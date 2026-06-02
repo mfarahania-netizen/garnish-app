@@ -1,0 +1,2926 @@
+[
+  {
+    "id": 216,
+    "title": "جوجه کباب زعفرانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "کباب",
+      "غذای مرغ",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات" 
+    ],
+    "occasion": [
+      "مهمانی",
+      "پیک‌نیک"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 224,
+    "title": "خورشت قرمه سبزی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن" 
+    ],
+    "occasion": [
+      "روزمره",
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 228,
+    "title": "خورشت فسنجان",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "شب یلدا",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "آجیل" 
+    ],
+    "occasion": [
+      "مهمانی",
+      "شب یلدا"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 230,
+    "title": "دیزی (آبگوشت)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "آبگوشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 232,
+    "title": "عدس پلو با گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 235,
+    "title": "چلو کباب کوبیده",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 862,
+    "title": "باقالی پلو با گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 864,
+    "title": "عدس پلو با گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 866,
+    "title": "لوبیا پلو با گوشت چرخ کرده",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 868,
+    "title": "استانبولی پلو بدون گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 870,
+    "title": "آلبالو پلو با مرغ یا گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 872,
+    "title": "دلمه برگ مو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "دلمه",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی",
+      "افطار"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 875,
+    "title": "دلمه بادمجان",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "دلمه",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی",
+      "افطار"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 878,
+    "title": "زرشک پلو با مرغ",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 880,
+    "title": "کوفته تبریزی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کوفته",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ" 
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 883,
+    "title": "رولت گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ",
+      "گلوتن"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1051,
+    "title": "خورشت کرفس",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1052,
+    "title": "خورشت آلو اسفناج",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1053,
+    "title": "خورشت بامیه",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "محلی جنوب"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1058,
+    "title": "خورشت کنگر",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1059,
+    "title": "خورشت خلال",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1071,
+    "title": "کتلت گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "کتلت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ",
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1072,
+    "title": "اشکنه",
+    "foodType": "main",
+    "mealType": "dinner",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "آش",
+      "غذای گیاهی",
+      "شام",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره",
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1077,
+    "title": "خوراک لوبیا چیتی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای گیاهی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1084,
+    "title": "ته چین مرغ",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "ته‌چین",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1195,
+    "title": "ماکارونی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پاستا",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1196,
+    "title": "کباب تابه‌ای گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1197,
+    "title": "کباب تابه‌ای مرغ",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "کباب",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "سریع",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1207,
+    "title": "شیشلیک (کباب دنده)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1208,
+    "title": "آش رشته",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "آش",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "افطار",
+      "شب یلدا",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "افطار",
+      "شب یلدا",
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1209,
+    "title": "کباب بختیاری",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1214,
+    "title": "کباب ترش",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1215,
+    "title": "کباب چنجه",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره",
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1220,
+    "title": "سبزی پلو با ماهی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای دریایی",
+      "ناهار",
+      "شام",
+      "عید نوروز",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "ماهی"
+    ],
+    "occasion": [
+      "عید نوروز",
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1224,
+    "title": "باقلاقاتق",
+    "foodType": "main",
+    "mealType": "dinner",
+    "diet": "vegetarian",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای گیاهی",
+      "شام",
+      "محلی شمال",
+      "رژیمی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1225,
+    "title": "میرزا قاسمی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پیش‌غذا",
+      "غذای گیاهی",
+      "محلی شمال",
+      "رژیمی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی",
+      "پیک‌نیک"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1235,
+    "title": "آش دوغ",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "آش",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "محلی شمال",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات",
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره",
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1237,
+    "title": "آش شله قلمکار",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "آش",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "نذری",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "نذری",
+      "افطار"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1238,
+    "title": "حلیم گندم با گوشت",
+    "foodType": "main",
+    "mealType": "breakfast",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "حلیم",
+      "صبحانه",
+      "غذای گوشتی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "صبحانه رسمی",
+      "افطار"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1239,
+    "title": "قیمه نثار",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "آجیل"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1250,
+    "title": "شیرین پلو (مرصع پلو)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "آجیل",
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی",
+      "عید نوروز"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1251,
+    "title": "خورشت بادمجان",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "روزمره",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1252,
+    "title": "کلم پلو شیرازی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "محلی جنوب",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1261,
+    "title": "دمپختک (ماش پلو تهرانی)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "دمپخت",
+      "غذای گیاهی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1262,
+    "title": "ترش شامی گیلانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "محلی شمال"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1263,
+    "title": "کاله جوش (کله جوش)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "central",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "آش",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1270,
+    "title": "یتیمچه",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegan",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1272,
+    "title": "زیره پلو کرمانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1276,
+    "title": "تاس کباب",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1279,
+    "title": "میگو پلو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای دریایی",
+      "ناهار",
+      "شام",
+      "محلی جنوب",
+      "رژیمی"
+    ],
+    "allergens": [
+      "میگو"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1280,
+    "title": "رشته پلو شیرازی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "پلو",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "محلی جنوب",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1289,
+    "title": "آب دوغ خیار",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "پیش‌غذا",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "روزمره",
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1290,
+    "title": "حلیم بادمجان",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1291,
+    "title": "بریان ماهی (ماهی شکم پر)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "غذای دریایی",
+      "ناهار",
+      "شام",
+      "مهمانی",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "ماهی",
+      "آجیل"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1296,
+    "title": "مرغ ترش گیلانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "north",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "محلی شمال"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1297,
+    "title": "دوپیازه آلو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "محلی غرب"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1306,
+    "title": "قلیه ماهی سیرافی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای دریایی",
+      "ناهار",
+      "شام",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "ماهی"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1307,
+    "title": "قلیه میگو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خورشت",
+      "غذای دریایی",
+      "ناهار",
+      "شام",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "میگو"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1314,
+    "title": "خورشت ماست",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "central",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1315,
+    "title": "دال عدس",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای گیاهی",
+      "غذای حبوبات",
+      "ناهار",
+      "شام",
+      "بین‌المللی",
+      "رژیمی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1323,
+    "title": "لازانیا",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پاستا",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1324,
+    "title": "سالاد الویه",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی",
+      "پیک‌نیک"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1325,
+    "title": "املت گوجه فرنگی",
+    "foodType": "main",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "تخم‌مرغ",
+      "صبحانه",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "صبحانه رسمی",
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1332,
+    "title": "سیب زمینی سرخ کرده",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "پیش‌غذا",
+      "فست‌فود",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1333,
+    "title": "مرغ سوخاری",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1334,
+    "title": "اشترودل گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1341,
+    "title": "همبرگر خانگی (چیزبرگر)",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1342,
+    "title": "خوراک مرغ زعفرانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1343,
+    "title": "خوراک مرغ و قارچ",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "خوراک",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1353,
+    "title": "کباب ترکی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1482,
+    "title": "شله زرد",
+    "foodType": "dessert",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "نذری",
+      "افطار",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "آجیل"
+    ],
+    "occasion": [
+      "افطار",
+      "نذری"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1483,
+    "title": "حلوا زعفرانی",
+    "foodType": "dessert",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "سریع",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "افطار",
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1484,
+    "title": "مسقطی",
+    "foodType": "dessert",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1491,
+    "title": "شیر برنج",
+    "foodType": "dessert",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "دسر",
+      "صبحانه",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "افطار",
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1492,
+    "title": "فرنی",
+    "foodType": "dessert",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "دسر",
+      "صبحانه",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "صبحانه رسمی",
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1496,
+    "title": "رنگینک",
+    "foodType": "dessert",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "south",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "سریع",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "کنجد"
+    ],
+    "occasion": [
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1510,
+    "title": "شربت خیار سکنجبین",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "افطار",
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1513,
+    "title": "شربت بهار نارنج",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1514,
+    "title": "شربت گلاب",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1519,
+    "title": "موهیتو کلاسیک",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1520,
+    "title": "لیموناد",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1521,
+    "title": "املت پنیر",
+    "foodType": "main",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "تخم‌مرغ",
+      "صبحانه",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ",
+      "لبنیات"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1528,
+    "title": "کله پاچه",
+    "foodType": "main",
+    "mealType": "breakfast",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "صبحانه",
+      "غذای گوشتی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "گران"
+  },
+  {
+    "id": 1547,
+    "title": "کاچی",
+    "foodType": "dessert",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "صبحانه",
+      "محلی جنوب",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1548,
+    "title": "خاگینه",
+    "foodType": "dessert",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "صبحانه",
+      "سریع",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1553,
+    "title": "دیتاکس واتر",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1554,
+    "title": "اسموتی طالبی",
+    "foodType": "drink",
+    "mealType": "breakfast",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "صبحانه",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1555,
+    "title": "شیر پسته",
+    "foodType": "drink",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "صبحانه",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات",
+      "آجیل"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1562,
+    "title": "عدسی",
+    "foodType": "main",
+    "mealType": "breakfast",
+    "diet": "vegan",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "صبحانه",
+      "غذای حبوبات",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1563,
+    "title": "اسموتی توت فرنگی",
+    "foodType": "drink",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "صبحانه",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1564,
+    "title": "اسموتی هندوانه",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "افطار",
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1706,
+    "title": "هویج پلو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پلو",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "محلی جنوب"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1743,
+    "title": "کشک بادمجان",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "پیش‌غذا",
+      "غذای گیاهی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1747,
+    "title": "سالاد اندونزی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1751,
+    "title": "سالاد مرغ",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "غذای مرغ",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1761,
+    "title": "سالاد رنگینک",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1762,
+    "title": "سالاد سیب زمینی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "پیک‌نیک"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1767,
+    "title": "شامی کباب لرستانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "west",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "کباب",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "محلی غرب"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1768,
+    "title": "سوسیس بندری",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "south",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1780,
+    "title": "پنکیک",
+    "foodType": "dessert",
+    "mealType": "breakfast",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "دسر",
+      "صبحانه",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "تخم‌مرغ",
+      "لبنیات"
+    ],
+    "occasion": [
+      "صبحانه رسمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1808,
+    "title": "سالاد ماکارونی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "فست‌فود",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "مهمانی",
+      "پیک‌نیک"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 1816,
+    "title": "سوپ شیر",
+    "foodType": "main",
+    "mealType": "dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "سوپ",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "لبنیات"
+    ],
+    "occasion": [
+      "شام سبک"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 1820,
+    "title": "شاورما",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2014,
+    "title": "خمیر پیتزا ایتالیایی",
+    "foodType": "bread",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "نان",
+      "پایه",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2018,
+    "title": "سس بشامل",
+    "foodType": "sauce",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "سس",
+      "پایه",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "لبنیات",
+      "گلوتن"
+    ],
+    "occasion": [],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2022,
+    "title": "سس پستو",
+    "foodType": "sauce",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "سس",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "آجیل",
+      "لبنیات"
+    ],
+    "occasion": [],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2028,
+    "title": "سس فلافل",
+    "foodType": "sauce",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "سس",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "کنجد"
+    ],
+    "occasion": [],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2032,
+    "title": "سس همبرگر",
+    "foodType": "sauce",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "سس",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2035,
+    "title": "سس مارینارا",
+    "foodType": "sauce",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "سس",
+      "سریع",
+      "رژیمی",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2039,
+    "title": "رد موهیتو",
+    "foodType": "drink",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "نوشیدنی",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2049,
+    "title": "کوکو سبزی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "persian",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "کوکو",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "رژیمی",
+      "سنتی ایرانی"
+    ],
+    "allergens": [
+      "تخم‌مرغ"
+    ],
+    "occasion": [
+      "افطار",
+      "پیک‌نیک"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2054,
+    "title": "قیمه سیب زمینی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "persian",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "خورشت",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "سنتی ایرانی"
+    ],
+    "allergens": [],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2056,
+    "title": "سالاد شیرازی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "south",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "سریع",
+      "رژیمی",
+      "محلی جنوب"
+    ],
+    "allergens": [],
+    "occasion": [
+      "همراه غذا"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2064,
+    "title": "پاستا پستو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پاستا",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "آجیل",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2071,
+    "title": "سالاد سزار",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": false,
+    "categories": [
+      "سالاد",
+      "پیش‌غذا",
+      "سریع",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "تخم‌مرغ",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2075,
+    "title": "سمبوسه آبادانی",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegetarian",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "پیش‌غذا",
+      "محلی جنوب",
+      "افطار"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "افطار"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2079,
+    "title": "سمبوسه در فر (رژیمی)",
+    "foodType": "appetizer",
+    "mealType": "any",
+    "diet": "vegan",
+    "region": "south",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "پیش‌غذا",
+      "سریع",
+      "رژیمی",
+      "محلی جنوب"
+    ],
+    "allergens": [
+      "گلوتن"
+    ],
+    "occasion": [
+      "افطار",
+      "رژیمی"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2082,
+    "title": "پیتزا استیک گوشت",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پیتزا",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2086,
+    "title": "فلافل آبادانی",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegan",
+    "region": "south",
+    "isQuick": false,
+    "isHealthy": true,
+    "categories": [
+      "فست‌فود",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "محلی جنوب",
+      "رژیمی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "کنجد"
+    ],
+    "occasion": [
+      "افطار",
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2090,
+    "title": "نودل سبزیجات",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegan",
+    "region": "international",
+    "isQuick": true,
+    "isHealthy": true,
+    "categories": [
+      "فست‌فود",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "سریع",
+      "بین‌المللی",
+      "رژیمی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "سویا"
+    ],
+    "occasion": [
+      "روزمره"
+    ],
+    "cost": "کم‌هزینه"
+  },
+  {
+    "id": 2094,
+    "title": "پیتزا مرغ و پستو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پیتزا",
+      "غذای مرغ",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات",
+      "آجیل"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2099,
+    "title": "پیتزا مارگاریتا",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "vegetarian",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پیتزا",
+      "غذای گیاهی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2103,
+    "title": "پاستا آلفردو",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پاستا",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  },
+  {
+    "id": 2107,
+    "title": "پیتزا بیکن",
+    "foodType": "main",
+    "mealType": "lunch,dinner",
+    "diet": "regular",
+    "region": "international",
+    "isQuick": false,
+    "isHealthy": false,
+    "categories": [
+      "فست‌فود",
+      "پیتزا",
+      "غذای گوشتی",
+      "ناهار",
+      "شام",
+      "بین‌المللی"
+    ],
+    "allergens": [
+      "گلوتن",
+      "لبنیات"
+    ],
+    "occasion": [
+      "مهمانی"
+    ],
+    "cost": "متوسط"
+  }
+]

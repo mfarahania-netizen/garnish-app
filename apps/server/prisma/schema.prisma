@@ -1,0 +1,386 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  phone     String?  @unique
+  email     String?  @unique
+  name      String?
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  preferences        UserPreference?
+  recipes            Recipe[]           @relation("UserRecipes")
+  favorites          FavoriteRecipe[]
+  mealPlans          MealPlan[]
+  shoppingList       ShoppingList[]
+  notifications      Notification[]
+  tickets            SupportTicket[]
+  sessions           UserSession[]
+  events             UserEvent[]
+  profile            UserBehaviorProfile?
+  isAdmin            Boolean  @default(false)
+  auditLogs          UserAuditLog[]
+  dataAccessLogs     DataAccessLog[]
+  consentLogs        ConsentLog[]
+  preferenceHistories PreferenceHistory[]
+  
+  // روابط جدید many-to-many
+  allergies          UserAllergy[]
+  cuisines           UserCuisine[]
+  healthGoals        UserHealthGoal[]
+}
+
+model UserPreference {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  diet       String?
+  skillLevel String?
+  budget     String?
+  updatedAt  DateTime @updatedAt
+}
+
+model Allergy {
+  id    String        @id @default(uuid())
+  name  String        @unique
+  users UserAllergy[]
+
+  @@map("allergies")
+}
+
+model Cuisine {
+  id    String        @id @default(uuid())
+  name  String        @unique
+  users UserCuisine[]
+
+  @@map("cuisines")
+}
+
+model HealthGoal {
+  id    String          @id @default(uuid())
+  name  String          @unique
+  users UserHealthGoal[]
+
+  @@map("health_goals")
+}
+
+model UserAllergy {
+  userId    String
+  allergyId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allergy   Allergy @relation(fields: [allergyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, allergyId])
+  @@map("user_allergies")
+}
+
+model UserCuisine {
+  userId    String
+  cuisineId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cuisine   Cuisine @relation(fields: [cuisineId], references: [id], onDelete: Cascade)
+
+  @@id([userId, cuisineId])
+  @@map("user_cuisines")
+}
+
+model UserHealthGoal {
+  userId       String
+  healthGoalId String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  healthGoal   HealthGoal  @relation(fields: [healthGoalId], references: [id], onDelete: Cascade)
+
+  @@id([userId, healthGoalId])
+  @@map("user_health_goals")
+}
+
+model Recipe {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  category    String
+  region      String?
+  difficulty  String?
+  cookingTime Int?
+  servings    Int?
+  imageUrl    String?
+  videoUrl    String?
+  authorId    String?
+  author      User?    @relation("UserRecipes", fields: [authorId], references: [id])
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  status      String?   @default("pending")
+  adminNote   String?
+
+  prepTime    String?
+  totalTime   String?
+  tools       String?   @default("[]")
+  tips        String?   @default("[]")
+  faq         String?   @default("[]")
+  mealType    String?
+  diet        String?
+  categories  String?   @default("[]")
+  allergens   String?   @default("[]")
+  occasion    String?   @default("[]")
+  cost        String?
+
+  ingredients    RecipeIngredient[]
+  steps          RecipeStep[]
+  nutrition      Nutrition?
+  searchTerms    SearchTerm[]
+  favoriteBy     FavoriteRecipe[]
+  mealSlots      MealSlot[]
+}
+
+model RecipeIngredient {
+  id        String  @id @default(uuid())
+  recipeId  String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name      String
+  amount    String?
+  unit      String?
+  notes     String?
+  order     Int     @default(0)
+}
+
+model RecipeStep {
+  id        String @id @default(uuid())
+  recipeId  String
+  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  title     String?
+  instruction String
+  duration  Int?
+  imageUrl  String?
+  order     Int    @default(0)
+}
+
+model Nutrition {
+  id         String @id @default(uuid())
+  recipeId   String @unique
+  recipe     Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  calories   Float?
+  protein    Float?
+  carbs      Float?
+  fat        Float?
+  fiber      Float?
+}
+
+model SearchTerm {
+  id       String @id @default(uuid())
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  term     String
+}
+
+model FavoriteRecipe {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+model MealPlan {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slots     MealSlot[]
+}
+
+model MealSlot {
+  id         String   @id @default(uuid())
+  mealPlanId String
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  dayOfWeek  Int
+  mealType   String
+  recipeId   String?
+  recipe     Recipe?  @relation(fields: [recipeId], references: [id])
+  notes      String?
+}
+
+model ShoppingList {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items     ShoppingItem[]
+}
+
+model ShoppingItem {
+  id             String   @id @default(uuid())
+  shoppingListId String
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  name           String
+  amount         String?
+  unit           String?
+  isChecked      Boolean  @default(false)
+  category       String?
+  addedAt        DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  type      String
+  isRead    Boolean  @default(false)
+  data      String?
+  createdAt DateTime @default(now())
+}
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String
+  message     String
+  status      String   @default("open")
+  priority    String   @default("normal")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  replies     TicketReply[]
+}
+
+model TicketReply {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  message   String
+  isStaff   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ===== مدل‌های ردیابی رفتار کاربران =====
+
+model UserSession {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  startTime DateTime    @default(now())
+  endTime   DateTime?
+  device    String?
+  ip        String?
+  events    UserEvent[]
+}
+
+model UserEvent {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id])
+  type      String
+  timestamp DateTime    @default(now())
+  sessionId String?
+  session   UserSession? @relation(fields: [sessionId], references: [id])
+  page      String?
+  duration  Int?
+  payload   String?
+  enrichment String?
+
+  @@index([userId, type, timestamp])
+  @@index([timestamp])
+}
+
+model UserBehaviorProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+
+  favoriteFoods   String?  @default("[]")
+  dislikedFoods   String?  @default("[]")
+  budgetRange     String?
+  shoppingPattern String?  @default("[]")
+  mealTiming      String?  @default("{}")
+  cookingSkill    String?
+  healthGoals     String?  @default("[]")
+  motivationStyle String?
+  consistencyScore Float?  @default(0.0)
+  churnRiskScore   Float?  @default(0.0)
+  familySize      Int?     @default(1)
+
+  favoriteIngredients  String?  @default("[]")
+  dislikedIngredients  String?  @default("[]")
+  preferredMealTimes   String?  @default("{}")
+  weeklyPatterns       String?  @default("{}")
+  cookingFrequency     String?
+  budgetScore          String?
+  healthAdherenceScore Float?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ===== جداول ممیزی برای GDPR =====
+
+model UserAuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // e.g., LOGIN, LOGOUT, PROFILE_UPDATE, PASSWORD_CHANGE, DELETE_ACCOUNT
+  details   String?  // JSON string containing extra metadata (IP, device, etc.)
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model DataAccessLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  resource   String   // e.g., RECIPE, PREFERENCES, SHOPPING_LIST
+  action     String   // READ, EXPORT, SHARE
+  details    String?  // additional info
+  ip         String?
+  accessedAt DateTime @default(now())
+
+  @@index([userId, accessedAt])
+}
+
+model ConsentLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // e.g., DATA_COLLECTION, MARKETING, COOKIES
+  granted   Boolean  @default(true)
+  ip        String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
+}
+
+model PreferenceHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fieldName  String   // e.g., diet, allergies, budget
+  oldValue   String?  // JSON
+  newValue   String?  // JSON
+  changedAt  DateTime @default(now())
+
+  @@index([userId, changedAt])
+}

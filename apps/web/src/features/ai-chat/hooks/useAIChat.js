@@ -1,0 +1,1 @@
+export { useAIChatContext as useAIChat } from '../context/AIChatContext';

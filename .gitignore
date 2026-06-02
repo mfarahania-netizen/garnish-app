@@ -1,1 +1,23 @@
-node_modules
+# وابستگی‌ها
+node_modules/
+
+# بیلدها
+dist/
+.turbo/
+
+# فایل‌های محیطی حساس
+.env
+.env.local
+.env.production
+
+# دیتابیس محلی
+*.db
+apps/server/prisma/dev.db
+
+# فایل‌های قفل اضافی
+package-lock.json
+
+# فایل‌های آرشیو و موقت
+*.rar
+*.zip
+*.log

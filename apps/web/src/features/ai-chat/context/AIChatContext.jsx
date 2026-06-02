@@ -1,0 +1,110 @@
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { processQuery, initAIEngine } from '../services/aiEngine';
+import { loadUserPreferences, getTimeBasedContext, getSeasonContext } from '../services/personalizationService';
+import { useRecipeContext } from '../../../context/RecipeContext';
+
+const AIChatContext = createContext();
+export const useAIChatContext = () => useContext(AIChatContext);
+
+export const AIChatProvider = ({ children }) => {
+  const { recipes } = useRecipeContext();
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [preferences, setPreferences] = useState({});
+  const messagesEndRef = useRef(null);
+
+  // راه‌اندازی موتور RAG با رسپی‌ها
+  useEffect(() => {
+    if (recipes.length > 0) {
+      initAIEngine(recipes);
+    }
+  }, [recipes]);
+
+  // بارگذاری تنظیمات کاربر
+  useEffect(() => {
+    setPreferences(loadUserPreferences());
+  }, []);
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const addMessage = useCallback((role, content, extra = {}) => {
+    const newMessage = {
+      id: Date.now().toString(),
+      role,
+      content,
+      timestamp: new Date().toISOString(),
+      ...extra,
+    };
+    setMessages(prev => [...prev, newMessage]);
+    return newMessage;
+  }, []);
+
+  const sendMessage = useCallback(async (text, imageData = null) => {
+    if (!text?.trim() && !imageData) return;
+
+    const userContent = imageData
+      ? `[تصویر آپلود شد] ${text || 'چه غذایی می‌توانم با این مواد بپزم؟'}`
+      : text;
+
+    addMessage('user', userContent, { imageData });
+
+    setLoading(true);
+
+    const timeContext = getTimeBasedContext();
+    const seasonContext = getSeasonContext();
+    const enrichedPrefs = {
+      ...preferences,
+      timeContext,
+      seasonContext,
+    };
+
+    let queryText = text;
+    if (imageData?.ingredients?.length) {
+      queryText = imageData.ingredients.join('، ') + (text ? ` - ${text}` : ' - چی بپزم؟');
+    }
+
+    try {
+      // اصلاح: await اضافه شد
+      const response = await processQuery(queryText, recipes, enrichedPrefs);
+
+      addMessage('assistant', response.message, {
+        recipes: response.recipes,
+        recipeFound: response.recipeFound,
+        recipe: response.recipe,
+        tips: response.tips,
+        substitutes: response.substitutes,
+        plan: response.plan,
+        searchMethod: response.searchMethod,
+      });
+    } catch (error) {
+      console.error('AI Engine error:', error);
+      addMessage('assistant', 'متأسفانه خطایی رخ داد. لطفاً دوباره تلاش کنید.');
+    }
+
+    setLoading(false);
+    scrollToBottom();
+  }, [recipes, preferences, addMessage]);
+
+  const clearChat = useCallback(() => {
+    setMessages([]);
+  }, []);
+
+  return (
+    <AIChatContext.Provider value={{
+      messages,
+      loading,
+      sendMessage,
+      clearChat,
+      addMessage,
+      preferences,
+      setPreferences,
+      messagesEndRef,
+    }}>
+      {children}
+    </AIChatContext.Provider>
+  );
+};

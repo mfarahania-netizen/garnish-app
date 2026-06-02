@@ -1,0 +1,9 @@
+{
+  "name": "@garnish/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.js",
+  "exports": {
+    "./data/*": "./data/*"
+  }
+}
