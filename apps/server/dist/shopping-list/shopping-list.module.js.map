@@ -1,0 +1,1 @@
+{"version":3,"file":"shopping-list.module.js","sourceRoot":"","sources":["../../src/shopping-list/shopping-list.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,mEAA8D;AAC9D,yEAAoE;AAM7D,IAAM,kBAAkB,GAAxB,MAAM,kBAAkB;CAAG,CAAA;AAArB,gDAAkB;6BAAlB,kBAAkB;IAJ9B,IAAA,eAAM,EAAC;QACN,SAAS,EAAE,CAAC,2CAAmB,CAAC;QAChC,WAAW,EAAE,CAAC,iDAAsB,CAAC;KACtC,CAAC;GACW,kBAAkB,CAAG"}
