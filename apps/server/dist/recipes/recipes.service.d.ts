@@ -4,7 +4,7 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 export declare class RecipesService {
     private prisma;
     constructor(prisma: PrismaService);
-    findAll(skip?: number, take?: number): Promise<{
+    findAll(skip?: number, take?: number, category?: string): Promise<{
         data: ({
             nutrition: {
                 id: string;
@@ -71,6 +71,45 @@ export declare class RecipesService {
         page: number;
         pageSize: number;
     }>;
+    search(q: string, limit?: number): Promise<({
+        ingredients: {
+            name: string;
+            amount: string | null;
+            unit: string | null;
+            notes: string | null;
+            id: string;
+            recipeId: string;
+            order: number;
+        }[];
+    } & {
+        title: string;
+        imageUrl: string | null;
+        description: string | null;
+        category: string;
+        region: string | null;
+        difficulty: string | null;
+        cookingTime: number | null;
+        servings: number | null;
+        videoUrl: string | null;
+        isPublic: boolean;
+        status: string | null;
+        prepTime: string | null;
+        totalTime: string | null;
+        mealType: string | null;
+        diet: string | null;
+        cost: string | null;
+        tools: string | null;
+        tips: string | null;
+        faq: string | null;
+        categories: string | null;
+        allergens: string | null;
+        occasion: string | null;
+        id: string;
+        authorId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        adminNote: string | null;
+    })[]>;
     findOne(id: string): Promise<({
         nutrition: {
             id: string;
@@ -229,7 +268,7 @@ export declare class RecipesService {
         updatedAt: Date;
         adminNote: string | null;
     }>;
-    update(id: string, data: UpdateRecipeDto): Promise<{
+    update(id: string, userId: string, data: UpdateRecipeDto): Promise<{
         title: string;
         imageUrl: string | null;
         description: string | null;

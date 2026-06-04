@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -32,16 +32,31 @@ export class ShoppingListService {
     });
   }
 
-  async toggleItem(itemId: string) {
-    const item = await this.prisma.shoppingItem.findUnique({ where: { id: itemId } });
-    if (!item) throw new Error('Item not found');
+  async toggleItem(itemId: string, userId: string) {
+    // مالکیت را از طریق ShoppingList چک کن
+    const item = await this.prisma.shoppingItem.findUnique({
+      where: { id: itemId },
+      include: { shoppingList: { select: { userId: true } } },
+    });
+
+    if (!item) throw new NotFoundException('آیتم یافت نشد');
+    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به تغییر این آیتم نیستید');
+
     return this.prisma.shoppingItem.update({
       where: { id: itemId },
       data: { isChecked: !item.isChecked },
     });
   }
 
-  async removeItem(itemId: string) {
+  async removeItem(itemId: string, userId: string) {
+    const item = await this.prisma.shoppingItem.findUnique({
+      where: { id: itemId },
+      include: { shoppingList: { select: { userId: true } } },
+    });
+
+    if (!item) throw new NotFoundException('آیتم یافت نشد');
+    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به حذف این آیتم نیستید');
+
     return this.prisma.shoppingItem.delete({ where: { id: itemId } });
   }
 }

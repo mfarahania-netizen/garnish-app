@@ -8,9 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiService = void 0;
 const common_1 = require("@nestjs/common");
+const cache_manager_1 = require("@nestjs/cache-manager");
 const prisma_service_1 = require("../prisma/prisma.service");
 const CONCEPT_MAP = {
     'مقوی': ['گوشت', 'حبوبات', 'عدس', 'نخود', 'لوبیا', 'آبگوشت', 'حلیم'],
@@ -25,8 +29,10 @@ const CONCEPT_MAP = {
 };
 let AiService = class AiService {
     prisma;
-    constructor(prisma) {
+    cacheManager;
+    constructor(prisma, cacheManager) {
         this.prisma = prisma;
+        this.cacheManager = cacheManager;
     }
     async handlePrompt(prompt, userId) {
         let userAllergies = [];
@@ -66,7 +72,7 @@ let AiService = class AiService {
         const intent = this.analyzeUserIntent(prompt);
         const { mealType, diet, cost, occasion, isQuick, isEasy } = intent;
         if (diet === 'healthy' && ingredients.length === 0 && !mealType && !cost && !occasion && !isQuick && !isEasy) {
-            return await this.getHealthySuggestions(prompt, userProfile);
+            return await this.getHealthySuggestions(prompt, userProfile, userAllergies);
         }
         if (ingredients.length === 0 && !mealType && !diet && !cost && !occasion && !isQuick && !isEasy) {
             if (this.isGreeting(prompt)) {
@@ -78,71 +84,42 @@ let AiService = class AiService {
             }
             return '❌ متأسفانه هیچ رسپی‌ای در دسترس نیست.';
         }
+        const where = this.buildWhereClause(ingredients, intent, userProfile, userAllergies);
         let recipes = await this.prisma.recipe.findMany({
+            where,
             include: { ingredients: true },
+            take: 50,
         });
-        if (ingredients.length > 0) {
-            const useOr = fromConcept || prompt.includes('یا');
+        if (userAllergies.length > 0) {
             recipes = recipes.filter(r => {
-                if (useOr) {
-                    return ingredients.some(ing => r.ingredients.some(ri => ri.name.includes(ing)) || r.title.includes(ing));
-                }
-                return ingredients.every(ing => r.ingredients.some(ri => ri.name.includes(ing)) || r.title.includes(ing));
+                const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
+                return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
             });
         }
-        if (mealType)
-            recipes = recipes.filter(r => r.mealType?.includes(mealType));
-        if (diet === 'healthy') {
-            recipes = recipes.filter(r => {
-                const cats = r.categories ? JSON.parse(r.categories) : [];
-                return r.diet === 'vegetarian' || r.diet === 'vegan' || cats.includes('سالم') || cats.includes('رژیمی');
-            });
-        }
-        else if (diet) {
-            recipes = recipes.filter(r => r.diet === diet);
-        }
-        if (cost)
-            recipes = recipes.filter(r => r.cost === cost);
-        if (occasion) {
-            recipes = recipes.filter(r => {
-                const occasions = r.occasion ? JSON.parse(r.occasion) : [];
-                return occasions.includes(occasion);
-            });
-        }
-        if (isQuick)
-            recipes = recipes.filter(r => (r.cookingTime || 0) <= 30);
-        if (isEasy)
-            recipes = recipes.filter(r => r.difficulty === 'آسان');
         const personalizationReasons = [];
         if (userProfile) {
             if (userProfile.diet === 'vegetarian' || userProfile.diet === 'vegan') {
-                const before = recipes.length;
-                recipes = recipes.filter(r => r.diet === 'vegetarian' || r.diet === 'vegan');
-                if (recipes.length < before)
-                    personalizationReasons.push('رژیم گیاه‌خواری شما');
+                personalizationReasons.push('رژیم گیاه‌خواری شما');
             }
             if (userAllergies.length > 0) {
-                const before = recipes.length;
-                recipes = recipes.filter(r => {
-                    const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
-                    return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
-                });
-                if (recipes.length < before)
-                    personalizationReasons.push('آلرژی‌های غذایی شما');
+                personalizationReasons.push('آلرژی‌های غذایی شما');
             }
             if (userProfile.skillLevel === 'beginner') {
-                const before = recipes.length;
-                recipes = recipes.filter(r => r.difficulty !== 'سخت');
-                if (recipes.length < before)
-                    personalizationReasons.push('سطح مهارت مبتدی شما');
+                personalizationReasons.push('سطح مهارت مبتدی شما');
             }
         }
         if (recipes.length === 0) {
+            const relaxedWhere = this.buildWhereClause(ingredients, intent, null, []);
             let relaxedRecipes = await this.prisma.recipe.findMany({
+                where: relaxedWhere,
                 include: { ingredients: true },
+                take: 10,
             });
-            if (ingredients.length > 0) {
-                relaxedRecipes = relaxedRecipes.filter(r => ingredients.some(ing => r.ingredients.some(ri => ri.name.includes(ing)) || r.title.includes(ing)));
+            if (userAllergies.length > 0) {
+                relaxedRecipes = relaxedRecipes.filter(r => {
+                    const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
+                    return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
+                });
             }
             if (relaxedRecipes.length > 0) {
                 return `🎯 برای «${prompt}» دقیقاً چیزی پیدا نشد، اما نزدیک‌ترین غذاها اینان:\n\n${this.formatRecipes(relaxedRecipes.slice(0, 3))}`;
@@ -168,6 +145,51 @@ let AiService = class AiService {
         }
         return response;
     }
+    buildWhereClause(ingredients, intent, userProfile, userAllergies) {
+        const where = {};
+        if (ingredients.length > 0) {
+            where.ingredients = {
+                some: {
+                    name: { in: ingredients },
+                },
+            };
+        }
+        if (intent.mealType) {
+            where.mealType = { contains: intent.mealType };
+        }
+        if (intent.diet === 'vegetarian') {
+            where.diet = { in: ['vegetarian', 'vegan'] };
+        }
+        else if (intent.diet === 'healthy') {
+            where.OR = [
+                { diet: { in: ['vegetarian', 'vegan'] } },
+                { categories: { contains: 'سالم' } },
+                { categories: { contains: 'رژیمی' } },
+            ];
+        }
+        else if (intent.diet) {
+            where.diet = intent.diet;
+        }
+        if (intent.cost) {
+            where.cost = intent.cost;
+        }
+        if (intent.occasion) {
+            where.occasion = { contains: intent.occasion };
+        }
+        if (intent.isQuick) {
+            where.cookingTime = { lte: 30 };
+        }
+        if (intent.isEasy) {
+            where.difficulty = 'آسان';
+        }
+        if (userProfile?.diet === 'vegetarian' || userProfile?.diet === 'vegan') {
+            where.diet = { in: ['vegetarian', 'vegan'] };
+        }
+        if (userProfile?.skillLevel === 'beginner') {
+            where.difficulty = { not: 'سخت' };
+        }
+        return where;
+    }
     findConceptKey(prompt) {
         const lower = prompt.toLowerCase();
         for (const key of Object.keys(CONCEPT_MAP)) {
@@ -176,16 +198,27 @@ let AiService = class AiService {
         }
         return null;
     }
-    async getHealthySuggestions(prompt, userProfile) {
-        let recipes = await this.prisma.recipe.findMany({
-            include: { ingredients: true },
-        });
-        recipes = recipes.filter(r => {
-            const cats = r.categories ? JSON.parse(r.categories) : [];
-            return r.diet === 'vegetarian' || r.diet === 'vegan' || cats.includes('سالم') || cats.includes('رژیمی');
-        });
+    async getHealthySuggestions(prompt, userProfile, userAllergies = []) {
+        const where = {
+            OR: [
+                { diet: { in: ['vegetarian', 'vegan'] } },
+                { categories: { contains: 'سالم' } },
+                { categories: { contains: 'رژیمی' } },
+            ],
+        };
         if (userProfile?.diet === 'vegetarian' || userProfile?.diet === 'vegan') {
-            recipes = recipes.filter(r => r.diet === 'vegetarian' || r.diet === 'vegan');
+            where.diet = { in: ['vegetarian', 'vegan'] };
+        }
+        let recipes = await this.prisma.recipe.findMany({
+            where,
+            include: { ingredients: true },
+            take: 20,
+        });
+        if (userAllergies.length > 0) {
+            recipes = recipes.filter(r => {
+                const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
+                return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
+            });
         }
         if (recipes.length === 0)
             return '❌ متأسفانه هیچ غذای سالمی در دیتابیس پیدا نشد.';
@@ -198,6 +231,10 @@ let AiService = class AiService {
         return `🥗 پیشنهادهای سالم و رژیمی:\n\n${lines.join('\n\n')}\n\n💡 این غذاها کم‌چرب و پرخاصیت هستن.`;
     }
     async expandConcept(prompt) {
+        const cacheKey = `ai:concept:${prompt}`;
+        const cached = await this.cacheManager.get(cacheKey);
+        if (cached)
+            return cached;
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
             console.error('GEMINI_API_KEY is not set');
@@ -219,8 +256,9 @@ let AiService = class AiService {
             const data = await response.json();
             const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
             const match = text.match(/\[.*?\]/s);
-            if (match)
-                return JSON.parse(match[0]);
+            const result = match ? JSON.parse(match[0]) : [];
+            await this.cacheManager.set(cacheKey, result, 60 * 60 * 1000);
+            return result;
         }
         catch (e) {
             console.error('expandConcept failed:', e);
@@ -336,6 +374,7 @@ let AiService = class AiService {
 exports.AiService = AiService;
 exports.AiService = AiService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __param(1, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, Object])
 ], AiService);
 //# sourceMappingURL=ai.service.js.map

@@ -115,22 +115,25 @@ export declare class AdminService {
         phone: string | null;
         email: string | null;
     }[]>;
-    getRecentEvents(limit?: number): Promise<{
-        recipeTitle: string | null;
-        user: {
-            name: string | null;
-            phone: string | null;
-        };
-        duration: number | null;
-        id: string;
-        page: string | null;
-        userId: string;
-        type: string;
-        timestamp: Date;
-        sessionId: string | null;
-        payload: string | null;
-        enrichment: string | null;
-    }[]>;
+    getRecentEvents(limit?: number, page?: number): Promise<{
+        events: {
+            recipeTitle: string | null;
+            user: {
+                name: string | null;
+                phone: string | null;
+            };
+            duration: number | null;
+            id: string;
+            page: string | null;
+            userId: string;
+            type: string;
+            timestamp: Date;
+            sessionId: string | null;
+            payload: string | null;
+            enrichment: string | null;
+        }[];
+        total: number;
+    }>;
     getAnalyticsStats(): Promise<{
         totalEvents: number;
         todayEvents: number;

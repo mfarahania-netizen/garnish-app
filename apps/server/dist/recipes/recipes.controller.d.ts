@@ -1,10 +1,11 @@
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { SearchRecipesDto } from './dto/search-recipes.dto';
 export declare class RecipesController {
     private readonly recipesService;
     constructor(recipesService: RecipesService);
-    findAll(page?: string, limit?: string): Promise<{
+    findAll(page?: string, limit?: string, category?: string): Promise<{
         data: ({
             nutrition: {
                 id: string;
@@ -71,6 +72,45 @@ export declare class RecipesController {
         page: number;
         pageSize: number;
     }>;
+    search(query: SearchRecipesDto): Promise<({
+        ingredients: {
+            name: string;
+            amount: string | null;
+            unit: string | null;
+            notes: string | null;
+            id: string;
+            recipeId: string;
+            order: number;
+        }[];
+    } & {
+        title: string;
+        imageUrl: string | null;
+        description: string | null;
+        category: string;
+        region: string | null;
+        difficulty: string | null;
+        cookingTime: number | null;
+        servings: number | null;
+        videoUrl: string | null;
+        isPublic: boolean;
+        status: string | null;
+        prepTime: string | null;
+        totalTime: string | null;
+        mealType: string | null;
+        diet: string | null;
+        cost: string | null;
+        tools: string | null;
+        tips: string | null;
+        faq: string | null;
+        categories: string | null;
+        allergens: string | null;
+        occasion: string | null;
+        id: string;
+        authorId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        adminNote: string | null;
+    })[]>;
     getMyRecipes(req: any): Promise<({
         ingredients: {
             name: string;
@@ -229,7 +269,7 @@ export declare class RecipesController {
         updatedAt: Date;
         adminNote: string | null;
     }>;
-    update(id: string, updateRecipeDto: UpdateRecipeDto): Promise<{
+    update(id: string, req: any, updateRecipeDto: UpdateRecipeDto): Promise<{
         title: string;
         imageUrl: string | null;
         description: string | null;

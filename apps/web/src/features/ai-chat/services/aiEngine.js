@@ -1,15 +1,13 @@
-import axios from 'axios';
+import apiClient from '../../../lib/apiClient';
 
 /**
  * ارسال درخواست به سرور و دریافت پاسخ
  * @param {string} prompt - متن سوال کاربر
- * @param {string} token - توکن JWT کاربر برای شخصی‌سازی
  * @returns {Promise<string>} پاسخ هوشمند
  */
-export async function askAI(prompt, token) {
+export async function askAI(prompt) {
   try {
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const res = await axios.post('http://localhost:3000/ai/chat', { prompt }, { headers });
+    const res = await apiClient.post('/ai/chat', { prompt });
     return res.data.reply;
   } catch (error) {
     console.error('خطا در ارتباط با دستیار:', error);

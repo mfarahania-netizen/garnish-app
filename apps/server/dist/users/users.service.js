@@ -105,6 +105,23 @@ let UsersService = class UsersService {
         };
     }
     async updatePreferences(userId, dto) {
+        const safeParseArray = (value) => {
+            if (Array.isArray(value))
+                return value;
+            if (typeof value === 'string') {
+                try {
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed : [];
+                }
+                catch {
+                    return [];
+                }
+            }
+            return [];
+        };
+        const allergies = safeParseArray(dto.allergies);
+        const cuisine = safeParseArray(dto.cuisine);
+        const healthGoals = safeParseArray(dto.healthGoals);
         await this.prisma.userPreference.upsert({
             where: { userId },
             create: {
@@ -119,43 +136,64 @@ let UsersService = class UsersService {
                 budget: dto.budget,
             },
         });
-        if (dto.allergies !== undefined) {
+        if (allergies !== undefined) {
             await this.prisma.userAllergy.deleteMany({ where: { userId } });
-            for (const name of dto.allergies) {
-                const allergy = await this.prisma.allergy.upsert({
+            if (allergies.length > 0) {
+                await this.prisma.$transaction(allergies.map(name => this.prisma.allergy.upsert({
                     where: { name },
                     create: { name },
                     update: {},
+                })));
+                const allergyRecords = await this.prisma.allergy.findMany({
+                    where: { name: { in: allergies } },
+                    select: { id: true },
                 });
-                await this.prisma.userAllergy.create({
-                    data: { userId, allergyId: allergy.id },
-                });
+                if (allergyRecords.length > 0) {
+                    await this.prisma.userAllergy.createMany({
+                        data: allergyRecords.map(a => ({ userId, allergyId: a.id })),
+                        skipDuplicates: true,
+                    });
+                }
             }
         }
-        if (dto.cuisine !== undefined) {
+        if (cuisine !== undefined) {
             await this.prisma.userCuisine.deleteMany({ where: { userId } });
-            for (const name of dto.cuisine) {
-                const cuisine = await this.prisma.cuisine.upsert({
+            if (cuisine.length > 0) {
+                await this.prisma.$transaction(cuisine.map(name => this.prisma.cuisine.upsert({
                     where: { name },
                     create: { name },
                     update: {},
+                })));
+                const cuisineRecords = await this.prisma.cuisine.findMany({
+                    where: { name: { in: cuisine } },
+                    select: { id: true },
                 });
-                await this.prisma.userCuisine.create({
-                    data: { userId, cuisineId: cuisine.id },
-                });
+                if (cuisineRecords.length > 0) {
+                    await this.prisma.userCuisine.createMany({
+                        data: cuisineRecords.map(c => ({ userId, cuisineId: c.id })),
+                        skipDuplicates: true,
+                    });
+                }
             }
         }
-        if (dto.healthGoals !== undefined) {
+        if (healthGoals !== undefined) {
             await this.prisma.userHealthGoal.deleteMany({ where: { userId } });
-            for (const name of dto.healthGoals) {
-                const goal = await this.prisma.healthGoal.upsert({
+            if (healthGoals.length > 0) {
+                await this.prisma.$transaction(healthGoals.map(name => this.prisma.healthGoal.upsert({
                     where: { name },
                     create: { name },
                     update: {},
+                })));
+                const goalRecords = await this.prisma.healthGoal.findMany({
+                    where: { name: { in: healthGoals } },
+                    select: { id: true },
                 });
-                await this.prisma.userHealthGoal.create({
-                    data: { userId, healthGoalId: goal.id },
-                });
+                if (goalRecords.length > 0) {
+                    await this.prisma.userHealthGoal.createMany({
+                        data: goalRecords.map(g => ({ userId, healthGoalId: g.id })),
+                        skipDuplicates: true,
+                    });
+                }
             }
         }
         return this.getPreferences(userId);

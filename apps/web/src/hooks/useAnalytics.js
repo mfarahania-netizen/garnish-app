@@ -1,24 +1,27 @@
 import { useCallback } from 'react';
-import apiClient from '../lib/apiClient';
-import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 export function useAnalytics() {
-  const { token } = useAuth();
-
   const trackEvent = useCallback(
-    async (type, payload = {}) => {
-      if (!token) return;
-      try {
-        await apiClient.post('/analytics/event', {
+    (type, payload) => {
+      const token = localStorage.getItem('token');
+      if (!token || token.length < 10) return;
+
+      axios.post(
+        'http://localhost:3000/analytics/event',
+        {
           type,
           page: window.location.pathname,
-          payload,
-        });
-      } catch (err) {
-        // بی‌صدا خطا می‌کنیم تا تجربه کاربری خراب نشود
-      }
+          payload: payload || {},
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ).catch(() => {});
     },
-    [token],
+    [],
   );
 
   return { trackEvent };

@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { askAI } from '../services/aiEngine';
 import { useAuth } from '../../../context/AuthContext';
 import { useAnalytics } from '../../../hooks/useAnalytics';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 
 export default function AIChatPage() {
   const { token } = useAuth();
@@ -24,10 +25,9 @@ export default function AIChatPage() {
   const theme = useMantineTheme();
   const hasTrackedStart = useRef(false);
 
-  // ردیابی شروع چت (فقط یک بار)
   useEffect(() => {
     if (!hasTrackedStart.current) {
-      trackEvent('ai_chat_started');
+      trackEvent(EventType.AI_CHAT_STARTED);
       hasTrackedStart.current = true;
     }
   }, []);
@@ -40,25 +40,23 @@ export default function AIChatPage() {
     setMessages(prev => [...prev, { sender: 'user', text: prompt }]);
     setLoading(true);
 
-    // ردیابی ارسال پیام
-    trackEvent('ai_message_send', { message: prompt });
+    trackEvent(EventType.AI_MESSAGE_SEND, { message: prompt });
 
     try {
       const startTime = Date.now();
-      const reply = await askAI(prompt, token);
+      const reply = await askAI(prompt); // 👈 دیگر token فرستاده نمی‌شود
       const latency = Date.now() - startTime;
       
       setMessages(prev => [...prev, { sender: 'bot', text: reply }]);
       
-      // ردیابی دریافت پاسخ و مدت زمان پاسخگویی
-      trackEvent('ai_suggestion_generated', { 
+      trackEvent(EventType.AI_SUGGESTION_GENERATED, { 
         prompt, 
         responseLength: reply.length,
         latency 
       });
     } catch {
       setMessages(prev => [...prev, { sender: 'bot', text: '❌ خطا در ارتباط با دستیار. دوباره تلاش کن.' }]);
-      trackEvent('ai_error', { message: prompt });
+      trackEvent(EventType.AI_ERROR, { message: prompt });
     } finally {
       setLoading(false);
     }
@@ -84,7 +82,7 @@ export default function AIChatPage() {
       maxWidth: '100%',
       overflow: 'hidden',
     }}>
-      {/* Header با طراحی بهبودیافته */}
+      {/* Header */}
       <Box
         py="md"
         px="md"
@@ -100,16 +98,8 @@ export default function AIChatPage() {
           overflow: 'hidden',
         }}
       >
-        <div style={{ 
-          position: 'absolute', top: -30, right: -30, 
-          width: 100, height: 100, borderRadius: '50%', 
-          background: 'rgba(255,255,255,0.08)' 
-        }} />
-        <div style={{ 
-          position: 'absolute', bottom: -20, left: -20, 
-          width: 70, height: 70, borderRadius: '50%', 
-          background: 'rgba(255,255,255,0.05)' 
-        }} />
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+        <div style={{ position: 'absolute', bottom: -20, left: -20, width: 70, height: 70, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
         
         <Group gap="xs" justify="center" style={{ position: 'relative', zIndex: 1 }}>
           <Avatar color="white" radius="xl" size="md" style={{ background: 'rgba(255,255,255,0.15)' }}>
@@ -194,7 +184,6 @@ export default function AIChatPage() {
         </Stack>
       </ScrollArea>
 
-      {/* دکمه اسکرول به پایین */}
       {showScrollButton && (
         <Transition transition="fade" mounted={showScrollButton}>
           {(styles) => (

@@ -1,52 +1,65 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import apiClient from '../lib/apiClient'; // 👈 جایگزین axios
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import apiClient from '../lib/apiClient';
 
-const AuthContext = createContext();
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '');
+  const [isLoading, setIsLoading] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
-    if (token) {
-      apiClient.get('/users/me')
-        .then(res => setUser(res.data))
-        .catch(() => {
-          localStorage.removeItem('token');
-          setToken('');
-          setUser(null);
-        });
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
+    setIsLoading(true);
+    apiClient.get('/users/me')
+      .then(res => setUser(res.data))
+      .catch(() => {
+        localStorage.removeItem('token');
+        setToken('');
+        setUser(null);
+      })
+      .finally(() => setIsLoading(false));
   }, [token]);
 
-  const register = async (phone, password, name) => {
-    const res = await apiClient.post('/auth/register', { phone, password, name });
-    const { token: newToken, user: newUser } = res.data;
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-    setUser(newUser);
-    return newUser;
-  };
+  const login = useCallback(async (phone, password) => {
+    const { data } = await apiClient.post('/auth/login', { phone, password });
+    console.log('🔑 Login response:', data); // لاگ برای تشخیص
 
-  const login = async (phone, password) => {
-    const res = await apiClient.post('/auth/login', { phone, password });
-    const { token: newToken, user: newUser } = res.data;
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-    setUser(newUser);
-    return newUser;
-  };
+    // پشتیبانی از هر دو نام احتمالی
+    const extractedToken = data.access_token || data.token;
+    const extractedUser = data.user || data.data;
 
-  const logout = () => {
+    if (!extractedToken) {
+      throw new Error('توکن در پاسخ سرور یافت نشد');
+    }
+
+    localStorage.setItem('token', extractedToken);
+    setToken(extractedToken);
+    setUser(extractedUser || null);
+  }, []);
+
+  const register = useCallback(async (phone, password, name) => {
+    await apiClient.post('/auth/register', { phone, password, name });
+    // بعد از ثبت‌نام، مستقیماً لاگین کن
+    await login(phone, password);
+  }, [login]);
+
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     setToken('');
     setUser(null);
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, token, register, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const value = { token, user, isLoading, login, register, logout };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+}

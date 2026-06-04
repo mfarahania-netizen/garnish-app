@@ -17,9 +17,14 @@ let RecipesService = class RecipesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll(skip = 0, take = 20) {
+    async findAll(skip = 0, take = 20, category) {
+        const where = {};
+        if (category) {
+            where.categories = { contains: category };
+        }
         const [data, total] = await Promise.all([
             this.prisma.recipe.findMany({
+                where,
                 skip,
                 take,
                 include: {
@@ -30,7 +35,7 @@ let RecipesService = class RecipesService {
                 },
                 orderBy: { createdAt: 'desc' },
             }),
-            this.prisma.recipe.count(),
+            this.prisma.recipe.count({ where }),
         ]);
         return {
             data,
@@ -38,6 +43,19 @@ let RecipesService = class RecipesService {
             page: Math.floor(skip / take) + 1,
             pageSize: take,
         };
+    }
+    async search(q, limit = 10) {
+        return this.prisma.recipe.findMany({
+            where: {
+                OR: [
+                    { title: { contains: q } },
+                    { description: { contains: q } },
+                    { ingredients: { some: { name: { contains: q } } } },
+                ],
+            },
+            take: limit,
+            include: { ingredients: { take: 3 } },
+        });
     }
     async findOne(id) {
         return this.prisma.recipe.findUnique({
@@ -102,7 +120,17 @@ let RecipesService = class RecipesService {
             },
         });
     }
-    async update(id, data) {
+    async update(id, userId, data) {
+        const recipe = await this.prisma.recipe.findUnique({
+            where: { id },
+            select: { authorId: true },
+        });
+        if (!recipe) {
+            throw new common_1.NotFoundException('رسپی یافت نشد');
+        }
+        if (recipe.authorId !== userId) {
+            throw new common_1.ForbiddenException('شما مجاز به ویرایش این رسپی نیستید');
+        }
         return this.prisma.recipe.update({
             where: { id },
             data: {

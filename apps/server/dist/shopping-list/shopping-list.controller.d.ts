@@ -23,7 +23,7 @@ export declare class ShoppingListController {
         userId: string;
     }>;
     addItems(req: any, body: AddShoppingItemsDto): Promise<import("@prisma/client").Prisma.BatchPayload>;
-    toggleItem(id: string, updateDto: UpdateShoppingItemDto): Promise<{
+    toggleItem(id: string, req: any, updateDto: UpdateShoppingItemDto): Promise<{
         name: string;
         amount: string | null;
         unit: string | null;
@@ -33,7 +33,7 @@ export declare class ShoppingListController {
         shoppingListId: string;
         isChecked: boolean;
     }>;
-    removeItem(id: string): Promise<{
+    removeItem(id: string, req: any): Promise<{
         name: string;
         amount: string | null;
         unit: string | null;

@@ -18,16 +18,21 @@ const passport_1 = require("@nestjs/passport");
 const recipes_service_1 = require("./recipes.service");
 const create_recipe_dto_1 = require("./dto/create-recipe.dto");
 const update_recipe_dto_1 = require("./dto/update-recipe.dto");
+const search_recipes_dto_1 = require("./dto/search-recipes.dto");
 let RecipesController = class RecipesController {
     recipesService;
     constructor(recipesService) {
         this.recipesService = recipesService;
     }
-    findAll(page = '1', limit = '20') {
+    findAll(page = '1', limit = '20', category) {
         const pageNum = parseInt(page, 10) || 1;
         const limitNum = parseInt(limit, 10) || 20;
         const skip = (pageNum - 1) * limitNum;
-        return this.recipesService.findAll(skip, limitNum);
+        return this.recipesService.findAll(skip, limitNum, category);
+    }
+    search(query) {
+        const limitNum = parseInt(query.limit, 10) || 10;
+        return this.recipesService.search(query.q, limitNum);
     }
     getMyRecipes(req) {
         return this.recipesService.getMyRecipes(req.user.userId);
@@ -38,8 +43,8 @@ let RecipesController = class RecipesController {
     create(req, createRecipeDto) {
         return this.recipesService.create(req.user.userId, createRecipeDto);
     }
-    update(id, updateRecipeDto) {
-        return this.recipesService.update(id, updateRecipeDto);
+    update(id, req, updateRecipeDto) {
+        return this.recipesService.update(id, req.user.userId, updateRecipeDto);
     }
 };
 exports.RecipesController = RecipesController;
@@ -47,10 +52,18 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('category')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", void 0)
 ], RecipesController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('search'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [search_recipes_dto_1.SearchRecipesDto]),
+    __metadata("design:returntype", void 0)
+], RecipesController.prototype, "search", null);
 __decorate([
     (0, common_1.Get)('my'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
@@ -79,9 +92,10 @@ __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_recipe_dto_1.UpdateRecipeDto]),
+    __metadata("design:paramtypes", [String, Object, update_recipe_dto_1.UpdateRecipeDto]),
     __metadata("design:returntype", void 0)
 ], RecipesController.prototype, "update", null);
 exports.RecipesController = RecipesController = __decorate([

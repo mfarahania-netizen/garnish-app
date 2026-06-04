@@ -1,29 +1,42 @@
-import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Container, Title, SimpleGrid, Skeleton, Text,
   useMantineColorScheme, Box, Group, ActionIcon, Alert
 } from '@mantine/core';
-import { useRecipes } from '../../../hooks/useRecipes';
 import { useAnalytics } from '../../../hooks/useAnalytics';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../../../lib/apiClient';
 import RecipeCard from '../../../components/RecipeCard';
 import { IconAlertTriangle, IconArrowUp, IconCategory } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 
 export default function CategoryPage() {
   const { keyword } = useParams();
-  const { recipes, loading } = useRecipes();
   const { trackEvent } = useAnalytics();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === 'dark';
 
   useEffect(() => {
-    trackEvent('category_view', { keyword });
+    trackEvent(EventType.CATEGORY_VIEW, { keyword });
   }, [keyword]);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['categoryRecipes', keyword],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/recipes?category=${encodeURIComponent(keyword)}&limit=100`);
+      return data;
+    },
+    enabled: !!keyword,
+  });
+
+  const recipes = data?.data || [];
+  const total = data?.total || 0;
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  if (loading || !recipes) {
+  if (isLoading || !keyword) {
     return (
       <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
         <Skeleton height={36} width="70%" mb="md" />
@@ -36,11 +49,17 @@ export default function CategoryPage() {
     );
   }
 
-  const filtered = keyword
-    ? recipes.filter(r => r.categories?.includes(keyword))
-    : recipes;
+  if (error) {
+    return (
+      <Container size="xs" py="xl" style={{ maxWidth: 420, margin: '0 auto' }}>
+        <Alert color="red" title="خطا در بارگذاری" icon={<IconAlertTriangle size={20} />}>
+          مشکلی در دریافت رسپی‌ها پیش آمده است.
+        </Alert>
+      </Container>
+    );
+  }
 
-  if (filtered.length === 0) {
+  if (recipes.length === 0) {
     return (
       <Container size="xs" py="xl" style={{ maxWidth: 420, margin: '0 auto' }}>
         <Alert color="orange" title="غذایی پیدا نشد" icon={<IconAlertTriangle size={20} />}>
@@ -60,12 +79,12 @@ export default function CategoryPage() {
           </Title>
         </Group>
         <Text size="xs" c="dimmed" mt={4}>
-          {filtered.length} رسپی در این دسته
+          {total} رسپی در این دسته
         </Text>
       </Box>
 
       <SimpleGrid cols={2} spacing="sm">
-        {filtered.map((recipe, index) => (
+        {recipes.map((recipe, index) => (
           <motion.div
             key={recipe.id}
             initial={{ opacity: 0, y: 20 }}
@@ -74,7 +93,7 @@ export default function CategoryPage() {
           >
             <RecipeCard
               recipe={recipe}
-              onClick={() => trackEvent('category_recipe_click', { recipeId: recipe.id, title: recipe.title, keyword })}
+              onClick={() => trackEvent(EventType.CATEGORY_RECIPE_CLICK, { recipeId: recipe.id, title: recipe.title, keyword })}
             />
           </motion.div>
         ))}

@@ -3,17 +3,28 @@ import { AuthGuard } from '@nestjs/passport';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
 
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
 
   @Get()
-  findAll(@Query('page') page = '1', @Query('limit') limit = '20') {
+  findAll(
+    @Query('page') page = '1',
+    @Query('limit') limit = '20',
+    @Query('category') category?: string,
+  ) {
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 20;
     const skip = (pageNum - 1) * limitNum;
-    return this.recipesService.findAll(skip, limitNum);
+    return this.recipesService.findAll(skip, limitNum, category);
+  }
+
+  @Get('search')
+  search(@Query() query: SearchRecipesDto) {
+    const limitNum = parseInt(query.limit, 10) || 10;
+    return this.recipesService.search(query.q, limitNum);
   }
 
   @Get('my')
@@ -35,7 +46,7 @@ export class RecipesController {
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
-  update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
-    return this.recipesService.update(id, updateRecipeDto);
+  update(@Param('id') id: string, @Req() req, @Body() updateRecipeDto: UpdateRecipeDto) {
+    return this.recipesService.update(id, req.user.userId, updateRecipeDto);
   }
 }

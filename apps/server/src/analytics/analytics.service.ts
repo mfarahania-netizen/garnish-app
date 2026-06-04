@@ -17,7 +17,11 @@ export class AnalyticsService {
     sessionId?: string;
     payload?: any;
   }) {
-    // آماده‌سازی شیء data برای Prisma
+    // 🛡️ سپر محافظ: اگر userId به هر دلیلی undefined بود، رویداد را ذخیره نکن
+    if (!data.userId) {
+      return null;
+    }
+
     const eventData: any = {
       userId: data.userId,
       type: data.type,

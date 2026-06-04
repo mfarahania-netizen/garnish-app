@@ -57,13 +57,19 @@ export class AdminService {
 
   // ========== تحلیل‌ها ==========
 
-  async getRecentEvents(limit = 50) {
-    const events = await this.prisma.userEvent.findMany({
-      take: limit,
-      orderBy: { timestamp: 'desc' },
-      include: { user: { select: { name: true, phone: true } } },
-    });
+  async getRecentEvents(limit = 100, page = 1) {
+    const skip = (page - 1) * limit;
+    const [events, total] = await Promise.all([
+      this.prisma.userEvent.findMany({
+        skip,
+        take: limit,
+        orderBy: { timestamp: 'desc' },
+        include: { user: { select: { name: true, phone: true } } },
+      }),
+      this.prisma.userEvent.count(),
+    ]);
 
+    // استخراج نام رسپی‌ها
     const recipeIds: string[] = [];
     for (const event of events) {
       try {
@@ -81,7 +87,7 @@ export class AdminService {
     }
     
     const recipeMap = new Map(recipes.map(r => [r.id, r.title]));
-    return events.map(event => {
+    const enrichedEvents = events.map(event => {
       let recipeTitle: string | null = null;
       try {
         const p = JSON.parse(event.payload || '{}');
@@ -89,6 +95,8 @@ export class AdminService {
       } catch {}
       return { ...event, recipeTitle };
     });
+
+    return { events: enrichedEvents, total };
   }
 
   async getAnalyticsStats() {

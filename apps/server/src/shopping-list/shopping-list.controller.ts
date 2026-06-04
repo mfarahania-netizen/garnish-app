@@ -20,13 +20,12 @@ export class ShoppingListController {
   }
 
   @Patch('items/:id')
-  toggleItem(@Param('id') id: string, @Body() updateDto: UpdateShoppingItemDto) {
-    // در صورت نیاز به بروزرسانی سایر فیلدها در آینده
-    return this.shoppingListService.toggleItem(id);
+  toggleItem(@Param('id') id: string, @Req() req, @Body() updateDto: UpdateShoppingItemDto) {
+    return this.shoppingListService.toggleItem(id, req.user.userId);
   }
 
   @Delete('items/:id')
-  removeItem(@Param('id') id: string) {
-    return this.shoppingListService.removeItem(id);
+  removeItem(@Param('id') id: string, @Req() req) {
+    return this.shoppingListService.removeItem(id, req.user.userId);
   }
 }

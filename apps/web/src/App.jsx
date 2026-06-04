@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Component } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
@@ -85,19 +86,23 @@ function AnimatedRoutes() {
           <Route index element={<PageWrapper><HomePage /></PageWrapper>} />
           <Route path="recipe/:id" element={<PageWrapper><RecipeDetailPage /></PageWrapper>} />
           <Route path="recipes" element={<PageWrapper><RecipesPage /></PageWrapper>} />
-          <Route path="plan" element={<PageWrapper><PlanPage /></PageWrapper>} />
-          <Route path="profile" element={<PageWrapper><ProfilePage /></PageWrapper>} />
           <Route path="auth" element={<PageWrapper><AuthPage /></PageWrapper>} />
           <Route path="category/:keyword" element={<PageWrapper><CategoryPage /></PageWrapper>} />
-          <Route path="add-recipe" element={<PageWrapper><AddRecipePage /></PageWrapper>} />
-          <Route path="my-recipes" element={<PageWrapper><MyRecipesPage /></PageWrapper>} />
-          <Route path="admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
-          <Route path="shopping-list" element={<PageWrapper><ShoppingListPage /></PageWrapper>} />
-          <Route path="support" element={<PageWrapper><SupportPage /></PageWrapper>} />
-          <Route path="preferences" element={<PageWrapper><PreferencesPage /></PageWrapper>} />
-          <Route path="favorites" element={<PageWrapper><FavoritesPage /></PageWrapper>} />
-          <Route path="ai-chat" element={<PageWrapper><AIChatPage /></PageWrapper>} />
-          <Route path="notifications" element={<PageWrapper><NotificationsPage /></PageWrapper>} />
+          
+          {/* مسیرهای محافظت‌شده با ProtectedRoute */}
+          <Route path="plan" element={<ProtectedRoute><PageWrapper><PlanPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>} />
+          <Route path="add-recipe" element={<ProtectedRoute><PageWrapper><AddRecipePage /></PageWrapper></ProtectedRoute>} />
+          <Route path="my-recipes" element={<ProtectedRoute><PageWrapper><MyRecipesPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="shopping-list" element={<ProtectedRoute><PageWrapper><ShoppingListPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="support" element={<ProtectedRoute><PageWrapper><SupportPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="preferences" element={<ProtectedRoute><PageWrapper><PreferencesPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="favorites" element={<ProtectedRoute><PageWrapper><FavoritesPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="ai-chat" element={<ProtectedRoute><PageWrapper><AIChatPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="notifications" element={<ProtectedRoute><PageWrapper><NotificationsPage /></PageWrapper></ProtectedRoute>} />
+          
+          {/* مسیر ادمین با محافظ مخصوص */}
+          <Route path="admin" element={<AdminRoute><PageWrapper><AdminDashboard /></PageWrapper></AdminRoute>} />
         </Route>
       </Routes>
     </AnimatePresence>

@@ -47,8 +47,8 @@ let AdminController = class AdminController {
     getUsers() {
         return this.adminService.getAllUsers();
     }
-    getRecentEvents(limit) {
-        return this.adminService.getRecentEvents(parseInt(limit) || 50);
+    getRecentEvents(limit, page) {
+        return this.adminService.getRecentEvents(parseInt(limit) || 50, parseInt(page) || 1);
     }
     getAnalyticsStats() {
         return this.adminService.getAnalyticsStats();
@@ -122,8 +122,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)('analytics/events'),
     __param(0, (0, common_1.Query)('limit')),
+    __param(1, (0, common_1.Query)('page')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getRecentEvents", null);
 __decorate([

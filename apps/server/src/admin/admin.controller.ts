@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Patch, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
-import { Roles } from '../auth/roles.decorator'; // 👈 جدید
-import { RolesGuard } from '../auth/roles.guard'; // 👈 جدید
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('admin')
-@UseGuards(AuthGuard('jwt'), RolesGuard) // 👈 RolesGuard اضافه شد
-@Roles('admin') // 👈 فقط ادمین‌ها دسترسی دارند
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
@@ -50,10 +50,10 @@ export class AdminController {
     return this.adminService.getAllUsers();
   }
 
-  // 📊 endpointهای تحلیلی
+  // ✅ این متد اصلاح شده است — پارامتر page را می‌گیرد
   @Get('analytics/events')
-  getRecentEvents(@Query('limit') limit: string) {
-    return this.adminService.getRecentEvents(parseInt(limit) || 50);
+  getRecentEvents(@Query('limit') limit: string, @Query('page') page: string) {
+    return this.adminService.getRecentEvents(parseInt(limit) || 50, parseInt(page) || 1);
   }
 
   @Get('analytics/stats')

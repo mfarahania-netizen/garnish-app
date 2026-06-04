@@ -6,7 +6,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { IconArrowRight, IconSend } from '@tabler/icons-react';
 import { AddRecipeProvider, useAddRecipe } from '../context/AddRecipeContext';
-import { useAnalytics } from '../../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../../hooks/useAnalytics';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 import BasicInfoSection from '../components/BasicInfoSection';
 import MediaSection from '../components/MediaSection';
 import IngredientsSection from '../components/IngredientsSection';
@@ -16,7 +17,7 @@ import FaqSection from '../components/FaqSection';
 import NutritionSection from '../components/NutritionSection';
 
 function AddRecipeForm() {
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
   const context = useAddRecipe();
   const {
     title, setTitle,
@@ -50,9 +51,8 @@ function AddRecipeForm() {
 
   const [alert, setAlert] = useState(null);
 
-  // 👇 ردیابی بازدید از صفحه
   useEffect(() => {
-    trackEvent('add_recipe_view');
+    trackEvent(EventType.ADD_RECIPE_VIEW);
   }, []);
 
   const handleSubmit = async () => {
@@ -62,11 +62,11 @@ function AddRecipeForm() {
     }
     const result = await submitRecipe();
     if (result) {
-      trackEvent('add_recipe_submit', { title, category, difficulty }); // 👈 ردیابی ثبت موفق
+      trackEvent(EventType.ADD_RECIPE_SUBMIT, { title, category, difficulty });
       setAlert({ type: 'success', message: 'رسپی با موفقیت ثبت شد! در حال انتقال...' });
       setTimeout(() => navigate(`/recipe/${result.id}`), 1500);
     } else {
-      trackEvent('add_recipe_error'); // 👈 ردیابی خطا
+      trackEvent(EventType.ADD_RECIPE_ERROR);
     }
   };
 

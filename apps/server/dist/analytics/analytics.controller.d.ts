@@ -1,8 +1,13 @@
 import { AnalyticsService } from './analytics.service';
+declare class TrackEventDto {
+    type: string;
+    page?: string;
+    payload: Record<string, any>;
+}
 export declare class AnalyticsController {
     private analyticsService;
     constructor(analyticsService: AnalyticsService);
-    trackEvent(req: any, body: any): Promise<{
+    trackEvent(req: any, body: TrackEventDto): Promise<{
         duration: number | null;
         id: string;
         page: string | null;
@@ -12,5 +17,6 @@ export declare class AnalyticsController {
         sessionId: string | null;
         payload: string | null;
         enrichment: string | null;
-    }>;
+    } | null>;
 }
+export {};

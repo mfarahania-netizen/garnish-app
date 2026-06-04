@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsArray } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdatePreferencesDto {
   @IsOptional()
@@ -6,25 +6,22 @@ export class UpdatePreferencesDto {
   diet?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  allergies?: string[];
+  @IsString()
+  allergies?: string;
 
   @IsOptional()
   @IsString()
   skillLevel?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  cuisine?: string[];
+  @IsString()
+  cuisine?: string;
 
   @IsOptional()
   @IsString()
   budget?: string;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  healthGoals?: string[];
+  @IsString()
+  healthGoals?: string;
 }

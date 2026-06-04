@@ -21,7 +21,7 @@ export declare class AnalyticsService {
         sessionId: string | null;
         payload: string | null;
         enrichment: string | null;
-    }>;
+    } | null>;
     getPopularRecipes(): Promise<{
         payload: string | null;
     }[]>;

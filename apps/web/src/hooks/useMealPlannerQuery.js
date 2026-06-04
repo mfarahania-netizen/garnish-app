@@ -1,8 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../lib/apiClient';
 import { useAuth } from '../context/AuthContext';
-
-const DAYS = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
+import { DAYS } from '../features/meal-planner/services/planHelpers'; // 👈 حالا از فایل اصلی می‌آید
 
 export function useMealPlannerQuery() {
   const { token } = useAuth();
@@ -12,42 +11,43 @@ export function useMealPlannerQuery() {
     queryKey: ['mealPlan'],
     queryFn: async () => {
       const { data } = await apiClient.get('/meal-plans');
-      return data || { slots: [], weekStart: new Date().toISOString() };
+      return data || { slots: [] };
     },
     enabled: !!token,
     staleTime: 0,
   });
 
-  // به‌روزرسانی خوش‌بینانه برای افزودن/حذف وعده
-  const saveMutation = useMutation({
-    mutationFn: async ({ weekStart, slots }) => {
-      const { data } = await apiClient.post('/meal-plans', { weekStart, slots });
-      return data;
+  const addMealMutation = useMutation({
+    mutationFn: async ({ dayOfWeek, mealType, recipeId }) => {
+      await apiClient.post('/meal-plans/slots', { dayOfWeek, mealType, recipeId });
     },
-    onMutate: async (newPlan) => {
-      await queryClient.cancelQueries({ queryKey: ['mealPlan'] });
-      const previousPlan = queryClient.getQueryData(['mealPlan']);
-      // بلافاصله UI را با داده جدید به‌روز کن
-      queryClient.setQueryData(['mealPlan'], (old) => ({
-        ...old,
-        slots: newPlan.slots,
-      }));
-      return { previousPlan };
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mealPlan'] });
     },
-    onError: (err, newPlan, context) => {
-      // در صورت خطا، به حالت قبلی برگرد
-      queryClient.setQueryData(['mealPlan'], context.previousPlan);
+  });
+
+  const removeMealMutation = useMutation({
+    mutationFn: async ({ dayOfWeek, mealType }) => {
+      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}`);
     },
-    onSettled: () => {
-      // در نهایت، داده را از سرور re-fetch کن
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mealPlan'] });
     },
   });
 
   const generateMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await apiClient.post('/meal-plans/generate');
-      return data;
+      await apiClient.post('/meal-plans/generate');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mealPlan'] });
+    },
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: async () => {
+      const weekStart = plan?.weekStart || new Date().toISOString();
+      await apiClient.post('/meal-plans', { weekStart, slots: [] });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mealPlan'] });
@@ -57,35 +57,25 @@ export function useMealPlannerQuery() {
   const addMeal = (day, mealType, recipeId) => {
     const dayIndex = DAYS.indexOf(day);
     if (dayIndex === -1) return;
-    const currentSlots = plan?.slots || [];
-    // هوشمندانه: اگر قبلاً این وعده وجود داشت، حذفش کن و بعد جدید را اضافه کن (جایگزینی)
-    const filteredSlots = currentSlots.filter(s => !(s.dayOfWeek === dayIndex && s.mealType === mealType));
-    const updatedSlots = [...filteredSlots, { dayOfWeek: dayIndex, mealType, recipeId, notes: '' }];
-    saveMutation.mutate({ weekStart: plan?.weekStart || new Date().toISOString(), slots: updatedSlots });
+    addMealMutation.mutate({ dayOfWeek: dayIndex, mealType, recipeId });
   };
 
   const removeMeal = (day, mealType) => {
     const dayIndex = DAYS.indexOf(day);
     if (dayIndex === -1) return;
-    const currentSlots = plan?.slots || [];
-    const updatedSlots = currentSlots.filter(s => !(s.dayOfWeek === dayIndex && s.mealType === mealType));
-    saveMutation.mutate({ weekStart: plan?.weekStart || new Date().toISOString(), slots: updatedSlots });
+    removeMealMutation.mutate({ dayOfWeek: dayIndex, mealType });
   };
 
   const generateSmartPlan = () => generateMutation.mutate();
 
-  const clearPlan = () => {
-    saveMutation.mutate({ weekStart: plan?.weekStart || new Date().toISOString(), slots: [] });
-  };
+  const clearPlan = () => clearMutation.mutate();
 
   return {
     plan,
-    loading: loading || generateMutation.isPending,
-    isSaving: saveMutation.isPending,
+    loading: loading || addMealMutation.isPending || removeMealMutation.isPending || generateMutation.isPending || clearMutation.isPending,
     addMeal,
     removeMeal,
     generateSmartPlan,
     clearPlan,
-    fetchPlan: () => queryClient.invalidateQueries({ queryKey: ['mealPlan'] }),
   };
 }

@@ -60,12 +60,17 @@ let AdminService = class AdminService {
             orderBy: { createdAt: 'desc' },
         });
     }
-    async getRecentEvents(limit = 50) {
-        const events = await this.prisma.userEvent.findMany({
-            take: limit,
-            orderBy: { timestamp: 'desc' },
-            include: { user: { select: { name: true, phone: true } } },
-        });
+    async getRecentEvents(limit = 100, page = 1) {
+        const skip = (page - 1) * limit;
+        const [events, total] = await Promise.all([
+            this.prisma.userEvent.findMany({
+                skip,
+                take: limit,
+                orderBy: { timestamp: 'desc' },
+                include: { user: { select: { name: true, phone: true } } },
+            }),
+            this.prisma.userEvent.count(),
+        ]);
         const recipeIds = [];
         for (const event of events) {
             try {
@@ -83,7 +88,7 @@ let AdminService = class AdminService {
             });
         }
         const recipeMap = new Map(recipes.map(r => [r.id, r.title]));
-        return events.map(event => {
+        const enrichedEvents = events.map(event => {
             let recipeTitle = null;
             try {
                 const p = JSON.parse(event.payload || '{}');
@@ -93,6 +98,7 @@ let AdminService = class AdminService {
             catch { }
             return { ...event, recipeTitle };
         });
+        return { events: enrichedEvents, total };
     }
     async getAnalyticsStats() {
         const totalEvents = await this.prisma.userEvent.count();

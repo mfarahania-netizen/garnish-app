@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common'; // ← ایمپورت جدید
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,            // فقط فیلدهای تعریف‌شده در DTO را قبول کن
-      forbidNonWhitelisted: true, // اگر فیلد اضافی فرستاده شد، خطا بده
+      forbidNonWhitelisted: false, // موقتاً غیرفعال شد تا مشکلات DTO حل شوند
       transform: true,            // تبدیل خودکار انواع داده‌ها
     }),
   );

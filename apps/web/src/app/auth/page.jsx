@@ -1,19 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Paper, Title, TextInput, PasswordInput, Button, Stack, Tabs, Text } from '@mantine/core';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { IconChefHat } from '@tabler/icons-react';
-import { useAnalytics } from '../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../hooks/useAnalytics';
 
 export default function AuthPage() {
-  const { login, register } = useAuth();
+  const { login, register, token } = useAuth();
   const navigate = useNavigate();
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  useEffect(() => {
+    if (shouldRedirect && token) {
+      navigate('/');
+      setShouldRedirect(false);
+    }
+  }, [shouldRedirect, token, navigate]);
 
   const handleSubmit = async (mode) => {
     setError('');
@@ -21,14 +29,14 @@ export default function AuthPage() {
     try {
       if (mode === 'register') {
         await register(phone, password, name);
-        trackEvent('register', { phone }); // 👈 ردیابی ثبت‌نام موفق
+        trackEvent('register', { phone });
       } else {
         await login(phone, password);
-        trackEvent('login', { phone }); // 👈 ردیابی ورود موفق
+        trackEvent('login', { phone });
       }
-      navigate('/');
+      setShouldRedirect(true);
     } catch (err) {
-      trackEvent(mode === 'register' ? 'register_error' : 'login_error', { phone, error: err.response?.data?.message }); // 👈 ردیابی خطا
+      trackEvent(mode === 'register' ? 'register_error' : 'login_error', { phone, error: err.response?.data?.message });
       setError(err.response?.data?.message || 'خطایی رخ داد');
     } finally {
       setLoading(false);
@@ -55,7 +63,7 @@ export default function AuthPage() {
         <Tabs 
           defaultValue="login" 
           style={{ position: 'relative', zIndex: 1 }}
-          onChange={(value) => trackEvent('auth_tab_change', { tab: value })} // 👈 ردیابی تغییر تب
+          onChange={(value) => trackEvent('auth_tab_change', { tab: value })}
         >
           <Tabs.List grow mb="md">
             <Tabs.Tab value="login">ورود</Tabs.Tab>

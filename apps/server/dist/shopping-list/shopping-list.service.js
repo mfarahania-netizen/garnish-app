@@ -42,16 +42,29 @@ let ShoppingListService = class ShoppingListService {
             })),
         });
     }
-    async toggleItem(itemId) {
-        const item = await this.prisma.shoppingItem.findUnique({ where: { id: itemId } });
+    async toggleItem(itemId, userId) {
+        const item = await this.prisma.shoppingItem.findUnique({
+            where: { id: itemId },
+            include: { shoppingList: { select: { userId: true } } },
+        });
         if (!item)
-            throw new Error('Item not found');
+            throw new common_1.NotFoundException('آیتم یافت نشد');
+        if (item.shoppingList.userId !== userId)
+            throw new common_1.ForbiddenException('شما مجاز به تغییر این آیتم نیستید');
         return this.prisma.shoppingItem.update({
             where: { id: itemId },
             data: { isChecked: !item.isChecked },
         });
     }
-    async removeItem(itemId) {
+    async removeItem(itemId, userId) {
+        const item = await this.prisma.shoppingItem.findUnique({
+            where: { id: itemId },
+            include: { shoppingList: { select: { userId: true } } },
+        });
+        if (!item)
+            throw new common_1.NotFoundException('آیتم یافت نشد');
+        if (item.shoppingList.userId !== userId)
+            throw new common_1.ForbiddenException('شما مجاز به حذف این آیتم نیستید');
         return this.prisma.shoppingItem.delete({ where: { id: itemId } });
     }
 };

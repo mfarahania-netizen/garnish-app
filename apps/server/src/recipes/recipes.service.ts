@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -7,9 +7,18 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 export class RecipesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(skip = 0, take = 20) {
+  async findAll(skip = 0, take = 20, category?: string) {
+    const where: any = {};
+
+    // اگر category داده شده باشد، فیلتر بر اساس آن اعمال شود
+    if (category) {
+      // categories به صورت JSON string ذخیره می‌شود، پس از contains استفاده می‌کنیم
+      where.categories = { contains: category };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.recipe.findMany({
+        where,
         skip,
         take,
         include: {
@@ -20,7 +29,7 @@ export class RecipesService {
         },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.recipe.count(),
+      this.prisma.recipe.count({ where }),
     ]);
 
     return {
@@ -29,6 +38,20 @@ export class RecipesService {
       page: Math.floor(skip / take) + 1,
       pageSize: take,
     };
+  }
+
+  async search(q: string, limit = 10) {
+    return this.prisma.recipe.findMany({
+      where: {
+        OR: [
+          { title: { contains: q } },
+          { description: { contains: q } },
+          { ingredients: { some: { name: { contains: q } } } },
+        ],
+      },
+      take: limit,
+      include: { ingredients: { take: 3 } },
+    });
   }
 
   async findOne(id: string) {
@@ -97,7 +120,20 @@ export class RecipesService {
     });
   }
 
-  async update(id: string, data: UpdateRecipeDto) {
+  async update(id: string, userId: string, data: UpdateRecipeDto) {
+    const recipe = await this.prisma.recipe.findUnique({
+      where: { id },
+      select: { authorId: true },
+    });
+
+    if (!recipe) {
+      throw new NotFoundException('رسپی یافت نشد');
+    }
+
+    if (recipe.authorId !== userId) {
+      throw new ForbiddenException('شما مجاز به ویرایش این رسپی نیستید');
+    }
+
     return this.prisma.recipe.update({
       where: { id },
       data: {

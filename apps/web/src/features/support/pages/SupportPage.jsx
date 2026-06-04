@@ -12,7 +12,8 @@ import {
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSupportQuery } from '../../../hooks/useSupportQuery';
-import { useAnalytics } from '../../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../../hooks/useAnalytics';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 
 const TICKET_STATUS = {
   open: { label: 'باز', color: 'orange', icon: <IconClock size={14} /> },
@@ -31,7 +32,7 @@ const SUPPORT_CONTACTS = [
 
 export default function SupportPage() {
   const { tickets, loading, createTicket, addReply, closeTicket } = useSupportQuery();
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === 'dark';
 
@@ -44,8 +45,7 @@ export default function SupportPage() {
   const handleCreateTicket = () => {
     if (!subject.trim() || !message.trim()) return;
     createTicket({ subject, message, category, priority: 'normal' });
-    // 👇 ردیابی ایجاد تیکت
-    trackEvent('ticket_create', { subject, category });
+    trackEvent(EventType.TICKET_CREATE, { subject, category });
     setSubject('');
     setMessage('');
   };
@@ -54,20 +54,17 @@ export default function SupportPage() {
     const msg = replyTexts[ticketId] || '';
     if (!msg.trim()) return;
     addReply(ticketId, msg);
-    // 👇 ردیابی ارسال پاسخ
-    trackEvent('ticket_reply', { ticketId });
+    trackEvent(EventType.TICKET_REPLY, { ticketId });
     setReplyTexts(prev => ({ ...prev, [ticketId]: '' }));
   };
 
   const handleCloseTicket = (ticketId) => {
     closeTicket(ticketId);
-    // 👇 ردیابی بستن تیکت
-    trackEvent('ticket_close', { ticketId });
+    trackEvent(EventType.TICKET_CLOSE, { ticketId });
   };
 
   const handleContactClick = (contactLabel) => {
-    // 👇 ردیابی کلیک روی راه‌های ارتباطی
-    trackEvent('support_contact_click', { contact: contactLabel });
+    trackEvent(EventType.SUPPORT_CONTACT_CLICK, { contact: contactLabel });
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -77,17 +74,27 @@ export default function SupportPage() {
   const borderColor = dark ? '#333' : '#FF6B35';
 
   return (
-    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
+    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 100px' }}>
       {/* هدر */}
-      <Box mb="lg" mt="md">
+      <Paper
+        p="md"
+        radius="xl"
+        mb="lg"
+        mt="md"
+        style={{
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,107,53,0.2)',
+        }}
+      >
         <Group gap="xs" align="center">
           <IconLifebuoy size={32} style={{ color: '#FF6B35' }} />
-          <Title order={3} style={{ color: '#1A237E' }}>پشتیبانی</Title>
+          <div>
+            <Title order={3} style={{ color: '#1A237E' }}>پشتیبانی</Title>
+            <Text size="xs" c="dimmed">ما همیشه آمادهٔ کمک به شما هستیم</Text>
+          </div>
         </Group>
-        <Text size="xs" c="dimmed" mt={4}>
-          ما همیشه آمادهٔ کمک به شما هستیم
-        </Text>
-      </Box>
+      </Paper>
 
       {/* راه‌های ارتباطی */}
       <Paper
@@ -98,7 +105,6 @@ export default function SupportPage() {
           background: cardBg,
           backdropFilter: 'blur(8px)',
           border: `1px solid ${borderColor}`,
-          boxShadow: dark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
         }}
       >
         <Text fw={600} mb="md" ta="center" c={textColor}>راه‌های ارتباطی</Text>
@@ -111,7 +117,7 @@ export default function SupportPage() {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleContactClick(contact.label)} // 👈 ردیابی کلیک
+                onClick={() => handleContactClick(contact.label)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: 52, height: 52, borderRadius: '50%',
@@ -136,12 +142,11 @@ export default function SupportPage() {
           background: cardBg,
           backdropFilter: 'blur(8px)',
           border: `1px solid ${borderColor}`,
-          boxShadow: dark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
         }}
       >
         <Group gap="xs" mb="sm">
           <IconFileReport size={20} color="#FF6B35" />
-          <Text fw={600} c={textColor}>📝 ثبت تیکت جدید</Text>
+          <Text fw={600} c={textColor}>ثبت تیکت جدید</Text>
         </Group>
         <Stack gap="sm">
           <Select
@@ -155,10 +160,7 @@ export default function SupportPage() {
             ]}
             value={category}
             onChange={setCategory}
-            styles={{
-              input: { textAlign: 'right' },
-              item: { textAlign: 'right' },
-            }}
+            styles={{ input: { textAlign: 'right' }, item: { textAlign: 'right' } }}
           />
           <TextInput
             placeholder="موضوع تیکت"
@@ -197,10 +199,9 @@ export default function SupportPage() {
             background: cardBg,
             backdropFilter: 'blur(8px)',
             border: `1px solid ${borderColor}`,
-            boxShadow: dark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
           }}
         >
-          <Text fw={600} mb="sm" c={textColor}>📋 تیکت‌های شما ({tickets.length})</Text>
+          <Text fw={600} mb="sm" c={textColor}>تیکت‌های شما ({tickets.length})</Text>
           <Stack gap="sm">
             <AnimatePresence>
               {tickets.map(ticket => {
@@ -219,9 +220,7 @@ export default function SupportPage() {
                       radius="md"
                       style={{
                         borderRight: `4px solid ${statusInfo.color}`,
-                        background: isExpanded
-                          ? (dark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)')
-                          : (dark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.7)'),
+                        background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.8)',
                         backdropFilter: 'blur(4px)',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
@@ -255,8 +254,6 @@ export default function SupportPage() {
                           >
                             <Box mt="sm" onClick={(e) => e.stopPropagation()}>
                               <Divider mb="sm" />
-
-                              {/* پاسخ‌ها */}
                               {ticket.replies?.length > 0 && (
                                 <Stack gap="xs" mb="sm">
                                   {ticket.replies.map(reply => (
@@ -285,7 +282,6 @@ export default function SupportPage() {
                                 </Stack>
                               )}
 
-                              {/* ارسال پاسخ */}
                               {ticket.status !== 'closed' && (
                                 <Group gap="xs" align="flex-end" mt="sm">
                                   <Textarea
@@ -314,7 +310,7 @@ export default function SupportPage() {
                                       color="gray"
                                       variant="filled"
                                       radius="xl"
-                                      onClick={() => handleCloseTicket(ticket.id)} // 👈 تغییر یافت
+                                      onClick={() => handleCloseTicket(ticket.id)}
                                       title="بستن تیکت"
                                     >
                                       <IconX size={16} />
@@ -342,19 +338,12 @@ export default function SupportPage() {
         </Alert>
       )}
 
-      {/* دکمه اسکرول به بالا */}
       <ActionIcon
         variant="light"
         color="orange"
         size="xl"
         radius="xl"
-        style={{
-          position: 'fixed',
-          bottom: 80,
-          right: 16,
-          zIndex: 50,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        }}
+        style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 50 }}
         onClick={scrollToTop}
       >
         <IconArrowUp size={18} />

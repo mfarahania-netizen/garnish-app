@@ -1,15 +1,16 @@
-import { Container, Title, Stack, Text, Skeleton, Box, Group, ActionIcon, Alert, Button } from '@mantine/core';
+import { Container, Title, Stack, Text, Skeleton, Box, Group, ActionIcon, Alert, Button, Paper } from '@mantine/core';
 import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
-import { useShoppingListQuery } from '../../hooks/useShoppingListQuery'; // ✅ هوک جدید
-import { useAnalytics } from '../../hooks/useAnalytics'; // ✅ ردیابی
+import { useShoppingListQuery } from '../../hooks/useShoppingListQuery';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import RecipeCard from '../../components/RecipeCard';
 import { useNavigate } from 'react-router-dom';
-import { IconHeart, IconArrowUp, IconMoodSad, IconShoppingCart } from '@tabler/icons-react';
+import { IconHeart, IconArrowUp, IconMoodSad, IconShoppingCart, IconTrash } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
+import { EventType } from '../../lib/eventTaxonomy';
 
 export default function FavoritesPage() {
-  const { favorites, isLoading } = useFavoritesQuery();
-  const { addItems } = useShoppingListQuery(); // ✅ دیگر خطا نمی‌دهد
+  const { favorites, isLoading, removeFavorite } = useFavoritesQuery();
+  const { addItems } = useShoppingListQuery();
   const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
 
@@ -20,13 +21,23 @@ export default function FavoritesPage() {
       amount: ing.amount || '',
       unit: ing.unit || ''
     }));
-    addItems(items);
-    trackEvent('shopping_add_from_fav', { recipeId: recipe.id, title: recipe.title });
+    // فرض می‌کنیم addItems آرایه‌ای از آیتم‌ها را مستقیماً می‌گیرد
+    if (typeof addItems === 'function') {
+      addItems(items);
+      trackEvent(EventType.SHOPPING_ADD_FROM_FAV, { recipeId: recipe.id, title: recipe.title });
+    }
   };
 
-  const handleRecipeClick = (recipe) => {
-    trackEvent('favorite_view', { recipeId: recipe.recipeId, title: recipe.recipe?.title });
-    navigate(`/recipe/${recipe.recipeId}`);
+  const handleRecipeClick = (fav) => {
+    trackEvent(EventType.FAVORITE_VIEW, { recipeId: fav.recipeId, title: fav.recipe?.title });
+    navigate(`/recipe/${fav.recipeId}`);
+  };
+
+  const handleRemoveFavorite = (recipeId) => {
+    if (removeFavorite) {
+      removeFavorite(recipeId);
+      trackEvent(EventType.FAVORITE_REMOVE, { recipeId });
+    }
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -42,16 +53,26 @@ export default function FavoritesPage() {
   }
 
   return (
-    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
-      <Box mb="lg" mt="md">
+    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 100px' }}>
+      <Paper
+        p="md"
+        radius="xl"
+        mb="lg"
+        mt="md"
+        style={{
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,107,53,0.2)',
+        }}
+      >
         <Group gap="xs" align="center">
           <IconHeart size={32} style={{ color: '#FF6B35' }} />
-          <Title order={3} style={{ color: '#1A237E' }}>علاقه‌مندی‌ها</Title>
+          <div>
+            <Title order={3} style={{ color: '#1A237E' }}>علاقه‌مندی‌ها</Title>
+            <Text size="xs" c="dimmed">رسپی‌هایی که دوست داشته‌اید</Text>
+          </div>
         </Group>
-        <Text size="xs" c="dimmed" mt={4}>
-          رسپی‌هایی که دوست داشته‌اید
-        </Text>
-      </Box>
+      </Paper>
 
       {favorites.length === 0 ? (
         <Alert color="orange" radius="lg" mb="md" icon={<IconMoodSad size={20} />}>
@@ -59,7 +80,7 @@ export default function FavoritesPage() {
           <Text size="xs">می‌توانید از صفحه رسپی‌ها، غذاهای مورد علاقه خود را ذخیره کنید.</Text>
         </Alert>
       ) : (
-        <Stack gap="sm">
+        <Stack gap="md">
           {favorites.map((fav, index) => (
             <motion.div
               key={fav.recipeId}
@@ -67,22 +88,47 @@ export default function FavoritesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05, duration: 0.3 }}
             >
-              <RecipeCard
-                recipe={fav.recipe}
-                onClick={() => handleRecipeClick(fav)}
-              />
-              <Button
-                fullWidth
-                mt="xs"
-                variant="light"
-                color="orange"
-                size="xs"
-                radius="xl"
-                leftSection={<IconShoppingCart size={14} />}
-                onClick={(e) => { e.stopPropagation(); handleAddToShoppingList(fav.recipe); }}
+              <Paper
+                radius="lg"
+                p={0}
+                style={{
+                  overflow: 'hidden',
+                  background: 'rgba(255,255,255,0.7)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                }}
               >
-                افزودن مواد به لیست خرید
-              </Button>
+                <RecipeCard
+                  recipe={fav.recipe}
+                  onClick={() => handleRecipeClick(fav)}
+                />
+                <Group p="sm" justify="space-between">
+                  <Button
+                    variant="light"
+                    color="orange"
+                    size="xs"
+                    radius="xl"
+                    leftSection={<IconShoppingCart size={14} />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToShoppingList(fav.recipe);
+                    }}
+                  >
+                    افزودن به لیست خرید
+                  </Button>
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveFavorite(fav.recipeId);
+                    }}
+                  >
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </Group>
+              </Paper>
             </motion.div>
           ))}
         </Stack>

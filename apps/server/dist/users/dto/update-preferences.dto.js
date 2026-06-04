@@ -27,9 +27,8 @@ __decorate([
 ], UpdatePreferencesDto.prototype, "diet", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
 ], UpdatePreferencesDto.prototype, "allergies", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
@@ -38,9 +37,8 @@ __decorate([
 ], UpdatePreferencesDto.prototype, "skillLevel", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
 ], UpdatePreferencesDto.prototype, "cuisine", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
@@ -49,8 +47,7 @@ __decorate([
 ], UpdatePreferencesDto.prototype, "budget", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.IsString)({ each: true }),
-    __metadata("design:type", Array)
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
 ], UpdatePreferencesDto.prototype, "healthGoals", void 0);
 //# sourceMappingURL=update-preferences.dto.js.map

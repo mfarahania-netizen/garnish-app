@@ -29,11 +29,11 @@ let ShoppingListController = class ShoppingListController {
     addItems(req, body) {
         return this.shoppingListService.addItems(req.user.userId, body.items);
     }
-    toggleItem(id, updateDto) {
-        return this.shoppingListService.toggleItem(id);
+    toggleItem(id, req, updateDto) {
+        return this.shoppingListService.toggleItem(id, req.user.userId);
     }
-    removeItem(id) {
-        return this.shoppingListService.removeItem(id);
+    removeItem(id, req) {
+        return this.shoppingListService.removeItem(id, req.user.userId);
     }
 };
 exports.ShoppingListController = ShoppingListController;
@@ -55,16 +55,18 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('items/:id'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_shopping_item_dto_1.UpdateShoppingItemDto]),
+    __metadata("design:paramtypes", [String, Object, update_shopping_item_dto_1.UpdateShoppingItemDto]),
     __metadata("design:returntype", void 0)
 ], ShoppingListController.prototype, "toggleItem", null);
 __decorate([
     (0, common_1.Delete)('items/:id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], ShoppingListController.prototype, "removeItem", null);
 exports.ShoppingListController = ShoppingListController = __decorate([

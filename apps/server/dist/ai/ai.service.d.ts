@@ -1,8 +1,11 @@
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma/prisma.service';
 export declare class AiService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private cacheManager;
+    constructor(prisma: PrismaService, cacheManager: Cache);
     handlePrompt(prompt: string, userId?: string): Promise<string>;
+    private buildWhereClause;
     private findConceptKey;
     private getHealthySuggestions;
     private expandConcept;

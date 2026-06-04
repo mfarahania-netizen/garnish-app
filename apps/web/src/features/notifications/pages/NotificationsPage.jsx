@@ -9,7 +9,8 @@ import {
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationsQuery } from '../../../hooks/useNotificationsQuery';
-import { useAnalytics } from '../../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../../hooks/useAnalytics';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 
 const timeAgo = (dateString) => {
   const now = new Date();
@@ -28,7 +29,7 @@ export default function NotificationsPage() {
     notifications, unreadCount, loading, isGenerating,
     generateSuggestion, markAsRead, deleteNotification
   } = useNotificationsQuery();
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
 
   const dark = false;
   const [filter, setFilter] = useState('unread');
@@ -40,38 +41,50 @@ export default function NotificationsPage() {
   }, [notifications, filter]);
 
   const handleGenerateSuggestion = () => {
-    trackEvent('notification_generate'); // 👈 ردیابی
+    trackEvent(EventType.NOTIFICATION_GENERATE);
     generateSuggestion();
   };
 
   const handleMarkAsRead = (id) => {
-    trackEvent('notification_read', { notificationId: id }); // 👈 ردیابی
+    trackEvent(EventType.NOTIFICATION_READ, { notificationId: id });
     markAsRead(id);
   };
 
   const handleDeleteNotification = (id) => {
-    trackEvent('notification_delete', { notificationId: id }); // 👈 ردیابی
+    trackEvent(EventType.NOTIFICATION_DELETE, { notificationId: id });
     deleteNotification(id);
   };
 
   const handleFilterChange = (value) => {
     setFilter(value);
-    trackEvent('notification_filter', { filter: value }); // 👈 ردیابی
+    trackEvent(EventType.NOTIFICATION_FILTER, { filter: value });
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
-    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
+    <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 100px' }}>
       {/* هدر */}
-      <Box mb="lg" mt="md">
+      <Paper
+        p="md"
+        radius="xl"
+        mb="lg"
+        mt="md"
+        style={{
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,107,53,0.2)',
+        }}
+      >
         <Group justify="space-between" align="center">
           <Group gap="xs">
             <IconBell size={32} style={{ color: '#FF6B35' }} />
-            <Title order={3} style={{ color: '#1A237E' }}>اعلان‌ها</Title>
-            {unreadCount > 0 && (
-              <Badge color="orange" variant="filled" size="sm">{unreadCount}</Badge>
-            )}
+            <div>
+              <Title order={3} style={{ color: '#1A237E' }}>اعلان‌ها</Title>
+              {unreadCount > 0 && (
+                <Badge color="orange" variant="filled" size="sm">{unreadCount} خوانده نشده</Badge>
+              )}
+            </div>
           </Group>
           <Button
             variant="light"
@@ -79,18 +92,18 @@ export default function NotificationsPage() {
             radius="xl"
             size="xs"
             leftSection={<IconSparkles size={16} />}
-            onClick={handleGenerateSuggestion} // 👈 تغییر یافت
+            onClick={handleGenerateSuggestion}
             loading={isGenerating}
           >
             پیشنهاد هوشمند
           </Button>
         </Group>
-      </Box>
+      </Paper>
 
       {/* فیلتر */}
       <SegmentedControl
         value={filter}
-        onChange={handleFilterChange} // 👈 تغییر یافت
+        onChange={handleFilterChange}
         data={[
           { label: 'خوانده نشده', value: 'unread' },
           { label: 'همه', value: 'all' },
@@ -122,7 +135,7 @@ export default function NotificationsPage() {
                   p="sm"
                   radius="md"
                   style={{
-                    background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)',
+                    background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.8)',
                     backdropFilter: 'blur(8px)',
                     border: `1px solid ${n.isRead ? '#eee' : '#FF6B35'}`,
                     borderRight: `4px solid ${n.isRead ? '#ddd' : '#FF6B35'}`,

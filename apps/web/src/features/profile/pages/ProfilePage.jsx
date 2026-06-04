@@ -14,7 +14,7 @@ import {
   IconChevronLeft, IconArrowUp, IconUser, IconCheck
 } from '@tabler/icons-react';
 import { useProfileQuery } from '../../../hooks/useProfileQuery';
-import { useAnalytics } from '../../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../../hooks/useAnalytics';
 
 const chefLevels = [
   { minXP: 0, title: 'نوآموز', color: 'gray' },
@@ -28,17 +28,19 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { profile, stats, badges, myRecipes, loading, updateName, updateAvatar } = useProfileQuery();
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === 'dark';
   const [nameModalOpen, { open: openNameModal, close: closeNameModal }] = useDisclosure(false);
   const [newName, setNewName] = useState('');
   const fileInputRef = useRef(null);
 
-  // ردیابی بازدید از پروفایل
+  // 👇 فقط وقتی کاربر واقعاً لاگین کرده، analytics شلیک کن
   useEffect(() => {
-    trackEvent('profile_view');
-  }, []);
+    if (user) {
+      trackEvent('profile_view');
+    }
+  }, [user]);
 
   const totalXP = stats.recipeCount * 10 + stats.favoriteCount * 5 + stats.plannedMeals * 3;
   let currentLevel = chefLevels[0];
@@ -58,7 +60,7 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.onload = () => {
       updateAvatar(reader.result);
-      trackEvent('avatar_change'); // 👈 ردیابی
+      trackEvent('avatar_change');
     };
     reader.readAsDataURL(file);
   };
@@ -66,19 +68,19 @@ export default function ProfilePage() {
   const handleSaveName = async () => {
     if (newName.trim()) {
       await updateName(newName.trim());
-      trackEvent('profile_edit', { name: newName }); // 👈 ردیابی
+      trackEvent('profile_edit', { name: newName });
       closeNameModal();
     }
   };
 
   const handleLogout = () => {
-    trackEvent('logout'); // 👈 ردیابی
+    trackEvent('logout');
     logout();
     navigate('/');
   };
 
   const handleNavigation = (destination) => {
-    trackEvent('profile_navigate', { destination }); // 👈 ردیابی
+    trackEvent('profile_navigate', { destination });
     navigate(destination);
   };
 

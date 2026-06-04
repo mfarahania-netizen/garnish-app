@@ -16,6 +16,25 @@ exports.AnalyticsController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const analytics_service_1 = require("./analytics.service");
+const class_validator_1 = require("class-validator");
+class TrackEventDto {
+    type;
+    page;
+    payload;
+}
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], TrackEventDto.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], TrackEventDto.prototype, "page", void 0);
+__decorate([
+    (0, class_validator_1.IsObject)(),
+    __metadata("design:type", Object)
+], TrackEventDto.prototype, "payload", void 0);
 let AnalyticsController = class AnalyticsController {
     analyticsService;
     constructor(analyticsService) {
@@ -34,7 +53,7 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, TrackEventDto]),
     __metadata("design:returntype", void 0)
 ], AnalyticsController.prototype, "trackEvent", null);
 exports.AnalyticsController = AnalyticsController = __decorate([

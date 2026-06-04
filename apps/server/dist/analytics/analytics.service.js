@@ -21,6 +21,9 @@ let AnalyticsService = class AnalyticsService {
         this.enrichmentService = enrichmentService;
     }
     async trackEvent(data) {
+        if (!data.userId) {
+            return null;
+        }
         const eventData = {
             userId: data.userId,
             type: data.type,

@@ -12,9 +12,9 @@ export function usePreferencesQuery() {
       const { data } = await apiClient.get('/users/preferences');
       return {
         diet: data?.diet || 'omnivore',
-        allergies: data?.allergies ? JSON.parse(data.allergies) : [],
+        allergies: Array.isArray(data?.allergies) ? data.allergies : JSON.parse(data?.allergies || '[]'),
         skill: data?.skillLevel || 'beginner',
-        cuisine: data?.cuisine ? JSON.parse(data.cuisine) : [],
+        cuisine: Array.isArray(data?.cuisine) ? data.cuisine : JSON.parse(data?.cuisine || '[]'),
         budget: data?.budget || 'low',
       };
     },
@@ -31,17 +31,19 @@ export function usePreferencesQuery() {
 
   const updateMutation = useMutation({
     mutationFn: async (newPrefs) => {
+      // تضمین می‌کنیم که همیشه رشتهٔ JSON ارسال شود
       const body = {
         diet: newPrefs.diet || preferences?.diet || 'omnivore',
         allergies: JSON.stringify(newPrefs.allergies ?? preferences?.allergies ?? []),
         skillLevel: newPrefs.skill ?? preferences?.skill ?? 'beginner',
         cuisine: JSON.stringify(newPrefs.cuisine ?? preferences?.cuisine ?? []),
         budget: newPrefs.budget ?? preferences?.budget ?? 'low',
+        healthGoals: JSON.stringify(newPrefs.healthGoals ?? preferences?.healthGoals ?? []),
       };
       await apiClient.put('/users/preferences', body);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['preferences']);
+      queryClient.invalidateQueries({ queryKey: ['preferences'] });
     },
   });
 
@@ -50,7 +52,7 @@ export function usePreferencesQuery() {
   };
 
   return {
-    preferences: preferences || { diet: 'omnivore', allergies: [], skill: 'beginner', cuisine: [], budget: 'low' },
+    preferences: preferences || { diet: 'omnivore', allergies: [], skill: 'beginner', cuisine: [], budget: 'low', healthGoals: [] },
     updatePreferences,
     loading: loading || updateMutation.isPending,
   };

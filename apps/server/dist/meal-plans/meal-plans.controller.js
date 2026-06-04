@@ -27,6 +27,12 @@ let MealPlansController = class MealPlansController {
     savePlan(req, body) {
         return this.mealPlansService.savePlan(req.user.userId, body.weekStart, body.slots);
     }
+    addMealSlot(req, body) {
+        return this.mealPlansService.addMealSlot(req.user.userId, body.dayOfWeek, body.mealType, body.recipeId);
+    }
+    removeMealSlot(req, dayOfWeek, mealType) {
+        return this.mealPlansService.removeMealSlot(req.user.userId, parseInt(dayOfWeek), mealType);
+    }
     generatePlan(req) {
         return this.mealPlansService.generateSmartPlan(req.user.userId);
     }
@@ -47,6 +53,23 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], MealPlansController.prototype, "savePlan", null);
+__decorate([
+    (0, common_1.Post)('slots'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], MealPlansController.prototype, "addMealSlot", null);
+__decorate([
+    (0, common_1.Delete)('slots/:dayOfWeek/:mealType'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('dayOfWeek')),
+    __param(2, (0, common_1.Param)('mealType')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:returntype", void 0)
+], MealPlansController.prototype, "removeMealSlot", null);
 __decorate([
     (0, common_1.Post)('generate'),
     __param(0, (0, common_1.Req)()),

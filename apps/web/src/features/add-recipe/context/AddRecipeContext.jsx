@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../../../lib/apiClient'; // جایگزین axios
 import { useAuth } from '../../../context/AuthContext';
 
 const AddRecipeContext = createContext();
@@ -59,9 +59,7 @@ export const AddRecipeProvider = ({ children }) => {
     };
 
     try {
-      const res = await axios.post('http://localhost:3000/recipes', recipeData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.post('/recipes', recipeData);
       return res.data;
     } catch (err) {
       console.error('خطا در ثبت رسپی:', err);
@@ -99,5 +97,4 @@ export const AddRecipeProvider = ({ children }) => {
   );
 };
 
-// 🔥 این خط را اضافه کنید تا کد قدیمی هم کار کند
 export { useAddRecipe as useAddRecipeContext };

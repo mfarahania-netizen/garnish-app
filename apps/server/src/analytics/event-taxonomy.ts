@@ -1,0 +1,140 @@
+export enum EventType {
+  // Layer 1: Identity
+  LOGIN = 'login',
+  REGISTER = 'register',
+  LOGOUT = 'logout',
+  PROFILE_EDIT = 'profile_edit',
+  AVATAR_CHANGE = 'avatar_change',
+
+  // Layer 2: Session Intelligence
+  PAGE_VIEW = 'page_view',
+  SESSION_START = 'session_start',
+  SESSION_END = 'session_end',
+
+  // Layer 3: Navigation Analytics
+  BANNER_CLICK = 'banner_click',
+  CATEGORY_CLICK = 'category_click',
+  CATEGORY_VIEW = 'category_view',
+  CATEGORY_RECIPE_CLICK = 'category_recipe_click',
+  VIEW_ALL_RECIPES_CLICK = 'view_all_recipes_click',
+  AI_CHAT_BUTTON_CLICK = 'ai_chat_button_click',
+  TODAY_SPECIAL_CLICK = 'today_special_click',
+  FILTER_USE = 'filter_use',
+  HOME_SCROLL_TO_BOTTOM = 'home_scroll_to_bottom',
+  ADMIN_TAB_CHANGE = 'admin_tab_change',
+
+  // Layer 4: Search Intelligence
+  SEARCH_QUERY = 'search_query',
+  SEARCH_RESULT_CLICK = 'search_result_click',
+  VOICE_SEARCH_START = 'voice_search_start',
+  VOICE_SEARCH_SUCCESS = 'voice_search_success',
+  VOICE_SEARCH_ERROR = 'voice_search_error',
+
+  // Layer 5: Meal Planning Intelligence
+  MEALPLAN_ADD = 'mealplan_add',
+  MEALPLAN_REMOVE = 'mealplan_remove',
+  MEALPLAN_GENERATE = 'mealplan_generate',
+  MEALPLAN_CLEAR = 'mealplan_clear',
+
+  // Layer 6: Grocery Intelligence
+  SHOPPING_ITEM_ADD = 'shopping_item_add',
+  SHOPPING_ITEM_TOGGLE = 'shopping_item_toggle',
+  SHOPPING_ITEM_REMOVE = 'shopping_item_remove',
+  SHOPPING_ADD_MANUAL = 'shopping_add_manual',            // 🆕
+  SHOPPING_ADD_FROM_PLAN = 'shopping_add_from_plan',      // 🆕
+  SHOPPING_TOGGLE = 'shopping_toggle',                    // 🆕
+  SHOPPING_REMOVE = 'shopping_remove',                    // 🆕
+
+  // Layer 7: Nutrition Intelligence
+  NUTRITION_EXPAND = 'nutrition_expand',
+  NUTRITION_COLLAPSE = 'nutrition_collapse',
+  NUTRITION_READ = 'nutrition_read',
+  TIMING_EXPAND = 'timing_expand',
+  TIMING_COLLAPSE = 'timing_collapse',
+  TIMING_READ = 'timing_read',
+  FEATURES_EXPAND = 'features_expand',
+  FEATURES_COLLAPSE = 'features_collapse',
+  FEATURES_READ = 'features_read',
+  INGREDIENTS_EXPAND = 'ingredients_expand',
+  INGREDIENTS_COLLAPSE = 'ingredients_collapse',
+  INGREDIENTS_READ = 'ingredients_read',
+  TOOLS_EXPAND = 'tools_expand',
+  TOOLS_COLLAPSE = 'tools_collapse',
+  TOOLS_READ = 'tools_read',
+  STEPS_EXPAND = 'steps_expand',
+  STEPS_COLLAPSE = 'steps_collapse',
+  STEPS_READ = 'steps_read',
+  TIPS_EXPAND = 'tips_expand',
+  TIPS_COLLAPSE = 'tips_collapse',
+  TIPS_READ = 'tips_read',
+  FAQ_EXPAND = 'faq_expand',
+  FAQ_COLLAPSE = 'faq_collapse',
+  FAQ_READ = 'faq_read',
+  RECIPE_SCROLL_TO_BOTTOM = 'recipe_scroll_to_bottom',
+
+  // Layer 8: Family Intelligence (Planned)
+  FAMILY_MEMBER_ADD = 'family_member_add',
+  FAMILY_PLAN_CREATE = 'family_plan_create',
+
+  // Layer 9: Habit & Behavioral Layer (Planned)
+  STREAK_UPDATE = 'streak_update',
+  GOAL_COMPLETE = 'goal_complete',
+
+  // Layer 10: AI Interaction Layer
+  AI_MESSAGE_SEND = 'ai_message_send',
+  AI_RESPONSE_LIKE = 'ai_response_like',
+  AI_RESPONSE_DISLIKE = 'ai_response_dislike',
+  AI_CHAT_STARTED = 'ai_chat_started',
+  AI_SUGGESTION_GENERATED = 'ai_suggestion_generated',
+  AI_ERROR = 'ai_error',
+
+  // Admin & System
+  ADMIN_VIEW = 'admin_view',
+  ADMIN_TICKET_REPLY = 'admin_ticket_reply',
+  ADMIN_TICKET_STATUS = 'admin_ticket_status',
+  ADMIN_RECIPE_APPROVE = 'admin_recipe_approve',
+  ADMIN_RECIPE_REJECT = 'admin_recipe_reject',
+
+  // Recipe Interactions
+  RECIPE_VIEW = 'recipe_view',
+  RECIPE_SHARE = 'recipe_share',
+  FAVORITE_ADD = 'favorite_add',
+  FAVORITE_REMOVE = 'favorite_remove',
+  START_COOKING_CLICK = 'start_cooking_click',
+  EXCERPT_TOGGLE = 'excerpt_toggle',
+  ADD_RECIPE_VIEW = 'add_recipe_view',
+  ADD_RECIPE_SUBMIT = 'add_recipe_submit',
+  ADD_RECIPE_ERROR = 'add_recipe_error',
+  MY_RECIPES_VIEW = 'my_recipes_view',
+  MY_RECIPE_CLICK = 'my_recipe_click',
+
+  // Profile & Preferences
+  PROFILE_VIEW = 'profile_view',
+  BADGE_VIEW = 'badge_view',
+  PROFILE_NAVIGATE = 'profile_navigate',
+  PREFERENCE_UPDATE = 'preference_update',
+  ALLERGY_CHANGED = 'allergy_changed',
+  DIET_CHANGED = 'diet_changed',
+  SKILL_CHANGED = 'skill_changed',
+  ALLERGY_CLEARED = 'allergy_cleared',
+  PREFERENCE_EDIT_START = 'preference_edit_start',
+
+  // Notifications
+  NOTIFICATIONS_VIEW = 'notifications_view',
+  NOTIFICATION_GENERATE = 'notification_generate',
+  NOTIFICATION_READ = 'notification_read',
+  NOTIFICATION_DELETE = 'notification_delete',
+  NOTIFICATION_FILTER = 'notification_filter',
+
+  // Support
+  SUPPORT_TICKET_CREATE = 'support_ticket_create',
+  SUPPORT_TICKET_CLOSE = 'support_ticket_close',
+  TICKET_CREATE = 'ticket_create',
+  TICKET_REPLY = 'ticket_reply',
+  TICKET_CLOSE = 'ticket_close',
+  SUPPORT_CONTACT_CLICK = 'support_contact_click',
+
+  // Favorites
+  FAVORITE_VIEW = 'favorite_view',
+  SHOPPING_ADD_FROM_FAV = 'shopping_add_from_fav',
+}

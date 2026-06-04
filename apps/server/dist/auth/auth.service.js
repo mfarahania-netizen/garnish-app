@@ -59,7 +59,11 @@ let AuthService = class AuthService {
         if (existing)
             throw new common_1.UnauthorizedException('این شماره قبلاً ثبت شده است');
         const user = await this.usersService.createUser(phone, password, name);
-        const token = this.jwtService.sign({ sub: user.id, phone: user.phone });
+        const token = this.jwtService.sign({
+            sub: user.id,
+            phone: user.phone,
+            isAdmin: user.isAdmin || false,
+        });
         return { token, user };
     }
     async login(phone, password) {
@@ -71,7 +75,11 @@ let AuthService = class AuthService {
         if (!isMatch) {
             throw new common_1.UnauthorizedException('شماره یا رمز عبور اشتباه است');
         }
-        const token = this.jwtService.sign({ sub: user.id, phone: user.phone });
+        const token = this.jwtService.sign({
+            sub: user.id,
+            phone: user.phone,
+            isAdmin: user.isAdmin || false,
+        });
         return { token, user };
     }
 };

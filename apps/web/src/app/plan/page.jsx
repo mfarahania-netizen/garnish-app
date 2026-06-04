@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import {
   Container, Title, Group, Text, Paper, Badge, ActionIcon,
   Tooltip, Tabs, ThemeIcon, Button, Modal, TextInput,
-  Stack, Center, Box, useMantineColorScheme, ScrollArea, Loader, SimpleGrid
+  Stack, Center, Box, useMantineColorScheme, ScrollArea, Loader
 } from '@mantine/core';
 import {
   IconTrash, IconSun, IconSunset, IconMoonStars,
@@ -17,11 +17,10 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import Fuse from 'fuse.js';
 
-// رنگ‌ها و آیکون‌های اختصاصی وعده‌ها
 const mealMeta = {
-  'صبحانه': { icon: <IconSun size={20} />, color: '#FFA726', gradient: 'linear-gradient(135deg, #FFE082, #FFCA28)' },
-  'ناهار': { icon: <IconSunset size={20} />, color: '#FF7043', gradient: 'linear-gradient(135deg, #FFAB91, #FF5722)' },
-  'شام': { icon: <IconMoonStars size={20} />, color: '#5C6BC0', gradient: 'linear-gradient(135deg, #9FA8DA, #3F51B5)' },
+  'صبحانه': { icon: <IconSun size={20} />, color: '#FFA726' },
+  'ناهار': { icon: <IconSunset size={20} />, color: '#FF7043' },
+  'شام': { icon: <IconMoonStars size={20} />, color: '#5C6BC0' },
 };
 
 export default function WeeklyPlanPage() {
@@ -30,7 +29,7 @@ export default function WeeklyPlanPage() {
   const { plan, loading, addMeal, removeMeal, generateSmartPlan, clearPlan } = useMealPlannerQuery();
   const { trackEvent } = useAnalytics();
 
-  const [view, setView] = useState('today'); // today | week
+  const [view, setView] = useState('today');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState({ day: '', meal: '' });
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,7 +39,6 @@ export default function WeeklyPlanPage() {
   const allSlots = plan?.slots || [];
   const todaySlots = allSlots.filter(s => s.dayOfWeek === todayIdx);
 
-  // دریافت همه رسپی‌ها برای جستجوی قدرتمند
   const { data: allRecipes = [], isFetching: recipesLoading } = useQuery({
     queryKey: ['allRecipes'],
     queryFn: async () => {
@@ -50,7 +48,6 @@ export default function WeeklyPlanPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // موتور جستجو سمت کاربر
   const fuse = useMemo(() => {
     if (!allRecipes.length) return null;
     return new Fuse(allRecipes, {
@@ -74,25 +71,31 @@ export default function WeeklyPlanPage() {
 
   const handleSelectRecipe = (recipeId, title) => {
     addMeal(selectedSlot.day, selectedSlot.meal, recipeId);
+    trackEvent('mealplan_add', { recipeId, title, day: selectedSlot.day, meal: selectedSlot.meal });
     setModalOpen(false);
+  };
+
+  const handleRemoveMeal = (day, mealType) => {
+    removeMeal(day, mealType);
+    trackEvent('mealplan_remove', { day, meal: mealType });
   };
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const textColor = dark ? '#f1f1f1' : '#1A237E';
-  const bgColor = dark ? '#1A1B1E' : '#F8F9FA';
   const cardBg = dark ? '#25262B' : '#FFFFFF';
+  const dimmedText = dark ? '#a0a0b0' : '#6c757d';
 
   return (
-    <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
+    <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 120px' }}>
       
-      {/* ================= هدر ================= */}
+      {/* هدر */}
       <Paper
         p="lg"
         radius="xl"
         mb="xl"
         style={{
-          background: dark ? 'linear-gradient(135deg, #1A237E30, #FF6B3520)' : 'linear-gradient(135deg, #FFFFFF, #FFF5F0)',
+          background: dark ? 'rgba(26,35,126,0.1)' : 'rgba(255,245,240,0.6)',
           border: dark ? '1px solid #333' : '1px solid #FFE0D0',
         }}
       >
@@ -111,7 +114,7 @@ export default function WeeklyPlanPage() {
           <Group gap="xs">
             {allSlots.length > 0 && (
               <Tooltip label="پاک کردن همه وعده‌ها">
-                <ActionIcon variant="subtle" color="red" size="lg" onClick={clearPlan}>
+                <ActionIcon variant="subtle" color="red" size="lg" onClick={() => { clearPlan(); trackEvent('mealplan_clear'); }}>
                   <IconTrash size={18} />
                 </ActionIcon>
               </Tooltip>
@@ -119,7 +122,6 @@ export default function WeeklyPlanPage() {
           </Group>
         </Group>
 
-        {/* دکمه هوشمند با توضیح */}
         <Button
           fullWidth
           variant="gradient"
@@ -138,7 +140,7 @@ export default function WeeklyPlanPage() {
         </Text>
       </Paper>
 
-      {/* ================= تب‌های نما ================= */}
+      {/* تب‌های نما */}
       <Tabs
         value={view}
         onChange={(val) => setView(val)}
@@ -157,11 +159,11 @@ export default function WeeklyPlanPage() {
         </Tabs.List>
       </Tabs>
 
-      {/* ================= نمای امروز ================= */}
+      {/* نمای امروز */}
       {view === 'today' && (
         <Stack gap="md">
           {todaySlots.length === 0 ? (
-            <Paper p="xl" radius="xl" ta="center" bg={cardBg} withBorder>
+            <Paper p="xl" radius="xl" ta="center" bg={cardBg} withBorder style={{ borderColor: '#FF6B35' }}>
               <IconChefHat size={48} color="#FF6B35" style={{ opacity: 0.5 }} />
               <Text mt="md" c={dimmedText} size="sm">
                 هنوز برای امروز وعده‌ای ثبت نکردی.
@@ -180,6 +182,14 @@ export default function WeeklyPlanPage() {
             ['صبحانه', 'ناهار', 'شام'].map(meal => {
               const slot = todaySlots.find(s => s.mealType === meal);
               const title = slot?.recipe?.title;
+              const meta = mealMeta[meal];
+              // رفع تداخل border shorthand با borderLeft
+              const borderColor = title ? meta.color : '#ccc';
+              const borderStyle = title ? 'solid' : 'dashed';
+              const borderWidth = title ? '2px' : '1px';
+              const leftBorderWidth = '6px';
+              const leftBorderColor = meta.color;
+
               return (
                 <motion.div key={meal} whileHover={{ y: -2 }} whileTap={{ scale: 0.99 }}>
                   <Paper
@@ -187,8 +197,18 @@ export default function WeeklyPlanPage() {
                     radius="lg"
                     style={{
                       backgroundColor: cardBg,
-                      border: title ? `2px solid ${mealMeta[meal]?.color}` : '1px dashed #ccc',
-                      borderLeft: `6px solid ${mealMeta[meal]?.color}`,
+                      borderTopWidth: borderWidth,
+                      borderRightWidth: borderWidth,
+                      borderBottomWidth: borderWidth,
+                      borderTopStyle: borderStyle,
+                      borderRightStyle: borderStyle,
+                      borderBottomStyle: borderStyle,
+                      borderTopColor: borderColor,
+                      borderRightColor: borderColor,
+                      borderBottomColor: borderColor,
+                      borderLeftWidth: leftBorderWidth,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: leftBorderColor,
                       position: 'relative',
                       overflow: 'hidden',
                       cursor: 'pointer',
@@ -197,8 +217,8 @@ export default function WeeklyPlanPage() {
                   >
                     <Group justify="space-between" align="center" wrap="nowrap">
                       <Group gap="sm" wrap="nowrap" style={{ flex: 1 }}>
-                        <ThemeIcon size="lg" radius="xl" color={mealMeta[meal]?.color} variant="light">
-                          {mealMeta[meal]?.icon}
+                        <ThemeIcon size="lg" radius="xl" color={meta.color} variant="light">
+                          {meta.icon}
                         </ThemeIcon>
                         <div style={{ flex: 1 }}>
                           <Text size="sm" fw={700} c={textColor}>{meal}</Text>
@@ -223,8 +243,7 @@ export default function WeeklyPlanPage() {
                         </ActionIcon>
                       )}
                     </Group>
-                    {/* افکت شیشه‌ای ظریف */}
-                    <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: mealMeta[meal]?.color || '#ccc', opacity: 0.05 }} />
+                    <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: meta.color, opacity: 0.05 }} />
                   </Paper>
                 </motion.div>
               );
@@ -233,7 +252,7 @@ export default function WeeklyPlanPage() {
         </Stack>
       )}
 
-      {/* ================= نمای هفته ================= */}
+      {/* نمای هفته */}
       {view === 'week' && (
         <Tabs defaultValue={today} variant="pills" radius="xl" mb="md">
           <Tabs.List grow>
@@ -258,24 +277,29 @@ export default function WeeklyPlanPage() {
                   {MEALS.map(meal => {
                     const slot = daySlots.find(s => s.mealType === meal);
                     const title = slot?.recipe?.title;
+                    const meta = mealMeta[meal];
+                    // رفع تداخل shorthand border با borderColor/borderStyle
+                    const borderColor = title ? meta.color : dark ? '#444' : '#ddd';
+                    const borderStyle = title ? 'solid' : 'dashed';
+
                     return (
                       <Paper
                         key={meal}
                         p="sm"
                         radius="md"
-                        withBorder={!!title}
                         style={{
                           backgroundColor: title ? cardBg : 'transparent',
-                          borderColor: title ? mealMeta[meal]?.color : dark ? '#444' : '#ddd',
-                          borderStyle: title ? 'solid' : 'dashed',
+                          borderWidth: '1px',
+                          borderStyle: borderStyle,
+                          borderColor: borderColor,
                           cursor: 'pointer',
                         }}
                         onClick={() => handleOpenPicker(day, meal)}
                       >
                         <Group justify="space-between" align="center" wrap="nowrap">
                           <Group gap="xs" wrap="nowrap" style={{ flex: 1 }}>
-                            <ThemeIcon size="md" radius="md" color={mealMeta[meal]?.color} variant="light">
-                              {mealMeta[meal]?.icon}
+                            <ThemeIcon size="md" radius="md" color={meta.color} variant="light">
+                              {meta.icon}
                             </ThemeIcon>
                             <div style={{ flex: 1 }}>
                               <Text size="xs" fw={600} c={textColor}>{meal}</Text>
@@ -314,7 +338,7 @@ export default function WeeklyPlanPage() {
         </Tabs>
       )}
 
-      {/* ================= مودال انتخاب غذا ================= */}
+      {/* مودال انتخاب غذا */}
       <Modal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -345,10 +369,7 @@ export default function WeeklyPlanPage() {
                   mb="sm"
                   radius="md"
                   withBorder
-                  style={{
-                    cursor: 'pointer',
-                    borderRight: '4px solid #FF6B35',
-                  }}
+                  style={{ cursor: 'pointer', borderRight: '4px solid #FF6B35' }}
                   onClick={() => handleSelectRecipe(recipe.id, recipe.title)}
                 >
                   <Group justify="space-between" align="center" wrap="nowrap">
@@ -367,19 +388,13 @@ export default function WeeklyPlanPage() {
         </ScrollArea>
       </Modal>
 
-      {/* دکمه برگشت به بالا */}
+      {/* دکمهٔ برگشت به بالا */}
       <ActionIcon
         variant="filled"
         color="orange"
         size="xl"
         radius="xl"
-        style={{
-          position: 'fixed',
-          bottom: 90,
-          right: 16,
-          zIndex: 50,
-          boxShadow: '0 4px 12px rgba(255,107,53,0.4)',
-        }}
+        style={{ position: 'fixed', bottom: 90, right: 16, zIndex: 50, boxShadow: '0 4px 12px rgba(255,107,53,0.4)' }}
         onClick={scrollToTop}
       >
         <IconArrowUp size={18} />

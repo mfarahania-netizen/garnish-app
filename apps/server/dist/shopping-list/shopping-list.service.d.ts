@@ -26,7 +26,7 @@ export declare class ShoppingListService {
         unit?: string;
         category?: string;
     }[]): Promise<import("@prisma/client").Prisma.BatchPayload>;
-    toggleItem(itemId: string): Promise<{
+    toggleItem(itemId: string, userId: string): Promise<{
         name: string;
         amount: string | null;
         unit: string | null;
@@ -36,7 +36,7 @@ export declare class ShoppingListService {
         shoppingListId: string;
         isChecked: boolean;
     }>;
-    removeItem(itemId: string): Promise<{
+    removeItem(itemId: string, userId: string): Promise<{
         name: string;
         amount: string | null;
         unit: string | null;

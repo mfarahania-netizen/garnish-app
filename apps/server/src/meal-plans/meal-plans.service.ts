@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { getStartOfWeek } from '../utils/date.utils';
 
 @Injectable()
 export class MealPlansService {
   constructor(private prisma: PrismaService) {}
 
   async getCurrentPlan(userId: string) {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - dayOfWeek);
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeek();
 
     return this.prisma.mealPlan.findFirst({
       where: {
@@ -63,24 +60,31 @@ export class MealPlansService {
     const userSkill = profile?.skillLevel || 'beginner';
     const userBudget = profile?.budget || 'low';
 
-    let allRecipes = await this.prisma.recipe.findMany({
-      include: { ingredients: true },
-    });
+    const where: any = {};
 
     if (userDiet === 'vegetarian' || userDiet === 'vegan') {
-      allRecipes = allRecipes.filter(r => r.diet === 'vegetarian' || r.diet === 'vegan');
+      where.diet = { in: ['vegetarian', 'vegan'] };
     }
+
+    if (userSkill === 'beginner') {
+      where.difficulty = { not: 'سخت' };
+    }
+
+    if (userBudget === 'low') {
+      where.cost = 'کم‌هزینه';
+    }
+
+    let allRecipes = await this.prisma.recipe.findMany({
+      where,
+      include: { ingredients: true },
+      take: 200,
+    });
+
     if (userAllergies.length > 0) {
       allRecipes = allRecipes.filter(r => {
         const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
-        return !userAllergies.some((allergy) => recipeAllergens.includes(allergy));
+        return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
       });
-    }
-    if (userSkill === 'beginner') {
-      allRecipes = allRecipes.filter(r => r.difficulty !== 'سخت');
-    }
-    if (userBudget === 'low') {
-      allRecipes = allRecipes.filter(r => r.cost === 'کم‌هزینه');
     }
 
     const breakfastOptions = allRecipes.filter(r => r.mealType?.includes('breakfast'));
@@ -117,11 +121,7 @@ export class MealPlansService {
       }
     }
 
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - dayOfWeek);
-    startOfWeek.setHours(0, 0, 0, 0);
+    const startOfWeek = getStartOfWeek();
 
     const cleanSlots = planSlots.map(slot => ({
       dayOfWeek: slot.dayOfWeek,
@@ -142,6 +142,51 @@ export class MealPlansService {
         },
         include: { slots: { include: { recipe: true } } },
       });
+    });
+  }
+
+  // ===== متدهای جدید برای افزودن/حذف اتمیک =====
+
+  async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
+    const startOfWeek = getStartOfWeek();
+
+    let plan = await this.prisma.mealPlan.findFirst({
+      where: { userId, weekStart: startOfWeek },
+    });
+
+    if (!plan) {
+      plan = await this.prisma.mealPlan.create({
+        data: { userId, weekStart: startOfWeek },
+      });
+    }
+
+    // اگر قبلاً این وعده وجود داشت، حذفش کن (جایگزینی)
+    await this.prisma.mealSlot.deleteMany({
+      where: { mealPlanId: plan.id, dayOfWeek, mealType },
+    });
+
+    return this.prisma.mealSlot.create({
+      data: {
+        mealPlanId: plan.id,
+        dayOfWeek,
+        mealType,
+        recipeId,
+      },
+      include: { recipe: true },
+    });
+  }
+
+  async removeMealSlot(userId: string, dayOfWeek: number, mealType: string) {
+    const startOfWeek = getStartOfWeek();
+
+    const plan = await this.prisma.mealPlan.findFirst({
+      where: { userId, weekStart: startOfWeek },
+    });
+
+    if (!plan) return null;
+
+    return this.prisma.mealSlot.deleteMany({
+      where: { mealPlanId: plan.id, dayOfWeek, mealType },
     });
   }
 }

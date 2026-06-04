@@ -4,9 +4,10 @@ import {
 } from '@mantine/core';
 import { IconArrowRight, IconCheck, IconClock, IconPencil, IconX } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import apiClient from '../../../lib/apiClient';
 import { useAuth } from "../../../context/AuthContext";
-import { useAnalytics } from '../../../hooks/useAnalytics'; // 👈 جدید
+import { useAnalytics } from '../../../hooks/useAnalytics';
+import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
 
 const statusMap = {
   pending: { label: 'در انتظار بررسی', color: 'yellow', icon: <IconClock size={14} /> },
@@ -17,17 +18,15 @@ const statusMap = {
 
 export default function MyRecipesPage() {
   const { token } = useAuth();
-  const { trackEvent } = useAnalytics(); // 👈 جدید
+  const { trackEvent } = useAnalytics();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
-    trackEvent('my_recipes_view'); // 👈 ردیابی بازدید
-    axios.get('http://localhost:3000/recipes/my', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    trackEvent(EventType.MY_RECIPES_VIEW);
+    apiClient.get('/recipes/my')
       .then(res => setRecipes(res.data))
       .catch(err => console.error('خطا در دریافت رسپی‌ها:', err))
       .finally(() => setLoading(false));
@@ -57,7 +56,7 @@ export default function MyRecipesPage() {
                 withBorder
                 style={{ cursor: 'pointer' }}
                 onClick={() => {
-                  trackEvent('my_recipe_click', { recipeId: r.id, title: r.title }); // 👈 ردیابی کلیک
+                  trackEvent(EventType.MY_RECIPE_CLICK, { recipeId: r.id, title: r.title });
                   navigate(`/recipe/${r.id}`);
                 }}
               >

@@ -9,6 +9,8 @@ import {
 import { useRecipes } from '../../../hooks/useRecipes';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
+import apiClient from '../../../lib/apiClient';
+import { EventType } from '../../../lib/eventTaxonomy';
 import {
   IconToolsKitchen, IconChefHat, IconClock, IconUsers,
   IconBulb, IconQuestionMark, IconTools,
@@ -21,7 +23,6 @@ import {
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
 
 // ========== توابع کمکی (بدون تغییر) ==========
 const getIngredientEmoji = (name) => {
@@ -145,29 +146,25 @@ export default function RecipeDetailPage() {
   const [directRecipe, setDirectRecipe] = useState(null);
   const [directLoading, setDirectLoading] = useState(false);
 
-  // حالت‌های باز/بسته برای کارت‌های تعاملی
   const [timingOpen, setTimingOpen] = useState(false);
   const [nutritionOpen, setNutritionOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
 
-  // تایمرهای read برای کارت‌ها
   const timingReadTimer = useRef(null);
   const nutritionReadTimer = useRef(null);
   const featuresReadTimer = useRef(null);
 
-  // ردیابی اسکرول به پایین
   const scrollTracked = useRef(false);
 
-  // ردیابی آکاردئون‌ها
   const prevAccordionValue = useRef([]);
-  const accordionTimers = useRef({}); // نگهداری تایمرهای read به ازای هر value
+  const accordionTimers = useRef({});
 
   const recipe = getRecipeById(id);
 
   useEffect(() => {
     if (!recipe && id) {
       setDirectLoading(true);
-      axios.get(`http://localhost:3000/recipes/${id}`)
+      apiClient.get(`/recipes/${id}`)
         .then(res => setDirectRecipe(res.data))
         .catch(() => setDirectRecipe(null))
         .finally(() => setDirectLoading(false));
@@ -180,11 +177,10 @@ export default function RecipeDetailPage() {
 
   useEffect(() => {
     if (finalRecipe) {
-      trackEvent('recipe_view', { recipeId: finalRecipe.id, title: finalRecipe.title });
+      trackEvent(EventType.RECIPE_VIEW, { recipeId: finalRecipe.id, title: finalRecipe.title });
     }
   }, [finalRecipe?.id]);
 
-  // اسکرول به پایین
   useEffect(() => {
     const handleScroll = () => {
       if (scrollTracked.current) return;
@@ -192,7 +188,7 @@ export default function RecipeDetailPage() {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       if (scrollTop + windowHeight >= documentHeight * 0.8) {
-        trackEvent('recipe_scroll_to_bottom', { recipeId: finalRecipe?.id });
+        trackEvent(EventType.RECIPE_SCROLL_TO_BOTTOM, { recipeId: finalRecipe?.id });
         scrollTracked.current = true;
       }
     };
@@ -200,7 +196,6 @@ export default function RecipeDetailPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [finalRecipe?.id, trackEvent]);
 
-  // پاکسازی تایمرها
   useEffect(() => {
     return () => {
       clearTimeout(timingReadTimer.current);
@@ -214,65 +209,62 @@ export default function RecipeDetailPage() {
     if (!finalRecipe) return;
     if (favorite) {
       removeFavorite(finalRecipe.id);
-      trackEvent('favorite_remove', { recipeId: finalRecipe.id });
+      trackEvent(EventType.FAVORITE_REMOVE, { recipeId: finalRecipe.id });
     } else {
       addFavorite(finalRecipe.id);
-      trackEvent('favorite_add', { recipeId: finalRecipe.id });
+      trackEvent(EventType.FAVORITE_ADD, { recipeId: finalRecipe.id });
     }
   };
 
   const toggleTiming = () => {
     if (!timingOpen) {
-      trackEvent('timing_expand', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.TIMING_EXPAND, { recipeId: finalRecipe?.id });
       clearTimeout(timingReadTimer.current);
       timingReadTimer.current = setTimeout(() => {
-        trackEvent('timing_read', { recipeId: finalRecipe?.id });
+        trackEvent(EventType.TIMING_READ, { recipeId: finalRecipe?.id });
       }, 8000);
     } else {
       clearTimeout(timingReadTimer.current);
-      trackEvent('timing_collapse', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.TIMING_COLLAPSE, { recipeId: finalRecipe?.id });
     }
     setTimingOpen(prev => !prev);
   };
 
   const toggleNutrition = () => {
     if (!nutritionOpen) {
-      trackEvent('nutrition_expand', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.NUTRITION_EXPAND, { recipeId: finalRecipe?.id });
       clearTimeout(nutritionReadTimer.current);
       nutritionReadTimer.current = setTimeout(() => {
-        trackEvent('nutrition_read', { recipeId: finalRecipe?.id });
+        trackEvent(EventType.NUTRITION_READ, { recipeId: finalRecipe?.id });
       }, 8000);
     } else {
       clearTimeout(nutritionReadTimer.current);
-      trackEvent('nutrition_collapse', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.NUTRITION_COLLAPSE, { recipeId: finalRecipe?.id });
     }
     setNutritionOpen(prev => !prev);
   };
 
   const toggleFeatures = () => {
     if (!featuresOpen) {
-      trackEvent('features_expand', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.FEATURES_EXPAND, { recipeId: finalRecipe?.id });
       clearTimeout(featuresReadTimer.current);
       featuresReadTimer.current = setTimeout(() => {
-        trackEvent('features_read', { recipeId: finalRecipe?.id });
+        trackEvent(EventType.FEATURES_READ, { recipeId: finalRecipe?.id });
       }, 8000);
     } else {
       clearTimeout(featuresReadTimer.current);
-      trackEvent('features_collapse', { recipeId: finalRecipe?.id });
+      trackEvent(EventType.FEATURES_COLLAPSE, { recipeId: finalRecipe?.id });
     }
     setFeaturesOpen(prev => !prev);
   };
 
-  // مدیریت آکاردئون‌ها با expand/collapse/read
   const handleAccordionChange = useCallback((values) => {
     const prev = prevAccordionValue.current;
     const opened = values.filter(v => !prev.includes(v));
     const closed = prev.filter(v => !values.includes(v));
 
-    // ثبت expand و شروع تایمر read
     opened.forEach(value => {
       trackEvent(`${value}_expand`, { recipeId: finalRecipe?.id });
-      // اگر قبلاً تایمری بود پاک کن
       if (accordionTimers.current[value]) clearTimeout(accordionTimers.current[value]);
       accordionTimers.current[value] = setTimeout(() => {
         trackEvent(`${value}_read`, { recipeId: finalRecipe?.id });
@@ -280,7 +272,6 @@ export default function RecipeDetailPage() {
       }, 8000);
     });
 
-    // ثبت collapse و پاک کردن تایمر read
     closed.forEach(value => {
       trackEvent(`${value}_collapse`, { recipeId: finalRecipe?.id });
       if (accordionTimers.current[value]) {
@@ -327,7 +318,7 @@ export default function RecipeDetailPage() {
   const carbVal = nutrition?.کربوهیدرات ? extractNum(nutrition.کربوهیدرات) : 0;
 
   const handleShare = async () => {
-    trackEvent('recipe_share', { recipeId: finalRecipe.id });
+    trackEvent(EventType.RECIPE_SHARE, { recipeId: finalRecipe.id });
     if (navigator.share) await navigator.share({ title, url: window.location.href });
   };
 
@@ -351,7 +342,6 @@ export default function RecipeDetailPage() {
         <Box
           style={{
             height: 240,
-            background: 'url(https://garnish-os.ir/default-recipe-bg.jpg) center/cover no-repeat',
             opacity: 0.2,
             position: 'absolute',
             top: 0,
@@ -421,7 +411,7 @@ export default function RecipeDetailPage() {
           {excerpt.length > 150 && (
             <Button
               variant="subtle" size="xs" color="orange" mt={4}
-              onClick={() => { setShowFullExcerpt(!showFullExcerpt); trackEvent('excerpt_toggle', { recipeId: finalRecipe.id }); }}
+              onClick={() => { setShowFullExcerpt(!showFullExcerpt); trackEvent(EventType.EXCERPT_TOGGLE, { recipeId: finalRecipe.id }); }}
             >
               {showFullExcerpt ? 'بستن ▲' : 'بیشتر بخوانید ▼'}
             </Button>
@@ -429,324 +419,253 @@ export default function RecipeDetailPage() {
         </Paper>
       )}
 
-      {/* ===== کارت ویژگی‌ها ===== */}
-      <UnstyledButton onClick={toggleFeatures} style={{ width: '100%', marginBottom: 16 }}>
-        <Paper
-          p="md"
-          radius="lg"
-          style={{
-            background: 'rgba(255,255,255,0.65)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(0,0,0,0.05)',
-            transition: 'border-color 0.2s, background 0.2s',
-            cursor: 'pointer',
-          }}
-        >
-          <Group justify="space-between" align="center">
-            <Group gap="xs">
-              <IconInfoCircle size={20} color="#FF6B35" />
-              <Text size="sm" fw={600} c="#1A237E">ویژگی‌های غذا</Text>
-            </Group>
+      {/* ===== کارت ویژگی‌ها (اصلاح‌شده) ===== */}
+      <Paper
+        p="md"
+        radius="lg"
+        mb="lg"
+        style={{
+          background: 'rgba(255,255,255,0.65)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          cursor: 'pointer',
+          transition: 'border-color 0.2s, background 0.2s',
+        }}
+        onClick={toggleFeatures}
+      >
+        <Group justify="space-between" align="center">
+          <Group gap="xs">
+            <IconInfoCircle size={20} color="#FF6B35" />
+            <Text size="sm" fw={600} c="#1A237E">ویژگی‌های غذا</Text>
+          </Group>
+          <motion.div
+            animate={{ rotate: featuresOpen ? 180 : 0 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          >
+            <IconArrowDown size={18} color="#666" />
+          </motion.div>
+        </Group>
+        {featuresOpen && (
+          <Box mt="md">
+            <SimpleGrid cols={2} spacing="sm">
+              {region && (
+                <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color="teal" variant="light">
+                      <IconInfoCircle size={12} />
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">منطقه</Text>
+                      <Text size="xs" fw={500}>{regionLabel(region)}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              )}
+              {difficulty && (
+                <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color={difficultyColor(difficulty)} variant="light">
+                      <IconFlame size={12} />
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">سطح سختی</Text>
+                      <Text size="xs" fw={500}>{difficulty}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              )}
+              {diet && (
+                <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color={diet === 'vegetarian' ? 'green' : 'blue'} variant="light">
+                      {diet === 'vegetarian' ? <IconLeaf size={12} /> : <IconFlameFilled size={12} />}
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">رژیم</Text>
+                      <Text size="xs" fw={500}>{diet === 'vegetarian' ? 'گیاهی' : diet}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              )}
+              {cost && (
+                <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color={costColor(cost)} variant="light">
+                      <IconCoin size={12} />
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">هزینه</Text>
+                      <Text size="xs" fw={500}>{cost}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              )}
+              {mealTypes.map((m, idx) => (
+                <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color={m.color} variant="light">
+                      {m.icon ? <m.icon size={12} /> : <IconInfoCircle size={12} />}
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">وعده</Text>
+                      <Text size="xs" fw={500}>{m.label}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              ))}
+              {occasion.map((occ, idx) => (
+                <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color="violet" variant="light">
+                      <IconCalendarEvent size={12} />
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">مناسبت</Text>
+                      <Text size="xs" fw={500}>{occ}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              ))}
+              {allergens.map((a, idx) => (
+                <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                  <Group gap="xs" wrap="nowrap">
+                    <ThemeIcon size="sm" radius="md" color="red" variant="light">
+                      <IconExclamationCircle size={12} />
+                    </ThemeIcon>
+                    <div>
+                      <Text size="xs" c="dimmed">آلرژن</Text>
+                      <Text size="xs" fw={500}>{a}</Text>
+                    </div>
+                  </Group>
+                </Paper>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
+      </Paper>
+
+      {/* ===== کارت زمان‌بندی (اصلاح‌شده) ===== */}
+      <Paper
+        p="md"
+        radius="lg"
+        mb="lg"
+        style={{
+          background: 'rgba(255,255,255,0.65)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,107,53,0.15)',
+          cursor: 'pointer',
+          transition: 'border-color 0.2s, background 0.2s',
+        }}
+        onClick={toggleTiming}
+      >
+        <Group justify="space-between" align="center">
+          <Group gap="xs">
+            <IconClockHour4 size={20} color="#FF6B35" />
+            <Text size="sm" fw={600} c="#1A237E">زمان‌بندی</Text>
+          </Group>
+          <Group gap="xs">
+            {total_time && <Text size="xs" c="dimmed">{formatTime(total_time)}</Text>}
             <motion.div
-              animate={{ rotate: featuresOpen ? 180 : 0 }}
+              animate={{ rotate: timingOpen ? 180 : 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
             >
-              <ActionIcon variant="light" color="gray" size="sm" radius="xl">
-                <IconArrowDown size={14} />
-              </ActionIcon>
+              <IconArrowDown size={18} color="#666" />
             </motion.div>
           </Group>
-        </Paper>
-      </UnstyledButton>
-      <AnimatePresence initial={false}>
-        {featuresOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <Paper
-              p="md"
-              radius="lg"
-              mb="lg"
-              mt={-8}
-              pt={20}
-              style={{
-                background: 'rgba(255,255,255,0.5)',
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0,
-              }}
-            >
-              <SimpleGrid cols={2} spacing="sm">
-                {region && (
-                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color="teal" variant="light">
-                        <IconInfoCircle size={12} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">منطقه</Text>
-                        <Text size="xs" fw={500}>{regionLabel(region)}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                )}
-                {difficulty && (
-                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color={difficultyColor(difficulty)} variant="light">
-                        <IconFlame size={12} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">سطح سختی</Text>
-                        <Text size="xs" fw={500}>{difficulty}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                )}
-                {diet && (
-                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color={diet === 'vegetarian' ? 'green' : 'blue'} variant="light">
-                        {diet === 'vegetarian' ? <IconLeaf size={12} /> : <IconFlameFilled size={12} />}
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">رژیم</Text>
-                        <Text size="xs" fw={500}>{diet === 'vegetarian' ? 'گیاهی' : diet}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                )}
-                {cost && (
-                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color={costColor(cost)} variant="light">
-                        <IconCoin size={12} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">هزینه</Text>
-                        <Text size="xs" fw={500}>{cost}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                )}
-                {mealTypes.map((m, idx) => (
-                  <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color={m.color} variant="light">
-                        {m.icon ? <m.icon size={12} /> : <IconInfoCircle size={12} />}
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">وعده</Text>
-                        <Text size="xs" fw={500}>{m.label}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                ))}
-                {occasion.map((occ, idx) => (
-                  <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color="violet" variant="light">
-                        <IconCalendarEvent size={12} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">مناسبت</Text>
-                        <Text size="xs" fw={500}>{occ}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                ))}
-                {allergens.map((a, idx) => (
-                  <Paper key={idx} p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                    <Group gap="xs" wrap="nowrap">
-                      <ThemeIcon size="sm" radius="md" color="red" variant="light">
-                        <IconExclamationCircle size={12} />
-                      </ThemeIcon>
-                      <div>
-                        <Text size="xs" c="dimmed">آلرژن</Text>
-                        <Text size="xs" fw={500}>{a}</Text>
-                      </div>
-                    </Group>
-                  </Paper>
-                ))}
-              </SimpleGrid>
-            </Paper>
-          </motion.div>
+        </Group>
+        {timingOpen && (
+          <Box mt="md">
+            <Stack gap="xs">
+              {prep_time && (
+                <Group justify="space-between">
+                  <Text size="xs" c="dimmed">آماده‌سازی</Text>
+                  <Text size="xs" fw={500}>{formatTime(prep_time)}</Text>
+                </Group>
+              )}
+              {cook_time && (
+                <Group justify="space-between">
+                  <Text size="xs" c="dimmed">پخت</Text>
+                  <Text size="xs" fw={500}>{formatTime(cook_time)}</Text>
+                </Group>
+              )}
+              {total_time && (
+                <Group justify="space-between">
+                  <Text size="xs" c="dimmed">کل</Text>
+                  <Text size="xs" fw={500}>{formatTime(total_time)}</Text>
+                </Group>
+              )}
+              {servings && (
+                <Group justify="space-between">
+                  <Text size="xs" c="dimmed">تعداد</Text>
+                  <Text size="xs" fw={500}>{servings} نفر</Text>
+                </Group>
+              )}
+            </Stack>
+          </Box>
         )}
-      </AnimatePresence>
+      </Paper>
 
-      {/* ===== کارت زمان‌بندی ===== */}
-      <UnstyledButton onClick={toggleTiming} style={{ width: '100%', marginBottom: 16 }}>
+      {/* ===== کارت ارزش غذایی (اصلاح‌شده) ===== */}
+      {nutrition && (calVal || protVal || fatVal || carbVal) ? (
         <Paper
           p="md"
           radius="lg"
+          mb="lg"
           style={{
             background: 'rgba(255,255,255,0.65)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,107,53,0.15)',
-            transition: 'border-color 0.2s, background 0.2s',
+            border: '1px solid rgba(76,175,80,0.2)',
             cursor: 'pointer',
+            transition: 'border-color 0.2s, background 0.2s',
           }}
+          onClick={toggleNutrition}
         >
           <Group justify="space-between" align="center">
             <Group gap="xs">
-              <IconClockHour4 size={20} color="#FF6B35" />
-              <Text size="sm" fw={600} c="#1A237E">زمان‌بندی</Text>
+              <IconChefHat size={20} color="#4CAF50" />
+              <Text size="sm" fw={600} c="#1A237E">ارزش غذایی</Text>
             </Group>
-            <Group gap="xs">
-              {total_time && <Text size="xs" c="dimmed">{formatTime(total_time)}</Text>}
-              <motion.div
-                animate={{ rotate: timingOpen ? 180 : 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-              >
-                <ActionIcon variant="light" color="gray" size="sm" radius="xl">
-                  <IconArrowDown size={14} />
-                </ActionIcon>
-              </motion.div>
-            </Group>
+            <motion.div
+              animate={{ rotate: nutritionOpen ? 180 : 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            >
+              <IconArrowDown size={18} color="#666" />
+            </motion.div>
           </Group>
+          {nutritionOpen && (
+            <Box mt="md">
+              <SimpleGrid cols={2} spacing="xs">
+                {calVal > 0 && (
+                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                    <Text size="xs" c="dimmed">🔥 کالری</Text>
+                    <Text size="sm" fw={700} c="#FF6B35">{calVal} کیلوکالری</Text>
+                  </Paper>
+                )}
+                {protVal > 0 && (
+                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                    <Text size="xs" c="dimmed">🥩 پروتئین</Text>
+                    <Text size="sm" fw={700} c="#1A237E">{protVal} گرم</Text>
+                  </Paper>
+                )}
+                {fatVal > 0 && (
+                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                    <Text size="xs" c="dimmed">🧈 چربی</Text>
+                    <Text size="sm" fw={700} c="#1A237E">{fatVal} گرم</Text>
+                  </Paper>
+                )}
+                {carbVal > 0 && (
+                  <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+                    <Text size="xs" c="dimmed">🍚 کربوهیدرات</Text>
+                    <Text size="sm" fw={700} c="#1A237E">{carbVal} گرم</Text>
+                  </Paper>
+                )}
+              </SimpleGrid>
+            </Box>
+          )}
         </Paper>
-      </UnstyledButton>
-      <AnimatePresence initial={false}>
-        {timingOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            style={{ overflow: 'hidden' }}
-          >
-            <Paper
-              p="md"
-              radius="lg"
-              mb="lg"
-              mt={-8}
-              pt={20}
-              style={{
-                background: 'rgba(255,255,255,0.5)',
-                borderTopLeftRadius: 0,
-                borderTopRightRadius: 0,
-              }}
-            >
-              <Stack gap="xs">
-                {prep_time && (
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">آماده‌سازی</Text>
-                    <Text size="xs" fw={500}>{formatTime(prep_time)}</Text>
-                  </Group>
-                )}
-                {cook_time && (
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">پخت</Text>
-                    <Text size="xs" fw={500}>{formatTime(cook_time)}</Text>
-                  </Group>
-                )}
-                {total_time && (
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">کل</Text>
-                    <Text size="xs" fw={500}>{formatTime(total_time)}</Text>
-                  </Group>
-                )}
-                {servings && (
-                  <Group justify="space-between">
-                    <Text size="xs" c="dimmed">تعداد</Text>
-                    <Text size="xs" fw={500}>{servings} نفر</Text>
-                  </Group>
-                )}
-              </Stack>
-            </Paper>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ===== کارت ارزش غذایی ===== */}
-      {nutrition && (calVal || protVal || fatVal || carbVal) ? (
-        <>
-          <UnstyledButton onClick={toggleNutrition} style={{ width: '100%', marginBottom: 16 }}>
-            <Paper
-              p="md"
-              radius="lg"
-              style={{
-                background: 'rgba(255,255,255,0.65)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(76,175,80,0.2)',
-                transition: 'border-color 0.2s, background 0.2s',
-                cursor: 'pointer',
-              }}
-            >
-              <Group justify="space-between" align="center">
-                <Group gap="xs">
-                  <IconChefHat size={20} color="#4CAF50" />
-                  <Text size="sm" fw={600} c="#1A237E">ارزش غذایی</Text>
-                </Group>
-                <motion.div
-                  animate={{ rotate: nutritionOpen ? 180 : 0 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                >
-                  <ActionIcon variant="light" color="gray" size="sm" radius="xl">
-                    <IconArrowDown size={14} />
-                  </ActionIcon>
-                </motion.div>
-              </Group>
-            </Paper>
-          </UnstyledButton>
-          <AnimatePresence initial={false}>
-            {nutritionOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                style={{ overflow: 'hidden' }}
-              >
-                <Paper
-                  p="md"
-                  radius="lg"
-                  mb="lg"
-                  mt={-8}
-                  pt={20}
-                  style={{
-                    background: 'rgba(255,255,255,0.5)',
-                    borderTopLeftRadius: 0,
-                    borderTopRightRadius: 0,
-                  }}
-                >
-                  <SimpleGrid cols={2} spacing="xs">
-                    {calVal > 0 && (
-                      <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                        <Text size="xs" c="dimmed">🔥 کالری</Text>
-                        <Text size="sm" fw={700} c="#FF6B35">{calVal} کیلوکالری</Text>
-                      </Paper>
-                    )}
-                    {protVal > 0 && (
-                      <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                        <Text size="xs" c="dimmed">🥩 پروتئین</Text>
-                        <Text size="sm" fw={700} c="#1A237E">{protVal} گرم</Text>
-                      </Paper>
-                    )}
-                    {fatVal > 0 && (
-                      <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                        <Text size="xs" c="dimmed">🧈 چربی</Text>
-                        <Text size="sm" fw={700} c="#1A237E">{fatVal} گرم</Text>
-                      </Paper>
-                    )}
-                    {carbVal > 0 && (
-                      <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
-                        <Text size="xs" c="dimmed">🍚 کربوهیدرات</Text>
-                        <Text size="sm" fw={700} c="#1A237E">{carbVal} گرم</Text>
-                      </Paper>
-                    )}
-                  </SimpleGrid>
-                </Paper>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
       ) : null}
 
-      {/* ===== آکاردئون‌های اصلی با سیستم ردیابی کامل ===== */}
+      {/* ===== آکاردئون‌های اصلی ===== */}
       <Accordion
         multiple
         defaultValue={ingredients.length ? ['ingredients'] : (steps.length ? ['steps'] : [])}
@@ -919,7 +838,6 @@ export default function RecipeDetailPage() {
         )}
       </Accordion>
 
-      {/* دکمه شروع پخت */}
       <Button
         fullWidth
         size="lg"
@@ -929,7 +847,7 @@ export default function RecipeDetailPage() {
         leftSection={<IconChefHat size={20} />}
         rightSection={<IconArrowRight size={20} />}
         style={{ boxShadow: '0 6px 20px rgba(255,107,53,0.4)', marginTop: 8 }}
-        onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); trackEvent('start_cooking_click', { recipeId: finalRecipe.id }); }}
+        onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); trackEvent(EventType.START_COOKING_CLICK, { recipeId: finalRecipe.id }); }}
       >
         شروع پخت
       </Button>
