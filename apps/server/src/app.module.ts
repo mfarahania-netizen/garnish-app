@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';   // 👈 جدید
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { PrismaModule } from './prisma/prisma.module';
@@ -13,11 +16,13 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { SupportModule } from './support/support.module';
 import { AdminModule } from './admin/admin.module';
 import { AnalyticsModule } from './analytics/analytics.module';
-import { BehaviorEngineModule } from './behavior-engine/behavior-engine.module'; // 👈 اضافه شد
-import { ThrottlerModule } from '@nestjs/throttler';
+import { BehaviorEngineModule } from './behavior-engine/behavior-engine.module';
+import { RecommendationModule } from './recommendation/recommendation.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),   // 👈 فقط یک بار اینجا
+
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => ({
@@ -30,7 +35,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 5,
+      limit: 30,
     }]),
 
     PrismaModule,
@@ -45,7 +50,14 @@ import { ThrottlerModule } from '@nestjs/throttler';
     SupportModule,
     AdminModule,
     AnalyticsModule,
-    BehaviorEngineModule, // 👈 اضافه شد
+    BehaviorEngineModule,
+    RecommendationModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

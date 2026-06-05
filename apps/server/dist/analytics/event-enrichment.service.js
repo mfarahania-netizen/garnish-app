@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventEnrichmentService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const constants_1 = require("../shared/constants");
 const INGREDIENTS_LIST = [
     'پیاز', 'سیر', 'گوجه', 'سیب‌زمینی', 'هویج', 'فلفل دلمه‌ای', 'فلفل سبز', 'فلفل قرمز',
     'کدو', 'بادمجان', 'قارچ', 'کلم', 'کلم بروکلی', 'گل کلم', 'اسفناج', 'کرفس',
@@ -85,17 +86,6 @@ const RECIPES_LIST = [
     'چیزکیک', 'بستنی', 'بستنی وانیلی', 'بستنی شکلاتی', 'بستنی توت فرنگی',
     'میلک شیک', 'اسموتی', 'آبمیوه', 'چای', 'قهوه', 'هات چاکلت',
 ];
-const CONCEPT_MAP = {
-    'مقوی': ['گوشت', 'حبوبات', 'عدس', 'نخود', 'لوبیا', 'آبگوشت', 'حلیم'],
-    'ورزشکاری': ['سینه مرغ', 'تخم‌مرغ', 'ماهی', 'پروتئین', 'اسفناج'],
-    'درباری': ['زعفران', 'گردو', 'رب انار', 'آلو', 'ته‌چین', 'فسنجان', 'کباب', 'دلمه'],
-    'خونگی': ['سیب‌زمینی', 'پیاز', 'گوجه', 'کتلت', 'کوکو', 'املت'],
-    'کودک': ['مرغ', 'پاستا', 'پنیر', 'کتلت', 'فرنی'],
-    'ساده': ['تخم‌مرغ', 'گوجه', 'سیب‌زمینی', 'پیاز'],
-    'پروتئین': ['گوشت', 'مرغ', 'تخم‌مرغ', 'عدس', 'لوبیا'],
-    'کبابی': ['گوشت چرخ‌کرده', 'کباب', 'زعفران', 'گوجه', 'پیاز'],
-    'گیاهی': ['بادمجان', 'لوبیا', 'نخود', 'عدس', 'سبزی'],
-};
 let EventEnrichmentService = class EventEnrichmentService {
     prisma;
     constructor(prisma) {
@@ -150,7 +140,7 @@ let EventEnrichmentService = class EventEnrichmentService {
     }
     findConceptKey(prompt) {
         const lower = prompt.toLowerCase();
-        for (const key of Object.keys(CONCEPT_MAP)) {
+        for (const key of Object.keys(constants_1.CONCEPT_MAP)) {
             if (lower.includes(key))
                 return key;
         }

@@ -26,8 +26,8 @@ let AdminController = class AdminController {
     getDashboard() {
         return this.adminService.getDashboardStats();
     }
-    getTickets() {
-        return this.adminService.getAllTickets();
+    getTickets(page, limit) {
+        return this.adminService.getAllTickets(parseInt(page) || 1, parseInt(limit) || 20);
     }
     respondToTicket(id, message) {
         return this.adminService.respondToTicket(id, message);
@@ -35,8 +35,8 @@ let AdminController = class AdminController {
     updateTicketStatus(id, status) {
         return this.adminService.updateTicketStatus(id, status);
     }
-    getRecipes() {
-        return this.adminService.getAllRecipes();
+    getRecipes(page, limit) {
+        return this.adminService.getAllRecipes(parseInt(page) || 1, parseInt(limit) || 20);
     }
     approveRecipe(id) {
         return this.adminService.updateRecipeStatus(id, 'approved');
@@ -44,8 +44,8 @@ let AdminController = class AdminController {
     rejectRecipe(id, note) {
         return this.adminService.updateRecipeStatus(id, 'rejected', note);
     }
-    getUsers() {
-        return this.adminService.getAllUsers();
+    getUsers(page, limit) {
+        return this.adminService.getAllUsers(parseInt(page) || 1, parseInt(limit) || 20);
     }
     getRecentEvents(limit, page) {
         return this.adminService.getRecentEvents(parseInt(limit) || 50, parseInt(page) || 1);
@@ -72,8 +72,10 @@ __decorate([
 ], AdminController.prototype, "getDashboard", null);
 __decorate([
     (0, common_1.Get)('tickets'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getTickets", null);
 __decorate([
@@ -94,8 +96,10 @@ __decorate([
 ], AdminController.prototype, "updateTicketStatus", null);
 __decorate([
     (0, common_1.Get)('recipes'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getRecipes", null);
 __decorate([
@@ -115,8 +119,10 @@ __decorate([
 ], AdminController.prototype, "rejectRecipe", null);
 __decorate([
     (0, common_1.Get)('users'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "getUsers", null);
 __decorate([

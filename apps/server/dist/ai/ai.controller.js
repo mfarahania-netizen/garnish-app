@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiController = void 0;
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
+const throttler_1 = require("@nestjs/throttler");
 const ai_service_1 = require("./ai.service");
 let AiController = class AiController {
     aiService;
@@ -21,24 +23,15 @@ let AiController = class AiController {
         this.aiService = aiService;
     }
     async chat(req, body) {
-        const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            throw new common_1.HttpException('برای استفاده از دستیار هوشمند، لطفاً ابتدا وارد حساب کاربری خود شوید.', common_1.HttpStatus.UNAUTHORIZED);
-        }
-        try {
-            const token = authHeader.substring(7);
-            const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-            const userId = payload.sub || payload.userId;
-            const reply = await this.aiService.handlePrompt(body.prompt, userId);
-            return { reply };
-        }
-        catch (e) {
-            throw new common_1.HttpException('توکن نامعتبر است. لطفاً دوباره وارد شوید.', common_1.HttpStatus.UNAUTHORIZED);
-        }
+        const userId = req.user.userId;
+        const reply = await this.aiService.handlePrompt(body.prompt, userId);
+        return { reply };
     }
 };
 exports.AiController = AiController;
 __decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, throttler_1.Throttle)({ default: { limit: 3, ttl: 60000 } }),
     (0, common_1.Post)('chat'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),

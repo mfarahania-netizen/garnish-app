@@ -16,8 +16,8 @@ export class AdminController {
   }
 
   @Get('tickets')
-  getTickets() {
-    return this.adminService.getAllTickets();
+  getTickets(@Query('page') page: string, @Query('limit') limit: string) {
+    return this.adminService.getAllTickets(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
   @Post('tickets/:id/respond')
@@ -31,8 +31,8 @@ export class AdminController {
   }
 
   @Get('recipes')
-  getRecipes() {
-    return this.adminService.getAllRecipes();
+  getRecipes(@Query('page') page: string, @Query('limit') limit: string) {
+    return this.adminService.getAllRecipes(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
   @Patch('recipes/:id/approve')
@@ -46,11 +46,10 @@ export class AdminController {
   }
 
   @Get('users')
-  getUsers() {
-    return this.adminService.getAllUsers();
+  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
+    return this.adminService.getAllUsers(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
-  // ✅ این متد اصلاح شده است — پارامتر page را می‌گیرد
   @Get('analytics/events')
   getRecentEvents(@Query('limit') limit: string, @Query('page') page: string) {
     return this.adminService.getRecentEvents(parseInt(limit) || 50, parseInt(page) || 1);

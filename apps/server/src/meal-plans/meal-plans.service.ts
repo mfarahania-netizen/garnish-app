@@ -145,34 +145,35 @@ export class MealPlansService {
     });
   }
 
-  // ===== متدهای جدید برای افزودن/حذف اتمیک =====
-
+  // ===== افزودن اسلات با تراکنش (بدون race condition) =====
   async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
     const startOfWeek = getStartOfWeek();
 
-    let plan = await this.prisma.mealPlan.findFirst({
-      where: { userId, weekStart: startOfWeek },
-    });
-
-    if (!plan) {
-      plan = await this.prisma.mealPlan.create({
-        data: { userId, weekStart: startOfWeek },
+    return this.prisma.$transaction(async (tx) => {
+      let plan = await tx.mealPlan.findFirst({
+        where: { userId, weekStart: startOfWeek },
       });
-    }
 
-    // اگر قبلاً این وعده وجود داشت، حذفش کن (جایگزینی)
-    await this.prisma.mealSlot.deleteMany({
-      where: { mealPlanId: plan.id, dayOfWeek, mealType },
-    });
+      if (!plan) {
+        plan = await tx.mealPlan.create({
+          data: { userId, weekStart: startOfWeek },
+        });
+      }
 
-    return this.prisma.mealSlot.create({
-      data: {
-        mealPlanId: plan.id,
-        dayOfWeek,
-        mealType,
-        recipeId,
-      },
-      include: { recipe: true },
+      // حذف وعده قبلی برای این روز/نوع
+      await tx.mealSlot.deleteMany({
+        where: { mealPlanId: plan.id, dayOfWeek, mealType },
+      });
+
+      return tx.mealSlot.create({
+        data: {
+          mealPlanId: plan.id,
+          dayOfWeek,
+          mealType,
+          recipeId,
+        },
+        include: { recipe: true },
+      });
     });
   }
 

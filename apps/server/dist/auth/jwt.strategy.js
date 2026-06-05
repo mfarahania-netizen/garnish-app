@@ -13,8 +13,10 @@ exports.JwtStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
+const users_service_1 = require("../users/users.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor() {
+    usersService;
+    constructor(usersService) {
         const secret = process.env.JWT_SECRET;
         if (!secret) {
             throw new Error('JWT_SECRET environment variable is not set.');
@@ -24,18 +26,23 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             ignoreExpiration: false,
             secretOrKey: secret,
         });
+        this.usersService = usersService;
     }
     async validate(payload) {
+        const user = await this.usersService.findById(payload.sub);
+        if (!user) {
+            return null;
+        }
         return {
-            userId: payload.sub,
-            phone: payload.phone,
-            isAdmin: payload.isAdmin || false,
+            userId: user.id,
+            phone: user.phone,
+            isAdmin: user.isAdmin,
         };
     }
 };
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [users_service_1.UsersService])
 ], JwtStrategy);
 //# sourceMappingURL=jwt.strategy.js.map

@@ -26,16 +26,9 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (phone, password) => {
     const { data } = await apiClient.post('/auth/login', { phone, password });
-    console.log('🔑 Login response:', data); // لاگ برای تشخیص
-
-    // پشتیبانی از هر دو نام احتمالی
     const extractedToken = data.access_token || data.token;
     const extractedUser = data.user || data.data;
-
-    if (!extractedToken) {
-      throw new Error('توکن در پاسخ سرور یافت نشد');
-    }
-
+    if (!extractedToken) throw new Error('توکن در پاسخ سرور یافت نشد');
     localStorage.setItem('token', extractedToken);
     setToken(extractedToken);
     setUser(extractedUser || null);
@@ -43,7 +36,6 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (phone, password, name) => {
     await apiClient.post('/auth/register', { phone, password, name });
-    // بعد از ثبت‌نام، مستقیماً لاگین کن
     await login(phone, password);
   }, [login]);
 
@@ -54,7 +46,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = { token, user, isLoading, login, register, logout };
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

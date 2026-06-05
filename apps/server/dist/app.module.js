@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const core_1 = require("@nestjs/core");
+const throttler_1 = require("@nestjs/throttler");
+const schedule_1 = require("@nestjs/schedule");
 const cache_manager_1 = require("@nestjs/cache-manager");
 const cache_manager_ioredis_yet_1 = require("cache-manager-ioredis-yet");
 const prisma_module_1 = require("./prisma/prisma.module");
@@ -23,13 +26,14 @@ const support_module_1 = require("./support/support.module");
 const admin_module_1 = require("./admin/admin.module");
 const analytics_module_1 = require("./analytics/analytics.module");
 const behavior_engine_module_1 = require("./behavior-engine/behavior-engine.module");
-const throttler_1 = require("@nestjs/throttler");
+const recommendation_module_1 = require("./recommendation/recommendation.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            schedule_1.ScheduleModule.forRoot(),
             cache_manager_1.CacheModule.registerAsync({
                 isGlobal: true,
                 useFactory: async () => ({
@@ -41,7 +45,7 @@ exports.AppModule = AppModule = __decorate([
             }),
             throttler_1.ThrottlerModule.forRoot([{
                     ttl: 60000,
-                    limit: 5,
+                    limit: 30,
                 }]),
             prisma_module_1.PrismaModule,
             recipes_module_1.RecipesModule,
@@ -56,6 +60,13 @@ exports.AppModule = AppModule = __decorate([
             admin_module_1.AdminModule,
             analytics_module_1.AnalyticsModule,
             behavior_engine_module_1.BehaviorEngineModule,
+            recommendation_module_1.RecommendationModule,
+        ],
+        providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
         ],
     })
 ], AppModule);

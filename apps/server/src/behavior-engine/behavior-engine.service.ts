@@ -9,32 +9,74 @@ export class BehaviorEngineService {
    * پردازش رویدادهای یک کاربر خاص و به‌روزرسانی پروفایل رفتاری او
    */
   async processEventsForUser(userId: string) {
-    const events = await this.prisma.userEvent.findMany({
-      where: { userId },
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // فقط رویدادهای ۳۰ روز اخیر
+    const recentEvents = await this.prisma.userEvent.findMany({
+      where: {
+        userId,
+        timestamp: { gte: thirtyDaysAgo },
+      },
       orderBy: { timestamp: 'asc' },
     });
 
-    if (events.length === 0) return null;
+    // اگر هیچ رویدادی نباشد، پروفایل ساخته نمی‌شود یا صفرها ثبت می‌شود
+    if (recentEvents.length === 0) {
+      // همچنان می‌توانیم پروفایل را با مقادیر پیش‌فرض به‌روز کنیم
+      return this.prisma.userBehaviorProfile.upsert({
+        where: { userId },
+        create: {
+          userId,
+          consistencyScore: 0,
+          churnRiskScore: 100,
+          healthAdherenceScore: 0,
+          cookingFrequency: 'rarely',
+          budgetScore: 'low',
+        },
+        update: {
+          consistencyScore: 0,
+          churnRiskScore: 100,
+          healthAdherenceScore: 0,
+          cookingFrequency: 'rarely',
+          budgetScore: 'low',
+        },
+      });
+    }
 
-    const totalEvents = events.length;
-    const nutritionEvents = events.filter(e => e.type.startsWith('nutrition_')).length;
-    const mealPlanEvents = events.filter(e => e.type.startsWith('mealplan_')).length;
-    const shoppingEvents = events.filter(e => e.type.startsWith('shopping_')).length;
+    // محاسبه churnRiskScore بر اساس تعداد روزهای فعال در ۳۰ روز گذشته
+    const activeDays = new Set(recentEvents.map(e => e.timestamp.toISOString().slice(0, 10))).size;
+    const churnRiskScore = Math.max(0, Math.min(100, Math.round(100 - (activeDays / 30) * 100)));
 
-    const healthAdherenceScore = totalEvents > 0
-      ? Math.round((nutritionEvents / totalEvents) * 100)
-      : 0;
+    // محاسبه consistencyScore بر اساس تعداد هفته‌های فعال (شنبه تا جمعه) در ۴ هفته اخیر
+    const activeWeeks = new Set<string>();
+    for (const event of recentEvents) {
+      const d = event.timestamp;
+      // محاسبه شروع هفته (شنبه) متناسب با تقویم ایران
+      const dayOfWeek = (d.getDay() + 1) % 7; // یک‌شنبه=0 → شنبه=0
+      const saturday = new Date(d);
+      saturday.setDate(d.getDate() - dayOfWeek);
+      activeWeeks.add(saturday.toISOString().slice(0, 10));
+    }
+    const consistencyScore = Math.min(100, Math.round((activeWeeks.size / 4) * 100));
 
-    const consistencyScore = mealPlanEvents > 0
-      ? Math.min(100, mealPlanEvents * 10)
-      : 0;
+    // cookingFrequency بر اساس تعداد رویدادهای mealplan در ۳۰ روز
+    const mealPlanEvents = recentEvents.filter(e => e.type.startsWith('mealplan_')).length;
+    let cookingFrequency: string;
+    if (mealPlanEvents >= 10) cookingFrequency = 'daily';
+    else if (mealPlanEvents >= 3) cookingFrequency = 'weekly';
+    else cookingFrequency = 'rarely';
 
-    const churnRiskScore = totalEvents > 0
-      ? Math.max(0, 100 - totalEvents)
-      : 100;
+    // budgetScore بر اساس shoppingEvents در ۳۰ روز
+    const shoppingEvents = recentEvents.filter(e => e.type.startsWith('shopping_')).length;
+    let budgetScore: string;
+    if (shoppingEvents > 5) budgetScore = 'high';
+    else if (shoppingEvents > 2) budgetScore = 'medium';
+    else budgetScore = 'low';
 
-    const cookingFrequency = mealPlanEvents > 10 ? 'daily' : mealPlanEvents > 3 ? 'weekly' : 'rarely';
-    const budgetScore = shoppingEvents > 5 ? 'high' : shoppingEvents > 2 ? 'medium' : 'low';
+    // healthAdherenceScore بر اساس رویدادهای nutrition در ۳۰ روز
+    const nutritionEvents = recentEvents.filter(e => e.type.startsWith('nutrition_')).length;
+    const healthAdherenceScore = Math.round((nutritionEvents / recentEvents.length) * 100);
 
     return this.prisma.userBehaviorProfile.upsert({
       where: { userId },
@@ -58,6 +100,7 @@ export class BehaviorEngineService {
 
   /**
    * متد تست خودکار: کاربر تست (09123456789) را پیدا کرده و پردازش می‌کند
+   * (در صورت نیاز می‌توان آن را غیرفعال کرد)
    */
   async processEventsForTestUser() {
     const testPhone = '09123456789';

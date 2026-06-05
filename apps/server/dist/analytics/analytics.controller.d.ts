@@ -8,15 +8,15 @@ export declare class AnalyticsController {
     private analyticsService;
     constructor(analyticsService: AnalyticsService);
     trackEvent(req: any, body: TrackEventDto): Promise<{
-        duration: number | null;
         id: string;
-        page: string | null;
-        userId: string;
         type: string;
         timestamp: Date;
-        sessionId: string | null;
+        page: string | null;
+        duration: number | null;
         payload: string | null;
         enrichment: string | null;
+        userId: string;
+        sessionId: string | null;
     } | null>;
 }
 export {};

@@ -5,12 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // فعال‌سازی اعتبارسنجی خودکار برای تمام endpointها
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // فقط فیلدهای تعریف‌شده در DTO را قبول کن
-      forbidNonWhitelisted: false, // موقتاً غیرفعال شد تا مشکلات DTO حل شوند
-      transform: true,            // تبدیل خودکار انواع داده‌ها
+      whitelist: true,            // فقط فیلدهای مجاز در DTO
+      forbidNonWhitelisted: true, // هر فیلد اضافی → خطای 400
+      transform: true,            // تبدیل خودکار نوع داده‌ها
     }),
   );
 

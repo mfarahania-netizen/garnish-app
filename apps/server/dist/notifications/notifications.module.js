@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationsModule = void 0;
 const common_1 = require("@nestjs/common");
-const schedule_1 = require("@nestjs/schedule");
 const notifications_service_1 = require("./notifications.service");
 const notifications_controller_1 = require("./notifications.controller");
 const notification_scheduler_service_1 = require("./notification-scheduler.service");
@@ -18,7 +17,7 @@ exports.NotificationsModule = NotificationsModule;
 exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot()],
+        imports: [],
         providers: [notifications_service_1.NotificationsService, notification_scheduler_service_1.NotificationSchedulerService],
         controllers: [notifications_controller_1.NotificationsController],
         exports: [notifications_service_1.NotificationsService],

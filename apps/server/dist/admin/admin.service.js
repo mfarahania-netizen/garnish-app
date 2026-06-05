@@ -25,11 +25,18 @@ let AdminService = class AdminService {
         ]);
         return { recipeCount, userCount, ticketCount };
     }
-    async getAllTickets() {
-        return this.prisma.supportTicket.findMany({
-            include: { user: { select: { name: true, phone: true } }, replies: true },
-            orderBy: { createdAt: 'desc' },
-        });
+    async getAllTickets(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.prisma.supportTicket.findMany({
+                skip,
+                take: limit,
+                include: { user: { select: { name: true, phone: true } }, replies: true },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.supportTicket.count(),
+        ]);
+        return { data, total, page, limit };
     }
     async respondToTicket(ticketId, message) {
         return this.prisma.ticketReply.create({
@@ -42,11 +49,18 @@ let AdminService = class AdminService {
             data: { status },
         });
     }
-    async getAllRecipes() {
-        return this.prisma.recipe.findMany({
-            include: { author: { select: { name: true } } },
-            orderBy: { createdAt: 'desc' },
-        });
+    async getAllRecipes(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.prisma.recipe.findMany({
+                skip,
+                take: limit,
+                include: { author: { select: { name: true } } },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.recipe.count(),
+        ]);
+        return { data, total, page, limit };
     }
     async updateRecipeStatus(recipeId, status, adminNote) {
         return this.prisma.recipe.update({
@@ -54,11 +68,18 @@ let AdminService = class AdminService {
             data: { status, adminNote },
         });
     }
-    async getAllUsers() {
-        return this.prisma.user.findMany({
-            select: { id: true, name: true, phone: true, email: true, createdAt: true },
-            orderBy: { createdAt: 'desc' },
-        });
+    async getAllUsers(page = 1, limit = 20) {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.prisma.user.findMany({
+                skip,
+                take: limit,
+                select: { id: true, name: true, phone: true, email: true, createdAt: true },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.user.count(),
+        ]);
+        return { data, total, page, limit };
     }
     async getRecentEvents(limit = 100, page = 1) {
         const skip = (page - 1) * limit;

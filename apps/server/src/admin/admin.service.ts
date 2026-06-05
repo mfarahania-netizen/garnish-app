@@ -14,11 +14,19 @@ export class AdminService {
     return { recipeCount, userCount, ticketCount };
   }
 
-  async getAllTickets() {
-    return this.prisma.supportTicket.findMany({
-      include: { user: { select: { name: true, phone: true } }, replies: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  // ----- تیکت‌ها با Pagination -----
+  async getAllTickets(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.supportTicket.findMany({
+        skip,
+        take: limit,
+        include: { user: { select: { name: true, phone: true } }, replies: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.supportTicket.count(),
+    ]);
+    return { data, total, page, limit };
   }
 
   async respondToTicket(ticketId: string, message: string) {
@@ -34,11 +42,19 @@ export class AdminService {
     });
   }
 
-  async getAllRecipes() {
-    return this.prisma.recipe.findMany({
-      include: { author: { select: { name: true } } },
-      orderBy: { createdAt: 'desc' },
-    });
+  // ----- رسپی‌ها با Pagination -----
+  async getAllRecipes(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.recipe.findMany({
+        skip,
+        take: limit,
+        include: { author: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.recipe.count(),
+    ]);
+    return { data, total, page, limit };
   }
 
   async updateRecipeStatus(recipeId: string, status: string, adminNote?: string) {
@@ -48,11 +64,19 @@ export class AdminService {
     });
   }
 
-  async getAllUsers() {
-    return this.prisma.user.findMany({
-      select: { id: true, name: true, phone: true, email: true, createdAt: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  // ----- کاربران با Pagination -----
+  async getAllUsers(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        skip,
+        take: limit,
+        select: { id: true, name: true, phone: true, email: true, createdAt: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count(),
+    ]);
+    return { data, total, page, limit };
   }
 
   // ========== تحلیل‌ها ==========
@@ -69,7 +93,6 @@ export class AdminService {
       this.prisma.userEvent.count(),
     ]);
 
-    // استخراج نام رسپی‌ها
     const recipeIds: string[] = [];
     for (const event of events) {
       try {
@@ -106,6 +129,7 @@ export class AdminService {
     return { totalEvents, todayEvents };
   }
 
+  // ✅ برگشت به نسخهٔ قبلی (ایمن) به دلیل مشکل raw query در PostgreSQL
   async getTopSearchQueries(limit = 10) {
     const events = await this.prisma.userEvent.findMany({
       where: { type: 'search_query' },

@@ -137,25 +137,27 @@ let MealPlansService = class MealPlansService {
     }
     async addMealSlot(userId, dayOfWeek, mealType, recipeId) {
         const startOfWeek = (0, date_utils_1.getStartOfWeek)();
-        let plan = await this.prisma.mealPlan.findFirst({
-            where: { userId, weekStart: startOfWeek },
-        });
-        if (!plan) {
-            plan = await this.prisma.mealPlan.create({
-                data: { userId, weekStart: startOfWeek },
+        return this.prisma.$transaction(async (tx) => {
+            let plan = await tx.mealPlan.findFirst({
+                where: { userId, weekStart: startOfWeek },
             });
-        }
-        await this.prisma.mealSlot.deleteMany({
-            where: { mealPlanId: plan.id, dayOfWeek, mealType },
-        });
-        return this.prisma.mealSlot.create({
-            data: {
-                mealPlanId: plan.id,
-                dayOfWeek,
-                mealType,
-                recipeId,
-            },
-            include: { recipe: true },
+            if (!plan) {
+                plan = await tx.mealPlan.create({
+                    data: { userId, weekStart: startOfWeek },
+                });
+            }
+            await tx.mealSlot.deleteMany({
+                where: { mealPlanId: plan.id, dayOfWeek, mealType },
+            });
+            return tx.mealSlot.create({
+                data: {
+                    mealPlanId: plan.id,
+                    dayOfWeek,
+                    mealType,
+                    recipeId,
+                },
+                include: { recipe: true },
+            });
         });
     }
     async removeMealSlot(userId, dayOfWeek, mealType) {

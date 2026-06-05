@@ -16,17 +16,7 @@ exports.AiService = void 0;
 const common_1 = require("@nestjs/common");
 const cache_manager_1 = require("@nestjs/cache-manager");
 const prisma_service_1 = require("../prisma/prisma.service");
-const CONCEPT_MAP = {
-    'مقوی': ['گوشت', 'حبوبات', 'عدس', 'نخود', 'لوبیا', 'آبگوشت', 'حلیم'],
-    'ورزشکاری': ['سینه مرغ', 'تخم‌مرغ', 'ماهی', 'پروتئین', 'اسفناج'],
-    'درباری': ['زعفران', 'گردو', 'رب انار', 'آلو', 'ته‌چین', 'فسنجان', 'کباب', 'دلمه'],
-    'خونگی': ['سیب‌زمینی', 'پیاز', 'گوجه', 'کتلت', 'کوکو', 'املت'],
-    'کودک': ['مرغ', 'پاستا', 'پنیر', 'کتلت', 'فرنی'],
-    'ساده': ['تخم‌مرغ', 'گوجه', 'سیب‌زمینی', 'پیاز'],
-    'پروتئین': ['گوشت', 'مرغ', 'تخم‌مرغ', 'عدس', 'لوبیا'],
-    'کبابی': ['گوشت چرخ‌کرده', 'کباب', 'زعفران', 'گوجه', 'پیاز'],
-    'گیاهی': ['بادمجان', 'لوبیا', 'نخود', 'عدس', 'سبزی'],
-};
+const constants_1 = require("../shared/constants");
 let AiService = class AiService {
     prisma;
     cacheManager;
@@ -53,7 +43,7 @@ let AiService = class AiService {
         let fromConcept = false;
         const conceptKey = this.findConceptKey(prompt);
         if (conceptKey) {
-            ingredients = CONCEPT_MAP[conceptKey];
+            ingredients = constants_1.CONCEPT_MAP[conceptKey];
             fromConcept = true;
         }
         else if (prompt.length < 3) {
@@ -192,7 +182,7 @@ let AiService = class AiService {
     }
     findConceptKey(prompt) {
         const lower = prompt.toLowerCase();
-        for (const key of Object.keys(CONCEPT_MAP)) {
+        for (const key of Object.keys(constants_1.CONCEPT_MAP)) {
             if (lower.includes(key))
                 return key;
         }

@@ -11,14 +11,17 @@ const common_1 = require("@nestjs/common");
 const analytics_service_1 = require("./analytics.service");
 const analytics_controller_1 = require("./analytics.controller");
 const event_enrichment_service_1 = require("./event-enrichment.service");
+const behavioral_profile_service_1 = require("./behavioral-profile.service");
+const prisma_module_1 = require("../prisma/prisma.module");
 let AnalyticsModule = class AnalyticsModule {
 };
 exports.AnalyticsModule = AnalyticsModule;
 exports.AnalyticsModule = AnalyticsModule = __decorate([
     (0, common_1.Module)({
-        providers: [analytics_service_1.AnalyticsService, event_enrichment_service_1.EventEnrichmentService],
+        imports: [prisma_module_1.PrismaModule],
+        providers: [analytics_service_1.AnalyticsService, event_enrichment_service_1.EventEnrichmentService, behavioral_profile_service_1.BehavioralProfileService],
         controllers: [analytics_controller_1.AnalyticsController],
-        exports: [analytics_service_1.AnalyticsService, event_enrichment_service_1.EventEnrichmentService],
+        exports: [analytics_service_1.AnalyticsService, event_enrichment_service_1.EventEnrichmentService, behavioral_profile_service_1.BehavioralProfileService],
     })
 ], AnalyticsModule);
 //# sourceMappingURL=analytics.module.js.map

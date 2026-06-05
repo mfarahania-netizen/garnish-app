@@ -76,9 +76,13 @@ export default function AdminDashboard() {
         apiClient.get('/admin/users'),
       ]);
       setStats(statsRes.data);
-      setTickets(ticketsRes.data);
-      setRecipes(recipesRes.data);
-      setUsers(usersRes.data);
+      // استخراج آرایه از ساختار paginated جدید
+      const extractedTickets = ticketsRes.data?.data || ticketsRes.data || [];
+      const extractedRecipes = recipesRes.data?.data || recipesRes.data || [];
+      const extractedUsers = usersRes.data?.data || usersRes.data || [];
+      setTickets(extractedTickets);
+      setRecipes(extractedRecipes);
+      setUsers(extractedUsers);
     } catch (err) {
       console.error('خطا در بارگذاری پنل:', err);
     } finally {
@@ -98,8 +102,10 @@ export default function AdminDashboard() {
       ]);
       setAnalyticsStats(statsRes.data);
       const eventsData = eventsRes.data;
-      setRecentEvents(eventsData.events || eventsData);
+      // این endpoint هم { events, total } برمی‌گردونه
+      setRecentEvents(eventsData.events || eventsData.data || eventsData);
       setTotalEvents(eventsData.total || 0);
+      // search-queries همچنان آرایه‌ست
       setSearchQueries(searchRes.data);
       setMealPlanning(mealPlanRes.data);
       setAIInteraction(aiRes.data);
@@ -144,7 +150,7 @@ export default function AdminDashboard() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   
-  // طراحی جدید: رنگ‌ها و استایل‌های شیشه‌ای
+  // طراحی شیشه‌ای
   const bgGlow = dark ? 'rgba(26,35,126,0.4)' : 'rgba(255,107,53,0.15)';
   const cardBg = dark ? 'rgba(20,20,28,0.7)' : 'rgba(255,255,255,0.8)';
   const borderStyle = dark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)';

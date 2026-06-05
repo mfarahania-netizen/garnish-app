@@ -4,13 +4,14 @@ import {
   Container, Title, Text, SimpleGrid, Skeleton,
   Group, Badge, Paper, Button, useMantineColorScheme,
   Popover, ScrollArea, ActionIcon, Box, Tooltip,
-  Autocomplete, Alert, ThemeIcon
+  Autocomplete, Alert, ThemeIcon, Stack
 } from '@mantine/core';
 import {
   IconSearch, IconRobot, IconChevronLeft,
   IconStars, IconMicrophone, IconArrowUp,
   IconAlertCircle, IconEye, IconSparkles,
-  IconChefHat, IconArrowRight
+  IconChefHat, IconArrowRight, IconClock,
+  IconFlame, IconHeart, IconHeartFilled
 } from '@tabler/icons-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
@@ -19,14 +20,24 @@ import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import apiClient from '../../lib/apiClient';
-import SectionSlider from '../../components/SectionSlider';
 import RecipeCard from '../../components/RecipeCard';
 import 'swiper/css/effect-fade';
 
 const bannerSlides = [
-  { bg: 'linear-gradient(135deg, #FF6B35, #D84315)', title: 'آشپزی هوشمند با گارنیش', subtitle: 'با هوش مصنوعی غذای مورد علاقه‌ات رو پیدا کن', icon: '🤖', action: '/ai-chat' },
-  { bg: 'linear-gradient(135deg, #1A237E, #3949AB)', title: 'با مواد ساده غذاهای عالی بپز', subtitle: 'مواد داخل یخچالت رو وارد کن تا معجزه ببینی', icon: '🥘', action: '/ai-chat' },
-  { bg: 'linear-gradient(135deg, #FF6B35, #1A237E)', title: 'دستور پخت‌های جدید هر هفته', subtitle: 'هر هفته ۱۰ رسپی جدید و خوشمزه', icon: '🔥', action: '/recipes' },
+  {
+    bg: 'linear-gradient(135deg, #FF6B35, #D84315)',
+    title: 'با مواد ساده غذاهای عالی بپز',
+    subtitle: 'مواد داخل یخچالت رو وارد کن تا معجزه ببینی',
+    icon: '🥘',
+    action: '/ai-chat'
+  },
+  {
+    bg: 'linear-gradient(135deg, #1A237E, #3949AB)',
+    title: 'دستور پخت‌های جدید هر هفته',
+    subtitle: 'هر هفته ۱۰ رسپی جدید و خوشمزه',
+    icon: '🔥',
+    action: '/recipes'
+  },
 ];
 
 const FILTER_CHIPS = [
@@ -49,22 +60,19 @@ const fadeInUp = {
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: 'easeOut' }
+    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' }
   })
 };
 
-// تابع کمکی برای اعمال فیلترهای چیپ روی هر آرایه‌ای از رسپی‌ها
 function applyChipFilters(recipes, activeChips) {
   if (!recipes) return [];
   let items = recipes;
-  
   if (activeChips.includes('isQuick')) {
     items = items.filter(r => {
       const cookTime = parseInt(r.cook_time, 10) || parseInt(r.cookingTime, 10);
       return !isNaN(cookTime) && cookTime <= 30;
     });
   }
-  
   if (activeChips.includes('isHealthy')) {
     items = items.filter(r => {
       const dietHealthy = r.diet === 'vegetarian' || r.diet === 'vegan';
@@ -73,15 +81,12 @@ function applyChipFilters(recipes, activeChips) {
       return dietHealthy || hasHealthyTag;
     });
   }
-  
   if (activeChips.includes('vegetarian')) {
     items = items.filter(r => r.diet === 'vegetarian' || r.diet === 'vegan');
   }
-  
   if (activeChips.includes('persian')) {
     items = items.filter(r => r.region === 'persian');
   }
-  
   return items;
 }
 
@@ -92,7 +97,10 @@ export default function HomePage() {
   const [activeChips, setActiveChips] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [voiceSupported] = useState(() => !!(window.SpeechRecognition || window.webkitSpeechRecognition));
-  const [isSearching, setIsSearching] = useState(false); // ← این خط حیاتی اضافه شد
+  const [isSearching, setIsSearching] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
+  const [recsLoading, setRecsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
   const scrollEventFired = useRef(false);
   const searchTimer = useRef(null);
 
@@ -122,17 +130,35 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleWindowScroll);
   }, [handleWindowScroll]);
 
-  // جستجوی سرور-محور
+  // دریافت پیشنهادهای شخصی‌سازی‌شده (فقط در صورت وجود توکن)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setRecsLoading(false);
+      return;
+    }
+    const fetchRecommendations = async () => {
+      try {
+        const { data } = await apiClient.get('/recommendations?limit=6');
+        setRecommendations(data);
+        trackEvent('recommendation_view', { count: data.length });
+      } catch (e) {
+        console.error('Recs error:', e);
+      } finally {
+        setRecsLoading(false);
+      }
+    };
+    fetchRecommendations();
+  }, []);
+
   const handleSearchChange = useCallback((value) => {
     setSearch(value);
     if (searchTimer.current) clearTimeout(searchTimer.current);
-    
     if (value.trim().length < 2) {
       setSearchResults([]);
       setSearchOpen(false);
       return;
     }
-
     setIsSearching(true);
     searchTimer.current = setTimeout(async () => {
       try {
@@ -178,12 +204,10 @@ export default function HomePage() {
     if (!isActive) trackEvent('filter_use', { filter: chipKey });
   };
 
-  // فیلتر کردن شبکهٔ «همه رسپی‌ها»
   const filteredRecipes = useMemo(() => {
     return applyChipFilters(recipes, activeChips);
   }, [recipes, activeChips]);
 
-  // فیلتر کردن نتایج جستجو با همان چیپ‌ها
   const filteredSearchResults = useMemo(() => {
     return applyChipFilters(searchResults, activeChips);
   }, [searchResults, activeChips]);
@@ -191,23 +215,34 @@ export default function HomePage() {
   const todaySpecial = useMemo(() => recipes && recipes.length ? recipes[Math.floor(Math.random() * recipes.length)] : null, [recipes]);
 
   const textColor = dark ? '#ffffff' : '#1A237E';
-  const cardShadow = dark ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(0,0,0,0.06)';
+  const mutedText = dark ? '#a0a0b0' : '#555';
+  const cardBg = dark ? 'rgba(30,30,40,0.8)' : 'rgba(255,255,255,0.8)';
+  const cardShadow = dark ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.05)';
+  const borderColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)';
   const accent = '#FF6B35';
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const uniqueCategoriesCount = useMemo(() => {
-    if (!recipes) return 0;
-    const cats = recipes.flatMap(r => r.categories || []);
-    return new Set(cats).size;
-  }, [recipes]);
+  // آماده‌سازی داده‌های تب‌ها
+  const quickRecipes = useMemo(() => recipes?.filter(r => {
+    const ct = parseInt(r.cook_time, 10) || parseInt(r.cookingTime, 10);
+    return !isNaN(ct) && ct <= 30;
+  }) || [], [recipes]);
+
+  const popularRecipes = useMemo(() => recipes?.filter(r => r.isPopular) || recipes?.slice(0, 8) || [], [recipes]);
+
+  const tabRecipes = useMemo(() => {
+    if (activeTab === 'quick') return quickRecipes;
+    if (activeTab === 'popular') return popularRecipes;
+    return filteredRecipes;
+  }, [activeTab, quickRecipes, popularRecipes, filteredRecipes]);
 
   if (isLoading) {
     return (
       <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
         <Skeleton height={200} radius="xl" mb="md" />
         <Skeleton height={30} width="60%" mb="sm" />
-        <SimpleGrid cols={2} spacing="sm">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} height={200} radius="xl" />)}
+        <SimpleGrid cols={1} spacing="sm">
+          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} height={180} radius="xl" />)}
         </SimpleGrid>
       </Container>
     );
@@ -225,50 +260,32 @@ export default function HomePage() {
 
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 120px' }}>
-      {/* هدر */}
-      <motion.div initial="hidden" animate="visible" variants={fadeInUp} custom={0}>
-        <Paper p="lg" radius="xl" mb="lg" style={{
-          background: dark ? 'linear-gradient(135deg, #1e1e2f, #2a2a3c)' : 'linear-gradient(135deg, #ffffff, #f8f9ff)',
-          boxShadow: cardShadow,
-          border: `1px solid ${dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}`
-        }}>
-          <Group justify="space-between" align="center" mb="sm">
-            <div>
-              <Group gap="xs">
-                <ThemeIcon variant="gradient" gradient={{ from: 'orange', to: 'red' }} size={36} radius="md">
-                  <IconChefHat size={20} />
-                </ThemeIcon>
-                <Title order={4} c={textColor}>Garnish OS</Title>
-              </Group>
-              <Text size="xs" c="dimmed" mt={4}>دستیار هوشمند تغذیه و آشپزی شما</Text>
-            </div>
-            <Group gap="md">
-              <div style={{ textAlign: 'center' }}>
-                <Text fw={700} c={accent} size="lg">{total || 0}</Text>
-                <Text size="xs" c="dimmed">رسپی</Text>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <Text fw={700} c="#1A237E" size="lg">{uniqueCategoriesCount}</Text>
-                <Text size="xs" c="dimmed">دسته‌بندی</Text>
-              </div>
+      {/* هدر ساده و مدرن */}
+      <motion.div initial="hidden" animate="visible" variants={fadeInUp} custom={0} style={{ marginBottom: 20, marginTop: 8 }}>
+        <Group justify="space-between" align="center">
+          <div>
+            <Group gap={8}>
+              <IconChefHat size={28} color={accent} />
+              <Title order={3} c={textColor} style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Garnish OS</Title>
             </Group>
-          </Group>
-        </Paper>
+            <Text size="sm" c={mutedText}>دستیار هوشمند تغذیه و آشپزی شما</Text>
+          </div>
+        </Group>
       </motion.div>
 
-      {/* بنر */}
+      {/* بنر اسلایدر */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Box mb={24} style={{ borderRadius: 20, overflow: 'hidden', boxShadow: cardShadow }}>
-          <Swiper modules={[Autoplay, EffectFade]} effect="fade" autoplay={{ delay: 5000 }} loop style={{ borderRadius: 20 }}>
+        <Box mb={24} style={{ borderRadius: 24, overflow: 'hidden', boxShadow: cardShadow }}>
+          <Swiper modules={[Autoplay, EffectFade]} effect="fade" autoplay={{ delay: 5000 }} loop style={{ borderRadius: 24 }}>
             {bannerSlides.map((slide, i) => (
               <SwiperSlide key={i}>
-                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   onClick={() => { navigate(slide.action); trackEvent('banner_click', { action: slide.action }); }}
                   style={{ background: slide.bg, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', textAlign: 'center', padding: '16px 24px', cursor: 'pointer' }}
                 >
-                  <Text size={40} mb={8}>{slide.icon}</Text>
-                  <Text size={18} fw={700} mb={4}>{slide.title}</Text>
-                  <Text size={13} opacity={0.9}>{slide.subtitle}</Text>
+                  <Text size={48} mb={12}>{slide.icon}</Text>
+                  <Text size={20} fw={800} mb={6}>{slide.title}</Text>
+                  <Text size={14} opacity={0.9}>{slide.subtitle}</Text>
                 </motion.div>
               </SwiperSlide>
             ))}
@@ -282,8 +299,8 @@ export default function HomePage() {
           <Popover opened={searchOpen} onChange={setSearchOpen} width="target" position="bottom" shadow="md" style={{ flex: 1 }}>
             <Popover.Target>
               <Autocomplete
-                placeholder="🔍  چی دوست داری بپزی؟"
-                leftSection={<IconSearch size={18} />}
+                placeholder="چی دوست داری بپزی؟"
+                leftSection={<IconSearch size={20} />}
                 radius="xl"
                 size="md"
                 value={search}
@@ -292,20 +309,20 @@ export default function HomePage() {
                 styles={{
                   input: {
                     textAlign: 'right',
-                    backgroundColor: dark ? 'rgba(30,30,40,0.8)' : 'rgba(255,255,255,0.85)',
+                    backgroundColor: dark ? 'rgba(30,30,40,0.8)' : 'rgba(255,255,255,0.9)',
                     backdropFilter: 'blur(12px)',
-                    border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`,
-                    height: 48,
-                    fontSize: 15,
-                    borderRadius: 24,
+                    border: `1px solid ${borderColor}`,
+                    height: 52,
+                    fontSize: 16,
+                    borderRadius: 26,
                     transition: 'border-color 0.2s, box-shadow 0.2s',
-                    '&:focus': { borderColor: accent, boxShadow: `0 0 0 3px ${accent}40` },
+                    '&:focus': { borderColor: accent, boxShadow: `0 0 0 3px ${accent}30` },
                   },
                 }}
               />
             </Popover.Target>
             {filteredSearchResults.length > 0 && (
-              <Popover.Dropdown p={0}>
+              <Popover.Dropdown p={0} style={{ borderRadius: 16, overflow: 'hidden' }}>
                 <ScrollArea.Autosize mah={250}>
                   {filteredSearchResults.map((recipe) => (
                     <motion.div key={recipe.id}
@@ -316,16 +333,16 @@ export default function HomePage() {
                         setSearch('');
                         trackEvent('search_result_click', { recipeId: recipe.id });
                       }}
-                      style={{ padding: '10px 14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #f0f0f0' }}
+                      style={{ padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
-                      <Text size="lg">🍽️</Text>
+                      <Text size="xl">🍽️</Text>
                       <div style={{ flex: 1 }}>
-                        <Text size="sm" fw={500}>{recipe.title}</Text>
+                        <Text size="sm" fw={600}>{recipe.title}</Text>
                         <Text size="xs" c="dimmed">
                           {(recipe.ingredients || []).slice(0, 2).map(i => i.name).join('، ')}
                         </Text>
                       </div>
-                      <Badge variant="light" color="orange" size="xs" radius="xl">{recipe.cookingTime ? `${recipe.cookingTime} دقیقه` : ''}</Badge>
+                      <Badge variant="light" color="orange" size="sm" radius="xl">{recipe.cookingTime ? `${recipe.cookingTime} دقیقه` : ''}</Badge>
                     </motion.div>
                   ))}
                 </ScrollArea.Autosize>
@@ -333,11 +350,11 @@ export default function HomePage() {
             )}
           </Popover>
           <Tooltip label={voiceSupported ? 'جستجوی صوتی' : 'مرورگر شما پشتیبانی نمی‌کند'}>
-            <ActionIcon variant={isListening ? 'filled' : 'light'} color={isListening ? 'red' : 'gray'} size={44} radius="xl"
+            <ActionIcon variant="light" color="gray" size={52} radius="xl"
               onClick={handleVoiceSearch} disabled={!voiceSupported}
-              style={{ animation: isListening ? 'pulse 1.5s infinite' : 'none' }}
+              style={{ border: `1px solid ${borderColor}` }}
             >
-              <IconMicrophone size={20} />
+              <IconMicrophone size={22} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -351,8 +368,21 @@ export default function HomePage() {
               const isActive = activeChips.includes(chip.key);
               return (
                 <motion.div key={chip.key} whileTap={{ scale: 0.95 }}>
-                  <Badge variant={isActive ? 'filled' : 'outline'} color={isActive ? 'orange' : 'gray'} size="lg" radius="xl"
-                    style={{ cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s', padding: '6px 14px' }}
+                  <Badge
+                    variant={isActive ? 'filled' : 'outline'}
+                    color={isActive ? 'orange' : 'gray'}
+                    size="lg"
+                    radius="xl"
+                    style={{
+                      cursor: 'pointer',
+                      flexShrink: 0,
+                      transition: 'all 0.2s',
+                      padding: '8px 18px',
+                      fontWeight: 500,
+                      backgroundColor: isActive ? accent : 'transparent',
+                      color: isActive ? 'white' : mutedText,
+                      border: `1px solid ${isActive ? accent : borderColor}`
+                    }}
                     onClick={() => handleFilterToggle(chip.key, isActive)}
                   >
                     {chip.label}
@@ -364,31 +394,91 @@ export default function HomePage() {
         </ScrollArea>
       </motion.div>
 
-      {/* غذای ویژه */}
+      {/* غذای ویژه امروز (کارت بزرگ) */}
       {todaySpecial && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} whileHover={{ y: -5 }}>
-          <Paper shadow="md" p="lg" radius="xl" mb="lg" style={{
-            background: dark ? 'linear-gradient(135deg, #2c2c3a, #1e1e2f)' : 'linear-gradient(135deg, #fff5f0, #ffffff)',
-            cursor: 'pointer', position: 'relative', overflow: 'hidden',
-            border: `2px solid ${dark ? '#555' : accent}80`, transition: 'transform 0.2s, box-shadow 0.2s',
-          }} onClick={() => { navigate(`/recipe/${todaySpecial.id}`); trackEvent('today_special_click', { recipeId: todaySpecial.id }); }}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} whileHover={{ y: -4 }}>
+          <Paper
+            p="lg"
+            radius="xl"
+            mb="lg"
+            style={{
+              background: dark
+                ? 'linear-gradient(135deg, #2c2c3a, #1e1e2f)'
+                : 'linear-gradient(135deg, #fff5f0, #ffffff)',
+              cursor: 'pointer',
+              position: 'relative',
+              overflow: 'hidden',
+              border: `1px solid ${accent}40`,
+              boxShadow: `0 8px 24px ${accent}20`,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onClick={() => { navigate(`/recipe/${todaySpecial.id}`); trackEvent('today_special_click', { recipeId: todaySpecial.id }); }}
+          >
             <Group justify="space-between" wrap="nowrap" align="flex-start">
               <div>
-                <Badge variant="gradient" gradient={{ from: 'orange', to: 'red' }} size="sm" mb="xs" leftSection={<IconStars size={12} />} radius="xl">
+                <Badge
+                  variant="gradient"
+                  gradient={{ from: 'orange', to: 'red' }}
+                  size="sm"
+                  mb="xs"
+                  leftSection={<IconStars size={14} />}
+                  radius="xl"
+                >
                   پیشنهاد سرآشپز امروز
                 </Badge>
                 <Title order={3} c={dark ? '#fff' : '#1A237E'} mb="xs">{todaySpecial.title}</Title>
-                <Text size="xs" c="dimmed" mb="md">
+                <Text size="xs" c={mutedText} mb="md">
                   {todaySpecial.cook_time ? `⏱ ${todaySpecial.cook_time}` : ''}
                   {todaySpecial.difficulty ? `  •  📊 ${todaySpecial.difficulty}` : ''}
                 </Text>
-                <Button variant="outline" color="orange" radius="xl" size="sm" rightSection={<IconArrowRight size={14} />}
-                  onClick={(e) => { e.stopPropagation(); navigate(`/recipe/${todaySpecial.id}`); }}>
+                <Button
+                  variant="outline"
+                  color="orange"
+                  radius="xl"
+                  size="sm"
+                  rightSection={<IconArrowRight size={16} />}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/recipe/${todaySpecial.id}`); }}
+                >
                   دیدن رسپی
                 </Button>
               </div>
-              <Text style={{ fontSize: 80, opacity: 0.08, transform: 'rotate(15deg)', position: 'absolute', top: 10, right: 20, pointerEvents: 'none' }}>🍽️</Text>
+              <Text style={{ fontSize: 80, opacity: 0.08, transform: 'rotate(15deg)', position: 'absolute', top: 10, right: 20, pointerEvents: 'none' }}>
+                🍽️
+              </Text>
             </Group>
+          </Paper>
+        </motion.div>
+      )}
+
+      {/* پیشنهادهای ویژه برای شما (در صورت وجود توکن) */}
+      {!recsLoading && recommendations.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Paper
+            p="md"
+            radius="xl"
+            mb="lg"
+            style={{
+              background: dark
+                ? 'linear-gradient(135deg, #2c2c3a, #1e1e2f)'
+                : 'linear-gradient(135deg, #f0f4ff, #ffffff)',
+              border: `1px solid ${accent}30`,
+              boxShadow: cardShadow,
+            }}
+          >
+            <Group justify="space-between" mb="sm">
+              <Group gap="xs">
+                <ThemeIcon variant="gradient" gradient={{ from: 'violet', to: 'blue' }} size={28} radius="md">
+                  <IconSparkles size={16} />
+                </ThemeIcon>
+                <Title order={5} c={textColor}>پیشنهادهای ویژه برای شما</Title>
+              </Group>
+              <Badge variant="light" color="violet" size="sm" radius="xl">شخصی‌سازی شده</Badge>
+            </Group>
+            <SimpleGrid cols={1} spacing="sm">
+              {recommendations.slice(0, 4).map(recipe => (
+                <RecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </SimpleGrid>
           </Paper>
         </motion.div>
       )}
@@ -396,18 +486,28 @@ export default function HomePage() {
       {/* دسته‌بندی‌ها */}
       <motion.div variants={fadeInUp} custom={3} initial="hidden" animate="visible">
         <Box mb="xl">
-          <Group justify="space-between" mb="sm">
-            <Title order={5} c={textColor}>📂 دسته‌بندی‌ها</Title>
-          </Group>
+          <Title order={5} c={textColor} mb="sm">📂 دسته‌بندی‌ها</Title>
           <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start' }}>
             {TOP_CATEGORIES.map((cat, i) => (
-              <motion.div key={i} whileHover={{ y: -5, boxShadow: '0 8px 20px rgba(0,0,0,0.12)' }} whileTap={{ scale: 0.96 }}
+              <motion.div
+                key={i}
+                whileHover={{ y: -5, boxShadow: '0 8px 20px rgba(0,0,0,0.12)' }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }}
                 style={{
-                  background: dark ? 'rgba(30,30,40,0.7)' : 'rgba(255,255,255,0.75)',
-                  backdropFilter: 'blur(12px)', borderRadius: 18, padding: '16px 4px', textAlign: 'center', cursor: 'pointer',
-                  boxShadow: cardShadow, border: `1px solid ${dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'}`,
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  background: cardBg,
+                  backdropFilter: 'blur(12px)',
+                  borderRadius: 18,
+                  padding: '16px 4px',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  boxShadow: cardShadow,
+                  border: `1px solid ${borderColor}`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
                   transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
               >
@@ -422,11 +522,28 @@ export default function HomePage() {
       </motion.div>
 
       {/* هوش مصنوعی */}
-      <motion.div whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(255,107,53,0.4)' }} whileTap={{ scale: 0.98 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <Paper shadow="md" p="lg" radius="xl" mb="xl" style={{
-          background: 'linear-gradient(135deg, #1A237E, #3949AB)', color: 'white', cursor: 'pointer', position: 'relative', overflow: 'hidden',
-        }} onClick={() => { navigate('/ai-chat'); trackEvent('ai_chat_button_click'); }}>
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+      <motion.div
+        whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(255,107,53,0.4)' }}
+        whileTap={{ scale: 0.98 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Paper
+          shadow="md"
+          p="lg"
+          radius="xl"
+          mb="xl"
+          style={{
+            background: 'linear-gradient(135deg, #1A237E, #3949AB)',
+            color: 'white',
+            cursor: 'pointer',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+          onClick={() => { navigate('/ai-chat'); trackEvent('ai_chat_button_click'); }}
+        >
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
           <Group justify="space-between" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
             <div>
               <Group gap="xs" mb={6}>
@@ -440,42 +557,44 @@ export default function HomePage() {
         </Paper>
       </motion.div>
 
-      {/* رسپی‌های منتخب */}
+      {/* تب‌ها برای رسپی‌ها */}
       <motion.div variants={fadeInUp} custom={4} initial="hidden" animate="visible">
-        <Title order={5} mb="sm" c={textColor}>🍽️ امروز چی بپزم؟</Title>
-        <SimpleGrid cols={2} spacing="sm" mb="xl">
-          {recipes.slice(0, 4).map(recipe => <RecipeCard key={recipe.id} recipe={recipe} />)}
-        </SimpleGrid>
-      </motion.div>
-
-      {/* اسلایدرها */}
-      <SectionSlider title="🔥 پرطرفدارها" recipes={recipes.slice(0, 8)} />
-      <SectionSlider
-        title="⚡ سریع و آسان"
-        recipes={recipes.filter(r => {
-          const ct = parseInt(r.cook_time, 10) || parseInt(r.cookingTime, 10);
-          return !isNaN(ct) && ct <= 30;
-        }).slice(0, 8)}
-      />
-      <SectionSlider title="🇮🇷 ایرانی اصیل" recipes={recipes.filter(r => r.region === 'persian').slice(0, 8)} />
-
-      {/* مشاهده همه */}
-      <motion.div variants={fadeInUp} custom={5} initial="hidden" animate="visible">
-        <Group justify="space-between" mb="sm" mt="xl">
-          <Title order={5} c={textColor}>📋 همه رسپی‌ها</Title>
-          <Button variant="subtle" size="xs" rightSection={<IconChevronLeft size={14} />} onClick={() => { navigate('/recipes'); trackEvent('view_all_recipes_click'); }}>
-            مشاهده همه
-          </Button>
+        <Group mb="md" style={{ gap: 4 }}>
+          {[
+            { key: 'all', label: 'همه رسپی‌ها' },
+            { key: 'quick', label: 'سریع و آسان' },
+            { key: 'popular', label: 'پرطرفدارها' },
+          ].map(tab => (
+            <Button
+              key={tab.key}
+              variant={activeTab === tab.key ? 'filled' : 'outline'}
+              color={activeTab === tab.key ? 'orange' : 'gray'}
+              size="sm"
+              radius="xl"
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </Button>
+          ))}
         </Group>
-        <SimpleGrid cols={2} spacing="sm" mb="lg">
-          {filteredRecipes.slice(0, 6).map(recipe => <RecipeCard key={recipe.id} recipe={recipe} />)}
+        <SimpleGrid cols={1} spacing="sm" mb="lg">
+          {tabRecipes.slice(0, 4).map(recipe => (
+            <RecipeCard key={recipe.id} recipe={recipe} />
+          ))}
         </SimpleGrid>
-        {total > 6 && (
+        {total > 4 && (
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button variant="gradient" gradient={{ from: 'orange', to: 'red' }} fullWidth size="lg" radius="xl"
+            <Button
+              variant="gradient"
+              gradient={{ from: 'orange', to: 'red' }}
+              fullWidth
+              size="lg"
+              radius="xl"
               onClick={() => { navigate('/recipes'); trackEvent('view_all_recipes_click'); }}
               rightSection={<IconArrowRight size={20} />}
-              styles={{ root: { height: 52, fontSize: 16, boxShadow: '0 6px 15px rgba(255,107,53,0.4)' } }}
+              styles={{
+                root: { height: 52, fontSize: 16, boxShadow: '0 6px 15px rgba(255,107,53,0.4)' }
+              }}
             >
               مشاهده همه رسپی‌ها ({total} رسپی)
             </Button>
@@ -483,11 +602,22 @@ export default function HomePage() {
         )}
       </motion.div>
 
+      {/* دکمه اسکرول به بالا */}
       <AnimatePresence>
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-          style={{ position: 'fixed', bottom: 100, right: 16, zIndex: 50 }}>
-          <ActionIcon variant="filled" color="orange" size="xl" radius="xl"
-            style={{ boxShadow: '0 6px 16px rgba(255,107,53,0.5)' }} onClick={scrollToTop}>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          style={{ position: 'fixed', bottom: 100, right: 16, zIndex: 50 }}
+        >
+          <ActionIcon
+            variant="filled"
+            color="orange"
+            size="xl"
+            radius="xl"
+            style={{ boxShadow: '0 6px 16px rgba(255,107,53,0.5)' }}
+            onClick={scrollToTop}
+          >
             <IconArrowUp size={22} />
           </ActionIcon>
         </motion.div>
