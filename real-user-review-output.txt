@@ -1,0 +1,7 @@
+﻿== Logging in test user ==
+
+== /report ==
+
+== /recommendations/compare ==
+
+== /recommendations?limit=10 ==

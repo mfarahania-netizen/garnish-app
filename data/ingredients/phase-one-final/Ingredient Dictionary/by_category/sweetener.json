@@ -1,0 +1,5587 @@
+[
+  {
+    "ingredientId": "ing_maple_syrup",
+    "code": "maple_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 46,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت افرا",
+        "normalized": "شربت افرا",
+        "display": "شربت افرا"
+      },
+      "en": {
+        "canonical": "maple syrup",
+        "normalized": "maple syrup",
+        "display": "Maple syrup"
+      },
+      "ar": {
+        "canonical": "شراب القيقب",
+        "normalized": "شراب القیقب",
+        "display": "شراب القيقب"
+      },
+      "tr": {
+        "canonical": "akçaağaç şurubu",
+        "normalized": "akcaagac surubu",
+        "display": "Akçaağaç şurubu"
+      },
+      "de": {
+        "canonical": "Ahornsirup",
+        "normalized": "ahornsirup",
+        "display": "Ahornsirup"
+      },
+      "fr": {
+        "canonical": "sirop d’érable",
+        "normalized": "sirop d’erable",
+        "display": "Sirop d’érable"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت افرا"
+      ],
+      "en": [
+        "maple syrup"
+      ],
+      "ar": [
+        "شراب القيقب"
+      ],
+      "tr": [
+        "akçaağaç şurubu",
+        "akcaagac surubu"
+      ],
+      "de": [
+        "Ahornsirup"
+      ],
+      "fr": [
+        "sirop d’érable",
+        "sirop d’erable"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شربتافرا",
+        "شربت افراا"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شربت افرا",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "maple syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "شراب القيقب",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "akçaağaç şurubu",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Ahornsirup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "sirop d’érable",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "maple"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "maple",
+      "part": "sap"
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 298,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 84.8,
+      "fiber": 0,
+      "sugar": 70.5,
+      "sodium": 10.7
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "maple syrup",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "syrup"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_agave_syrup",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شربت افرا، شربت آگاو می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/maple_syrup.webp",
+      "thumbnail": "/media/ingredients/maple_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت افرا / maple syrup یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_agave_syrup",
+          "reason": "same_family",
+          "differenceFa": "شربت افرا با شربت آگاو از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شربت افرا با شربت آگاو از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شربتافرا",
+        "شربت افراا"
+      ],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت افرا"
+      ],
+      "en": [
+        "maple syrup"
+      ],
+      "ar": [
+        "شراب القيقب"
+      ],
+      "tr": [
+        "akçaağaç şurubu",
+        "akcaagac surubu"
+      ],
+      "de": [
+        "Ahornsirup"
+      ],
+      "fr": [
+        "sirop d’érable",
+        "sirop d’erable"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": false,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_agave_syrup",
+    "code": "agave_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 47,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت آگاو",
+        "normalized": "شربت آگاو",
+        "display": "شربت آگاو"
+      },
+      "en": {
+        "canonical": "agave syrup",
+        "normalized": "agave syrup",
+        "display": "Agave syrup"
+      },
+      "ar": {
+        "canonical": "شراب الأغاف",
+        "normalized": "شراب الأغاف",
+        "display": "شراب الأغاف"
+      },
+      "tr": {
+        "canonical": "agave şurubu",
+        "normalized": "agave surubu",
+        "display": "Agave şurubu"
+      },
+      "de": {
+        "canonical": "Agavensirup",
+        "normalized": "agavensirup",
+        "display": "Agavensirup"
+      },
+      "fr": {
+        "canonical": "sirop d’agave",
+        "normalized": "sirop d’agave",
+        "display": "Sirop d’agave"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت آگاو"
+      ],
+      "en": [
+        "agave syrup"
+      ],
+      "ar": [
+        "شراب الأغاف"
+      ],
+      "tr": [
+        "agave şurubu",
+        "agave surubu"
+      ],
+      "de": [
+        "Agavensirup"
+      ],
+      "fr": [
+        "sirop d’agave"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شربتآگاو",
+        "شربت اگاو",
+        "شربت آگاوو"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شربت آگاو",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "agave syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "شراب الأغاف",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "agave şurubu",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Agavensirup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "sirop d’agave",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "agave"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "agave",
+      "part": "sap"
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 301,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 84.8,
+      "fiber": 0,
+      "sugar": 77.2,
+      "sodium": 9.2
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "agave syrup",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "syrup"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_maple_syrup",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شربت آگاو، شربت افرا می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/agave_syrup.webp",
+      "thumbnail": "/media/ingredients/agave_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت آگاو / agave syrup یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_maple_syrup",
+          "reason": "same_family",
+          "differenceFa": "شربت آگاو با شربت افرا از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شربت آگاو با شربت افرا از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شربتآگاو",
+        "شربت اگاو",
+        "شربت آگاوو"
+      ],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت آگاو"
+      ],
+      "en": [
+        "agave syrup"
+      ],
+      "ar": [
+        "شراب الأغاف"
+      ],
+      "tr": [
+        "agave şurubu",
+        "agave surubu"
+      ],
+      "de": [
+        "Agavensirup"
+      ],
+      "fr": [
+        "sirop d’agave"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": false,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_molasses",
+    "code": "molasses",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 48,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ملاس",
+        "normalized": "ملاس",
+        "display": "ملاس"
+      },
+      "en": {
+        "canonical": "molasses",
+        "normalized": "molasses",
+        "display": "Molasses"
+      },
+      "ar": {
+        "canonical": "دبس السكر",
+        "normalized": "دبس السکر",
+        "display": "دبس السكر"
+      },
+      "tr": {
+        "canonical": "pekmez tipi melas",
+        "normalized": "pekmez tipi melas",
+        "display": "Pekmez tipi melas"
+      },
+      "de": {
+        "canonical": "Melasse",
+        "normalized": "melasse",
+        "display": "Melasse"
+      },
+      "fr": {
+        "canonical": "mélasse",
+        "normalized": "melasse",
+        "display": "Mélasse"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ملاس"
+      ],
+      "en": [
+        "molasses"
+      ],
+      "ar": [
+        "دبس السكر"
+      ],
+      "tr": [
+        "pekmez tipi melas"
+      ],
+      "de": [
+        "Melasse"
+      ],
+      "fr": [
+        "mélasse",
+        "melasse"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "ملاس",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "molasses",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "دبس السكر",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "pekmez tipi melas",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Melasse",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "mélasse",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "sugarcane"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugarcane",
+      "part": "sap"
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 313,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 75.2,
+      "fiber": 0,
+      "sugar": 70.5,
+      "sodium": 10.3
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "molasses",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "syrup"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_brown_sugar",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود ملاس، شکر قهوه‌ای می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/molasses.webp",
+      "thumbnail": "/media/ingredients/molasses-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "ملاس / molasses یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_brown_sugar",
+          "reason": "same_family",
+          "differenceFa": "ملاس با شکر قهوه‌ای از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "ملاس با شکر قهوه‌ای از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ملاس"
+      ],
+      "en": [
+        "molasses"
+      ],
+      "ar": [
+        "دبس السكر"
+      ],
+      "tr": [
+        "pekmez tipi melas"
+      ],
+      "de": [
+        "Melasse"
+      ],
+      "fr": [
+        "mélasse",
+        "melasse"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": false,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_brown_sugar",
+    "code": "brown_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 49,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر قهوه‌ای",
+        "normalized": "شکر قهوه ای",
+        "display": "شکر قهوه‌ای"
+      },
+      "en": {
+        "canonical": "brown sugar",
+        "normalized": "brown sugar",
+        "display": "Brown sugar"
+      },
+      "ar": {
+        "canonical": "سكر بني",
+        "normalized": "سکر بنی",
+        "display": "سكر بني"
+      },
+      "tr": {
+        "canonical": "esmer şeker",
+        "normalized": "esmer seker",
+        "display": "Esmer şeker"
+      },
+      "de": {
+        "canonical": "brauner Zucker",
+        "normalized": "brauner zucker",
+        "display": "Brauner Zucker"
+      },
+      "fr": {
+        "canonical": "sucre brun",
+        "normalized": "sucre brun",
+        "display": "Sucre brun"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر قهوه‌ای"
+      ],
+      "en": [
+        "brown sugar"
+      ],
+      "ar": [
+        "سكر بني"
+      ],
+      "tr": [
+        "esmer şeker",
+        "esmer seker"
+      ],
+      "de": [
+        "brauner Zucker"
+      ],
+      "fr": [
+        "sucre brun"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکر قهوه‌اي",
+        "شکر قهوهای",
+        "شکر قهوه‌ایی",
+        "شکرقهوه‌ای"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر قهوه‌ای",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "brown sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر بني",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "esmer şeker",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "brauner Zucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre brun",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugarcane"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugarcane",
+      "part": "crystal"
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 313,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 85.6,
+      "fiber": 0,
+      "sugar": 79.5,
+      "sodium": 9.5
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "brown sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "sugar"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_molasses",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر قهوه‌ای، ملاس می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/brown_sugar.webp",
+      "thumbnail": "/media/ingredients/brown_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر قهوه‌ای / brown sugar یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_molasses",
+          "reason": "same_family",
+          "differenceFa": "شکر قهوه‌ای با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر قهوه‌ای با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکر قهوه‌اي",
+        "شكر قهوه‌ای",
+        "شکر قهوهای",
+        "شکر قهوه ای",
+        "شکر قهوه‌ایی",
+        "شکرقهوه‌ای"
+      ],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر قهوه‌ای"
+      ],
+      "en": [
+        "brown sugar"
+      ],
+      "ar": [
+        "سكر بني"
+      ],
+      "tr": [
+        "esmer şeker",
+        "esmer seker"
+      ],
+      "de": [
+        "brauner Zucker"
+      ],
+      "fr": [
+        "sucre brun"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "dried",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_powdered_sugar",
+    "code": "powdered_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 50,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پودر قند",
+        "normalized": "پودر قند",
+        "display": "پودر قند"
+      },
+      "en": {
+        "canonical": "powdered sugar",
+        "normalized": "powdered sugar",
+        "display": "Powdered sugar"
+      },
+      "ar": {
+        "canonical": "سكر بودرة",
+        "normalized": "سکر بودرة",
+        "display": "سكر بودرة"
+      },
+      "tr": {
+        "canonical": "pudra şekeri",
+        "normalized": "pudra sekeri",
+        "display": "Pudra şekeri"
+      },
+      "de": {
+        "canonical": "Puderzucker",
+        "normalized": "puderzucker",
+        "display": "Puderzucker"
+      },
+      "fr": {
+        "canonical": "sucre glace",
+        "normalized": "sucre glace",
+        "display": "Sucre glace"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پودر قند"
+      ],
+      "en": [
+        "powdered sugar"
+      ],
+      "ar": [
+        "سكر بودرة"
+      ],
+      "tr": [
+        "pudra şekeri",
+        "pudra sekeri"
+      ],
+      "de": [
+        "Puderzucker"
+      ],
+      "fr": [
+        "sucre glace"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "پودرقند",
+        "پودر قندد"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "پودر قند",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "powdered sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر بودرة",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "pudra şekeri",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Puderzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre glace",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugarcane"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugarcane",
+      "part": "crystal"
+    },
+    "ingredientState": {
+      "physicalState": "powdered",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 313,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 84.8,
+      "fiber": 0,
+      "sugar": 70.5,
+      "sodium": 10.3
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "powdered sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "sugar"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_molasses",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود پودر قند، ملاس می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/powdered_sugar.webp",
+      "thumbnail": "/media/ingredients/powdered_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "پودر قند / powdered sugar یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_molasses",
+          "reason": "same_family",
+          "differenceFa": "پودر قند با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "پودر قند با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "پودرقند",
+        "پودر قندد"
+      ],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "powder"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پودر قند"
+      ],
+      "en": [
+        "powdered sugar"
+      ],
+      "ar": [
+        "سكر بودرة"
+      ],
+      "tr": [
+        "pudra şekeri",
+        "pudra sekeri"
+      ],
+      "de": [
+        "Puderzucker"
+      ],
+      "fr": [
+        "sucre glace"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": false,
+      "defaultStateApplied": "powdered",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_corn_syrup",
+    "code": "corn_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B003",
+      "batchSequence": 3,
+      "batchRecordNumber": 51,
+      "expansionBase": "GFD_V2_B001_PATCH_02"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت ذرت",
+        "normalized": "شربت ذرت",
+        "display": "شربت ذرت"
+      },
+      "en": {
+        "canonical": "corn syrup",
+        "normalized": "corn syrup",
+        "display": "Corn syrup"
+      },
+      "ar": {
+        "canonical": "شراب الذرة",
+        "normalized": "شراب الذرة",
+        "display": "شراب الذرة"
+      },
+      "tr": {
+        "canonical": "mısır şurubu",
+        "normalized": "mısır surubu",
+        "display": "Mısır şurubu"
+      },
+      "de": {
+        "canonical": "Maissirup",
+        "normalized": "maissirup",
+        "display": "Maissirup"
+      },
+      "fr": {
+        "canonical": "sirop de maïs",
+        "normalized": "sirop de mais",
+        "display": "Sirop de maïs"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت ذرت"
+      ],
+      "en": [
+        "corn syrup"
+      ],
+      "ar": [
+        "شراب الذرة"
+      ],
+      "tr": [
+        "mısır şurubu",
+        "mısır surubu"
+      ],
+      "de": [
+        "Maissirup"
+      ],
+      "fr": [
+        "sirop de maïs",
+        "sirop de mais"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شربتذرت",
+        "شربت ذرتت"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شربت ذرت",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "corn syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "شراب الذرة",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "mısır şurubu",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Maissirup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "sirop de maïs",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "corn"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "corn",
+      "part": "syrup"
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 310,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 82.4,
+      "fiber": 0,
+      "sugar": 70.5,
+      "sodium": 10.4
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central / NEVO / CoFID target",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "corn syrup",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "expansion_seed_pending_exact_source_id_lock",
+      "confidence": "pending_exact_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until exact sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:45:15Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 2,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "recipe_ingredient",
+        "meal_component",
+        "syrup"
+      ],
+      "commonCookingMethods": [
+        "mixed",
+        "prepared"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "measured",
+        "mixed"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای جستجو، resolver و recommendation عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "ارقام تغذیه‌ای برای رژیم دقیق تا زمان sourceFoodId lock نهایی نباید قطعی تلقی شوند."
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_cornmeal",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شربت ذرت، آرد ذرت زبر می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/corn_syrup.webp",
+      "thumbnail": "/media/ingredients/corn_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت ذرت / corn syrup یک ماده در دسته sweetener است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId قطعی نیست.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_cornmeal",
+          "reason": "same_family",
+          "differenceFa": "شربت ذرت با آرد ذرت زبر از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شربت ذرت با آرد ذرت زبر از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شربتذرت",
+        "شربت ذرتت"
+      ],
+      "usageNotes": [
+        "اگر متن رسپی state/form را نگفت، از recipeInputAliases و default resolver استفاده شود.",
+        "برای nutrition حساس، sourceBackedNutrition.lockStatus باید locked باشد.",
+        "Expansion aliases were collision-sanitized against previous registries; ambiguous removed aliases are listed in Validation Report/alias_collision_sanitization_report.json."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "global"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "american": 3,
+      "mediterranean": 2,
+      "asian": 2
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.8,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت ذرت"
+      ],
+      "en": [
+        "corn syrup"
+      ],
+      "ar": [
+        "شراب الذرة"
+      ],
+      "tr": [
+        "mısır şurubu",
+        "mısır surubu"
+      ],
+      "de": [
+        "Maissirup"
+      ],
+      "fr": [
+        "sirop de maïs",
+        "sirop de mais"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": false,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_grape_molasses",
+    "code": "grape_molasses",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 731,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شیره انگور",
+        "normalized": "شیره انگور",
+        "display": "شیره انگور"
+      },
+      "en": {
+        "canonical": "grape molasses",
+        "normalized": "grape molasses",
+        "display": "Grape molasses"
+      },
+      "ar": {
+        "canonical": "دبس العنب",
+        "normalized": "دبس العنب",
+        "display": "دبس العنب"
+      },
+      "tr": {
+        "canonical": "üzüm pekmezi",
+        "normalized": "uzum pekmezi",
+        "display": "üzüm pekmezi"
+      },
+      "de": {
+        "canonical": "Traubensirup",
+        "normalized": "traubensirup",
+        "display": "Traubensirup"
+      },
+      "fr": {
+        "canonical": "mélasse de raisin",
+        "normalized": "melasse de raisin",
+        "display": "mélasse de raisin"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شیره انگور",
+        "شیره‌ی انگور",
+        "دوشاب",
+        "دوشاب انگور"
+      ],
+      "en": [
+        "grape molasses"
+      ],
+      "ar": [
+        "دبس العنب"
+      ],
+      "tr": [
+        "üzüm pekmezi",
+        "uzum pekmezi"
+      ],
+      "de": [
+        "Traubensirup"
+      ],
+      "fr": [
+        "mélasse de raisin",
+        "melasse de raisin"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شیرهانگور",
+        "شیره انگورر"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شیره انگور",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "grape molasses",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "دبس العنب",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "üzüm pekmezi",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Traubensirup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "mélasse de raisin",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "grape"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "grape",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 332,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 75.3,
+      "fiber": 0,
+      "sugar": 67.5,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "grape molasses",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_date_syrup",
+        "reason": "similar_function",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "high",
+        "notesFa": "در صورت نبود شیره انگور، شیره خرما می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/grape_molasses.webp",
+      "thumbnail": "/media/ingredients/grape_molasses-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شیره انگور / grape molasses یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_date_syrup",
+          "reason": "similar_use",
+          "differenceFa": "شیره انگور با شیره خرما از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شیره انگور با شیره خرما از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شیرهانگور",
+        "شیره انگورر"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شیره انگور",
+        "شیره‌ی انگور",
+        "دوشاب",
+        "دوشاب انگور"
+      ],
+      "en": [
+        "grape molasses"
+      ],
+      "ar": [
+        "دبس العنب"
+      ],
+      "tr": [
+        "üzüm pekmezi",
+        "uzum pekmezi"
+      ],
+      "de": [
+        "Traubensirup"
+      ],
+      "fr": [
+        "mélasse de raisin",
+        "melasse de raisin"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_date_syrup",
+    "code": "date_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 732,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شیره خرما",
+        "normalized": "شیره خرما",
+        "display": "شیره خرما"
+      },
+      "en": {
+        "canonical": "date syrup",
+        "normalized": "date syrup",
+        "display": "Date syrup"
+      },
+      "ar": {
+        "canonical": "دبس التمر",
+        "normalized": "دبس التمر",
+        "display": "دبس التمر"
+      },
+      "tr": {
+        "canonical": "hurma pekmezi",
+        "normalized": "hurma pekmezi",
+        "display": "hurma pekmezi"
+      },
+      "de": {
+        "canonical": "Dattelsirup",
+        "normalized": "dattelsirup",
+        "display": "Dattelsirup"
+      },
+      "fr": {
+        "canonical": "sirop de dattes",
+        "normalized": "sirop de dattes",
+        "display": "sirop de dattes"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شیره خرما",
+        "شیره‌ی خرما",
+        "سیروپ خرما",
+        "عسل خرما"
+      ],
+      "en": [
+        "date syrup"
+      ],
+      "ar": [
+        "دبس التمر"
+      ],
+      "tr": [
+        "hurma pekmezi"
+      ],
+      "de": [
+        "Dattelsirup"
+      ],
+      "fr": [
+        "sirop de dattes"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شیره خرماا",
+        "شیرهخرما"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شیره خرما",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "date syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "دبس التمر",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "hurma pekmezi",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Dattelsirup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "sirop de dattes",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "date"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "date",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 332,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 80.7,
+      "fiber": 0,
+      "sugar": 72.4,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "date syrup",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_grape_molasses",
+        "reason": "similar_function",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "high",
+        "notesFa": "در صورت نبود شیره خرما، شیره انگور می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/date_syrup.webp",
+      "thumbnail": "/media/ingredients/date_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شیره خرما / date syrup یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_grape_molasses",
+          "reason": "similar_use",
+          "differenceFa": "شیره خرما با شیره انگور از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شیره خرما با شیره انگور از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شیره خرماا",
+        "شیرهخرما"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شیره خرما",
+        "شیره‌ی خرما",
+        "سیروپ خرما",
+        "عسل خرما"
+      ],
+      "en": [
+        "date syrup"
+      ],
+      "ar": [
+        "دبس التمر"
+      ],
+      "tr": [
+        "hurma pekmezi"
+      ],
+      "de": [
+        "Dattelsirup"
+      ],
+      "fr": [
+        "sirop de dattes"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_golden_syrup",
+    "code": "golden_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 821,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت طلایی",
+        "normalized": "شربت طلایی",
+        "display": "شربت طلایی"
+      },
+      "en": {
+        "canonical": "golden syrup",
+        "normalized": "golden syrup",
+        "display": "Golden syrup"
+      },
+      "ar": {
+        "canonical": "شراب ذهبي",
+        "normalized": "شراب ذهبی",
+        "display": "شراب ذهبي"
+      },
+      "tr": {
+        "canonical": "altın şurup",
+        "normalized": "altın surup",
+        "display": "altın şurup"
+      },
+      "de": {
+        "canonical": "Golden Syrup",
+        "normalized": "golden syrup",
+        "display": "Golden Syrup"
+      },
+      "fr": {
+        "canonical": "sirop doré",
+        "normalized": "sirop dore",
+        "display": "sirop doré"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت طلایی"
+      ],
+      "en": [
+        "golden syrup"
+      ],
+      "ar": [
+        "شراب ذهبي"
+      ],
+      "tr": [
+        "altın şurup",
+        "altın surup"
+      ],
+      "de": [
+        "Golden Syrup"
+      ],
+      "fr": [
+        "sirop doré",
+        "sirop dore"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شربت طلاییی",
+        "شربتطلایی"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شربت طلایی",
+        "sweetener",
+        "syrup"
+      ],
+      "en": [
+        "golden syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "ar": [
+        "شراب ذهبي",
+        "sweetener",
+        "syrup"
+      ],
+      "tr": [
+        "altın şurup",
+        "sweetener",
+        "syrup"
+      ],
+      "de": [
+        "Golden Syrup",
+        "sweetener",
+        "syrup"
+      ],
+      "fr": [
+        "sirop doré",
+        "sweetener",
+        "syrup"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "sugar"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugar",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 332,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 80.7,
+      "fiber": 0,
+      "sugar": 67.5,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "golden syrup",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_caster_sugar",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شربت طلایی، شکر دانه‌ریز می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/golden_syrup.webp",
+      "thumbnail": "/media/ingredients/golden_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت طلایی / golden syrup یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_caster_sugar",
+          "reason": "same_family",
+          "differenceFa": "شربت طلایی با شکر دانه‌ریز از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شربت طلایی با شکر دانه‌ریز از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شربت طلاییی",
+        "شربتطلایی"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "liquid"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت طلایی"
+      ],
+      "en": [
+        "golden syrup"
+      ],
+      "ar": [
+        "شراب ذهبي"
+      ],
+      "tr": [
+        "altın şurup",
+        "altın surup"
+      ],
+      "de": [
+        "Golden Syrup"
+      ],
+      "fr": [
+        "sirop doré",
+        "sirop dore"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_light_brown_sugar",
+    "code": "light_brown_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 858,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر قهوه‌ای روشن",
+        "normalized": "شکر قهوه ای روشن",
+        "display": "شکر قهوه‌ای روشن"
+      },
+      "en": {
+        "canonical": "light brown sugar",
+        "normalized": "light brown sugar",
+        "display": "Light brown sugar"
+      },
+      "ar": {
+        "canonical": "سكر بني فاتح",
+        "normalized": "سکر بنی فاتح",
+        "display": "سكر بني فاتح"
+      },
+      "tr": {
+        "canonical": "açık esmer şeker",
+        "normalized": "acık esmer seker",
+        "display": "açık esmer şeker"
+      },
+      "de": {
+        "canonical": "hellbrauner Zucker",
+        "normalized": "hellbrauner zucker",
+        "display": "hellbrauner Zucker"
+      },
+      "fr": {
+        "canonical": "sucre roux clair",
+        "normalized": "sucre roux clair",
+        "display": "sucre roux clair"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر قهوه‌ای روشن"
+      ],
+      "en": [
+        "light brown sugar"
+      ],
+      "ar": [
+        "سكر بني فاتح"
+      ],
+      "tr": [
+        "açık esmer şeker",
+        "acık esmer seker"
+      ],
+      "de": [
+        "hellbrauner Zucker"
+      ],
+      "fr": [
+        "sucre roux clair"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکر قهوهای روشن",
+        "شکرقهوه‌ایروشن",
+        "شکر قهوه‌ای روشنن"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر قهوه‌ای روشن",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "light brown sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر بني فاتح",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "açık esmer şeker",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "hellbrauner Zucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre roux clair",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugarcane"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugarcane",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 299,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 83.5,
+      "fiber": 0,
+      "sugar": 74.9,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "light brown sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_molasses",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر قهوه‌ای روشن، ملاس می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/light_brown_sugar.webp",
+      "thumbnail": "/media/ingredients/light_brown_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر قهوه‌ای روشن / light brown sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_molasses",
+          "reason": "same_family",
+          "differenceFa": "شکر قهوه‌ای روشن با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر قهوه‌ای روشن با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکر قهوهای روشن",
+        "شکرقهوه‌ایروشن",
+        "شکر قهوه‌ای روشنن"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر قهوه‌ای روشن"
+      ],
+      "en": [
+        "light brown sugar"
+      ],
+      "ar": [
+        "سكر بني فاتح"
+      ],
+      "tr": [
+        "açık esmer şeker",
+        "acık esmer seker"
+      ],
+      "de": [
+        "hellbrauner Zucker"
+      ],
+      "fr": [
+        "sucre roux clair"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_dark_brown_sugar",
+    "code": "dark_brown_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 859,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر قهوه‌ای تیره",
+        "normalized": "شکر قهوه ای تیره",
+        "display": "شکر قهوه‌ای تیره"
+      },
+      "en": {
+        "canonical": "dark brown sugar",
+        "normalized": "dark brown sugar",
+        "display": "Dark brown sugar"
+      },
+      "ar": {
+        "canonical": "سكر بني داكن",
+        "normalized": "سکر بنی داکن",
+        "display": "سكر بني داكن"
+      },
+      "tr": {
+        "canonical": "koyu esmer şeker",
+        "normalized": "koyu esmer seker",
+        "display": "koyu esmer şeker"
+      },
+      "de": {
+        "canonical": "dunkelbrauner Zucker",
+        "normalized": "dunkelbrauner zucker",
+        "display": "dunkelbrauner Zucker"
+      },
+      "fr": {
+        "canonical": "sucre roux foncé",
+        "normalized": "sucre roux fonce",
+        "display": "sucre roux foncé"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر قهوه‌ای تیره"
+      ],
+      "en": [
+        "dark brown sugar"
+      ],
+      "ar": [
+        "سكر بني داكن"
+      ],
+      "tr": [
+        "koyu esmer şeker",
+        "koyu esmer seker"
+      ],
+      "de": [
+        "dunkelbrauner Zucker"
+      ],
+      "fr": [
+        "sucre roux foncé",
+        "sucre roux fonce"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکر قهوهای تیره",
+        "شکر قهوه‌ای تیرهه",
+        "شکرقهوه‌ایتیره"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر قهوه‌ای تیره",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "dark brown sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر بني داكن",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "koyu esmer şeker",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "dunkelbrauner Zucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre roux foncé",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugarcane"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugarcane",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 321,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 83.5,
+      "fiber": 0,
+      "sugar": 72.4,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "dark brown sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_molasses",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر قهوه‌ای تیره، ملاس می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/dark_brown_sugar.webp",
+      "thumbnail": "/media/ingredients/dark_brown_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر قهوه‌ای تیره / dark brown sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_molasses",
+          "reason": "same_family",
+          "differenceFa": "شکر قهوه‌ای تیره با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر قهوه‌ای تیره با ملاس از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکر قهوهای تیره",
+        "شکر قهوه‌ای تیرهه",
+        "شکرقهوه‌ایتیره"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر قهوه‌ای تیره"
+      ],
+      "en": [
+        "dark brown sugar"
+      ],
+      "ar": [
+        "سكر بني داكن"
+      ],
+      "tr": [
+        "koyu esmer şeker",
+        "koyu esmer seker"
+      ],
+      "de": [
+        "dunkelbrauner Zucker"
+      ],
+      "fr": [
+        "sucre roux foncé",
+        "sucre roux fonce"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_caster_sugar",
+    "code": "caster_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 860,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر دانه‌ریز",
+        "normalized": "شکر دانه ریز",
+        "display": "شکر دانه‌ریز"
+      },
+      "en": {
+        "canonical": "caster sugar",
+        "normalized": "caster sugar",
+        "display": "Caster sugar"
+      },
+      "ar": {
+        "canonical": "سكر ناعم",
+        "normalized": "سکر ناعم",
+        "display": "سكر ناعم"
+      },
+      "tr": {
+        "canonical": "ince toz şeker",
+        "normalized": "ince toz seker",
+        "display": "ince toz şeker"
+      },
+      "de": {
+        "canonical": "Feinzucker",
+        "normalized": "feinzucker",
+        "display": "Feinzucker"
+      },
+      "fr": {
+        "canonical": "sucre semoule fin",
+        "normalized": "sucre semoule fin",
+        "display": "sucre semoule fin"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر دانه‌ریز"
+      ],
+      "en": [
+        "caster sugar"
+      ],
+      "ar": [
+        "سكر ناعم"
+      ],
+      "tr": [
+        "ince toz şeker",
+        "ince toz seker"
+      ],
+      "de": [
+        "Feinzucker"
+      ],
+      "fr": [
+        "sucre semoule fin"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکر دانهریز",
+        "شکردانه‌ریز",
+        "شکر دانه‌ریزز"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر دانه‌ریز",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "caster sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر ناعم",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "ince toz şeker",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Feinzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre semoule fin",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugar"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugar",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 310,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 83.5,
+      "fiber": 0,
+      "sugar": 74.9,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "caster sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_golden_syrup",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر دانه‌ریز، شربت طلایی می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/caster_sugar.webp",
+      "thumbnail": "/media/ingredients/caster_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر دانه‌ریز / caster sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_golden_syrup",
+          "reason": "same_family",
+          "differenceFa": "شکر دانه‌ریز با شربت طلایی از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر دانه‌ریز با شربت طلایی از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکر دانهریز",
+        "شکردانه‌ریز",
+        "شکر دانه‌ریزز"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر دانه‌ریز"
+      ],
+      "en": [
+        "caster sugar"
+      ],
+      "ar": [
+        "سكر ناعم"
+      ],
+      "tr": [
+        "ince toz şeker",
+        "ince toz seker"
+      ],
+      "de": [
+        "Feinzucker"
+      ],
+      "fr": [
+        "sucre semoule fin"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_pearl_sugar",
+    "code": "pearl_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 861,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر مرواریدی",
+        "normalized": "شکر مرواریدی",
+        "display": "شکر مرواریدی"
+      },
+      "en": {
+        "canonical": "pearl sugar",
+        "normalized": "pearl sugar",
+        "display": "Pearl sugar"
+      },
+      "ar": {
+        "canonical": "سكر لؤلؤي",
+        "normalized": "سکر لولوی",
+        "display": "سكر لؤلؤي"
+      },
+      "tr": {
+        "canonical": "inci şeker",
+        "normalized": "inci seker",
+        "display": "inci şeker"
+      },
+      "de": {
+        "canonical": "Hagelzucker",
+        "normalized": "hagelzucker",
+        "display": "Hagelzucker"
+      },
+      "fr": {
+        "canonical": "sucre perlé",
+        "normalized": "sucre perle",
+        "display": "sucre perlé"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر مرواریدی"
+      ],
+      "en": [
+        "pearl sugar"
+      ],
+      "ar": [
+        "سكر لؤلؤي"
+      ],
+      "tr": [
+        "inci şeker",
+        "inci seker"
+      ],
+      "de": [
+        "Hagelzucker"
+      ],
+      "fr": [
+        "sucre perlé",
+        "sucre perle"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکرمرواریدی",
+        "شکر مرواریدیی"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر مرواریدی",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "pearl sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر لؤلؤي",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "inci şeker",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Hagelzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre perlé",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "sugar"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sugar",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 332,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 80.7,
+      "fiber": 0,
+      "sugar": 70.0,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "pearl sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_golden_syrup",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر مرواریدی، شربت طلایی می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/pearl_sugar.webp",
+      "thumbnail": "/media/ingredients/pearl_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر مرواریدی / pearl sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_golden_syrup",
+          "reason": "same_family",
+          "differenceFa": "شکر مرواریدی با شربت طلایی از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر مرواریدی با شربت طلایی از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکرمرواریدی",
+        "شکر مرواریدیی"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر مرواریدی"
+      ],
+      "en": [
+        "pearl sugar"
+      ],
+      "ar": [
+        "سكر لؤلؤي"
+      ],
+      "tr": [
+        "inci şeker",
+        "inci seker"
+      ],
+      "de": [
+        "Hagelzucker"
+      ],
+      "fr": [
+        "sucre perlé",
+        "sucre perle"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_coconut_sugar",
+    "code": "coconut_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 862,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر نارگیل",
+        "normalized": "شکر نارگیل",
+        "display": "شکر نارگیل"
+      },
+      "en": {
+        "canonical": "coconut sugar",
+        "normalized": "coconut sugar",
+        "display": "Coconut sugar"
+      },
+      "ar": {
+        "canonical": "سكر جوز الهند",
+        "normalized": "سکر جوز الهند",
+        "display": "سكر جوز الهند"
+      },
+      "tr": {
+        "canonical": "Hindistan cevizi şekeri",
+        "normalized": "hindistan cevizi sekeri",
+        "display": "Hindistan cevizi şekeri"
+      },
+      "de": {
+        "canonical": "Kokosblütenzucker",
+        "normalized": "kokosblutenzucker",
+        "display": "Kokosblütenzucker"
+      },
+      "fr": {
+        "canonical": "sucre de coco",
+        "normalized": "sucre de coco",
+        "display": "sucre de coco"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر نارگیل"
+      ],
+      "en": [
+        "coconut sugar"
+      ],
+      "ar": [
+        "سكر جوز الهند"
+      ],
+      "tr": [
+        "Hindistan cevizi şekeri",
+        "hindistan cevizi sekeri"
+      ],
+      "de": [
+        "Kokosblütenzucker",
+        "kokosblutenzucker"
+      ],
+      "fr": [
+        "sucre de coco"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکرنارگیل",
+        "شکر نارگیلل"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر نارگیل",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "coconut sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر جوز الهند",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "Hindistan cevizi şekeri",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Kokosblütenzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre de coco",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "coconut"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "coconut",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 321,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 83.5,
+      "fiber": 0,
+      "sugar": 72.4,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "coconut sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_coconut_oil",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر نارگیل، روغن نارگیل می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/coconut_sugar.webp",
+      "thumbnail": "/media/ingredients/coconut_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر نارگیل / coconut sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_coconut_oil",
+          "reason": "same_family",
+          "differenceFa": "شکر نارگیل با روغن نارگیل از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر نارگیل با روغن نارگیل از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکرنارگیل",
+        "شکر نارگیلل"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر نارگیل"
+      ],
+      "en": [
+        "coconut sugar"
+      ],
+      "ar": [
+        "سكر جوز الهند"
+      ],
+      "tr": [
+        "Hindistan cevizi şekeri",
+        "hindistan cevizi sekeri"
+      ],
+      "de": [
+        "Kokosblütenzucker",
+        "kokosblutenzucker"
+      ],
+      "fr": [
+        "sucre de coco"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_palm_sugar",
+    "code": "palm_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 863,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر نخل",
+        "normalized": "شکر نخل",
+        "display": "شکر نخل"
+      },
+      "en": {
+        "canonical": "palm sugar",
+        "normalized": "palm sugar",
+        "display": "Palm sugar"
+      },
+      "ar": {
+        "canonical": "سكر النخيل",
+        "normalized": "سکر النخیل",
+        "display": "سكر النخيل"
+      },
+      "tr": {
+        "canonical": "palmiye şekeri",
+        "normalized": "palmiye sekeri",
+        "display": "palmiye şekeri"
+      },
+      "de": {
+        "canonical": "Palmzucker",
+        "normalized": "palmzucker",
+        "display": "Palmzucker"
+      },
+      "fr": {
+        "canonical": "sucre de palme",
+        "normalized": "sucre de palme",
+        "display": "sucre de palme"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر نخل"
+      ],
+      "en": [
+        "palm sugar"
+      ],
+      "ar": [
+        "سكر النخيل"
+      ],
+      "tr": [
+        "palmiye şekeri",
+        "palmiye sekeri"
+      ],
+      "de": [
+        "Palmzucker"
+      ],
+      "fr": [
+        "sucre de palme"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکرنخل",
+        "شکر نخلل"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر نخل",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "palm sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر النخيل",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "palmiye şekeri",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Palmzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre de palme",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "palm"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "palm",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 299,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 83.5,
+      "fiber": 0,
+      "sugar": 74.9,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "palm sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_hearts_of_palm",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر نخل، مغز نخل می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/palm_sugar.webp",
+      "thumbnail": "/media/ingredients/palm_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر نخل / palm sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_hearts_of_palm",
+          "reason": "same_family",
+          "differenceFa": "شکر نخل با مغز نخل از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر نخل با مغز نخل از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکرنخل",
+        "شکر نخلل"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر نخل"
+      ],
+      "en": [
+        "palm sugar"
+      ],
+      "ar": [
+        "سكر النخيل"
+      ],
+      "tr": [
+        "palmiye şekeri",
+        "palmiye sekeri"
+      ],
+      "de": [
+        "Palmzucker"
+      ],
+      "fr": [
+        "sucre de palme"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_date_sugar",
+    "code": "date_sugar",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B1000",
+      "batchSequence": 5,
+      "batchRecordNumber": 864,
+      "expansionBase": "700_approved_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شکر خرما",
+        "normalized": "شکر خرما",
+        "display": "شکر خرما"
+      },
+      "en": {
+        "canonical": "date sugar",
+        "normalized": "date sugar",
+        "display": "Date sugar"
+      },
+      "ar": {
+        "canonical": "سكر التمر",
+        "normalized": "سکر التمر",
+        "display": "سكر التمر"
+      },
+      "tr": {
+        "canonical": "hurma şekeri",
+        "normalized": "hurma sekeri",
+        "display": "hurma şekeri"
+      },
+      "de": {
+        "canonical": "Dattelzucker",
+        "normalized": "dattelzucker",
+        "display": "Dattelzucker"
+      },
+      "fr": {
+        "canonical": "sucre de datte",
+        "normalized": "sucre de datte",
+        "display": "sucre de datte"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شکر خرما"
+      ],
+      "en": [
+        "date sugar"
+      ],
+      "ar": [
+        "سكر التمر"
+      ],
+      "tr": [
+        "hurma şekeri",
+        "hurma sekeri"
+      ],
+      "de": [
+        "Dattelzucker"
+      ],
+      "fr": [
+        "sucre de datte"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شکر خرماا",
+        "شکرخرما"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شکر خرما",
+        "sweetener",
+        "sugar"
+      ],
+      "en": [
+        "date sugar",
+        "sweetener",
+        "sugar"
+      ],
+      "ar": [
+        "سكر التمر",
+        "sweetener",
+        "sugar"
+      ],
+      "tr": [
+        "hurma şekeri",
+        "sweetener",
+        "sugar"
+      ],
+      "de": [
+        "Dattelzucker",
+        "sweetener",
+        "sugar"
+      ],
+      "fr": [
+        "sucre de datte",
+        "sweetener",
+        "sugar"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sugar",
+      "family": "date"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "date",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "dehydrated"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": [],
+    "nutritionPer100g": {
+      "calories": 332,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 80.7,
+      "fiber": 0,
+      "sugar": 74.9,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "date sugar",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_1000_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T20:00:00+04:00"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "baking",
+        "sauces"
+      ],
+      "commonCookingMethods": [
+        "added_to_recipe",
+        "soaked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "dry",
+        "sliced",
+        "chopped"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و ساخت رسپی عمومی قابل استفاده است."
+      ],
+      "cautions": [
+        "برای رژیم درمانی یا ادعای پزشکی، nutrition source lock لازم است."
+      ],
+      "goodForGoals": [
+        "general_cooking"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_date_dried",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود شکر خرما، خرمای خشک می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/date_sugar.webp",
+      "thumbnail": "/media/ingredients/date_sugar-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شکر خرما / date sugar یک ماده غذایی با دسته‌بندی sweetener است. این رکورد برای resolver، ورود رسپی و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_date_dried",
+          "reason": "same_family",
+          "differenceFa": "شکر خرما با خرمای خشک از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "شکر خرما با خرمای خشک از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "شکر خرماا",
+        "شکرخرما"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، ابتدا recipeInputAliases سپس aliases و canonical names بررسی شوند."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "dry"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 3,
+      "dutch": 3,
+      "turkish": 3,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "mvp_complete_native_review_recommended",
+      "en": "mvp_complete_native_review_recommended",
+      "ar": "mvp_complete_native_review_recommended",
+      "tr": "mvp_complete_native_review_recommended",
+      "de": "mvp_complete_native_review_recommended",
+      "fr": "mvp_complete_native_review_recommended"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شکر خرما"
+      ],
+      "en": [
+        "date sugar"
+      ],
+      "ar": [
+        "سكر التمر"
+      ],
+      "tr": [
+        "hurma şekeri",
+        "hurma sekeri"
+      ],
+      "de": [
+        "Dattelzucker"
+      ],
+      "fr": [
+        "sucre de datte"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  }
+]

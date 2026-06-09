@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-06-08T19:21:47.609574+00:00",
+  "nutritionLayerImportedAsIngredient": false,
+  "ingredientRecordsMissingNamesCount": 0,
+  "ingredientRecordsMissingFaCanonicalCount": 0,
+  "ingredientRecordsMissingRecipeInputAliasesFaCount": 0,
+  "importSourcePathAllowed": true,
+  "allowedIngredientImportPaths": [
+    "Ingredient Dictionary/ingredient_dictionary_verified_structure_resolver_ready_1000_closeout_patch_02_1.json",
+    "Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json"
+  ]
+}

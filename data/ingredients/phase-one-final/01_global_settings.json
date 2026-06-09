@@ -1,0 +1,69 @@
+{
+  "languageSupport": [
+    "fa",
+    "en",
+    "ar",
+    "tr",
+    "de",
+    "fr"
+  ],
+  "normalizationRules": {
+    "fa": [
+      "ي -> ی",
+      "ك -> ک",
+      "remove Arabic diacritics",
+      "normalize half-space to regular space for search",
+      "collapse multiple spaces",
+      "trim text"
+    ],
+    "global": [
+      "lowercase latin text",
+      "trim text",
+      "remove duplicate spaces",
+      "remove diacritics for search keys"
+    ]
+  },
+  "qualityPolicy": {
+    "ingredientIdentity": "freezeable",
+    "recipeResolver": "freezeable",
+    "generalRecommendation": "mvp_ready",
+    "strictNutrition": "not_ready_until_sourceFoodIdLockedCount_equals_ingredientCount",
+    "doNotUseForMedicalDietClaims": true,
+    "nutritionLockPolicy": "productionNutritionLock remains false until every ingredient has exact sourceFoodId and audited nutrient extraction."
+  },
+  "resolverPolicy": {
+    "fallbackLookupOrder": [
+      "recipeInputAliases",
+      "aliases",
+      "names.canonical_normalized_display",
+      "searchKeywords"
+    ],
+    "requiresFallbackSupport": true,
+    "canonicalNamesInRecipeInputAliases": true,
+    "ambiguousTermsMustReturnCandidates": true,
+    "ambiguousResolverPolicyVersion": "resolver_ambiguity_policy_500_02",
+    "nutritionIsNotStrictDietLocked": true
+  },
+  "dictionaryStatus": {
+    "phase": "phase_one_final_closeout",
+    "name": "Garnish Food Data v2 — Phase-One Ingredient Dictionary — Verified Structure + Persian Resolver Ready — 1000 Closeout Patch 02",
+    "recipeImportReady": true,
+    "resolverReady": true,
+    "persianSearchReady": true,
+    "mvpRecommendationReady": true,
+    "mealPlannerMvpReady": true,
+    "structureCanBeFrozen": true,
+    "resolverCanBeFrozen": true,
+    "productionNutritionLock": false,
+    "readyForMedicalNutritionClaims": false,
+    "readyForStrictDietPlanning": false,
+    "noFurtherBatchExpansionRecommended": true,
+    "nextStep": "Import final closeout patch, build 50–100 real recipes, test resolver, then run nutrition source lock as a separate project.",
+    "phaseOneCloseoutPatch": "02.1",
+    "readyForRecipeImport": true,
+    "readyForMvpRecommendation": true,
+    "readyForMealPlannerMvp": true,
+    "phaseOneExpansionStopped": true,
+    "nextRecommendedStep": "Import final closeout patch 02.1, create 50-100 real recipes, then run resolver QA and nutrition source-lock enrichment as separate projects."
+  }
+}

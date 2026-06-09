@@ -1,15 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as express from 'express';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // سرو فایل‌های استاتیک از پوشهٔ uploads
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // فقط فیلدهای مجاز در DTO
-      forbidNonWhitelisted: true, // هر فیلد اضافی → خطای 400
-      transform: true,            // تبدیل خودکار نوع داده‌ها
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
@@ -21,6 +26,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  await app.listen(3000);
+  const port = parseInt(process.env.PORT || '3000', 10);
+  await app.listen(port);
 }
 bootstrap();

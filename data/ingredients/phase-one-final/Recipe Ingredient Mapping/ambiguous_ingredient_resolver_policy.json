@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 2,
+  "batchId": "GFD_V2_B001_PATCH_02",
+  "createdAt": "2026-06-08T12:28:00Z",
+  "policy": "Ambiguous generic inputs must not be resolved with high confidence. Use context, ingredient modifiers, cuisine, preparation method, and neighboring ingredients to boost confidence; otherwise send to review.",
+  "confidenceBands": {
+    "0.97-1.00": "direct canonical/alias match, low ambiguity",
+    "0.90-0.96": "safe default state match with mild ambiguity",
+    "0.80-0.89": "usable default for MVP, not strict; context boost recommended",
+    "<0.80": "needs context or review"
+  },
+  "ambiguousInputs": [
+    {
+      "canonicalInput": {
+        "fa": "شیر",
+        "en": "milk",
+        "ar": "حليب",
+        "tr": "süt",
+        "de": "milch",
+        "fr": "lait"
+      },
+      "defaultIngredientId": "ing_whole_milk",
+      "confidence": 0.88,
+      "ambiguityLevel": "medium",
+      "reason": "Milk without modifier may mean whole, skim, plant-based, or market-specific milk. Default is whole milk only for basic recipes.",
+      "possibleCandidates": [
+        "ing_whole_milk",
+        "ing_skim_milk",
+        "ing_soy_milk_unsweetened",
+        "ing_oat_milk_unsweetened",
+        "ing_almond_milk_unsweetened"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": false
+    },
+    {
+      "canonicalInput": {
+        "fa": "پیاز",
+        "en": "onion",
+        "ar": "بصل",
+        "tr": "soğan",
+        "de": "zwiebel",
+        "fr": "oignon"
+      },
+      "defaultIngredientId": "ing_onion_raw",
+      "confidence": 0.91,
+      "ambiguityLevel": "medium",
+      "reason": "Onion without color usually maps to generic/raw onion, but red onion is a separate ingredient.",
+      "possibleCandidates": [
+        "ing_onion_raw",
+        "ing_red_onion_raw"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": false
+    },
+    {
+      "canonicalInput": {
+        "fa": "لیمو",
+        "en": "lemon/lime",
+        "ar": "ليمون",
+        "tr": "limon",
+        "de": "zitrone/limette",
+        "fr": "citron/citron vert"
+      },
+      "defaultIngredientId": null,
+      "confidence": 0.55,
+      "ambiguityLevel": "high",
+      "reason": "Persian/Arabic لیمو/ليمون can refer to lemon or lime depending on locale and recipe context.",
+      "possibleCandidates": [
+        "ing_lemon_raw",
+        "ing_lime_raw"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": true
+    },
+    {
+      "canonicalInput": {
+        "fa": "لوبیا",
+        "en": "beans",
+        "ar": "فاصوليا",
+        "tr": "fasulye",
+        "de": "bohnen",
+        "fr": "haricots"
+      },
+      "defaultIngredientId": null,
+      "confidence": 0.5,
+      "ambiguityLevel": "high",
+      "reason": "Beans can mean green beans, kidney beans, black beans, pinto beans, etc. Context is required.",
+      "possibleCandidates": [
+        "ing_green_beans_raw",
+        "ing_kidney_beans_dry",
+        "ing_red_kidney_beans_canned_drained",
+        "ing_black_beans_dry",
+        "ing_pinto_beans_dry",
+        "ing_navy_beans_dry",
+        "ing_cannellini_beans_dry"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": true
+    },
+    {
+      "canonicalInput": {
+        "fa": "کلم",
+        "en": "cabbage",
+        "ar": "ملفوف",
+        "tr": "lahana",
+        "de": "kohl",
+        "fr": "chou"
+      },
+      "defaultIngredientId": "ing_cabbage_raw",
+      "confidence": 0.86,
+      "ambiguityLevel": "medium",
+      "reason": "Cabbage without color maps to green/white cabbage in many recipes, but red cabbage is separate.",
+      "possibleCandidates": [
+        "ing_cabbage_raw",
+        "ing_red_cabbage_raw"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": false
+    },
+    {
+      "canonicalInput": {
+        "fa": "گوشت گاو",
+        "en": "beef",
+        "ar": "لحم بقر",
+        "tr": "sığır eti",
+        "de": "rindfleisch",
+        "fr": "bœuf"
+      },
+      "defaultIngredientId": "ing_beef_lean_raw",
+      "confidence": 0.84,
+      "ambiguityLevel": "medium",
+      "reason": "Beef can mean lean beef, steak, ground beef, liver, or specific cuts. Default is lean raw beef for generic recipes.",
+      "possibleCandidates": [
+        "ing_beef_lean_raw",
+        "ing_ground_beef_raw",
+        "ing_beef_steak_raw",
+        "ing_beef_liver_raw"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": false
+    },
+    {
+      "canonicalInput": {
+        "fa": "سالمون",
+        "en": "salmon",
+        "ar": "سلمون",
+        "tr": "somon",
+        "de": "lachs",
+        "fr": "saumon"
+      },
+      "defaultIngredientId": "ing_salmon_raw",
+      "confidence": 0.88,
+      "ambiguityLevel": "medium",
+      "reason": "Salmon without modifier maps to raw salmon for recipe ingredients, but smoked salmon is separate.",
+      "possibleCandidates": [
+        "ing_salmon_raw",
+        "ing_smoked_salmon"
+      ],
+      "requiresContextBoost": true,
+      "reviewWhenContextMissing": false
+    }
+  ]
+}

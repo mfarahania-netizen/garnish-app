@@ -1,3 +1,4 @@
+// apps/server/src/recipes/recipes.service.ts
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -10,10 +11,12 @@ export class RecipesService {
   async findAll(skip = 0, take = 20, category?: string) {
     const where: any = {};
 
-    // اگر category داده شده باشد، فیلتر بر اساس آن اعمال شود
     if (category) {
-      // categories به صورت JSON string ذخیره می‌شود، پس از contains استفاده می‌کنیم
-      where.categories = { contains: category };
+      // استفاده از هر دو روش: searchTerms (دقیق) و categories (fallback)
+      where.OR = [
+        { searchTerms: { some: { term: { contains: category } } } },
+        { categories: { contains: category } },
+      ];
     }
 
     const [data, total] = await Promise.all([

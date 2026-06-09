@@ -1,3 +1,4 @@
+// apps/server/src/auth/jwt.strategy.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -18,15 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    // گرفتن کاربر از دیتابیس
     const user = await this.usersService.findById(payload.sub);
-    if (!user) {
-      return null; // کاربر وجود نداشته باشه → غیرمجاز
-    }
+    if (!user) return null;
     return {
       userId: user.id,
       phone: user.phone,
-      isAdmin: user.isAdmin,   // 👈 مستقیماً از دیتابیس
+      isAdmin: user.isAdmin,
     };
   }
 }

@@ -1,63 +1,41 @@
-import { Box, Text, Paper, Stack, ThemeIcon, Badge, Group } from '@mantine/core';
-import { IconClock, IconFlame } from '@tabler/icons-react';
+// features/ai-chat/components/MessageBubble.jsx
+import { Group, Avatar, Paper, Text, Box } from '@mantine/core';
+import { IconRobot, IconUser } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
-export default function MessageBubble({ message }) {
-  const isUser = message.role === 'user';
+export default function MessageBubble({ message, index }) {
+  const isUser = message.sender === 'user';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, type: 'spring', stiffness: 100 }}
       style={{
         display: 'flex',
         justifyContent: isUser ? 'flex-end' : 'flex-start',
         marginBottom: 12,
-        padding: '0 8px',
+        padding: '0 4px',
       }}
     >
-      <Paper
-        radius="lg"
-        p="sm"
-        style={{
-          maxWidth: '85%',
-          background: isUser ? '#1A237E' : '#fff',
-          color: isUser ? 'white' : '#000',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}
-      >
-        <Text size="sm" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
-          {message.content}
-        </Text>
-
-        {/* رسپی‌های پیشنهادی */}
-        {message.recipes?.length > 0 && (
-          <Stack mt="sm" gap="xs">
-            {message.recipes.map((r, idx) => (
-              <Paper key={idx} p="xs" radius="md" withBorder>
-                <Text size="sm" fw={600}>{r.title}</Text>
-                <Group gap="xs" mt={4}>
-                  {r.cookTime && (
-                    <Badge size="xs" variant="light" leftSection={<IconClock size={10} />}>
-                      {r.cookTime}
-                    </Badge>
-                  )}
-                  {r.difficulty && (
-                    <Badge size="xs" variant="light" leftSection={<IconFlame size={10} />}>
-                      {r.difficulty}
-                    </Badge>
-                  )}
-                </Group>
-                {r.missingIngredients?.length > 0 && (
-                  <Text size="xs" c="orange.6" mt={4}>
-                    🛒 مواد اضافی: {r.missingIngredients.join('، ')}
-                  </Text>
-                )}
-              </Paper>
-            ))}
-          </Stack>
-        )}
-      </Paper>
+      <Group gap="sm" align="flex-start" wrap="nowrap" style={{ maxWidth: '88%', flexDirection: isUser ? 'row-reverse' : 'row' }}>
+        <Avatar color={isUser ? 'blue' : 'orange'} radius="xl" size="md" style={{ flexShrink: 0 }}>
+          {isUser ? <IconUser size={18} /> : <IconRobot size={18} />}
+        </Avatar>
+        <Box
+          p="md"
+          style={{
+            background: isUser ? 'linear-gradient(135deg, #1e3a5f, #2a4a6b)' : 'rgba(255,255,255,0.07)',
+            borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+            border: `1px solid ${isUser ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}`,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          }}
+        >
+          <Text size="sm" style={{ color: '#fff', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {message.text}
+          </Text>
+        </Box>
+      </Group>
     </motion.div>
   );
 }

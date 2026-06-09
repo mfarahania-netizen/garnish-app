@@ -1,0 +1,4 @@
+{
+  "status": "schema_only",
+  "note": "Product/SKU layer is intentionally not imported as ingredient dictionary."
+}

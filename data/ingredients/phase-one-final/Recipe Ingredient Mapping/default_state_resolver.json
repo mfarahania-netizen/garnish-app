@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 2,
+  "batchId": "GFD_V2_B001_PATCH_02",
+  "createdAt": "2026-06-08T12:28:00Z",
+  "defaultStateRules": [
+    {
+      "ingredientGroup": "raw fresh produce",
+      "defaultState": "raw/fresh",
+      "examples": [
+        "ing_tomato_raw",
+        "ing_potato_raw",
+        "ing_onion_raw"
+      ],
+      "confidence": "0.90-0.98 depending on ambiguity"
+    },
+    {
+      "ingredientGroup": "dry grains and legumes",
+      "defaultState": "dry/raw",
+      "examples": [
+        "ing_white_rice_raw",
+        "ing_lentils_dry",
+        "ing_chickpeas_dry"
+      ],
+      "confidence": "0.94-0.98"
+    },
+    {
+      "ingredientGroup": "raw meat/poultry/seafood",
+      "defaultState": "raw",
+      "examples": [
+        "ing_chicken_breast_raw",
+        "ing_beef_lean_raw",
+        "ing_salmon_raw"
+      ],
+      "confidence": "0.88-0.98 depending on cut ambiguity"
+    },
+    {
+      "ingredientGroup": "dairy staples",
+      "defaultState": "as sold/plain unless specified",
+      "examples": [
+        "ing_whole_milk",
+        "ing_plain_yogurt",
+        "ing_butter_unsalted"
+      ],
+      "confidence": "0.84-0.96 depending on fat/type ambiguity"
+    },
+    {
+      "ingredientGroup": "processed generic ingredients",
+      "defaultState": "as sold/generic",
+      "examples": [
+        "ing_tomato_paste",
+        "ing_soy_sauce",
+        "ing_white_vinegar"
+      ],
+      "confidence": "0.90-0.98"
+    }
+  ],
+  "ambiguousPolicyFile": "Recipe Ingredient Mapping/ambiguous_ingredient_resolver_policy.json",
+  "hardRule": "Never resolve high-ambiguity terms above 0.80 without recipe context."
+}

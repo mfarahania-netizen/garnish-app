@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Container, Title, SimpleGrid, Skeleton, Text,
   useMantineColorScheme, Box, Group, ActionIcon, Alert
@@ -10,10 +10,11 @@ import RecipeCard from '../../../components/RecipeCard';
 import { IconAlertTriangle, IconArrowUp, IconCategory } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
-import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
+import { EventType } from '../../../lib/eventTaxonomy';
 
 export default function CategoryPage() {
   const { keyword } = useParams();
+  const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === 'dark';
@@ -93,7 +94,10 @@ export default function CategoryPage() {
           >
             <RecipeCard
               recipe={recipe}
-              onClick={() => trackEvent(EventType.CATEGORY_RECIPE_CLICK, { recipeId: recipe.id, title: recipe.title, keyword })}
+              onClick={() => {
+                trackEvent(EventType.CATEGORY_RECIPE_CLICK, { recipeId: recipe.id, title: recipe.title, keyword });
+                navigate(`/recipe/${recipe.id}`);
+              }}
             />
           </motion.div>
         ))}

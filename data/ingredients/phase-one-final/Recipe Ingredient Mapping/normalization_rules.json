@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "2.0-phase-one-closeout-patch-02.1",
+  "status": "archive_support_file_only_does_not_modify_ingredient_dictionary",
+  "source": "wrapper.normalizationRules + Persian culinary closeout rules",
+  "languageSupport": [
+    "fa",
+    "en",
+    "ar",
+    "tr",
+    "de",
+    "fr"
+  ],
+  "rules": {
+    "fa": [
+      "ي -> ی",
+      "ك -> ک",
+      "remove Arabic diacritics",
+      "normalize half-space to regular space for search",
+      "collapse multiple spaces",
+      "trim text"
+    ],
+    "global": [
+      "lowercase latin text",
+      "trim text",
+      "remove duplicate spaces",
+      "remove diacritics for search keys"
+    ]
+  },
+  "persianResolverRules": {
+    "arabicToPersian": {
+      "ي": "ی",
+      "ك": "ک"
+    },
+    "remove": [
+      "Arabic diacritics",
+      "tatweel/kashida",
+      "extra spaces"
+    ],
+    "halfSpaceEquivalenceExamples": [
+      "سیب زمینی = سیب‌زمینی",
+      "چرخ کرده = چرخ‌کرده",
+      "آسیاب شده = آسیاب‌شده",
+      "دم کرده = دم‌کرده"
+    ],
+    "spacingEquivalenceExamples": [
+      "آب غوره = آبغوره",
+      "لیمو عمانی = لیموعمانی",
+      "تمر هندی = تمرهندی"
+    ],
+    "controlledLexicalVariants": [
+      "قورمه/قرمه",
+      "آش/اش",
+      "نعناع/نعنا",
+      "خشك/خشک"
+    ],
+    "doNotGlobalNormalize": [
+      "Do not globally rewrite قور to قر",
+      "Do not treat dish names as ingredients without ingredient-line context"
+    ]
+  },
+  "resolverFallbackOrder": [
+    "recipeInputAliases",
+    "aliases",
+    "names.canonical_normalized_display",
+    "searchKeywords"
+  ]
+}

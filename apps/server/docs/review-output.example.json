@@ -1,0 +1,132 @@
+{
+  "userId": "review-fitness-1",
+  "summary": {
+    "quality": {
+      "metricName": "recommendation_quality",
+      "metricValue": 88.4,
+      "period": "daily"
+    },
+    "reward": {
+      "metricName": "recommendation_reward",
+      "metricValue": 63.1,
+      "period": "daily"
+    },
+    "attribution": {
+      "windowDays": 14,
+      "impressions": 420,
+      "clicks": 168,
+      "saves": 92,
+      "cooks": 51,
+      "dismisses": 36,
+      "clickThroughRate": 0.4,
+      "saveRate": 0.55,
+      "cookRate": 0.55,
+      "frictionRate": 0.09
+    },
+    "metrics": {
+      "7d": {
+        "windowDays": 7,
+        "totalImpressions": 420,
+        "totalClicks": 168,
+        "totalSaves": 92,
+        "totalCooks": 51,
+        "totalDismisses": 36,
+        "totalExposures": 438,
+        "clickThroughRate": 0.4,
+        "saveRate": 0.55,
+        "cookRate": 0.55,
+        "frictionRate": 0.09,
+        "recommendationQuality": 88.4,
+        "recommendationReward": 63.1
+      }
+    },
+    "topSignals": [
+      { "signalName": "likes_high_protein", "value": 0.94 },
+      { "signalName": "meal_planner", "value": 0.81 },
+      { "signalName": "goal_adherence", "value": 0.76 }
+    ],
+    "topFeatureImportance": [
+      { "featureKey": "tasteAffinity", "contribution": 0.74 },
+      { "featureKey": "outcomeFit", "contribution": 0.61 },
+      { "featureKey": "behaviorFit", "contribution": 0.58 }
+    ]
+  },
+  "metrics": {
+    "metrics": {
+      "7d": {
+        "windowDays": 7,
+        "recommendationQuality": 88.4,
+        "recommendationReward": 63.1,
+        "clickThroughRate": 0.4,
+        "saveRate": 0.55,
+        "cookRate": 0.55,
+        "frictionRate": 0.09
+      },
+      "30d": {
+        "windowDays": 30,
+        "recommendationQuality": 84.2,
+        "recommendationReward": 58.7,
+        "clickThroughRate": 0.37,
+        "saveRate": 0.49,
+        "cookRate": 0.48,
+        "frictionRate": 0.11
+      },
+      "90d": {
+        "windowDays": 90,
+        "recommendationQuality": 81.9,
+        "recommendationReward": 55.6,
+        "clickThroughRate": 0.34,
+        "saveRate": 0.45,
+        "cookRate": 0.42,
+        "frictionRate": 0.12
+      }
+    }
+  },
+  "governance": {
+    "governance": {
+      "retentionPolicyDays": 365,
+      "activeExperiment": {
+        "id": "exp-ranking-v2",
+        "name": "ranking-v2"
+      },
+      "activeAssignments": 60,
+      "recentEventVolume": 12480,
+      "totalUsers": 60
+    }
+  },
+  "compare": {
+    "candidateCount": 20,
+    "scenarios": {
+      "fitness": [
+        {
+          "recipeId": "r-1",
+          "title": "جوجه کباب زعفرانی",
+          "finalScore": 0.93,
+          "matchedSignals": ["likes_high_protein", "meal_planner", "goal_adherence"]
+        },
+        {
+          "recipeId": "r-2",
+          "title": "سالاد پروتئینی",
+          "finalScore": 0.91,
+          "matchedSignals": ["likes_healthy", "likes_high_protein"]
+        }
+      ],
+      "family": [
+        {
+          "recipeId": "r-9",
+          "title": "خوراک گوشت و سیب زمینی",
+          "finalScore": 0.89,
+          "matchedSignals": ["family_meal_planner", "weekend_cook"]
+        }
+      ],
+      "budget": [
+        {
+          "recipeId": "r-15",
+          "title": "عدسی اقتصادی",
+          "finalScore": 0.94,
+          "matchedSignals": ["budget_sensitive", "time_poor"]
+        }
+      ]
+    }
+  }
+}

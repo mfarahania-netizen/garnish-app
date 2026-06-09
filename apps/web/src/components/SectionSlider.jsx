@@ -4,7 +4,8 @@ import { Autoplay, Pagination, A11y } from 'swiper/modules';
 import RecipeCard from './RecipeCard';
 
 export default function SectionSlider({ title, recipes }) {
-  if (!recipes.length) return null;
+  if (!recipes || recipes.length === 0) return null;
+
   return (
     <div style={{ marginBottom: 32 }}>
       <Group justify="space-between" mb="md">
@@ -17,11 +18,13 @@ export default function SectionSlider({ title, recipes }) {
         pagination={{ clickable: true }}
         spaceBetween={16}
         slidesPerView={1}
-        observer={true}
-        observeParents={true}
         style={{ paddingBottom: 32 }}
       >
-        {recipes.map(recipe => <SwiperSlide key={recipe.id}><RecipeCard recipe={recipe} /></SwiperSlide>)}
+        {recipes.map(recipe => (
+          <SwiperSlide key={recipe.id}>
+            <RecipeCard recipe={recipe} />
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

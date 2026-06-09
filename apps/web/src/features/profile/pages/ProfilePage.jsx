@@ -1,3 +1,4 @@
+// features/profile/pages/ProfilePage.jsx
 import { useMemo, useRef, useState, useEffect } from 'react';
 import {
   Container, Paper, Group, Text, Avatar, Button,
@@ -11,10 +12,11 @@ import { useAuth } from '../../../context/AuthContext';
 import {
   IconEdit, IconLogout, IconSettings, IconCamera,
   IconHeart, IconTrophy, IconPencil, IconCalendar,
-  IconChevronLeft, IconArrowUp, IconUser, IconCheck
+  IconChevronLeft, IconArrowUp, IconUser
 } from '@tabler/icons-react';
 import { useProfileQuery } from '../../../hooks/useProfileQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
+import apiClient from '../../../lib/apiClient'; // 🆕
 
 const chefLevels = [
   { minXP: 0, title: 'نوآموز', color: 'gray' },
@@ -35,11 +37,8 @@ export default function ProfilePage() {
   const [newName, setNewName] = useState('');
   const fileInputRef = useRef(null);
 
-  // 👇 فقط وقتی کاربر واقعاً لاگین کرده، analytics شلیک کن
   useEffect(() => {
-    if (user) {
-      trackEvent('profile_view');
-    }
+    if (user) trackEvent('profile_view');
   }, [user]);
 
   const totalXP = stats.recipeCount * 10 + stats.favoriteCount * 5 + stats.plannedMeals * 3;
@@ -55,14 +54,21 @@ export default function ProfilePage() {
     ? ((totalXP - currentLevel.minXP) / (nextLevel.minXP - currentLevel.minXP)) * 100
     : 100;
 
-  const handleAvatarChange = (file) => {
+  // 🆕 آپلود واقعی و ذخیره URL
+  const handleAvatarChange = async (file) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateAvatar(reader.result);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const { data } = await apiClient.post('/upload/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      updateAvatar(data.avatarUrl);
       trackEvent('avatar_change');
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('آپلود آواتار ناموفق بود:', err);
+    }
   };
 
   const handleSaveName = async () => {
@@ -144,7 +150,13 @@ export default function ProfilePage() {
 
         <Group wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ position: 'relative' }}>
-            <Avatar size={64} radius="xl" src={profile.avatar} color="white" style={{ border: '3px solid rgba(255,255,255,0.3)' }}>
+            <Avatar
+              size={64}
+              radius="xl"
+              src={profile.avatar ? `http://localhost:3000${profile.avatar}` : undefined}
+              color="white"
+              style={{ border: '3px solid rgba(255,255,255,0.3)' }}
+            >
               {!profile.avatar && <Text size={26}>{profile.name?.charAt(0) || user.name?.charAt(0)}</Text>}
             </Avatar>
             <ActionIcon

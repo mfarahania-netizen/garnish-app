@@ -1,0 +1,37 @@
+// packages/shared/types/events.types.ts
+
+export const EVENT_TYPES = [
+  'login', 'register', 'logout', 'profile_edit', 'avatar_change',
+  'page_view', 'session_start', 'session_end',
+  'banner_click', 'category_click', 'category_view',
+  'view_all_recipes_click', 'ai_chat_button_click', 'today_special_click', 'filter_use',
+  'home_scroll_to_bottom', 'admin_tab_change',
+  'search_query', 'search_result_click', 'voice_search_start', 'voice_search_success', 'voice_search_error',
+  'mealplan_add', 'mealplan_remove', 'mealplan_generate', 'mealplan_clear',
+  'shopping_item_add', 'shopping_item_toggle', 'shopping_item_remove',
+  'nutrition_expand', 'nutrition_collapse', 'nutrition_read',
+  'timing_expand', 'timing_collapse', 'timing_read',
+  'features_expand', 'features_collapse', 'features_read',
+  'ingredients_expand', 'ingredients_collapse', 'ingredients_read',
+  'tools_expand', 'tools_collapse', 'tools_read',
+  'steps_expand', 'steps_collapse', 'steps_read',
+  'tips_expand', 'tips_collapse', 'tips_read',
+  'faq_expand', 'faq_collapse', 'faq_read',
+  'recipe_scroll_to_bottom',
+  'family_member_add', 'family_plan_create',
+  'streak_update', 'goal_complete',
+  'ai_message_send', 'ai_response_like', 'ai_response_dislike',
+  'ai_chat_started', 'ai_suggestion_generated', 'ai_error',
+  'admin_view', 'admin_ticket_reply', 'admin_ticket_status', 'admin_recipe_approve', 'admin_recipe_reject',
+  'recipe_view', 'recipe_share', 'favorite_add', 'favorite_remove',
+  'start_cooking_click', 'excerpt_toggle', 'add_recipe_view', 'add_recipe_submit', 'add_recipe_error',
+  'my_recipes_view', 'my_recipe_click',
+  'profile_view', 'badge_view', 'profile_navigate', 'preference_update',
+  'allergy_changed', 'diet_changed', 'skill_changed', 'allergy_cleared', 'preference_edit_start',
+  'notifications_view', 'notification_generate', 'notification_read', 'notification_delete', 'notification_filter',
+  'support_ticket_create', 'support_ticket_close', 'ticket_create', 'ticket_reply', 'ticket_close',
+  'support_contact_click',
+  'favorite_view', 'shopping_add_from_fav',
+] as const;
+
+export type EventType = typeof EVENT_TYPES[number];

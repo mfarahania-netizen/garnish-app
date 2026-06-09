@@ -1,7 +1,8 @@
+// apps/server/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ScheduleModule } from '@nestjs/schedule';   // 👈 جدید
+import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { PrismaModule } from './prisma/prisma.module';
@@ -18,11 +19,13 @@ import { AdminModule } from './admin/admin.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { BehaviorEngineModule } from './behavior-engine/behavior-engine.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { OutcomesModule } from './outcomes/outcomes.module';
+import { ExperimentationModule } from './experimentation/experimentation.module';
+import { GovernanceModule } from './governance/governance.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),   // 👈 فقط یک بار اینجا
-
+    ScheduleModule.forRoot(),
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => ({
@@ -32,12 +35,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
         ttl: 60 * 60,
       }),
     }),
-
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 30,
-    }]),
-
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 200 }]),
     PrismaModule,
     RecipesModule,
     UsersModule,
@@ -52,12 +50,10 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     AnalyticsModule,
     BehaviorEngineModule,
     RecommendationModule,
+    OutcomesModule,
+    ExperimentationModule,
+    GovernanceModule,
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-  ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

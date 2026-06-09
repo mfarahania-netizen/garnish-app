@@ -1,3 +1,4 @@
+// apps/server/prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +13,7 @@ model User {
   phone     String?  @unique
   email     String?  @unique
   name      String?
+  avatar    String?   // 🆕 آواتار کاربر
   password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,6 +27,9 @@ model User {
   tickets            SupportTicket[]
   sessions           UserSession[]
   events             UserEvent[]
+  recommendationExposures RecommendationExposure[]
+  featureContributionLogs FeatureContributionLog[]
+  recommendationAttributions RecommendationAttributionEvent[]
   profile            UserBehaviorProfile?
   isAdmin            Boolean  @default(false)
   auditLogs          UserAuditLog[]
@@ -32,7 +37,6 @@ model User {
   consentLogs        ConsentLog[]
   preferenceHistories PreferenceHistory[]
   
-  // روابط جدید many-to-many
   allergies          UserAllergy[]
   cuisines           UserCuisine[]
   healthGoals        UserHealthGoal[]
@@ -140,6 +144,9 @@ model Recipe {
   searchTerms    SearchTerm[]
   favoriteBy     FavoriteRecipe[]
   mealSlots      MealSlot[]
+  recommendationExposures RecommendationExposure[]
+  featureContributionLogs FeatureContributionLog[]
+  recommendationAttributionEvents RecommendationAttributionEvent[]
 }
 
 model RecipeIngredient {
@@ -202,6 +209,8 @@ model MealPlan {
   updatedAt DateTime @updatedAt
 
   slots     MealSlot[]
+
+  @@unique([userId, weekStart])
 }
 
 model MealSlot {
@@ -287,20 +296,22 @@ model UserSession {
 }
 
 model UserEvent {
-  id        String      @id @default(uuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  type      String
-  timestamp DateTime    @default(now())
-  sessionId String?
-  session   UserSession? @relation(fields: [sessionId], references: [id])
-  page      String?
-  duration  Int?
-  payload   String?
-  enrichment String?
+  id                  String               @id @default(uuid())
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id])
+  type                String
+  timestamp           DateTime             @default(now())
+  sessionId           String?
+  session             UserSession?         @relation(fields: [sessionId], references: [id])
+  page                String?
+  duration            Int?
+  payload             String?
+  enrichment          String?
+  signalObservations  SignalObservation[]  // 👈 اضافه شد
 
   @@index([userId, type, timestamp])
   @@index([timestamp])
+  @@index([type])
 }
 
 model UserBehaviorProfile {
@@ -338,8 +349,8 @@ model UserAuditLog {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  action    String   // e.g., LOGIN, LOGOUT, PROFILE_UPDATE, PASSWORD_CHANGE, DELETE_ACCOUNT
-  details   String?  // JSON string containing extra metadata (IP, device, etc.)
+  action    String
+  details   String?
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
@@ -351,9 +362,9 @@ model DataAccessLog {
   id         String   @id @default(uuid())
   userId     String?
   user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  resource   String   // e.g., RECIPE, PREFERENCES, SHOPPING_LIST
-  action     String   // READ, EXPORT, SHARE
-  details    String?  // additional info
+  resource   String
+  action     String
+  details    String?
   ip         String?
   accessedAt DateTime @default(now())
 
@@ -364,7 +375,7 @@ model ConsentLog {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type      String   // e.g., DATA_COLLECTION, MARKETING, COOKIES
+  type      String
   granted   Boolean  @default(true)
   ip        String?
   createdAt DateTime @default(now())
@@ -377,10 +388,234 @@ model PreferenceHistory {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fieldName  String   // e.g., diet, allergies, budget
-  oldValue   String?  // JSON
-  newValue   String?  // JSON
+  fieldName  String
+  oldValue   String?
+  newValue   String?
   changedAt  DateTime @default(now())
 
   @@index([userId, changedAt])
+}
+
+// ===== 🆕 مدل‌های Feature Store =====
+
+model UserFeatureVector {
+  userId    String   @id
+  features  Json
+  version   Int      @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model UserFeature {
+  id         String   @id @default(uuid())
+  userId     String
+  featureKey String
+  value      Float    @default(0.0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, featureKey])
+  @@index([featureKey, value])
+}
+
+// ===== 🆕 مدل‌های لایه Outcomes =====
+
+model UserOutcome {
+  id                String   @id @default(uuid())
+  userId            String
+  metricName        String
+  baselineValue     Float?
+  metricValue       Float    @default(0.0)
+  improvementPercent Float?
+  trend             Float?
+  period            String   @default("weekly")
+  sources           Json?
+  recordedAt        DateTime @default(now())
+
+  @@index([userId, metricName, recordedAt])
+}
+
+// ===== 🆕 مدل‌های Identity =====
+
+model UserIdentityDimension {
+  userId          String
+  dimensionKey    String
+  value           Float    @default(0.0)
+  confidence      Float    @default(0.0)
+  evidenceCount   Int      @default(0)
+  lastEvidenceAt  DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@id([userId, dimensionKey])
+}
+
+model UserBehaviorTimeline {
+  id            String   @id @default(uuid())
+  userId        String
+  dimensionKey  String
+  value         Float
+  recordedAt    DateTime @default(now())
+
+  @@index([userId, dimensionKey, recordedAt])
+}
+
+// ===== 🆕 مدل‌های Behavioral Signals =====
+
+model SignalObservation {
+  id          String   @id @default(uuid())
+  userId      String
+  signalName  String
+  eventId     String
+  weight      Float    @default(0.0)
+  observedAt  DateTime @default(now())
+  
+  event       UserEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model RecommendationExposure {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId     String
+  recipe       Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  source       String   @default("recommendation")
+  viewedAt     DateTime @default(now())
+  scorePenalty Float    @default(0.0)
+
+  @@index([userId, recipeId, viewedAt])
+}
+
+model FeatureContributionLog {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId     String
+  recipe       Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  featureKey   String
+  contribution Float
+  finalScore   Float
+  createdAt    DateTime @default(now())
+
+  @@index([userId, recipeId, createdAt])
+  @@index([featureKey, contribution])
+}
+
+model RecommendationAttributionEvent {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId    String
+  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  eventType   String
+  value       Float    @default(0.0)
+  source      String   @default("recommendation")
+  occurredAt  DateTime @default(now())
+
+  @@index([userId, recipeId, occurredAt])
+  @@index([eventType, value])
+}
+
+model RecommendationMetrics {
+  id                  String   @id @default(uuid())
+  metricDate          DateTime @default(now())
+  windowDays          Int      @default(7)
+  totalImpressions    Int      @default(0)
+  totalClicks         Int      @default(0)
+  totalSaves          Int      @default(0)
+  totalCooks          Int      @default(0)
+  totalDismisses      Int      @default(0)
+  totalExposures      Int      @default(0)
+  clickThroughRate    Float    @default(0.0)
+  saveRate            Float    @default(0.0)
+  cookRate            Float    @default(0.0)
+  frictionRate        Float    @default(0.0)
+  recommendationQuality Float  @default(0.0)
+  recommendationReward  Float  @default(0.0)
+  topSignals          Json?
+  topFeatures         Json?
+  createdAt           DateTime @default(now())
+
+  @@unique([metricDate, windowDays])
+  @@index([metricDate, windowDays])
+}
+
+model UserBehaviorSignal {
+  userId        String
+  signalName    String
+  signalDomain  String
+  signalType    String
+  value         Float    @default(0.0)
+  confidence    Float    @default(0.0)
+  sampleSize    Int      @default(0)
+  consistency   Float    @default(0.0)
+  halfLifeDays  Int      @default(30)
+  lastDetected  DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@id([userId, signalName])
+}
+
+// ===== 🆕 Domain Snapshots =====
+
+model UserEngagementSnapshot {
+  userId                  String   @id
+  avgSessionDuration      Float    @default(0.0)
+  avgTimeBetweenSessions  Float    @default(0.0)
+  daysSinceLastMealPlan   Int      @default(0)
+  activeDaysLast30        Int      @default(0)
+  schemaVersion           Int      @default(1)
+  updatedAt               DateTime @updatedAt
+}
+
+model UserHealthSnapshot {
+  userId                  String   @id
+  mealPlanCompletionRate  Float    @default(0.0)
+  goalCompletionRate      Float    @default(0.0)
+  nutritionViewFrequency  Float    @default(0.0)
+  hasActiveHealthGoal     Boolean  @default(false)
+  schemaVersion           Int      @default(1)
+  updatedAt               DateTime @updatedAt
+}
+
+model UserIdentitySnapshot {
+  userId                  String   @id
+  recipeSaveRate          Float    @default(0.0)
+  recipeCookRate          Float    @default(0.0)
+  shoppingCompletionRate  Float    @default(0.0)
+  aiAcceptanceRate        Float    @default(0.0)
+  aiDismissRate           Float    @default(0.0)
+  schemaVersion           Int      @default(1)
+  updatedAt               DateTime @updatedAt
+}
+
+model UserRetentionSnapshot {
+  userId                String   @id
+  daysSinceLastActive   Int      @default(0)
+  sessionTrend          Float    @default(0.0)
+  engagementTrend       Float    @default(0.0)
+  retentionScore        Float    @default(0.0)
+  churnRisk             Float    @default(0.0)
+  schemaVersion         Int      @default(1)
+  updatedAt             DateTime @updatedAt
+}
+// ===== 🆕 مدل‌های A/B Testing =====
+
+model Experiment {
+  id        String   @id @default(uuid())
+  name      String
+  variantA  Json     // وزن‌های گروه A
+  variantB  Json     // وزن‌های گروه B
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  assignments ExperimentAssignment[]
+}
+
+model ExperimentAssignment {
+  id           String     @id @default(uuid())
+  userId       String
+  experimentId String
+  variant      String     // "A" or "B"
+  experiment   Experiment @relation(fields: [experimentId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, experimentId])
 }

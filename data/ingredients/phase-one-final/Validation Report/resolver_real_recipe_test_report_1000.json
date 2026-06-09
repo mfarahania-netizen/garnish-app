@@ -1,0 +1,10 @@
+{
+  "testCasesCount": 106,
+  "passCount": 104,
+  "failCount": 2,
+  "passRate": 0.9811,
+  "wrongHighConfidenceMatchCount": 1,
+  "dishNameResolvedAsIngredientWrongly": 0,
+  "unresolvedHighFrequencyTerms": 1,
+  "ambiguousTermsHandledByPolicy": true
+}

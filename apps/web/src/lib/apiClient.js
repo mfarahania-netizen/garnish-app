@@ -1,3 +1,4 @@
+// apps/web/src/lib/apiClient.js
 import axios from 'axios';
 
 const apiClient = axios.create({
@@ -7,7 +8,7 @@ const apiClient = axios.create({
   },
 });
 
-// افزودن interceptor برای تزریق خودکار توکن
+// درخواست interceptor – توکن را از localStorage می‌خواند و به هدر اضافه می‌کند
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -17,6 +18,21 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// 🆕 پاسخ interceptor – مدیریت 401 Unauthorized
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      // اگر در صفحهٔ admin نیستیم، به صفحهٔ auth هدایت شود
+      if (!window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/auth';
+      }
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

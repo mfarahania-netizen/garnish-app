@@ -1,0 +1,21 @@
+{
+  "ghormehSabziAliasCoveragePass": true,
+  "kashkDefaultResolverFixed": true,
+  "tarehMarzehSabziKhordanHandled": true,
+  "iranianSpacingHalfSpaceVariantsCovered": true,
+  "aliasesPatchedFor": [
+    "ghormeh_sabzi",
+    "kashk",
+    "tareh",
+    "savory",
+    "sabzi_khordan",
+    "ash_sabzi",
+    "kookoo_sabzi",
+    "reshteh",
+    "verjuice",
+    "dried_lime",
+    "barberries",
+    "pomegranate_molasses",
+    "persian_spices"
+  ]
+}

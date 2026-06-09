@@ -1,0 +1,9 @@
+{
+  "phase": "phase_one_closeout_patch_02_1",
+  "base": "1000 closeout patch 02",
+  "newExpansionBatchCreated": false,
+  "criticalHotfixAdditionsInPatch021": 0,
+  "notes": [
+    "No new ingredient was added in 02.1; existing nigella record owns siāhdāneh aliases; Persian black cumin record no longer owns nigella/black seed aliases."
+  ]
+}

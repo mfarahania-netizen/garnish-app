@@ -1,3 +1,4 @@
+// apps/server/src/users/dto/update-profile.dto.ts
 import { IsOptional, IsString, IsEmail } from 'class-validator';
 
 export class UpdateProfileDto {
@@ -8,4 +9,8 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;   // 🆕 برای ذخیره URL آواتار
 }

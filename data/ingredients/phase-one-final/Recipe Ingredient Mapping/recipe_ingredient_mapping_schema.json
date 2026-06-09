@@ -1,0 +1,47 @@
+{
+  "schemaName": "Garnish Recipe Ingredient Mapping Schema",
+  "schemaVersion": "2.0-phase-one-closeout-patch-02.1",
+  "purpose": "Map raw recipe ingredient lines to stable Garnish ingredientId values without duplicating ingredient identity.",
+  "status": "archive_support_file_only_does_not_modify_ingredient_dictionary",
+  "requiredFields": {
+    "recipeId": "string",
+    "lineId": "string",
+    "rawIngredientText": "string",
+    "normalizedIngredientText": "string",
+    "matchedIngredientId": "string | null",
+    "matchStatus": "matched | ambiguous | unresolved | dish_context_not_ingredient",
+    "confidence": "number 0..1",
+    "resolverPath": [
+      "recipeInputAliases",
+      "aliases",
+      "names",
+      "searchKeywords",
+      "ambiguousPolicy",
+      "manualReview"
+    ],
+    "needsReview": "boolean"
+  },
+  "recommendedFields": {
+    "quantity": "number | null",
+    "unit": "string | null",
+    "preparationText": "string | null",
+    "ingredientStateHint": "raw | cooked | dry | fresh | canned | frozen | liquid | paste | powder | unknown",
+    "alternativeIngredientIds": "array<string>",
+    "ambiguityLevel": "none | low | medium | high",
+    "resolverRuleApplied": "string | null",
+    "notesFa": "string | null"
+  },
+  "qualityRules": [
+    "matchedIngredientId must exist in Ingredient Dictionary when matchStatus is matched.",
+    "High ambiguity terms must not be resolved with confidence above 0.92 unless context disambiguates them.",
+    "Dish names such as قورمه سبزی or آش رشته must not be treated as ingredient IDs unless the ingredient line explicitly refers to an ingredient mix.",
+    "Do not import Nutrition Source Layer records as ingredient records."
+  ],
+  "importSafety": {
+    "allowedIngredientDictionaryPaths": [
+      "Ingredient Dictionary/ingredient_dictionary_verified_structure_resolver_ready_1000_closeout_patch_02_1.json",
+      "Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json"
+    ],
+    "rejectNutritionLayerAsIngredient": true
+  }
+}

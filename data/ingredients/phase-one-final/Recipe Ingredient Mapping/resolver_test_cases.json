@@ -1,0 +1,961 @@
+{
+  "schemaVersion": "2.0-phase-one-closeout-patch-02.1",
+  "status": "archive_support_file_only_does_not_modify_ingredient_dictionary",
+  "caseCount": 106,
+  "cases": [
+    {
+      "inputText": "سینه مرغ",
+      "language": "fa",
+      "expectedIngredientId": "ing_chicken_breast_raw",
+      "actualIngredientId": "ing_chicken_breast_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "ران مرغ",
+      "language": "fa",
+      "expectedIngredientId": "ing_chicken_thigh_raw",
+      "actualIngredientId": "ing_chicken_thigh_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گوشت چرخ کرده",
+      "language": "fa",
+      "expectedIngredientId": "ing_ground_beef_raw",
+      "actualIngredientId": "ing_ground_beef_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گوشت گوسفندی",
+      "language": "fa",
+      "expectedIngredientId": "ing_lamb_meat_raw",
+      "actualIngredientId": "ing_lamb_meat_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "برنج",
+      "language": "fa",
+      "expectedIngredientId": "ing_white_rice_raw",
+      "actualIngredientId": "ing_white_rice_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "برنج باسماتی",
+      "language": "fa",
+      "expectedIngredientId": "ing_basmati_rice_raw",
+      "actualIngredientId": "ing_basmati_rice_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پیاز",
+      "language": "fa",
+      "expectedIngredientId": "ing_onion_raw",
+      "actualIngredientId": "ing_onion_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سیر",
+      "language": "fa",
+      "expectedIngredientId": "ing_garlic_raw",
+      "actualIngredientId": "ing_garlic_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رب گوجه",
+      "language": "fa",
+      "expectedIngredientId": "ing_tomato_paste",
+      "actualIngredientId": "ing_tomato_paste",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گوجه فرنگی",
+      "language": "fa",
+      "expectedIngredientId": "ing_tomato_raw",
+      "actualIngredientId": "ing_tomato_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گوجه‌فرنگی خرد شده",
+      "language": "fa",
+      "expectedIngredientId": "ing_canned_diced_tomatoes",
+      "actualIngredientId": "ing_tomato_raw",
+      "confidence": 0.92,
+      "resolverStatus": "resolved_by_fallback_contains",
+      "status": "fail"
+    },
+    {
+      "inputText": "سیب زمینی",
+      "language": "fa",
+      "expectedIngredientId": "ing_potato_raw",
+      "actualIngredientId": "ing_potato_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سیب‌زمینی",
+      "language": "fa",
+      "expectedIngredientId": "ing_potato_raw",
+      "actualIngredientId": "ing_potato_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تخم مرغ",
+      "language": "fa",
+      "expectedIngredientId": "ing_whole_egg_raw",
+      "actualIngredientId": "ing_whole_egg_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تخم‌مرغ",
+      "language": "fa",
+      "expectedIngredientId": "ing_whole_egg_raw",
+      "actualIngredientId": "ing_whole_egg_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "شیر",
+      "language": "fa",
+      "expectedIngredientId": "ing_whole_milk",
+      "actualIngredientId": "ing_whole_milk",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "خامه",
+      "language": "fa",
+      "expectedIngredientId": "ing_heavy_cream",
+      "actualIngredientId": "ing_heavy_cream",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "ماست",
+      "language": "fa",
+      "expectedIngredientId": "ing_plain_yogurt",
+      "actualIngredientId": "ing_plain_yogurt",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "کشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_liquid",
+      "actualIngredientId": "ing_kashk_liquid",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زرشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_barberries_dry",
+      "actualIngredientId": "ing_barberries_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زعفران",
+      "language": "fa",
+      "expectedIngredientId": "ing_saffron",
+      "actualIngredientId": "ing_saffron",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "نعناع خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_mint",
+      "actualIngredientId": "ing_dried_mint",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی قورمه",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی قرمه",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی قورمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی قرمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی خورشت قورمه",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی خورش قرمه",
+      "language": "fa",
+      "expectedIngredientId": "ing_ghormeh_sabzi_mix",
+      "actualIngredientId": "ing_ghormeh_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "قورمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": null,
+      "actualIngredientId": null,
+      "confidence": 0.0,
+      "resolverStatus": "dish_name_context",
+      "status": "pass"
+    },
+    {
+      "inputText": "قرمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": null,
+      "actualIngredientId": null,
+      "confidence": 0.0,
+      "resolverStatus": "dish_name_context",
+      "status": "pass"
+    },
+    {
+      "inputText": "خورشت قورمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": null,
+      "actualIngredientId": null,
+      "confidence": 0.0,
+      "resolverStatus": "dish_name_context",
+      "status": "pass"
+    },
+    {
+      "inputText": "خورش قرمه سبزی",
+      "language": "fa",
+      "expectedIngredientId": null,
+      "actualIngredientId": null,
+      "confidence": 0.0,
+      "resolverStatus": "dish_name_context",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی آش",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_sabzi_mix",
+      "actualIngredientId": "ing_ash_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی اش",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_sabzi_mix",
+      "actualIngredientId": "ing_ash_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی آش رشته",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_sabzi_mix",
+      "actualIngredientId": "ing_ash_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی اش رشته",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_sabzi_mix",
+      "actualIngredientId": "ing_ash_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رشته آش",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_noodles",
+      "actualIngredientId": "ing_ash_noodles",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رشته اش",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_noodles",
+      "actualIngredientId": "ing_ash_noodles",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رشته آشی",
+      "language": "fa",
+      "expectedIngredientId": "ing_ash_noodles",
+      "actualIngredientId": "ing_ash_noodles",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رشته پلویی",
+      "language": "fa",
+      "expectedIngredientId": "ing_reshteh_polo_noodles",
+      "actualIngredientId": "ing_reshteh_polo_noodles",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رشته پلو",
+      "language": "fa",
+      "expectedIngredientId": "ing_reshteh_polo_noodles",
+      "actualIngredientId": null,
+      "confidence": 0.0,
+      "resolverStatus": "dish_name_context",
+      "status": "fail"
+    },
+    {
+      "inputText": "رشته پلوئی",
+      "language": "fa",
+      "expectedIngredientId": "ing_reshteh_polo_noodles",
+      "actualIngredientId": "ing_reshteh_polo_noodles",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی کوکو",
+      "language": "fa",
+      "expectedIngredientId": "ing_kookoo_sabzi_mix",
+      "actualIngredientId": "ing_kookoo_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی کوکو سبزی",
+      "language": "fa",
+      "expectedIngredientId": "ing_kookoo_sabzi_mix",
+      "actualIngredientId": "ing_kookoo_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی کوکوسبزی",
+      "language": "fa",
+      "expectedIngredientId": "ing_kookoo_sabzi_mix",
+      "actualIngredientId": "ing_kookoo_sabzi_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "کشک مایع",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_liquid",
+      "actualIngredientId": "ing_kashk_liquid",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "کشک خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_dry",
+      "actualIngredientId": "ing_kashk_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پودر کشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_dry",
+      "actualIngredientId": "ing_kashk_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "کشک ساییده",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_liquid",
+      "actualIngredientId": "ing_kashk_liquid",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "کشک آماده",
+      "language": "fa",
+      "expectedIngredientId": "ing_kashk_liquid",
+      "actualIngredientId": "ing_kashk_liquid",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تره",
+      "language": "fa",
+      "expectedIngredientId": "ing_tareh_fresh",
+      "actualIngredientId": "ing_tareh_fresh",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تره تازه",
+      "language": "fa",
+      "expectedIngredientId": "ing_tareh_fresh",
+      "actualIngredientId": "ing_tareh_fresh",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تره فرنگی",
+      "language": "fa",
+      "expectedIngredientId": "ing_leek_raw",
+      "actualIngredientId": "ing_leek_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تره‌فرنگی",
+      "language": "fa",
+      "expectedIngredientId": "ing_leek_raw",
+      "actualIngredientId": "ing_leek_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تره پیازی",
+      "language": "fa",
+      "expectedIngredientId": "ing_chives_fresh",
+      "actualIngredientId": "ing_chives_fresh",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پیازچه",
+      "language": "fa",
+      "expectedIngredientId": "ing_scallion_raw",
+      "actualIngredientId": "ing_scallion_raw",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "مرزه",
+      "language": "fa",
+      "expectedIngredientId": "ing_savory_fresh",
+      "actualIngredientId": "ing_savory_fresh",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "مرزه خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_savory_dried",
+      "actualIngredientId": "ing_savory_dried",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سبزی خوردن",
+      "language": "fa",
+      "expectedIngredientId": "ing_sabzi_khordan_mix",
+      "actualIngredientId": "ing_sabzi_khordan_mix",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "آبغوره",
+      "language": "fa",
+      "expectedIngredientId": "ing_verjuice",
+      "actualIngredientId": "ing_verjuice",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "آب غوره",
+      "language": "fa",
+      "expectedIngredientId": "ing_verjuice",
+      "actualIngredientId": "ing_verjuice",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "ابغوره",
+      "language": "fa",
+      "expectedIngredientId": "ing_verjuice",
+      "actualIngredientId": "ing_verjuice",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "اب غوره",
+      "language": "fa",
+      "expectedIngredientId": "ing_verjuice",
+      "actualIngredientId": "ing_verjuice",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لیموعمانی",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_lime_whole",
+      "actualIngredientId": "ing_dried_lime_whole",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لیمو عمانی",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_lime_whole",
+      "actualIngredientId": "ing_dried_lime_whole",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لیمو امانی",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_lime_whole",
+      "actualIngredientId": "ing_dried_lime_whole",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لیمو خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_lime_whole",
+      "actualIngredientId": "ing_dried_lime_whole",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پودر لیموعمانی",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_lime_powder",
+      "actualIngredientId": "ing_dried_lime_powder",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رب انار",
+      "language": "fa",
+      "expectedIngredientId": "ing_pomegranate_molasses",
+      "actualIngredientId": "ing_pomegranate_molasses",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رب انار ترش",
+      "language": "fa",
+      "expectedIngredientId": "ing_pomegranate_molasses",
+      "actualIngredientId": "ing_pomegranate_molasses",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "رب آلوچه",
+      "language": "fa",
+      "expectedIngredientId": "ing_sour_plum_paste",
+      "actualIngredientId": "ing_sour_plum_paste",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تمر هندی",
+      "language": "fa",
+      "expectedIngredientId": "ing_tamarind_paste",
+      "actualIngredientId": "ing_tamarind_paste",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تمرهندی",
+      "language": "fa",
+      "expectedIngredientId": "ing_tamarind_paste",
+      "actualIngredientId": "ing_tamarind_paste",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گلاب",
+      "language": "fa",
+      "expectedIngredientId": "ing_rose_water",
+      "actualIngredientId": "ing_rose_water",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "عرق هل",
+      "language": "fa",
+      "expectedIngredientId": "ing_cardamom_water",
+      "actualIngredientId": "ing_cardamom_water",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "عرق بیدمشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_bidmeshk_water",
+      "actualIngredientId": "ing_bidmeshk_water",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "شیره انگور",
+      "language": "fa",
+      "expectedIngredientId": "ing_grape_molasses",
+      "actualIngredientId": "ing_grape_molasses",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "دوشاب",
+      "language": "fa",
+      "expectedIngredientId": "ing_grape_molasses",
+      "actualIngredientId": "ing_grape_molasses",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "شیره خرما",
+      "language": "fa",
+      "expectedIngredientId": "ing_date_syrup",
+      "actualIngredientId": "ing_date_syrup",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "ارده",
+      "language": "fa",
+      "expectedIngredientId": "ing_tahini",
+      "actualIngredientId": "ing_tahini",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "حلوا ارده",
+      "language": "fa",
+      "expectedIngredientId": "ing_halva_ardeh",
+      "actualIngredientId": "ing_halva_ardeh",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "شنبلیله خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_fenugreek_leaves_dried",
+      "actualIngredientId": "ing_fenugreek_leaves_dried",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "نعنا خشک",
+      "language": "fa",
+      "expectedIngredientId": "ing_dried_mint",
+      "actualIngredientId": "ing_dried_mint",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پودر گشنیز",
+      "language": "fa",
+      "expectedIngredientId": "ing_coriander_seed_ground",
+      "actualIngredientId": "ing_coriander_seed_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "تخم گشنیز",
+      "language": "fa",
+      "expectedIngredientId": "ing_coriander_seed_ground",
+      "actualIngredientId": "ing_coriander_seed_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زیره",
+      "language": "fa",
+      "expectedIngredientId": "ing_cumin_ground",
+      "actualIngredientId": "ing_cumin_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زیره سبز",
+      "language": "fa",
+      "expectedIngredientId": "ing_cumin_ground",
+      "actualIngredientId": "ing_cumin_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پودر زیره",
+      "language": "fa",
+      "expectedIngredientId": "ing_cumin_ground",
+      "actualIngredientId": "ing_cumin_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زیره سیاه",
+      "language": "fa",
+      "expectedIngredientId": "ing_black_cumin_seeds",
+      "actualIngredientId": "ing_black_cumin_seeds",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "دارچین",
+      "language": "fa",
+      "expectedIngredientId": "ing_cinnamon_ground",
+      "actualIngredientId": "ing_cinnamon_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "پودر دارچین",
+      "language": "fa",
+      "expectedIngredientId": "ing_cinnamon_ground",
+      "actualIngredientId": "ing_cinnamon_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "چوب دارچین",
+      "language": "fa",
+      "expectedIngredientId": "ing_cinnamon_stick",
+      "actualIngredientId": "ing_cinnamon_stick",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "زعفران دم کرده",
+      "language": "fa",
+      "expectedIngredientId": "ing_saffron",
+      "actualIngredientId": "ing_saffron",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "گلپر",
+      "language": "fa",
+      "expectedIngredientId": "ing_golpar_ground",
+      "actualIngredientId": "ing_golpar_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سماق",
+      "language": "fa",
+      "expectedIngredientId": "ing_sumac_ground",
+      "actualIngredientId": "ing_sumac_ground",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لپه",
+      "language": "fa",
+      "expectedIngredientId": "ing_split_peas_dry",
+      "actualIngredientId": "ing_split_peas_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "عدس",
+      "language": "fa",
+      "expectedIngredientId": "ing_lentils_dry",
+      "actualIngredientId": "ing_lentils_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "نخود",
+      "language": "fa",
+      "expectedIngredientId": "ing_chickpeas_dry",
+      "actualIngredientId": "ing_chickpeas_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "لوبیا چیتی",
+      "language": "fa",
+      "expectedIngredientId": "ing_pinto_beans_dry",
+      "actualIngredientId": "ing_pinto_beans_dry",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "روغن",
+      "language": "fa",
+      "expectedIngredientId": "ing_sunflower_oil",
+      "actualIngredientId": "ing_sunflower_oil",
+      "confidence": 0.86,
+      "resolverStatus": "resolved_by_ambiguous_policy",
+      "status": "pass"
+    },
+    {
+      "inputText": "روغن زیتون",
+      "language": "fa",
+      "expectedIngredientId": "ing_olive_oil",
+      "actualIngredientId": "ing_olive_oil",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "آرد",
+      "language": "fa",
+      "expectedIngredientId": "ing_all_purpose_flour",
+      "actualIngredientId": "ing_all_purpose_flour",
+      "confidence": 0.88,
+      "resolverStatus": "resolved_by_ambiguous_policy",
+      "status": "pass"
+    },
+    {
+      "inputText": "نشاسته ذرت",
+      "language": "fa",
+      "expectedIngredientId": "ing_cornstarch",
+      "actualIngredientId": "ing_cornstarch",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "آبلیمو",
+      "language": "fa",
+      "expectedIngredientId": "ing_lime_juice_bottled",
+      "actualIngredientId": "ing_lime_juice_bottled",
+      "confidence": 0.9,
+      "resolverStatus": "resolved_by_ambiguous_policy",
+      "status": "pass"
+    },
+    {
+      "inputText": "پنیر پارمزان",
+      "language": "fa",
+      "expectedIngredientId": "ing_parmesan_cheese",
+      "actualIngredientId": "ing_parmesan_cheese",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    },
+    {
+      "inputText": "سس سویا",
+      "language": "fa",
+      "expectedIngredientId": "ing_soy_sauce",
+      "actualIngredientId": "ing_soy_sauce",
+      "confidence": 0.98,
+      "resolverStatus": "resolved_by_alias",
+      "status": "pass"
+    }
+  ]
+}

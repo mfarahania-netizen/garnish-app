@@ -1,3 +1,4 @@
+// apps/server/src/auth/auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -14,11 +15,10 @@ export class AuthService {
     const existing = await this.usersService.findByPhone(phone);
     if (existing) throw new UnauthorizedException('این شماره قبلاً ثبت شده است');
     const user = await this.usersService.createUser(phone, password, name);
-    // 👇 اضافه کردن isAdmin
+    // ❌ isAdmin از payload حذف شد
     const token = this.jwtService.sign({
       sub: user.id,
       phone: user.phone,
-      isAdmin: user.isAdmin || false,
     });
     return { token, user };
   }
@@ -32,11 +32,10 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('شماره یا رمز عبور اشتباه است');
     }
-    // 👇 اضافه کردن isAdmin
+    // ❌ isAdmin از payload حذف شد
     const token = this.jwtService.sign({
       sub: user.id,
       phone: user.phone,
-      isAdmin: user.isAdmin || false,
     });
     return { token, user };
   }

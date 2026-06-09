@@ -1,16 +1,22 @@
+// apps/web/src/features/ai-chat/services/aiEngine.js
 import apiClient from '../../../lib/apiClient';
 
-/**
- * ارسال درخواست به سرور و دریافت پاسخ
- * @param {string} prompt - متن سوال کاربر
- * @returns {Promise<string>} پاسخ هوشمند
- */
 export async function askAI(prompt) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // ۳۰ ثانیه
+
   try {
-    const res = await apiClient.post('/ai/chat', { prompt });
-    return res.data.reply;
+    const { data } = await apiClient.post('/ai/chat', { prompt }, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return data.reply;
   } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
+      throw new Error('⏳ پاسخ دستیار خیلی طول کشید. لطفاً دوباره تلاش کن.');
+    }
     console.error('خطا در ارتباط با دستیار:', error);
-    return '❌ مشکلی در ارتباط با دستیار پیش اومد. دوباره تلاش کن.';
+    throw error;
   }
 }

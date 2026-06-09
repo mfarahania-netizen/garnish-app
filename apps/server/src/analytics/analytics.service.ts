@@ -1,12 +1,17 @@
+// apps/server/src/analytics/analytics.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEnrichmentService } from './event-enrichment.service';
+import { EventRouterService } from '../behavior-engine/routing/event-router.service';
+import { EventQualityService } from './event-quality.service'; // 👈 جدید
 
 @Injectable()
 export class AnalyticsService {
   constructor(
     private prisma: PrismaService,
     private enrichmentService: EventEnrichmentService,
+    private eventRouter: EventRouterService,
+    private eventQuality: EventQualityService, // 👈 جدید
   ) {}
 
   async trackEvent(data: {
@@ -17,8 +22,14 @@ export class AnalyticsService {
     sessionId?: string;
     payload?: any;
   }) {
-    // 🛡️ سپر محافظ: اگر userId به هر دلیلی undefined بود، رویداد را ذخیره نکن
     if (!data.userId) {
+      return null;
+    }
+
+    // 🛡️ ارزیابی کیفیت رویداد
+    const quality = this.eventQuality.assess(data);
+    if (!quality.isValid) {
+      console.warn(`⚠️ Event rejected: ${data.type} - ${quality.reason}`);
       return null;
     }
 
@@ -35,6 +46,11 @@ export class AnalyticsService {
 
     // غنی‌سازی را در پس‌زمینه اجرا کن
     this.enrichmentService.enrichEvent(event.id);
+
+    // 🆕 ارسال رویداد به موتور سیگنال‌ها (بدون منتظر ماندن)
+    this.eventRouter.route(event, data.userId).catch(err =>
+      console.error(`Event routing failed for event ${event.id}:`, err)
+    );
 
     return event;
   }

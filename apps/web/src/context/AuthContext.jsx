@@ -1,5 +1,7 @@
+// apps/web/src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import apiClient from '../lib/apiClient';
+import posthog from 'posthog-js'; // 🆕
 
 const AuthContext = createContext(null);
 
@@ -32,6 +34,14 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', extractedToken);
     setToken(extractedToken);
     setUser(extractedUser || null);
+
+    // 🆕 شناسایی کاربر در PostHog
+    if (posthog?.__loaded && extractedUser?.id) {
+      posthog.identify(extractedUser.id, {
+        name: extractedUser.name || '',
+        phone: extractedUser.phone || '',
+      });
+    }
   }, []);
 
   const register = useCallback(async (phone, password, name) => {
@@ -40,6 +50,10 @@ export function AuthProvider({ children }) {
   }, [login]);
 
   const logout = useCallback(() => {
+    // 🆕 بازنشانی session در PostHog
+    if (posthog?.__loaded) {
+      posthog.reset();
+    }
     localStorage.removeItem('token');
     setToken('');
     setUser(null);

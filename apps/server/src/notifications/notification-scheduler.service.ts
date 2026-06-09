@@ -1,3 +1,4 @@
+// apps/server/src/notifications/notification-scheduler.service.ts
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
@@ -92,5 +93,33 @@ export class NotificationSchedulerService {
         }
       }
     }
+  }
+
+  // 🆕 هر دوشنبه ساعت ۹ صبح – کاربران با ریسک ریزش بالا
+  @Cron('0 9 * * 1')
+  async handleChurnRiskNotifications() {
+    const highRiskUsers = await this.prisma.userBehaviorProfile.findMany({
+      where: {
+        churnRiskScore: { gte: 70 },
+      },
+      select: { userId: true },
+    });
+
+    console.log(`⚠️ Found ${highRiskUsers.length} users with high churn risk.`);
+
+    const notifications = highRiskUsers.map(profile =>
+      this.prisma.notification.create({
+        data: {
+          userId: profile.userId,
+          title: 'دلتنگت شدیم! 😢',
+          body: 'مدتیه که کمتر از گارنیش استفاده می‌کنی. بیا دوباره با هم غذاهای خوشمزه بپزیم!',
+          type: 'churn_risk',
+        },
+      })
+    );
+
+    const results = await Promise.allSettled(notifications);
+    const succeeded = results.filter(r => r.status === 'fulfilled').length;
+    console.log(`✅ Churn risk notifications sent: ${succeeded} succeeded.`);
   }
 }

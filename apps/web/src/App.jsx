@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { MantineProvider, createTheme, virtualColor } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Component, useEffect } from 'react';   // 👈 useEffect اضافه شد
-import posthog from 'posthog-js';                // 👈 جدید
+import { Component, useEffect } from 'react';
+import posthog from 'posthog-js';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
@@ -81,7 +81,6 @@ class ErrorBoundary extends Component {
 function AnimatedRoutes() {
   const location = useLocation();
 
-  // 👇 track pageview در هر تغییر مسیر
   useEffect(() => {
     if (posthog.__loaded) {
       posthog.capture('$pageview', {
@@ -94,13 +93,13 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* مسیرهای داخل MainLayout */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<PageWrapper><HomePage /></PageWrapper>} />
           <Route path="recipe/:id" element={<PageWrapper><RecipeDetailPage /></PageWrapper>} />
           <Route path="recipes" element={<PageWrapper><RecipesPage /></PageWrapper>} />
           <Route path="auth" element={<PageWrapper><AuthPage /></PageWrapper>} />
           <Route path="category/:keyword" element={<PageWrapper><CategoryPage /></PageWrapper>} />
-          
           <Route path="plan" element={<ProtectedRoute><PageWrapper><PlanPage /></PageWrapper></ProtectedRoute>} />
           <Route path="profile" element={<ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute>} />
           <Route path="add-recipe" element={<ProtectedRoute><PageWrapper><AddRecipePage /></PageWrapper></ProtectedRoute>} />
@@ -111,9 +110,17 @@ function AnimatedRoutes() {
           <Route path="favorites" element={<ProtectedRoute><PageWrapper><FavoritesPage /></PageWrapper></ProtectedRoute>} />
           <Route path="ai-chat" element={<ProtectedRoute><PageWrapper><AIChatPage /></PageWrapper></ProtectedRoute>} />
           <Route path="notifications" element={<ProtectedRoute><PageWrapper><NotificationsPage /></PageWrapper></ProtectedRoute>} />
-          
-          <Route path="admin" element={<AdminRoute><PageWrapper><AdminDashboard /></PageWrapper></AdminRoute>} />
         </Route>
+
+        {/* 🆕 مسیر admin مستقل، بدون MainLayout */}
+        <Route
+          path="admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );

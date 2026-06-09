@@ -1,3 +1,4 @@
+// apps/server/src/ai/ai.controller.ts
 import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
@@ -8,7 +9,7 @@ export class AiController {
   constructor(private readonly aiService: AiService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Throttle({ default: { limit: 3, ttl: 60000 } })  // فقط ۳ درخواست در دقیقه
+  @Throttle({ default: { limit: 20, ttl: 60000 } }) // افزایش محدودیت مخصوص چت
   @Post('chat')
   async chat(@Req() req, @Body() body: { prompt: string }) {
     const userId = req.user.userId;

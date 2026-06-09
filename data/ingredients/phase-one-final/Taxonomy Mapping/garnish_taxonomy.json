@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-06-08T19:21:47.609574+00:00",
+  "categoryCounts": {
+    "beverage": 24,
+    "dairy": 62,
+    "egg": 6,
+    "fruit": 88,
+    "grain": 96,
+    "herb": 39,
+    "legume": 48,
+    "nut_seed": 49,
+    "oil": 26,
+    "poultry": 20,
+    "processed_food": 250,
+    "red_meat": 41,
+    "seafood": 63,
+    "spice": 54,
+    "sweetener": 16,
+    "vegetable": 126
+  }
+}

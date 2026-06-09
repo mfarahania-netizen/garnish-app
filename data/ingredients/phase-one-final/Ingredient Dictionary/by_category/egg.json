@@ -1,0 +1,2224 @@
+[
+  {
+    "ingredientId": "ing_whole_egg_raw",
+    "code": "whole_egg_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B001",
+      "batchSequence": 1,
+      "batchRecordNumber": 16,
+      "expansionBase": "none_first_verified_batch"
+    },
+    "names": {
+      "fa": {
+        "canonical": "تخم‌مرغ کامل خام",
+        "normalized": "تخم مرغ کامل خام",
+        "display": "تخم‌مرغ کامل خام"
+      },
+      "en": {
+        "canonical": "whole egg, raw",
+        "normalized": "whole egg, raw",
+        "display": "Whole egg, raw"
+      },
+      "ar": {
+        "canonical": "بيض كامل نيء",
+        "normalized": "بيض كامل نيء",
+        "display": "بيض كامل نيء"
+      },
+      "tr": {
+        "canonical": "çiğ bütün yumurta",
+        "normalized": "cig butun yumurta",
+        "display": "çiğ bütün yumurta"
+      },
+      "de": {
+        "canonical": "rohes Vollei",
+        "normalized": "rohes vollei",
+        "display": "rohes Vollei"
+      },
+      "fr": {
+        "canonical": "œuf entier cru",
+        "normalized": "uf entier cru",
+        "display": "œuf entier cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "تخم‌مرغ کامل خام",
+        "تخم مرغ",
+        "تخم مرغ کامل"
+      ],
+      "en": [
+        "whole egg, raw",
+        "egg",
+        "whole egg",
+        "eggs"
+      ],
+      "ar": [
+        "بيض كامل نيء",
+        "بيض",
+        "بيضة"
+      ],
+      "tr": [
+        "çiğ bütün yumurta",
+        "bütün yumurta",
+        "yumurta",
+        "cig butun yumurta"
+      ],
+      "de": [
+        "rohes Vollei",
+        "Ei",
+        "Eier"
+      ],
+      "fr": [
+        "œuf entier cru",
+        "œuf",
+        "uf",
+        "oeuf",
+        "œufs",
+        "oeufs",
+        "uf entier cru"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "تخم مرق",
+        "تخم مورغ",
+        "تخممرغ",
+        "تخم مرغع",
+        "تخم مرغی",
+        "تخم‌مرغ كامل خام",
+        "تخممرغ کامل خام",
+        "تخم‌مرغ کامل خامم",
+        "تخم‌مرغکاملخام"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "تخم‌مرغ",
+        "egg",
+        "whole_egg"
+      ],
+      "en": [
+        "whole egg",
+        "egg",
+        "whole_egg"
+      ],
+      "ar": [
+        "بيض"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "œuf"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "whole_egg",
+      "family": "egg"
+    },
+    "origin": {
+      "animalSource": "chicken",
+      "plantSource": null,
+      "part": "egg"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 143,
+      "protein": 12.6,
+      "fat": 9.5,
+      "carbs": 0.7,
+      "fiber": 0,
+      "sugar": 0.4,
+      "sodium": 142
+    },
+    "nutritionConfidence": "source_locked_verified_for_general_use",
+    "sourceBackedNutrition": {
+      "isSourceBacked": true,
+      "primarySource": "USDA FoodData Central",
+      "sourceFoodId": "171287",
+      "sourceFoodName": "Egg, whole, raw, fresh",
+      "sourceFoodDescription": "Egg, whole, raw, fresh",
+      "sourceSearchQuery": "whole egg raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "fdc_id_lock_patch_01_search_evidence_queue_for_api_recheck",
+      "confidence": "source_id_locked_for_key_ingredient_api_recheck_recommended",
+      "exactSourceIdLocked": true,
+      "requiresFinalSourceIdLock": false,
+      "sourceDataType": "SR Legacy",
+      "lockEvidence": "FDC-linked search evidence; public FDC detail URL pattern /food-details/171287/nutrients",
+      "lockStatus": "locked_primary_source_id_present",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Source id is present, but strict diet/medical use still requires final API/dataset extraction audit and possibly local-market cross-check.",
+      "lastPolicyReviewedAt": "2026-06-08T12:28:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 3,
+      "fatty": 2,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "breakfast",
+        "binding_agent",
+        "baking"
+      ],
+      "commonCookingMethods": [
+        "boiled",
+        "fried",
+        "scrambled",
+        "baked"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "beaten",
+        "separated"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "منبع پروتئین قابل توجه است."
+      ],
+      "cautions": [],
+      "goodForGoals": [
+        "high_protein"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_tofu_firm",
+        "reason": "vegan_alternative",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود تخم‌مرغ کامل خام، توفوی سفت می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/whole_egg_raw.webp",
+      "thumbnail": "/media/ingredients/whole_egg_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "تخم‌مرغ کامل خام / whole egg, raw یک ماده در دسته egg است. وضعیت رکورد: raw. اعداد تغذیه‌ای بر پایه ۱۰۰ گرم بخش خوراکی ثبت شده‌اند و برای قفل نهایی باید به sourceFoodId دقیق وصل شوند.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_tofu_firm",
+          "reason": "similar_use",
+          "differenceFa": "تخم‌مرغ کامل خام با توفوی سفت از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "تخم‌مرغ کامل خام با توفوی سفت از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "تخم مرق",
+        "تخم مورغ",
+        "تخممرغ",
+        "تخم مرغع",
+        "تخم مرغی",
+        "تخم‌مرغ كامل خام",
+        "تخممرغ کامل خام",
+        "تخم مرغ کامل خام",
+        "تخم‌مرغ کامل خامم",
+        "تخم‌مرغکاملخام"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی، از nutrition source layer و sourceFoodId قفل‌شده استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 5,
+      "dutch": 5,
+      "american": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": "171287",
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": true,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": false,
+      "reviewReasons": [],
+      "qualityScore": 0.92,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "تخم مرغ",
+        "تخم مرغ کامل",
+        "تخم‌مرغ کامل خام"
+      ],
+      "en": [
+        "egg",
+        "whole egg",
+        "eggs",
+        "whole egg, raw"
+      ],
+      "ar": [
+        "بيض",
+        "بيضة",
+        "بيض كامل نيء"
+      ],
+      "tr": [
+        "bütün yumurta",
+        "yumurta",
+        "çiğ bütün yumurta",
+        "cig butun yumurta"
+      ],
+      "de": [
+        "Ei",
+        "Eier",
+        "rohes Vollei"
+      ],
+      "fr": [
+        "œuf",
+        "uf",
+        "oeuf",
+        "œufs",
+        "oeufs",
+        "œuf entier cru",
+        "uf entier cru"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "raw",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_egg_white_raw",
+    "code": "egg_white_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B001",
+      "batchSequence": 1,
+      "batchRecordNumber": 17,
+      "expansionBase": "none_first_verified_batch"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سفیده تخم‌مرغ خام",
+        "normalized": "سفیده تخم مرغ خام",
+        "display": "سفیده تخم‌مرغ خام"
+      },
+      "en": {
+        "canonical": "egg white, raw",
+        "normalized": "egg white, raw",
+        "display": "Egg white, raw"
+      },
+      "ar": {
+        "canonical": "بياض البيض النيء",
+        "normalized": "بياض البيض النيء",
+        "display": "بياض البيض النيء"
+      },
+      "tr": {
+        "canonical": "çiğ yumurta akı",
+        "normalized": "cig yumurta ak",
+        "display": "çiğ yumurta akı"
+      },
+      "de": {
+        "canonical": "rohes Eiweiß",
+        "normalized": "rohes eiwei",
+        "display": "rohes Eiweiß"
+      },
+      "fr": {
+        "canonical": "blanc d’œuf cru",
+        "normalized": "blanc duf cru",
+        "display": "blanc d’œuf cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سفیده تخم‌مرغ خام",
+        "سفیده تخم مرغ"
+      ],
+      "en": [
+        "egg white, raw",
+        "egg white"
+      ],
+      "ar": [
+        "بياض البيض النيء"
+      ],
+      "tr": [
+        "çiğ yumurta akı",
+        "yumurta akı",
+        "yumurta ak",
+        "cig yumurta ak"
+      ],
+      "de": [
+        "rohes Eiweiß",
+        "rohes eiwei"
+      ],
+      "fr": [
+        "blanc d’œuf cru",
+        "blanc d’œuf",
+        "blanc duf",
+        "blanc duf cru"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "سفيده تخم‌مرغ خام",
+        "سفیده تخممرغ خام",
+        "سفیده تخم‌مرق خام",
+        "سفيده تخم مرغ",
+        "سفیده تخم مرق",
+        "سفیده تخم‌مرغ خامم",
+        "سفیدهتخم‌مرغخام"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "سفیده",
+        "egg",
+        "egg_white"
+      ],
+      "en": [
+        "egg white",
+        "egg",
+        "egg_white"
+      ],
+      "ar": [
+        "بياض"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "blanc"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "egg_white",
+      "family": "egg"
+    },
+    "origin": {
+      "animalSource": "chicken",
+      "plantSource": null,
+      "part": "egg_white"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 52,
+      "protein": 10.9,
+      "fat": 0.2,
+      "carbs": 0.7,
+      "fiber": 0,
+      "sugar": 0.7,
+      "sodium": 166
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "egg white, raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "manual_reference_compilation_pending_exact_source_id_lock",
+      "confidence": "source_backed_pending_exact_source_id",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:28:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 3,
+      "fatty": 2,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "breakfast",
+        "binding_agent",
+        "baking"
+      ],
+      "commonCookingMethods": [
+        "boiled",
+        "fried",
+        "scrambled",
+        "baked"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "beaten",
+        "separated"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "منبع پروتئین قابل توجه است."
+      ],
+      "cautions": [],
+      "goodForGoals": [
+        "high_protein"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_whole_egg_raw",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود سفیده تخم‌مرغ خام، تخم‌مرغ کامل خام می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/egg_white_raw.webp",
+      "thumbnail": "/media/ingredients/egg_white_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "سفیده تخم‌مرغ خام / egg white, raw یک ماده در دسته egg است. وضعیت رکورد: raw. اعداد تغذیه‌ای بر پایه ۱۰۰ گرم بخش خوراکی ثبت شده‌اند و برای قفل نهایی باید به sourceFoodId دقیق وصل شوند.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_whole_egg_raw",
+          "reason": "same_family",
+          "differenceFa": "سفیده تخم‌مرغ خام با تخم‌مرغ کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "سفیده تخم‌مرغ خام با تخم‌مرغ کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "سفيده تخم‌مرغ خام",
+        "سفیده تخممرغ خام",
+        "سفیده تخم مرغ خام",
+        "سفیده تخم‌مرق خام",
+        "سفيده تخم مرغ",
+        "سفیده تخم مرق",
+        "سفیده تخم‌مرغ خامم",
+        "سفیدهتخم‌مرغخام"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی، از nutrition source layer و sourceFoodId قفل‌شده استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "fitness": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "qualityScore": 0.82,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سفیده تخم مرغ",
+        "سفیده تخم‌مرغ خام"
+      ],
+      "en": [
+        "egg white",
+        "egg white, raw"
+      ],
+      "ar": [
+        "بياض البيض النيء"
+      ],
+      "tr": [
+        "yumurta akı",
+        "yumurta ak",
+        "çiğ yumurta akı",
+        "cig yumurta ak"
+      ],
+      "de": [
+        "rohes Eiweiß",
+        "rohes eiwei"
+      ],
+      "fr": [
+        "blanc d’œuf",
+        "blanc duf",
+        "blanc d’œuf cru",
+        "blanc duf cru"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "raw",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_egg_yolk_raw",
+    "code": "egg_yolk_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B001",
+      "batchSequence": 1,
+      "batchRecordNumber": 18,
+      "expansionBase": "none_first_verified_batch"
+    },
+    "names": {
+      "fa": {
+        "canonical": "زرده تخم‌مرغ خام",
+        "normalized": "زرده تخم مرغ خام",
+        "display": "زرده تخم‌مرغ خام"
+      },
+      "en": {
+        "canonical": "egg yolk, raw",
+        "normalized": "egg yolk, raw",
+        "display": "Egg yolk, raw"
+      },
+      "ar": {
+        "canonical": "صفار البيض النيء",
+        "normalized": "صفار البيض النيء",
+        "display": "صفار البيض النيء"
+      },
+      "tr": {
+        "canonical": "çiğ yumurta sarısı",
+        "normalized": "cig yumurta sars",
+        "display": "çiğ yumurta sarısı"
+      },
+      "de": {
+        "canonical": "rohes Eigelb",
+        "normalized": "rohes eigelb",
+        "display": "rohes Eigelb"
+      },
+      "fr": {
+        "canonical": "jaune d’œuf cru",
+        "normalized": "jaune duf cru",
+        "display": "jaune d’œuf cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "زرده تخم‌مرغ خام",
+        "زرده تخم مرغ"
+      ],
+      "en": [
+        "egg yolk, raw",
+        "egg yolk"
+      ],
+      "ar": [
+        "صفار البيض النيء"
+      ],
+      "tr": [
+        "çiğ yumurta sarısı",
+        "yumurta sarısı",
+        "yumurta sars",
+        "cig yumurta sars"
+      ],
+      "de": [
+        "rohes Eigelb"
+      ],
+      "fr": [
+        "jaune d’œuf cru",
+        "jaune d’œuf",
+        "jaune duf",
+        "jaune duf cru"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "زرده تخممرغ خام",
+        "زرده تخم مرغ خام",
+        "زرده تخم‌مرق خام",
+        "زرده تخم مرق",
+        "زردهتخم‌مرغخام",
+        "زرده تخم‌مرغ خامم"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "زرده",
+        "egg",
+        "egg_yolk"
+      ],
+      "en": [
+        "egg yolk",
+        "egg",
+        "egg_yolk"
+      ],
+      "ar": [
+        "صفار"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "jaune"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "egg_yolk",
+      "family": "egg"
+    },
+    "origin": {
+      "animalSource": "chicken",
+      "plantSource": null,
+      "part": "egg_yolk"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 322,
+      "protein": 15.9,
+      "fat": 26.5,
+      "carbs": 3.6,
+      "fiber": 0,
+      "sugar": 0.6,
+      "sodium": 48
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "USDA FoodData Central",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "egg yolk, raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": "2026-06-08",
+      "extractionMethod": "manual_reference_compilation_pending_exact_source_id_lock",
+      "confidence": "source_backed_pending_exact_source_id",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Do not use as verified nutrition until sourceFoodId and nutrient extraction are locked from official dataset/API.",
+      "lastPolicyReviewedAt": "2026-06-08T12:28:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 3,
+      "fatty": 2,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "breakfast",
+        "binding_agent",
+        "baking"
+      ],
+      "commonCookingMethods": [
+        "boiled",
+        "fried",
+        "scrambled",
+        "baked"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "beaten",
+        "separated"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "منبع پروتئین قابل توجه است."
+      ],
+      "cautions": [],
+      "goodForGoals": [
+        "high_protein"
+      ],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_whole_egg_raw",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود زرده تخم‌مرغ خام، تخم‌مرغ کامل خام می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/egg_yolk_raw.webp",
+      "thumbnail": "/media/ingredients/egg_yolk_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "زرده تخم‌مرغ خام / egg yolk, raw یک ماده در دسته egg است. وضعیت رکورد: raw. اعداد تغذیه‌ای بر پایه ۱۰۰ گرم بخش خوراکی ثبت شده‌اند و برای قفل نهایی باید به sourceFoodId دقیق وصل شوند.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_whole_egg_raw",
+          "reason": "same_family",
+          "differenceFa": "زرده تخم‌مرغ خام با تخم‌مرغ کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "زرده تخم‌مرغ خام با تخم‌مرغ کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "زرده تخممرغ خام",
+        "زرده تخم مرغ خام",
+        "زرده تخم‌مرق خام",
+        "زرده تخم مرق",
+        "زردهتخم‌مرغخام",
+        "زرده تخم‌مرغ خامم"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی، از nutrition source layer و sourceFoodId قفل‌شده استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "baking": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "qualityScore": 0.82,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "زرده تخم مرغ",
+        "زرده تخم‌مرغ خام"
+      ],
+      "en": [
+        "egg yolk",
+        "egg yolk, raw"
+      ],
+      "ar": [
+        "صفار البيض النيء"
+      ],
+      "tr": [
+        "yumurta sarısı",
+        "yumurta sars",
+        "çiğ yumurta sarısı",
+        "cig yumurta sars"
+      ],
+      "de": [
+        "rohes Eigelb"
+      ],
+      "fr": [
+        "jaune d’œuf",
+        "jaune duf",
+        "jaune d’œuf cru",
+        "jaune duf cru"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "raw",
+      "defaultPreparationStateApplied": "unprepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "If recipe text omits state/form, resolver may map recipeInputAliases to this ingredientId when no more specific state is present."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_quail_egg_raw",
+    "code": "quail_egg_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B002_TO_700",
+      "batchSequence": 2,
+      "batchRecordNumber": 11,
+      "expansionBase": "500_patch_02_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "تخم بلدرچین خام",
+        "normalized": "تخم بلدرچین خام",
+        "display": "تخم بلدرچین خام"
+      },
+      "en": {
+        "canonical": "quail egg, raw",
+        "normalized": "quail egg, raw",
+        "display": "Quail egg, raw"
+      },
+      "ar": {
+        "canonical": "بيض سمان نيء",
+        "normalized": "بيض سمان نيء",
+        "display": "بيض سمان نيء"
+      },
+      "tr": {
+        "canonical": "çiğ bıldırcın yumurtası",
+        "normalized": "cig bıldırcın yumurtası",
+        "display": "çiğ bıldırcın yumurtası"
+      },
+      "de": {
+        "canonical": "rohes Wachtelei",
+        "normalized": "rohes wachtelei",
+        "display": "rohes Wachtelei"
+      },
+      "fr": {
+        "canonical": "œuf de caille cru",
+        "normalized": "œuf de caille cru",
+        "display": "œuf de caille cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "تخم بلدرچین خام",
+        "تخم بلدرچین"
+      ],
+      "en": [
+        "quail egg, raw",
+        "quail egg"
+      ],
+      "ar": [
+        "بيض سمان نيء",
+        "بيض سمان"
+      ],
+      "tr": [
+        "çiğ bıldırcın yumurtası",
+        "bıldırcın yumurtası",
+        "cig bıldırcın yumurtası"
+      ],
+      "de": [
+        "rohes Wachtelei",
+        "es Wachtelei",
+        "Wachtelei"
+      ],
+      "fr": [
+        "œuf de caille cru",
+        "œuf de caille"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "تخم بلدرچين خام",
+        "تخم بلدرچين",
+        "تخم بلدرچین خامم",
+        "تخمبلدرچینخام"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "تخم",
+        "quail_egg",
+        "quail"
+      ],
+      "en": [
+        "quail egg",
+        "quail_egg",
+        "quail"
+      ],
+      "ar": [
+        "بيض"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "œuf"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "quail_egg",
+      "family": "quail"
+    },
+    "origin": {
+      "animalSource": "quail",
+      "plantSource": null,
+      "part": "egg"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly",
+      "low_carb"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 158,
+      "protein": 13,
+      "fat": 11,
+      "carbs": 1,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 140
+    },
+    "nutritionConfidence": "estimated_pending_exact_source_id_lock",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "quail egg, raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_700_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T16:45:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "main_protein",
+        "recipe_component",
+        "meal_prep"
+      ],
+      "commonCookingMethods": [
+        "grilled",
+        "pan_fried",
+        "baked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "as_sold",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و تحلیل مواد اولیه قابل استفاده است"
+      ],
+      "cautions": [
+        "برای رژیم دقیق، داده تغذیه‌ای باید با sourceFoodId قفل شود"
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": [
+        "strict_medical_nutrition_until_verified"
+      ]
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_quail_whole_raw",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود تخم بلدرچین خام، بلدرچین کامل خام می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/quail_egg_raw.webp",
+      "thumbnail": "/media/ingredients/quail_egg_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "تخم بلدرچین خام / quail egg, raw یک ماده غذایی با دسته‌بندی egg است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_quail_whole_raw",
+          "reason": "same_family",
+          "differenceFa": "تخم بلدرچین خام با بلدرچین کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "تخم بلدرچین خام با بلدرچین کامل خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "تخم بلدرچين خام",
+        "تخم بلدرچين",
+        "تخم بلدرچین خامم",
+        "تخمبلدرچینخام"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، اگر state ذکر نشود از resolver پیش‌فرض و confidence مناسب استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "turkish": 2,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "reviewed_seed_translation",
+      "en": "reviewed_seed_translation",
+      "ar": "reviewed_seed_translation",
+      "tr": "reviewed_seed_translation",
+      "de": "reviewed_seed_translation",
+      "fr": "reviewed_seed_translation"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "تخم بلدرچین خام",
+        "تخم بلدرچین"
+      ],
+      "en": [
+        "quail egg, raw",
+        "quail egg"
+      ],
+      "ar": [
+        "بيض سمان نيء",
+        "بيض سمان"
+      ],
+      "tr": [
+        "çiğ bıldırcın yumurtası",
+        "bıldırcın yumurtası",
+        "cig bıldırcın yumurtası"
+      ],
+      "de": [
+        "rohes Wachtelei",
+        "es Wachtelei",
+        "Wachtelei"
+      ],
+      "fr": [
+        "œuf de caille cru",
+        "œuf de caille"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_duck_egg_raw",
+    "code": "duck_egg_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B002_TO_700",
+      "batchSequence": 2,
+      "batchRecordNumber": 115,
+      "expansionBase": "500_patch_02_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "تخم اردک خام",
+        "normalized": "تخم اردک خام",
+        "display": "تخم اردک خام"
+      },
+      "en": {
+        "canonical": "duck egg, raw",
+        "normalized": "duck egg, raw",
+        "display": "Duck egg, raw"
+      },
+      "ar": {
+        "canonical": "بيض بط نيء",
+        "normalized": "بيض بط نيء",
+        "display": "بيض بط نيء"
+      },
+      "tr": {
+        "canonical": "çiğ ördek yumurtası",
+        "normalized": "cig ordek yumurtası",
+        "display": "çiğ ördek yumurtası"
+      },
+      "de": {
+        "canonical": "rohes Entenei",
+        "normalized": "rohes entenei",
+        "display": "rohes Entenei"
+      },
+      "fr": {
+        "canonical": "œuf de canard cru",
+        "normalized": "œuf de canard cru",
+        "display": "œuf de canard cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "تخم اردک خام",
+        "تخم اردک"
+      ],
+      "en": [
+        "duck egg, raw",
+        "duck egg"
+      ],
+      "ar": [
+        "بيض بط نيء",
+        "بيض بط"
+      ],
+      "tr": [
+        "çiğ ördek yumurtası",
+        "ördek yumurtası",
+        "cig ordek yumurtası"
+      ],
+      "de": [
+        "rohes Entenei",
+        "es Entenei",
+        "Entenei"
+      ],
+      "fr": [
+        "œuf de canard cru",
+        "œuf de canard"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "تخم اردك خام",
+        "تخم اردك",
+        "تخم اردک خامم",
+        "تخماردکخام"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "تخم",
+        "duck_egg",
+        "duck"
+      ],
+      "en": [
+        "duck egg",
+        "duck_egg",
+        "duck"
+      ],
+      "ar": [
+        "بيض"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "œuf"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "duck_egg",
+      "family": "duck"
+    },
+    "origin": {
+      "animalSource": "duck",
+      "plantSource": null,
+      "part": "egg"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly",
+      "low_carb"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 158,
+      "protein": 13,
+      "fat": 11,
+      "carbs": 1,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 140
+    },
+    "nutritionConfidence": "estimated_pending_exact_source_id_lock",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "duck egg, raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_700_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T16:45:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "main_protein",
+        "recipe_component",
+        "meal_prep"
+      ],
+      "commonCookingMethods": [
+        "grilled",
+        "pan_fried",
+        "baked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "as_sold",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و تحلیل مواد اولیه قابل استفاده است"
+      ],
+      "cautions": [
+        "برای رژیم دقیق، داده تغذیه‌ای باید با sourceFoodId قفل شود"
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": [
+        "strict_medical_nutrition_until_verified"
+      ]
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_duck_meat_raw",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود تخم اردک خام، گوشت اردک خام می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/duck_egg_raw.webp",
+      "thumbnail": "/media/ingredients/duck_egg_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "تخم اردک خام / duck egg, raw یک ماده غذایی با دسته‌بندی egg است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_duck_meat_raw",
+          "reason": "same_family",
+          "differenceFa": "تخم اردک خام با گوشت اردک خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "تخم اردک خام با گوشت اردک خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "تخم اردك خام",
+        "تخم اردك",
+        "تخم اردک خامم",
+        "تخماردکخام"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، اگر state ذکر نشود از resolver پیش‌فرض و confidence مناسب استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "turkish": 2,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "reviewed_seed_translation",
+      "en": "reviewed_seed_translation",
+      "ar": "reviewed_seed_translation",
+      "tr": "reviewed_seed_translation",
+      "de": "reviewed_seed_translation",
+      "fr": "reviewed_seed_translation"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "تخم اردک خام",
+        "تخم اردک"
+      ],
+      "en": [
+        "duck egg, raw",
+        "duck egg"
+      ],
+      "ar": [
+        "بيض بط نيء",
+        "بيض بط"
+      ],
+      "tr": [
+        "çiğ ördek yumurtası",
+        "ördek yumurtası",
+        "cig ordek yumurtası"
+      ],
+      "de": [
+        "rohes Entenei",
+        "es Entenei",
+        "Entenei"
+      ],
+      "fr": [
+        "œuf de canard cru",
+        "œuf de canard"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  },
+  {
+    "ingredientId": "ing_goose_egg_raw",
+    "code": "goose_egg_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_B002_TO_700",
+      "batchSequence": 2,
+      "batchRecordNumber": 116,
+      "expansionBase": "500_patch_02_append_only"
+    },
+    "names": {
+      "fa": {
+        "canonical": "تخم غاز خام",
+        "normalized": "تخم غاز خام",
+        "display": "تخم غاز خام"
+      },
+      "en": {
+        "canonical": "goose egg, raw",
+        "normalized": "goose egg, raw",
+        "display": "Goose egg, raw"
+      },
+      "ar": {
+        "canonical": "بيض أوز نيء",
+        "normalized": "بيض أوز نيء",
+        "display": "بيض أوز نيء"
+      },
+      "tr": {
+        "canonical": "çiğ kaz yumurtası",
+        "normalized": "cig kaz yumurtası",
+        "display": "çiğ kaz yumurtası"
+      },
+      "de": {
+        "canonical": "rohes Gänseei",
+        "normalized": "rohes ganseei",
+        "display": "rohes Gänseei"
+      },
+      "fr": {
+        "canonical": "œuf d’oie cru",
+        "normalized": "œuf d’oie cru",
+        "display": "œuf d’oie cru"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "تخم غاز خام",
+        "تخم غاز"
+      ],
+      "en": [
+        "goose egg, raw",
+        "goose egg"
+      ],
+      "ar": [
+        "بيض أوز نيء",
+        "بيض أوز"
+      ],
+      "tr": [
+        "çiğ kaz yumurtası",
+        "kaz yumurtası",
+        "cig kaz yumurtası"
+      ],
+      "de": [
+        "rohes Gänseei",
+        "es Gänseei",
+        "Gänseei",
+        "rohes ganseei"
+      ],
+      "fr": [
+        "œuf d’oie cru",
+        "œuf d’oie"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "تخم غاز خامم",
+        "تخمغازخام"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "تخم",
+        "goose_egg",
+        "goose"
+      ],
+      "en": [
+        "goose egg",
+        "goose_egg",
+        "goose"
+      ],
+      "ar": [
+        "بيض"
+      ],
+      "tr": [
+        "çiğ"
+      ],
+      "de": [
+        "rohes"
+      ],
+      "fr": [
+        "œuf"
+      ]
+    },
+    "taxonomy": {
+      "category": "egg",
+      "parentCategory": "animal_product",
+      "subCategory": "goose_egg",
+      "family": "goose"
+    },
+    "origin": {
+      "animalSource": "goose",
+      "plantSource": null,
+      "part": "egg"
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "unprepared",
+      "waterState": "fresh"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal",
+      "high_protein",
+      "keto_friendly",
+      "low_carb"
+    ],
+    "allergens": {
+      "eu14": [
+        "eggs"
+      ],
+      "us9": [
+        "eggs"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 158,
+      "protein": 13,
+      "fat": 11,
+      "carbs": 1,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 140
+    },
+    "nutritionConfidence": "estimated_pending_exact_source_id_lock",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "goose egg, raw",
+      "crossCheckSources": [],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "not_locked_batch_700_expansion",
+      "confidence": "pending",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockStatus": "pending_exact_source_id",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Not available for strict diet/medical nutrition until exact sourceFoodId and dataset extraction audit are locked.",
+      "lastPolicyReviewedAt": "2026-06-08T16:45:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "main_protein",
+        "recipe_component",
+        "meal_prep"
+      ],
+      "commonCookingMethods": [
+        "grilled",
+        "pan_fried",
+        "baked",
+        "boiled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "as_sold",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [
+        "برای تنوع غذایی و تحلیل مواد اولیه قابل استفاده است"
+      ],
+      "cautions": [
+        "برای رژیم دقیق، داده تغذیه‌ای باید با sourceFoodId قفل شود"
+      ],
+      "goodForGoals": [
+        "general_meal_planning"
+      ],
+      "avoidForGoals": [
+        "strict_medical_nutrition_until_verified"
+      ]
+    },
+    "substitutionOptions": [
+      {
+        "replaceWithIngredientId": "ing_goose_meat_raw",
+        "reason": "availability",
+        "bestUseCases": [
+          "general_cooking",
+          "recipe_adaptation"
+        ],
+        "impact": {
+          "taste": "medium",
+          "texture": "medium",
+          "nutrition": "medium",
+          "allergenRisk": "low"
+        },
+        "confidence": "medium",
+        "notesFa": "در صورت نبود تخم غاز خام، گوشت غاز خام می‌تواند در بعضی کاربردهای عمومی جایگزین شود؛ اثر طعم/بافت باید در رسپی بررسی شود.",
+        "note": "جایگزین عمومی برای برخی رسپی‌ها؛ اثر دقیق به نوع غذا بستگی دارد."
+      }
+    ],
+    "media": {
+      "image": "/media/ingredients/goose_egg_raw.webp",
+      "thumbnail": "/media/ingredients/goose_egg_raw-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "تخم غاز خام / goose egg, raw یک ماده غذایی با دسته‌بندی egg است. این رکورد برای resolver و recommendation عمومی آماده است، اما nutrition آن تا زمان قفل sourceFoodId برای رژیم دقیق استفاده نشود.",
+      "distinguishFrom": [
+        {
+          "ingredientId": "ing_goose_meat_raw",
+          "reason": "same_family",
+          "differenceFa": "تخم غاز خام با گوشت غاز خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند.",
+          "resolverNote": "در صورت وجود نشانه‌های حالت، نوع یا کاربرد، ماده دقیق‌تر انتخاب شود.",
+          "note": "تخم غاز خام با گوشت غاز خام از نظر کاربرد، حالت یا طعم یکی نیست و resolver باید متن رسپی را بررسی کند."
+        }
+      ],
+      "typoHandling": [
+        "تخم غاز خامم",
+        "تخمغازخام"
+      ],
+      "usageNotes": [
+        "در ورود رسپی، اگر state ذکر نشود از resolver پیش‌فرض و confidence مناسب استفاده شود."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "EU",
+        "NL",
+        "US",
+        "IR",
+        "GLOBAL"
+      ],
+      "commonRetailForms": [
+        "raw"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 4,
+      "persian": 2,
+      "dutch": 2,
+      "turkish": 2,
+      "indian": 2,
+      "east_asian": 2,
+      "latin_american": 2
+    },
+    "translationQuality": {
+      "fa": "reviewed_seed_translation",
+      "en": "reviewed_seed_translation",
+      "ar": "reviewed_seed_translation",
+      "tr": "reviewed_seed_translation",
+      "de": "reviewed_seed_translation",
+      "fr": "reviewed_seed_translation"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationVerified": true,
+      "taxonomyVerified": true,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending"
+      ],
+      "readyForMealPlannerMvp": true,
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "تخم غاز خام",
+        "تخم غاز"
+      ],
+      "en": [
+        "goose egg, raw",
+        "goose egg"
+      ],
+      "ar": [
+        "بيض أوز نيء",
+        "بيض أوز"
+      ],
+      "tr": [
+        "çiğ kaz yumurtası",
+        "kaz yumurtası",
+        "cig kaz yumurtası"
+      ],
+      "de": [
+        "rohes Gänseei",
+        "es Gänseei",
+        "Gänseei",
+        "rohes ganseei"
+      ],
+      "fr": [
+        "œuf d’oie cru",
+        "œuf d’oie"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultStateIngredient": true,
+      "defaultConfidence": 0.92,
+      "ambiguityLevel": "low",
+      "requiresContextBoost": false
+    }
+  }
+]

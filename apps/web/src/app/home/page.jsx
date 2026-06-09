@@ -4,24 +4,24 @@ import {
   Container, Title, Text, SimpleGrid, Skeleton,
   Group, Badge, Paper, Button, useMantineColorScheme,
   Popover, ScrollArea, ActionIcon, Box, Tooltip,
-  Autocomplete, Alert, ThemeIcon, Stack
+  Autocomplete, Alert, ThemeIcon
 } from '@mantine/core';
 import {
-  IconSearch, IconRobot, IconChevronLeft,
+  IconSearch, IconRobot,
   IconStars, IconMicrophone, IconArrowUp,
-  IconAlertCircle, IconEye, IconSparkles,
-  IconChefHat, IconArrowRight, IconClock,
-  IconFlame, IconHeart, IconHeartFilled
+  IconAlertCircle, IconSparkles,
+  IconChefHat, IconArrowRight
 } from '@tabler/icons-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectFade } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules'; // فقط Autoplay نیاز داریم
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import apiClient from '../../lib/apiClient';
 import RecipeCard from '../../components/RecipeCard';
-import 'swiper/css/effect-fade';
+
+// حذف import 'swiper/css/effect-fade' چون EffectFade را استفاده نمی‌کنیم
 
 const bannerSlides = [
   {
@@ -141,7 +141,10 @@ export default function HomePage() {
       try {
         const { data } = await apiClient.get('/recommendations?limit=6');
         setRecommendations(data);
-        trackEvent('recommendation_view', { count: data.length });
+        trackEvent('recommendation_impression', {
+          count: data.length,
+          recipeIds: data.map((item) => item.recipeId || item.id).filter(Boolean),
+        });
       } catch (e) {
         console.error('Recs error:', e);
       } finally {
@@ -216,9 +219,10 @@ export default function HomePage() {
 
   const textColor = dark ? '#ffffff' : '#1A237E';
   const mutedText = dark ? '#a0a0b0' : '#555';
-  const cardBg = dark ? 'rgba(30,30,40,0.8)' : 'rgba(255,255,255,0.8)';
-  const cardShadow = dark ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.05)';
-  const borderColor = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)';
+  // ⚡ مطمئن شو پس‌زمینه کارت‌ها در dark mode کاملاً opaque دیده شود
+  const cardBg = dark ? 'rgba(30,30,40,1)' : 'rgba(255,255,255,0.9)';
+  const cardShadow = dark ? '0 4px 12px rgba(0,0,0,0.6)' : '0 4px 20px rgba(0,0,0,0.05)';
+  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)';
   const accent = '#FF6B35';
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -273,15 +277,32 @@ export default function HomePage() {
         </Group>
       </motion.div>
 
-      {/* بنر اسلایدر */}
+      {/* بنر اسلایدر (بدون EffectFade و loop) */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Box mb={24} style={{ borderRadius: 24, overflow: 'hidden', boxShadow: cardShadow }}>
-          <Swiper modules={[Autoplay, EffectFade]} effect="fade" autoplay={{ delay: 5000 }} loop style={{ borderRadius: 24 }}>
-            {bannerSlides.map((slide, i) => (
-              <SwiperSlide key={i}>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <Swiper
+            modules={[Autoplay]}
+            autoplay={{ delay: 5000 }}
+            style={{ borderRadius: 24, backgroundColor: dark ? '#1e1e2f' : '#fff' }}
+          >
+            {bannerSlides.map((slide) => (
+              <SwiperSlide key={slide.action}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => { navigate(slide.action); trackEvent('banner_click', { action: slide.action }); }}
-                  style={{ background: slide.bg, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', textAlign: 'center', padding: '16px 24px', cursor: 'pointer' }}
+                  style={{
+                    background: slide.bg,
+                    height: 200,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    textAlign: 'center',
+                    padding: '16px 24px',
+                    cursor: 'pointer'
+                  }}
                 >
                   <Text size={48} mb={12}>{slide.icon}</Text>
                   <Text size={20} fw={800} mb={6}>{slide.title}</Text>
@@ -309,7 +330,7 @@ export default function HomePage() {
                 styles={{
                   input: {
                     textAlign: 'right',
-                    backgroundColor: dark ? 'rgba(30,30,40,0.8)' : 'rgba(255,255,255,0.9)',
+                    backgroundColor: dark ? 'rgba(30,30,40,0.9)' : 'rgba(255,255,255,0.9)',
                     backdropFilter: 'blur(12px)',
                     border: `1px solid ${borderColor}`,
                     height: 52,
@@ -475,23 +496,33 @@ export default function HomePage() {
               <Badge variant="light" color="violet" size="sm" radius="xl">شخصی‌سازی شده</Badge>
             </Group>
             <SimpleGrid cols={1} spacing="sm">
-              {recommendations.slice(0, 4).map(recipe => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
+              {recommendations.slice(0, 4).map(rec => {
+                const adaptedRecipe = { ...rec, id: rec.recipeId || rec.id };
+                return (
+                  <RecipeCard
+                    key={adaptedRecipe.id}
+                    recipe={adaptedRecipe}
+                    onClick={() => {
+                      navigate(`/recipe/${adaptedRecipe.id}`);
+                      trackEvent('recommendation_click', { recipeId: adaptedRecipe.id });
+                    }}
+                  />
+                );
+              })}
             </SimpleGrid>
           </Paper>
         </motion.div>
       )}
 
-      {/* دسته‌بندی‌ها */}
+      {/* دسته‌بندی‌ها – اصلاح شده برای دیده شدن قطعی */}
       <motion.div variants={fadeInUp} custom={3} initial="hidden" animate="visible">
         <Box mb="xl">
           <Title order={5} c={textColor} mb="sm">📂 دسته‌بندی‌ها</Title>
-          <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start' }}>
-            {TOP_CATEGORIES.map((cat, i) => (
+          <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start', visibility: 'visible' }}>
+            {TOP_CATEGORIES.map((cat) => (
               <motion.div
-                key={i}
-                whileHover={{ y: -5, boxShadow: '0 8px 20px rgba(0,0,0,0.12)' }}
+                key={cat}
+                whileHover={{ y: -5, boxShadow: '0 8px 20px rgba(0,0,0,0.15)' }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }}
                 style={{
@@ -509,6 +540,10 @@ export default function HomePage() {
                   justifyContent: 'center',
                   gap: 6,
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  minHeight: 80,              // تضمین ارتفاع قابل مشاهده
+                  position: 'relative',
+                  zIndex: 1,
+                  visibility: 'visible'       // احتیاط اضافی
                 }}
               >
                 <Text size={30} style={{ lineHeight: 1.2 }}>{CATEGORY_EMOJIS[cat] || '🍽️'}</Text>
@@ -579,7 +614,7 @@ export default function HomePage() {
         </Group>
         <SimpleGrid cols={1} spacing="sm" mb="lg">
           {tabRecipes.slice(0, 4).map(recipe => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+            <RecipeCard key={recipe.id} recipe={recipe} onClick={() => { navigate(`/recipe/${recipe.id}`); trackEvent('recipe_view', { recipeId: recipe.id }); }} />
           ))}
         </SimpleGrid>
         {total > 4 && (

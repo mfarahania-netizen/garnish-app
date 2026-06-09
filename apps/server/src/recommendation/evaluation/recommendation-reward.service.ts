@@ -1,0 +1,127 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+
+@Injectable()
+export class RecommendationRewardService {
+  constructor(private prisma: PrismaService) {}
+
+  async buildRewardProfile(userId: string, windowDays = 14) {
+    const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const attributionEvent = (this.prisma as any).recommendationAttributionEvent;
+    const exposure = (this.prisma as any).recommendationExposure;
+
+    const [attributionEvents, userEvents, exposureCount] = await Promise.all([
+      attributionEvent?.findMany
+        ? attributionEvent.findMany({
+            where: { userId, occurredAt: { gte: since } },
+            select: { eventType: true, value: true },
+          })
+        : [],
+      this.prisma.userEvent?.findMany
+        ? this.prisma.userEvent.findMany({
+            where: {
+              userId,
+              timestamp: { gte: since },
+              type: {
+                in: [
+                  'recommendation_impression',
+                  'recommendation_click',
+                  'recommendation_save',
+                  'recommendation_cook',
+                  'recommendation_dismiss',
+                  'recommendation_ignore',
+                ],
+              },
+            },
+            select: { type: true },
+          })
+        : [],
+      exposure?.count
+        ? exposure.count({
+            where: { userId, viewedAt: { gte: since } },
+          })
+        : 0,
+    ]);
+
+    const events = [
+      ...attributionEvents,
+      ...userEvents.map((event) => ({
+        eventType: event.type,
+        value: this.defaultEventValue(event.type),
+      })),
+    ];
+
+    const aggregate = events.reduce(
+      (acc: Record<string, number>, event: { eventType: string; value: number }) => {
+        acc.total += event.value ?? 0;
+        acc[event.eventType] = (acc[event.eventType] ?? 0) + 1;
+        return acc;
+      },
+      {
+        total: 0,
+        recommendation_impression: 0,
+        recommendation_click: 0,
+        recommendation_save: 0,
+        recommendation_cook: 0,
+        recommendation_dismiss: 0,
+        recommendation_ignore: 0,
+      },
+    );
+
+    if (aggregate.recommendation_impression === 0 && exposureCount > 0) {
+      aggregate.recommendation_impression = exposureCount;
+      aggregate.total = Math.max(aggregate.total, exposureCount);
+    }
+
+    const rewardScore = this.computeRewardScore(aggregate);
+
+    const outcome = await this.prisma.userOutcome.create({
+      data: {
+        userId,
+        metricName: 'recommendation_reward',
+        metricValue: rewardScore,
+        period: 'daily',
+        sources: {
+          windowDays,
+          aggregate,
+        },
+      },
+    });
+
+    return {
+      ...outcome,
+      windowDays,
+      rewardScore,
+      aggregate,
+    };
+  }
+
+  async getLatestReward(userId: string) {
+    return this.prisma.userOutcome.findFirst({
+      where: { userId, metricName: 'recommendation_reward' },
+      orderBy: { recordedAt: 'desc' },
+    });
+  }
+
+  private computeRewardScore(aggregate: Record<string, number>) {
+    const positives =
+      (aggregate.recommendation_click ?? 0) * 0.2 +
+      (aggregate.recommendation_save ?? 0) * 0.6 +
+      (aggregate.recommendation_cook ?? 0) * 1.0;
+    const negatives =
+      (aggregate.recommendation_dismiss ?? 0) * 0.8 +
+      (aggregate.recommendation_ignore ?? 0) * 0.4;
+    const base = aggregate.total || 1;
+    const score = ((positives - negatives) / base) * 100;
+    return Math.max(0, Math.min(100, Math.round(score * 10) / 10));
+  }
+
+  private defaultEventValue(eventType: string) {
+    if (eventType === 'recommendation_cook') return 1;
+    if (eventType === 'recommendation_save') return 0.6;
+    if (eventType === 'recommendation_click') return 0.2;
+    if (eventType === 'recommendation_dismiss') return -0.8;
+    if (eventType === 'recommendation_ignore') return -0.4;
+    return 0;
+  }
+}

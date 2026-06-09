@@ -1,3 +1,4 @@
+// apps/server/src/admin/admin.controller.ts
 import { Controller, Get, Post, Patch, Param, Body, UseGuards, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
@@ -11,9 +12,7 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Get('dashboard')
-  getDashboard() {
-    return this.adminService.getDashboardStats();
-  }
+  getDashboard() { return this.adminService.getDashboardStats(); }
 
   @Get('tickets')
   getTickets(@Query('page') page: string, @Query('limit') limit: string) {
@@ -36,9 +35,7 @@ export class AdminController {
   }
 
   @Patch('recipes/:id/approve')
-  approveRecipe(@Param('id') id: string) {
-    return this.adminService.updateRecipeStatus(id, 'approved');
-  }
+  approveRecipe(@Param('id') id: string) { return this.adminService.updateRecipeStatus(id, 'approved'); }
 
   @Patch('recipes/:id/reject')
   rejectRecipe(@Param('id') id: string, @Body('note') note: string) {
@@ -51,27 +48,49 @@ export class AdminController {
   }
 
   @Get('analytics/events')
-  getRecentEvents(@Query('limit') limit: string, @Query('page') page: string) {
-    return this.adminService.getRecentEvents(parseInt(limit) || 50, parseInt(page) || 1);
+  getRecentEvents(
+    @Query('limit') limit: string,
+    @Query('page') page: string,
+    @Query('type') type: string,
+    @Query('from') from: string,    // 🆕
+    @Query('to') to: string,        // 🆕
+  ) {
+    return this.adminService.getRecentEvents(
+      parseInt(limit) || 50,
+      parseInt(page) || 1,
+      type || undefined,
+      from || undefined,
+      to || undefined,
+    );
   }
 
   @Get('analytics/stats')
-  getAnalyticsStats() {
-    return this.adminService.getAnalyticsStats();
-  }
+  getAnalyticsStats() { return this.adminService.getAnalyticsStats(); }
 
   @Get('analytics/search-queries')
-  getTopSearchQueries() {
-    return this.adminService.getTopSearchQueries();
-  }
+  getTopSearchQueries() { return this.adminService.getTopSearchQueries(); }
 
   @Get('analytics/meal-planning')
-  getMealPlanningStats() {
-    return this.adminService.getMealPlanningStats();
-  }
+  getMealPlanningStats() { return this.adminService.getMealPlanningStats(); }
 
   @Get('analytics/ai-interaction')
-  getAIInteractionStats() {
-    return this.adminService.getAIInteractionStats();
-  }
+  getAIInteractionStats() { return this.adminService.getAIInteractionStats(); }
+
+  @Get('analytics/user-stats')
+  getUserStats() { return this.adminService.getUserStats(); }
+
+  @Get('analytics/recipes-stats')
+  getRecipeStats() { return this.adminService.getRecipeStats(); }
+
+  @Get('analytics/shopping')
+  getShoppingAnalytics() { return this.adminService.getShoppingAnalytics(); }
+
+  @Get('analytics/behavior-profiles')
+  getBehaviorProfiles() { return this.adminService.getBehaviorProfiles(); }
+
+  @Get('analytics/page-views')
+  getPageViewStats() { return this.adminService.getPageViewStats(); }
+
+  @Get('analytics/system-health')
+  getSystemHealth() { return this.adminService.getSystemHealth(); }
 }

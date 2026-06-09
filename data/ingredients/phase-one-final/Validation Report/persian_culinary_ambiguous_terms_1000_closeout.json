@@ -1,0 +1,666 @@
+[
+  {
+    "term": "شیر",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_whole_milk",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_skim_milk",
+      "ing_almond_milk_unsweetened",
+      "ing_oat_milk_unsweetened",
+      "ing_soy_milk_unsweetened"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "اگر فقط شیر آمده، پیش‌فرض شیر کامل است؛ زمینه گیاهی/کم‌چرب باید بررسی شود."
+  },
+  {
+    "term": "کشک",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_kashk_liquid",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_kashk_dry"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "اگر خشک/پودر/جامد نیامده، کشک مایع پیش‌فرض است."
+  },
+  {
+    "term": "خامه",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_heavy_cream",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_sour_cream"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نوع خامه باید از رسپی یا کاربرد مشخص شود."
+  },
+  {
+    "term": "پنیر",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_feta_cheese",
+    "defaultConfidence": 0.8,
+    "alternativeIngredientIds": [
+      "ing_mozzarella_cheese",
+      "ing_cheddar_cheese",
+      "ing_parmesan_cheese",
+      "ing_cream_cheese",
+      "ing_ricotta_cheese"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "پنیر اصطلاح عمومی است و باید context مشخص کند."
+  },
+  {
+    "term": "روغن",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_sunflower_oil",
+    "defaultConfidence": 0.86,
+    "alternativeIngredientIds": [
+      "ing_olive_oil",
+      "ing_canola_oil",
+      "ing_sesame_oil"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "اگر نوع نیامده، روغن عمومی/آفتابگردان پیش‌فرض کم‌اعتماد است."
+  },
+  {
+    "term": "آرد",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_all_purpose_flour",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_whole_wheat_flour",
+      "ing_rice_flour"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نوع آرد با رسپی مشخص شود."
+  },
+  {
+    "term": "گوشت",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_beef_lean_raw",
+    "defaultConfidence": 0.84,
+    "alternativeIngredientIds": [
+      "ing_lamb_meat_raw",
+      "ing_ground_beef_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "گوشت عمومی است و نوع حیوان/برش باید بررسی شود."
+  },
+  {
+    "term": "مرغ",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_chicken_breast_raw",
+      "ing_chicken_thigh_raw",
+      "ing_chicken_wing_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "مرغ عمومی است؛ اگر سینه/ران/بال آمده همان دقیق‌تر انتخاب شود."
+  },
+  {
+    "term": "ماهی",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_salmon_raw",
+      "ing_shrimp_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نوع ماهی با متن رسپی تعیین شود."
+  },
+  {
+    "term": "لوبیا",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_pinto_beans_dry",
+    "defaultConfidence": 0.82,
+    "alternativeIngredientIds": [
+      "ing_white_beans_dry",
+      "ing_black_beans_dry",
+      "ing_green_beans_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "لوبیا عمومی است؛ نوع باید از متن یا context مشخص شود."
+  },
+  {
+    "term": "لیمو",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_lime_raw",
+    "defaultConfidence": 0.84,
+    "alternativeIngredientIds": [
+      "ing_lemon_raw",
+      "ing_dried_lime_whole",
+      "ing_lime_juice_bottled"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "لیمو می‌تواند lemon/lime/لیموعمانی باشد."
+  },
+  {
+    "term": "فلفل",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_black_pepper_ground",
+    "defaultConfidence": 0.82,
+    "alternativeIngredientIds": [
+      "ing_chili_pepper_raw",
+      "ing_paprika_ground"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "فلفل عمومی است؛ ادویه یا سبزی باید مشخص شود."
+  },
+  {
+    "term": "برنج",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_white_rice_raw",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_brown_rice_raw",
+      "ing_basmati_rice_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "اگر نوع نیامده، برنج سفید خام پیش‌فرض است."
+  },
+  {
+    "term": "نان",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_lavash_bread",
+      "ing_barbari_bread",
+      "ing_sangak_bread"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نان عمومی است و نوع نان باید مشخص شود."
+  },
+  {
+    "term": "ماست",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_plain_yogurt",
+    "defaultConfidence": 0.91,
+    "alternativeIngredientIds": [
+      "ing_sour_cream"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "ماست ساده پیش‌فرض است؛ نوع یونانی/چکیده/اسکایر از context."
+  },
+  {
+    "term": "سبزی",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_sabzi_khordan_mix",
+    "defaultConfidence": 0.8,
+    "alternativeIngredientIds": [
+      "ing_ghormeh_sabzi_mix",
+      "ing_ash_sabzi_mix",
+      "ing_kookoo_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "سبزی عمومی است؛ نوع سبزی باید مشخص شود."
+  },
+  {
+    "term": "سبزی خشک",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_dried_mint",
+    "defaultConfidence": 0.75,
+    "alternativeIngredientIds": [
+      "ing_fenugreek_leaves_dried",
+      "ing_savory_dried",
+      "ing_dried_parsley"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "سبزی خشک عمومی است و نباید با اعتماد بالا resolve شود."
+  },
+  {
+    "term": "سبزی خورشتی",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_ghormeh_sabzi_mix",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_ash_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "در فارسی معمولاً سبزی خورشتی با قورمه مرتبط است، اما متن بررسی شود."
+  },
+  {
+    "term": "سبزی خوردن",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_sabzi_khordan_mix",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_ghormeh_sabzi_mix",
+      "ing_kookoo_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "سبزی خوردن یک مخلوط مصرف خام است."
+  },
+  {
+    "term": "رب",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_tomato_paste",
+    "defaultConfidence": 0.86,
+    "alternativeIngredientIds": [
+      "ing_pomegranate_molasses",
+      "ing_sour_plum_paste",
+      "ing_tamarind_paste"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "رب عمومی است؛ نوع رب باید مشخص شود."
+  },
+  {
+    "term": "سس",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_mayonnaise",
+      "ing_soy_sauce"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "سس عمومی است."
+  },
+  {
+    "term": "رشته",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_ash_noodles",
+    "defaultConfidence": 0.86,
+    "alternativeIngredientIds": [
+      "ing_reshteh_polo_noodles"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "رشته عمومی است؛ آش/پلویی/نودل باید مشخص شود."
+  },
+  {
+    "term": "قورمه سبزی",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_ghormeh_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نام غذاست، نه ingredient؛ فقط در line ingredient با اشاره به سبزی resolve شود."
+  },
+  {
+    "term": "قرمه سبزی",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_ghormeh_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نام غذاست، نه ingredient؛ فقط در line ingredient با اشاره به سبزی resolve شود."
+  },
+  {
+    "term": "آش رشته",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_ash_noodles",
+      "ing_ash_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نام غذاست؛ به ingredient مستقیم resolve نشود."
+  },
+  {
+    "term": "کوکو سبزی",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": null,
+    "defaultConfidence": 0.0,
+    "alternativeIngredientIds": [
+      "ing_kookoo_sabzi_mix"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نام غذاست؛ ingredient line باید مشخص کند."
+  },
+  {
+    "term": "زعفران دم کرده",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_saffron",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_rose_water"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "برای resolver به زعفران وصل شود، اما nutrition/conversion جدا لازم است."
+  },
+  {
+    "term": "زیره",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_cumin_ground",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_black_cumin_seeds",
+      "ing_caraway_seeds"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "زیره سبز و زیره سیاه جدا هستند."
+  },
+  {
+    "term": "شنبلیله",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_fenugreek_leaves_dried",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_tareh_fresh"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "اگر تازه/خشک مشخص شد دقیق‌تر انتخاب شود."
+  },
+  {
+    "term": "نعناع",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_mint_fresh",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_dried_mint"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نعناع تازه/خشک جداست."
+  },
+  {
+    "term": "نعنا",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_mint_fresh",
+    "defaultConfidence": 0.88,
+    "alternativeIngredientIds": [
+      "ing_dried_mint"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "نعنا/نعناع یک family؛ خشک بودن باید بررسی شود."
+  },
+  {
+    "term": "تره",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_tareh_fresh",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_leek_raw",
+      "ing_chives_fresh",
+      "ing_scallion_raw"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "تره ایرانی با تره‌فرنگی و تره پیازی متفاوت است."
+  },
+  {
+    "term": "تره فرنگی",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_leek_raw",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_tareh_fresh"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "تره‌فرنگی همان leek است، نه تره سبزی."
+  },
+  {
+    "term": "تره پیازی",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_chives_fresh",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_tareh_fresh"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "تره پیازی/chives جدا از تره ایرانی است."
+  },
+  {
+    "term": "پیازچه",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_scallion_raw",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_chives_fresh"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "پیازچه/scallion جدا از تره پیازی است."
+  },
+  {
+    "term": "آلو",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_plum_raw",
+    "defaultConfidence": 0.82,
+    "alternativeIngredientIds": [
+      "ing_prunes",
+      "ing_greengage_sour_plum_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "آلو خام/خشک/آلوچه متفاوت است."
+  },
+  {
+    "term": "آلو خشک",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_prunes",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_dried_sour_cherries",
+      "ing_plum_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "آلو خشک با آلو خام فرق دارد."
+  },
+  {
+    "term": "آلو بخارا",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_prunes",
+    "defaultConfidence": 0.96,
+    "alternativeIngredientIds": [
+      "ing_plum_raw"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "برای فاز اول به آلو خشک/prunes وصل می‌شود."
+  },
+  {
+    "term": "گوجه",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_tomato_raw",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_greengage_sour_plum_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "گوجه می‌تواند گوجه‌فرنگی یا در ترکیب گوجه‌سبز باشد."
+  },
+  {
+    "term": "گوجه فرنگی",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_tomato_raw",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_canned_diced_tomatoes",
+      "ing_tomato_paste"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "گوجه‌فرنگی خام پیش‌فرض است."
+  },
+  {
+    "term": "گوجه سبز",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_greengage_sour_plum_raw",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_plum_raw"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "گوجه‌سبز میوه ترش است، نه گوجه‌فرنگی."
+  },
+  {
+    "term": "لیمو عمانی",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_dried_lime_whole",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_dried_lime_powder",
+      "ing_lime_raw"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "لیموعمانی درسته با پودر آن فرق دارد."
+  },
+  {
+    "term": "لیموعمانی",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_dried_lime_whole",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_dried_lime_powder"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "لیموعمانی درسته پیش‌فرض است."
+  },
+  {
+    "term": "آبلیمو",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_lime_juice_bottled",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_lime_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "آبلیمو ممکن است لیمو زرد/سبز باشد؛ context بررسی شود."
+  },
+  {
+    "term": "آب لیمو",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_lime_juice_bottled",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_lime_raw"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "آب لیمو با خود لیمو فرق دارد."
+  },
+  {
+    "term": "آبغوره",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_verjuice",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_lime_juice_bottled"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "آبغوره همان verjuice است."
+  },
+  {
+    "term": "آب غوره",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_verjuice",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_lime_juice_bottled"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "فاصله در آبغوره کنترل می‌شود."
+  },
+  {
+    "term": "ارده",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_tahini",
+    "defaultConfidence": 0.92,
+    "alternativeIngredientIds": [
+      "ing_halva_ardeh"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "ارده کنجد است؛ حلوا ارده محصول شیرین جداست."
+  },
+  {
+    "term": "حلوا ارده",
+    "language": "fa",
+    "ambiguityLevel": "low",
+    "defaultIngredientId": "ing_halva_ardeh",
+    "defaultConfidence": 0.98,
+    "alternativeIngredientIds": [
+      "ing_tahini"
+    ],
+    "requiresContextForHighConfidence": false,
+    "resolverRule": "حلوا ارده با ارده خام یکی نیست."
+  },
+  {
+    "term": "شیره",
+    "language": "fa",
+    "ambiguityLevel": "high",
+    "defaultIngredientId": "ing_grape_molasses",
+    "defaultConfidence": 0.84,
+    "alternativeIngredientIds": [
+      "ing_date_syrup"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "شیره عمومی است؛ انگور/خرما باید مشخص شود."
+  },
+  {
+    "term": "سیاهدانه",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_nigella_seeds",
+    "defaultConfidence": 0.94,
+    "alternativeIngredientIds": [
+      "ing_nigella_seeds",
+      "ing_black_cumin_seeds"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "در فارسی سیاهدانه/شونیز پیش‌فرض Nigella sativa است؛ با زیره سیاه ایرانی یکی نشود."
+  },
+  {
+    "term": "زیره سیاه",
+    "language": "fa",
+    "ambiguityLevel": "medium",
+    "defaultIngredientId": "ing_black_cumin_seeds",
+    "defaultConfidence": 0.9,
+    "alternativeIngredientIds": [
+      "ing_black_cumin_seeds",
+      "ing_nigella_seeds"
+    ],
+    "requiresContextForHighConfidence": true,
+    "resolverRule": "زیره سیاه در رسپی ایرانی پیش‌فرض زیره سیاه ایرانی است، اما اگر سیاهدانه/شونیز آمده باشد باید به Nigella resolve شود."
+  }
+]
