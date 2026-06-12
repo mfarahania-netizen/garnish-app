@@ -11,8 +11,10 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    // اگر هیچ نقشی تعریف نشده، یعنی همه می‌توانند دسترسی داشته باشند
-    if (!requiredRoles) return true;
+    // E3: deny-by-default. اگر این گارد روی یک مسیر اعمال شده ولی هیچ نقشی
+    // اعلام نشده، این یک پیکربندی اشتباه است و دسترسی بسته می‌شود (fail closed)،
+    // نه باز. مسیرهای عمومی نباید اصلاً RolesGuard داشته باشند.
+    if (!requiredRoles || requiredRoles.length === 0) return false;
 
     const { user } = context.switchToHttp().getRequest();
     // چک می‌کند که آیا کاربر ادمین است یا نه
