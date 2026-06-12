@@ -21,6 +21,8 @@
 | R13 | Overengineering in WAT | Scope | Med | Med | EL | WAT W0 spec only, W1 conditional on time-log evidence, permanent deny-list | WAT build beyond W0 pre-evidence | Open |
 | R14 | Nutrition source gap | Data/Content | Med | Med | CM | E12 three-tier nutrition policy, 200 source-locked, no number without badge | Recipe shows nutrition w/o source | Open |
 | R15 | GDPR / consent failure | Compliance | Med | High | ADV | E4 consent gate (zero pre-consent events), E39 erasure/export, E40 AI-Act memo | Any event before consent | Open |
+| R16 | GDPR erasure structurally broken — behavioral/feature/outcome models have no `@relation` to User; `UserSession`/`UserEvent`/`UserPreference` use RESTRICT → `user.delete()` throws / orphans rows | Data/Compliance | High | High | EL/ADV | E39: add FK + `onDelete: Cascade`, flip RESTRICT→CASCADE, e2e `DELETE /users/me` against a user with behavioral history | erasure request returns error / orphan rows found | Open (audit 2026-06-13) |
+| R17 | Missing `RecipeContext` — 4 live files import a non-existent `context/RecipeContext`; components throw at runtime | Frontend/Quality | High | Med | EL | Create the context or fix imports before the affected surfaces ship | mounting shopping/meal-planner/ai-chat surfaces crashes | Open (audit 2026-06-13) |
 
 ## How to use
 - Add a new row whenever a risk is identified; never delete — set Status to `Closed` / `Accepted` with a dated note below.
@@ -29,3 +31,4 @@
 
 ## Change history
 - 2026-06-13 — Seeded with 15 initial risks per A1.5.
+- 2026-06-13 — Added R16 (GDPR erasure structurally broken) and R17 (missing RecipeContext) from the structure/design audit (`docs/audit/STRUCTURE_AND_DESIGN_AUDIT.md`).
