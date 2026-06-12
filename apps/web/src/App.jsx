@@ -2,9 +2,11 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { MantineProvider, createTheme, virtualColor, Center, Loader } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Component, Suspense, lazy, useEffect } from 'react';
+import { Component, Suspense, lazy, useEffect, useState } from 'react';
 import posthog from 'posthog-js';
 import { AuthProvider } from './context/AuthContext';
+import ConsentModal from './components/ConsentModal';
+import { getAnalyticsConsent } from './lib/analytics-init';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
@@ -149,6 +151,19 @@ function PageWrapper({ children }) {
   );
 }
 
+// E4: first-visit analytics consent prompt. Opens only when the user has made
+// no prior decision; PostHog stays uninitialized until consent is granted.
+function AnalyticsConsentGate() {
+  const [opened, setOpened] = useState(() => getAnalyticsConsent() === null);
+  return (
+    <ConsentModal
+      opened={opened}
+      onClose={() => setOpened(false)}
+      onConsentGiven={() => setOpened(false)}
+    />
+  );
+}
+
 function AppInner() {
   const { dark } = useTheme();
   return (
@@ -157,6 +172,7 @@ function AppInner() {
         <AuthProvider>
           <ErrorBoundary>
             <AnimatedRoutes />
+            <AnalyticsConsentGate />
           </ErrorBoundary>
         </AuthProvider>
       </MantineProvider>
