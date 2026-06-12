@@ -6,6 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
 import { PrismaModule } from './prisma/prisma.module';
+import { IngredientsModule } from './ingredients/ingredients.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -37,6 +38,7 @@ import { GovernanceModule } from './governance/governance.module';
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 200 }]),
     PrismaModule,
+    IngredientsModule,
     RecipesModule,
     UsersModule,
     AuthModule,

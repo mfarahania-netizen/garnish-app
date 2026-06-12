@@ -6,6 +6,9 @@ export enum EventType {
   PROFILE_EDIT = 'profile_edit',
   AVATAR_CHANGE = 'avatar_change',
 
+  // Data quality (E11 ingredient resolver)
+  RESOLVE_MISS = 'resolve_miss',
+
   PAGE_VIEW = 'page_view',
   SESSION_START = 'session_start',
   SESSION_END = 'session_end',
