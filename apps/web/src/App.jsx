@@ -1,35 +1,43 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { MantineProvider, createTheme, virtualColor } from '@mantine/core';
+import { MantineProvider, createTheme, virtualColor, Center, Loader } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Component, useEffect } from 'react';
+import { Component, Suspense, lazy, useEffect } from 'react';
 import posthog from 'posthog-js';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
-import HomePage from './app/home/page';
-import RecipeDetailPage from './app/recipe/[id]/page';
-import RecipesPage from './app/recipes/page';
-import AuthPage from './app/auth/page';
-import CategoryPage from './app/category/[keyword]/page';
-import PlanPage from './app/plan/page';
-import ShoppingListPage from './app/shopping-list/page';
-import AdminDashboard from './app/admin/page';
-import FavoritesPage from './app/favorites/page';
-import ProfilePage from './features/profile/pages/ProfilePage';
-import { AddRecipePage } from './features/add-recipe';
-import MyRecipesPage from './features/add-recipe/pages/MyRecipesPage';
-import SupportPage from './features/support/pages/SupportPage';
-import PreferencesPage from './features/profile/pages/PreferencesPage';
-import AIChatPage from './features/ai-chat/pages/AIChatPage';
-import NotificationsPage from './features/notifications/pages/NotificationsPage';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import '@mantine/core/styles.css';
 import './App.css';
 
 const queryClient = new QueryClient();
+const HomePage = lazy(() => import('./app/home/page'));
+const RecipeDetailPage = lazy(() => import('./app/recipe/[id]/page'));
+const RecipesPage = lazy(() => import('./app/recipes/page'));
+const AuthPage = lazy(() => import('./app/auth/page'));
+const CategoryPage = lazy(() => import('./app/category/[keyword]/page'));
+const PlanPage = lazy(() => import('./app/plan/page'));
+const ShoppingListPage = lazy(() => import('./app/shopping-list/page'));
+const AdminDashboard = lazy(() => import('./app/admin/page'));
+const FavoritesPage = lazy(() => import('./app/favorites/page'));
+const ProfilePage = lazy(() => import('./features/profile/pages/ProfilePage'));
+const AddRecipePage = lazy(() => import('./features/add-recipe').then((module) => ({ default: module.AddRecipePage })));
+const MyRecipesPage = lazy(() => import('./features/add-recipe/pages/MyRecipesPage'));
+const SupportPage = lazy(() => import('./features/support/pages/SupportPage'));
+const PreferencesPage = lazy(() => import('./features/profile/pages/PreferencesPage'));
+const AIChatPage = lazy(() => import('./features/ai-chat/pages/AIChatPage'));
+const NotificationsPage = lazy(() => import('./features/notifications/pages/NotificationsPage'));
+
+function RouteFallback() {
+  return (
+    <Center h="60vh">
+      <Loader color="orange" />
+    </Center>
+  );
+}
 
 const theme = createTheme({
   primaryColor: 'orange',
@@ -92,6 +100,7 @@ function AnimatedRoutes() {
 
   return (
     <AnimatePresence mode="wait">
+      <Suspense fallback={<RouteFallback />}>
       <Routes location={location} key={location.pathname}>
         {/* مسیرهای داخل MainLayout */}
         <Route path="/" element={<MainLayout />}>
@@ -122,6 +131,7 @@ function AnimatedRoutes() {
           }
         />
       </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 }

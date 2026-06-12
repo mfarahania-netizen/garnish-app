@@ -45,5 +45,21 @@ export default defineConfig({
       '@garnish/shared': path.resolve(__dirname, '../../packages/shared'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1300,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) return 'react';
+          if (id.includes('@mantine')) return 'mantine';
+          if (id.includes('framer-motion')) return 'motion';
+          if (id.includes('recharts')) return 'charts';
+          if (id.includes('@tanstack/react-query')) return 'query';
+          return 'vendor';
+        },
+      },
+    },
+  },
   server: { host: true, port: 5173 },
 });
