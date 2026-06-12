@@ -24,6 +24,8 @@
 | R16 | GDPR erasure structurally broken — behavioral/feature/outcome models have no `@relation` to User; `UserSession`/`UserEvent`/`UserPreference` use RESTRICT → `user.delete()` throws / orphans rows | Data/Compliance | High | High | EL/ADV | E39: add FK + `onDelete: Cascade`, flip RESTRICT→CASCADE, e2e `DELETE /users/me` against a user with behavioral history | erasure request returns error / orphan rows found | Open (audit 2026-06-13) |
 | R17 | Missing `RecipeContext` — 4 live files import a non-existent `context/RecipeContext`; components throw at runtime | Frontend/Quality | High | Med | EL | Create the context or fix imports before the affected surfaces ship | mounting shopping/meal-planner/ai-chat surfaces crashes | Open (audit 2026-06-13) |
 | R18 | Over-exposed ops/diagnostics endpoints — `recommendation` (build-snapshots, run-signal-detector, build-identity, debug-features, test-penalty, embedding) and root-mounted `diagnostics` (governance, report, metrics, …) require only `AuthGuard`, so any logged-in user can trigger jobs / read system internals | Security | Med | High | EL/PS | Gate `⚠ needs PS/F` routes behind `RolesGuard + @Roles('admin')` after PS/F confirms intended access; move diagnostics under a non-root prefix (see `docs/security/RBAC_ROUTE_MATRIX.md`) | any non-admin user hits an ops/governance route | Open (E3-0 2026-06-13) |
+| R19 | 4 pre-existing failing unit specs (`recipes.controller.spec.ts`/`recipes.service.spec.ts` DI errors, `ranking.service.spec.ts:192` stale assertion, `feature-store.service.spec.ts` incomplete mock) — 44/48 pass | Quality/CI | High | Med | EL | CI `test` step is `continue-on-error` (non-blocking) until a dedicated fix ticket lands; then make it a blocking gate | test gate stays red | Open (E6 2026-06-13) |
+| R20 | Server lint ~3230 errors (almost all `prettier/prettier` formatting/CRLF; ~2218 auto-fixable) | Quality/CI | Med | Low | EL | CI `lint` step is `continue-on-error` until a `prettier --write` format pass + CRLF/EOL policy lands; then make blocking | lint gate stays red | Open (E6 2026-06-13) |
 
 ## How to use
 - Add a new row whenever a risk is identified; never delete — set Status to `Closed` / `Accepted` with a dated note below.
@@ -33,3 +35,5 @@
 ## Change history
 - 2026-06-13 — Seeded with 15 initial risks per A1.5.
 - 2026-06-13 — Added R16 (GDPR erasure structurally broken) and R17 (missing RecipeContext) from the structure/design audit (`docs/audit/STRUCTURE_AND_DESIGN_AUDIT.md`).
+- 2026-06-13 — Added R18 (over-exposed ops/diagnostics endpoints) from E3-0 RBAC matrix.
+- 2026-06-13 — Added R19 (4 failing specs) and R20 (lint/format debt) from E6 CI setup; both gated non-blocking in CI.

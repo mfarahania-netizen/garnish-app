@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: lint · build · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.1.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --dir apps/server exec prisma generate
+
+      # Blocking gate: a broken build fails CI.
+      - name: Build
+        run: pnpm build
+
+      # Non-blocking for now — tracked as R20 (lint/format debt). Remove
+      # continue-on-error once the formatting backlog is cleared.
+      - name: Lint
+        run: pnpm lint
+        continue-on-error: true
+
+      # Non-blocking for now — tracked as R19 (4 pre-existing failing specs).
+      # Remove continue-on-error once those specs are fixed.
+      - name: Test
+        run: pnpm test
+        continue-on-error: true
+
+  secret-scan:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
