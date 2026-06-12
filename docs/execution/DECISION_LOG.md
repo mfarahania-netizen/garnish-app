@@ -1,0 +1,25 @@
+# DECISION LOG
+
+> Execution artifact per **Constitution v1.0.1 — A1.5**. Append-only record of consequential decisions.
+> Each `Revisit Trigger` points to the gate (Part 2 / Part 8) that may reopen the decision.
+
+| Decision ID | Date | Decision | Options Considered | Final Choice | Reason | Owner | Revisit Trigger |
+|-------------|------|----------|--------------------|--------------|--------|-------|-----------------|
+| D1 | 2026-06-13 | Iran market posture | Real market vs. technical/behavioral sandbox | Iran = sandbox, **not** a market | Honest separation of "product quality" from "market demand"; operational/legal risk | F | New legal opinion (E49) |
+| D2 | 2026-06-13 | Europe launch posture | Persian/MENA-first vs. universal-first | Europe = universal-first (English-first, universal ICPs) | Market size + founder fit; Persian/MENA = hidden strength, not identity | F | G2 outcome |
+| D3 | 2026-06-13 | Public chat / DM | Build public chat vs. not | Public chat **not built** (ever in core) | Real-time harassment/moderation liability, no value evidence | F | Never (core) |
+| D4 | 2026-06-13 | Public feed | Algorithmic feed vs. none | Public feed **not built** by default | ED/DSA/moderation risk; anti "no-feed" principle | F+ADV | Year 3 w/ full evidence |
+| D5 | 2026-06-13 | AI Core architecture | Multi-agent vs. single Orchestrator | AI Core v1 = single Orchestrator + Tool Registry | Anthropic "simple patterns", anti agent-washing, MAST | AA | Proven need Orchestrator can't meet |
+| D6 | 2026-06-13 | B2B scope | Direct sales vs. governance-only | B2B = governance only (B0) until Year 2 | Slow cycle, Fleming doubt, focus | F | 2 real LOI (B1 entry) |
+| D7 | 2026-06-13 | WAT scope | Autonomous agents vs. W0 hooks only | WAT = W0 only now, W1 conditional | Gartner ~40% cancellation, MAST, Anthropic simplicity | EL | Time-log evidence (W1) |
+| D8 | 2026-06-13 | Health Mode | Build now vs. delay | Delay to Year 3 | Legal/safety boundary (Art.9) | F+ADV | Legal opinion + Art.9 controls |
+| D9 | 2026-06-13 | Family layer | Build now vs. delay | Delay to Year 2–3, schema-ready only | No fabricated demand | F | ≥8% EU waitlist + stable revenue |
+| D10 | 2026-06-13 | Native mobile | Native now vs. PWA-first | PWA-OS now; Expo/RN decision months 6–12 | mobile-first founder, API-first ready | EL | Spike + PWA retention evidence |
+
+## How to use
+- Append a new row for any decision that closes a real fork; never edit a decided row — supersede it with a new dated row referencing the old `Decision ID`.
+- Operational/security events (e.g. key rotation date for E1) are logged here too.
+- File-Closing Rule: requests outside the 5 allowed triggers are rejected and recorded here.
+
+## Change history
+- 2026-06-13 — Seeded with 10 initial decisions per A1.5.
