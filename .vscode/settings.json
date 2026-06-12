@@ -1,0 +1,10 @@
+{
+  // Use the workspace's TypeScript (5.9.3) for the editor's language service,
+  // instead of VS Code's bundled (newer) TS. The newer TS flags
+  // `moduleResolution: "node"` as deprecated and asks for
+  // `ignoreDeprecations: "6.0"`, which the project's TS 5.9.3 rejects (TS5103).
+  // Pinning to the workspace version removes the false editor errors with zero
+  // build impact. (Long-term: upgrade TS + migrate module/moduleResolution.)
+  "typescript.tsdk": "apps/server/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
