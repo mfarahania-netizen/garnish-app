@@ -1,0 +1,179 @@
+{
+  "version": "v0.5.4",
+  "baseVersion": "v0.5.3",
+  "generatedAt": "2026-06-12T07:59:48.604746Z",
+  "verdict": "FINAL_IMPORT_CANDIDATE_V0_5_4_PRODUCT_FACING_INTERNAL_NOTE_CLEANUP_READY_FOR_EXTERNAL_AUDIT_NOT_IMPORTED",
+  "recipeCount": 122,
+  "missingSequences": [
+    19
+  ],
+  "expectedMissingSequences": [
+    19
+  ],
+  "unexpectedMissingSequences": [],
+  "wrapper": {
+    "version": "v0.5.4",
+    "batch": "phase_one_122_product_facing_internal_note_cleanup_patch",
+    "status": "final_import_candidate_not_imported",
+    "phase": "phase_one",
+    "language": "fa",
+    "recipeCount": 122,
+    "recipesEqualsArray": true
+  },
+  "duplicateRecipeId": 0,
+  "duplicateSlug": 0,
+  "duplicateLegacyId": 0,
+  "duplicateRecipeIdItems": [],
+  "duplicateSlugItems": [],
+  "duplicateLegacyIdItems": [],
+  "changedRecipeCount": 6,
+  "changedSequences": [
+    10,
+    76,
+    85,
+    90,
+    99,
+    109
+  ],
+  "changedFields": {
+    "10": [
+      "steps[0].chefNote"
+    ],
+    "76": [
+      "steps[4].chefNote"
+    ],
+    "85": [
+      "steps[0].chefNote"
+    ],
+    "90": [
+      "steps[4].chefNote"
+    ],
+    "99": [
+      "steps[4].chefNote"
+    ],
+    "109": [
+      "steps[4].chefNote"
+    ]
+  },
+  "changedChefNotes": [
+    {
+      "phaseOneSequence": 10,
+      "stepIndex": 1,
+      "stepTitle": "خیساندن آلبالو خشک",
+      "oldChefNote": "چون آلبالوی تازه در دیکشنری موجود نیست، این نسخه با آلبالوی خشک استاندارد شده است.",
+      "newChefNote": "آلبالو خشک بعد از خیساندن، ترشی و رنگش را سریع پس می‌دهد؛ آب خیسانده را جدا کنید تا پلو تیره و مزه آن تلخ نشود."
+    },
+    {
+      "phaseOneSequence": 76,
+      "stepIndex": 5,
+      "stepTitle": "سرو سرد شربت خیار سکنجبین",
+      "oldChefNote": "این شربت فقط یک نوشیدنی طعم‌دار است و در متن Garnish برای ادعای درمانی استفاده نمی‌شود.",
+      "newChefNote": "خیار رنده‌شده را نزدیک سرو اضافه کنید تا شربت شفاف بماند و عطر نعناع تازه در لیوان زنده‌تر باشد."
+    },
+    {
+      "phaseOneSequence": 85,
+      "stepIndex": 1,
+      "stepTitle": "برش میوه برای آب طعم‌دار",
+      "oldChefNote": "این نوشیدنی در Garnish فقط آب طعم‌دار است و هیچ ادعای پاکسازی یا درمان ندارد.",
+      "newChefNote": "برش‌ها را نازک بگیرید تا عطر میوه در آب سرد آزاد شود؛ نعناع را هم له نکنید تا نوشیدنی تلخ نشود."
+    },
+    {
+      "phaseOneSequence": 90,
+      "stepIndex": 5,
+      "stepTitle": "سرو سرد اسموتی هندوانه",
+      "oldChefNote": "این نسخه بدون عسل یا استویا نوشته شده تا unresolved جدید ایجاد نشود.",
+      "newChefNote": "هندوانه سرد خودش بافت اسموتی را سبک می‌کند؛ یخ زیاد اضافه نکنید چون نوشیدنی آبکی و دولایه می‌شود."
+    },
+    {
+      "phaseOneSequence": 99,
+      "stepIndex": 5,
+      "stepTitle": "چیدمان نهایی پنکیک",
+      "oldChefNote": "در این نسخه از عسل استفاده نشده تا unresolved دیکشنری ایجاد نشود.",
+      "newChefNote": "بعد از چیدن پنکیک، میوه تازه یا کمی کره کافی است؛ ریختن شربت زیاد لایه‌ها را خیس و سنگین می‌کند."
+    },
+    {
+      "phaseOneSequence": 109,
+      "stepIndex": 5,
+      "stepTitle": "چیدمان نهایی رد موهیتو",
+      "oldChefNote": "آب گازدار در Dictionary فعلی unresolved می‌ماند و هیچ شناسه‌ای برای آن ساخته نشده است.",
+      "newChefNote": "آب گازدار را درست لحظه آخر اضافه کنید تا حباب‌ها در لیوان بمانند و رنگ توت‌فرنگی کدر نشود."
+    }
+  ],
+  "protectedChangeCount": 0,
+  "protectedChanges": [],
+  "recipeContentChangeCount": 6,
+  "recipeContentChanges": [
+    {
+      "phaseOneSequence": 10,
+      "fieldPath": "steps[0].chefNote",
+      "before": "چون آلبالوی تازه در دیکشنری موجود نیست، این نسخه با آلبالوی خشک استاندارد شده است.",
+      "after": "آلبالو خشک بعد از خیساندن، ترشی و رنگش را سریع پس می‌دهد؛ آب خیسانده را جدا کنید تا پلو تیره و مزه آن تلخ نشود."
+    },
+    {
+      "phaseOneSequence": 76,
+      "fieldPath": "steps[4].chefNote",
+      "before": "این شربت فقط یک نوشیدنی طعم‌دار است و در متن Garnish برای ادعای درمانی استفاده نمی‌شود.",
+      "after": "خیار رنده‌شده را نزدیک سرو اضافه کنید تا شربت شفاف بماند و عطر نعناع تازه در لیوان زنده‌تر باشد."
+    },
+    {
+      "phaseOneSequence": 85,
+      "fieldPath": "steps[0].chefNote",
+      "before": "این نوشیدنی در Garnish فقط آب طعم‌دار است و هیچ ادعای پاکسازی یا درمان ندارد.",
+      "after": "برش‌ها را نازک بگیرید تا عطر میوه در آب سرد آزاد شود؛ نعناع را هم له نکنید تا نوشیدنی تلخ نشود."
+    },
+    {
+      "phaseOneSequence": 90,
+      "fieldPath": "steps[4].chefNote",
+      "before": "این نسخه بدون عسل یا استویا نوشته شده تا unresolved جدید ایجاد نشود.",
+      "after": "هندوانه سرد خودش بافت اسموتی را سبک می‌کند؛ یخ زیاد اضافه نکنید چون نوشیدنی آبکی و دولایه می‌شود."
+    },
+    {
+      "phaseOneSequence": 99,
+      "fieldPath": "steps[4].chefNote",
+      "before": "در این نسخه از عسل استفاده نشده تا unresolved دیکشنری ایجاد نشود.",
+      "after": "بعد از چیدن پنکیک، میوه تازه یا کمی کره کافی است؛ ریختن شربت زیاد لایه‌ها را خیس و سنگین می‌کند."
+    },
+    {
+      "phaseOneSequence": 109,
+      "fieldPath": "steps[4].chefNote",
+      "before": "آب گازدار در Dictionary فعلی unresolved می‌ماند و هیچ شناسه‌ای برای آن ساخته نشده است.",
+      "after": "آب گازدار را درست لحظه آخر اضافه کنید تا حباب‌ها در لیوان بمانند و رنگ توت‌فرنگی کدر نشود."
+    }
+  ],
+  "ingredientLineCountBefore": 1223,
+  "ingredientLineCountAfter": 1223,
+  "ingredientLineCount": 1223,
+  "unresolvedBefore": 0,
+  "unresolvedAfter": 0,
+  "unresolvedIngredientLineCount": 0,
+  "expectedUnresolvedOnly": true,
+  "unexpectedUnresolvedCount": 0,
+  "removedUnresolvedItems": [],
+  "addedIngredientLines": [],
+  "invalidIngredientId": 0,
+  "invalidIngredientIdItems": [],
+  "invalidCode": 0,
+  "invalidCodeItems": [],
+  "ingredientIdCodeMismatch": 0,
+  "ingredientIdCodeMismatchItems": [],
+  "ingredientSchemaIssue": 0,
+  "ingredientSchemaIssues": [],
+  "exactDuplicateCopyCount": 0,
+  "exactDuplicateCopyExamples": [],
+  "internalTermHits": 0,
+  "internalTermHitItems": [],
+  "ASCII/internal product copy hits": 0,
+  "asciiInternalProductCopyHits": 0,
+  "asciiInternalProductCopyHitItems": [],
+  "bannedTemplatePhraseHits": 0,
+  "bannedTemplatePhraseHitItems": [],
+  "semanticHighRiskPatternCount": 0,
+  "semanticHighRiskPatternItems": [],
+  "foodInappropriateCount": 0,
+  "foodInappropriateItems": [],
+  "databaseImported": false,
+  "activeImportPathUsed": false,
+  "activeFileCreated": false,
+  "finalActiveFileCreated": false,
+  "validationType": "import_validation"
+}

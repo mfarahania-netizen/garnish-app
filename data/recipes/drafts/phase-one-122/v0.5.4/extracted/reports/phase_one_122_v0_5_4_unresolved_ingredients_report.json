@@ -1,0 +1,12 @@
+{
+  "version": "v0.5.4",
+  "baseVersion": "v0.5.3",
+  "generatedAt": "2026-06-12T07:59:48.606627Z",
+  "verdict": "FINAL_IMPORT_CANDIDATE_V0_5_4_PRODUCT_FACING_INTERNAL_NOTE_CLEANUP_READY_FOR_EXTERNAL_AUDIT_NOT_IMPORTED",
+  "unresolvedBefore": 0,
+  "unresolvedAfter": 0,
+  "unresolvedIngredientLineCount": 0,
+  "expectedUnresolvedOnly": true,
+  "items": [],
+  "policyNote": "v0.5.4 does not change unresolved ingredients; water/soda process-liquid policy remains from v0.5.3."
+}

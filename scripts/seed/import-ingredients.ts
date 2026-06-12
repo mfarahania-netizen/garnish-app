@@ -16,10 +16,11 @@ async function main() {
 
   console.log(`Loaded ${ingredients.length} ingredients from approved dictionary.`);
 
-  // TODO: Map the approved ingredient dictionary to Prisma models once the
-  // database schema for canonical ingredients is finalized.
-  // Do not import Nutrition Source Layer, Registry, Validation Report, or
-  // Recipe Ingredient Mapping as ingredient records.
+  // The production importer lives in:
+  // apps/server/scripts/data/import-ingredients.js
+  // This placeholder stays as a documented root-level entry point for the
+  // approved dictionary path. Do not import Nutrition Source Layer, Registry,
+  // Validation Report, or Recipe Ingredient Mapping as ingredient records.
 }
 
 main().catch((error) => {

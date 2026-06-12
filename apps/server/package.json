@@ -18,7 +18,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "data:validate:ingredients": "node scripts/data/validate-ingredients.js",
+    "data:import:ingredients": "node scripts/data/import-ingredients.js",
+    "data:validate:phase-one": "node scripts/data/validate-phase-one.js",
+    "data:import:phase-one": "node scripts/data/import-phase-one.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

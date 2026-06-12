@@ -1,0 +1,41 @@
+{
+  "version": "v0.5.4",
+  "packageName": "garnish_recipe_phase_one_122_final_import_candidate_v0_5_4_product_facing_internal_note_cleanup_patch",
+  "createdAt": "2026-06-12T07:59:48.606706Z",
+  "verdict": "FINAL_IMPORT_CANDIDATE_V0_5_4_PRODUCT_FACING_INTERNAL_NOTE_CLEANUP_READY_FOR_EXTERNAL_AUDIT_NOT_IMPORTED",
+  "recipeCount": 122,
+  "sequenceRange": "1-123",
+  "missingSequences": [
+    19
+  ],
+  "changedSequences": [
+    10,
+    76,
+    85,
+    90,
+    99,
+    109
+  ],
+  "candidateJson": "candidates/recipes/phase_one_122/recipes.fa.phase-one.122-final-import-candidate.v0.5.4.json",
+  "candidateWrapper": "candidates/recipes/phase_one_122/recipes.fa.phase-one.122-final-import-candidate.v0.5.4.wrapper.json",
+  "reports": [
+    "reports/phase_one_122_v0_5_4_product_facing_internal_note_cleanup_patch_report.json",
+    "reports/phase_one_122_v0_5_4_final_import_gate_validation_report.json",
+    "reports/phase_one_122_v0_5_4_import_validation_report.json",
+    "reports/phase_one_122_v0_5_4_unresolved_ingredients_report.json",
+    "reports/phase_one_122_v0_5_4_manifest.json"
+  ],
+  "databaseImported": false,
+  "activeImportPathUsed": false,
+  "activeFileCreated": false,
+  "finalActiveFileCreated": false,
+  "sha256": {
+    "candidates/recipes/phase_one_122/recipes.fa.phase-one.122-final-import-candidate.v0.5.4.json": "9a26e458143555df811853fa70c40e327cfe4896c3603d257f6333b6e8dcec21",
+    "candidates/recipes/phase_one_122/recipes.fa.phase-one.122-final-import-candidate.v0.5.4.wrapper.json": "f2c0280e8730cd3072b5270032e4fe95c6c0ef03b5fa948e3a27357ed1949687",
+    "reports/phase_one_122_v0_5_4_product_facing_internal_note_cleanup_patch_report.json": "3f43157c55a2adcc868c1f930bfea53e2d96c1c1490b09e46a080584f0eb6bdb",
+    "reports/phase_one_122_v0_5_4_final_import_gate_validation_report.json": "9f6f0ea68189d9019ba6c13bc1194a38497282a565f15d6b176813f609d41a54",
+    "reports/phase_one_122_v0_5_4_import_validation_report.json": "54af842c75a1fe167399210b52849c2cb3194aa185b803d778829bf6802f937e",
+    "reports/phase_one_122_v0_5_4_unresolved_ingredients_report.json": "8490dfc5233a09dfd3d43fae5346b1720f87ddb7afd312f434c600282a37c62a",
+    "reports/phase_one_122_v0_5_4_manifest.json": "6b8a617a6f6ec70990a1321d94e1a104d16202a8e5a820cc2df5cab6e9d89f21"
+  }
+}

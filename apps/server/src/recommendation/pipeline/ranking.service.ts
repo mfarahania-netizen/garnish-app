@@ -20,7 +20,26 @@ interface RecipeForRanking {
   servings?: number | null;
   categories?: string | null;
   createdAt?: Date | string | null;
-  ingredients?: Array<{ name: string }>;
+  ingredients?: Array<{
+    name: string;
+    amount?: string | null;
+    unit?: string | null;
+    notes?: string | null;
+    ingredientId?: string | null;
+    ingredient?: {
+      id: string;
+      code: string;
+      category?: string | null;
+      dietFlags?: unknown;
+      allergens?: unknown;
+      nutritionPer100g?: unknown;
+      nutritionConfidence?: unknown;
+      tasteProfile?: unknown;
+      cookingBehavior?: unknown;
+      healthContext?: unknown;
+      dataQuality?: unknown;
+    } | null;
+  }>;
   searchTerms?: Array<{ term: string }>;
 }
 
@@ -32,6 +51,7 @@ interface ScoreBreakdown {
   popularity: number;
   recency: number;
   recipeUnderstanding: number;
+  ingredientIntelligence: number;
 }
 
 interface ContributionBreakdown {
@@ -43,18 +63,20 @@ interface ContributionBreakdown {
   popularity: number;
   recency: number;
   recipeUnderstanding: number;
+  ingredientIntelligence: number;
 }
 
 @Injectable()
 export class RankingService {
   private readonly defaultWeights = {
-    tasteAffinity: 0.3,
-    behaviorFit: 0.24,
-    outcomeFit: 0.2,
-    novelty: 0.1,
+    tasteAffinity: 0.27,
+    behaviorFit: 0.22,
+    outcomeFit: 0.17,
+    novelty: 0.09,
     popularity: 0.04,
     recency: 0.02,
     recipeUnderstanding: 0.1,
+    ingredientIntelligence: 0.09,
   };
 
   private readonly signalTokenMap: Record<string, string[]> = {
@@ -121,7 +143,31 @@ export class RankingService {
         servings: true,
         categories: true,
         createdAt: true,
-        ingredients: { select: { name: true }, take: 20 },
+        ingredients: {
+          select: {
+            name: true,
+            amount: true,
+            unit: true,
+            notes: true,
+            ingredientId: true,
+            ingredient: {
+              select: {
+                id: true,
+                code: true,
+                category: true,
+                dietFlags: true,
+                allergens: true,
+                nutritionPer100g: true,
+                nutritionConfidence: true,
+                tasteProfile: true,
+                cookingBehavior: true,
+                healthContext: true,
+                dataQuality: true,
+              },
+            },
+          },
+          take: 30,
+        },
         searchTerms: { select: { term: true } },
       },
     });
@@ -141,6 +187,7 @@ export class RankingService {
           popularity: await this.calculatePopularityScore(recipe.id),
           recency: this.calculateRecencyScore(recipe),
           recipeUnderstanding: this.calculateRecipeUnderstanding(recipe, userFeatures, matchedSignals),
+          ingredientIntelligence: this.calculateIngredientIntelligence(recipe, userFeatures, matchedSignals),
         };
         scores.outcomeFit = this.capOutcomeFit(scores.outcomeFit, userFeatures);
 
@@ -458,6 +505,57 @@ export class RankingService {
     return this.clamp(score);
   }
 
+  private calculateIngredientIntelligence(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+  ): number {
+    const ingredients = recipe.ingredients || [];
+    if (ingredients.length === 0) return 0.25;
+
+    const linked = ingredients.filter((item) => item.ingredientId || item.ingredient?.id);
+    const linkedRatio = linked.length / ingredients.length;
+    const lineConfidence = ingredients
+      .map((item) => this.parseIngredientMetadata(item.notes)?.confidence)
+      .filter((value) => Number.isFinite(Number(value)))
+      .map(Number);
+    const averageLineConfidence =
+      lineConfidence.reduce((sum, value) => sum + value, 0) / Math.max(lineConfidence.length, 1);
+    const metadataDepth = this.ingredientMetadataDepth(ingredients);
+    const nutritionCoverage =
+      linked.filter((item) => this.asObject(item.ingredient?.nutritionPer100g)).length /
+      Math.max(linked.length, 1);
+
+    const ingredientDiversity = Math.min(1, ingredients.length / 10);
+    const categoryDiversity = this.ingredientCategoryDiversity(ingredients);
+    const tasteSignalFit = this.ingredientTasteSignalFit(recipe, features, matchedSignals);
+    const cookingFit = this.ingredientCookingFit(recipe, features, matchedSignals);
+    const nutritionIntentFit = this.ingredientNutritionIntentFit(recipe, features, matchedSignals);
+
+    let score =
+      linkedRatio * 0.2 +
+      averageLineConfidence * 0.12 +
+      metadataDepth * 0.12 +
+      nutritionCoverage * 0.08 +
+      ingredientDiversity * 0.08 +
+      categoryDiversity * 0.12 +
+      tasteSignalFit * 0.14 +
+      cookingFit * 0.08 +
+      nutritionIntentFit * 0.06;
+
+    if (linkedRatio >= 0.9) matchedSignals.push('ingredient_dictionary_linked');
+    if (metadataDepth >= 0.6) matchedSignals.push('ingredient_profile_depth');
+    if (nutritionCoverage >= 0.8) matchedSignals.push('ingredient_nutrition_coverage');
+
+    const prefDiet = this.getPrefDiet(features);
+    if (prefDiet && recipe.diet?.includes(prefDiet) && this.ingredientsSupportDiet(ingredients, prefDiet)) {
+      score += 0.05;
+      matchedSignals.push('ingredient_diet_compatible');
+    }
+
+    return this.clamp(score);
+  }
+
   private stableRecipeSignature(recipe: RecipeForRanking) {
     const raw = [
       recipe.title,
@@ -468,6 +566,8 @@ export class RankingService {
       recipe.difficulty,
       recipe.cost,
       ...(recipe.ingredients || []).map((item) => item.name),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.code || ''),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.category || ''),
       ...(recipe.searchTerms || []).map((item) => item.term),
     ].join('|');
 
@@ -585,6 +685,8 @@ export class RankingService {
       recipe.mealType,
       recipe.categories,
       ...(recipe.ingredients || []).map((item) => item.name),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.code),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.category),
       ...(recipe.searchTerms || []).map((item) => item.term),
     ];
 
@@ -643,6 +745,7 @@ export class RankingService {
     adjusted.outcomeFit *= outcomeScale;
     adjusted.tasteAffinity *= 0.85 + reliability * 0.35;
     adjusted.recipeUnderstanding *= 1.25 + (1 - reliability) * 0.8;
+    adjusted.ingredientIntelligence *= 1.15 + (1 - reliability) * 0.55;
     adjusted.novelty *= 1.1 + (1 - reliability) * 0.4;
     adjusted.popularity *= 1.15 + (1 - reliability) * 0.35;
     adjusted.recency *= 0.75;
@@ -715,8 +818,180 @@ export class RankingService {
     ) {
       sorted.push(['recipeUnderstanding', contributions.recipeUnderstanding]);
     }
+    if (
+      contributions.ingredientIntelligence > 0 &&
+      !sorted.some(([featureKey]) => featureKey === 'ingredientIntelligence')
+    ) {
+      sorted.push(['ingredientIntelligence', contributions.ingredientIntelligence]);
+    }
 
     return sorted;
+  }
+
+  private parseIngredientMetadata(value?: string | null): Record<string, any> | null {
+    if (!value || typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (!trimmed.startsWith('{')) return null;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return null;
+    }
+  }
+
+  private ingredientMetadataDepth(ingredients: NonNullable<RecipeForRanking['ingredients']>) {
+    const linked = ingredients.filter((item) => item.ingredient);
+    if (linked.length === 0) return 0;
+
+    const rich = linked.filter((item) => {
+      const ingredient = item.ingredient;
+      return Boolean(
+        this.asObject(ingredient?.dietFlags) ||
+          this.asObject(ingredient?.allergens) ||
+          this.asObject(ingredient?.tasteProfile) ||
+          this.asObject(ingredient?.cookingBehavior) ||
+          this.asObject(ingredient?.healthContext),
+      );
+    });
+
+    return rich.length / linked.length;
+  }
+
+  private ingredientsSupportDiet(
+    ingredients: NonNullable<RecipeForRanking['ingredients']>,
+    diet: string,
+  ) {
+    const linked = ingredients.filter((item) => item.ingredient);
+    if (linked.length === 0) return false;
+    const incompatible = linked.filter((item) => {
+      const haystack = JSON.stringify({
+        flags: item.ingredient?.dietFlags || {},
+        code: item.ingredient?.code || '',
+        category: item.ingredient?.category || '',
+      }).toLowerCase();
+      if (diet === 'vegan') return /meat|chicken|beef|fish|egg|milk|cheese|dairy|cream/.test(haystack);
+      if (diet === 'vegetarian') return /meat|chicken|beef|fish|seafood/.test(haystack);
+      return false;
+    });
+    return incompatible.length === 0;
+  }
+
+  private averageNutrition(recipe: RecipeForRanking, key: string) {
+    const values = (recipe.ingredients || [])
+      .map((item) => this.asObject(item.ingredient?.nutritionPer100g)?.[key])
+      .map(Number)
+      .filter((value) => Number.isFinite(value));
+    if (values.length === 0) return 0;
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  private ingredientCategoryDiversity(ingredients: NonNullable<RecipeForRanking['ingredients']>) {
+    const categories = new Set(
+      ingredients
+        .map((item) => item.ingredient?.category)
+        .filter(Boolean)
+        .map((item) => String(item).toLowerCase()),
+    );
+    return Math.min(1, categories.size / 5);
+  }
+
+  private ingredientTasteSignalFit(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+  ) {
+    const tokens = this.recipeTokens(recipe);
+    let score = 0.35;
+
+    const spicy = this.feature(features, 'likes_spicy');
+    if (spicy > 0 && this.averageTasteProfile(recipe, 'spicy') >= 1.5) {
+      score += 0.22 * spicy;
+      matchedSignals.push('ingredient_spicy_fit');
+    }
+
+    const highProtein = Math.max(
+      this.feature(features, 'likes_high_protein'),
+      this.feature(features, 'high_protein_seeker'),
+    );
+    if (highProtein > 0 && this.averageNutrition(recipe, 'protein') >= 8) {
+      score += 0.24 * highProtein;
+      matchedSignals.push('ingredient_high_protein_fit');
+    }
+
+    for (const signal of ['likes_chicken', 'likes_mushroom', 'likes_cheese', 'likes_beef', 'likes_seafood']) {
+      const value = this.feature(features, signal);
+      const signalTokens = this.signalTokenMap[signal] || [];
+      if (value > 0 && signalTokens.some((token) => tokens.has(token))) {
+        score += 0.12 * value;
+        matchedSignals.push(`ingredient_${signal}_fit`);
+      }
+    }
+
+    return this.clamp(score);
+  }
+
+  private ingredientCookingFit(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+  ) {
+    const serialized = JSON.stringify(
+      (recipe.ingredients || []).map((item) => item.ingredient?.cookingBehavior || {}),
+    ).toLowerCase();
+    let score = 0.35;
+
+    const quickMeal = Math.max(this.feature(features, 'quick_meal_lover'), this.feature(features, 'time_poor'));
+    if (quickMeal > 0 && /easy|quick|pan|boiled|ready|fresh/.test(serialized)) {
+      score += 0.22 * quickMeal;
+      matchedSignals.push('ingredient_quick_cooking_fit');
+    }
+
+    const weekendCook = this.feature(features, 'weekend_cook');
+    if (weekendCook > 0 && /slow|stew|baked|grilled|marinated/.test(serialized)) {
+      score += 0.18 * weekendCook;
+      matchedSignals.push('ingredient_weekend_cooking_fit');
+    }
+
+    return this.clamp(score);
+  }
+
+  private ingredientNutritionIntentFit(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+  ) {
+    let score = 0.35;
+    const weightLoss = this.feature(features, 'weight_loss');
+    const calories = this.averageNutrition(recipe, 'calories');
+    if (weightLoss > 0 && calories > 0 && calories <= 180) {
+      score += 0.25 * weightLoss;
+      matchedSignals.push('ingredient_weight_loss_fit');
+    }
+
+    const healthConscious = Math.max(
+      this.feature(features, 'health_conscious'),
+      this.feature(features, 'dim_health_consciousness'),
+    );
+    if (healthConscious > 0 && this.averageNutrition(recipe, 'fiber') >= 2) {
+      score += 0.18 * healthConscious;
+      matchedSignals.push('ingredient_fiber_fit');
+    }
+
+    return this.clamp(score);
+  }
+
+  private averageTasteProfile(recipe: RecipeForRanking, key: string) {
+    const values = (recipe.ingredients || [])
+      .map((item) => this.asObject(item.ingredient?.tasteProfile)?.[key])
+      .map(Number)
+      .filter((value) => Number.isFinite(value));
+    if (values.length === 0) return 0;
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  private asObject(value: unknown): Record<string, any> | null {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    return value as Record<string, any>;
   }
 
   private applyDiversity<T extends { finalScore: number; mealType?: string | null; diet?: string | null }>(

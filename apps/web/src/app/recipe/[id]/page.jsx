@@ -1,4 +1,3 @@
-// apps/web/src/app/recipe/[id]/page.jsx
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Skeleton, Alert, Button, Accordion, ActionIcon, Text, Paper } from '@mantine/core';
 import { useRecipes } from '../../../hooks/useRecipes';
@@ -35,7 +34,11 @@ export default function RecipeDetailPage() {
   useEffect(() => {
     if (!recipe && id) {
       setDirectLoading(true);
-      apiClient.get(`/recipes/${id}`).then(res => setDirectRecipe(res.data)).catch(() => setDirectRecipe(null)).finally(() => setDirectLoading(false));
+      apiClient
+        .get(`/recipes/${id}`)
+        .then((res) => setDirectRecipe(res.data))
+        .catch(() => setDirectRecipe(null))
+        .finally(() => setDirectLoading(false));
     }
   }, [recipe, id]);
 
@@ -68,8 +71,13 @@ export default function RecipeDetailPage() {
 
   const handleToggleFavorite = () => {
     if (!finalRecipe) return;
-    if (favorite) { removeFavorite(finalRecipe.id); trackEvent(EventType.FAVORITE_REMOVE, { recipeId: finalRecipe.id }); }
-    else { addFavorite(finalRecipe.id); trackEvent(EventType.FAVORITE_ADD, { recipeId: finalRecipe.id }); }
+    if (favorite) {
+      removeFavorite(finalRecipe.id);
+      trackEvent(EventType.FAVORITE_REMOVE, { recipeId: finalRecipe.id });
+    } else {
+      addFavorite(finalRecipe.id);
+      trackEvent(EventType.FAVORITE_ADD, { recipeId: finalRecipe.id });
+    }
   };
 
   const handleShare = async () => {
@@ -79,16 +87,22 @@ export default function RecipeDetailPage() {
 
   const handleAccordionChange = useCallback((values) => {
     const prev = prevAccordionValue.current;
-    const opened = values.filter(v => !prev.includes(v));
-    const closed = prev.filter(v => !values.includes(v));
-    opened.forEach(value => {
+    const opened = values.filter((value) => !prev.includes(value));
+    const closed = prev.filter((value) => !values.includes(value));
+    opened.forEach((value) => {
       trackEvent(`${value}_expand`, { recipeId: finalRecipe?.id });
       if (accordionTimers.current[value]) clearTimeout(accordionTimers.current[value]);
-      accordionTimers.current[value] = setTimeout(() => { trackEvent(`${value}_read`, { recipeId: finalRecipe?.id }); delete accordionTimers.current[value]; }, 8000);
+      accordionTimers.current[value] = setTimeout(() => {
+        trackEvent(`${value}_read`, { recipeId: finalRecipe?.id });
+        delete accordionTimers.current[value];
+      }, 8000);
     });
-    closed.forEach(value => {
+    closed.forEach((value) => {
       trackEvent(`${value}_collapse`, { recipeId: finalRecipe?.id });
-      if (accordionTimers.current[value]) { clearTimeout(accordionTimers.current[value]); delete accordionTimers.current[value]; }
+      if (accordionTimers.current[value]) {
+        clearTimeout(accordionTimers.current[value]);
+        delete accordionTimers.current[value];
+      }
     });
     prevAccordionValue.current = values;
   }, [finalRecipe?.id, trackEvent]);
@@ -107,24 +121,35 @@ export default function RecipeDetailPage() {
   if (!finalRecipe) {
     return (
       <Container size="sm" py="xl" style={{ maxWidth: 480, margin: '0 auto' }}>
-        <Alert color="red" title="رسپی پیدا نشد" icon={<IconAlertTriangle size={20} />}>غذایی با این شناسه در پایگاه داده یافت نشد.</Alert>
+        <Alert color="red" title="رسپی پیدا نشد" icon={<IconAlertTriangle size={20} />}>
+          غذایی با این شناسه در پایگاه داده یافت نشد.
+        </Alert>
       </Container>
     );
   }
 
-  const { excerpt, ingredients = [], steps = [], tools = [], tips = [], faq = [] } = finalRecipe;
+  const { ingredients = [], steps = [], tools = [], tips = [], faq = [] } = finalRecipe;
+  const excerpt = finalRecipe.excerpt || finalRecipe.summary || finalRecipe.description;
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
       <RecipeHero recipe={finalRecipe} favorite={favorite} onToggleFavorite={handleToggleFavorite} onShare={handleShare} />
       {excerpt && (
-        <Paper p="md" radius="lg" mb="lg" style={{ background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,107,53,0.2)' }}>
+        <Paper p="md" radius="lg" mb="lg" style={{ background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,107,53,0.2)' }}>
           <Text size="sm" c="dimmed" lineClamp={showFullExcerpt ? 0 : 3} style={{ lineHeight: 1.8 }}>{excerpt}</Text>
           {excerpt.length > 150 && (
-            <Button variant="subtle" size="xs" color="orange" mt={4}
-              onClick={() => { setShowFullExcerpt(!showFullExcerpt); trackEvent(EventType.EXCERPT_TOGGLE, { recipeId: finalRecipe.id }); }}>
-              {showFullExcerpt ? 'بستن ▲' : 'بیشتر بخوانید ▼'}
+            <Button
+              variant="subtle"
+              size="xs"
+              color="orange"
+              mt={4}
+              onClick={() => {
+                setShowFullExcerpt(!showFullExcerpt);
+                trackEvent(EventType.EXCERPT_TOGGLE, { recipeId: finalRecipe.id });
+              }}
+            >
+              {showFullExcerpt ? 'بستن' : 'بیشتر بخوانید'}
             </Button>
           )}
         </Paper>
@@ -132,17 +157,40 @@ export default function RecipeDetailPage() {
       <FeaturesCard recipe={finalRecipe} />
       <TimingCard recipe={finalRecipe} />
       <NutritionCard recipe={finalRecipe} />
-      <Accordion multiple defaultValue={ingredients.length ? ['ingredients'] : (steps.length ? ['steps'] : [])} variant="separated" radius="lg" chevronPosition="right" onChange={handleAccordionChange}
-        styles={{ item: { background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 16, marginBottom: 12, overflow: 'hidden' }, control: { padding: '16px 20px', '&:hover': { backgroundColor: 'rgba(255,107,53,0.05)' } }, panel: { padding: '0 20px 20px', background: 'transparent' }, chevron: { color: '#FF6B35' } }}>
+      <Accordion
+        multiple
+        defaultValue={ingredients.length ? ['ingredients'] : (steps.length ? ['steps'] : [])}
+        variant="separated"
+        radius="lg"
+        chevronPosition="right"
+        onChange={handleAccordionChange}
+        styles={{
+          item: { background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 16, marginBottom: 12, overflow: 'hidden' },
+          control: { padding: '16px 20px', '&:hover': { backgroundColor: 'rgba(255,107,53,0.05)' } },
+          panel: { padding: '0 20px 20px', background: 'transparent' },
+          chevron: { color: '#FF6B35' },
+        }}
+      >
         <IngredientsSection ingredients={ingredients} />
         <ToolsSection tools={tools} />
         <StepsSection steps={steps} />
         <TipsSection tips={tips} />
         <FaqSection faq={faq} />
       </Accordion>
-      <Button fullWidth size="lg" radius="xl" variant="gradient" gradient={{ from: '#FF6B35', to: '#1A237E' }} leftSection={<IconChefHat size={20} />} rightSection={<IconArrowRight size={20} />}
+      <Button
+        fullWidth
+        size="lg"
+        radius="xl"
+        variant="gradient"
+        gradient={{ from: '#FF6B35', to: '#1A237E' }}
+        leftSection={<IconChefHat size={20} />}
+        rightSection={<IconArrowRight size={20} />}
         style={{ boxShadow: '0 6px 20px rgba(255,107,53,0.4)', marginTop: 8 }}
-        onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); trackEvent(EventType.START_COOKING_CLICK, { recipeId: finalRecipe.id }); }}>
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          trackEvent(EventType.START_COOKING_CLICK, { recipeId: finalRecipe.id });
+        }}
+      >
         شروع پخت
       </Button>
       <ActionIcon variant="filled" color="orange" size="xl" radius="xl" style={{ position: 'fixed', bottom: 90, right: 16, zIndex: 50, boxShadow: '0 4px 12px rgba(255,107,53,0.4)' }} onClick={scrollToTop}>

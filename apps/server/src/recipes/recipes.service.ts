@@ -25,7 +25,7 @@ export class RecipesService {
         skip,
         take,
         include: {
-          ingredients: true,
+          ingredients: { include: { ingredient: true } },
           steps: true,
           searchTerms: true,
           nutrition: true,
@@ -36,7 +36,7 @@ export class RecipesService {
     ]);
 
     return {
-      data,
+      data: data.map((recipe) => this.presentRecipe(recipe)),
       total,
       page: Math.floor(skip / take) + 1,
       pageSize: take,
@@ -44,7 +44,7 @@ export class RecipesService {
   }
 
   async search(q: string, limit = 10) {
-    return this.prisma.recipe.findMany({
+    const recipes = await this.prisma.recipe.findMany({
       where: {
         OR: [
           { title: { contains: q } },
@@ -53,28 +53,31 @@ export class RecipesService {
         ],
       },
       take: limit,
-      include: { ingredients: { take: 3 } },
+      include: { ingredients: { include: { ingredient: true }, take: 3 } },
     });
+    return recipes.map((recipe) => this.presentRecipe(recipe));
   }
 
   async findOne(id: string) {
-    return this.prisma.recipe.findUnique({
+    const recipe = await this.prisma.recipe.findUnique({
       where: { id },
       include: {
-        ingredients: true,
+        ingredients: { include: { ingredient: true } },
         steps: true,
         nutrition: true,
         searchTerms: true,
       },
     });
+    return recipe ? this.presentRecipe(recipe) : null;
   }
 
   async getMyRecipes(userId: string) {
-    return this.prisma.recipe.findMany({
+    const recipes = await this.prisma.recipe.findMany({
       where: { authorId: userId },
-      include: { ingredients: true, steps: true },
+      include: { ingredients: { include: { ingredient: true } }, steps: true },
       orderBy: { createdAt: 'desc' },
     });
+    return recipes.map((recipe) => this.presentRecipe(recipe));
   }
 
   async create(userId: string, data: CreateRecipeDto) {
@@ -160,5 +163,87 @@ export class RecipesService {
         occasion: data.occasion ? JSON.stringify(data.occasion) : undefined,
       },
     });
+  }
+
+  private presentRecipe<T extends Record<string, any>>(recipe: T): T {
+    return {
+      ...recipe,
+      ingredients: Array.isArray(recipe.ingredients)
+        ? recipe.ingredients
+            .slice()
+            .sort((a, b) => Number(a.order || 0) - Number(b.order || 0))
+            .map((ingredient) => this.presentIngredient(ingredient))
+        : recipe.ingredients,
+      steps: Array.isArray(recipe.steps)
+        ? recipe.steps.slice().sort((a, b) => Number(a.order || 0) - Number(b.order || 0))
+        : recipe.steps,
+      tools: this.parseJsonField(recipe.tools, []),
+      tips: this.parseJsonField(recipe.tips, []),
+      faq: this.parseJsonField(recipe.faq, []),
+      categories: this.parseJsonField(recipe.categories, []),
+      allergens: this.parseJsonField(recipe.allergens, []),
+      occasion: this.parseJsonField(recipe.occasion, []),
+      mealType: this.parseJsonField(recipe.mealType, recipe.mealType),
+      adminNote: this.parseJsonField(recipe.adminNote, recipe.adminNote),
+    };
+  }
+
+  private presentIngredient(ingredient: Record<string, any>) {
+    const metadata = this.parseJsonField(ingredient.notes, null);
+    const preparation =
+      metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+        ? metadata.preparation || null
+        : ingredient.notes || null;
+    const cleanNotes =
+      metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+        ? preparation
+        : ingredient.notes || null;
+
+    return {
+      ...ingredient,
+      unit: metadata?.unit || ingredient.unit || null,
+      displayUnit: ingredient.unit || metadata?.unit || null,
+      preparation,
+      notes: cleanNotes,
+      ingredientId: metadata?.ingredientId || ingredient.ingredientId || ingredient.ingredient?.id || null,
+      ingredient: ingredient.ingredient
+        ? this.presentIngredientDictionaryEntry(ingredient.ingredient)
+        : null,
+      ingredientCode: metadata?.code || ingredient.ingredient?.code || null,
+      ingredientLine: metadata?.line || null,
+      optional: metadata?.optional ?? false,
+      confidence: metadata?.confidence ?? null,
+    };
+  }
+
+  private presentIngredientDictionaryEntry(ingredient: Record<string, any>) {
+    return {
+      id: ingredient.id,
+      code: ingredient.code,
+      nameFa: ingredient.nameFa,
+      nameEn: ingredient.nameEn,
+      category: ingredient.category,
+      subCategory: ingredient.subCategory,
+      dietFlags: ingredient.dietFlags,
+      allergens: ingredient.allergens,
+      nutritionPer100g: ingredient.nutritionPer100g,
+      tasteProfile: ingredient.tasteProfile,
+      cookingBehavior: ingredient.cookingBehavior,
+      healthContext: ingredient.healthContext,
+      media: ingredient.media,
+      dataQuality: ingredient.dataQuality,
+    };
+  }
+
+  private parseJsonField(value: any, fallback: any) {
+    if (typeof value !== 'string') return value ?? fallback;
+    const trimmed = value.trim();
+    if (!trimmed) return fallback;
+    if (!['{', '['].includes(trimmed[0])) return fallback;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return fallback;
+    }
   }
 }

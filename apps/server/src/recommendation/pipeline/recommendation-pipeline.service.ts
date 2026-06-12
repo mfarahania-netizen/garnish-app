@@ -63,6 +63,7 @@ export class RecommendationPipelineService {
           popularity: scores.popularity ?? 0,
           recency: scores.recency ?? 0,
           recipeUnderstanding: scores.recipeUnderstanding ?? 0,
+          ingredientIntelligence: scores.ingredientIntelligence ?? 0,
           exposurePenalty: scores.exposurePenalty ?? 0,
         },
       };

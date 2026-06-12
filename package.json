@@ -5,7 +5,11 @@
     "dev": "turbo run dev", 
     "build": "turbo run build", 
     "lint": "turbo run lint", 
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"" 
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "data:validate:ingredients": "pnpm --dir apps/server data:validate:ingredients",
+    "data:import:ingredients": "pnpm --dir apps/server data:import:ingredients",
+    "data:validate:phase-one": "pnpm --dir apps/server data:validate:phase-one",
+    "data:import:phase-one": "pnpm --dir apps/server data:import:phase-one"
   }, 
   "devDependencies": { 
     "turbo": "^1.13.3", 

@@ -283,7 +283,14 @@ export class RecommendationDiagnosticsController {
     const supportingFeatures = allFeatures.filter((feature) => !this.isPersonalizationDriver(feature.featureKey));
     const exposureMemory = await this.exposureTracking.getExposureMemory(report.userId, 5);
     const derivedSignals = this.extractDerivedSignals(featureVector);
-    const rankingEvidence = this.buildRankingEvidence(topFeatures, supportingFeatures, exposureMemory, derivedSignals);
+    const ingredientIntelligence = await this.getIngredientIntelligenceSummary();
+    const rankingEvidence = this.buildRankingEvidence(
+      topFeatures,
+      supportingFeatures,
+      exposureMemory,
+      derivedSignals,
+      ingredientIntelligence,
+    );
 
     return {
       userId: report.userId,
@@ -310,6 +317,7 @@ export class RecommendationDiagnosticsController {
         topFeatureDrivers: topFeatures.slice(0, 8),
         supportingFeatureDrivers: supportingFeatures.slice(0, 4),
         exposureMemory,
+        ingredientIntelligence,
         rankingEvidence,
       },
       governance: {
@@ -318,7 +326,13 @@ export class RecommendationDiagnosticsController {
         recentEventVolume: report.governance?.governance?.recentEventVolume ?? 0,
         totalUsers: report.governance?.governance?.totalUsers ?? 0,
       },
-      reviewFlags: this.buildReviewFlags(summary, attribution, metrics7, topFeatures),
+      reviewFlags: this.buildReviewFlags(
+        summary,
+        attribution,
+        metrics7,
+        topFeatures,
+        ingredientIntelligence,
+      ),
     };
   }
 
@@ -331,6 +345,38 @@ export class RecommendationDiagnosticsController {
       orderBy: [{ createdAt: 'desc' }, { contribution: 'desc' }],
       take,
     });
+  }
+
+  private async getIngredientIntelligenceSummary() {
+    const ingredientDelegate = (this.prisma as any).ingredient;
+    const recipeIngredientDelegate = (this.prisma as any).recipeIngredient;
+    if (!ingredientDelegate?.count || !recipeIngredientDelegate?.count) {
+      return {
+        dictionaryCount: 0,
+        recipeIngredientLines: 0,
+        linkedRecipeIngredientLines: 0,
+        coverage: 0,
+        ready: false,
+      };
+    }
+
+    const [dictionaryCount, recipeIngredientLines, linkedRecipeIngredientLines] =
+      await Promise.all([
+        ingredientDelegate.count(),
+        recipeIngredientDelegate.count(),
+        recipeIngredientDelegate.count({ where: { ingredientId: { not: null } } }),
+      ]);
+
+    const coverage =
+      recipeIngredientLines > 0 ? linkedRecipeIngredientLines / recipeIngredientLines : 0;
+
+    return {
+      dictionaryCount,
+      recipeIngredientLines,
+      linkedRecipeIngredientLines,
+      coverage: this.round(coverage),
+      ready: dictionaryCount >= 1000 && coverage >= 0.98,
+    };
   }
 
   private aggregateFeatureImportance(logs: any[]) {
@@ -356,7 +402,13 @@ export class RecommendationDiagnosticsController {
       .slice(0, 8);
   }
 
-  private buildReviewFlags(summary: any, attribution: any, metrics: any, topFeatures: any[]) {
+  private buildReviewFlags(
+    summary: any,
+    attribution: any,
+    metrics: any,
+    topFeatures: any[],
+    ingredientIntelligence: any,
+  ) {
     const flags: string[] = [];
     if ((summary.quality?.metricValue ?? 0) === 0) {
       flags.push('quality_is_zero_until_positive_feedback_events_exist');
@@ -372,6 +424,9 @@ export class RecommendationDiagnosticsController {
     }
     if ((metrics.exposures ?? 0) > 100 && (attribution.clicks ?? 0) === 0) {
       flags.push('high_exposure_without_positive_feedback');
+    }
+    if (!ingredientIntelligence.ready) {
+      flags.push('ingredient_dictionary_coverage_not_ready');
     }
     return flags;
   }
@@ -408,6 +463,7 @@ export class RecommendationDiagnosticsController {
     supportingFeatures: any[],
     exposureMemory: any[],
     derivedSignals: any[],
+    ingredientIntelligence: any,
   ) {
     const featureKeys = topFeatures.map((feature) => feature.featureKey);
     const allDriverKeys = [
@@ -426,16 +482,28 @@ export class RecommendationDiagnosticsController {
     return {
       personalizationDrivers: featureKeys,
       hasRecipeUnderstanding: allDriverKeys.includes('recipeUnderstanding'),
+      hasIngredientIntelligence: allDriverKeys.includes('ingredientIntelligence'),
       hasBehaviorSignals: derivedSignals.length > 0,
       hasExposureMemory: exposureMemory.length > 0,
+      ingredientCoverage: ingredientIntelligence.coverage,
       exposedWithPenalty,
       staleShownNoAction,
       supportingDrivers: supportingFeatures.map((feature) => feature.featureKey),
-      assessment: this.rankingAssessment(allDriverKeys, derivedSignals, exposureMemory),
+      assessment: this.rankingAssessment(
+        allDriverKeys,
+        derivedSignals,
+        exposureMemory,
+        ingredientIntelligence,
+      ),
     };
   }
 
-  private rankingAssessment(featureKeys: string[], derivedSignals: any[], exposureMemory: any[]) {
+  private rankingAssessment(
+    featureKeys: string[],
+    derivedSignals: any[],
+    exposureMemory: any[],
+    ingredientIntelligence: any,
+  ) {
     const strengths: string[] = [];
     const watchItems: string[] = [];
 
@@ -443,10 +511,14 @@ export class RecommendationDiagnosticsController {
     if (featureKeys.includes('behaviorFit')) strengths.push('behavior_fit_active');
     if (featureKeys.includes('outcomeFit')) strengths.push('outcome_fit_active');
     if (featureKeys.includes('recipeUnderstanding')) strengths.push('recipe_understanding_active');
+    if (featureKeys.includes('ingredientIntelligence')) strengths.push('ingredient_intelligence_active');
     if (derivedSignals.length >= 4) strengths.push('professional_signal_library_visible');
     if (exposureMemory.length > 0) strengths.push('exposure_memory_visible');
+    if (ingredientIntelligence.ready) strengths.push('ingredient_dictionary_coverage_ready');
 
     if (!featureKeys.includes('recipeUnderstanding')) watchItems.push('recipe_understanding_not_in_top_drivers');
+    if (!featureKeys.includes('ingredientIntelligence')) watchItems.push('ingredient_intelligence_not_in_top_drivers');
+    if (!ingredientIntelligence.ready) watchItems.push('ingredient_dictionary_coverage_incomplete');
     if (derivedSignals.length < 4) watchItems.push('derived_signal_library_thin');
     if (exposureMemory.length === 0) watchItems.push('exposure_memory_empty');
 

@@ -13,33 +13,33 @@ model User {
   phone     String?  @unique
   email     String?  @unique
   name      String?
-  avatar    String?   // 🆕 آواتار کاربر
+  avatar    String? // 🆕 آواتار کاربر
   password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  preferences        UserPreference?
-  recipes            Recipe[]           @relation("UserRecipes")
-  favorites          FavoriteRecipe[]
-  mealPlans          MealPlan[]
-  shoppingList       ShoppingList[]
-  notifications      Notification[]
-  tickets            SupportTicket[]
-  sessions           UserSession[]
-  events             UserEvent[]
-  recommendationExposures RecommendationExposure[]
-  featureContributionLogs FeatureContributionLog[]
+  preferences                UserPreference?
+  recipes                    Recipe[]                         @relation("UserRecipes")
+  favorites                  FavoriteRecipe[]
+  mealPlans                  MealPlan[]
+  shoppingList               ShoppingList[]
+  notifications              Notification[]
+  tickets                    SupportTicket[]
+  sessions                   UserSession[]
+  events                     UserEvent[]
+  recommendationExposures    RecommendationExposure[]
+  featureContributionLogs    FeatureContributionLog[]
   recommendationAttributions RecommendationAttributionEvent[]
-  profile            UserBehaviorProfile?
-  isAdmin            Boolean  @default(false)
-  auditLogs          UserAuditLog[]
-  dataAccessLogs     DataAccessLog[]
-  consentLogs        ConsentLog[]
-  preferenceHistories PreferenceHistory[]
-  
-  allergies          UserAllergy[]
-  cuisines           UserCuisine[]
-  healthGoals        UserHealthGoal[]
+  profile                    UserBehaviorProfile?
+  isAdmin                    Boolean                          @default(false)
+  auditLogs                  UserAuditLog[]
+  dataAccessLogs             DataAccessLog[]
+  consentLogs                ConsentLog[]
+  preferenceHistories        PreferenceHistory[]
+
+  allergies   UserAllergy[]
+  cuisines    UserCuisine[]
+  healthGoals UserHealthGoal[]
 }
 
 model UserPreference {
@@ -69,8 +69,8 @@ model Cuisine {
 }
 
 model HealthGoal {
-  id    String          @id @default(uuid())
-  name  String          @unique
+  id    String           @id @default(uuid())
+  name  String           @unique
   users UserHealthGoal[]
 
   @@map("health_goals")
@@ -99,8 +99,8 @@ model UserCuisine {
 model UserHealthGoal {
   userId       String
   healthGoalId String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  healthGoal   HealthGoal  @relation(fields: [healthGoalId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  healthGoal   HealthGoal @relation(fields: [healthGoalId], references: [id], onDelete: Cascade)
 
   @@id([userId, healthGoalId])
   @@map("user_health_goals")
@@ -123,63 +123,104 @@ model Recipe {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  status      String?   @default("pending")
-  adminNote   String?
+  status    String? @default("pending")
+  adminNote String?
 
-  prepTime    String?
-  totalTime   String?
-  tools       String?   @default("[]")
-  tips        String?   @default("[]")
-  faq         String?   @default("[]")
-  mealType    String?
-  diet        String?
-  categories  String?   @default("[]")
-  allergens   String?   @default("[]")
-  occasion    String?   @default("[]")
-  cost        String?
+  prepTime   String?
+  totalTime  String?
+  tools      String? @default("[]")
+  tips       String? @default("[]")
+  faq        String? @default("[]")
+  mealType   String?
+  diet       String?
+  categories String? @default("[]")
+  allergens  String? @default("[]")
+  occasion   String? @default("[]")
+  cost       String?
 
-  ingredients    RecipeIngredient[]
-  steps          RecipeStep[]
-  nutrition      Nutrition?
-  searchTerms    SearchTerm[]
-  favoriteBy     FavoriteRecipe[]
-  mealSlots      MealSlot[]
-  recommendationExposures RecommendationExposure[]
-  featureContributionLogs FeatureContributionLog[]
+  ingredients                     RecipeIngredient[]
+  steps                           RecipeStep[]
+  nutrition                       Nutrition?
+  searchTerms                     SearchTerm[]
+  favoriteBy                      FavoriteRecipe[]
+  mealSlots                       MealSlot[]
+  recommendationExposures         RecommendationExposure[]
+  featureContributionLogs         FeatureContributionLog[]
   recommendationAttributionEvents RecommendationAttributionEvent[]
 }
 
+model Ingredient {
+  id                  String   @id
+  code                String   @unique
+  status              String?
+  version             String?
+  batch               Json?
+  nameFa              String?
+  nameEn              String?
+  category            String?
+  subCategory         String?
+  ingredientState     Json?
+  dietFlags           Json?
+  allergens           Json?
+  nutritionPer100g    Json?
+  nutritionConfidence Json?
+  tasteProfile        Json?
+  textureProfile      Json?
+  cookingBehavior     Json?
+  healthContext       Json?
+  substitutionOptions Json?
+  media               Json?
+  aiContext           Json?
+  marketAvailability  Json?
+  cuisineRelevance    Json?
+  dataQuality         Json?
+  recipeInputAliases  Json?
+  resolverDefaults    Json?
+  raw                 Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  recipeIngredients RecipeIngredient[]
+
+  @@index([category])
+  @@index([code])
+}
+
 model RecipeIngredient {
-  id        String  @id @default(uuid())
-  recipeId  String
-  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  name      String
-  amount    String?
-  unit      String?
-  notes     String?
-  order     Int     @default(0)
+  id           String      @id @default(uuid())
+  recipeId     String
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  name         String
+  amount       String?
+  unit         String?
+  notes        String?
+  order        Int         @default(0)
+
+  @@index([ingredientId])
 }
 
 model RecipeStep {
-  id        String @id @default(uuid())
-  recipeId  String
-  recipe    Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  title     String?
+  id          String  @id @default(uuid())
+  recipeId    String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  title       String?
   instruction String
-  duration  Int?
-  imageUrl  String?
-  order     Int    @default(0)
+  duration    Int?
+  imageUrl    String?
+  order       Int     @default(0)
 }
 
 model Nutrition {
-  id         String @id @default(uuid())
-  recipeId   String @unique
-  recipe     Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  calories   Float?
-  protein    Float?
-  carbs      Float?
-  fat        Float?
-  fiber      Float?
+  id       String @id @default(uuid())
+  recipeId String @unique
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  calories Float?
+  protein  Float?
+  carbs    Float?
+  fat      Float?
+  fiber    Float?
 }
 
 model SearchTerm {
@@ -190,12 +231,12 @@ model SearchTerm {
 }
 
 model FavoriteRecipe {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  addedAt   DateTime @default(now())
+  id       String   @id @default(uuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId String
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  addedAt  DateTime @default(now())
 
   @@unique([userId, recipeId])
 }
@@ -208,7 +249,7 @@ model MealPlan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  slots     MealSlot[]
+  slots MealSlot[]
 
   @@unique([userId, weekStart])
 }
@@ -232,19 +273,19 @@ model ShoppingList {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  items     ShoppingItem[]
+  items ShoppingItem[]
 }
 
 model ShoppingItem {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   shoppingListId String
   shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
   name           String
   amount         String?
   unit           String?
-  isChecked      Boolean  @default(false)
+  isChecked      Boolean      @default(false)
   category       String?
-  addedAt        DateTime @default(now())
+  addedAt        DateTime     @default(now())
 }
 
 model Notification {
@@ -260,26 +301,26 @@ model Notification {
 }
 
 model SupportTicket {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  subject     String
-  message     String
-  status      String   @default("open")
-  priority    String   @default("normal")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject   String
+  message   String
+  status    String   @default("open")
+  priority  String   @default("normal")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  replies     TicketReply[]
+  replies TicketReply[]
 }
 
 model TicketReply {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   ticketId  String
   ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   message   String
-  isStaff   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  isStaff   Boolean       @default(false)
+  createdAt DateTime      @default(now())
 }
 
 // ===== مدل‌های ردیابی رفتار کاربران =====
@@ -296,18 +337,18 @@ model UserSession {
 }
 
 model UserEvent {
-  id                  String               @id @default(uuid())
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id])
-  type                String
-  timestamp           DateTime             @default(now())
-  sessionId           String?
-  session             UserSession?         @relation(fields: [sessionId], references: [id])
-  page                String?
-  duration            Int?
-  payload             String?
-  enrichment          String?
-  signalObservations  SignalObservation[]  // 👈 اضافه شد
+  id                 String              @id @default(uuid())
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  type               String
+  timestamp          DateTime            @default(now())
+  sessionId          String?
+  session            UserSession?        @relation(fields: [sessionId], references: [id])
+  page               String?
+  duration           Int?
+  payload            String?
+  enrichment         String?
+  signalObservations SignalObservation[] // 👈 اضافه شد
 
   @@index([userId, type, timestamp])
   @@index([timestamp])
@@ -315,32 +356,32 @@ model UserEvent {
 }
 
 model UserBehaviorProfile {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
-  favoriteFoods   String?  @default("[]")
-  dislikedFoods   String?  @default("[]")
-  budgetRange     String?
-  shoppingPattern String?  @default("[]")
-  mealTiming      String?  @default("{}")
-  cookingSkill    String?
-  healthGoals     String?  @default("[]")
-  motivationStyle String?
+  favoriteFoods    String? @default("[]")
+  dislikedFoods    String? @default("[]")
+  budgetRange      String?
+  shoppingPattern  String? @default("[]")
+  mealTiming       String? @default("{}")
+  cookingSkill     String?
+  healthGoals      String? @default("[]")
+  motivationStyle  String?
   consistencyScore Float?  @default(0.0)
   churnRiskScore   Float?  @default(0.0)
-  familySize      Int?     @default(1)
+  familySize       Int?    @default(1)
 
-  favoriteIngredients  String?  @default("[]")
-  dislikedIngredients  String?  @default("[]")
-  preferredMealTimes   String?  @default("{}")
-  weeklyPatterns       String?  @default("{}")
+  favoriteIngredients  String? @default("[]")
+  dislikedIngredients  String? @default("[]")
+  preferredMealTimes   String? @default("{}")
+  weeklyPatterns       String? @default("{}")
   cookingFrequency     String?
   budgetScore          String?
   healthAdherenceScore Float?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ===== جداول ممیزی برای GDPR =====
@@ -385,13 +426,13 @@ model ConsentLog {
 }
 
 model PreferenceHistory {
-  id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fieldName  String
-  oldValue   String?
-  newValue   String?
-  changedAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fieldName String
+  oldValue  String?
+  newValue  String?
+  changedAt DateTime @default(now())
 
   @@index([userId, changedAt])
 }
@@ -419,16 +460,16 @@ model UserFeature {
 // ===== 🆕 مدل‌های لایه Outcomes =====
 
 model UserOutcome {
-  id                String   @id @default(uuid())
-  userId            String
-  metricName        String
-  baselineValue     Float?
-  metricValue       Float    @default(0.0)
+  id                 String   @id @default(uuid())
+  userId             String
+  metricName         String
+  baselineValue      Float?
+  metricValue        Float    @default(0.0)
   improvementPercent Float?
-  trend             Float?
-  period            String   @default("weekly")
-  sources           Json?
-  recordedAt        DateTime @default(now())
+  trend              Float?
+  period             String   @default("weekly")
+  sources            Json?
+  recordedAt         DateTime @default(now())
 
   @@index([userId, metricName, recordedAt])
 }
@@ -436,23 +477,23 @@ model UserOutcome {
 // ===== 🆕 مدل‌های Identity =====
 
 model UserIdentityDimension {
-  userId          String
-  dimensionKey    String
-  value           Float    @default(0.0)
-  confidence      Float    @default(0.0)
-  evidenceCount   Int      @default(0)
-  lastEvidenceAt  DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  userId         String
+  dimensionKey   String
+  value          Float    @default(0.0)
+  confidence     Float    @default(0.0)
+  evidenceCount  Int      @default(0)
+  lastEvidenceAt DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@id([userId, dimensionKey])
 }
 
 model UserBehaviorTimeline {
-  id            String   @id @default(uuid())
-  userId        String
-  dimensionKey  String
-  value         Float
-  recordedAt    DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String
+  dimensionKey String
+  value        Float
+  recordedAt   DateTime @default(now())
 
   @@index([userId, dimensionKey, recordedAt])
 }
@@ -460,14 +501,14 @@ model UserBehaviorTimeline {
 // ===== 🆕 مدل‌های Behavioral Signals =====
 
 model SignalObservation {
-  id          String   @id @default(uuid())
-  userId      String
-  signalName  String
-  eventId     String
-  weight      Float    @default(0.0)
-  observedAt  DateTime @default(now())
-  
-  event       UserEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  userId     String
+  signalName String
+  eventId    String
+  weight     Float    @default(0.0)
+  observedAt DateTime @default(now())
+
+  event UserEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
 
 model RecommendationExposure {
@@ -499,56 +540,56 @@ model FeatureContributionLog {
 }
 
 model RecommendationAttributionEvent {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipeId    String
-  recipe      Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  eventType   String
-  value       Float    @default(0.0)
-  source      String   @default("recommendation")
-  occurredAt  DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipeId   String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  eventType  String
+  value      Float    @default(0.0)
+  source     String   @default("recommendation")
+  occurredAt DateTime @default(now())
 
   @@index([userId, recipeId, occurredAt])
   @@index([eventType, value])
 }
 
 model RecommendationMetrics {
-  id                  String   @id @default(uuid())
-  metricDate          DateTime @default(now())
-  windowDays          Int      @default(7)
-  totalImpressions    Int      @default(0)
-  totalClicks         Int      @default(0)
-  totalSaves          Int      @default(0)
-  totalCooks          Int      @default(0)
-  totalDismisses      Int      @default(0)
-  totalExposures      Int      @default(0)
-  clickThroughRate    Float    @default(0.0)
-  saveRate            Float    @default(0.0)
-  cookRate            Float    @default(0.0)
-  frictionRate        Float    @default(0.0)
-  recommendationQuality Float  @default(0.0)
-  recommendationReward  Float  @default(0.0)
-  topSignals          Json?
-  topFeatures         Json?
-  createdAt           DateTime @default(now())
+  id                    String   @id @default(uuid())
+  metricDate            DateTime @default(now())
+  windowDays            Int      @default(7)
+  totalImpressions      Int      @default(0)
+  totalClicks           Int      @default(0)
+  totalSaves            Int      @default(0)
+  totalCooks            Int      @default(0)
+  totalDismisses        Int      @default(0)
+  totalExposures        Int      @default(0)
+  clickThroughRate      Float    @default(0.0)
+  saveRate              Float    @default(0.0)
+  cookRate              Float    @default(0.0)
+  frictionRate          Float    @default(0.0)
+  recommendationQuality Float    @default(0.0)
+  recommendationReward  Float    @default(0.0)
+  topSignals            Json?
+  topFeatures           Json?
+  createdAt             DateTime @default(now())
 
   @@unique([metricDate, windowDays])
   @@index([metricDate, windowDays])
 }
 
 model UserBehaviorSignal {
-  userId        String
-  signalName    String
-  signalDomain  String
-  signalType    String
-  value         Float    @default(0.0)
-  confidence    Float    @default(0.0)
-  sampleSize    Int      @default(0)
-  consistency   Float    @default(0.0)
-  halfLifeDays  Int      @default(30)
-  lastDetected  DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  userId       String
+  signalName   String
+  signalDomain String
+  signalType   String
+  value        Float    @default(0.0)
+  confidence   Float    @default(0.0)
+  sampleSize   Int      @default(0)
+  consistency  Float    @default(0.0)
+  halfLifeDays Int      @default(30)
+  lastDetected DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@id([userId, signalName])
 }
@@ -556,56 +597,57 @@ model UserBehaviorSignal {
 // ===== 🆕 Domain Snapshots =====
 
 model UserEngagementSnapshot {
-  userId                  String   @id
-  avgSessionDuration      Float    @default(0.0)
-  avgTimeBetweenSessions  Float    @default(0.0)
-  daysSinceLastMealPlan   Int      @default(0)
-  activeDaysLast30        Int      @default(0)
-  schemaVersion           Int      @default(1)
-  updatedAt               DateTime @updatedAt
+  userId                 String   @id
+  avgSessionDuration     Float    @default(0.0)
+  avgTimeBetweenSessions Float    @default(0.0)
+  daysSinceLastMealPlan  Int      @default(0)
+  activeDaysLast30       Int      @default(0)
+  schemaVersion          Int      @default(1)
+  updatedAt              DateTime @updatedAt
 }
 
 model UserHealthSnapshot {
-  userId                  String   @id
-  mealPlanCompletionRate  Float    @default(0.0)
-  goalCompletionRate      Float    @default(0.0)
-  nutritionViewFrequency  Float    @default(0.0)
-  hasActiveHealthGoal     Boolean  @default(false)
-  schemaVersion           Int      @default(1)
-  updatedAt               DateTime @updatedAt
+  userId                 String   @id
+  mealPlanCompletionRate Float    @default(0.0)
+  goalCompletionRate     Float    @default(0.0)
+  nutritionViewFrequency Float    @default(0.0)
+  hasActiveHealthGoal    Boolean  @default(false)
+  schemaVersion          Int      @default(1)
+  updatedAt              DateTime @updatedAt
 }
 
 model UserIdentitySnapshot {
-  userId                  String   @id
-  recipeSaveRate          Float    @default(0.0)
-  recipeCookRate          Float    @default(0.0)
-  shoppingCompletionRate  Float    @default(0.0)
-  aiAcceptanceRate        Float    @default(0.0)
-  aiDismissRate           Float    @default(0.0)
-  schemaVersion           Int      @default(1)
-  updatedAt               DateTime @updatedAt
+  userId                 String   @id
+  recipeSaveRate         Float    @default(0.0)
+  recipeCookRate         Float    @default(0.0)
+  shoppingCompletionRate Float    @default(0.0)
+  aiAcceptanceRate       Float    @default(0.0)
+  aiDismissRate          Float    @default(0.0)
+  schemaVersion          Int      @default(1)
+  updatedAt              DateTime @updatedAt
 }
 
 model UserRetentionSnapshot {
-  userId                String   @id
-  daysSinceLastActive   Int      @default(0)
-  sessionTrend          Float    @default(0.0)
-  engagementTrend       Float    @default(0.0)
-  retentionScore        Float    @default(0.0)
-  churnRisk             Float    @default(0.0)
-  schemaVersion         Int      @default(1)
-  updatedAt             DateTime @updatedAt
+  userId              String   @id
+  daysSinceLastActive Int      @default(0)
+  sessionTrend        Float    @default(0.0)
+  engagementTrend     Float    @default(0.0)
+  retentionScore      Float    @default(0.0)
+  churnRisk           Float    @default(0.0)
+  schemaVersion       Int      @default(1)
+  updatedAt           DateTime @updatedAt
 }
+
 // ===== 🆕 مدل‌های A/B Testing =====
 
 model Experiment {
   id        String   @id @default(uuid())
   name      String
-  variantA  Json     // وزن‌های گروه A
-  variantB  Json     // وزن‌های گروه B
+  variantA  Json // وزن‌های گروه A
+  variantB  Json // وزن‌های گروه B
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  
+
   assignments ExperimentAssignment[]
 }
 
@@ -613,7 +655,7 @@ model ExperimentAssignment {
   id           String     @id @default(uuid())
   userId       String
   experimentId String
-  variant      String     // "A" or "B"
+  variant      String // "A" or "B"
   experiment   Experiment @relation(fields: [experimentId], references: [id])
   createdAt    DateTime   @default(now())
 

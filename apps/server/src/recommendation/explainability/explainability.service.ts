@@ -54,6 +54,7 @@ export class ExplainabilityService {
       behaviorFit: 'fits the user cooking pattern',
       outcomeFit: 'aligns with recent positive outcomes',
       recipeUnderstanding: 'has distinct recipe-level fit',
+      ingredientIntelligence: 'uses verified ingredient intelligence',
       novelty: 'adds controlled variety',
       popularity: 'has supporting popularity evidence',
       recency: 'is fresh in the catalog',
