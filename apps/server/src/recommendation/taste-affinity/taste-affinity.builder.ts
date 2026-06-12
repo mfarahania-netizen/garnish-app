@@ -8,7 +8,10 @@ interface RecipeForTaste {
   mealType?: string | null;
   categories?: string | null;
   cookingTime?: number | null;
-  ingredients?: Array<{ name: string }>;
+  ingredients?: Array<{
+    name: string;
+    ingredient?: { code?: string | null; category?: string | null } | null;
+  }>;
   searchTerms?: Array<{ term: string }>;
 }
 
@@ -98,6 +101,8 @@ export class TasteAffinityBuilder {
       recipe.mealType,
       recipe.categories,
       ...(recipe.ingredients || []).map((item) => item.name),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.code),
+      ...(recipe.ingredients || []).map((item) => item.ingredient?.category),
       ...(recipe.searchTerms || []).map((item) => item.term),
     ];
 

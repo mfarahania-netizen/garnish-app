@@ -20,6 +20,13 @@ interface RecipeForRanking {
   servings?: number | null;
   categories?: string | null;
   createdAt?: Date | string | null;
+  nutrition?: {
+    calories?: number | null;
+    protein?: number | null;
+    carbs?: number | null;
+    fat?: number | null;
+    fiber?: number | null;
+  } | null;
   ingredients?: Array<{
     name: string;
     amount?: string | null;
@@ -143,6 +150,15 @@ export class RankingService {
         servings: true,
         categories: true,
         createdAt: true,
+        nutrition: {
+          select: {
+            calories: true,
+            protein: true,
+            carbs: true,
+            fat: true,
+            fiber: true,
+          },
+        },
         ingredients: {
           select: {
             name: true,
@@ -206,7 +222,7 @@ export class RankingService {
           recipeId: recipe.id,
           title: recipe.title,
           diet: recipe.diet || null,
-          mealType: recipe.mealType || null,
+          mealType: this.parseListField(recipe.mealType),
           finalScore: this.round(finalScore),
           rawScore: this.round(rawScore),
           scores: {
@@ -235,30 +251,18 @@ export class RankingService {
       this.signalTokenMap[name],
     );
 
+    const directTasteScore = this.calculateDirectTasteScore(recipe, activeTasteSignals, matchedSignals);
+
     if (typeof baseScore === 'number') {
       const uniqueTasteSignals = new Set(matchedSignals.filter((signal) => this.signalTokenMap[signal]));
       const strongEvidenceCount = uniqueTasteSignals.size;
       const evidenceCap =
         strongEvidenceCount >= 3 ? 1 : strongEvidenceCount === 2 ? 0.94 : 0.86;
-      return this.clamp(Math.min(baseScore, evidenceCap));
+      return this.clamp(Math.min(Math.max(baseScore, directTasteScore), evidenceCap));
     }
 
     if (activeTasteSignals.length === 0) return 0.35;
-
-    let matchedWeight = 0;
-    let totalWeight = 0;
-    const tokens = this.recipeTokens(recipe);
-
-    for (const signal of activeTasteSignals) {
-      totalWeight += signal.value;
-      const signalTokens = this.signalTokenMap[signal.name];
-      if (signalTokens.some((token) => tokens.has(token))) {
-        matchedWeight += signal.value;
-        matchedSignals.push(signal.name);
-      }
-    }
-
-    return this.clamp(0.15 + (matchedWeight / Math.max(totalWeight, 0.01)) * 0.85);
+    return directTasteScore;
   }
 
   private calculateBehaviorFit(
@@ -294,15 +298,18 @@ export class RankingService {
       matchedSignals.push('budget_sensitive');
     }
     if (mealPlanner > 0 && recipe.servings && recipe.servings >= 3) {
-      score += 0.2 * mealPlanner;
+      const servingFit = Math.min(1, (recipe.servings - 2) / 4);
+      score += 0.16 * mealPlanner * servingFit;
       matchedSignals.push('meal_planner');
     }
     if (familyCook > 0 && recipe.servings && recipe.servings >= 4) {
-      score += 0.2 * familyCook;
+      const familyServingFit = Math.min(1, (recipe.servings - 3) / 5);
+      score += 0.18 * familyCook * familyServingFit;
       matchedSignals.push('family_cook');
     }
     if (weekendCook > 0 && recipe.cookingTime && recipe.cookingTime >= 45) {
-      score += 0.15 * weekendCook;
+      const weekendDepth = Math.min(1, Math.max(0, recipe.cookingTime - 30) / 90);
+      score += 0.15 * weekendCook * weekendDepth;
       matchedSignals.push('weekend_cook');
     }
     if (novice > 0 && this.hasAnyToken(recipe, ['easy', 'beginner', 'simple', 'آسان', 'ساده', 'فوری'])) {
@@ -311,7 +318,9 @@ export class RankingService {
     }
 
     if (recipe.mealType && mealPlanner > 0 && this.hasAnyToken(recipe, ['dinner', 'lunch', 'meal', 'ناهار', 'شام', 'غذا'])) {
-      score += 0.08 * mealPlanner;
+      const mealTypes = this.parseListField(recipe.mealType);
+      const multiMealFit = Math.min(1, mealTypes.length / 3);
+      score += 0.08 * mealPlanner * multiMealFit;
       matchedSignals.push('planned_meal_fit');
     }
 
@@ -351,19 +360,19 @@ export class RankingService {
     const weightLoss = this.feature(features, 'weight_loss');
 
     if (goalAdherence > 0) {
-      score += 0.18 * goalAdherence;
+      score += 0.13 * goalAdherence;
       matchedSignals.push('goal_adherence');
     }
     if (shoppingEfficiency > 0) {
-      score += 0.12 * shoppingEfficiency;
+      score += 0.09 * shoppingEfficiency;
       matchedSignals.push('shopping_efficiency');
     }
     if (recipeSaveRate > 0) {
-      score += 0.08 * recipeSaveRate;
+      score += 0.06 * recipeSaveRate;
       matchedSignals.push('recipe_save_rate');
     }
     if (recommendationReward > 0) {
-      score += 0.1 * recommendationReward;
+      score += 0.07 * recommendationReward;
       matchedSignals.push('recommendation_reward');
     }
     if (activity30 > 0) {
@@ -375,16 +384,24 @@ export class RankingService {
       matchedSignals.push('recommendation_engagement_30d');
     }
     if (healthConscious > 0 && this.hasAnyToken(recipe, ['healthy', 'vegetarian', 'vegan', 'low_fat', 'light', 'salad', 'سالم', 'سبک', 'رژیمی', 'سالاد', 'گیاهی'])) {
-      score += 0.25 * healthConscious;
+      score += 0.2 * healthConscious;
       matchedSignals.push('health_conscious');
     }
     if (highProtein > 0 && this.hasAnyToken(recipe, ['protein', 'high_protein', 'chicken', 'beef', 'egg', 'fish', 'پروتئین', 'مرغ', 'گوشت', 'تخم', 'ماهی'])) {
-      score += 0.25 * highProtein;
+      score += 0.18 * highProtein;
       matchedSignals.push('likes_high_protein');
     }
     if (weightLoss > 0 && this.hasAnyToken(recipe, ['low_calorie', 'light', 'healthy', 'salad', 'diet', 'سبک', 'سالم', 'سالاد', 'رژیمی'])) {
-      score += 0.2 * weightLoss;
+      score += 0.16 * weightLoss;
       matchedSignals.push('weight_loss');
+    }
+    if (highProteinSeeker > 0 && Number(recipe.nutrition?.protein || 0) >= 20) {
+      score += 0.14 * highProteinSeeker;
+      matchedSignals.push('outcome_high_protein_fit');
+    }
+    if (weightLoss > 0 && Number(recipe.nutrition?.calories || 0) > 0 && Number(recipe.nutrition?.calories || 0) <= 450) {
+      score += 0.12 * weightLoss;
+      matchedSignals.push('outcome_calorie_fit');
     }
     if (prefDiet && recipe.diet && recipe.diet.includes(prefDiet)) {
       score += 0.22;
@@ -436,6 +453,30 @@ export class RankingService {
     ]);
 
     return this.clamp((views + favorites * 2) / 250);
+  }
+
+  private calculateDirectTasteScore(
+    recipe: RecipeForRanking,
+    activeTasteSignals: Array<{ name: string; value: number }>,
+    matchedSignals: string[],
+  ) {
+    if (activeTasteSignals.length === 0) return 0.35;
+
+    let matchedWeight = 0;
+    let totalWeight = 0;
+    const tokens = this.recipeTokens(recipe);
+
+    for (const signal of activeTasteSignals) {
+      totalWeight += signal.value;
+      const signalTokens = this.signalTokenMap[signal.name];
+      if (signalTokens.some((token) => tokens.has(token))) {
+        matchedWeight += signal.value;
+        matchedSignals.push(signal.name);
+      }
+    }
+
+    if (matchedWeight <= 0) return 0.35;
+    return this.clamp(0.2 + (matchedWeight / Math.max(totalWeight, 0.01)) * 0.72);
   }
 
   private calculateRecencyScore(recipe: RecipeForRanking): number {
@@ -676,6 +717,21 @@ export class RankingService {
     return expectedTokens.some((token) => tokens.has(token));
   }
 
+  private parseListField(value?: string | null): string[] {
+    if (!value) return [];
+    const text = String(value).trim();
+    if (!text) return [];
+    if (text.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(text);
+        return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
+      } catch {
+        return [];
+      }
+    }
+    return text.split(',').map((item) => item.trim()).filter(Boolean);
+  }
+
   private recipeTokens(recipe: RecipeForRanking): Set<string> {
     const rawValues = [
       recipe.title,
@@ -779,7 +835,7 @@ export class RankingService {
       recipeId: string;
       finalScore: number;
       diet?: string | null;
-      mealType?: string | null;
+      mealType?: string | string[] | null;
       contributions: ContributionBreakdown;
     }>,
   ) {
@@ -994,7 +1050,7 @@ export class RankingService {
     return value as Record<string, any>;
   }
 
-  private applyDiversity<T extends { finalScore: number; mealType?: string | null; diet?: string | null }>(
+  private applyDiversity<T extends { finalScore: number; mealType?: string | string[] | null; diet?: string | null }>(
     recipes: T[],
   ): T[] {
     const seenMealTypes = new Map<string, number>();
@@ -1003,7 +1059,9 @@ export class RankingService {
     return recipes
       .map((recipe) => {
         let adjusted = recipe.finalScore;
-        const mealType = recipe.mealType || 'unknown';
+        const mealType = Array.isArray(recipe.mealType)
+          ? recipe.mealType.join(',')
+          : recipe.mealType || 'unknown';
         const diet = recipe.diet || 'unknown';
 
         const mealPenalty = (seenMealTypes.get(mealType) || 0) * 0.03;
