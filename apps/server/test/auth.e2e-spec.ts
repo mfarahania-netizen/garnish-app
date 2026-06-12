@@ -40,6 +40,8 @@ describe('AuthController (e2e)', () => {
 
     expect(res.body.token).toBeDefined();
     expect(res.body.user.phone).toBe('09123456789');
+    // E2: no password/hash must leak in the register response
+    expect(res.body.user.password).toBeUndefined();
   });
 
   it('/auth/login (POST) should login with correct credentials', async () => {
@@ -79,5 +81,32 @@ describe('AuthController (e2e)', () => {
       .expect(200);
 
     expect(res.body.phone).toBe('09123456789');
+  });
+
+  // E2: no sensitive field may leave the server on any auth/user surface.
+  it('should never leak password/hash in register, login, or /users/me', async () => {
+    const FORBIDDEN = ['password', 'hash', 'passwordHash'];
+    const assertClean = (user: any) => {
+      expect(user).toBeDefined();
+      for (const key of FORBIDDEN) expect(user[key]).toBeUndefined();
+    };
+
+    const reg = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ phone: '09123456789', password: '123456', name: 'کاربر تست' })
+      .expect(201);
+    assertClean(reg.body.user);
+
+    const login = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ phone: '09123456789', password: '123456' })
+      .expect(201);
+    assertClean(login.body.user);
+
+    const me = await request(app.getHttpServer())
+      .get('/users/me')
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .expect(200);
+    assertClean(me.body);
   });
 });

@@ -2,6 +2,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { sanitizeUser } from '../common/serializers/user.serializer';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -20,7 +21,7 @@ export class AuthService {
       sub: user.id,
       phone: user.phone,
     });
-    return { token, user };
+    return { token, user: sanitizeUser(user) };
   }
 
   async login(phone: string, password: string) {
@@ -37,6 +38,6 @@ export class AuthService {
       sub: user.id,
       phone: user.phone,
     });
-    return { token, user };
+    return { token, user: sanitizeUser(user) };
   }
 }

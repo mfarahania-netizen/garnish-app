@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { sanitizeUser } from '../common/serializers/user.serializer';
 
 @Controller('users')
 export class UsersController {
@@ -11,14 +12,16 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  getProfile(@Req() req) {
-    return this.usersService.findById(req.user.userId);
+  async getProfile(@Req() req) {
+    return sanitizeUser(await this.usersService.findById(req.user.userId));
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('me')
-  updateProfile(@Req() req, @Body() dto: UpdateProfileDto) {
-    return this.usersService.updateProfile(req.user.userId, dto.name, dto.email, dto.avatar);
+  async updateProfile(@Req() req, @Body() dto: UpdateProfileDto) {
+    return sanitizeUser(
+      await this.usersService.updateProfile(req.user.userId, dto.name, dto.email, dto.avatar),
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
