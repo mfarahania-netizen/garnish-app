@@ -7,6 +7,7 @@ import posthog from 'posthog-js';
 import { AuthProvider } from './context/AuthContext';
 import ConsentModal from './components/ConsentModal';
 import { getAnalyticsConsent } from './lib/analytics-init';
+import { I18nProvider } from './i18n/I18nProvider';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
@@ -183,9 +184,11 @@ function AppInner() {
 export default function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <AppInner />
-      </BrowserRouter>
+      <I18nProvider>
+        <BrowserRouter>
+          <AppInner />
+        </BrowserRouter>
+      </I18nProvider>
     </ThemeProvider>
   );
 }

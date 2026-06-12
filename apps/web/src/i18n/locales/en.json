@@ -1,0 +1,32 @@
+{
+  "app": {
+    "name": "Garnish",
+    "tagline": "Smart cooking, made simple"
+  },
+  "nav": {
+    "home": "Home",
+    "recipes": "Recipes",
+    "plan": "Meal Plan",
+    "shopping": "Shopping List",
+    "profile": "Profile",
+    "favorites": "Favorites",
+    "ai": "AI Assistant",
+    "support": "Support",
+    "addRecipe": "Add Recipe"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "later": "Later",
+    "confirm": "Confirm",
+    "search": "Search",
+    "empty": "Nothing here yet"
+  },
+  "auth": {
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out"
+  }
+}
