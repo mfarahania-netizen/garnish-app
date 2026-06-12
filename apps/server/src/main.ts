@@ -3,8 +3,12 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { join } from 'path';
+import { validateEnv } from './config/env.validation';
 
 async function bootstrap() {
+  // E1: fail fast if any required secret is missing/placeholder/weak.
+  const env = validateEnv();
+
   const app = await NestFactory.create(AppModule);
 
   // سرو فایل‌های استاتیک از پوشهٔ uploads
@@ -18,15 +22,13 @@ async function bootstrap() {
     }),
   );
 
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
   app.enableCors({
-    origin: frontendUrl,
+    origin: env.FRONTEND_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
 
-  const port = parseInt(process.env.PORT || '3000', 10);
-  await app.listen(port);
+  await app.listen(env.PORT);
 }
 bootstrap();

@@ -1,0 +1,18 @@
+# Gitleaks config — Garnish OS (E1)
+title = "Garnish OS gitleaks config"
+
+[extend]
+# Use gitleaks' built-in rule set (AWS, GCP, generic API keys, JWTs, etc.)
+useDefault = true
+
+[allowlist]
+description = "Allow documented placeholders in example/template files"
+paths = [
+  '''\.env\.example$''',
+  '''\.gitleaks\.toml$''',
+]
+regexes = [
+  '''your-strong-random-secret-here''',
+  '''your-gemini-api-key''',
+  '''username:password@localhost''',
+]

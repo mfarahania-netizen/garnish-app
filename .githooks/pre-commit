@@ -1,0 +1,24 @@
+#!/bin/sh
+# Garnish OS pre-commit secret guard (E1)
+# Enable once per clone:  git config core.hooksPath .githooks
+
+# 1) Never allow a real .env to be ADDED/MODIFIED (deletions are fine).
+if git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)\.env$' >/dev/null 2>&1; then
+  echo "✖ Refusing to commit a .env file. Use .env.example and keep secrets local."
+  exit 1
+fi
+
+# 2) Scan staged changes with gitleaks if available.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --config .gitleaks.toml
+  if [ $? -ne 0 ]; then
+    echo "✖ gitleaks found a potential secret in staged changes. Commit blocked."
+    echo "  If this is a false positive, add an allowlist entry in .gitleaks.toml."
+    exit 1
+  fi
+else
+  echo "⚠ gitleaks not installed — staged-secret scan skipped."
+  echo "  Install it: https://github.com/gitleaks/gitleaks (brew/scoop/go install)."
+fi
+
+exit 0
