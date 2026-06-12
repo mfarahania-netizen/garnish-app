@@ -6,7 +6,7 @@ import {
   ActionIcon, Box
 } from '@mantine/core';
 import {
-  IconEdit, IconCheck, IconSearch,
+  IconEdit, IconCheck,
   IconAlertTriangle, IconArrowUp, IconPalette
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';

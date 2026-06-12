@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Modal, Text, Group, Button, Card, Title, Badge, Checkbox, Divider } from '@mantine/core';
-import { IconHeartPlus, IconCheck } from '@tabler/icons-react';
+import { Modal, Text, Group, Button, Card, Title, Checkbox, Divider } from '@mantine/core';
+import { IconCheck } from '@tabler/icons-react';
 import { useRecipeContext } from '../../context/RecipeContext';
 import { useMantineColorScheme } from '@mantine/core';
 

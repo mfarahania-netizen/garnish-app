@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import {
   Paper, Text, Group, Stack, Badge, ThemeIcon,
-  Loader, Center, useMantineColorScheme, Box
+  Loader, Center, useMantineColorScheme
 } from '@mantine/core';
 import { IconCalendar, IconChefHat } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Modal, Text, Group, Button, Checkbox, Divider } from '@mantine/core';
-import { IconCalendarPlus, IconCheck } from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
 import { useRecipeContext } from '../../context/RecipeContext';
 import { useMantineColorScheme } from '@mantine/core';
-import { getIngredientEmoji } from '../../data/commonIngredients';
 
 export default function AddFromPlanModal({ opened, onClose, onAddSelected }) {
   const { recipes } = useRecipeContext();

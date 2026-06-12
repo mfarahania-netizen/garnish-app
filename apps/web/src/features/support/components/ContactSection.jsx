@@ -1,4 +1,4 @@
-import { Paper, Text, Group, ActionIcon, Tooltip, Box, useMantineColorScheme } from '@mantine/core';
+import { Paper, Text, Group, Tooltip, Box, useMantineColorScheme } from '@mantine/core';
 import { IconPhone, IconBrandWhatsapp, IconBrandTelegram, IconMessageCircle } from '@tabler/icons-react';
 
 const SUPPORT_CONTACTS = [

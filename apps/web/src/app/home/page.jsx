@@ -95,9 +95,9 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeChips, setActiveChips] = useState([]);
-  const [isListening, setIsListening] = useState(false);
+  const [_isListening, setIsListening] = useState(false);
   const [voiceSupported] = useState(() => !!(window.SpeechRecognition || window.webkitSpeechRecognition));
-  const [isSearching, setIsSearching] = useState(false);
+  const [_isSearching, setIsSearching] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
   const [recsLoading, setRecsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
@@ -128,7 +128,7 @@ export default function HomePage() {
     trackEvent('page_view', { page: '/home' });
     window.addEventListener('scroll', handleWindowScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleWindowScroll);
-  }, [handleWindowScroll]);
+  }, [handleWindowScroll, trackEvent]);
 
   // دریافت پیشنهادهای شخصی‌سازی‌شده (فقط در صورت وجود توکن)
   useEffect(() => {
@@ -152,7 +152,7 @@ export default function HomePage() {
       }
     };
     fetchRecommendations();
-  }, []);
+  }, [trackEvent]);
 
   const handleSearchChange = useCallback((value) => {
     setSearch(value);
@@ -215,7 +215,12 @@ export default function HomePage() {
     return applyChipFilters(searchResults, activeChips);
   }, [searchResults, activeChips]);
 
-  const todaySpecial = useMemo(() => recipes && recipes.length ? recipes[Math.floor(Math.random() * recipes.length)] : null, [recipes]);
+  const todaySpecial = useMemo(() => {
+    if (!recipes?.length) return null;
+    const dayKey = new Date().toISOString().slice(0, 10);
+    const seed = [...dayKey].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return recipes[seed % recipes.length];
+  }, [recipes]);
 
   const textColor = dark ? '#ffffff' : '#1A237E';
   const mutedText = dark ? '#a0a0b0' : '#555';

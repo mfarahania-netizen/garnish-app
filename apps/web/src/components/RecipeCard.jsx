@@ -1,7 +1,7 @@
-import { Box, Text, Group, Paper, Badge, ThemeIcon } from '@mantine/core';
+import { Box, Text, Group, Paper, Badge } from '@mantine/core';
 import {
   IconChefHat, IconCake, IconGlassFull, IconSoup, IconSalad,
-  IconClock, IconFlame, IconBolt, IconHeart, IconStar
+  IconClock, IconBolt, IconHeart
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

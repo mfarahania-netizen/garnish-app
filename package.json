@@ -1,6 +1,7 @@
 { 
   "name": "garnish-os", 
   "private": true, 
+  "type": "module",
   "scripts": { 
     "dev": "turbo run dev", 
     "build": "turbo run build", 

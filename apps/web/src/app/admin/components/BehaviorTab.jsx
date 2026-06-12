@@ -1,7 +1,7 @@
 // 3. apps/web/src/app/admin/components/BehaviorTab.jsx
 import { useState, useEffect } from 'react';
 import {
-  Paper, Text, Group, Stack, Badge, ThemeIcon,
+  Paper, Text, Group, Stack, ThemeIcon,
   SimpleGrid, Table, Loader, Center, useMantineColorScheme
 } from '@mantine/core';
 import { IconBrain, IconChartBar } from '@tabler/icons-react';

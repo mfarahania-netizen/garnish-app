@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import {
-  Container, Title, Group, Text, Paper, Badge, ActionIcon,
+  Container, Title, Group, Text, Paper, ActionIcon,
   Tooltip, Tabs, ThemeIcon, Button, Modal, TextInput,
-  Stack, Center, Box, useMantineColorScheme, ScrollArea, Loader
+  Stack, Center, useMantineColorScheme, ScrollArea, Loader
 } from '@mantine/core';
 import {
   IconTrash, IconSun, IconSunset, IconMoonStars,

@@ -1,4 +1,4 @@
-import { Container, Title, Stack, Text, Skeleton, Box, Group, ActionIcon, Alert, Button, Paper } from '@mantine/core';
+import { Container, Title, Stack, Text, Skeleton, Group, ActionIcon, Alert, Button, Paper } from '@mantine/core';
 import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
 import { useShoppingListQuery } from '../../hooks/useShoppingListQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ActionIcon, Tooltip, Box, Image, Text, Group } from '@mantine/core';
+import { ActionIcon, Tooltip, Box, Image } from '@mantine/core';
 import { IconCamera, IconX } from '@tabler/icons-react';
 import { analyzeImage, isImageFile } from '../services/visionService';
 

@@ -1,5 +1,5 @@
 // features/ai-chat/components/MessageBubble.jsx
-import { Group, Avatar, Paper, Text, Box } from '@mantine/core';
+import { Group, Avatar, Text, Box } from '@mantine/core';
 import { IconRobot, IconUser } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 

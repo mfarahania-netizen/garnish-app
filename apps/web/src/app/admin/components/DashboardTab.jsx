@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import {
   SimpleGrid, Paper, Text, Group, ThemeIcon, Stack,
-  Badge, useMantineColorScheme, Box
+  Badge, useMantineColorScheme
 } from '@mantine/core';
 import { IconUsers, IconChefHat, IconActivity, IconTicket } from '@tabler/icons-react';
 import {

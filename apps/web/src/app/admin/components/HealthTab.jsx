@@ -1,10 +1,10 @@
 // 5. apps/web/src/app/admin/components/HealthTab.jsx
 import { useState, useEffect } from 'react';
 import {
-  Paper, Text, Group, Stack, Badge, ThemeIcon,
+  Paper, Text, Group, Stack, ThemeIcon,
   SimpleGrid, Loader, Center, useMantineColorScheme
 } from '@mantine/core';
-import { IconSettings, IconBug, IconShield, IconClock } from '@tabler/icons-react';
+import { IconBug, IconShield, IconClock } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import dayjs from 'dayjs';
 

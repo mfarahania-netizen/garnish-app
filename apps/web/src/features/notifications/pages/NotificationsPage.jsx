@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import {
   Container, Title, Group, Text, Paper, Stack, Badge,
-  ActionIcon, Button, Alert, Box, SegmentedControl
+  ActionIcon, Button, Alert, SegmentedControl
 } from '@mantine/core';
 import {
   IconTrash, IconCheck, IconBell, IconSparkles,
@@ -26,7 +26,7 @@ const timeAgo = (dateString) => {
 
 export default function NotificationsPage() {
   const {
-    notifications, unreadCount, loading, isGenerating,
+    notifications, unreadCount, isGenerating,
     generateSuggestion, markAsRead, deleteNotification
   } = useNotificationsQuery();
   const { trackEvent } = useAnalytics();

@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import {
   Paper, Text, Group, Stack, Table, Badge, SimpleGrid,
-  ThemeIcon, Loader, Center, Pagination, ActionIcon, useMantineColorScheme
+  Loader, Center, Pagination, ActionIcon, useMantineColorScheme
 } from '@mantine/core';
-import { IconChefHat, IconCheck, IconX } from '@tabler/icons-react';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 
 const STATUS_COLOR = { pending: 'yellow', approved: 'green', rejected: 'red' };

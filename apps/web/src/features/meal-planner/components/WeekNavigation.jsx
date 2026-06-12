@@ -1,7 +1,5 @@
-// TODO
-import { Group, ActionIcon, Text } from '@mantine/core';
-import { IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
-import { DAYS } from '../services/planHelpers';
+import { ActionIcon, Group, Text } from '@mantine/core';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 export default function WeekNavigation({ currentWeekLabel, onPrev, onNext, dark }) {
   return (

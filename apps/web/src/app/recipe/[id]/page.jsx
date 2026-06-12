@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Container, Skeleton, Alert, Button, Accordion, ActionIcon, Text, Paper } from '@mantine/core';
 import { useRecipes } from '../../../hooks/useRecipes';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
@@ -19,7 +19,6 @@ import FaqSection from './components/FaqSection';
 
 export default function RecipeDetailPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { getRecipeById, loading } = useRecipes();
   const { addFavorite, removeFavorite, isFavorite } = useFavoritesQuery();
   const { trackEvent } = useAnalytics();
@@ -48,7 +47,7 @@ export default function RecipeDetailPage() {
 
   useEffect(() => {
     if (finalRecipe) trackEvent(EventType.RECIPE_VIEW, { recipeId: finalRecipe.id, title: finalRecipe.title });
-  }, [finalRecipe?.id]);
+  }, [finalRecipe, trackEvent]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,7 +65,8 @@ export default function RecipeDetailPage() {
   }, [finalRecipe?.id, trackEvent]);
 
   useEffect(() => {
-    return () => Object.values(accordionTimers.current).forEach(clearTimeout);
+    const timers = accordionTimers.current;
+    return () => Object.values(timers).forEach(clearTimeout);
   }, []);
 
   const handleToggleFavorite = () => {

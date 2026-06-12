@@ -1,7 +1,7 @@
 // apps/web/src/app/admin/components/UsersTab.jsx
 import { useState, useEffect } from 'react';
 import {
-  Paper, Text, Group, Stack, Table, Badge, SimpleGrid,
+  Paper, Text, Group, Stack, Table, SimpleGrid,
   ThemeIcon, Loader, Center, Pagination, useMantineColorScheme
 } from '@mantine/core';
 import { IconUsers, IconUserPlus, IconBrain } from '@tabler/icons-react';

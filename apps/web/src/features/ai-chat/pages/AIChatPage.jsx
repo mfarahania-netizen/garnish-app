@@ -27,7 +27,7 @@ export default function AIChatPage() {
       trackEvent(EventType.AI_CHAT_STARTED);
       hasTrackedStart.current = true;
     }
-  }, []);
+  }, [trackEvent]);
 
   const handleSend = async () => {
     const prompt = input.trim();

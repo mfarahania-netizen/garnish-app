@@ -1,5 +1,5 @@
 // features/profile/pages/ProfilePage.jsx
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   Container, Paper, Group, Text, Avatar, Button,
   Progress, Badge, useMantineColorScheme, ActionIcon,
@@ -39,7 +39,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user) trackEvent('profile_view');
-  }, [user]);
+  }, [user, trackEvent]);
 
   const totalXP = stats.recipeCount * 10 + stats.favoriteCount * 5 + stats.plannedMeals * 3;
   let currentLevel = chefLevels[0];

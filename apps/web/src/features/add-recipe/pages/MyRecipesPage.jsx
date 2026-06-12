@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Container, Title, Group, Text, Paper, Badge, Stack, Skeleton, Alert
 } from '@mantine/core';
-import { IconArrowRight, IconCheck, IconClock, IconPencil, IconX } from '@tabler/icons-react';
+import { IconCheck, IconClock, IconPencil, IconX } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from "../../../context/AuthContext";
@@ -30,7 +30,7 @@ export default function MyRecipesPage() {
       .then(res => setRecipes(res.data))
       .catch(err => console.error('خطا در دریافت رسپی‌ها:', err))
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, trackEvent]);
 
   return (
     <Container size="xs" py="md" style={{ paddingBottom: 80 }}>

@@ -1,12 +1,12 @@
 // apps/web/src/app/admin/components/EventsTab.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
-  Paper, Text, Group, Stack, Badge, ThemeIcon,
+  Paper, Text, Group, Stack, Badge,
   Loader, Center, Pagination, Select, useMantineColorScheme,
-  ActionIcon, Tooltip, Box
+  ActionIcon, Tooltip
 } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
-import { IconActivity, IconFilter, IconCalendar, IconX } from '@tabler/icons-react';
+import { IconFilter, IconCalendar, IconX } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import dayjs from 'dayjs';
 
@@ -29,7 +29,7 @@ export default function EventsTab() {
   const [loading, setLoading] = useState(true);
   const LIMIT = 20;
 
-  const fetchEvents = async (p = 1) => {
+  const fetchEvents = useCallback(async (p = 1) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -48,11 +48,11 @@ export default function EventsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, dateRange]);
 
   useEffect(() => {
     fetchEvents(page);
-  }, [page, filter, dateRange]);
+  }, [fetchEvents, page]);
 
   const clearDateRange = () => setDateRange([null, null]);
 

@@ -48,7 +48,7 @@ export const startListening = (onResult, onEnd, onError) => {
 
   try {
     recognition.start();
-  } catch (e) {
+  } catch {
     onError?.('خطا در شروع تشخیص گفتار. لطفاً دوباره تلاش کنید.');
   }
 };

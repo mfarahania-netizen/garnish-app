@@ -8,6 +8,8 @@ const fetchRecipes = async (page = 1, limit = 20) => {
   return data;
 };
 
+const EMPTY_RECIPES = [];
+
 const normalizeList = (value) => {
   if (!value) return [];
   if (Array.isArray(value)) return value;
@@ -102,7 +104,7 @@ export function useRecipes() {
     retry: 2,
   });
 
-  const apiRecipes = response?.data ?? [];
+  const apiRecipes = response?.data ?? EMPTY_RECIPES;
   const total = response?.total ?? 0;
   const currentPage = response?.page ?? page;
   const pageSize = response?.pageSize ?? limit;

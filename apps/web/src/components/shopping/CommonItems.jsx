@@ -1,4 +1,4 @@
-import { Text, Group } from '@mantine/core';
+import { Text } from '@mantine/core';
 import { IconCircleFilled } from '@tabler/icons-react';
 
 export default function CommonItems({ items, onSelect, dark }) {

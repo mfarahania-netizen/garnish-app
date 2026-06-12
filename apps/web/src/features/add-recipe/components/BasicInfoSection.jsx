@@ -1,4 +1,4 @@
-import { TextInput, Select, Textarea, Group, Text, MultiSelect, Stack, Grid, NumberInput } from '@mantine/core';
+import { TextInput, Select, Textarea, MultiSelect, Stack, Grid, NumberInput } from '@mantine/core';
 
 const categories = [
   { value: 'کباب', label: 'کباب' },
@@ -43,7 +43,7 @@ const allergens = [
 const regions = ['persian', 'north', 'south', 'west', 'central', 'international'];
 
 export default function BasicInfoSection({
-  dark, inputStyles, textColor,
+  inputStyles,
   title, setTitle,
   description, setDescription,
   category, setCategory,

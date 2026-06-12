@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import {
   Paper, Text, Group, Stack, Badge, Textarea,
-  ActionIcon, ThemeIcon, Loader, Center, Pagination, useMantineColorScheme
+  ActionIcon, Loader, Center, Pagination, useMantineColorScheme
 } from '@mantine/core';
-import { IconTicket, IconSend, IconX, IconCircleCheck, IconAlertCircle } from '@tabler/icons-react';
+import { IconSend, IconX, IconCircleCheck, IconAlertCircle } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 
 const STATUS_MAP = {

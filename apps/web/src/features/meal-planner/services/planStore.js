@@ -1,4 +1,3 @@
-// TODO
 const PLAN_KEY = 'garnish_weekly_plan';
 
 export function loadPlan() {

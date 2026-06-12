@@ -15,10 +15,7 @@ const mealColors = {
   'شام': 'indigo',
 };
 
-export default function TodayDashboard({ today, getRecipeData, onOpenPicker, onRemoveMeal, dark }) {
-  const textColor = dark ? '#ffffff' : '#1A237E';
-  const bgColor = dark ? '#1e1e24' : '#ffffff';
-
+export default function TodayDashboard({ today, getRecipeData, onOpenPicker, dark }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
       <Paper

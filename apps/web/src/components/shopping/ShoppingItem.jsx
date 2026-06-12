@@ -1,7 +1,6 @@
-import { Group, Text, Checkbox, ActionIcon, Badge } from '@mantine/core';
+import { Group, Text, Checkbox, ActionIcon } from '@mantine/core';
 import { IconPlus, IconMinus, IconTrash, IconEdit, IconAlertTriangle } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
-import { useMantineColorScheme } from '@mantine/core';
 
 export default function ShoppingItem({ item, onToggle, onChangeQty, onDelete, onEdit, isAllergen, emoji, dark }) {
   return (

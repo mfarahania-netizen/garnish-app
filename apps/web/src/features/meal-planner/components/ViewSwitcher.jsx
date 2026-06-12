@@ -1,5 +1,4 @@
 import { SegmentedControl } from '@mantine/core';
-import { IconCalendar, IconSun, IconList } from '@tabler/icons-react';
 
 export default function ViewSwitcher({ view, onChange }) {
   return (

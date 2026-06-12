@@ -1,5 +1,4 @@
-// TODO
-import { Paper, Group, Text, ActionIcon, Tooltip } from '@mantine/core';
+import { ActionIcon, Group, Paper, Text, Tooltip } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { getMealEmoji } from '../services/planHelpers';
@@ -14,7 +13,7 @@ export default function MealSlot({ day, meal, recipeTitle, onOpenPicker, onRemov
         withBorder
         style={{
           cursor: 'pointer',
-          backgroundColor: recipeTitle ? (dark ? 'rgba(255,255,255,0.05)' : '#f9f9fb') : 'transparent',
+          backgroundColor: recipeTitle ? dark ? 'rgba(255,255,255,0.05)' : '#f9f9fb' : 'transparent',
           borderColor: recipeTitle ? '#FF6B35' : undefined,
           minHeight: 52,
         }}
@@ -33,8 +32,8 @@ export default function MealSlot({ day, meal, recipeTitle, onOpenPicker, onRemov
                 size="xs"
                 variant="subtle"
                 color="red"
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={(event) => {
+                  event.stopPropagation();
                   onRemove(day, meal);
                 }}
               >

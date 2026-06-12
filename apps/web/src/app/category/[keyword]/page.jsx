@@ -21,7 +21,7 @@ export default function CategoryPage() {
 
   useEffect(() => {
     trackEvent(EventType.CATEGORY_VIEW, { keyword });
-  }, [keyword]);
+  }, [keyword, trackEvent]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['categoryRecipes', keyword],

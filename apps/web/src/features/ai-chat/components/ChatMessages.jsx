@@ -1,10 +1,9 @@
 // features/ai-chat/components/ChatMessage.jsx
-import { Group, Avatar, Paper, Text, useMantineTheme, Box } from '@mantine/core';
+import { Group, Avatar, Text, Box } from '@mantine/core';
 import { IconRobot, IconUser } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 export default function ChatMessage({ message, index }) {
-  const theme = useMantineTheme();
   const isUser = message.sender === 'user';
 
   return (

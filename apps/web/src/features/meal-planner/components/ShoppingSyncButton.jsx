@@ -1,4 +1,4 @@
-import { Paper, Group, Text, Button, ThemeIcon } from '@mantine/core';
+import { Paper, Group, Text, ThemeIcon } from '@mantine/core';
 import { IconShoppingCart, IconArrowRight } from '@tabler/icons-react';
 import { useMealPlanner } from '../hooks/useMealPlanner';
 import { loadFromStorage, saveToStorage } from '../../../data/shoppingConstants';

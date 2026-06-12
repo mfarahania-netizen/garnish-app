@@ -9,7 +9,7 @@ const KNOWN_INGREDIENTS = [
   'لوبیا', 'نخود', 'ماهی', 'میگو', 'گردو', 'بادام',
 ];
 
-export const analyzeImage = async (imageFile) => {
+export const analyzeImage = async (_imageFile) => {
   // شبیه‌سازی تشخیص (در نسخه واقعی: ارسال به API)
   return new Promise((resolve) => {
     setTimeout(() => {

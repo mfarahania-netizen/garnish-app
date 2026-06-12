@@ -3,11 +3,11 @@ import {
   Container, Title, Group, Text, Paper, Checkbox, ActionIcon,
   Stack, Skeleton, Alert, Button, Modal, TextInput, Badge,
   ScrollArea, Box, SimpleGrid, Select,
-  useMantineColorScheme, Tooltip, ThemeIcon
+  useMantineColorScheme, ThemeIcon
 } from '@mantine/core';
 import {
   IconTrash, IconPlus, IconShoppingCart, IconSearch,
-  IconCheck, IconCalendar, IconArrowUp, IconChevronDown,
+  IconCalendar, IconArrowUp, IconChevronDown,
   IconChevronUp, IconX, IconMoodEmpty, IconCircleCheck
 } from '@tabler/icons-react';
 import { useShoppingListQuery } from '../../hooks/useShoppingListQuery';

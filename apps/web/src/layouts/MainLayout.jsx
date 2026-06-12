@@ -1,15 +1,15 @@
 import { useLocation, Outlet, useNavigate } from 'react-router-dom';
 import {
-  AppShell, Container, Group, ActionIcon, Drawer, Stack, NavLink,
+  AppShell, Container, Group, ActionIcon, NavLink,
   Text, Divider, Box, Image, Avatar,
-  useMantineColorScheme, useMantineTheme, Tooltip
+  useMantineColorScheme
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
   IconHome, IconBook, IconCalendar, IconUser, IconLogout,
-  IconBell, IconLogin, IconPencil, IconShoppingCart, IconHeadset,
+  IconLogin, IconPencil, IconShoppingCart, IconHeadset,
   IconRobot, IconX, IconChevronRight, IconSun, IconMoon,
-  IconHeart, IconSettings, IconShield
+  IconHeart
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -22,7 +22,6 @@ export default function MainLayout() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const theme = useMantineTheme();
   const dark = colorScheme === 'dark';
 
   // ===== ۱. استخراج tab فعال از URL =====
@@ -40,7 +39,7 @@ export default function MainLayout() {
   };
   const activeTab = getActiveTab(location.pathname);
 
-  const handleNavigate = (path, tab) => {
+  const handleNavigate = (path) => {
     navigate(path);
     close();
   };
@@ -54,7 +53,6 @@ export default function MainLayout() {
   // رنگ‌های داینامیک برای سایدبار و نوارها
   const sidebarBg = dark ? '#1A1B1E' : '#ffffff';
   const sidebarBorder = dark ? '#2C2E33' : '#f0f0f0';
-  const sidebarText = dark ? '#C1C2C5' : '#1A237E';
   const overlayColor = dark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.3)';
 
   const menuGroups = [

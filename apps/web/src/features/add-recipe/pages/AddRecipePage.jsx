@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  Container, Title, Group, ActionIcon, Paper, Stack, Button, Alert, Text,
+  Container, Title, Group, ActionIcon, Paper, Stack, Button, Alert,
   useMantineColorScheme
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +34,6 @@ function AddRecipeForm() {
     region, setRegion,
     ingredients, setIngredients,
     steps, setSteps,
-    tools, setTools,
     tips, setTips,
     faq, setFaq,
     categories, setCategories,
@@ -53,7 +52,7 @@ function AddRecipeForm() {
 
   useEffect(() => {
     trackEvent(EventType.ADD_RECIPE_VIEW);
-  }, []);
+  }, [trackEvent]);
 
   const handleSubmit = async () => {
     if (!title || ingredients.filter(i => i.name.trim()).length === 0 || steps.filter(s => s.instruction.trim()).length === 0) {

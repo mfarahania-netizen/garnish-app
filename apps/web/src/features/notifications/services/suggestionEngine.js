@@ -1,6 +1,4 @@
-// TODO: کد این ماژول را جایگزین کنید
-import { normalize } from '../../../data/shoppingConstants';
-
+// Local-only fallback scorer for notification suggestions.
 const INTERACTION_KEY = 'garnish_interaction_history';
 
 export function loadInteractionHistory() {
