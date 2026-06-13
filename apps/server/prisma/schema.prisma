@@ -59,6 +59,9 @@ model User {
   identitySnapshot      UserIdentitySnapshot?
   retentionSnapshot     UserRetentionSnapshot?
   experimentAssignments ExperimentAssignment[]
+
+  // E39-1B erasure-proof ledger (audit-long; SetNull so it survives deletion)
+  erasureEvents ErasureEvent[]
 }
 
 model UserPreference {
@@ -407,8 +410,8 @@ model UserBehaviorProfile {
 
 model UserAuditLog {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String? // E39-1B: nullable for audit-long survival (SetNull on erasure)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   action    String
   details   String?
   ip        String?
@@ -433,8 +436,8 @@ model DataAccessLog {
 
 model ConsentLog {
   id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String? // E39-1B: nullable for audit-long survival (SetNull on erasure)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   type      String
   // E52/B2B-B0: processing purpose the user consented to (additive, nullable).
   // Mirrors the canonical envelope consentPurpose: core | analytics | personalization | b2b_aggregate | community.
@@ -445,6 +448,24 @@ model ConsentLog {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, type])
+}
+
+// E39-1B: audit-long, PII-FREE erasure-proof ledger. Survives user deletion (userId SetNull on
+// erasure; `subjectHash` is the durable, non-reversible subject reference). Written by the future
+// transactional erasure service (E39-1C). No email/phone/name/raw profile/secrets stored.
+model ErasureEvent {
+  id          String   @id @default(uuid())
+  userId      String? // SetNull on erasure — proof survives without an active user link
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  subjectHash String // sha256(salt + userId) — non-reversible reference to the (deleted) subject
+  action      String // e.g. user_erasure_requested | user_erasure_completed
+  status      String // requested | completed | failed
+  reason      String?
+  metadata    Json // PII-free only (assertNoPIIInMetadata enforced in ErasureAuditService)
+  createdAt   DateTime @default(now())
+
+  @@index([subjectHash, createdAt])
+  @@index([action, status])
 }
 
 model PreferenceHistory {
