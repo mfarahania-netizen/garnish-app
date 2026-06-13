@@ -75,3 +75,8 @@
 - **Major phase acceptance requires the related README / status documentation to be updated.** A phase is **not fully accepted** unless its documentation source-of-truth is current.
 - Canonical doc roles: **root `README.md`** = developer overview + current status snapshot · **`docs/README.md`** = documentation index (links only) · **`data/README.md`** = data-layer source of truth · **Master Execution Constitution** = execution source of truth.
 - E47 A1–A7 accepted as **safe gates** (Orchestrator, persistence, chat routing, read-only tools, Gemini provider behind orchestrator, deterministic eval gate, guard hardening, controlled live-smoke gate). **Live Gemini product behavior is NOT enabled.** Docs synced via `DOCS_README_SOURCE_OF_TRUTH_REPORT.md` (2026-06-13).
+
+## E39 / R16 erasure coverage audit — 2026-06-13
+- **Audit COMPLETED — verdict FAIL.** GDPR erasure is structurally broken: `deleteUser` is a bare `prisma.user.delete()`; **4 relations Restrict** (deletion throws) and **12 models carry `userId` with no FK** (orphan leak); **no export endpoint**; **no retention/prune cron**. AICallLog SetNull tombstone is correct; ChatMessage/UserFact Cascade correct.
+- **Fix is REQUIRED before beta/sandbox real users / G1 / external diligence.** R16 stays **OPEN**. Recommended next task: **`E39-1-ERASURE-FIX-ADDITIVE`** (additive FK migration + transactional erasure service + export endpoint + retention crons + tests; gated on approval — no destructive migration).
+- Full matrix + plan: `docs/security/E39_R16_ERASURE_COVERAGE_AUDIT.md`. **UI remains FROZEN; live Gemini remains NOT enabled.**

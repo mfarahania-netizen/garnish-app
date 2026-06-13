@@ -45,7 +45,8 @@
 ## Security
 - [RBAC Route Matrix](security/RBAC_ROUTE_MATRIX.md) ·
   [E1 Secret Incident Status](security/E1_SECRET_INCIDENT_STATUS.md) ·
-  [E1 Secret Purge Runbook](security/E1_secret_purge_runbook.md)
+  [E1 Secret Purge Runbook](security/E1_secret_purge_runbook.md) ·
+  [E39/R16 Erasure Coverage Audit](security/E39_R16_ERASURE_COVERAGE_AUDIT.md) (verdict FAIL — R16 OPEN)
 
 ## QA reports
 - AI eval results: [e47_a6_eval_results.json](qa/ai/e47_a6_eval_results.json) ·
