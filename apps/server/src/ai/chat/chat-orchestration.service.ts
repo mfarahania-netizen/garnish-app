@@ -5,6 +5,7 @@ import { BehavioralContextSnapshotService } from '../context/behavioral-context-
 import { ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
+import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 
 export interface HandleChatInput {
   userId: string;
@@ -15,6 +16,10 @@ export interface HandleChatResult {
   reply: string;
   conversationId: string;
   status: AiCallStatus;
+  /** 'gemini' when the reply is the live, post-guarded model output; otherwise 'deterministic'. */
+  providerMode: 'gemini' | 'deterministic';
+  /** the AICallLog row id for this turn (null if persistence failed). */
+  aiCallLogId: string | null;
 }
 
 const STUB_MODEL = 'stub-model-v0';
@@ -58,6 +63,7 @@ export class ChatOrchestrationService {
     let aiCallLogId: string | null = null;
     let blocked = false;
     let reasons: string[] = [];
+    let modelText: string | null = null;
 
     try {
       const result = await this.orchestrator.run({
@@ -72,6 +78,7 @@ export class ChatOrchestrationService {
       aiCallLogId = result.aiCallLogId;
       blocked = result.blocked;
       reasons = result.reasons;
+      modelText = result.text; // the post-guarded model output (only surfaced when live chat is enabled)
     } catch (err) {
       // The orchestrator fails fast without a valid snapshot — surface it safely (no leak).
       const rejected = err instanceof MissingBehavioralContextError;
@@ -88,15 +95,24 @@ export class ChatOrchestrationService {
         model: STUB_MODEL,
         contentSafetyStatus: status,
       });
-      return { reply, conversationId, status };
+      return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null };
     }
 
+    // E47-A8: surface the LIVE, post-guarded model output ONLY when chat-live is explicitly enabled
+    // (general live flags + chat kill switch) AND the orchestrator returned a safe non-empty answer.
+    // Otherwise fall back to the deterministic rule-based recipe reply (the safe default).
+    const chatLiveEnabled = resolveChatLiveEnabled(process.env);
     let reply: string;
+    let providerMode: 'gemini' | 'deterministic';
     if (blocked || status === 'error') {
       reply = this.safeBlockedReply(status, reasons);
+      providerMode = 'deterministic';
+    } else if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
+      reply = modelText; // live Gemini output, already passed the orchestrator's outbound guards
+      providerMode = 'gemini';
     } else {
-      // safe prompt → deterministic recipe-search reply (rule-based; live Gemini disabled in A3)
       reply = await this.legacyAi.handlePrompt(input.prompt, input.userId);
+      providerMode = 'deterministic';
     }
 
     await this.chatMessages.create({
@@ -109,7 +125,7 @@ export class ChatOrchestrationService {
       aiCallLogId,
     });
 
-    return { reply, conversationId, status };
+    return { reply, conversationId, status, providerMode, aiCallLogId };
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */

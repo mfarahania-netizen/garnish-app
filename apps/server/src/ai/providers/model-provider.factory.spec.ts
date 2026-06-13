@@ -3,9 +3,11 @@ jest.mock('@google/generative-ai', () => ({
   GoogleGenerativeAI: jest.fn().mockImplementation(() => ({ getGenerativeModel: jest.fn() })),
 }));
 
-import { resolveAiProviderConfig, createModelProvider } from './model-provider.factory';
+import { resolveAiProviderConfig, createModelProvider, resolveChatLiveEnabled, isLiveModelConfigured } from './model-provider.factory';
 import { StubModelProvider } from './stub-model.provider';
 import { GeminiModelProvider } from './gemini-model.provider';
+
+const LIVE = { AI_PROVIDER: 'gemini', AI_LIVE_ENABLED: 'true', GEMINI_API_KEY: 'realkey123' } as any;
 
 const silentLogger = { warn: jest.fn(), log: jest.fn() };
 
@@ -47,5 +49,34 @@ describe('model-provider.factory', () => {
     expect(cfg.modelName).toBe('gemini-2.5-flash');
     expect(cfg.provider).toBe('gemini');
     expect(cfg.liveEnabled).toBe(true);
+  });
+
+  describe('resolveChatLiveEnabled (E47-A8 chat-live gate)', () => {
+    it('is FALSE by default (no flags)', () => {
+      expect(isLiveModelConfigured({} as any)).toBe(false);
+      expect(resolveChatLiveEnabled({} as any)).toBe(false);
+    });
+
+    it('is TRUE when general live is configured and no chat override is set', () => {
+      expect(isLiveModelConfigured(LIVE)).toBe(true);
+      expect(resolveChatLiveEnabled(LIVE)).toBe(true);
+    });
+
+    it('is TRUE when general live + AI_CHAT_LIVE_ENABLED=true', () => {
+      expect(resolveChatLiveEnabled({ ...LIVE, AI_CHAT_LIVE_ENABLED: 'true' })).toBe(true);
+    });
+
+    it('KILL SWITCH: FALSE when AI_CHAT_LIVE_ENABLED=false even if general live is on', () => {
+      expect(resolveChatLiveEnabled({ ...LIVE, AI_CHAT_LIVE_ENABLED: 'false' })).toBe(false);
+    });
+
+    it('is FALSE when the key is placeholder/missing, regardless of the chat flag', () => {
+      expect(resolveChatLiveEnabled({ ...LIVE, GEMINI_API_KEY: 'your-gemini-api-key', AI_CHAT_LIVE_ENABLED: 'true' })).toBe(false);
+      expect(resolveChatLiveEnabled({ AI_PROVIDER: 'gemini', AI_LIVE_ENABLED: 'true', AI_CHAT_LIVE_ENABLED: 'true' } as any)).toBe(false);
+    });
+
+    it('is FALSE when AI_LIVE_ENABLED is not true even with the chat flag', () => {
+      expect(resolveChatLiveEnabled({ ...LIVE, AI_LIVE_ENABLED: 'false', AI_CHAT_LIVE_ENABLED: 'true' })).toBe(false);
+    });
   });
 });

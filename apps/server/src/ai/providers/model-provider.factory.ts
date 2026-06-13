@@ -20,6 +20,9 @@ export interface AiProviderConfig {
 const PLACEHOLDER_KEYS = new Set(['', 'your-gemini-api-key', 'changeme', 'placeholder']);
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 
+/** Chat-specific kill switch (E47-A8): an EXTRA gate on top of the general live config. */
+export const CHAT_LIVE_FLAG = 'AI_CHAT_LIVE_ENABLED';
+
 export function resolveAiProviderConfig(env: NodeJS.ProcessEnv = process.env): AiProviderConfig {
   const provider = (env.AI_PROVIDER || 'stub').toLowerCase() === 'gemini' ? 'gemini' : 'stub';
   const liveEnabled = String(env.AI_LIVE_ENABLED ?? '').toLowerCase() === 'true';
@@ -27,6 +30,29 @@ export function resolveAiProviderConfig(env: NodeJS.ProcessEnv = process.env): A
   const apiKey = PLACEHOLDER_KEYS.has(rawKey) ? undefined : rawKey;
   const modelName = env.AI_MODEL_NAME || DEFAULT_MODEL;
   return { provider, liveEnabled, apiKey, modelName };
+}
+
+/** True only when the general live config is satisfied (gemini + live + real key). */
+export function isLiveModelConfigured(env: NodeJS.ProcessEnv = process.env): boolean {
+  const cfg = resolveAiProviderConfig(env);
+  return cfg.provider === 'gemini' && cfg.liveEnabled && !!cfg.apiKey;
+}
+
+/**
+ * Whether LIVE Gemini output may be surfaced in chat (E47-A8).
+ *
+ * SAFE BY DEFAULT: requires the full general live config (AI_PROVIDER=gemini + AI_LIVE_ENABLED=true +
+ * real GEMINI_API_KEY). The chat-specific `AI_CHAT_LIVE_ENABLED` is an additional kill switch:
+ *   - unset/empty → chat follows the general live config;
+ *   - 'false'     → live chat is FORCED OFF even if general live is on (kill switch);
+ *   - 'true'      → allowed (still only if general live is on).
+ * When this returns false, chat uses the deterministic reply and no live output is used.
+ */
+export function resolveChatLiveEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
+  if (!isLiveModelConfigured(env)) return false;
+  const flag = (env[CHAT_LIVE_FLAG] ?? '').trim().toLowerCase();
+  if (flag === '') return true; // no chat-specific override → follow general live
+  return flag === 'true';
 }
 
 export function createModelProvider(

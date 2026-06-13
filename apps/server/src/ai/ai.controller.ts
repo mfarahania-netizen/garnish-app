@@ -13,13 +13,15 @@ export class AiController {
   @Post('chat')
   async chat(@Req() req, @Body() body: { prompt: string; conversationId?: string }) {
     const userId = req.user.userId;
-    // E47-A3: every chat request now routes THROUGH the AI Orchestrator (guards/cost/AICallLog,
-    // mandatory snapshot, stub model). Response keeps `reply` (backward-compatible) + adds conversationId.
-    const { reply, conversationId } = await this.chatOrchestration.handleChat({
+    // E47-A3/A8: every chat request routes THROUGH the AI Orchestrator (mandatory snapshot, guards,
+    // cost, AICallLog). The reply is the LIVE post-guarded model output only when chat-live is
+    // explicitly enabled by env; otherwise it is the deterministic recipe reply (safe default).
+    // Response keeps `reply` + `conversationId` (backward-compatible) and adds safe optional fields.
+    const { reply, conversationId, status, providerMode, aiCallLogId } = await this.chatOrchestration.handleChat({
       userId,
       prompt: body.prompt,
       conversationId: body.conversationId,
     });
-    return { reply, conversationId };
+    return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId };
   }
 }
