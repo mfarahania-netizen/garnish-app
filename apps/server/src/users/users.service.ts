@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { ErasureService } from './erasure/erasure.service';
+import { UserExportService } from './export/user-export.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class UsersService {
   constructor(
     private prisma: PrismaService,
     private readonly erasureService: ErasureService,
+    private readonly userExportService: UserExportService,
   ) {}
 
   async createUser(phone: string, password: string, name?: string) {
@@ -162,5 +164,11 @@ export class UsersService {
   // deletes the user (Cascade + SetNull). Returns a PII-free erasure summary.
   async deleteUser(userId: string) {
     return this.erasureService.eraseUser(userId, { actorType: 'self' });
+  }
+
+  // 🆕 GDPR Art. 20: data portability — export the current user's own data (E39-1D).
+  // Delegated to the dedicated UserExportService. `userId` always comes from the verified JWT.
+  async exportUser(userId: string) {
+    return this.userExportService.exportUser(userId);
   }
 }

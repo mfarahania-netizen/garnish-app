@@ -43,6 +43,14 @@ export class UsersController {
     return this.usersService.grantConsent(req.user.userId, body.type, body.granted);
   }
 
+  // 🆕 GDPR Art. 20: data portability — export the CURRENT user's own data only.
+  // userId is taken from the verified JWT (req.user.userId); no client-supplied id is accepted.
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me/export')
+  async exportMe(@Req() req) {
+    return this.usersService.exportUser(req.user.userId);
+  }
+
   // 🆕 Right to be Forgotten (GDPR)
   @UseGuards(AuthGuard('jwt'))
   @Delete('me')
