@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext';
 import ConsentModal from './components/ConsentModal';
 import { getAnalyticsConsent } from './lib/analytics-init';
 import { I18nProvider } from './i18n/I18nProvider';
+import { garnishTheme } from './theme/garnish-theme';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
@@ -42,12 +43,15 @@ function RouteFallback() {
   );
 }
 
+// GES v1 foundation theme (Phase 1). Adopts garnish-theme (saffron brand, token-bound
+// radius, component defaults, elevation/semantic/z tokens) while PRESERVING — to avoid a
+// Phase-1 page redesign and runtime breakage — the Persian font, the existing heading
+// scale, RTL, and the legacy custom colors (navy/glass/glassNav/accent/tip) that current
+// surfaces still reference. Legacy colors + Vazirmatn-on-Mantine are retired per-surface
+// during the GES migration phases (EN typography lives in tokens.css/base.css).
 const theme = createTheme({
-  primaryColor: 'orange',
+  ...garnishTheme,
   fontFamily: 'Vazirmatn, sans-serif',
-  fontSizes: {
-    xs: '0.75rem', sm: '0.85rem', md: '0.95rem', lg: '1.1rem', xl: '1.25rem',
-  },
   headings: {
     fontFamily: 'Vazirmatn, sans-serif',
     fontWeight: '700',
@@ -60,7 +64,9 @@ const theme = createTheme({
       h6: { fontSize: '0.9rem', lineHeight: '1.5' },
     },
   },
+  dir: 'rtl',
   colors: {
+    ...(garnishTheme.colors || {}),
     navy: virtualColor({
       name: 'navy',
       light: ['#E8EAF6','#C5CAE9','#9FA8DA','#7986CB','#5C6BC0','#3F51B5','#3949AB','#303F9F','#283593','#1A237E'],
@@ -71,7 +77,6 @@ const theme = createTheme({
     accent: virtualColor({ name: 'accent', light: '#1A237E', dark: '#FF6B35' }),
     tip: virtualColor({ name: 'tip', light: '#2e7d32', dark: '#81c784' }),
   },
-  dir: 'rtl',
 });
 
 class ErrorBoundary extends Component {
@@ -167,6 +172,11 @@ function AnalyticsConsentGate() {
 
 function AppInner() {
   const { dark } = useTheme();
+  // GES v1: drive the design-token dark overrides ([data-theme="dark"] in tokens.css)
+  // from the app's existing dark mode, so tokens and Mantine stay in sync.
+  useEffect(() => {
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  }, [dark]);
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} colorScheme={dark ? 'dark' : 'light'}>
