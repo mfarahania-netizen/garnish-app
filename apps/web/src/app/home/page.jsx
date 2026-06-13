@@ -1,16 +1,15 @@
 // src/app/home/page.jsx
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
-  Container, Title, Text, SimpleGrid, Skeleton,
-  Group, Badge, Paper, Button, useMantineColorScheme,
-  Popover, ScrollArea, ActionIcon, Box, Tooltip,
-  Autocomplete, Alert, ThemeIcon
+  Container, Title, Text, SimpleGrid,
+  Group, Badge, Box,
+  Popover, ScrollArea, ActionIcon, Tooltip,
+  Autocomplete
 } from '@mantine/core';
 import {
   IconSearch, IconRobot,
   IconStars, IconMicrophone, IconArrowUp,
-  IconAlertCircle, IconSparkles,
-  IconChefHat, IconArrowRight
+  IconSparkles, IconChefHat, IconArrowRight
 } from '@tabler/icons-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules'; // فقط Autoplay نیاز داریم
@@ -20,19 +19,26 @@ import { useRecipes } from '../../hooks/useRecipes';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import apiClient from '../../lib/apiClient';
 import RecipeCard from '../../components/RecipeCard';
+import {
+  CardShell, SectionHeader, Button,
+  LoadingSkeleton, ErrorState, EmptyState
+} from '../../components/ges';
+import { riseIn, gentleFade, pressResponse, withReducedMotion } from '../../lib/motion';
 
-// حذف import 'swiper/css/effect-fade' چون EffectFade را استفاده نمی‌کنیم
-
+// GES hero banners use a soft saffron-ramp gradient (light stops) with dark
+// brand-900 foreground text. The brand ramp is theme-independent, so pairing it
+// with the (theme-flipping) --g-color-text-inverse token would fail WCAG AA in
+// light mode; brand-900 on brand-100→300 stays ≥5.6:1 in BOTH light and dark.
 const bannerSlides = [
   {
-    bg: 'linear-gradient(135deg, #FF6B35, #D84315)',
+    bg: 'linear-gradient(135deg, var(--g-color-brand-100), var(--g-color-brand-300))',
     title: 'با مواد ساده غذاهای عالی بپز',
     subtitle: 'مواد داخل یخچالت رو وارد کن تا معجزه ببینی',
     icon: '🥘',
     action: '/ai-chat'
   },
   {
-    bg: 'linear-gradient(135deg, #1A237E, #3949AB)',
+    bg: 'linear-gradient(135deg, var(--g-color-brand-200), var(--g-color-brand-300))',
     title: 'دستور پخت‌های جدید هر هفته',
     subtitle: 'هر هفته ۱۰ رسپی جدید و خوشمزه',
     icon: '🔥',
@@ -53,15 +59,6 @@ const CATEGORY_EMOJIS = {
   'کباب': '🍢', 'خورشت': '🥘', 'پلو': '🍚', 'آش': '🍜',
   'غذای ساده و فوری': '⚡', 'دلمه': '🫔', 'سالاد': '🥗',
   'دسر': '🍰', 'نوشیدنی': '🍹',
-};
-
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: 'easeOut' }
-  })
 };
 
 function applyChipFilters(recipes, activeChips) {
@@ -110,8 +107,6 @@ export default function HomePage() {
   const isError = !!error;
 
   const navigate = useNavigate();
-  const { colorScheme } = useMantineColorScheme();
-  const dark = colorScheme === 'dark';
 
   const handleWindowScroll = useCallback(() => {
     if (scrollEventFired.current) return;
@@ -222,14 +217,12 @@ export default function HomePage() {
     return recipes[seed % recipes.length];
   }, [recipes]);
 
-  const textColor = dark ? '#ffffff' : '#1A237E';
-  const mutedText = dark ? '#a0a0b0' : '#555';
-  // ⚡ مطمئن شو پس‌زمینه کارت‌ها در dark mode کاملاً opaque دیده شود
-  const cardBg = dark ? 'rgba(30,30,40,1)' : 'rgba(255,255,255,0.9)';
-  const cardShadow = dark ? '0 4px 12px rgba(0,0,0,0.6)' : '0 4px 20px rgba(0,0,0,0.05)';
-  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.06)';
-  const accent = '#FF6B35';
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // فعال‌سازی با کیبورد برای سطوح کلیک‌پذیرِ غیر-دکمه (دسترسی‌پذیری WCAG 2.1.1)
+  const onKeyActivate = (fn) => (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); }
+  };
 
   // آماده‌سازی داده‌های تب‌ها
   const quickRecipes = useMemo(() => recipes?.filter(r => {
@@ -248,11 +241,8 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
-        <Skeleton height={200} radius="xl" mb="md" />
-        <Skeleton height={30} width="60%" mb="sm" />
-        <SimpleGrid cols={1} spacing="sm">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} height={180} radius="xl" />)}
-        </SimpleGrid>
+        <Box mb="md"><LoadingSkeleton shape="media" label="در حال بارگذاری" /></Box>
+        <LoadingSkeleton shape="list" lines={3} label="در حال بارگذاری رسپی‌ها" />
       </Container>
     );
   }
@@ -260,9 +250,13 @@ export default function HomePage() {
   if (isError) {
     return (
       <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
-        <Alert icon={<IconAlertCircle size={16} />} title="خطا در بارگذاری" color="red" radius="lg">
-          {error?.message || 'متأسفانه در دریافت رسپی‌ها مشکلی پیش اومد.'}
-        </Alert>
+        <ErrorState
+          variant="section"
+          title="خطا در بارگذاری"
+          message={error?.message || 'متأسفانه در دریافت رسپی‌ها مشکلی پیش اومد.'}
+          retryLabel="تلاش دوباره"
+          onRetry={() => window.location.reload()}
+        />
       </Container>
     );
   }
@@ -270,32 +264,35 @@ export default function HomePage() {
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 120px' }}>
       {/* هدر ساده و مدرن */}
-      <motion.div initial="hidden" animate="visible" variants={fadeInUp} custom={0} style={{ marginBottom: 20, marginTop: 8 }}>
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 20, marginTop: 8 }}>
         <Group justify="space-between" align="center">
           <div>
             <Group gap={8}>
-              <IconChefHat size={28} color={accent} />
-              <Title order={3} c={textColor} style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Garnish OS</Title>
+              <IconChefHat size={28} color="var(--g-color-brand-600)" />
+              <Title order={3} c="var(--g-color-text-primary)" style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Garnish OS</Title>
             </Group>
-            <Text size="sm" c={mutedText}>دستیار هوشمند تغذیه و آشپزی شما</Text>
+            <Text size="sm" c="var(--g-color-text-secondary)">دستیار هوشمند تغذیه و آشپزی شما</Text>
           </div>
         </Group>
       </motion.div>
 
-      {/* بنر اسلایدر (بدون EffectFade و loop) */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Box mb={24} style={{ borderRadius: 24, overflow: 'hidden', boxShadow: cardShadow }}>
+      {/* بنر اسلایدر */}
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
+        <Box mb={24} style={{ borderRadius: 'var(--g-radius-card)', overflow: 'hidden', boxShadow: 'var(--g-shadow-2)' }}>
           <Swiper
             modules={[Autoplay]}
             autoplay={{ delay: 5000 }}
-            style={{ borderRadius: 24, backgroundColor: dark ? '#1e1e2f' : '#fff' }}
+            style={{ borderRadius: 'var(--g-radius-card)', backgroundColor: 'var(--g-color-bg-surface)' }}
           >
             {bannerSlides.map((slide) => (
               <SwiperSlide key={slide.action}>
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  {...pressResponse}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={slide.title}
                   onClick={() => { navigate(slide.action); trackEvent('banner_click', { action: slide.action }); }}
+                  onKeyDown={onKeyActivate(() => { navigate(slide.action); trackEvent('banner_click', { action: slide.action }); })}
                   style={{
                     background: slide.bg,
                     height: 200,
@@ -303,7 +300,7 @@ export default function HomePage() {
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'white',
+                    color: 'var(--g-color-brand-900)',
                     textAlign: 'center',
                     padding: '16px 24px',
                     cursor: 'pointer'
@@ -311,7 +308,7 @@ export default function HomePage() {
                 >
                   <Text size={48} mb={12}>{slide.icon}</Text>
                   <Text size={20} fw={800} mb={6}>{slide.title}</Text>
-                  <Text size={14} opacity={0.9}>{slide.subtitle}</Text>
+                  <Text size={14}>{slide.subtitle}</Text>
                 </motion.div>
               </SwiperSlide>
             ))}
@@ -320,7 +317,7 @@ export default function HomePage() {
       </motion.div>
 
       {/* جستجوی سرور-محور */}
-      <motion.div variants={fadeInUp} custom={1} initial="hidden" animate="visible">
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <Group gap="xs" mb="md">
           <Popover opened={searchOpen} onChange={setSearchOpen} width="target" position="bottom" shadow="md" style={{ flex: 1 }}>
             <Popover.Target>
@@ -335,24 +332,22 @@ export default function HomePage() {
                 styles={{
                   input: {
                     textAlign: 'right',
-                    backgroundColor: dark ? 'rgba(30,30,40,0.9)' : 'rgba(255,255,255,0.9)',
-                    backdropFilter: 'blur(12px)',
-                    border: `1px solid ${borderColor}`,
+                    backgroundColor: 'var(--g-color-bg-surface)',
+                    border: '1px solid var(--g-color-border-subtle)',
                     height: 52,
                     fontSize: 16,
-                    borderRadius: 26,
-                    transition: 'border-color 0.2s, box-shadow 0.2s',
-                    '&:focus': { borderColor: accent, boxShadow: `0 0 0 3px ${accent}30` },
+                    borderRadius: 'var(--g-radius-chip)',
+                    '&:focus': { borderColor: 'var(--g-color-brand-600)', boxShadow: 'var(--g-focus-ring)' },
                   },
                 }}
               />
             </Popover.Target>
             {filteredSearchResults.length > 0 && (
-              <Popover.Dropdown p={0} style={{ borderRadius: 16, overflow: 'hidden' }}>
+              <Popover.Dropdown p={0} style={{ borderRadius: 'var(--g-radius-card)', overflow: 'hidden' }}>
                 <ScrollArea.Autosize mah={250}>
                   {filteredSearchResults.map((recipe) => (
                     <motion.div key={recipe.id}
-                      whileHover={{ backgroundColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(255,107,53,0.06)' }}
+                      {...pressResponse}
                       onClick={() => {
                         navigate(`/recipe/${recipe.id}`);
                         setSearchOpen(false);
@@ -364,11 +359,11 @@ export default function HomePage() {
                       <Text size="xl">🍽️</Text>
                       <div style={{ flex: 1 }}>
                         <Text size="sm" fw={600}>{recipe.title}</Text>
-                        <Text size="xs" c="dimmed">
+                        <Text size="xs" c="var(--g-color-text-muted)">
                           {(recipe.ingredients || []).slice(0, 2).map(i => i.name).join('، ')}
                         </Text>
                       </div>
-                      <Badge variant="light" color="orange" size="sm" radius="xl">{recipe.cookingTime ? `${recipe.cookingTime} دقیقه` : ''}</Badge>
+                      <Badge variant="light" color="saffron" size="sm" radius="xl">{recipe.cookingTime ? `${recipe.cookingTime} دقیقه` : ''}</Badge>
                     </motion.div>
                   ))}
                 </ScrollArea.Autosize>
@@ -378,7 +373,7 @@ export default function HomePage() {
           <Tooltip label={voiceSupported ? 'جستجوی صوتی' : 'مرورگر شما پشتیبانی نمی‌کند'}>
             <ActionIcon variant="light" color="gray" size={52} radius="xl"
               onClick={handleVoiceSearch} disabled={!voiceSupported}
-              style={{ border: `1px solid ${borderColor}` }}
+              style={{ border: '1px solid var(--g-color-border-subtle)' }}
             >
               <IconMicrophone size={22} />
             </ActionIcon>
@@ -387,29 +382,32 @@ export default function HomePage() {
       </motion.div>
 
       {/* فیلتر چیپس */}
-      <motion.div variants={fadeInUp} custom={2} initial="hidden" animate="visible">
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <ScrollArea type="never" mb="lg">
           <Group gap="xs" wrap="nowrap">
             {FILTER_CHIPS.map(chip => {
               const isActive = activeChips.includes(chip.key);
               return (
-                <motion.div key={chip.key} whileTap={{ scale: 0.95 }}>
+                <motion.div key={chip.key} {...pressResponse}>
                   <Badge
                     variant={isActive ? 'filled' : 'outline'}
-                    color={isActive ? 'orange' : 'gray'}
                     size="lg"
                     radius="xl"
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isActive}
+                    aria-label={chip.label}
                     style={{
                       cursor: 'pointer',
                       flexShrink: 0,
-                      transition: 'all 0.2s',
                       padding: '8px 18px',
                       fontWeight: 500,
-                      backgroundColor: isActive ? accent : 'transparent',
-                      color: isActive ? 'white' : mutedText,
-                      border: `1px solid ${isActive ? accent : borderColor}`
+                      backgroundColor: isActive ? 'var(--g-color-brand-600)' : 'transparent',
+                      color: isActive ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)',
+                      border: `1px solid ${isActive ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`
                     }}
                     onClick={() => handleFilterToggle(chip.key, isActive)}
+                    onKeyDown={onKeyActivate(() => handleFilterToggle(chip.key, isActive))}
                   >
                     {chip.label}
                   </Badge>
@@ -422,29 +420,17 @@ export default function HomePage() {
 
       {/* غذای ویژه امروز (کارت بزرگ) */}
       {todaySpecial && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} whileHover={{ y: -4 }}>
-          <Paper
-            p="lg"
-            radius="xl"
-            mb="lg"
-            style={{
-              background: dark
-                ? 'linear-gradient(135deg, #2c2c3a, #1e1e2f)'
-                : 'linear-gradient(135deg, #fff5f0, #ffffff)',
-              cursor: 'pointer',
-              position: 'relative',
-              overflow: 'hidden',
-              border: `1px solid ${accent}40`,
-              boxShadow: `0 8px 24px ${accent}20`,
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onClick={() => { navigate(`/recipe/${todaySpecial.id}`); trackEvent('today_special_click', { recipeId: todaySpecial.id }); }}
-          >
+        <motion.div
+          variants={withReducedMotion(riseIn)} initial="initial" animate="animate" {...pressResponse}
+          onClick={() => { navigate(`/recipe/${todaySpecial.id}`); trackEvent('today_special_click', { recipeId: todaySpecial.id }); }}
+          style={{ marginBottom: 'var(--g-space-5)', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
+        >
+          <CardShell>
             <Group justify="space-between" wrap="nowrap" align="flex-start">
               <div>
                 <Badge
-                  variant="gradient"
-                  gradient={{ from: 'orange', to: 'red' }}
+                  variant="filled"
+                  color="saffron"
                   size="sm"
                   mb="xs"
                   leftSection={<IconStars size={14} />}
@@ -452,17 +438,14 @@ export default function HomePage() {
                 >
                   پیشنهاد سرآشپز امروز
                 </Badge>
-                <Title order={3} c={dark ? '#fff' : '#1A237E'} mb="xs">{todaySpecial.title}</Title>
-                <Text size="xs" c={mutedText} mb="md">
+                <Title order={3} c="var(--g-color-text-primary)" mb="xs">{todaySpecial.title}</Title>
+                <Text size="xs" c="var(--g-color-text-secondary)" mb="md">
                   {todaySpecial.cook_time ? `⏱ ${todaySpecial.cook_time}` : ''}
                   {todaySpecial.difficulty ? `  •  📊 ${todaySpecial.difficulty}` : ''}
                 </Text>
                 <Button
-                  variant="outline"
-                  color="orange"
-                  radius="xl"
-                  size="sm"
-                  rightSection={<IconArrowRight size={16} />}
+                  variant="secondary"
+                  leftIcon={<IconArrowRight size={16} />}
                   onClick={(e) => { e.stopPropagation(); navigate(`/recipe/${todaySpecial.id}`); }}
                 >
                   دیدن رسپی
@@ -472,34 +455,19 @@ export default function HomePage() {
                 🍽️
               </Text>
             </Group>
-          </Paper>
+          </CardShell>
         </motion.div>
       )}
 
       {/* پیشنهادهای ویژه برای شما (در صورت وجود توکن) */}
       {!recsLoading && recommendations.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Paper
-            p="md"
-            radius="xl"
-            mb="lg"
-            style={{
-              background: dark
-                ? 'linear-gradient(135deg, #2c2c3a, #1e1e2f)'
-                : 'linear-gradient(135deg, #f0f4ff, #ffffff)',
-              border: `1px solid ${accent}30`,
-              boxShadow: cardShadow,
-            }}
-          >
-            <Group justify="space-between" mb="sm">
-              <Group gap="xs">
-                <ThemeIcon variant="gradient" gradient={{ from: 'violet', to: 'blue' }} size={28} radius="md">
-                  <IconSparkles size={16} />
-                </ThemeIcon>
-                <Title order={5} c={textColor}>پیشنهادهای ویژه برای شما</Title>
-              </Group>
-              <Badge variant="light" color="violet" size="sm" radius="xl">شخصی‌سازی شده</Badge>
-            </Group>
+        <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 'var(--g-space-5)' }}>
+          <CardShell>
+            <SectionHeader
+              as="h2"
+              title="پیشنهادهای ویژه برای شما"
+              action={<Badge variant="light" color="saffron" size="sm" radius="xl">شخصی‌سازی شده</Badge>}
+            />
             <SimpleGrid cols={1} spacing="sm">
               {recommendations.slice(0, 4).map(rec => {
                 const adaptedRecipe = { ...rec, id: rec.recipeId || rec.id };
@@ -515,91 +483,67 @@ export default function HomePage() {
                 );
               })}
             </SimpleGrid>
-          </Paper>
+          </CardShell>
         </motion.div>
       )}
 
-      {/* دسته‌بندی‌ها – اصلاح شده برای دیده شدن قطعی */}
-      <motion.div variants={fadeInUp} custom={3} initial="hidden" animate="visible">
+      {/* دسته‌بندی‌ها */}
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <Box mb="xl">
-          <Title order={5} c={textColor} mb="sm">📂 دسته‌بندی‌ها</Title>
-          <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start', visibility: 'visible' }}>
+          <SectionHeader as="h2" title="📂 دسته‌بندی‌ها" />
+          <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start' }}>
             {TOP_CATEGORIES.map((cat) => (
-              <motion.div
+              <CardShell
                 key={cat}
-                whileHover={{ y: -5, boxShadow: '0 8px 20px rgba(0,0,0,0.15)' }}
-                whileTap={{ scale: 0.96 }}
+                interactive
                 onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }}
-                style={{
-                  background: cardBg,
-                  backdropFilter: 'blur(12px)',
-                  borderRadius: 18,
-                  padding: '16px 4px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  boxShadow: cardShadow,
-                  border: `1px solid ${borderColor}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  minHeight: 80,              // تضمین ارتفاع قابل مشاهده
-                  position: 'relative',
-                  zIndex: 1,
-                  visibility: 'visible'       // احتیاط اضافی
-                }}
               >
-                <Text size={30} style={{ lineHeight: 1.2 }}>{CATEGORY_EMOJIS[cat] || '🍽️'}</Text>
-                <Text size="xs" fw={600} c={dark ? 'gray.3' : 'dark.7'} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                  {cat}
-                </Text>
-              </motion.div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 80, textAlign: 'center' }}>
+                  <Text size={30} style={{ lineHeight: 1.2 }}>{CATEGORY_EMOJIS[cat] || '🍽️'}</Text>
+                  <Text size="xs" fw={600} c="var(--g-color-text-primary)" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                    {cat}
+                  </Text>
+                </div>
+              </CardShell>
             ))}
           </SimpleGrid>
         </Box>
       </motion.div>
 
-      {/* هوش مصنوعی */}
-      <motion.div
-        whileHover={{ scale: 1.02, boxShadow: '0 8px 25px rgba(255,107,53,0.4)' }}
-        whileTap={{ scale: 0.98 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <Paper
-          shadow="md"
-          p="lg"
-          radius="xl"
+      {/* هوش مصنوعی — سطح AI طبق توکن‌های GES */}
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" {...pressResponse}>
+        <Box
           mb="xl"
-          style={{
-            background: 'linear-gradient(135deg, #1A237E, #3949AB)',
-            color: 'white',
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
+          role="button"
+          tabIndex={0}
+          aria-label="با مواد یخچال چی بپزم؟ — دستیار هوش مصنوعی"
           onClick={() => { navigate('/ai-chat'); trackEvent('ai_chat_button_click'); }}
+          onKeyDown={onKeyActivate(() => { navigate('/ai-chat'); trackEvent('ai_chat_button_click'); })}
+          style={{
+            background: 'var(--g-color-ai-surface)',
+            border: 'var(--g-border-ai)',
+            borderRadius: 'var(--g-radius-card)',
+            boxShadow: 'var(--g-shadow-1)',
+            padding: 'var(--g-space-5)',
+            cursor: 'pointer',
+          }}
         >
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-          <Group justify="space-between" wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
+          <Group justify="space-between" wrap="nowrap">
             <div>
               <Group gap="xs" mb={6}>
-                <IconSparkles size={24} color="#FFD166" />
-                <Text fw={700} size="lg">با مواد یخچال چی بپزم؟</Text>
+                <IconSparkles size={24} color="var(--g-color-brand-600)" />
+                <Text fw={700} size="lg" c="var(--g-color-text-primary)">با مواد یخچال چی بپزم؟</Text>
               </Group>
-              <Text size="sm" opacity={0.9}>از دستیار هوش مصنوعی بپرس…</Text>
+              <Text size="sm" c="var(--g-color-text-secondary)">از دستیار هوش مصنوعی بپرس…</Text>
             </div>
-            <IconRobot size={56} opacity={0.9} />
+            <IconRobot size={56} color="var(--g-color-brand-600)" opacity={0.9} />
           </Group>
-        </Paper>
+        </Box>
       </motion.div>
 
       {/* تب‌ها برای رسپی‌ها */}
-      <motion.div variants={fadeInUp} custom={4} initial="hidden" animate="visible">
-        <Group mb="md" style={{ gap: 4 }}>
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
+        <Group mb="md" gap="xs">
           {[
             { key: 'all', label: 'همه رسپی‌ها' },
             { key: 'quick', label: 'سریع و آسان' },
@@ -607,55 +551,54 @@ export default function HomePage() {
           ].map(tab => (
             <Button
               key={tab.key}
-              variant={activeTab === tab.key ? 'filled' : 'outline'}
-              color={activeTab === tab.key ? 'orange' : 'gray'}
-              size="sm"
-              radius="xl"
+              variant={activeTab === tab.key ? 'primary' : 'ghost'}
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
             </Button>
           ))}
         </Group>
-        <SimpleGrid cols={1} spacing="sm" mb="lg">
-          {tabRecipes.slice(0, 4).map(recipe => (
-            <RecipeCard key={recipe.id} recipe={recipe} onClick={() => { navigate(`/recipe/${recipe.id}`); trackEvent('recipe_view', { recipeId: recipe.id }); }} />
-          ))}
-        </SimpleGrid>
+        {tabRecipes.length === 0 ? (
+          <EmptyState
+            title="رسپی‌ای پیدا نشد"
+            message="با این فیلترها رسپی‌ای پیدا نشد. فیلترها را تغییر بده یا پاک کن."
+            actionLabel="پاک کردن فیلترها"
+            onAction={() => { setActiveChips([]); setActiveTab('all'); }}
+          />
+        ) : (
+          <SimpleGrid cols={1} spacing="sm" mb="lg">
+            {tabRecipes.slice(0, 4).map(recipe => (
+              <RecipeCard key={recipe.id} recipe={recipe} onClick={() => { navigate(`/recipe/${recipe.id}`); trackEvent('recipe_view', { recipeId: recipe.id }); }} />
+            ))}
+          </SimpleGrid>
+        )}
         {total > 4 && (
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              variant="gradient"
-              gradient={{ from: 'orange', to: 'red' }}
-              fullWidth
-              size="lg"
-              radius="xl"
-              onClick={() => { navigate('/recipes'); trackEvent('view_all_recipes_click'); }}
-              rightSection={<IconArrowRight size={20} />}
-              styles={{
-                root: { height: 52, fontSize: 16, boxShadow: '0 6px 15px rgba(255,107,53,0.4)' }
-              }}
-            >
-              مشاهده همه رسپی‌ها ({total} رسپی)
-            </Button>
-          </motion.div>
+          <Button
+            variant="primary"
+            fullWidth
+            leftIcon={<IconArrowRight size={20} />}
+            onClick={() => { navigate('/recipes'); trackEvent('view_all_recipes_click'); }}
+          >
+            مشاهده همه رسپی‌ها ({total} رسپی)
+          </Button>
         )}
       </motion.div>
 
       {/* دکمه اسکرول به بالا */}
       <AnimatePresence>
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          style={{ position: 'fixed', bottom: 100, right: 16, zIndex: 50 }}
+          variants={withReducedMotion(gentleFade)}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          style={{ position: 'fixed', bottom: 100, right: 16, zIndex: 'var(--g-z-sticky)' }}
         >
           <ActionIcon
             variant="filled"
-            color="orange"
+            color="saffron"
             size="xl"
             radius="xl"
-            style={{ boxShadow: '0 6px 16px rgba(255,107,53,0.5)' }}
+            style={{ boxShadow: 'var(--g-shadow-2)' }}
             onClick={scrollToTop}
           >
             <IconArrowUp size={22} />
