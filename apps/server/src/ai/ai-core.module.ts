@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AI_MODEL_PROVIDER } from './ai-core.types';
-import { StubModelProvider } from './model/stub-model-provider';
+import { createModelProvider, resolveAiProviderConfig } from './providers/model-provider.factory';
 import { AiOrchestratorService } from './orchestrator/ai-orchestrator.service';
 import { ToolRegistryService } from './tools/tool-registry.service';
 import { BehavioralContextSnapshotService } from './context/behavioral-context-snapshot.service';
@@ -45,7 +45,7 @@ import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
     ExplainRecommendationTool,
     GetUserFoodContextTool,
     LogAiFeedbackTool,
-    { provide: AI_MODEL_PROVIDER, useClass: StubModelProvider },
+    { provide: AI_MODEL_PROVIDER, useFactory: () => createModelProvider(resolveAiProviderConfig()) },
   ],
   exports: [
     AiOrchestratorService,
