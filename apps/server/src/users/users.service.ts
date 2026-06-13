@@ -2,11 +2,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { ErasureService } from './erasure/erasure.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly erasureService: ErasureService,
+  ) {}
 
   async createUser(phone: string, password: string, name?: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -152,8 +156,11 @@ export class UsersService {
     });
   }
 
-  // 🆕 GDPR: Right to be Forgotten
+  // 🆕 GDPR: Right to be Forgotten — delegated to the transactional ErasureService (E39-1C).
+  // The bare `prisma.user.delete()` is replaced by a safe transaction that revokes sessions,
+  // scrubs residual PII on audit-long records, writes a PII-free ErasureEvent proof, then
+  // deletes the user (Cascade + SetNull). Returns a PII-free erasure summary.
   async deleteUser(userId: string) {
-    return this.prisma.user.delete({ where: { id: userId } });
+    return this.erasureService.eraseUser(userId, { actorType: 'self' });
   }
 }
