@@ -12,6 +12,7 @@ import {
   IconHeart
 } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { gentleFade, pressResponse, duration, ease } from '../lib/motion';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from '../features/notifications/components/NotificationBell';
 import NotificationPopover from '../features/notifications/components/NotificationPopover';
@@ -50,10 +51,10 @@ export default function MainLayout() {
     close();
   };
 
-  // رنگ‌های داینامیک برای سایدبار و نوارها
-  const sidebarBg = dark ? '#1A1B1E' : '#ffffff';
-  const sidebarBorder = dark ? '#2C2E33' : '#f0f0f0';
-  const overlayColor = dark ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.3)';
+  // GES tokens — dark handled by [data-theme="dark"] in tokens.css (no JS color conditionals).
+  const sidebarBg = 'var(--g-color-bg-surface)';
+  const sidebarBorder = 'var(--g-color-border-subtle)';
+  const overlayColor = 'var(--g-scrim-photo)'; // proposal: a flat scrim token would suit full overlays better
 
   const menuGroups = [
     {
@@ -126,28 +127,28 @@ export default function MainLayout() {
         {opened && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              variants={gentleFade}
+              initial="initial"
+              animate="animate"
+              exit="exit"
               onClick={close}
               style={{
                 position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                backgroundColor: overlayColor, zIndex: 999
+                backgroundColor: overlayColor, zIndex: 'var(--g-z-overlay)'
               }}
             />
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.3 }}
+              transition={{ type: 'tween', duration: duration.slow, ease: ease.enter }}
               style={{
                 position: 'fixed', top: 0, bottom: 0, right: 0,
                 width: '75%', maxWidth: 320,
                 backgroundColor: sidebarBg,
-                boxShadow: dark ? '-8px 0 30px rgba(0,0,0,0.5)' : '-8px 0 30px rgba(0,0,0,0.15)',
-                borderRadius: '20px 0 0 20px',
-                zIndex: 1000, overflowY: 'auto', direction: 'rtl',
+                boxShadow: 'var(--g-shadow-3)',
+                borderRadius: 'var(--g-radius-sheet) 0 0 var(--g-radius-sheet)',
+                zIndex: 'var(--g-z-sheet)', overflowY: 'auto', direction: 'rtl',
                 borderLeft: `1px solid ${sidebarBorder}`
               }}
             >
@@ -160,7 +161,7 @@ export default function MainLayout() {
                 </Group>
                 {user && (
                   <Group mt="md" gap="sm">
-                    <Avatar color="orange" radius="xl" size="sm">{user.name?.charAt(0)}</Avatar>
+                    <Avatar color="saffron" radius="xl" size="sm">{user.name?.charAt(0)}</Avatar>
                     <Text size="sm" fw={500} c={dark ? 'gray.4' : 'dark'}>{user.name}</Text>
                   </Group>
                 )}
@@ -175,19 +176,13 @@ export default function MainLayout() {
                         key={item.label}
                         label={item.label}
                         leftSection={item.icon}
-                        rightSection={activeTab === item.tab ? <IconChevronRight size={16} color="orange" /> : null}
+                        rightSection={activeTab === item.tab ? <IconChevronRight size={16} color="saffron" /> : null}
                         active={activeTab === item.tab}
                         onClick={() => handleNavigate(item.path, item.tab)}
                         variant="light"
-                        color="orange"
-                        style={{
-                          borderRadius: 8, marginBottom: 4,
-                          backgroundColor: activeTab === item.tab ? 'rgba(255,107,53,0.08)' : 'transparent',
-                        }}
-                        styles={{
-                          label: { fontSize: 14, fontWeight: 500 },
-                          root: { '&:hover': { backgroundColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' } }
-                        }}
+                        color="saffron"
+                        style={{ borderRadius: 'var(--g-radius-input)', marginBottom: 'var(--g-space-1)' }}
+                        styles={{ label: { fontSize: 'var(--g-font-size-14)', fontWeight: 500 } }}
                       />
                     ))}
                   </Box>
@@ -200,11 +195,8 @@ export default function MainLayout() {
                   leftSection={dark ? <IconSun size={20} /> : <IconMoon size={20} />}
                   onClick={toggleColorScheme}
                   variant="subtle"
-                  style={{ borderRadius: 8, marginBottom: 8 }}
-                  styles={{
-                    label: { fontSize: 14 },
-                    root: { '&:hover': { backgroundColor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' } }
-                  }}
+                  style={{ borderRadius: 'var(--g-radius-input)', marginBottom: 'var(--g-space-2)' }}
+                  styles={{ label: { fontSize: 'var(--g-font-size-14)' } }}
                 />
 
                 <Divider my="sm" color={sidebarBorder} />
@@ -216,11 +208,8 @@ export default function MainLayout() {
                     onClick={handleLogout}
                     variant="subtle"
                     color="red"
-                    style={{ borderRadius: 8 }}
-                    styles={{
-                      label: { fontSize: 14 },
-                      root: { '&:hover': { backgroundColor: dark ? 'rgba(255,0,0,0.1)' : 'rgba(255,0,0,0.05)' } }
-                    }}
+                    style={{ borderRadius: 'var(--g-radius-input)' }}
+                    styles={{ label: { fontSize: 'var(--g-font-size-14)' } }}
                   />
                 ) : (
                   <NavLink
@@ -228,9 +217,9 @@ export default function MainLayout() {
                     leftSection={<IconLogin size={20} />}
                     onClick={() => { navigate('/auth'); close(); }}
                     variant="light"
-                    color="orange"
-                    style={{ borderRadius: 8 }}
-                    styles={{ label: { fontSize: 14 } }}
+                    color="saffron"
+                    style={{ borderRadius: 'var(--g-radius-input)' }}
+                    styles={{ label: { fontSize: 'var(--g-font-size-14)' } }}
                   />
                 )}
               </Box>
@@ -240,23 +229,22 @@ export default function MainLayout() {
       </AnimatePresence>
 
       {/* ===== نوار پایین (BottomNav) ===== */}
-      <div className="glass-nav" style={{
+      <div className="glass-nav g-safe-bottom" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, maxWidth: 420,
         margin: '0 auto', display: 'flex', justifyContent: 'space-around',
-        padding: '8px 0 16px', zIndex: 10,
-        backgroundColor: dark ? 'rgba(26,27,30,0.85)' : 'rgba(255,255,255,0.85)',
+        paddingTop: 'var(--g-space-2)', zIndex: 'var(--g-z-shelf)',
+        backgroundColor: 'var(--g-color-bg-surface)',
         backdropFilter: 'blur(10px)',
-        borderTop: `1px solid ${dark ? '#2C2E33' : '#f0f0f0'}`
+        borderTop: '1px solid var(--g-color-border-subtle)'
       }}>
         {bottomTabs.map(item => (
           <motion.div
             key={item.tab}
-            whileTap={{ scale: 0.9 }}
+            {...pressResponse}
             onClick={() => navigate(item.path)}
             style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer',
-              color: activeTab === item.tab ? '#FF6B35' : (dark ? '#909296' : '#1A237E'),
-              transition: 'color 0.2s'
+              color: activeTab === item.tab ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)',
             }}
           >
             {item.icon}
