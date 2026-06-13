@@ -34,6 +34,8 @@ export interface ModelUsage {
   promptTokens?: number;
   completionTokens?: number;
   totalTokens?: number;
+  /** E47-A10A: provenance of the token counts — 'provider' (real metadata) or 'estimated'. */
+  source?: 'provider' | 'estimated';
 }
 export interface ModelGenerateResult {
   text: string;

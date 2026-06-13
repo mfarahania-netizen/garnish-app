@@ -27,14 +27,26 @@ export class GeminiModelProvider implements ModelProvider {
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       const usage = result.response.usageMetadata;
+      // E47-A10A: tag provenance — 'provider' when the SDK returned real usage metadata, else 'estimated'.
+      const hasProviderUsage = !!usage && (usage.promptTokenCount != null || usage.totalTokenCount != null);
+      const estTotal = Math.max(1, Math.ceil((prompt.length + (text?.length ?? 0)) / 4));
       return {
         text,
         model: this.modelName,
-        usage: {
-          promptTokens: usage?.promptTokenCount,
-          completionTokens: usage?.candidatesTokenCount,
-          totalTokens: usage?.totalTokenCount,
-        },
+        usage: hasProviderUsage
+          ? {
+              promptTokens: usage?.promptTokenCount,
+              completionTokens: usage?.candidatesTokenCount,
+              totalTokens: usage?.totalTokenCount,
+              source: 'provider',
+            }
+          : {
+              // SDK gave no usage metadata → conservative estimate, clearly marked estimated.
+              promptTokens: Math.max(1, Math.ceil(prompt.length / 4)),
+              completionTokens: Math.max(0, Math.ceil((text?.length ?? 0) / 4)),
+              totalTokens: estTotal,
+              source: 'estimated',
+            },
       };
     } catch (err) {
       throw new Error(this.sanitize(err));

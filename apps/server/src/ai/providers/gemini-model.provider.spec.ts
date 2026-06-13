@@ -25,7 +25,8 @@ describe('GeminiModelProvider (mocked SDK — no live API)', () => {
     expect(provider.name).toBe('gemini');
     expect(result.text).toBe('یک پلوی زعفرانی ساده');
     expect(result.model).toBe('gemini-2.5-flash');
-    expect(result.usage).toEqual({ promptTokens: 10, completionTokens: 20, totalTokens: 30 });
+    // E47-A10A: usage now carries provenance — 'provider' when the SDK returned real usageMetadata.
+    expect(result.usage).toEqual({ promptTokens: 10, completionTokens: 20, totalTokens: 30, source: 'provider' });
     expect(mockGetGenerativeModel).toHaveBeenCalledWith({ model: 'gemini-2.5-flash' });
   });
 

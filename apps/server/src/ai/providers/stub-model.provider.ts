@@ -14,7 +14,8 @@ export class StubModelProvider implements ModelProvider {
     return {
       text: `[stub-model] acknowledged ${input.prompt?.length ?? 0} chars; no live model.`,
       model: 'stub-model-v0',
-      usage: { promptTokens: totalTokens, completionTokens: 0, totalTokens },
+      // Synthetic counts → always 'estimated' (the stub makes no real model call).
+      usage: { promptTokens: totalTokens, completionTokens: 0, totalTokens, source: 'estimated' },
     };
   }
 }

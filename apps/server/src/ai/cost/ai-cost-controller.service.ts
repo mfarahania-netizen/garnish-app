@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PER_REQUEST_MAX_TOKENS, PER_USER_DAILY_MAX_TOKENS } from './ai-cost-policy';
 
 export interface CostCheckInput {
   userId: string;
@@ -13,8 +14,9 @@ export interface CostLimits {
   perUserTokenLimit?: number;
 }
 
-const DEFAULT_PER_CALL_TOKEN_LIMIT = 8000;
-const DEFAULT_PER_USER_TOKEN_LIMIT = 200000;
+// Defaults sourced from the AI cost policy (single source of truth — E47-A10A).
+const DEFAULT_PER_CALL_TOKEN_LIMIT = PER_REQUEST_MAX_TOKENS;
+const DEFAULT_PER_USER_TOKEN_LIMIT = PER_USER_DAILY_MAX_TOKENS;
 
 /**
  * AI Cost Controller (E47-A1).

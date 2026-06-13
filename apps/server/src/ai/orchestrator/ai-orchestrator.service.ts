@@ -13,6 +13,7 @@ import { NutritionClaimGuardService } from '../guards/nutrition-claim.guard';
 import { AiCostControllerService } from '../cost/ai-cost-controller.service';
 import { AiCallLogService } from '../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
+import { resolveAiCostPolicy, estimateCostUsd, AI_COST_SCHEMA_VERSION, UsageSource } from '../cost/ai-cost-policy';
 
 /**
  * AI Orchestrator (E47-A1) — the SINGLE entry point for all AI calls.
@@ -77,13 +78,19 @@ export class AiOrchestratorService {
     let model: string;
     let inputTokens: number | null;
     let outputTokens: number | null;
+    let totalTokens: number | null = null;
+    let usageSource: UsageSource = 'unavailable';
     try {
       const result = await this.model.generate({ prompt: request.prompt });
       text = result.text;
       model = result.model;
       inputTokens = result.usage?.promptTokens ?? request.estimatedTokens ?? null;
       outputTokens = result.usage?.completionTokens ?? null;
+      const sum = (inputTokens ?? 0) + (outputTokens ?? 0);
+      totalTokens = result.usage?.totalTokens ?? (sum > 0 ? sum : null);
+      usageSource = result.usage?.source ?? 'estimated';
     } catch (err) {
+      // provider call attempted but failed → no usage available (no faked cost)
       return this.finish({
         request,
         status: 'error',
@@ -91,6 +98,7 @@ export class AiOrchestratorService {
         toolCalls,
         reasons: ['model_error'],
         start,
+        usageSource: 'unavailable',
         errorCode: 'model_error',
         errorMessage: err instanceof Error ? err.message : String(err),
       });
@@ -101,12 +109,13 @@ export class AiOrchestratorService {
     const nut = this.nutrition.inspect(text, { nutritionSourceLocked: sourceLocked });
     if (nut.blocked) {
       guardHits.push('nutrition_claim');
-      return this.finish({ request, status: 'blocked_nutrition', model, inputTokens, outputTokens, guardHits, toolCalls, reasons: nut.reasons, start });
+      // a provider call DID happen → record the attempted usage on the ledger row
+      return this.finish({ request, status: 'blocked_nutrition', model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: nut.reasons, start });
     }
 
     // success — record actual usage
     this.cost.record({ userId: request.userId, tokens: (inputTokens ?? 0) + (outputTokens ?? 0) });
-    return this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, guardHits, toolCalls, reasons: [], start });
+    return this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: [], start });
   }
 
   private async finish(args: {
@@ -116,6 +125,8 @@ export class AiOrchestratorService {
     model?: string | null;
     inputTokens?: number | null;
     outputTokens?: number | null;
+    totalTokens?: number | null;
+    usageSource?: UsageSource;
     guardHits: string[];
     toolCalls: string[];
     reasons: string[];
@@ -124,6 +135,14 @@ export class AiOrchestratorService {
     errorMessage?: string | null;
   }): Promise<AiCallResult> {
     const latencyMs = Date.now() - args.start;
+    // ── E47-A10A: durable cost/usage ledger fields for EVERY terminal path ──
+    const policy = resolveAiCostPolicy();
+    const usageSource: UsageSource = args.usageSource ?? 'unavailable';
+    const totalTokens = args.totalTokens ?? (args.inputTokens != null || args.outputTokens != null ? (args.inputTokens ?? 0) + (args.outputTokens ?? 0) : null);
+    // estimatedCostUsd: only when a per-model rate exists (none configured by default → null; no faked precision)
+    const estimatedCost = estimateCostUsd(args.model, args.inputTokens, args.outputTokens, policy);
+    // cost is "estimated" whenever we have no precise USD figure (always true today)
+    const costIsEstimated = estimatedCost === null ? true : usageSource !== 'provider';
     // persist an audit row for EVERY terminal path (success or blocked); never throws.
     const logged = await this.callLog.record({
       userId: args.request.userId,
@@ -136,7 +155,12 @@ export class AiOrchestratorService {
       latencyMs,
       estimatedInputTokens: args.inputTokens ?? null,
       estimatedOutputTokens: args.outputTokens ?? null,
-      estimatedCost: null, // no billing logic yet
+      estimatedCost, // null until a per-model rate table exists
+      totalTokens,
+      usageSource,
+      costIsEstimated,
+      currency: policy.currency,
+      costSchemaVersion: AI_COST_SCHEMA_VERSION,
       guardHits: args.guardHits,
       toolCalls: args.toolCalls,
       metadata: args.reasons.length ? { reasons: args.reasons } : {},

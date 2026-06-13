@@ -737,7 +737,13 @@ model AICallLog {
   latencyMs             Int?
   estimatedInputTokens  Int?
   estimatedOutputTokens Int?
-  estimatedCost         Float?
+  estimatedCost         Float? // estimatedCostUsd — null until a per-model pricing table exists (no faked precision)
+  // ── E47-A10A persisted cost/usage ledger fields (additive; R3 mitigation) ──
+  totalTokens           Int? // input+output; provider-returned when available, else estimated
+  usageSource           String? // 'provider' | 'estimated' | 'unavailable' (no provider call)
+  costIsEstimated       Boolean? // true while estimatedCost is null / not precisely metered
+  currency              String? // ISO currency for estimatedCost (e.g. 'USD'); null when no cost
+  costSchemaVersion     Int? // ledger schema version for forward migration
   guardHits             Json // string[] — guard categories that fired
   toolCalls             Json // string[] — tool names invoked
   metadata              Json // PII-free only (assertNoPIIInMetadata enforced in the service)
@@ -748,6 +754,7 @@ model AICallLog {
   @@index([userId, createdAt])
   @@index([status])
   @@index([conversationId])
+  @@index([provider, model, createdAt])
 }
 
 // Persisted chat messages for AI Core v1 (no medical/vision claim expansion).

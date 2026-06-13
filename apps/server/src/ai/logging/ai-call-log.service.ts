@@ -26,6 +26,12 @@ export interface AICallLogInput {
   estimatedInputTokens?: number | null;
   estimatedOutputTokens?: number | null;
   estimatedCost?: number | null;
+  // ── E47-A10A persisted cost/usage ledger ──
+  totalTokens?: number | null;
+  usageSource?: 'provider' | 'estimated' | 'unavailable' | null;
+  costIsEstimated?: boolean | null;
+  currency?: string | null;
+  costSchemaVersion?: number | null;
   guardHits: string[];
   toolCalls: string[];
   metadata?: Record<string, unknown> | null;
@@ -56,6 +62,11 @@ export class AiCallLogService {
           estimatedInputTokens: input.estimatedInputTokens ?? null,
           estimatedOutputTokens: input.estimatedOutputTokens ?? null,
           estimatedCost: input.estimatedCost ?? null,
+          totalTokens: input.totalTokens ?? null,
+          usageSource: input.usageSource ?? null,
+          costIsEstimated: input.costIsEstimated ?? null,
+          currency: input.currency ?? null,
+          costSchemaVersion: input.costSchemaVersion ?? null,
           guardHits: (input.guardHits ?? []) as unknown as object,
           toolCalls: (input.toolCalls ?? []) as unknown as object,
           metadata: metadata as unknown as object,
@@ -93,6 +104,7 @@ export class AiCallLogService {
     let s = String(msg)
       .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[redacted-email]')
       .replace(/\b(sk|pk|AIza|ghp|gho|xox[baprs])[A-Za-z0-9_-]{8,}\b/g, '[redacted-key]')
+      .replace(/\b(api[_-]?key|key|token|secret|password|pwd)=[^\s&'"]+/gi, '$1=[redacted]') // defense-in-depth: any key=value secret, regardless of error source
       .replace(/\bBearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted]')
       .replace(/\beyJ[A-Za-z0-9._-]{10,}/g, '[redacted-jwt]');
     return s.length > 500 ? `${s.slice(0, 500)}…` : s;
