@@ -58,3 +58,8 @@
 - **History purge: DEFERRED (tooling)** — no functional Python 3 / git-filter-repo / gitleaks / trufflehog in the working environment. Tracked as `R-E1-HISTORY-DEAD-SECRETS`; details in `docs/security/E1_SECRET_INCIDENT_STATUS.md`.
 - **Phase 3 (App Shell / navigation) CONDITIONALLY ALLOWED** and proceeding under strict scope (shell/nav only; no Home/AI-Chat/Admin/RecipeDetail/MealPlanner migration; no new features).
 - **E1 remains OPEN** for final security closeout (history purge required before external diligence / new collaborators / public repo / G1).
+
+## UI migration freeze + infrastructure resume — 2026-06-13
+- **UI migration FROZEN after Phase 4A visual rejection.** Phase 4A (Home/Command Center) passed technical scans but failed visual/product-quality review. CA must not continue visual redesign without an approved visual spec from Founder/Claude Max/UX. Phase 4A technical cleanup is kept (not rolled back); visual direction marked rejected. Status tracked in `docs/execution/UI_MIGRATION_STATUS.md`; evidence in `docs/qa/phase4a/`.
+- Phase 3 Shell/Nav: conditionally accepted · Phase 3.1: accepted · Phase 4A: technical pass / visual rejected · Phase 4B+: blocked.
+- **Infrastructure work resumes** (non-UI). **Next infrastructure task: Event Envelope code contract** (E43-W6, per ADR-0001 / Constitution A1.4) — typed, testable canonical event envelope schema + validation + PII guard. No DB migration (additive-only when adopted, gated on approval).
