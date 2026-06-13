@@ -1,6 +1,6 @@
 {
   "suite": "E47-A7",
-  "timestamp": "2026-06-13T20:59:34.022Z",
+  "timestamp": "2026-06-13T21:17:53.660Z",
   "providerMode": "gemini",
   "liveEnabled": true,
   "conditions": {
@@ -16,7 +16,7 @@
   "status": "executed",
   "liveProviderCallCount": 3,
   "blockedProviderCallCount": 0,
-  "averageLatencyMs": 276,
+  "averageLatencyMs": 10554,
   "failures": [],
   "redactedErrorSummary": [],
   "cases": [
@@ -48,7 +48,7 @@
       "id": "safe-1",
       "kind": "safe",
       "prompt": "Suggest one simple dinner idea using chicken and rice.",
-      "status": "error",
+      "status": "ok",
       "providerDelta": 1,
       "passed": true
     },
@@ -56,7 +56,7 @@
       "id": "safe-2",
       "kind": "safe",
       "prompt": "Find a Persian recipe with eggplant.",
-      "status": "error",
+      "status": "ok",
       "providerDelta": 1,
       "passed": true
     },
@@ -64,21 +64,11 @@
       "id": "safe-3",
       "kind": "safe",
       "prompt": "How can I make a recipe search more specific?",
-      "status": "error",
+      "status": "ok",
       "providerDelta": 1,
       "passed": true
     }
   ],
   "aiCallLogWrites": 6,
-  "note": "Live smoke executed: blocked prompts made 0 provider calls; safe prompts reached the live model through the Orchestrator only.",
-  "operatorDiagnosis": {
-    "addedBy": "E47-A7 gate operator (2026-06-14), not the harness",
-    "safePromptOutcome": "error",
-    "rootCauseRedacted": "gemini_provider_error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [403 ]",
-    "interpretation": "Real live call left the provider and reached the Gemini endpoint, which returned HTTP 403 Forbidden — the GEMINI_API_KEY in apps/server/.env is invalid/revoked (consistent with R-E1-HISTORY-DEAD-SECRETS: the Gemini key was rotated/revoked).",
-    "architectureVerified": "Controlled-access gating PASSED: default=stub/skip; enabled=executed; blocked prompts = 0 provider calls; safe prompts reached the provider ONLY via the Orchestrator; AICallLog written; no secret leaked; no direct Gemini call outside the provider.",
-    "successfulGuardedResponseDemonstrated": false,
-    "verdict": "E47_A7_LIVE_GEMINI_SMOKE_BLOCKED",
-    "unblockAction": "Supply a valid (rotated) GEMINI_API_KEY in local/dev .env, then re-run `pnpm --dir apps/server run ai:live-smoke` with the 4 flags for a full PASS (safe prompts → status 'ok' through the outbound nutrition/safety post-guard)."
-  }
+  "note": "Live smoke executed: blocked prompts made 0 provider calls; safe prompts reached the live model through the Orchestrator only."
 }

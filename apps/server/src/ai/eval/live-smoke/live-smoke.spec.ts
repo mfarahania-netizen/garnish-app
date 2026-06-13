@@ -19,7 +19,10 @@ describe('E47-A7 — controlled live Gemini smoke gate', () => {
     } catch {
       /* artifact write is best-effort */
     }
-  });
+    // Real Gemini calls are slow (~10-15s each × 3 safe prompts); the default 5s beforeAll timeout
+    // is too short for a valid-key live run (it would fail the suite even on a perfect run). In the
+    // default no-flag path runLiveSmoke skips instantly, so this generous timeout is inert there.
+  }, 180_000);
 
   it('skips safely when live config is absent (no live call), or executes safely when enabled', () => {
     if (result.status === 'skipped_missing_live_config') {
