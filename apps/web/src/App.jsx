@@ -38,7 +38,7 @@ const NotificationsPage = lazy(() => import('./features/notifications/pages/Noti
 function RouteFallback() {
   return (
     <Center h="60vh">
-      <Loader color="orange" />
+      <Loader color="saffron" />
     </Center>
   );
 }
