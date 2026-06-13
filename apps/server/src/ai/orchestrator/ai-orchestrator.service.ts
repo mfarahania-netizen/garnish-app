@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import {
   AI_MODEL_PROVIDER,
   AiCallRequest,
@@ -14,6 +14,8 @@ import { AiCostControllerService } from '../cost/ai-cost-controller.service';
 import { AiCallLogService } from '../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { resolveAiCostPolicy, estimateCostUsd, AI_COST_SCHEMA_VERSION, UsageSource } from '../cost/ai-cost-policy';
+import { PersistedDailyBudgetService } from '../cost/persisted-daily-budget.service';
+import { isLiveModelConfigured } from '../providers/model-provider.factory';
 
 /**
  * AI Orchestrator (E47-A1) — the SINGLE entry point for all AI calls.
@@ -31,6 +33,8 @@ import { resolveAiCostPolicy, estimateCostUsd, AI_COST_SCHEMA_VERSION, UsageSour
  */
 @Injectable()
 export class AiOrchestratorService {
+  private readonly logger = new Logger(AiOrchestratorService.name);
+
   constructor(
     @Inject(AI_MODEL_PROVIDER) private readonly model: ModelProvider,
     private readonly promptInjection: PromptInjectionGuardService,
@@ -39,6 +43,8 @@ export class AiOrchestratorService {
     private readonly nutrition: NutritionClaimGuardService,
     private readonly callLog: AiCallLogService,
     private readonly snapshots: BehavioralContextSnapshotService,
+    // E47-A10B: optional persisted daily-budget gate (wired in the app; absent in unit constructions).
+    @Optional() private readonly persistedBudget?: PersistedDailyBudgetService,
   ) {}
 
   async run(request: AiCallRequest): Promise<AiCallResult> {
@@ -71,6 +77,27 @@ export class AiOrchestratorService {
     if (safety.blocked) {
       guardHits.push('safety');
       return this.finish({ request, status: 'blocked_safety', guardHits, toolCalls, reasons: safety.reasons, start });
+    }
+
+    // 4.5. persisted per-user DAILY budget (E47-A10B) — ONLY before a LIVE provider call.
+    //      Skipped entirely for the default stub path (no live config) so offline behavior is unchanged.
+    //      Fails CLOSED on a lookup error: if we cannot verify the budget we do NOT make a paid call.
+    if (this.persistedBudget && isLiveModelConfigured()) {
+      let allowed = true;
+      let reason = 'daily_budget_exceeded';
+      try {
+        const budget = await this.persistedBudget.check(request.userId, request.estimatedTokens);
+        allowed = budget.allowed;
+        reason = budget.reason ?? reason;
+      } catch (err) {
+        allowed = false; // fail-closed (cost safety); no internal values leaked to the user
+        reason = 'budget_check_unavailable';
+        this.logger.warn(`daily budget check failed; failing CLOSED (no provider call): ${err instanceof Error ? err.name : 'error'}`);
+      }
+      if (!allowed) {
+        guardHits.push('daily_budget');
+        return this.finish({ request, status: 'blocked_cost', guardHits, toolCalls, reasons: [reason], start, usageSource: 'unavailable' });
+      }
     }
 
     // 5. model call (stubbed provider in tests; never a live LLM in CI)

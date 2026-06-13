@@ -33,7 +33,8 @@
   [A7 live smoke execution (PASS)](execution/E47_A7_LIVE_GEMINI_SMOKE_EXECUTION_REPORT.md) ·
   [A8 controlled live chat adapter](execution/E47_A8_CONTROLLED_LIVE_CHAT_ADAPTER_REPORT.md) ·
   [A9 runtime boundary & product-safety gate](execution/E47_A9_AI_RUNTIME_BOUNDARY_AND_PRODUCT_SAFETY_GATE_REPORT.md) ·
-  [A10A persisted AI cost ledger (R3 mitigation)](execution/E47_A10A_PERSISTED_AI_COST_LEDGER_REPORT.md)
+  [A10A persisted AI cost ledger (R3 mitigation)](execution/E47_A10A_PERSISTED_AI_COST_LEDGER_REPORT.md) ·
+  [A10B persisted daily user budget (R3 mitigation)](execution/E47_A10B_PERSISTED_DAILY_USER_BUDGET_REPORT.md)
 - Docs: [README source-of-truth cleanup](execution/DOCS_README_SOURCE_OF_TRUTH_REPORT.md)
 
 ## Design system (GES)

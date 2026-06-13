@@ -9,6 +9,7 @@ import { PromptInjectionGuardService } from './guards/prompt-injection.guard';
 import { AiSafetyGuardService } from './guards/ai-safety.guard';
 import { NutritionClaimGuardService } from './guards/nutrition-claim.guard';
 import { AiCostControllerService } from './cost/ai-cost-controller.service';
+import { PersistedDailyBudgetService } from './cost/persisted-daily-budget.service';
 import { AiCallLogService } from './logging/ai-call-log.service';
 import { ChatMessageService } from './chat/chat-message.service';
 import { UserFactService } from './facts/user-fact.service';
@@ -38,6 +39,7 @@ import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
     AiSafetyGuardService,
     NutritionClaimGuardService,
     AiCostControllerService,
+    PersistedDailyBudgetService,
     AiCallLogService,
     ChatMessageService,
     UserFactService,
