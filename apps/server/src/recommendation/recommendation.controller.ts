@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { RecommendationPipelineService } from './pipeline/recommendation-pipeline.service';
 import { ExposureTrackingService } from './exposure/exposure-tracking.service';
 import { RankingService } from './pipeline/ranking.service';
@@ -103,20 +105,23 @@ export class RecommendationController {
   }
 
   @Post('build-snapshots')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async buildSnapshots(@Req() req) {
     // فراخوانی SnapshotBuilder – این قسمت ممکن است از قبل موجود باشد
     return { message: 'Snapshots building started' };
   }
 
   @Post('run-signal-detector')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async runSignalDetector() {
     return { message: 'Signal detector executed' };
   }
 
   @Post('build-identity')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async buildIdentity() {
     return { message: 'Identity building started' };
   }
@@ -186,13 +191,15 @@ export class RecommendationController {
   }
 
   @Get('embedding/:recipeId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async getEmbedding(@Param('recipeId') recipeId: string) {
     return { recipeId, embedding: 'embedding-placeholder' };
   }
 
   @Get('debug-features')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async debugFeatures(@Req() req) {
     const userId = req.user.userId;
     // فرضاً FeatureStore را صدا می‌زنیم، ولی اینجا مستقیم Prisma نمی‌آوریم
@@ -201,7 +208,8 @@ export class RecommendationController {
 
   // 🆕 Route تست Exposure Penalty (برای تأیید نهایی)
   @Get('test-penalty/:recipeId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async testPenalty(@Req() req, @Param('recipeId') recipeId: string) {
     const userId = req.user.userId;
 

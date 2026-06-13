@@ -1,5 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { PrismaService } from '../prisma/prisma.service';
 import { FeatureStoreService } from '../behavior-engine/feature-store/feature-store.service';
 import { SignalRegistryService } from '../behavior-engine/signals/signal.registry';
@@ -8,7 +10,12 @@ import { RecommendationMetricsService } from './evaluation/recommendation-metric
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
 import { ExposureTrackingService } from './exposure/exposure-tracking.service';
 
+// Safety: this controller is ENTIRELY internal diagnostics/governance. Locked to
+// admins (deny-by-default RolesGuard) so normal authenticated users can't read
+// feature-vectors, signals, metrics, governance, or reports.
 @Controller()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
 export class RecommendationDiagnosticsController {
   constructor(
     private readonly prisma: PrismaService,

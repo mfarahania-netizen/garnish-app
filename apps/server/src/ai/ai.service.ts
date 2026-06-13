@@ -233,7 +233,7 @@ export class AiService {
       const ingNames = r.ingredients.slice(0, 3).map(i => i.name).join('، ');
       return `**${r.title}**\n⏱ ${time} | ${r.difficulty || '؟'}${r.cost ? ` | 💰 ${r.cost}` : ''}\n📝 ${ingNames}`;
     });
-    return `🥗 پیشنهادهای سالم و رژیمی:\n\n${lines.join('\n\n')}\n\n💡 این غذاها کم‌چرب و پرخاصیت هستن.`;
+    return `🥗 پیشنهادهای سبک/رژیمی (بر اساس دسته‌بندی غذا):\n\n${lines.join('\n\n')}\n\n💡 این‌ها فقط پیشنهاد آشپزی‌اند، نه توصیهٔ تغذیه‌ای یا پزشکی.`;
   }
 
   private async expandConcept(prompt: string): Promise<string[]> {

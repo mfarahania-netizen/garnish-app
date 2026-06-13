@@ -38,8 +38,10 @@ European audience.
 ## 6. AI Core status & boundaries
 - **Reality today:** rule-based assistant (`apps/server/src/ai`, Gemini-backed). The single
   **Orchestrator + Tool Registry + mandatory BehavioralContextSnapshot** is **🔧 In execution (E47, W6–W8)** — not yet built.
-- **Boundaries (E47 Annex):** no autonomous agents, no multi-agent/LangGraph, no medical claims, no
-  irreversible actions without explicit user confirmation; streaming for chat only.
+- **Boundaries (E47 Annex):** no autonomous agents, no multi-agent/LangGraph, no medical or
+  nutrition-specialist claims, no irreversible actions without explicit user confirmation; streaming for chat only.
+- **No image/photo recognition:** there is no real vision capability. The earlier *simulated* "fridge-photo"
+  ingredient detection was removed (no fake placeholder); the assistant is text-only.
 
 ## 7. BIP (Behavioral Intelligence Platform)
 Base exists (`apps/server/src/behavior-engine`). Envelope design is set (ADR-0001 ✅); full v1
@@ -48,10 +50,15 @@ Base exists (`apps/server/src/behavior-engine`). Envelope design is set (ADR-000
 ## 8. Recommendation Engine ✅ (base)
 candidate → rank → exposure → outcome pipeline (`apps/server/src/recommendation`).
 
-## 9. GES / Design System ⏸
-The Garnish Experience System (tokens, theme, motion, component migration) is **being designed**; the
-canonical file will land under `docs/design/`. Until then, no design-system code is built. Today the
-Mantine theme is inline in `apps/web/src/App.jsx` (token migration is pending GES).
+## 9. GES / Design System — foundation installed, UI migration PARTIAL 🔧
+- **Docs (exist):** `docs/design/GARNISH_EXPERIENCE_SYSTEM_v1.md`, `DESIGN_IMPLEMENTATION_GUIDE.md`,
+  `DESIGN_QA_CHECKLIST.md`, `COMPONENT_MIGRATION_MAP.md`, `COMPONENT_PATTERN_LIBRARY_v1.md`.
+- **Foundation (installed):** `apps/web/src/styles/tokens.css` + `base.css`, `theme/garnish-theme.js`,
+  `lib/motion.js` — imported once at the app entry; the Mantine theme is wired to the tokens.
+- **Primitives (exist):** 17 token-pure components under `apps/web/src/components/ges/`.
+- **Migration status: PARTIAL — NOT complete.** App surfaces (Home, AI Chat, Admin, shell/nav, …) are
+  **not yet migrated** to GES; that work is paused pending approval. The design pack is marked
+  `DRAFT_PENDING_UX_APPROVAL`. **No production-ready UX is claimed.**
 
 ## 10. Execution gates
 - **G1 (W13):** security scans 0, import live, Food DNA e2e, Briefing live, erasure test green, AI safety eval pass.
@@ -117,5 +124,5 @@ docs/adr/ADR-0001-canonical-event-envelope.md
 docs/security/RBAC_ROUTE_MATRIX.md · E1_secret_purge_runbook.md
 docs/audit/STRUCTURE_AND_DESIGN_AUDIT.md
 docs/b2b/B2B_GOVERNANCE_B0.md · docs/community/COMMUNITY_C0_POLICY.md · docs/ops/WAT_W0_WORKFLOW_SPEC.md
-docs/design/  (GES — pending the design-system file)
+docs/design/GARNISH_EXPERIENCE_SYSTEM_v1.md · DESIGN_IMPLEMENTATION_GUIDE.md · DESIGN_QA_CHECKLIST.md · COMPONENT_MIGRATION_MAP.md · COMPONENT_PATTERN_LIBRARY_v1.md
 ```

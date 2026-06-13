@@ -46,9 +46,8 @@ export const AIChatProvider = ({ children }) => {
   const sendMessage = useCallback(async (text, imageData = null) => {
     if (!text?.trim() && !imageData) return;
 
-    const userContent = imageData
-      ? `[تصویر آپلود شد] ${text || 'چه غذایی می‌توانم با این مواد بپزم؟'}`
-      : text;
+    // Image/vision flow removed (no real photo recognition available).
+    const userContent = text;
 
     addMessage('user', userContent, { imageData });
 
