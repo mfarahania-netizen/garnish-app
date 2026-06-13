@@ -417,6 +417,9 @@ model ConsentLog {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      String
+  // E52/B2B-B0: processing purpose the user consented to (additive, nullable).
+  // Mirrors the canonical envelope consentPurpose: core | analytics | personalization | b2b_aggregate | community.
+  purpose   String?
   granted   Boolean  @default(true)
   ip        String?
   createdAt DateTime @default(now())
