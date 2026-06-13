@@ -1,40 +1,31 @@
-# Garnish Food Data v2 — Phase-One Closeout Patch 02.1
+# Garnish Food Data v2 — Phase-One Recipe Resolver Alias Patch 00
 
-This package is the corrected phase-one archive/import package. It fixes the Patch 02 issues around Persian black cumin vs nigella/black seed, multilingual TR/DE aliases for the affected records, and ambiguous terms without alternatives.
+Append-only patch over the **1008 nutrition-quarantined** dictionary. Closes real recipe
+alias gaps and adds ambiguous-term handling. **No new ingredient IDs. Nutrition unchanged.**
 
-## Import rule
-Only import one of these files:
+## What changed (allowed fields only)
+- recipeInputAliases: 53 surface additions across 29 ingredients
+  (plurals/bare-nouns + Persian recipe forms, e.g. scallions, ginger, coconut milk, besan,
+   panko, kalamata olives, masoor dal, لوبیا سبز, ادویه پلویی, ساق گوسفند, خرما, نعناع داغ).
+- ambiguity policy: 11 entries (butter/کره → butter_unsalted default+salted alt;
+  paprika → paprika_ground default+bell_pepper alt; generic cooking oil روغن مایع/cooking oil →
+  low-confidence default + requiresContext). Ambiguous terms are flagged, never high-confidence bound.
 
-- `Ingredient Dictionary/ingredient_dictionary_verified_structure_resolver_ready_1000_closeout_patch_02_1.json`
-- `Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json`
+## Re-run on patched dictionary (same 342 lines)
+- resolved 334/342 • **nonDishResolvedRatePct 98.2%** • wrongMatchCount 0 • dishNameResolvedAsIngredientWrongly 0
+- ambiguousHandled 56 • **aliasGapCount 0** • unresolvedHighFrequencyTerms 0 • genuinelyMissing 6 lines
+- **passesRecipeResolverAliasPatch00Validation: true**
 
-Do not import Batch 700, old Batch 1000, old Closeout Patch 02, or Nutrition Source Layer as ingredient records.
+## Genuinely-missing (NOT created — see unresolved_recipe_import_terms_report.json)
+white/granulated sugar (phase-one-necessary → critical hotfix recommended), croutons, generic
+chili-powder blend, gochugaru, cooking white wine, sushi/short-grain rice, shirataki.
 
-## Validation
-- ingredientCount: 1008
-- duplicateIngredientId: 0
-- duplicateCode: 0
-- duplicateAliasOrRecipeAliasAcrossIngredients: 0
-- missingRecipeInputAliasesFaCount: 0
-- missingRecipeInputAliasesTrCount: 0
-- missingRecipeInputAliasesDeCount: 0
-- ambiguousTermsHaveAlternatives: true
-- passesAllCloseoutPatch021Validation: true
-- productionNutritionLock: false
-- readyForMedicalNutritionClaims: false
+## Pre-existing note
+7 cross-language alias homographs (paprika, raisins, کشک, بامیه, حمص, موسلی, mais) ALREADY existed
+in the base (0 introduced here; native per-language duplicate metric = 0). Flagged for a future
+ambiguity-policy/cleanup pass; not modified to stay in scope.
 
-## Scope
-Ready for Recipe Import, Ingredient Resolver, Persian Search, general AI, Recommendation MVP, Meal Planner MVP, and investor demo. Not ready for strict medical nutrition claims.
-
-
-## Archive completion support files
-
-Closeout Patch 02.1 data was already approved. This final archive package adds six support files only and does not change the main ingredient dictionary or array-only JSON.
-
-Added files:
-- Recipe Ingredient Mapping/recipe_input_alias_registry.json
-- Recipe Ingredient Mapping/recipe_ingredient_mapping_schema.json
-- Recipe Ingredient Mapping/normalization_rules.json
-- Recipe Ingredient Mapping/test_cases.json
-- Recipe Ingredient Mapping/resolver_test_cases.json
-- Registry/source_food_id_registry.json
+## Required statement
+This patch improves recipe resolver coverage by adding aliases and ambiguous-term handling only.
+It does not create new ingredient IDs and does not change nutrition. This is not a Final Verified
+Nutrition Dataset. Medical and strict-diet use remain out of scope.

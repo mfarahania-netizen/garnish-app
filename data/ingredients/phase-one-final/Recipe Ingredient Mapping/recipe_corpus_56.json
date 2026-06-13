@@ -1,0 +1,739 @@
+{
+  "recipeCount": 56,
+  "recipes": [
+    {
+      "recipeId": "r01",
+      "recipeTitle": "Ghormeh Sabzi",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۵۰۰ گرم گوشت گوسفندی خورشتی",
+        "۳ پیمانه سبزی قورمه سبزی خرد شده",
+        "۱ پیمانه لوبیا قرمز خشک",
+        "۴ عدد لیمو عمانی",
+        "۲ عدد پیاز متوسط",
+        "۱ قاشق چایخوری زردچوبه",
+        "به مقدار لازم روغن مایع",
+        "نمک و فلفل سیاه به مقدار لازم"
+      ]
+    },
+    {
+      "recipeId": "r02",
+      "recipeTitle": "Gheymeh",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۵۰۰ گرم گوشت خورشتی گوساله",
+        "۱ پیمانه لپه",
+        "۲ عدد پیاز",
+        "۲ قاشق غذاخوری رب گوجه فرنگی",
+        "۴ عدد لیمو عمانی",
+        "۱ قاشق چایخوری زردچوبه",
+        "سیب‌زمینی سرخ‌شده برای تزیین",
+        "کمی روغن"
+      ]
+    },
+    {
+      "recipeId": "r03",
+      "recipeTitle": "Zereshk Polo ba Morgh",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۳ پیمانه برنج باسماتی",
+        "۴ تکه ران مرغ",
+        "نصف پیمانه زرشک",
+        "۲ قاشق غذاخوری کره",
+        "به مقدار لازم زعفران دم‌کرده",
+        "۱ عدد پیاز",
+        "۲ قاشق غذاخوری شکر"
+      ]
+    },
+    {
+      "recipeId": "r04",
+      "recipeTitle": "Fesenjan",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲ پیمانه گردو آسیاب شده",
+        "۱ پیمانه رب انار",
+        "۴ تکه ران مرغ",
+        "۱ عدد پیاز بزرگ",
+        "کمی زعفران",
+        "نمک و فلفل"
+      ]
+    },
+    {
+      "recipeId": "r05",
+      "recipeTitle": "Kuku Sabzi",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۴ عدد تخم مرغ",
+        "۲ پیمانه سبزی کوکو خرد شده",
+        "۱ قاشق غذاخوری آرد",
+        "نصف قاشق چایخوری زردچوبه",
+        "کمی زرشک",
+        "۲ قاشق غذاخوری گردو خرد شده"
+      ]
+    },
+    {
+      "recipeId": "r06",
+      "recipeTitle": "Ash Reshteh",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲۰۰ گرم رشته آشی",
+        "۱ پیمانه نخود",
+        "۱ پیمانه لوبیا قرمز",
+        "۱ پیمانه عدس",
+        "۴ پیمانه سبزی آش",
+        "کشک به مقدار لازم",
+        "۲ عدد پیاز",
+        "نعناع داغ خشک"
+      ]
+    },
+    {
+      "recipeId": "r07",
+      "recipeTitle": "Mirza Ghasemi",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۳ عدد بادمجان",
+        "۴ حبه سیر",
+        "۲ عدد گوجه فرنگی",
+        "۲ عدد تخم مرغ",
+        "زردچوبه",
+        "روغن"
+      ]
+    },
+    {
+      "recipeId": "r08",
+      "recipeTitle": "Kashke Bademjan",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۴ عدد بادمجان",
+        "کشک",
+        "۱ عدد پیاز",
+        "نعناع خشک",
+        "گردو",
+        "سیر"
+      ]
+    },
+    {
+      "recipeId": "r09",
+      "recipeTitle": "Adas Polo",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲ پیمانه برنج",
+        "۱ پیمانه عدس",
+        "نصف پیمانه کشمش",
+        "۲ عدد پیاز",
+        "خرما",
+        "زعفران"
+      ]
+    },
+    {
+      "recipeId": "r10",
+      "recipeTitle": "Salad Shirazi",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۳ عدد خیار",
+        "۳ عدد گوجه فرنگی",
+        "۱ عدد پیاز",
+        "آبغوره",
+        "نعناع تازه"
+      ]
+    },
+    {
+      "recipeId": "r11",
+      "recipeTitle": "Mast-o-Khiar",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۵۰۰ گرم ماست",
+        "۲ عدد خیار",
+        "نعناع خشک",
+        "گردو",
+        "گل سرخ خشک"
+      ]
+    },
+    {
+      "recipeId": "r12",
+      "recipeTitle": "Loobia Polo",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲ پیمانه برنج",
+        "۲۰۰ گرم گوشت چرخ کرده",
+        "۲۰۰ گرم لوبیا سبز",
+        "۲ قاشق رب گوجه",
+        "دارچین",
+        "ادویه پلویی"
+      ]
+    },
+    {
+      "recipeId": "r13",
+      "recipeTitle": "Kotlet",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۵۰۰ گرم گوشت چرخ‌کرده",
+        "۲ عدد سیب زمینی",
+        "۱ عدد پیاز رنده شده",
+        "۱ عدد تخم مرغ",
+        "آرد سوخاری",
+        "زردچوبه"
+      ]
+    },
+    {
+      "recipeId": "r14",
+      "recipeTitle": "Tahchin Morgh",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲ پیمانه برنج",
+        "۵۰۰ گرم سینه مرغ",
+        "۲ پیمانه ماست",
+        "۲ عدد زرده تخم مرغ",
+        "زعفران",
+        "زرشک"
+      ]
+    },
+    {
+      "recipeId": "r15",
+      "recipeTitle": "Baghali Polo",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۳ پیمانه برنج",
+        "۲ پیمانه باقالی",
+        "شوید خشک",
+        "ساق گوسفند",
+        "زعفران"
+      ]
+    },
+    {
+      "recipeId": "r16",
+      "recipeTitle": "Spaghetti Bolognese",
+      "cuisine": "italian",
+      "ingredientLines": [
+        "400 g spaghetti",
+        "500 g ground beef",
+        "1 onion, finely chopped",
+        "2 cloves garlic",
+        "2 tbsp tomato paste",
+        "100 g parmesan cheese, grated",
+        "2 tbsp olive oil",
+        "salt and black pepper"
+      ]
+    },
+    {
+      "recipeId": "r17",
+      "recipeTitle": "Margherita Pizza Dough",
+      "cuisine": "italian",
+      "ingredientLines": [
+        "500 g all-purpose flour",
+        "7 g active dry yeast",
+        "1 tsp salt",
+        "2 tbsp olive oil",
+        "200 g mozzarella cheese",
+        "fresh basil leaves"
+      ]
+    },
+    {
+      "recipeId": "r18",
+      "recipeTitle": "Classic Hummus",
+      "cuisine": "levantine",
+      "ingredientLines": [
+        "400 g canned chickpeas, drained",
+        "3 tbsp tahini",
+        "1 lemon, juiced",
+        "2 cloves garlic",
+        "3 tbsp olive oil",
+        "1 tsp ground cumin"
+      ]
+    },
+    {
+      "recipeId": "r19",
+      "recipeTitle": "Shakshuka",
+      "cuisine": "north_african",
+      "ingredientLines": [
+        "4 eggs",
+        "400 g canned tomatoes",
+        "1 red onion, diced",
+        "1 red bell pepper",
+        "1 tsp paprika",
+        "1 tsp ground cumin",
+        "2 tbsp olive oil"
+      ]
+    },
+    {
+      "recipeId": "r20",
+      "recipeTitle": "Caesar Salad",
+      "cuisine": "american",
+      "ingredientLines": [
+        "2 romaine lettuce hearts",
+        "50 g parmesan cheese",
+        "2 cups croutons",
+        "2 anchovy fillets",
+        "1 clove garlic",
+        "1 lemon"
+      ]
+    },
+    {
+      "recipeId": "r21",
+      "recipeTitle": "French Omelette",
+      "cuisine": "french",
+      "ingredientLines": [
+        "3 eggs",
+        "1 tbsp butter",
+        "salt and pepper",
+        "chives, chopped"
+      ]
+    },
+    {
+      "recipeId": "r22",
+      "recipeTitle": "Pancakes",
+      "cuisine": "american",
+      "ingredientLines": [
+        "200 g flour",
+        "2 tbsp sugar",
+        "1 tbsp baking powder",
+        "250 ml milk",
+        "2 eggs",
+        "50 g butter, melted",
+        "1 tsp vanilla extract"
+      ]
+    },
+    {
+      "recipeId": "r23",
+      "recipeTitle": "Banana Bread",
+      "cuisine": "american",
+      "ingredientLines": [
+        "3 ripe bananas",
+        "200 g all-purpose flour",
+        "150 g brown sugar",
+        "2 eggs",
+        "1 tsp baking soda",
+        "100 g butter",
+        "2 tbsp cocoa powder"
+      ]
+    },
+    {
+      "recipeId": "r24",
+      "recipeTitle": "Beef Stew",
+      "cuisine": "european",
+      "ingredientLines": [
+        "800 g beef chuck, cubed",
+        "3 carrots",
+        "2 potatoes",
+        "1 onion",
+        "2 tbsp flour",
+        "500 ml beef broth"
+      ]
+    },
+    {
+      "recipeId": "r25",
+      "recipeTitle": "Pesto Pasta",
+      "cuisine": "italian",
+      "ingredientLines": [
+        "60 g fresh basil",
+        "50 g pine nuts",
+        "50 g parmesan",
+        "2 cloves garlic",
+        "120 ml olive oil",
+        "400 g spaghetti"
+      ]
+    },
+    {
+      "recipeId": "r26",
+      "recipeTitle": "Guacamole",
+      "cuisine": "mexican",
+      "ingredientLines": [
+        "3 ripe avocados",
+        "1 lime, juiced",
+        "1 small red onion",
+        "1 jalapeno",
+        "fresh cilantro"
+      ]
+    },
+    {
+      "recipeId": "r27",
+      "recipeTitle": "Beef Tacos",
+      "cuisine": "mexican",
+      "ingredientLines": [
+        "500 g ground beef",
+        "8 corn tortillas",
+        "100 g cotija cheese",
+        "1 onion",
+        "2 tbsp chili powder",
+        "1 lime"
+      ]
+    },
+    {
+      "recipeId": "r28",
+      "recipeTitle": "Chili con Carne",
+      "cuisine": "tex_mex",
+      "ingredientLines": [
+        "500 g ground beef",
+        "400 g canned black beans, drained",
+        "400 g canned tomatoes",
+        "1 onion",
+        "2 chipotle in adobo",
+        "1 tbsp ground cumin"
+      ]
+    },
+    {
+      "recipeId": "r29",
+      "recipeTitle": "Chicken Tikka Masala",
+      "cuisine": "indian",
+      "ingredientLines": [
+        "600 g chicken breast",
+        "200 g plain yogurt",
+        "2 tbsp garam masala",
+        "1 tbsp ginger paste",
+        "400 ml coconut milk",
+        "2 tbsp tomato paste",
+        "2 tbsp ghee"
+      ]
+    },
+    {
+      "recipeId": "r30",
+      "recipeTitle": "Dal Tadka",
+      "cuisine": "indian",
+      "ingredientLines": [
+        "200 g masoor dal",
+        "1 tomato",
+        "1 onion",
+        "1 tbsp ginger",
+        "1 tsp turmeric",
+        "1 tsp mustard seeds",
+        "2 tbsp ghee"
+      ]
+    },
+    {
+      "recipeId": "r31",
+      "recipeTitle": "Chana Masala",
+      "cuisine": "indian",
+      "ingredientLines": [
+        "400 g chickpeas",
+        "2 tbsp besan",
+        "1 onion",
+        "1 tbsp garam masala",
+        "1 tsp ground coriander",
+        "2 green chilies"
+      ]
+    },
+    {
+      "recipeId": "r32",
+      "recipeTitle": "Pad Thai",
+      "cuisine": "thai",
+      "ingredientLines": [
+        "200 g rice noodles",
+        "2 tbsp fish sauce",
+        "2 tbsp tamarind paste",
+        "100 g tofu",
+        "2 tbsp palm sugar",
+        "3 stalks lemongrass",
+        "bean sprouts"
+      ]
+    },
+    {
+      "recipeId": "r33",
+      "recipeTitle": "Green Curry",
+      "cuisine": "thai",
+      "ingredientLines": [
+        "400 ml coconut milk",
+        "2 tbsp fish sauce",
+        "3 kaffir lime leaves",
+        "2 stalks lemongrass",
+        "1 thumb galangal",
+        "1 tbsp palm sugar"
+      ]
+    },
+    {
+      "recipeId": "r34",
+      "recipeTitle": "Miso Soup",
+      "cuisine": "japanese",
+      "ingredientLines": [
+        "3 tbsp white miso",
+        "1 piece kombu",
+        "2 tbsp bonito flakes",
+        "100 g silken tofu",
+        "2 scallions",
+        "1 sheet nori"
+      ]
+    },
+    {
+      "recipeId": "r35",
+      "recipeTitle": "Fried Rice",
+      "cuisine": "chinese",
+      "ingredientLines": [
+        "3 cups cooked rice",
+        "2 eggs",
+        "2 tbsp soy sauce",
+        "1 tbsp oyster sauce",
+        "1 tbsp sesame oil",
+        "2 scallions",
+        "1 tbsp shaoxing wine"
+      ]
+    },
+    {
+      "recipeId": "r36",
+      "recipeTitle": "Mapo Tofu",
+      "cuisine": "chinese",
+      "ingredientLines": [
+        "400 g soft tofu",
+        "150 g ground pork",
+        "2 tbsp doubanjiang",
+        "1 tbsp soy sauce",
+        "2 scallions",
+        "1 tsp sichuan peppercorns"
+      ]
+    },
+    {
+      "recipeId": "r37",
+      "recipeTitle": "Bibimbap",
+      "cuisine": "korean",
+      "ingredientLines": [
+        "2 cups cooked rice",
+        "2 tbsp gochujang",
+        "1 tbsp gochugaru",
+        "2 eggs",
+        "100 g spinach",
+        "1 tbsp sesame oil"
+      ]
+    },
+    {
+      "recipeId": "r38",
+      "recipeTitle": "Greek Salad",
+      "cuisine": "greek",
+      "ingredientLines": [
+        "4 tomatoes",
+        "1 cucumber",
+        "1 red onion",
+        "200 g feta cheese",
+        "100 g kalamata olives",
+        "1 tsp dried oregano",
+        "4 tbsp olive oil"
+      ]
+    },
+    {
+      "recipeId": "r39",
+      "recipeTitle": "Tabbouleh",
+      "cuisine": "levantine",
+      "ingredientLines": [
+        "100 g bulgur",
+        "3 bunches parsley",
+        "2 tomatoes",
+        "1 lemon",
+        "fresh mint",
+        "3 tbsp olive oil"
+      ]
+    },
+    {
+      "recipeId": "r40",
+      "recipeTitle": "Falafel",
+      "cuisine": "levantine",
+      "ingredientLines": [
+        "250 g dried chickpeas",
+        "1 onion",
+        "4 cloves garlic",
+        "fresh parsley",
+        "1 tsp ground cumin",
+        "1 tsp ground coriander"
+      ]
+    },
+    {
+      "recipeId": "r41",
+      "recipeTitle": "Tzatziki",
+      "cuisine": "greek",
+      "ingredientLines": [
+        "400 g greek yogurt",
+        "1 cucumber",
+        "2 cloves garlic",
+        "1 tbsp olive oil",
+        "fresh dill"
+      ]
+    },
+    {
+      "recipeId": "r42",
+      "recipeTitle": "Pho Bo",
+      "cuisine": "vietnamese",
+      "ingredientLines": [
+        "400 g rice noodles",
+        "500 g beef brisket",
+        "1 piece ginger",
+        "3 star anise",
+        "2 tbsp fish sauce",
+        "fresh cilantro",
+        "1 stalk lemongrass"
+      ]
+    },
+    {
+      "recipeId": "r43",
+      "recipeTitle": "Risotto",
+      "cuisine": "italian",
+      "ingredientLines": [
+        "300 g arborio rice",
+        "1 onion",
+        "100 ml white wine",
+        "50 g parmesan",
+        "2 tbsp butter",
+        "1 l vegetable broth"
+      ]
+    },
+    {
+      "recipeId": "r44",
+      "recipeTitle": "Tahdig with Lavash",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۳ پیمانه برنج",
+        "ماست",
+        "زعفران",
+        "روغن",
+        "نان لواش"
+      ]
+    },
+    {
+      "recipeId": "r45",
+      "recipeTitle": "Sholeh Zard",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۱ پیمانه برنج",
+        "۲ پیمانه شکر",
+        "زعفران",
+        "گلاب",
+        "خلال بادام",
+        "هل"
+      ]
+    },
+    {
+      "recipeId": "r46",
+      "recipeTitle": "Abgoosht (Dizi)",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۴۰۰ گرم گوشت گوسفند",
+        "۱ پیمانه نخود",
+        "۱ پیمانه لوبیا سفید",
+        "۲ عدد سیب زمینی",
+        "۲ عدد گوجه فرنگی",
+        "لیمو عمانی",
+        "زردچوبه"
+      ]
+    },
+    {
+      "recipeId": "r47",
+      "recipeTitle": "Shami Lapeh",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲۵۰ گرم گوشت چرخ کرده",
+        "۱ پیمانه لپه",
+        "۱ عدد پیاز",
+        "۱ عدد تخم مرغ",
+        "زردچوبه"
+      ]
+    },
+    {
+      "recipeId": "r48",
+      "recipeTitle": "Halim",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۱ پیمانه گندم پوست کنده",
+        "۳۰۰ گرم گوشت گوسفند",
+        "دارچین",
+        "شکر",
+        "روغن"
+      ]
+    },
+    {
+      "recipeId": "r49",
+      "recipeTitle": "Joojeh Kabab",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۸ تکه ران مرغ",
+        "۱ عدد پیاز",
+        "آب لیمو",
+        "زعفران",
+        "ماست"
+      ]
+    },
+    {
+      "recipeId": "r50",
+      "recipeTitle": "Borani Esfenaj",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۴۰۰ گرم اسفناج",
+        "۵۰۰ گرم ماست",
+        "سیر",
+        "گردو",
+        "نعناع داغ"
+      ]
+    },
+    {
+      "recipeId": "r51",
+      "recipeTitle": "Reshteh Polo",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "۲ پیمانه برنج",
+        "۱۵۰ گرم رشته پلویی",
+        "خرما",
+        "کشمش",
+        "گوشت چرخ کرده",
+        "زعفران"
+      ]
+    },
+    {
+      "recipeId": "r52",
+      "recipeTitle": "Yakhni Pulao",
+      "cuisine": "south_asian",
+      "ingredientLines": [
+        "2 cups basmati rice",
+        "500 g lamb",
+        "2 tbsp toor dal",
+        "1 tbsp panko",
+        "1 tbsp ghee",
+        "1 onion"
+      ]
+    },
+    {
+      "recipeId": "r53",
+      "recipeTitle": "Sushi Rice Bowl",
+      "cuisine": "japanese",
+      "ingredientLines": [
+        "2 cups sushi rice",
+        "2 tbsp rice vinegar",
+        "1 tbsp mirin",
+        "2 sheets nori",
+        "100 g salmon",
+        "1 avocado"
+      ]
+    },
+    {
+      "recipeId": "r54",
+      "recipeTitle": "Shirataki Stir Fry",
+      "cuisine": "asian",
+      "ingredientLines": [
+        "200 g shirataki noodles",
+        "2 tbsp soy sauce",
+        "1 tbsp sesame oil",
+        "1 thumb ginger",
+        "2 scallions"
+      ]
+    },
+    {
+      "recipeId": "r55",
+      "recipeTitle": "Persian Staples Probe",
+      "cuisine": "persian",
+      "ingredientLines": [
+        "نخود",
+        "شیر",
+        "خامه",
+        "پنیر",
+        "سماق",
+        "قورمه سبزی"
+      ]
+    },
+    {
+      "recipeId": "r56",
+      "recipeTitle": "Spring Roll Probe",
+      "cuisine": "asian",
+      "ingredientLines": [
+        "rice paper wrappers",
+        "vermicelli noodles",
+        "2 tbsp fish sauce",
+        "fresh cilantro",
+        "spring onions",
+        "beef stroganoff"
+      ]
+    }
+  ]
+}

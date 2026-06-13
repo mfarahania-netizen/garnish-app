@@ -1,0 +1,24 @@
+{
+  "packageName": "Garnish Food Data v2 — Phase-One Ingredient Dictionary — Final Closeout Patch 02.1",
+  "generatedAt": "2026-06-08T19:21:47.609574+00:00",
+  "mainIngredientDictionary": "Ingredient Dictionary/ingredient_dictionary_verified_structure_resolver_ready_1000_closeout_patch_02_1.json",
+  "arrayOnlyIngredientDictionary": "Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json",
+  "ingredientCount": 1008,
+  "passesAllCloseoutPatch021Validation": true,
+  "importRule": "Only import the final closeout patch 02.1 ingredient dictionary or array-only file. Do not import nutrition source layer as ingredients.",
+  "productionNutritionLock": false,
+  "readyForMedicalNutritionClaims": false,
+  "archiveCompletionPatch": "02.1-archive-support-files",
+  "archiveSupportFilesAdded": [
+    "Recipe Ingredient Mapping/recipe_input_alias_registry.json",
+    "Recipe Ingredient Mapping/recipe_ingredient_mapping_schema.json",
+    "Recipe Ingredient Mapping/normalization_rules.json",
+    "Recipe Ingredient Mapping/test_cases.json",
+    "Recipe Ingredient Mapping/resolver_test_cases.json",
+    "Registry/source_food_id_registry.json"
+  ],
+  "ingredientDictionarySha256": "19d8cf928356b383d9b91bb331208e562185d3783500c4c72efaa53803d2d6b5",
+  "arrayOnlySha256": "0a29a3817e3da88af4abd112b248afc6c6ce07603586278d8990cce7c7b91c1a",
+  "ingredientDataChangedInArchiveCompletion": false,
+  "archivePackageComplete": true
+}

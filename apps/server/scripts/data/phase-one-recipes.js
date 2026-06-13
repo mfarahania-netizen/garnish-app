@@ -6,7 +6,7 @@ const ACTIVE_RECIPE_PATH = path.join(ROOT_DIR, 'data/recipes/active/recipes.fa.p
 const ACTIVE_WRAPPER_PATH = path.join(ROOT_DIR, 'data/recipes/active/recipes.fa.phase-one.wrapper.json');
 const INGREDIENT_DICTIONARY_PATH = path.join(
   ROOT_DIR,
-  'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json',
+  'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1008_only_recipe_resolver_alias_patch_00.json',
 );
 
 function readJson(filePath) {

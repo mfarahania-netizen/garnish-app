@@ -1,0 +1,206 @@
+{
+  "policyEntriesAdded": 11,
+  "entries": [
+    {
+      "term": "butter",
+      "language": "en",
+      "ambiguityLevel": "medium",
+      "defaultIngredientId": "ing_butter_unsalted",
+      "defaultConfidence": 0.7,
+      "alternativeIngredientIds": [
+        "ing_salted_butter"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "butter_unsalted_vs_salted"
+    },
+    {
+      "term": "کره",
+      "language": "fa",
+      "ambiguityLevel": "medium",
+      "defaultIngredientId": "ing_butter_unsalted",
+      "defaultConfidence": 0.7,
+      "alternativeIngredientIds": [
+        "ing_salted_butter"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "butter_unsalted_vs_salted"
+    },
+    {
+      "term": "paprika",
+      "language": "en",
+      "ambiguityLevel": "medium",
+      "defaultIngredientId": "ing_paprika_ground",
+      "defaultConfidence": 0.7,
+      "alternativeIngredientIds": [
+        "ing_bell_pepper_raw"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "spice_paprika_vs_bell_pepper"
+    },
+    {
+      "term": "روغن مایع",
+      "language": "fa",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_sunflower_oil",
+      "defaultConfidence": 0.55,
+      "alternativeIngredientIds": [
+        "ing_canola_oil",
+        "ing_olive_oil",
+        "ing_sunflower_oil"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "generic_cooking_oil_no_dedicated_entry"
+    },
+    {
+      "term": "روغن سرخ کردنی",
+      "language": "fa",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_sunflower_oil",
+      "defaultConfidence": 0.55,
+      "alternativeIngredientIds": [
+        "ing_canola_oil",
+        "ing_olive_oil",
+        "ing_sunflower_oil"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "generic_cooking_oil_no_dedicated_entry"
+    },
+    {
+      "term": "cooking oil",
+      "language": "en",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_sunflower_oil",
+      "defaultConfidence": 0.55,
+      "alternativeIngredientIds": [
+        "ing_canola_oil",
+        "ing_olive_oil",
+        "ing_sunflower_oil"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "generic_cooking_oil_no_dedicated_entry"
+    },
+    {
+      "term": "vegetable oil",
+      "language": "en",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_sunflower_oil",
+      "defaultConfidence": 0.55,
+      "alternativeIngredientIds": [
+        "ing_canola_oil",
+        "ing_olive_oil",
+        "ing_sunflower_oil"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "generic_cooking_oil_no_dedicated_entry"
+    },
+    {
+      "term": "sugar",
+      "language": "en",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_caster_sugar",
+      "defaultConfidence": 0.5,
+      "alternativeIngredientIds": [
+        "ing_caster_sugar",
+        "ing_brown_sugar",
+        "ing_powdered_sugar"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "no_dedicated_white_granulated_sugar_entry_nearest_caster_pending_founder_decision"
+    },
+    {
+      "term": "granulated sugar",
+      "language": "en",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_caster_sugar",
+      "defaultConfidence": 0.5,
+      "alternativeIngredientIds": [
+        "ing_caster_sugar",
+        "ing_brown_sugar",
+        "ing_powdered_sugar"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "no_dedicated_white_granulated_sugar_entry_nearest_caster_pending_founder_decision"
+    },
+    {
+      "term": "white sugar",
+      "language": "en",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_caster_sugar",
+      "defaultConfidence": 0.5,
+      "alternativeIngredientIds": [
+        "ing_caster_sugar",
+        "ing_brown_sugar",
+        "ing_powdered_sugar"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "no_dedicated_white_granulated_sugar_entry_nearest_caster_pending_founder_decision"
+    },
+    {
+      "term": "شکر",
+      "language": "fa",
+      "ambiguityLevel": "high",
+      "defaultIngredientId": "ing_caster_sugar",
+      "defaultConfidence": 0.5,
+      "alternativeIngredientIds": [
+        "ing_caster_sugar",
+        "ing_brown_sugar",
+        "ing_powdered_sugar"
+      ],
+      "requiresContextForHighConfidence": true,
+      "reviewReason": "no_dedicated_white_granulated_sugar_entry_nearest_caster_pending_founder_decision"
+    }
+  ],
+  "note": "Ambiguous terms resolved via policy with low/medium confidence + requiresContextForHighConfidence; never high-confidence single-ingredient binding.",
+  "preExistingAliasHomographsRecommendedForPolicyOrCleanup": [
+    {
+      "surface": "mais",
+      "codes": [
+        "ing_corn_kernels_canned",
+        "ing_frozen_corn_kernels"
+      ]
+    },
+    {
+      "surface": "paprika",
+      "codes": [
+        "ing_bell_pepper_raw",
+        "ing_paprika_ground"
+      ]
+    },
+    {
+      "surface": "raisins",
+      "codes": [
+        "ing_grape_raw",
+        "ing_raisins"
+      ]
+    },
+    {
+      "surface": "بامیه",
+      "codes": [
+        "ing_frozen_okra",
+        "ing_okra_raw"
+      ]
+    },
+    {
+      "surface": "حمص",
+      "codes": [
+        "ing_chickpeas_dry",
+        "ing_hummus_plain"
+      ]
+    },
+    {
+      "surface": "موسلی",
+      "codes": [
+        "ing_muesli",
+        "ing_muesli_plain"
+      ]
+    },
+    {
+      "surface": "کشک",
+      "codes": [
+        "ing_kashk_dry",
+        "ing_kashk_liquid"
+      ]
+    }
+  ],
+  "preExistingNote": "These cross-language alias homographs ALREADY existed in the base dictionary (0 introduced by this patch, 0 under native per-language keying). Recommend a future ambiguity-policy/cleanup pass; not modified here to stay in scope."
+}

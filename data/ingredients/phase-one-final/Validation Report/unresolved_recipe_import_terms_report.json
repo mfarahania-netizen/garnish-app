@@ -1,0 +1,103 @@
+{
+  "note": "Genuinely-absent ingredients. NO ingredientId created. Founder decides on critical hotfix.",
+  "criticalHotfixCandidates": [
+    {
+      "concept": "white/granulated sugar",
+      "occurrences": 4,
+      "exampleLines": [
+        "۲ قاشق غذاخوری شکر",
+        "2 tbsp sugar",
+        "۲ پیمانه شکر",
+        "شکر"
+      ],
+      "classification": "phase_one_necessary",
+      "criticalHotfixRecommended": true,
+      "currentHandling": "resolved via LOW-confidence ambiguity policy -> caster_sugar (nearest white sugar), flagged needsReview",
+      "recommendation": "Add a dedicated granulated white sugar ingredient (white_sugar/granulated_sugar). Founder approval required; caster_sugar is superfine white, not an exact granulated match.",
+      "newIngredientCreated": false
+    }
+  ],
+  "terms": [
+    {
+      "concept": "croutons",
+      "occurrences": 1,
+      "exampleLines": [
+        "2 cups croutons"
+      ],
+      "classification": "can_remain_unresolved",
+      "criticalHotfixRecommended": false,
+      "recommendation": "Salad garnish; optional. Could add later as processed_food.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "chili powder (generic blend)",
+      "occurrences": 1,
+      "exampleLines": [
+        "2 tbsp chili powder"
+      ],
+      "classification": "ambiguous",
+      "criticalHotfixRecommended": false,
+      "recommendation": "Generic blend varies; specific entries exist (cayenne_pepper_ground, paprika_ground, chili_pepper_raw). Optional generic blend entry.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "gochugaru (GAP)",
+      "occurrences": 1,
+      "exampleLines": [
+        "1 tbsp gochugaru"
+      ],
+      "classification": "can_remain_unresolved",
+      "criticalHotfixRecommended": false,
+      "recommendation": "Korean chili flakes; niche. gochujang exists. Optional add.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "cooking white wine (GAP)",
+      "occurrences": 1,
+      "exampleLines": [
+        "100 ml white wine"
+      ],
+      "classification": "can_remain_unresolved",
+      "criticalHotfixRecommended": false,
+      "recommendation": "Deglazing liquid; alcohol. Optional; often omitted in import.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "sushi/short-grain rice (GAP)",
+      "occurrences": 1,
+      "exampleLines": [
+        "2 cups sushi rice"
+      ],
+      "classification": "can_remain_unresolved",
+      "criticalHotfixRecommended": false,
+      "recommendation": "basmati/white/arborio exist; short-grain optional. Optional add short_grain_rice.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "shirataki (GAP)",
+      "occurrences": 1,
+      "exampleLines": [
+        "200 g shirataki noodles"
+      ],
+      "classification": "can_remain_unresolved",
+      "criticalHotfixRecommended": false,
+      "recommendation": "Konjac noodles; niche. Optional add.",
+      "newIngredientCreated": false
+    },
+    {
+      "concept": "white/granulated sugar",
+      "occurrences": 4,
+      "exampleLines": [
+        "۲ قاشق غذاخوری شکر",
+        "2 tbsp sugar",
+        "۲ پیمانه شکر",
+        "شکر"
+      ],
+      "classification": "phase_one_necessary",
+      "criticalHotfixRecommended": true,
+      "currentHandling": "resolved via LOW-confidence ambiguity policy -> caster_sugar (nearest white sugar), flagged needsReview",
+      "recommendation": "Add a dedicated granulated white sugar ingredient (white_sugar/granulated_sugar). Founder approval required; caster_sugar is superfine white, not an exact granulated match.",
+      "newIngredientCreated": false
+    }
+  ]
+}

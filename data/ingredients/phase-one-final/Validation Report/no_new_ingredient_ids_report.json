@@ -1,0 +1,9 @@
+{
+  "newIngredientIdsCreated": 0,
+  "ingredientCountBefore": 1008,
+  "ingredientCountAfter": 1008,
+  "ingredientIdsChanged": 0,
+  "codesChanged": 0,
+  "nutritionChanged": 0,
+  "verification": "byte-identical protected fields; only aliases/recipeInputAliases modified"
+}

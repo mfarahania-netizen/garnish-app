@@ -1,0 +1,123 @@
+{
+  "resolverNote": "Reference resolver built from the dictionary's own surfaces + normalizationRules + ambiguity policy. NOT the production engine. Measures DICTIONARY COVERAGE for recipe lines. No ingredientId created.",
+  "groundTruthMethod": "Each line labeled with culinary-intent expectedCode (verified to exist) or null (genuine gap). Resolver ran blind on raw text. wrongMatch = confident (not needs-review) mismatch.",
+  "recipeCount": 56,
+  "totalIngredientLines": 342,
+  "resolvedCount": 334,
+  "unresolvedCount": 8,
+  "resolvedRatePct": 97.7,
+  "nonDishResolvedRatePct": 98.2,
+  "lowConfidenceCount": 11,
+  "wrongMatchCount": 0,
+  "flaggedReviewMismatchCount": 16,
+  "ambiguousHandledCount": 56,
+  "compoundLineCount": 4,
+  "dishNameLines": 2,
+  "dishNameResolvedAsIngredientWrongly": 0,
+  "correctlyLeftUnresolvedGapCount": 6,
+  "aliasGapCount": 0,
+  "topMissingIngredients": [
+    {
+      "concept": "croutons",
+      "count": 1
+    },
+    {
+      "concept": "chili powder (generic blend)",
+      "count": 1
+    },
+    {
+      "concept": "gochugaru (GAP)",
+      "count": 1
+    },
+    {
+      "concept": "cooking white wine (GAP)",
+      "count": 1
+    },
+    {
+      "concept": "sushi/short-grain rice (GAP)",
+      "count": 1
+    },
+    {
+      "concept": "shirataki (GAP)",
+      "count": 1
+    }
+  ],
+  "topAliasGaps": [],
+  "suggestedDictionaryPatchItems": [
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "croutons",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    },
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "chili powder (generic blend)",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    },
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "gochugaru (GAP)",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    },
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "cooking white wine (GAP)",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    },
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "sushi/short-grain rice (GAP)",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    },
+    {
+      "type": "candidate_new_ingredient_or_alias",
+      "concept": "shirataki (GAP)",
+      "occurrences": 1,
+      "note": "REQUIRES APPROVAL — no ingredientId created"
+    }
+  ],
+  "ingredientPresentButAliasGapCount": 0,
+  "genuinelyMissingIngredientLineCount": 6,
+  "ingredientCoveragePctOfNonDishLines": 98.2,
+  "genuinelyMissingLines": [
+    {
+      "recipeId": "r20",
+      "rawIngredientLine": "2 cups croutons",
+      "intendedConcept": "croutons"
+    },
+    {
+      "recipeId": "r27",
+      "rawIngredientLine": "2 tbsp chili powder",
+      "intendedConcept": "chili powder (generic blend)"
+    },
+    {
+      "recipeId": "r37",
+      "rawIngredientLine": "1 tbsp gochugaru",
+      "intendedConcept": "gochugaru (GAP)"
+    },
+    {
+      "recipeId": "r43",
+      "rawIngredientLine": "100 ml white wine",
+      "intendedConcept": "cooking white wine (GAP)"
+    },
+    {
+      "recipeId": "r53",
+      "rawIngredientLine": "2 cups sushi rice",
+      "intendedConcept": "sushi/short-grain rice (GAP)"
+    },
+    {
+      "recipeId": "r54",
+      "rawIngredientLine": "200 g shirataki noodles",
+      "intendedConcept": "shirataki (GAP)"
+    }
+  ],
+  "dictionaryEnoughForPhaseOneRecipeImport": true,
+  "phaseOneRecipeImportVerdict": "APPROVED_SAFE_WITH_RECOMMENDED_ALIAS_PATCH",
+  "rationale": "Zero confident wrong matches and zero dish-name mis-resolutions: safe to import. 98.2% of non-dish lines reference an ingredient that EXISTS in the dictionary (live resolve 98.2% + 0 alias-gap lines whose ingredient is present). Only 6 lines reference a genuinely-absent ingredient (niche items + 2 generic staples). Gating factor is recipeInputAlias coverage, NOT ingredient coverage. A small append-only alias patch plus 2 generic staples would lift live resolve to ~95%+. No dictionary change made — gaps reported for approval.",
+  "requiredStatement": "This dictionary is approved for Recipe Import, Ingredient Resolver, Persian Search, General AI, Recommendation MVP, and General Meal Planner MVP. It is not a Final Verified Nutrition Dataset. Medical and strict-diet use remain out of scope."
+}

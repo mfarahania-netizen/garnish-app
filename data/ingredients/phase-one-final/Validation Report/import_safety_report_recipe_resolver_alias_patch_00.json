@@ -1,0 +1,24 @@
+{
+  "importableFiles": [
+    "Ingredient Dictionary/ingredient_dictionary_verified_structure_resolver_ready_1008_recipe_resolver_alias_patch_00.json",
+    "Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1008_only_recipe_resolver_alias_patch_00.json"
+  ],
+  "useArrayOnlyIfImporterExpectsArray": true,
+  "approvedFor": [
+    "Recipe Import",
+    "Ingredient Resolver",
+    "Persian Search",
+    "General AI",
+    "Recommendation MVP",
+    "General Meal Planner MVP"
+  ],
+  "notApprovedFor": [
+    "Final Verified Nutrition",
+    "Strict Diet Planning",
+    "Medical Nutrition Claims"
+  ],
+  "nutritionStatus": "UNCHANGED from quarantine patch 00; templated/quarantined values remain flagged; NOT source-verified.",
+  "newIngredientIdsCreated": 0,
+  "identityIntegrity": "protected fields byte-identical; only aliases/recipeInputAliases + ambiguity policy changed",
+  "requiredStatement": "This patch improves recipe resolver coverage by adding aliases and ambiguous-term handling only. It does not create new ingredient IDs and does not change nutrition. This is not a Final Verified Nutrition Dataset. Medical and strict-diet use remain out of scope."
+}

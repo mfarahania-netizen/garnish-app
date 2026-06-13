@@ -8,7 +8,7 @@ const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const REG = path.join(ROOT, 'data/ingredients/phase-one-final/Registry/normalized_alias_registry.json');
-const DICT = path.join(ROOT, 'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json');
+const DICT = path.join(ROOT, 'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1008_only_recipe_resolver_alias_patch_00.json');
 
 function normalize(input) {
   if (input == null) return '';

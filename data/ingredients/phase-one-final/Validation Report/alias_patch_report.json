@@ -1,0 +1,275 @@
+{
+  "appliedAliasAdditions": 53,
+  "skippedDueToCollision": [],
+  "additions": [
+    {
+      "surface": "all purpose flour",
+      "lang": "en",
+      "target": "all_purpose_flour"
+    },
+    {
+      "surface": "all-purpose flour",
+      "lang": "en",
+      "target": "all_purpose_flour"
+    },
+    {
+      "surface": "plain flour",
+      "lang": "en",
+      "target": "all_purpose_flour"
+    },
+    {
+      "surface": "آرد سفید",
+      "lang": "fa",
+      "target": "all_purpose_flour"
+    },
+    {
+      "surface": "beef broth",
+      "lang": "en",
+      "target": "beef_stock_liquid"
+    },
+    {
+      "surface": "vegetable broth",
+      "lang": "en",
+      "target": "vegetable_stock_liquid"
+    },
+    {
+      "surface": "veg broth",
+      "lang": "en",
+      "target": "vegetable_stock_liquid"
+    },
+    {
+      "surface": "besan",
+      "lang": "en",
+      "target": "chickpea_flour"
+    },
+    {
+      "surface": "gram flour",
+      "lang": "en",
+      "target": "chickpea_flour"
+    },
+    {
+      "surface": "chives",
+      "lang": "en",
+      "target": "chives_fresh"
+    },
+    {
+      "surface": "cocoa powder",
+      "lang": "en",
+      "target": "cocoa_powder_unsweetened"
+    },
+    {
+      "surface": "cocoa",
+      "lang": "en",
+      "target": "cocoa_powder_unsweetened"
+    },
+    {
+      "surface": "coconut milk",
+      "lang": "en",
+      "target": "coconut_milk_canned"
+    },
+    {
+      "surface": "شیر نارگیل",
+      "lang": "fa",
+      "target": "coconut_milk_canned"
+    },
+    {
+      "surface": "corn tortillas",
+      "lang": "en",
+      "target": "corn_tortilla"
+    },
+    {
+      "surface": "basil leaves",
+      "lang": "en",
+      "target": "basil_fresh"
+    },
+    {
+      "surface": "ginger",
+      "lang": "en",
+      "target": "ginger_root_raw"
+    },
+    {
+      "surface": "fresh ginger",
+      "lang": "en",
+      "target": "ginger_root_raw"
+    },
+    {
+      "surface": "green chili",
+      "lang": "en",
+      "target": "chili_pepper_raw"
+    },
+    {
+      "surface": "green chilies",
+      "lang": "en",
+      "target": "chili_pepper_raw"
+    },
+    {
+      "surface": "green chillies",
+      "lang": "en",
+      "target": "chili_pepper_raw"
+    },
+    {
+      "surface": "ground coriander",
+      "lang": "en",
+      "target": "coriander_seed_ground"
+    },
+    {
+      "surface": "coriander powder",
+      "lang": "en",
+      "target": "coriander_seed_ground"
+    },
+    {
+      "surface": "kalamata olives",
+      "lang": "en",
+      "target": "black_olives_pitted"
+    },
+    {
+      "surface": "kalamata",
+      "lang": "en",
+      "target": "black_olives_pitted"
+    },
+    {
+      "surface": "nori",
+      "lang": "en",
+      "target": "nori_sheets"
+    },
+    {
+      "surface": "panko",
+      "lang": "en",
+      "target": "breadcrumbs_panko"
+    },
+    {
+      "surface": "red bell pepper",
+      "lang": "en",
+      "target": "bell_pepper_raw"
+    },
+    {
+      "surface": "green bell pepper",
+      "lang": "en",
+      "target": "bell_pepper_raw"
+    },
+    {
+      "surface": "yellow bell pepper",
+      "lang": "en",
+      "target": "bell_pepper_raw"
+    },
+    {
+      "surface": "bell peppers",
+      "lang": "en",
+      "target": "bell_pepper_raw"
+    },
+    {
+      "surface": "avocados",
+      "lang": "en",
+      "target": "avocado_raw"
+    },
+    {
+      "surface": "bananas",
+      "lang": "en",
+      "target": "banana_raw"
+    },
+    {
+      "surface": "scallions",
+      "lang": "en",
+      "target": "scallion_raw"
+    },
+    {
+      "surface": "spring onion",
+      "lang": "en",
+      "target": "scallion_raw"
+    },
+    {
+      "surface": "spring onions",
+      "lang": "en",
+      "target": "scallion_raw"
+    },
+    {
+      "surface": "green onion",
+      "lang": "en",
+      "target": "scallion_raw"
+    },
+    {
+      "surface": "green onions",
+      "lang": "en",
+      "target": "scallion_raw"
+    },
+    {
+      "surface": "silken tofu",
+      "lang": "en",
+      "target": "tofu_firm"
+    },
+    {
+      "surface": "soft tofu",
+      "lang": "en",
+      "target": "tofu_firm"
+    },
+    {
+      "surface": "vermicelli noodles",
+      "lang": "en",
+      "target": "vermicelli_pasta_dry"
+    },
+    {
+      "surface": "vermicelli",
+      "lang": "en",
+      "target": "vermicelli_pasta_dry"
+    },
+    {
+      "surface": "masoor",
+      "lang": "en",
+      "target": "red_lentils_dry"
+    },
+    {
+      "surface": "ادویه پلویی",
+      "lang": "fa",
+      "target": "advieh_polo"
+    },
+    {
+      "surface": "ساق گوسفند",
+      "lang": "fa",
+      "target": "lamb_shank_raw"
+    },
+    {
+      "surface": "ماهیچه گوسفند",
+      "lang": "fa",
+      "target": "lamb_shank_raw"
+    },
+    {
+      "surface": "ساق بره",
+      "lang": "fa",
+      "target": "lamb_shank_raw"
+    },
+    {
+      "surface": "لوبیا سبز",
+      "lang": "fa",
+      "target": "green_beans_raw"
+    },
+    {
+      "surface": "نعناع داغ",
+      "lang": "fa",
+      "target": "dried_mint"
+    },
+    {
+      "surface": "نعناع داغ خشک",
+      "lang": "fa",
+      "target": "dried_mint"
+    },
+    {
+      "surface": "گل سرخ خشک",
+      "lang": "fa",
+      "target": "dried_rose_petals"
+    },
+    {
+      "surface": "گندم پوست کنده",
+      "lang": "fa",
+      "target": "wheat_berries_dry"
+    },
+    {
+      "surface": "خرما",
+      "lang": "fa",
+      "target": "pitted_dates"
+    }
+  ],
+  "appendOnly": true,
+  "fieldsTouched": [
+    "recipeInputAliases"
+  ]
+}

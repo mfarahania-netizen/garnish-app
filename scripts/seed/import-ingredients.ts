@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const INGREDIENT_DICTIONARY_PATH = path.resolve(
   process.cwd(),
-  'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1000_only_closeout_patch_02_1.json',
+  'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1008_only_recipe_resolver_alias_patch_00.json',
 );
 
 async function main() {
