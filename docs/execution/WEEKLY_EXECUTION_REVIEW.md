@@ -63,3 +63,10 @@
 - **UI migration FROZEN after Phase 4A visual rejection.** Phase 4A (Home/Command Center) passed technical scans but failed visual/product-quality review. CA must not continue visual redesign without an approved visual spec from Founder/Claude Max/UX. Phase 4A technical cleanup is kept (not rolled back); visual direction marked rejected. Status tracked in `docs/execution/UI_MIGRATION_STATUS.md`; evidence in `docs/qa/phase4a/`.
 - Phase 3 Shell/Nav: conditionally accepted · Phase 3.1: accepted · Phase 4A: technical pass / visual rejected · Phase 4B+: blocked.
 - **Infrastructure work resumes** (non-UI). **Next infrastructure task: Event Envelope code contract** (E43-W6, per ADR-0001 / Constitution A1.4) — typed, testable canonical event envelope schema + validation + PII guard. No DB migration (additive-only when adopted, gated on approval).
+
+## Infrastructure acceptance + next build task — 2026-06-13
+- **E43 Event Envelope code contract: ACCEPTED by report** (`docs/execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md`) — 32 tests green, build green, no DB migration.
+- **Ingredient Dictionary active-source Recipe Resolver Alias Patch 00: ACCEPTED by report** (`docs/execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md`) — 1008 ingredients, no new ingredientIds, no nutrition changes; validated against real data.
+- **DB re-import DEFERRED** as a separate controlled task (active import path updated to the new 1008 dictionary; the live DB has not been re-imported).
+- **UI remains FROZEN** (no Phase 4B; no visual-surface changes) pending an approved visual spec.
+- Hygiene: untracked source package `garnish_food_data_v2_phase_one_recipe_resolver_alias_patch_00/` removed from repo root (redundant; archive retained). Next build task: **E47-A1 AI Core skeleton** (orchestrator + tool registry + guards + AICallLog contracts; no autonomous agents, no vision, no medical advice).
