@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { FavoritesModule } from './favorites/favorites.module';
 import { MealPlansModule } from './meal-plans/meal-plans.module';
 import { AiModule } from './ai/ai.module';
+import { AiCoreModule } from './ai/ai-core.module';
 import { ShoppingListModule } from './shopping-list/shopping-list.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { SupportModule } from './support/support.module';
@@ -45,6 +46,7 @@ import { GovernanceModule } from './governance/governance.module';
     FavoritesModule,
     MealPlansModule,
     AiModule,
+    AiCoreModule,
     ShoppingListModule,
     NotificationsModule,
     SupportModule,
