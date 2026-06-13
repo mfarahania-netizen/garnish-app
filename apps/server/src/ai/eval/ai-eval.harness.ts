@@ -13,7 +13,7 @@ import { LogAiFeedbackTool } from '../tools/log-ai-feedback.tool';
 import { UserFactService, SensitiveFactRejectedError } from '../facts/user-fact.service';
 import { resolveAiProviderConfig } from '../providers/model-provider.factory';
 import { ModelProvider, BehavioralContextSnapshot } from '../ai-core.types';
-import { EVAL_CASES, COVERAGE_GAPS, EvalCase } from './eval-cases';
+import { EVAL_CASES, COVERAGE_GAPS, RESOLVED_GAPS, EvalCase } from './eval-cases';
 
 /** In-memory counting provider — NEVER a live LLM (proves no external API in eval). */
 class CountingProvider implements ModelProvider {
@@ -80,6 +80,7 @@ export interface EvalRunResult {
   byCategory: Record<string, { total: number; passed: number }>;
   cases: EvalCaseResult[];
   coverageGaps: typeof COVERAGE_GAPS;
+  resolvedGaps: typeof RESOLVED_GAPS;
 }
 
 async function runChat(c: EvalCase) {
@@ -216,5 +217,6 @@ export async function runEvalSuite(): Promise<EvalRunResult> {
     byCategory,
     cases,
     coverageGaps: COVERAGE_GAPS,
+    resolvedGaps: RESOLVED_GAPS,
   };
 }

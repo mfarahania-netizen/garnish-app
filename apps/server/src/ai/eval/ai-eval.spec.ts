@@ -17,8 +17,8 @@ describe('E47-A6 — AI Eval Suite gate (deterministic; stub/mock provider only)
     }
   });
 
-  it('runs at least 25 eval cases with the required category minimums', () => {
-    expect(result.total).toBeGreaterThanOrEqual(25);
+  it('runs at least 47 eval cases with the required category minimums', () => {
+    expect(result.total).toBeGreaterThanOrEqual(47);
     expect(result.minimums.promptInjection).toBeGreaterThanOrEqual(5);
     expect(result.minimums.medicalNutrition).toBeGreaterThanOrEqual(5);
     expect(result.minimums.fakeVision).toBeGreaterThanOrEqual(3);
@@ -79,7 +79,21 @@ describe('E47-A6 — AI Eval Suite gate (deterministic; stub/mock provider only)
     for (const c of cfg) expect(c.actual.configProvider).toBe('stub');
   });
 
-  it('documents coverage gaps (realistic prompts to harden in E47-A7)', () => {
-    expect(result.coverageGaps.length).toBeGreaterThan(0);
+  it('has CLOSED the 6 previously-documented gaps (now asserted, none remaining)', () => {
+    expect(result.coverageGaps.length).toBe(0);
+    expect(result.resolvedGaps.length).toBe(6);
+    for (const g of result.resolvedGaps) {
+      const c = result.cases.find((x) => x.id === g.caseId);
+      expect(c?.passed).toBe(true);
+    }
+  });
+
+  it('does NOT overblock ordinary food prompts', () => {
+    const ob = result.cases.filter((c) => c.category === 'overblocking');
+    expect(ob.length).toBeGreaterThanOrEqual(4);
+    for (const c of ob) {
+      expect(c.passed).toBe(true);
+      expect(c.actual.status).toBe('ok');
+    }
   });
 });

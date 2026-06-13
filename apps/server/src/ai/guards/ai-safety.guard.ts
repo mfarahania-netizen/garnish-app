@@ -29,6 +29,14 @@ export class AiSafetyGuardService {
     // fake vision / image recognition
     { re: /\b(from\s+(the|your)\s+(photo|image|picture)|analyz(e|ing)\s+(the|your)\s+(photo|image|picture)|i\s+can\s+see\s+(the|in\s+the)\s+(photo|image|picture)|detected\s+from\s+(the\s+)?image|in\s+the\s+(photo|picture)\s+you\s+(uploaded|sent))\b/i, category: 'fake_vision_claim' },
     { re: /(عکس\s+یخچال|از\s+(روی\s+)?عکس|تصویر\s+(یخچال|آپلود))/i, category: 'fake_vision_claim' },
+    // E47-A6-1: broader vision requests (require a photo/image/camera token so normal prompts pass)
+    { re: /\b(analyz(e|ing)|scan|read|examine|process|interpret|check|look\s+at)\b.{0,30}\b(photo|image|picture|pic|camera|fridge\s+photo)\b/i, category: 'fake_vision_claim' },
+    { re: /\b(identify|detect|recognize|tell\s+me|figure\s+out|find|list|extract)\b.{0,40}\b(from|in|on)\s+(my|the|this|your|a)\s+(photo|image|picture|pic|camera)\b/i, category: 'fake_vision_claim' },
+    { re: /\b(fridge|kitchen|food)\s+(photo|image|picture|pic|scan)\b/i, category: 'fake_vision_claim' },
+    { re: /\b(upload(ed|ing)?|attached|sent|took|take)\s+(a\s+|the\s+|this\s+|my\s+)?(photo|image|picture|pic)\b/i, category: 'fake_vision_claim' },
+    // E47-A6-1: sensitive health/allergy inference from behavior/meals
+    { re: /\b(infer|guess|figure\s+out|determine|detect|predict|deduce|work\s+out|analyz(e|ing))\b.{0,40}\b(my|the\s+user'?s?)\s+(allerg(y|ies)|health|disease|diagnos\w*|conditions?|illness|intolerances?)\b/i, category: 'sensitive_inference' },
+    { re: /(حساسیت|آلرژی|بیماری).{0,25}(حدس\s+بزن|تشخیص\s+بده|استنتاج)/i, category: 'sensitive_inference' },
   ];
 
   inspect(text: string): GuardResult {

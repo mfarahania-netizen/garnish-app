@@ -18,6 +18,9 @@ export class PromptInjectionGuardService {
     { re: /\b(developer|debug|god)\s*mode\b|\bjailbreak\b|\bDAN\b/i, reason: 'jailbreak-mode' },
     { re: /override\s+(your\s+)?(safety|rules?|guardrails?|restrictions?)/i, reason: 'override-safety' },
     { re: /bypass\s+(the\s+)?(safety|filter|guard|restrictions?)/i, reason: 'bypass-safety' },
+    // E47-A6-1: "disable safety rules" / "turn off guardrails" + variants
+    { re: /\b(disable|turn\s+off|deactivate|switch\s+off|shut\s+off|remove)\s+(your\s+|the\s+|all\s+)?(safety|guardrails?|guard|filters?|restrictions?|rules?|policy|policies|moderation|protections?)\b/i, reason: 'disable-safety' },
+    { re: /ignore\s+(the\s+|your\s+|all\s+)?(safety|content)\s+(policy|policies|rules?|guidelines?|filters?)/i, reason: 'ignore-safety-policy' },
     // Persian
     { re: /دستور(ات)?\s+(قبلی|بالا|سیستم)\s+را\s+نادیده/i, reason: 'ignore-previous-fa' },
     { re: /نقش\s+.{0,20}\s+را\s+بازی\s+کن/i, reason: 'role-override-fa' },

@@ -14,12 +14,16 @@ import { GuardResult } from '../ai-core.types';
 @Injectable()
 export class NutritionClaimGuardService {
   private readonly healthClaimPatterns: RegExp[] = [
-    /\b(lowers?|reduces?|controls?|cures?|prevents?|treats?|heals?)\b.{0,30}\b(cholesterol|blood\s+sugar|diabetes|cancer|disease|blood\s+pressure|weight)\b/i,
+    // medical/therapeutic-outcome verb + a health object (objects keep "cured meat" etc. safe)
+    /\b(lowers?|reduces?|controls?|cures?|prevents?|treats?|heals?|reverses?|eliminates?|fights?)\b.{0,30}\b(cholesterol|blood\s+sugar|diabetes|cancer|disease|blood\s+pressure|weight|inflammation|arthritis|illness|infection|acne|migraines?|insomnia|anxiety|depression|digestion|immunity|bloating|hypertension)\b/i,
     /\b(helps?\s+you\s+)?(lose|burn)\s+(weight|fat)\b/i,
     /\b(boosts?|strengthens?)\s+(your\s+)?(immune\s+system|immunity|metabolism)\b/i,
     /\b(good|great|excellent|perfect|ideal|beneficial|recommended)\s+for\s+(your\s+)?(diabetes|heart|kidney|liver|cholesterol|blood\s+pressure)\b/i,
     /\b(clinically|scientifically)\s+proven\b|\bdoctor[-\s]?recommended\b|\bmedically\s+proven\b/i,
-    /(کاهش\s+وزن|کاهش\s+کلسترول|کنترل\s+(قند|دیابت)|تقویت\s+(سیستم\s+ایمنی|متابولیسم)|درمان\s+بیماری)/i,
+    // E47-A6-1: guaranteed medical/weight outcomes
+    /\bguarantee[ds]?\b.{0,25}\b(weight\s+loss|fat\s+loss|cures?|cure|results?|slim|detox|heal|lose\s+\d)/i,
+    /\b(weight|fat)\s+loss\b.{0,15}\b(guarantee[ds]?|in\s+\d+\s+days?)/i,
+    /(کاهش\s+وزن|کاهش\s+کلسترول|کنترل\s+(قند|دیابت)|تقویت\s+(سیستم\s+ایمنی|متابولیسم)|درمان\s+بیماری|تضمین\s+کاهش\s+وزن)/i,
   ];
 
   /** exact nutrient-number assertions (e.g. "200 calories", "30 g protein", "150 mg sodium"). */
