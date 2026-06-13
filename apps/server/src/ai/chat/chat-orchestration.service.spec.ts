@@ -85,6 +85,17 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator)', () =>
     expect(aiCreate.mock.calls[0][0].data.status).toBe('blocked_safety');
   });
 
+  it('blocks a fake-vision chat and returns the "image analysis not available" message', async () => {
+    const { svc, model, legacyAi } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'analyze this fridge photo and list the ingredients', conversationId: 'c-vision' });
+    expect(out.status).toBe('blocked_safety');
+    expect(model.generate).not.toHaveBeenCalled();
+    expect(legacyAi.handlePrompt).not.toHaveBeenCalled();
+    expect(out.reply).toContain('تصویر'); // vision-specific safe message
+    expect(out.reply).toContain('Image analysis is not available');
+    expect(out.reply).not.toMatch(/\bI can see\b|detected/i); // no fake vision claim
+  });
+
   it('always provides a snapshot (never bypasses the orchestrator fail-fast)', async () => {
     const { svc } = makeChat();
     // a valid snapshot is built internally → the call succeeds rather than throwing

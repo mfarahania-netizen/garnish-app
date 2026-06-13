@@ -57,6 +57,7 @@ export class ChatOrchestrationService {
     let model: string | null = STUB_MODEL;
     let aiCallLogId: string | null = null;
     let blocked = false;
+    let reasons: string[] = [];
 
     try {
       const result = await this.orchestrator.run({
@@ -70,6 +71,7 @@ export class ChatOrchestrationService {
       model = result.model ?? STUB_MODEL;
       aiCallLogId = result.aiCallLogId;
       blocked = result.blocked;
+      reasons = result.reasons;
     } catch (err) {
       // The orchestrator fails fast without a valid snapshot — surface it safely (no leak).
       const rejected = err instanceof MissingBehavioralContextError;
@@ -91,7 +93,7 @@ export class ChatOrchestrationService {
 
     let reply: string;
     if (blocked || status === 'error') {
-      reply = this.safeBlockedReply(status);
+      reply = this.safeBlockedReply(status, reasons);
     } else {
       // safe prompt → deterministic recipe-search reply (rule-based; live Gemini disabled in A3)
       reply = await this.legacyAi.handlePrompt(input.prompt, input.userId);
@@ -111,7 +113,11 @@ export class ChatOrchestrationService {
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */
-  private safeBlockedReply(status: AiCallStatus): string {
+  private safeBlockedReply(status: AiCallStatus, reasons: string[] = []): string {
+    // E47-A7: explicit "image analysis unavailable" message when a vision request is refused.
+    if (status === 'blocked_safety' && reasons.includes('fake_vision_claim')) {
+      return 'تحلیل تصویر در این نسخه در دسترس نیست؛ من فقط دستیار آشپزی متنی هستم. لطفاً مواد یا اسم غذا را بنویس. (Image analysis is not available in this build.)';
+    }
     switch (status) {
       case 'blocked_injection':
         return 'این درخواست قابل پردازش نیست. لطفاً سؤال آشپزی‌ات را ساده و مستقیم بپرس.';

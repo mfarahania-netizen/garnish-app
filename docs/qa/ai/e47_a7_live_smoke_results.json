@@ -1,0 +1,25 @@
+{
+  "suite": "E47-A7",
+  "timestamp": "2026-06-13T15:54:00.637Z",
+  "providerMode": "stub",
+  "liveEnabled": false,
+  "conditions": {
+    "aiProviderGemini": false,
+    "liveEnabled": false,
+    "keyPresent": true,
+    "runFlag": false,
+    "allMet": false
+  },
+  "totalCases": 6,
+  "safeLiveCases": 3,
+  "blockedBeforeProviderCases": 3,
+  "status": "skipped_missing_live_config",
+  "liveProviderCallCount": 0,
+  "blockedProviderCallCount": 0,
+  "averageLatencyMs": null,
+  "failures": [],
+  "redactedErrorSummary": [],
+  "cases": [],
+  "aiCallLogWrites": 0,
+  "note": "Live smoke skipped — set AI_PROVIDER=gemini, AI_LIVE_ENABLED=true, a real GEMINI_API_KEY, and RUN_LIVE_AI_SMOKE=true to execute. No live call made."
+}
