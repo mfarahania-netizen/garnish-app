@@ -45,8 +45,14 @@
 ## Security
 - [RBAC Route Matrix](security/RBAC_ROUTE_MATRIX.md) ·
   [E1 Secret Incident Status](security/E1_SECRET_INCIDENT_STATUS.md) ·
-  [E1 Secret Purge Runbook](security/E1_secret_purge_runbook.md) ·
-  [E39/R16 Erasure Coverage Audit](security/E39_R16_ERASURE_COVERAGE_AUDIT.md) (verdict FAIL — R16 OPEN)
+  [E1 Secret Purge Runbook](security/E1_secret_purge_runbook.md)
+- **E39 / R16 GDPR privacy track** (erasure / export / retention):
+  [Final Privacy Gate](security/E39_FINAL_PRIVACY_GATE_REPORT.md) (**R16 BASELINE_CLOSED for dev/beta** — controlled prune deferred) ·
+  [R16 Coverage Audit](security/E39_R16_ERASURE_COVERAGE_AUDIT.md) (original FAIL snapshot, now remediated) ·
+  [E39-1C Transactional Erasure](security/E39_1C_TRANSACTIONAL_ERASURE_SERVICE_REPORT.md) ·
+  [E39-1C Disposable-DB Verify](security/E39_1C_DISPOSABLE_DB_ERASURE_VERIFY_REPORT.md) ·
+  [E39-1D GDPR Export Endpoint](security/E39_1D_GDPR_USER_EXPORT_ENDPOINT_REPORT.md) ·
+  [E39-1E Retention Cron Policy](security/E39_1E_RETENTION_CRON_POLICY_REPORT.md)
 
 ## QA reports
 - AI eval results: [e47_a6_eval_results.json](qa/ai/e47_a6_eval_results.json) ·

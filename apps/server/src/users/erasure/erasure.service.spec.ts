@@ -126,7 +126,9 @@ describe('ErasureService (E39-1C)', () => {
 describe('UsersService.deleteUser delegation (E39-1C wiring)', () => {
   it('DELETE /users/me path delegates to ErasureService.eraseUser with actorType "self"', async () => {
     const erasureService = { eraseUser: jest.fn(async () => ({ status: 'erased', erasureEventId: 'evt-1', summary: {} })) };
-    const service = new UsersService({} as never, erasureService as never);
+    // UsersService(prisma, erasureService, userExportService) — only erasureService is exercised here;
+    // the export service is a stub (E39-1D added it to the constructor; keep this wiring test in sync).
+    const service = new UsersService({} as never, erasureService as never, {} as never);
 
     const result = await service.deleteUser('user-uuid-1');
 

@@ -1,5 +1,14 @@
 # E39 / R16 — Erasure / Export / Retention Coverage Audit
 
+> **⏩ CLOSURE UPDATE (2026-06-14) — this 2026-06-13 audit recorded the ORIGINAL FAIL state and is kept as history.**
+> Every FAIL item below has since been remediated and re-verified at the **E39 Final Privacy Gate**: the 4
+> `Restrict` relations are now `Cascade` and the 12 orphan `userId` models now carry a `User` FK (E39-1A);
+> erasure is transactional with audit-long tombstones (E39-1B/1C); `GET /users/me/export` exists (E39-1D);
+> retention is a dry-run-only policy with the legacy destructive cron neutralized (E39-1E / E39-1E-1).
+> Current FK model = **36 User FKs (30 Cascade / 6 SetNull / 0 Restrict / 0 orphan userId)**. **R16 verdict is now
+> BASELINE_CLOSED for dev/beta** (controlled destructive prune deferred). See
+> [`E39_FINAL_PRIVACY_GATE_REPORT.md`](E39_FINAL_PRIVACY_GATE_REPORT.md). The matrix below is the historical FAIL snapshot.
+
 **Date:** 2026-06-13 · **Owner:** EL / ADV · **Scope:** audit-only (no schema/data change). Triggered by R16
 + the new E47 AI-Core models (AICallLog / ChatMessage / UserFact). Source: `apps/server/prisma/schema.prisma`
 (49 models) + `users.service.deleteUser`.

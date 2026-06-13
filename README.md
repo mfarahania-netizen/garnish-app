@@ -7,12 +7,12 @@
 >
 > **Doc roles:** this root README = developer overview + current status snapshot · [`docs/README.md`](docs/README.md) = documentation index · [`data/README.md`](data/README.md) = data-layer source of truth · the Constitution = execution source of truth.
 
-## Current status snapshot (updated 2026-06-13)
+## Current status snapshot (updated 2026-06-14)
 - **UI migration: FROZEN** after Phase 4A (Home) — *technical pass, visual/product-quality rejected*. No Phase 4B until an approved visual spec. See [UI_MIGRATION_STATUS](docs/execution/UI_MIGRATION_STATUS.md).
 - **AI Core (E47 A1–A7):** single Orchestrator + mandatory BehavioralContextSnapshot · DB persistence (AICallLog / ChatMessage / UserFact) · legacy chat routed **through** the orchestrator · real read-only tools (**exactly 4**) · Gemini provider **behind** the provider interface · deterministic eval gate (51/51) + guard hardening · controlled live-smoke gate (built; **skips safely by default**).
 - **Live Gemini product behavior is NOT enabled** (stub default; `AI_LIVE_ENABLED=false`). **AI Core is not complete.**
-- **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **122** (v0.5.4 final candidate). **Nutrition is not source-locked / not a final verified dataset.** **DB re-import deferred.** See [data/README](data/README.md).
-- **Open security / compliance:** E1 secret **history purge deferred**; **R16 / E39 GDPR erasure still open**.
+- **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **200** (v0.6.1) **dev/preview import** to local `garnish_db` (2026-06-13) — superset upsert of the prior 122 (0 deletions, interactions preserved); **not final production data**, production import remains a separate gated decision. **Nutrition is not source-locked / not a final verified dataset.** See [data/README](data/README.md).
+- **Open security / compliance:** E1 secret **history purge deferred** (R-E1-HISTORY-DEAD-SECRETS — keys already rotated, repo private). **R16 / E39 GDPR privacy = BASELINE-CLOSED for dev/beta** (2026-06-14 final gate: erasure + export + retention-dry-run verified; legacy destructive cron neutralized) — **controlled destructive prune deferred** as a future operational task. See [E39 Final Privacy Gate](docs/security/E39_FINAL_PRIVACY_GATE_REPORT.md).
 
 ## 1. What Garnish OS is
 An AI-native food-intelligence product (PWA): recipe discovery, meal planning, a grocery list, and an
