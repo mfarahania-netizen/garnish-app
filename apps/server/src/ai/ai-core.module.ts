@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '../prisma/prisma.module';
 import { AI_MODEL_PROVIDER } from './ai-core.types';
 import { StubModelProvider } from './model/stub-model-provider';
 import { AiOrchestratorService } from './orchestrator/ai-orchestrator.service';
@@ -9,6 +10,8 @@ import { AiSafetyGuardService } from './guards/ai-safety.guard';
 import { NutritionClaimGuardService } from './guards/nutrition-claim.guard';
 import { AiCostControllerService } from './cost/ai-cost-controller.service';
 import { AiCallLogService } from './logging/ai-call-log.service';
+import { ChatMessageService } from './chat/chat-message.service';
+import { UserFactService } from './facts/user-fact.service';
 
 /**
  * AI Core v1 skeleton (E47-A1).
@@ -22,6 +25,7 @@ import { AiCallLogService } from './logging/ai-call-log.service';
  * Coexists with the legacy AiModule; routing legacy calls through the orchestrator is E47-A2.
  */
 @Module({
+  imports: [PrismaModule],
   providers: [
     AiOrchestratorService,
     ToolRegistryService,
@@ -31,6 +35,8 @@ import { AiCallLogService } from './logging/ai-call-log.service';
     NutritionClaimGuardService,
     AiCostControllerService,
     AiCallLogService,
+    ChatMessageService,
+    UserFactService,
     { provide: AI_MODEL_PROVIDER, useClass: StubModelProvider },
   ],
   exports: [
@@ -39,6 +45,8 @@ import { AiCallLogService } from './logging/ai-call-log.service';
     BehavioralContextSnapshotService,
     AiCallLogService,
     AiCostControllerService,
+    ChatMessageService,
+    UserFactService,
   ],
 })
 export class AiCoreModule {}

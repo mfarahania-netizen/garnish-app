@@ -77,6 +77,7 @@ export interface AiCallRequest {
   /** MANDATORY — the orchestrator fails fast if this is missing/invalid. */
   snapshot?: BehavioralContextSnapshot | null;
   surface?: string;
+  conversationId?: string;
   estimatedTokens?: number;
   /** overrides snapshot.nutritionSourceLocked when provided. */
   nutritionSourceLocked?: boolean;
@@ -90,20 +91,6 @@ export interface AiCallResult {
   guardHits: string[];
   toolCalls: string[];
   reasons: string[];
-}
-
-/** Shape recorded by AiCallLogService (persistence to a Prisma model deferred — see report). */
-export interface AICallRecord {
-  userId: string;
-  model: string | null;
-  status: AiCallStatus;
-  latencyMs: number;
-  estimatedTokens: number | null;
-  estimatedCostUsd: number | null;
-  guardHits: string[];
-  toolCalls: string[];
-  surface?: string;
-  createdAt: string;
 }
 
 /** Thrown when an AI call is attempted without a valid BehavioralContextSnapshot. */

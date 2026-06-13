@@ -40,6 +40,11 @@ model User {
   allergies   UserAllergy[]
   cuisines    UserCuisine[]
   healthGoals UserHealthGoal[]
+
+  // AI Core v1 (E47-A2) — additive
+  aiCallLogs   AICallLog[]
+  chatMessages ChatMessage[]
+  userFacts    UserFact[]
 }
 
 model UserPreference {
@@ -663,4 +668,71 @@ model ExperimentAssignment {
   createdAt    DateTime   @default(now())
 
   @@unique([userId, experimentId])
+}
+
+// ============================================================
+// AI Core v1 persistence (E47-A2) — ADDITIVE ONLY.
+// Makes every orchestrator call auditable. No product-scope change.
+// JSON columns store guard hits / tool calls / PII-free metadata.
+// ============================================================
+
+// Audit record for every AI call routed through the orchestrator (success or blocked).
+model AICallLog {
+  id                    String   @id @default(uuid())
+  userId                String?
+  user                  User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  eventId               String? // link to a canonical event envelope (ADR-0001)
+  conversationId        String?
+  surface               String?
+  model                 String
+  provider              String
+  status                String // ok | blocked_injection | blocked_safety | blocked_nutrition | blocked_cost | error
+  latencyMs             Int?
+  estimatedInputTokens  Int?
+  estimatedOutputTokens Int?
+  estimatedCost         Float?
+  guardHits             Json // string[] — guard categories that fired
+  toolCalls             Json // string[] — tool names invoked
+  metadata              Json // PII-free only (assertNoPIIInMetadata enforced in the service)
+  errorCode             String?
+  errorMessage          String? // sanitized; never raw secrets/PII/prompt text
+  createdAt             DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([conversationId])
+}
+
+// Persisted chat messages for AI Core v1 (no medical/vision claim expansion).
+model ChatMessage {
+  id                  String   @id @default(uuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId      String
+  role                String // user | assistant | system | tool
+  content             String
+  contentSafetyStatus String?
+  model               String?
+  aiCallLogId         String?
+  createdAt           DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([conversationId, createdAt])
+}
+
+// Safe, non-sensitive user memory/facts. Sensitive health/medical facts are rejected by the service.
+model UserFact {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key        String
+  value      Json
+  source     String
+  confidence Float?
+  expiresAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, key])
+  @@index([userId])
 }

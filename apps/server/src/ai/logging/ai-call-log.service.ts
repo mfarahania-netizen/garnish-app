@@ -1,38 +1,100 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AICallRecord } from '../ai-core.types';
+import { PrismaService } from '../../prisma/prisma.service';
+import { AiCallStatus } from '../ai-core.types';
+import { assertNoPIIInMetadata, PIIDetectedError } from '../../analytics/event-envelope.schema';
 
 /**
- * AI Call Log (E47-A1).
+ * AI Call Log (E47-A2) — DATABASE-BACKED.
  *
- * Records every AI call's model, latency, estimated tokens/cost, guard hits, tool calls, and status.
- *
- * Persistence note: there is no Prisma `AICallLog` model yet. A1 keeps an in-memory sink + structured
- * log line. Durable persistence requires an ADDITIVE, nullable `AICallLog` table — proposed in the
- * E47-A1 report and gated on Founder approval (no schema change made here).
+ * Persists an audit row for EVERY orchestrator call (success or blocked) to the `AICallLog` table.
+ * Privacy guarantees:
+ *  - metadata is checked with `assertNoPIIInMetadata`; if PII is detected the metadata is REDACTED
+ *    (replaced with a marker), never stored raw.
+ *  - errorMessage is sanitized (emails / API keys / bearer tokens / JWTs redacted, length-capped).
+ *  - prompt text is never persisted here.
+ *  - logging never throws — a persistence failure must not break the AI call.
  */
-export type AICallLogInput = Omit<AICallRecord, 'createdAt'>;
+export interface AICallLogInput {
+  userId?: string | null;
+  eventId?: string | null;
+  conversationId?: string | null;
+  surface?: string | null;
+  model: string | null;
+  provider: string | null;
+  status: AiCallStatus;
+  latencyMs?: number | null;
+  estimatedInputTokens?: number | null;
+  estimatedOutputTokens?: number | null;
+  estimatedCost?: number | null;
+  guardHits: string[];
+  toolCalls: string[];
+  metadata?: Record<string, unknown> | null;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+}
 
 @Injectable()
 export class AiCallLogService {
   private readonly logger = new Logger(AiCallLogService.name);
-  private readonly sink: AICallRecord[] = [];
 
-  record(entry: AICallLogInput): AICallRecord {
-    const rec: AICallRecord = { ...entry, createdAt: new Date().toISOString() };
-    this.sink.push(rec);
-    this.logger.log(
-      `AICall status=${rec.status} model=${rec.model ?? '-'} latencyMs=${rec.latencyMs} ` +
-        `tokens=${rec.estimatedTokens ?? '-'} cost=${rec.estimatedCostUsd ?? '-'} ` +
-        `guards=[${rec.guardHits.join(',')}] tools=[${rec.toolCalls.join(',')}]`,
-    );
-    return rec;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async record(input: AICallLogInput): Promise<{ id: string } | null> {
+    const metadata = this.sanitizeMetadata(input.metadata);
+    const errorMessage = this.sanitizeError(input.errorMessage);
+    try {
+      const row = await this.prisma.aICallLog.create({
+        data: {
+          userId: input.userId ?? null,
+          eventId: input.eventId ?? null,
+          conversationId: input.conversationId ?? null,
+          surface: input.surface ?? null,
+          model: input.model ?? 'unknown',
+          provider: input.provider ?? 'unknown',
+          status: input.status,
+          latencyMs: input.latencyMs ?? null,
+          estimatedInputTokens: input.estimatedInputTokens ?? null,
+          estimatedOutputTokens: input.estimatedOutputTokens ?? null,
+          estimatedCost: input.estimatedCost ?? null,
+          guardHits: (input.guardHits ?? []) as unknown as object,
+          toolCalls: (input.toolCalls ?? []) as unknown as object,
+          metadata: metadata as unknown as object,
+          errorCode: input.errorCode ?? null,
+          errorMessage,
+        },
+        select: { id: true },
+      });
+      return row;
+    } catch (err) {
+      // Auditing must never break the AI call itself.
+      this.logger.error(`Failed to persist AICallLog: ${err instanceof Error ? err.message : String(err)}`);
+      return null;
+    }
   }
 
-  getAll(): AICallRecord[] {
-    return [...this.sink];
+  /** metadata MUST be PII-free; if PII is detected, redact rather than store or throw. */
+  private sanitizeMetadata(metadata?: Record<string, unknown> | null): Record<string, unknown> {
+    if (!metadata) return {};
+    try {
+      assertNoPIIInMetadata(metadata);
+      return metadata;
+    } catch (err) {
+      if (err instanceof PIIDetectedError) {
+        this.logger.warn(`AICallLog metadata redacted (PII at: ${err.issues.map((i) => i.path).join(', ')})`);
+        return { redacted: true, reason: 'pii_detected' };
+      }
+      return { redacted: true, reason: 'metadata_error' };
+    }
   }
 
-  clear(): void {
-    this.sink.length = 0;
+  /** strip obvious secrets/PII from an error string and cap length. */
+  private sanitizeError(msg?: string | null): string | null {
+    if (!msg) return null;
+    let s = String(msg)
+      .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[redacted-email]')
+      .replace(/\b(sk|pk|AIza|ghp|gho|xox[baprs])[A-Za-z0-9_-]{8,}\b/g, '[redacted-key]')
+      .replace(/\bBearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted]')
+      .replace(/\beyJ[A-Za-z0-9._-]{10,}/g, '[redacted-jwt]');
+    return s.length > 500 ? `${s.slice(0, 500)}…` : s;
   }
 }

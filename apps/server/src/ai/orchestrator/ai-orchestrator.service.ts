@@ -55,34 +55,45 @@ export class AiOrchestratorService {
     const injection = this.promptInjection.inspect(request.prompt);
     if (injection.blocked) {
       guardHits.push('prompt_injection');
-      return this.finish(request, 'blocked_injection', null, null, null, guardHits, toolCalls, injection.reasons, start);
+      return this.finish({ request, status: 'blocked_injection', guardHits, toolCalls, reasons: injection.reasons, start });
     }
 
     // 3. cost
     const costCheck = this.cost.check({ userId: request.userId, estimatedTokens: request.estimatedTokens });
     if (!costCheck.allowed) {
       guardHits.push('cost_limit');
-      return this.finish(request, 'blocked_cost', null, null, null, guardHits, toolCalls, [costCheck.reason ?? 'cost limit'], start);
+      return this.finish({ request, status: 'blocked_cost', guardHits, toolCalls, reasons: [costCheck.reason ?? 'cost limit'], start });
     }
 
     // 4. safety (inbound)
     const safety = this.safety.inspect(request.prompt);
     if (safety.blocked) {
       guardHits.push('safety');
-      return this.finish(request, 'blocked_safety', null, null, null, guardHits, toolCalls, safety.reasons, start);
+      return this.finish({ request, status: 'blocked_safety', guardHits, toolCalls, reasons: safety.reasons, start });
     }
 
     // 5. model call (stubbed provider in tests; never a live LLM in CI)
     let text: string;
     let model: string;
-    let tokens: number | null;
+    let inputTokens: number | null;
+    let outputTokens: number | null;
     try {
       const result = await this.model.generate({ prompt: request.prompt });
       text = result.text;
       model = result.model;
-      tokens = result.usage?.totalTokens ?? request.estimatedTokens ?? null;
+      inputTokens = result.usage?.promptTokens ?? request.estimatedTokens ?? null;
+      outputTokens = result.usage?.completionTokens ?? null;
     } catch (err) {
-      return this.finish(request, 'error', null, null, null, guardHits, toolCalls, [err instanceof Error ? err.message : String(err)], start);
+      return this.finish({
+        request,
+        status: 'error',
+        guardHits,
+        toolCalls,
+        reasons: ['model_error'],
+        start,
+        errorCode: 'model_error',
+        errorMessage: err instanceof Error ? err.message : String(err),
+      });
     }
 
     // 6. nutrition claim guard (outbound)
@@ -90,45 +101,56 @@ export class AiOrchestratorService {
     const nut = this.nutrition.inspect(text, { nutritionSourceLocked: sourceLocked });
     if (nut.blocked) {
       guardHits.push('nutrition_claim');
-      return this.finish(request, 'blocked_nutrition', null, model, tokens, guardHits, toolCalls, nut.reasons, start);
+      return this.finish({ request, status: 'blocked_nutrition', model, inputTokens, outputTokens, guardHits, toolCalls, reasons: nut.reasons, start });
     }
 
     // success — record actual usage
-    this.cost.record({ userId: request.userId, tokens: tokens ?? 0 });
-    return this.finish(request, 'ok', text, model, tokens, guardHits, toolCalls, [], start);
+    this.cost.record({ userId: request.userId, tokens: (inputTokens ?? 0) + (outputTokens ?? 0) });
+    return this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, guardHits, toolCalls, reasons: [], start });
   }
 
-  private finish(
-    request: AiCallRequest,
-    status: AiCallStatus,
-    text: string | null,
-    model: string | null,
-    tokens: number | null,
-    guardHits: string[],
-    toolCalls: string[],
-    reasons: string[],
-    start: number,
-  ): AiCallResult {
-    const latencyMs = Date.now() - start;
-    this.callLog.record({
-      userId: request.userId,
-      model,
-      status,
+  private async finish(args: {
+    request: AiCallRequest;
+    status: AiCallStatus;
+    text?: string | null;
+    model?: string | null;
+    inputTokens?: number | null;
+    outputTokens?: number | null;
+    guardHits: string[];
+    toolCalls: string[];
+    reasons: string[];
+    start: number;
+    errorCode?: string | null;
+    errorMessage?: string | null;
+  }): Promise<AiCallResult> {
+    const latencyMs = Date.now() - args.start;
+    // persist an audit row for EVERY terminal path (success or blocked); never throws.
+    await this.callLog.record({
+      userId: args.request.userId,
+      eventId: null,
+      conversationId: args.request.conversationId ?? null,
+      surface: args.request.surface ?? null,
+      model: args.model ?? null,
+      provider: this.model.name,
+      status: args.status,
       latencyMs,
-      estimatedTokens: tokens,
-      estimatedCostUsd: null, // no billing logic in A1
-      guardHits,
-      toolCalls,
-      surface: request.surface,
+      estimatedInputTokens: args.inputTokens ?? null,
+      estimatedOutputTokens: args.outputTokens ?? null,
+      estimatedCost: null, // no billing logic yet
+      guardHits: args.guardHits,
+      toolCalls: args.toolCalls,
+      metadata: args.reasons.length ? { reasons: args.reasons } : {},
+      errorCode: args.errorCode ?? null,
+      errorMessage: args.errorMessage ?? null,
     });
     return {
-      status,
-      text,
-      model,
-      blocked: status !== 'ok' && status !== 'error',
-      guardHits,
-      toolCalls,
-      reasons,
+      status: args.status,
+      text: args.text ?? null,
+      model: args.model ?? null,
+      blocked: args.status !== 'ok' && args.status !== 'error',
+      guardHits: args.guardHits,
+      toolCalls: args.toolCalls,
+      reasons: args.reasons,
     };
   }
 }
