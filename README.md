@@ -4,6 +4,15 @@
 > the **Master Execution Constitution v1.0.1**
 > (`docs/execution/GARNISH_OS_MASTER_EXECUTION_CONSTITUTION_v1.0.1.md`). Final wording pending Founder
 > review (E0-1). Status legend: **✅ Implemented** · **🔧 In execution (Epic)** · **⏸ Delayed (gate)**.
+>
+> **Doc roles:** this root README = developer overview + current status snapshot · [`docs/README.md`](docs/README.md) = documentation index · [`data/README.md`](data/README.md) = data-layer source of truth · the Constitution = execution source of truth.
+
+## Current status snapshot (updated 2026-06-13)
+- **UI migration: FROZEN** after Phase 4A (Home) — *technical pass, visual/product-quality rejected*. No Phase 4B until an approved visual spec. See [UI_MIGRATION_STATUS](docs/execution/UI_MIGRATION_STATUS.md).
+- **AI Core (E47 A1–A7):** single Orchestrator + mandatory BehavioralContextSnapshot · DB persistence (AICallLog / ChatMessage / UserFact) · legacy chat routed **through** the orchestrator · real read-only tools (**exactly 4**) · Gemini provider **behind** the provider interface · deterministic eval gate (51/51) + guard hardening · controlled live-smoke gate (built; **skips safely by default**).
+- **Live Gemini product behavior is NOT enabled** (stub default; `AI_LIVE_ENABLED=false`). **AI Core is not complete.**
+- **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **122** (v0.5.4 final candidate). **Nutrition is not source-locked / not a final verified dataset.** **DB re-import deferred.** See [data/README](data/README.md).
+- **Open security / compliance:** E1 secret **history purge deferred**; **R16 / E39 GDPR erasure still open**.
 
 ## 1. What Garnish OS is
 An AI-native food-intelligence product (PWA): recipe discovery, meal planning, a grocery list, and an

@@ -70,3 +70,8 @@
 - **DB re-import DEFERRED** as a separate controlled task (active import path updated to the new 1008 dictionary; the live DB has not been re-imported).
 - **UI remains FROZEN** (no Phase 4B; no visual-surface changes) pending an approved visual spec.
 - Hygiene: untracked source package `garnish_food_data_v2_phase_one_recipe_resolver_alias_patch_00/` removed from repo root (redundant; archive retained). Next build task: **E47-A1 AI Core skeleton** (orchestrator + tool registry + guards + AICallLog contracts; no autonomous agents, no vision, no medical advice).
+
+## Project rule — phase documentation source-of-truth — 2026-06-13
+- **Major phase acceptance requires the related README / status documentation to be updated.** A phase is **not fully accepted** unless its documentation source-of-truth is current.
+- Canonical doc roles: **root `README.md`** = developer overview + current status snapshot · **`docs/README.md`** = documentation index (links only) · **`data/README.md`** = data-layer source of truth · **Master Execution Constitution** = execution source of truth.
+- E47 A1–A7 accepted as **safe gates** (Orchestrator, persistence, chat routing, read-only tools, Gemini provider behind orchestrator, deterministic eval gate, guard hardening, controlled live-smoke gate). **Live Gemini product behavior is NOT enabled.** Docs synced via `DOCS_README_SOURCE_OF_TRUTH_REPORT.md` (2026-06-13).
