@@ -29,7 +29,7 @@ function makeOrchestrator(modelText = 'a warm comforting stew', cost = new AiCos
     new AiSafetyGuardService(),
     new NutritionClaimGuardService(),
     callLog,
-    new BehavioralContextSnapshotService(),
+    new BehavioralContextSnapshotService({} as any), // validate() only; build() not used here
   );
   return { orch, create, model };
 }

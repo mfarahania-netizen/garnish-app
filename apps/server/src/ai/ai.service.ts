@@ -236,39 +236,11 @@ export class AiService {
     return `🥗 پیشنهادهای سبک/رژیمی (بر اساس دسته‌بندی غذا):\n\n${lines.join('\n\n')}\n\n💡 این‌ها فقط پیشنهاد آشپزی‌اند، نه توصیهٔ تغذیه‌ای یا پزشکی.`;
   }
 
-  private async expandConcept(prompt: string): Promise<string[]> {
-    const cacheKey = `ai:concept:${prompt}`;
-    const cached = await this.cacheManager.get<string[]>(cacheKey);
-    if (cached) return cached;
-
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error('GEMINI_API_KEY is not set');
-      return [];
-    }
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `تو یک آشپز حرفه‌ای ایرانی هستی. کاربر جمله‌ای نوشته: "${prompt}". وظیفه تو این است که مفهوم کلی این جمله را درک کنی و ۵ مادهٔ اولیه یا کلمهٔ کلیدی که در آشپزی ایرانی برای این مفهوم به کار می‌روند را به صورت یک آرایه JSON برگردانی. این کلمات را طوری انتخاب کن که اگر در یک پایگاه دادهٔ غذا جستجو شوند، غذاهای مرتبط با آن مفهوم پیدا شوند. فقط آرایه JSON را برگردان، بدون هیچ توضیح اضافی. مثال: برای "کبابی" → ["گوشت چرخ‌کرده", "زعفران", "پیاز", "نان", "گوجه"]. برای "رژیمی" → ["سینه مرغ", "سبزیجات", "ماهی", "سالاد", "کم‌چرب"]. برای "درباری" → ["زعفران", "گردو", "رب انار", "آلو", "ته‌چین"]. اگر مفهومی متوجه نشدی، آرایه خالی برگردان: []`
-            }]
-          }]
-        }),
-      });
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
-      const match = text.match(/\[.*?\]/s);
-      const result = match ? JSON.parse(match[0]) : [];
-
-      await this.cacheManager.set(cacheKey, result, 60 * 60 * 1000);
-      return result;
-    } catch (e) {
-      console.error('expandConcept failed:', e);
-    }
+  private async expandConcept(_prompt: string): Promise<string[]> {
+    // E47-A3: the direct live LLM (Gemini) concept-expansion call is DISABLED. All model calls must
+    // route through the AI Orchestrator (stub provider for now); no path may call a live LLM directly.
+    // The deterministic CONCEPT_MAP + keyword extraction remain the fallback. Model-backed expansion
+    // returns in E47-A4 via the orchestrator + a real provider. (cacheManager kept for that phase.)
     return [];
   }
 

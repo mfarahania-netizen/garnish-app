@@ -125,7 +125,7 @@ export class AiOrchestratorService {
   }): Promise<AiCallResult> {
     const latencyMs = Date.now() - args.start;
     // persist an audit row for EVERY terminal path (success or blocked); never throws.
-    await this.callLog.record({
+    const logged = await this.callLog.record({
       userId: args.request.userId,
       eventId: null,
       conversationId: args.request.conversationId ?? null,
@@ -151,6 +151,7 @@ export class AiOrchestratorService {
       guardHits: args.guardHits,
       toolCalls: args.toolCalls,
       reasons: args.reasons,
+      aiCallLogId: logged?.id ?? null,
     };
   }
 }

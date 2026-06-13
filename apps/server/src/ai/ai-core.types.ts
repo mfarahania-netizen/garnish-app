@@ -11,8 +11,12 @@ export interface BehavioralContextSnapshot {
   /** ISO-8601 build time. */
   generatedAt: string;
   schemaVersion: number;
-  /** opaque, PII-free behavioral signals (hydrated from the behavior engine in E47-A2). */
+  /** opaque, PII-free behavioral signals (hydrated from the behavior engine in a later phase). */
   signals?: Record<string, unknown>;
+  /** UI locale if known (e.g. 'fa'). */
+  locale?: string;
+  /** known, already-stored, NON-sensitive preferences (e.g. diet/skill/budget). No health/allergy inference. */
+  preferences?: Record<string, unknown>;
   /** active consent purposes (mirrors the canonical envelope consentPurpose set). */
   consents?: string[];
   /** true only when the user's nutrition data is source-locked (gates nutrition claims). */
@@ -91,6 +95,8 @@ export interface AiCallResult {
   guardHits: string[];
   toolCalls: string[];
   reasons: string[];
+  /** id of the persisted AICallLog row (null if persistence failed). */
+  aiCallLogId: string | null;
 }
 
 /** Thrown when an AI call is attempted without a valid BehavioralContextSnapshot. */
