@@ -12,6 +12,10 @@ import { AiCostControllerService } from './cost/ai-cost-controller.service';
 import { AiCallLogService } from './logging/ai-call-log.service';
 import { ChatMessageService } from './chat/chat-message.service';
 import { UserFactService } from './facts/user-fact.service';
+import { SearchRecipesTool } from './tools/search-recipes.tool';
+import { ExplainRecommendationTool } from './tools/explain-recommendation.tool';
+import { GetUserFoodContextTool } from './tools/get-user-food-context.tool';
+import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
 
 /**
  * AI Core v1 skeleton (E47-A1).
@@ -37,6 +41,10 @@ import { UserFactService } from './facts/user-fact.service';
     AiCallLogService,
     ChatMessageService,
     UserFactService,
+    SearchRecipesTool,
+    ExplainRecommendationTool,
+    GetUserFoodContextTool,
+    LogAiFeedbackTool,
     { provide: AI_MODEL_PROVIDER, useClass: StubModelProvider },
   ],
   exports: [

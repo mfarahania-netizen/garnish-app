@@ -1,29 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { AiTool } from '../ai-core.types';
-import { searchRecipesTool } from './search-recipes.tool';
-import { explainRecommendationTool } from './explain-recommendation.tool';
-import { getUserFoodContextTool } from './get-user-food-context.tool';
-import { logAiFeedbackTool } from './log-ai-feedback.tool';
+import { SearchRecipesTool } from './search-recipes.tool';
+import { ExplainRecommendationTool } from './explain-recommendation.tool';
+import { GetUserFoodContextTool } from './get-user-food-context.tool';
+import { LogAiFeedbackTool } from './log-ai-feedback.tool';
 
 /**
- * Tool Registry (E47-A1).
+ * Tool Registry (E47-A1/A4).
  *
- * Registers EXACTLY the four approved read-only tools. No dynamic/unbounded tool loading, no
- * autonomous tool chaining — the registry is the single allow-list of what the model may invoke.
+ * Registers EXACTLY the four approved tools (now real injectable handlers). It is the single
+ * allow-list of what the model may invoke — no dynamic/unbounded loading, no fifth tool, no hidden
+ * autonomous-action tool, and the only mutation is the narrow append-only feedback log.
  */
-export const APPROVED_TOOLS: readonly AiTool[] = [
-  searchRecipesTool,
-  explainRecommendationTool,
-  getUserFoodContextTool,
-  logAiFeedbackTool,
-];
-
 @Injectable()
 export class ToolRegistryService {
   private readonly tools = new Map<string, AiTool>();
 
-  constructor() {
-    for (const tool of APPROVED_TOOLS) this.register(tool);
+  constructor(
+    searchRecipes: SearchRecipesTool,
+    explainRecommendation: ExplainRecommendationTool,
+    getUserFoodContext: GetUserFoodContextTool,
+    logAiFeedback: LogAiFeedbackTool,
+  ) {
+    for (const tool of [searchRecipes, explainRecommendation, getUserFoodContext, logAiFeedback]) {
+      this.register(tool);
+    }
   }
 
   private register(tool: AiTool): void {
