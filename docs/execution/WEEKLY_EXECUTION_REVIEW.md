@@ -52,3 +52,9 @@
 - **Decisions needed from Founder:** approve E1 history purge; supply clean Constitution `.md`.
 - **Carry-over to next week:** E0-1 (README alignment) scheduled for W2.
 - **Next week tickets (Part 11 handoff):** E3 (RolesGuard), E6 (CI/CD), E7 (error/logging), E9/E10 importers, E0-1 README.
+
+## E1 security update — 2026-06-13
+- **E1 active exposure: MITIGATED** — repo made private; Gemini key revoked/replaced; JWT_SECRET rotated; DATABASE_URL rotated/replaced; `.env` untracked on tip; backup bundle verified.
+- **History purge: DEFERRED (tooling)** — no functional Python 3 / git-filter-repo / gitleaks / trufflehog in the working environment. Tracked as `R-E1-HISTORY-DEAD-SECRETS`; details in `docs/security/E1_SECRET_INCIDENT_STATUS.md`.
+- **Phase 3 (App Shell / navigation) CONDITIONALLY ALLOWED** and proceeding under strict scope (shell/nav only; no Home/AI-Chat/Admin/RecipeDetail/MealPlanner migration; no new features).
+- **E1 remains OPEN** for final security closeout (history purge required before external diligence / new collaborators / public repo / G1).
