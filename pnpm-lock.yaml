@@ -68,12 +68,18 @@ importers:
       class-validator:
         specifier: ^0.15.1
         version: 0.15.1
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       fuse.js:
         specifier: ^7.3.0
         version: 7.3.0
       ioredis:
         specifier: ^5.11.0
         version: 5.11.0
+      multer:
+        specifier: ^2.1.1
+        version: 2.1.1
       passport:
         specifier: ^0.7.0
         version: 0.7.0

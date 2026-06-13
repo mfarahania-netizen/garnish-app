@@ -3,10 +3,19 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { join } from 'path';
+import { existsSync } from 'fs';
 import { validateEnv } from './config/env.validation';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
+  // Load apps/server/.env into process.env (Node built-in `loadEnvFile`, no dependency).
+  // The app reads process.env directly (auth/ai/redis); in production the platform
+  // provides env, so only load the file when it exists.
+  const envPath = join(process.cwd(), '.env');
+  if (typeof process.loadEnvFile === 'function' && existsSync(envPath)) {
+    process.loadEnvFile(envPath);
+  }
+
   // E1: fail fast if any required secret is missing/placeholder/weak.
   const env = validateEnv();
 
