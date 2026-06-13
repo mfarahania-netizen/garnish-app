@@ -30,6 +30,13 @@ async cleanupOldEvents() {
 ```
 This aligns the legacy cron with the new default-false flag. Alternatively, deprecate `DataRetentionService` and migrate its single deleteMany into the policy-driven flow. **R16 cannot close until this unguarded cron is resolved.**
 
+### ✅ RESOLVED in E39-1E-1 (2026-06-13)
+The legacy cron is now **neutralized** (`apps/server/src/governance/data-retention.service.ts`): the direct `userEvent.deleteMany(...)` is **removed** and replaced by delegation to the E39-1E `RetentionService`:
+- **Default (no `RETENTION_DESTRUCTIVE_ENABLED`):** runs the count-only **dry-run** and deletes **nothing** (logs a PII-free candidate count + `deleted 0`).
+- **Destructive mode (`RETENTION_DESTRUCTIVE_ENABLED=true`):** routed through `RetentionService.executeRetention()`, which **refuses** (no deletion path implemented in this phase).
+- **One retention code path** (the policy service); no second deletion path remains. No DI rewiring (RetentionService instantiated directly; `governance.module.ts` / `app.module.ts` untouched).
+- Tests: `data-retention.service.spec.ts` — 4 tests proving `deleteMany` is never called when the flag is unset/false and that destructive mode throws (deletes nothing). **18/18 unit + 13/13 disposable green; build green; no data deleted.** Destructive retention remains **disabled by default**; R16 stays OPEN pending an approved controlled-prune execution.
+
 ## Files changed (new code is isolated; nothing wired into AppModule)
 **Created:** `apps/server/src/retention/retention-policy.ts`, `retention.service.ts`, `retention.module.ts`, `retention.service.spec.ts`; `apps/server/scripts/security/retention-dry-run.cjs`; this report.
 **Modified (docs):** `E39_R16_ERASURE_COVERAGE_AUDIT.md`, `RISK_REGISTER.md`, `WEEKLY_EXECUTION_REVIEW.md`.
