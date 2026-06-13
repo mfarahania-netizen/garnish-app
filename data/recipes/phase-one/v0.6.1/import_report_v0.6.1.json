@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-06-13T20:04:40.418Z",
+  "finishedAt": "2026-06-13T20:04:46.447Z",
+  "mode": "apply",
+  "databaseUrl": "postgresql://garnish:***@localhost:5432/garnish_db",
+  "databaseName": "garnish_db",
+  "sourcePackage": "garnish_recipe_phase_one_200_draft_candidate_v0_6_1_unresolved_recipe_replacement_patch",
+  "datasetVersion": "v0.6.1",
+  "recipeCountInput": 200,
+  "recipeCountBefore": 122,
+  "recipeCountImported": 200,
+  "recipeCountAfter": 200,
+  "createdCount": 78,
+  "updatedCount": 122,
+  "skippedCount": 0,
+  "deactivatedOldRecipeCount": 0,
+  "invalidIngredientId": 0,
+  "invalidIngredientCode": 0,
+  "ingredientIdCodeMismatch": 0,
+  "unresolvedIngredientCount": 0,
+  "readyForImportFalseCount": 0,
+  "medicalNutritionClaimHits": 0,
+  "newIngredientIdsCreated": 0,
+  "userInteractionsPreserved": {
+    "favoriteRecipe": 9,
+    "recommendationExposure": 5,
+    "featureContributionLog": 1602,
+    "recommendationAttributionEvent": 379,
+    "mealSlotWithRecipe": 21
+  },
+  "success": true,
+  "errors": []
+}

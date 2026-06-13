@@ -11,8 +11,11 @@
     "data:validate:ingredients": "pnpm --dir apps/server data:validate:ingredients",
     "data:import:ingredients": "pnpm --dir apps/server data:import:ingredients",
     "data:validate:phase-one": "pnpm --dir apps/server data:validate:phase-one",
-    "data:import:phase-one": "pnpm --dir apps/server data:import:phase-one"
-  }, 
+    "data:import:phase-one": "pnpm --dir apps/server data:import:phase-one",
+    "recipes:validate:v0.6.1": "pnpm --dir apps/server recipes:validate:v0.6.1",
+    "recipes:import:v0.6.1:dry": "pnpm --dir apps/server recipes:import:v0.6.1:dry",
+    "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1"
+  },
   "devDependencies": { 
     "turbo": "^1.13.3", 
     "prettier": "^3.2.5" 

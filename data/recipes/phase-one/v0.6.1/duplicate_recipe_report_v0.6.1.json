@@ -1,0 +1,11 @@
+{
+  "reportType": "duplicate_recipe_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "recipeCount": 200,
+  "duplicateRecipeId": 0,
+  "duplicateSlug": 0,
+  "duplicateLegacyId": 0,
+  "duplicateTitleFa": 0,
+  "scope": "all 200 recipes after replacement"
+}

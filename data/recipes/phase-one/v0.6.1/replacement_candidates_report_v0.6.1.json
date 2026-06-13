@@ -1,0 +1,129 @@
+{
+  "reportType": "replacement_candidates_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "selectionRule": "same as v0.6.0: Iranian & sourceStatus=new & not in existing122/pilot/batch02/batch03 & not a removed recipe & feasible vs 1008 dictionary & no critical unresolved & no new IDs; continue after rank 78; sort tier A,B,C then sequenceNumber asc; pick first 3 feasible",
+  "continuedAfterRank": 78,
+  "evaluatedCandidates": [
+    {
+      "rank": 79,
+      "csvSequenceNumber": "110",
+      "priorityTier": "C",
+      "slug": "khoresh-sib",
+      "faName": "خورشت سیب",
+      "category": "khoresht",
+      "feasibleAgainst1008Dictionary": true,
+      "criticalUnresolvedIngredient": null,
+      "selected": true
+    },
+    {
+      "rank": 80,
+      "csvSequenceNumber": "113",
+      "priorityTier": "C",
+      "slug": "anar-polo-shirazi",
+      "faName": "انارپلو شیرازی",
+      "category": "polo",
+      "feasibleAgainst1008Dictionary": true,
+      "criticalUnresolvedIngredient": null,
+      "selected": true
+    },
+    {
+      "rank": 81,
+      "csvSequenceNumber": "115",
+      "priorityTier": "C",
+      "slug": "tahandaz-morgh",
+      "faName": "ته‌انداز مرغ",
+      "category": "polo",
+      "feasibleAgainst1008Dictionary": true,
+      "criticalUnresolvedIngredient": null,
+      "selected": true
+    },
+    {
+      "rank": 82,
+      "csvSequenceNumber": "116",
+      "priorityTier": "C",
+      "slug": "valak-polo",
+      "faName": "والک‌پلو",
+      "category": "polo",
+      "feasibleAgainst1008Dictionary": false,
+      "criticalUnresolvedIngredient": "والک (wild allium) — not in dictionary",
+      "selected": false
+    },
+    {
+      "rank": 83,
+      "csvSequenceNumber": "117",
+      "priorityTier": "C",
+      "slug": "shevid-polo-ba-morgh",
+      "faName": "شویدپلو با مرغ",
+      "category": "polo",
+      "feasibleAgainst1008Dictionary": false,
+      "criticalUnresolvedIngredient": null,
+      "selected": false
+    },
+    {
+      "rank": 84,
+      "csvSequenceNumber": "118",
+      "priorityTier": "C",
+      "slug": "rob-polo-shirazi",
+      "faName": "رب‌پلو شیرازی",
+      "category": "polo",
+      "feasibleAgainst1008Dictionary": false,
+      "criticalUnresolvedIngredient": null,
+      "selected": false
+    },
+    {
+      "rank": 85,
+      "csvSequenceNumber": "132",
+      "priorityTier": "C",
+      "slug": "baghala-vabij",
+      "faName": "باقلا وابیج",
+      "category": "main",
+      "feasibleAgainst1008Dictionary": false,
+      "criticalUnresolvedIngredient": null,
+      "selected": false
+    },
+    {
+      "rank": 86,
+      "csvSequenceNumber": "135",
+      "priorityTier": "C",
+      "slug": "kuku-gerdu",
+      "faName": "کوکو گردو",
+      "category": "appetizer_side",
+      "feasibleAgainst1008Dictionary": false,
+      "criticalUnresolvedIngredient": null,
+      "selected": false
+    }
+  ],
+  "selectedReplacements": [
+    {
+      "slug": "khoresh-sib",
+      "csvSequenceNumber": "110",
+      "priorityTier": "C",
+      "phaseOneSequence": 202,
+      "feasible": true
+    },
+    {
+      "slug": "anar-polo-shirazi",
+      "csvSequenceNumber": "113",
+      "priorityTier": "C",
+      "phaseOneSequence": 203,
+      "feasible": true
+    },
+    {
+      "slug": "tahandaz-morgh",
+      "csvSequenceNumber": "115",
+      "priorityTier": "C",
+      "phaseOneSequence": 204,
+      "feasible": true
+    }
+  ],
+  "skippedForInfeasibility": [
+    {
+      "slug": "valak-polo",
+      "csvSequenceNumber": "116",
+      "reason": "critical ingredient والک (wild allium/garlic) not in approved dictionary; not reached because the first three ranked candidates were all feasible, but flagged as infeasible-if-reached"
+    }
+  ],
+  "replacementRecipeCount": 3,
+  "newIngredientIdsCreated": 0
+}

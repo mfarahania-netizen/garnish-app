@@ -1,0 +1,200 @@
+{
+  "reportType": "ingredient_resolver_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "totalIngredientLines": 1924,
+  "replacementIngredientLines": 37,
+  "replacementResolverAgreeCount": 33,
+  "replacementResolverDivergenceCount": 4,
+  "allDivergencesHaveValidPair": true,
+  "allIngredientIdsExistIn1008Dictionary": true,
+  "allCodesExistIn1008Dictionary": true,
+  "allIngredientIdCodePairsValidatedAgainst1008Dictionary": true,
+  "newIngredientIdsCreated": 0,
+  "sugarPolicyUsageCount": 35,
+  "sugarUsages": [
+    {
+      "slug": "fesenjan",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "albaloo-polo-ba-morgh",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "zereshk-polo-ba-morgh",
+      "line": "شکر"
+    },
+    {
+      "slug": "halim-gandom",
+      "line": "شکر"
+    },
+    {
+      "slug": "shirin-polo",
+      "line": "شکر"
+    },
+    {
+      "slug": "khoresh-mast",
+      "line": "شکر"
+    },
+    {
+      "slug": "sholeh-zard",
+      "line": "شکر"
+    },
+    {
+      "slug": "saffron-halva",
+      "line": "شکر"
+    },
+    {
+      "slug": "masghati",
+      "line": "شکر"
+    },
+    {
+      "slug": "shir-berenj",
+      "line": "شکر"
+    },
+    {
+      "slug": "ferni",
+      "line": "شکر"
+    },
+    {
+      "slug": "ranginak",
+      "line": "شکر اختیاری"
+    },
+    {
+      "slug": "cucumber-sekanjabin-sharbat",
+      "line": "شکر"
+    },
+    {
+      "slug": "orange-blossom-sharbat",
+      "line": "شکر سفید"
+    },
+    {
+      "slug": "rosewater-sharbat",
+      "line": "شکر سفید"
+    },
+    {
+      "slug": "classic-mojito",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "lemonade",
+      "line": "شکر سفید"
+    },
+    {
+      "slug": "kachi",
+      "line": "شکر"
+    },
+    {
+      "slug": "khagineh",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "havij-polo",
+      "line": "شکر"
+    },
+    {
+      "slug": "pancake",
+      "line": "شکر"
+    },
+    {
+      "slug": "italian-pizza-dough",
+      "line": "شکر"
+    },
+    {
+      "slug": "marinara-sauce",
+      "line": "شکر"
+    },
+    {
+      "slug": "bastani-sonnati",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "zoolbia-bamieh",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "ash-e-anar",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "gaz-isfahan",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "sohan-qom",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "qottab-yazdi",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "nan-berenji-kermanshahi",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "nan-nokhodchi",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "kolompeh-kermani",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "koloocheh-fooman",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "reshteh-khoshkar",
+      "line": "شکر دانه‌ریز"
+    },
+    {
+      "slug": "malabij-gilani",
+      "line": "شکر دانه‌ریز"
+    }
+  ],
+  "divergences": [
+    {
+      "slug": "khoresh-sib",
+      "line": "سیب ترش",
+      "authoredIngredientId": "ing_apple_raw",
+      "authoredCode": "apple_raw",
+      "resolverIngredientId": null,
+      "resolverConfidence": 0.0,
+      "authoredPairValidAgainst1008Dictionary": true,
+      "note": "manually verified id/code pair valid in 1008 dictionary; reference resolver literal/ambiguous on this surface"
+    },
+    {
+      "slug": "khoresh-sib",
+      "line": "پیاز زرد",
+      "authoredIngredientId": "ing_onion_raw",
+      "authoredCode": "onion_raw",
+      "resolverIngredientId": null,
+      "resolverConfidence": 0.0,
+      "authoredPairValidAgainst1008Dictionary": true,
+      "note": "manually verified id/code pair valid in 1008 dictionary; reference resolver literal/ambiguous on this surface"
+    },
+    {
+      "slug": "anar-polo-shirazi",
+      "line": "پیاز زرد",
+      "authoredIngredientId": "ing_onion_raw",
+      "authoredCode": "onion_raw",
+      "resolverIngredientId": null,
+      "resolverConfidence": 0.0,
+      "authoredPairValidAgainst1008Dictionary": true,
+      "note": "manually verified id/code pair valid in 1008 dictionary; reference resolver literal/ambiguous on this surface"
+    },
+    {
+      "slug": "tahandaz-morgh",
+      "line": "پیاز زرد",
+      "authoredIngredientId": "ing_onion_raw",
+      "authoredCode": "onion_raw",
+      "resolverIngredientId": null,
+      "resolverConfidence": 0.0,
+      "authoredPairValidAgainst1008Dictionary": true,
+      "note": "manually verified id/code pair valid in 1008 dictionary; reference resolver literal/ambiguous on this surface"
+    }
+  ],
+  "note": "replacement recipes resolved against the same 1008-item dictionary; authoritative mapping is the manually-verified id/code pair"
+}

@@ -1,0 +1,59 @@
+{
+  "reportType": "removed_unresolved_recipes_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "removedRecipeCount": 3,
+  "removedSlugs": [
+    "faloodeh-shirazi",
+    "khoresh-chaghaleh-badam",
+    "ash-soraneh-kermanshahi"
+  ],
+  "reason": "each removed recipe critically depends on an ingredient that is not in the approved 1008-item dictionary; per decision, such recipes are removed (not kept with unresolved criticals, and no new ingredient IDs are created)",
+  "removed": [
+    {
+      "slug": "ash-soraneh-kermanshahi",
+      "phaseOneSequence": 195,
+      "unresolvedIngredients": [
+        {
+          "line": "سورانه",
+          "reason": "گیاهِ خودروی سورانه (سورنجان) در فهرستِ موادِ ۱۰۰۸‌تایی وجود ندارد و تره جایگزینِ درستی برای آن نیست",
+          "needsHumanReview": true
+        }
+      ],
+      "reviewReasons": [
+        "core flavoring herb sorane (suranjān) not present in approved dictionary; cultivated leek is not a valid substitute"
+      ],
+      "criticalMissingIngredient": "سورانه"
+    },
+    {
+      "slug": "faloodeh-shirazi",
+      "phaseOneSequence": 138,
+      "unresolvedIngredients": [
+        {
+          "line": "رشته فالوده",
+          "reason": "رشتهٔ مخصوصِ فالوده در فهرست موادِ ۱۰۰۸‌تایی وجود ندارد و قابل جایگزینی نیست",
+          "needsHumanReview": true
+        }
+      ],
+      "reviewReasons": [
+        "core ingredient faloodeh starch noodles not present in approved dictionary"
+      ],
+      "criticalMissingIngredient": "رشته فالوده"
+    },
+    {
+      "slug": "khoresh-chaghaleh-badam",
+      "phaseOneSequence": 178,
+      "unresolvedIngredients": [
+        {
+          "line": "چاقاله بادام",
+          "reason": "بادامِ نارس (چاقالهٔ بادام) در فهرستِ موادِ ۱۰۰۸‌تایی وجود ندارد و جایگزینِ دقیقی ندارد",
+          "needsHumanReview": true
+        }
+      ],
+      "reviewReasons": [
+        "core ingredient green almond (chaghaleh badam) not present in approved dictionary"
+      ],
+      "criticalMissingIngredient": "چاقاله بادام"
+    }
+  ]
+}

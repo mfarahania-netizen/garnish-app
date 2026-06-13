@@ -1,0 +1,28 @@
+{
+  "reportType": "internal_terms_audit_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "scope": "3 replacement recipes (existing 197 are accepted baseline)",
+  "bannedInternalEnglishTerms": [
+    "batch",
+    "garnish",
+    "dictionary",
+    "ingredientid",
+    "resolver",
+    "unresolved",
+    "phase",
+    "import",
+    "metadata"
+  ],
+  "productFacingInternalTermHitsInReplacements": 0,
+  "bannedProductFacingPhrases": [
+    "مواد اصلی",
+    "مواد همراه",
+    "طبق نیاز",
+    "همین غذا",
+    "تا آماده شود",
+    "خوب مخلوط کنید",
+    "به مقدار لازم"
+  ],
+  "templatePhraseHitsBlocking": 0
+}

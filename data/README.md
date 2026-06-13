@@ -18,9 +18,12 @@
 - Do **not** import ingredient records from `Nutrition Source Layer/`, `Registry/`, `Validation Report/`, or `Recipe Ingredient Mapping/`. Those folders are for archive, validation, resolver debugging, and future work.
 
 ## Recipes — Phase One (active)
-- **122 recipes**, dataset **v0.5.4**, status **`final_import_candidate_not_imported`** (ready for external audit; **not yet imported**).
-- Active source: `data/recipes/active/recipes.fa.phase-one.json` (+ `recipes.fa.phase-one.wrapper.json`). Draft recipes stay in `data/recipes/drafts/`.
-- The earlier `seq19` / "khoresh kangar" entry was **removed** (absent from the active 122-recipe set).
+- **200 recipes**, dataset **v0.6.1**, imported to the **local/dev** `garnish_db` (2026-06-13). **NOT declared final production data** — the v0.6.1 package self-identifies as a draft candidate "ready for external audit"; this is a controlled dev import + app preview only.
+- Active source (200): `data/recipes/active/recipes.fa.phase-one.200.json` (+ `…200.wrapper.json`), copied from the source package `garnish_recipe_phase_one_200_draft_candidate_v0_6_1_unresolved_recipe_replacement_patch/` (staged under `data/recipes/phase-one/v0.6.1/`).
+- **Previous 122 (v0.5.4)** active files are preserved (`data/recipes/active/recipes.fa.phase-one.json` kept) **and archived** to `data/recipes/archive/recipes.fa.phase-one.122.v0.5.4.json` (+ wrapper). Not deleted — rollback path.
+- v0.6.1 = superset of the 122 (same recipeIds): import was a pure **upsert** (122 updated in place + 78 created, **0 deleted**) so user favorites/recommendations/meal-plan slots/interactions were never touched.
+- The earlier `seq19` / "khoresh kangar" entry remains **removed**; sequences `19,138,178,195` are the only allowed gaps. Removed slugs (faloodeh-shirazi, khoresh-chaghaleh-badam, ash-soraneh-kermanshahi) absent; replacements (khoresh-sib, anar-polo-shirazi, tahandaz-morgh) present.
+- Validate: `pnpm recipes:validate:v0.6.1` · dry-run: `pnpm recipes:import:v0.6.1:dry` · import: `pnpm recipes:import:v0.6.1`. Report: `data/recipes/phase-one/v0.6.1/import_report_v0.6.1.json`. See [`data/recipes/phase-one/v0.6.1/README.md`](recipes/phase-one/v0.6.1/README.md).
 
 ## Import / search policy
 - **One** ingredient source only (the active array file above). Importers are idempotent (upsert).
@@ -33,8 +36,8 @@
 - **No medical, diagnostic, treatment, strict-diet-planning, or health-outcome claims** are made from this data.
 
 ## DB re-import status
-- **DEFERRED.** The active **import path** points to the new 1008 dictionary, but the **live DB has not been re-imported** —
-  `data:import:*` is a separate, controlled step that has **not** been run.
+- **Ingredients:** the **1008** dictionary is present in the local/dev DB (`Ingredient` table = 1008); the active import path points to the 1008 array file.
+- **Recipes:** the **v0.6.1 200** dataset was imported to the **local/dev** `garnish_db` on 2026-06-13 (200 rows, 1924 ingredient links, 0 unresolved/orphan). This is a **dev/preview** import, **not** a production release. Production import remains a separate, gated decision.
 
 ## AI Core note
 - The latest AI Core work (E47 A1–A7) does **not** modify any file under `data/`.

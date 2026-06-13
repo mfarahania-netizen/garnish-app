@@ -1,0 +1,14 @@
+{
+  "reportType": "template_copy_audit_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "methodology": "3 replacement recipes compared against all 197 kept recipes and within-3 (every field: summary/description/steps/chefTips/commonMistakes/substitutions/servingSuggestions/faq)",
+  "blockingThreshold": 0.8,
+  "reviewThreshold": 0.68,
+  "semanticTemplateCopyRiskBlocking": 0,
+  "maxSemanticSimilarityReplacementsVsCorpus": 0.796,
+  "duplicateStepInstructionHighRisk": 0,
+  "duplicateFAQHighRisk": 0,
+  "templatePhraseHitsBlocking": 0,
+  "note": "replacement recipes reworded to dish-specific phrasing until zero blocking; thresholds never loosened"
+}

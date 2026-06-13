@@ -26,7 +26,10 @@
     "data:validate:phase-one": "node scripts/data/validate-phase-one.js",
     "data:import:phase-one": "node scripts/data/import-phase-one.js",
     "data:validate:aliases": "node scripts/data/validate-aliases.js",
-    "data:import:aliases": "node scripts/data/import-aliases.js"
+    "data:import:aliases": "node scripts/data/import-aliases.js",
+    "recipes:validate:v0.6.1": "node scripts/recipes/validate-phase-one-200-v0-6-1.js",
+    "recipes:import:v0.6.1:dry": "node --env-file=.env scripts/recipes/import-phase-one-200-v0-6-1.js --dry-run",
+    "recipes:import:v0.6.1": "node --env-file=.env scripts/recipes/import-phase-one-200-v0-6-1.js --apply"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

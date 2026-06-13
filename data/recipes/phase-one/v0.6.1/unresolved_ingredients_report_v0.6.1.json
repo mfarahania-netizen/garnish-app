@@ -1,0 +1,10 @@
+{
+  "reportType": "unresolved_ingredients_report",
+  "version": "v0.6.1",
+  "createdAt": "2026-06-13T18:19:38.495730Z",
+  "unresolvedIngredientCount": 0,
+  "readyForImportFalseCount": 0,
+  "readyForImportTrueCount": 200,
+  "note": "the three recipes with critical unresolved ingredients were removed and replaced; the dataset now has zero unresolved ingredients and zero readyForImport:false",
+  "items": []
+}
