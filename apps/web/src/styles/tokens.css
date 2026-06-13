@@ -1,0 +1,106 @@
+/* ============================================================
+   GARNISH DESIGN TOKENS — GES v1
+   DRAFT — for later implementation by coding assistant after approval
+   STATUS: DRAFT_PENDING_UX_APPROVAL (all values are proposals until Designer sign-off)
+   Authority: GES v1 + DESIGN_IMPLEMENTATION_GUIDE.md (Constitution A1.8)
+   Single source of color/type/space/radius/shadow/motion/z/state tokens.
+   ============================================================ */
+:root {
+  /* ── Brand: Saffron ramp (legacy #EA6C0A ramp adopted) ── */
+  --g-color-brand-50:#FFF7ED; --g-color-brand-100:#FFEDD5; --g-color-brand-200:#FED7AA;
+  --g-color-brand-300:#FDBA74; --g-color-brand-400:#FB923C; --g-color-brand-500:#F97316;
+  --g-color-brand-600:#EA6C0A; /* decision/earned-success only */
+  --g-color-brand-700:#C2570A; --g-color-brand-800:#9A3C06; --g-color-brand-900:#7C2D12;
+  --g-color-food-saffron: var(--g-color-brand-600); /* semantic alias */
+
+  /* ── Warm neutral roles ── */
+  --g-color-bg-canvas:#FAF7F2;
+  --g-color-bg-surface:#FFFFFF;
+  --g-color-bg-surface-raised:#FFFFFF;
+  --g-color-text-primary:#1F1B16;
+  --g-color-text-secondary:#57534E;
+  --g-color-text-muted:#8A817A;
+  --g-color-text-inverse:#FFF9F2;
+  --g-color-border-subtle:#EDE7DF;
+  --g-color-border-strong:#D8D1C7;
+  --g-scrim-photo: linear-gradient(180deg, rgba(31,27,22,0) 35%, rgba(31,27,22,.62) 100%);
+
+  /* ── Semantic states ── */
+  --g-color-state-success-fg:#2E7D4F; --g-color-state-success-bg:#EAF5EE;
+  --g-color-state-warning-fg:#C9821B; --g-color-state-warning-bg:#FBF3E4;
+  --g-color-state-danger-fg:#B43C2E;  --g-color-state-danger-bg:#FBEDEA; /* destructive only — never streak shame */
+  --g-color-state-info-fg:#4A443D;    --g-color-state-info-bg:#F2EEE8;
+
+  /* ── AI surface (saffron glow — purple ramp superseded) ── */
+  --g-color-ai-glow: rgba(234,108,10,.12);
+  --g-color-ai-glow-transparent: rgba(234,108,10,0); /* pulse end-state; mirrors brand-600 */
+  --g-color-ai-surface:#FFFDFA;
+  --g-border-ai:1px solid var(--g-color-brand-200);
+  --g-ai-glyph-size:16px;
+
+  /* ── Nutrition / safety states ── */
+  --g-color-nutrition-verified-fg:#3F7A4E; --g-color-nutrition-verified-bg:#EBF4EE;
+  --g-color-nutrition-estimate-fg:#C98A1B; --g-color-nutrition-estimate-bg:#FBF3E2;
+  --g-color-nutrition-unavailable-fg:#8A817A; --g-color-nutrition-unavailable-bg:#F2EEE8;
+  --g-color-allergen-fg:var(--g-color-state-danger-fg); --g-color-allergen-bg:#FBF0EE;
+  --g-color-skeleton-shimmer: rgba(255,255,255,.45); /* highlight sweep for the approved g-shimmer */
+
+  /* ── Typography ── */
+  --g-font-display:'Plus Jakarta Sans',system-ui,sans-serif;
+  --g-font-text:'Inter',system-ui,sans-serif;
+  --g-font-fa:'Vazirmatn','Inter',system-ui,sans-serif;
+  --g-font-size-12:12px; --g-font-size-14:14px; --g-font-size-16:16px; /* base */
+  --g-font-size-18:18px; --g-font-size-22:22px; --g-font-size-28:28px; --g-font-size-34:34px;
+  --g-font-size-hero-48:48px; /* splash/demo only */
+  --g-leading-body:1.55; --g-leading-heading:1.25;
+
+  /* ── Spacing (4px scale) ── */
+  --g-space-1:4px; --g-space-2:8px; --g-space-3:12px; --g-space-4:16px; --g-space-5:20px;
+  --g-space-6:24px; --g-space-7:28px; --g-space-8:32px; --g-space-9:36px; --g-space-10:40px;
+  --g-space-12:48px; --g-space-16:64px;
+
+  /* ── Radius ── */
+  --g-radius-input:12px; --g-radius-card:16px; --g-radius-photo:16px;
+  --g-radius-sheet:20px; --g-radius-chip:999px;
+
+  /* ── Elevation (Calm depth: exactly 3) ── */
+  --g-shadow-1:0 1px 2px rgba(31,27,22,.05),0 2px 8px rgba(31,27,22,.06);
+  --g-shadow-2:0 4px 12px rgba(31,27,22,.08),0 2px 4px rgba(31,27,22,.05);
+  --g-shadow-3:0 12px 32px rgba(31,27,22,.14),0 4px 8px rgba(31,27,22,.06);
+
+  /* ── Motion ── */
+  --g-motion-duration-fast:120ms; --g-motion-duration-base:240ms;
+  --g-motion-duration-slow:360ms; --g-motion-duration-celebrate:600ms;
+  --g-ease-standard:cubic-bezier(.2,.8,.2,1);
+  --g-ease-enter:cubic-bezier(.16,1,.3,1);
+  --g-ease-exit:cubic-bezier(.4,0,1,1);
+
+  /* ── Z-index ── */
+  --g-z-base:0; --g-z-sticky:100; --g-z-shelf:200; --g-z-sheet:300; --g-z-overlay:400; --g-z-toast:500;
+
+  /* ── Focus / breakpoints ── */
+  --g-focus-ring:0 0 0 2px var(--g-color-bg-surface),0 0 0 4px var(--g-color-brand-600);
+  --g-bp-sm:480px; --g-bp-md:768px; --g-bp-lg:1024px; --g-bp-xl:1280px;
+}
+
+/* ── Dark theme: same roles, mirrored values ── */
+[data-theme="dark"]{
+  --g-color-bg-canvas:#171310;
+  --g-color-bg-surface:#211C17;
+  --g-color-bg-surface-raised:#2A241E;
+  --g-color-text-primary:#F4EEE6;
+  --g-color-text-secondary:#C7BEB2;
+  --g-color-text-muted:#94897C;
+  --g-color-text-inverse:#1F1B16;
+  --g-color-border-subtle:#352E26;
+  --g-color-border-strong:#4A4138;
+  --g-scrim-photo:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.7) 100%);
+  --g-color-state-success-bg:#1E2B23; --g-color-state-warning-bg:#2E2719;
+  --g-color-state-danger-bg:#2E1D1A;  --g-color-state-info-bg:#262119;
+  --g-color-ai-surface:#262019; --g-color-ai-glow:rgba(249,115,22,.16); --g-color-ai-glow-transparent:rgba(249,115,22,0);
+  --g-color-nutrition-verified-bg:#1E2B23; --g-color-nutrition-estimate-bg:#2E2719;
+  --g-color-nutrition-unavailable-bg:#262119; --g-color-allergen-bg:#2E1D1A;
+  --g-color-skeleton-shimmer: rgba(255,255,255,.08);
+  --g-shadow-1:0 1px 2px rgba(0,0,0,.4); --g-shadow-2:0 4px 12px rgba(0,0,0,.5);
+  --g-shadow-3:0 12px 32px rgba(0,0,0,.6);
+}

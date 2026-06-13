@@ -1,0 +1,77 @@
+/* ============================================================
+   GARNISH BASE STYLES — GES v1
+   DRAFT — for later implementation by coding assistant after approval
+   STATUS: DRAFT_PENDING_UX_APPROVAL (all values are proposals until Designer sign-off)
+   Resets, defaults, accessibility, RTL/LTR helpers, mobile safe areas.
+   Consumes tokens.css only — no raw values beyond resets.
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--g-color-bg-canvas);
+  color:var(--g-color-text-primary);
+  font-family:var(--g-font-text);
+  font-size:var(--g-font-size-16);
+  line-height:var(--g-leading-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100dvh;
+}
+:lang(fa){font-family:var(--g-font-fa)}
+h1,h2,h3,h4{font-family:var(--g-font-display);line-height:var(--g-leading-heading);margin:0;color:var(--g-color-text-primary)}
+:lang(fa) h1,:lang(fa) h2,:lang(fa) h3,:lang(fa) h4{font-family:var(--g-font-fa)}
+p{margin:0}
+img,video{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* Fluid root — retires legacy fixed #root width (migration P0) */
+#root{width:100%;min-height:100dvh}
+
+/* Focus — never removed, always visible */
+:focus{outline:none}
+:focus-visible{box-shadow:var(--g-focus-ring);border-radius:var(--g-radius-input)}
+
+/* Touch targets & tap feedback baseline */
+button,[role="button"],a.g-action{min-height:44px;min-width:44px;touch-action:manipulation}
+
+/* Mobile safe areas (Action Shelf / bottom nav consumers) */
+.g-safe-bottom{padding-bottom:calc(var(--g-space-4) + env(safe-area-inset-bottom))}
+.g-safe-top{padding-top:env(safe-area-inset-top)}
+
+/* RTL/LTR: logical-by-default helpers (physical left/right forbidden in components) */
+.g-start{text-align:start}
+.g-end{text-align:end}
+[dir] .g-row{display:flex;gap:var(--g-space-3)} /* flex follows direction automatically */
+
+/* Selection & scrollbar restraint */
+::selection{background:var(--g-color-brand-200);color:var(--g-color-text-primary)}
+
+/* Reduced motion — global hard fallback (motion.js also gates presets) */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+/* Screen-reader-only utility */
+.g-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* FONT LOADING (Guide §8a — current repo loading NOT inspected; do not assume)
+   Fonts load in index.html via preconnect + Google Fonts (or self-host later)
+   with font-display: swap on every face — NO FOIT, text renders in fallback
+   immediately. Selection: :lang(fa) → Vazirmatn; default → Inter/Jakarta via
+   tokens. Fallback stacks live in tokens (--g-font-*, system-ui last). Any
+   font substitution requires UX/UI Designer approval (Decision Log entry). */
+
+/* SKELETON SHIMMER EXCEPTION — the ONLY approved CSS @keyframes in the app.
+   Approved as the shared Skeleton/State pattern (Guide §24); all other motion
+   must come from lib/motion.js presets. Adding any other keyframe = PR block. */
+.g-skeleton{background:var(--g-color-border-subtle);border-radius:var(--g-radius-input);position:relative;overflow:hidden}
+.g-skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,var(--g-color-skeleton-shimmer),transparent);
+  animation:g-shimmer 1.4s var(--g-ease-standard) infinite}
+@keyframes g-shimmer{100%{transform:translateX(100%)}}
+/* dark override lives in tokens.css (--g-color-skeleton-shimmer) — no selector needed here */
