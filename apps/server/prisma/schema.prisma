@@ -45,12 +45,26 @@ model User {
   aiCallLogs   AICallLog[]
   chatMessages ChatMessage[]
   userFacts    UserFact[]
+
+  // E39-1A erasure FK repair — behavioral / intelligence relations (additive)
+  featureVector         UserFeatureVector?
+  features              UserFeature[]
+  outcomes              UserOutcome[]
+  identityDimensions    UserIdentityDimension[]
+  behaviorTimelines     UserBehaviorTimeline[]
+  signalObservations    SignalObservation[]
+  behaviorSignals       UserBehaviorSignal[]
+  engagementSnapshot    UserEngagementSnapshot?
+  healthSnapshot        UserHealthSnapshot?
+  identitySnapshot      UserIdentitySnapshot?
+  retentionSnapshot     UserRetentionSnapshot?
+  experimentAssignments ExperimentAssignment[]
 }
 
 model UserPreference {
   id         String   @id @default(uuid())
   userId     String   @unique
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   diet       String?
   skillLevel String?
   budget     String?
@@ -123,7 +137,7 @@ model Recipe {
   imageUrl    String?
   videoUrl    String?
   authorId    String?
-  author      User?    @relation("UserRecipes", fields: [authorId], references: [id])
+  author      User?    @relation("UserRecipes", fields: [authorId], references: [id], onDelete: SetNull)
   isPublic    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -333,7 +347,7 @@ model TicketReply {
 model UserSession {
   id        String      @id @default(uuid())
   userId    String
-  user      User        @relation(fields: [userId], references: [id])
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   startTime DateTime    @default(now())
   endTime   DateTime?
   device    String?
@@ -344,7 +358,7 @@ model UserSession {
 model UserEvent {
   id                 String              @id @default(uuid())
   userId             String
-  user               User                @relation(fields: [userId], references: [id])
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   type               String
   timestamp          DateTime            @default(now())
   sessionId          String?
@@ -363,7 +377,7 @@ model UserEvent {
 model UserBehaviorProfile {
   id     String @id @default(uuid())
   userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   favoriteFoods    String? @default("[]")
   dislikedFoods    String? @default("[]")
@@ -449,6 +463,7 @@ model PreferenceHistory {
 
 model UserFeatureVector {
   userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   features  Json
   version   Int      @default(1)
   updatedAt DateTime @updatedAt
@@ -457,6 +472,7 @@ model UserFeatureVector {
 model UserFeature {
   id         String   @id @default(uuid())
   userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   featureKey String
   value      Float    @default(0.0)
   updatedAt  DateTime @updatedAt
@@ -470,6 +486,7 @@ model UserFeature {
 model UserOutcome {
   id                 String   @id @default(uuid())
   userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   metricName         String
   baselineValue      Float?
   metricValue        Float    @default(0.0)
@@ -486,6 +503,7 @@ model UserOutcome {
 
 model UserIdentityDimension {
   userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   dimensionKey   String
   value          Float    @default(0.0)
   confidence     Float    @default(0.0)
@@ -499,6 +517,7 @@ model UserIdentityDimension {
 model UserBehaviorTimeline {
   id           String   @id @default(uuid())
   userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   dimensionKey String
   value        Float
   recordedAt   DateTime @default(now())
@@ -511,6 +530,7 @@ model UserBehaviorTimeline {
 model SignalObservation {
   id         String   @id @default(uuid())
   userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   signalName String
   eventId    String
   weight     Float    @default(0.0)
@@ -588,6 +608,7 @@ model RecommendationMetrics {
 
 model UserBehaviorSignal {
   userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   signalName   String
   signalDomain String
   signalType   String
@@ -606,6 +627,7 @@ model UserBehaviorSignal {
 
 model UserEngagementSnapshot {
   userId                 String   @id
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   avgSessionDuration     Float    @default(0.0)
   avgTimeBetweenSessions Float    @default(0.0)
   daysSinceLastMealPlan  Int      @default(0)
@@ -616,6 +638,7 @@ model UserEngagementSnapshot {
 
 model UserHealthSnapshot {
   userId                 String   @id
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   mealPlanCompletionRate Float    @default(0.0)
   goalCompletionRate     Float    @default(0.0)
   nutritionViewFrequency Float    @default(0.0)
@@ -626,6 +649,7 @@ model UserHealthSnapshot {
 
 model UserIdentitySnapshot {
   userId                 String   @id
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   recipeSaveRate         Float    @default(0.0)
   recipeCookRate         Float    @default(0.0)
   shoppingCompletionRate Float    @default(0.0)
@@ -637,6 +661,7 @@ model UserIdentitySnapshot {
 
 model UserRetentionSnapshot {
   userId              String   @id
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   daysSinceLastActive Int      @default(0)
   sessionTrend        Float    @default(0.0)
   engagementTrend     Float    @default(0.0)
@@ -662,6 +687,7 @@ model Experiment {
 model ExperimentAssignment {
   id           String     @id @default(uuid())
   userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   experimentId String
   variant      String // "A" or "B"
   experiment   Experiment @relation(fields: [experimentId], references: [id])

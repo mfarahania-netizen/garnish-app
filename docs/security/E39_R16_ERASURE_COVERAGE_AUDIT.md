@@ -103,3 +103,14 @@ All additive / non-destructive; **no schema change made in this audit**:
 
 ## 9. Exact next patch task
 **`E39-1-ERASURE-FIX-ADDITIVE`** — additive nullable/FK migration (12 orphan FKs + flip 4 Restrict→Cascade + explicit Recipe.author SetNull) **proposed for approval**, plus a transactional erasure service + erasure audit event + e2e erasure/export tests. Additive only; no destructive migration; gated on Founder/ADV approval before applying.
+
+---
+
+## E39-1A status — schema FK/cascade repair APPLIED (2026-06-13)
+The **schema-structure half** of the fix is done (migration `20260613170000_e39_1a_erasure_fk_cascade_repair`).
+- **Preflight (read-only):** 0 orphan rows across all 12 tables (every `userId` references a real `User`) → safe to add FKs.
+- **12 orphan models** now have a `User` FK with `onDelete: Cascade` (incl. UserHealthSnapshot, UserBehaviorSignal, snapshots, ExperimentAssignment).
+- **4 Restrict relations** (UserPreference / UserSession / UserEvent / UserBehaviorProfile) flipped to `Cascade`.
+- **Recipe.author** made explicit `onDelete: SetNull` (no DB change — optional relations already defaulted to SetNull).
+- **DB structural proof:** of 35 FKs referencing `User`, **32 Cascade + 3 SetNull** (AICallLog/DataAccessLog/Recipe), **0 Restrict/No-Action** → `user.delete()` is **no longer structurally blocked** and no longer orphans these tables. Migration SQL was additive only (16 ADD + 4 DROP/re-add CONSTRAINT; no DROP TABLE/COLUMN/DELETE).
+- **Still deferred to E39-1B** (NOT in A1): the transactional erasure service + erasure audit event, `GET /users/me/export`, retention crons, and the **ConsentLog/UserAuditLog audit-long tombstone** policy (both currently Cascade — they would be deleted on erasure; E39-1B should switch them to retained/tombstoned with an erasure-proof record). **R16 remains OPEN** until the erasure service + export + retention land.
