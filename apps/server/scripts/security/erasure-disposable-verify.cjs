@@ -51,10 +51,10 @@ const CASCADE_TABLES = [
   'recommendationAttributionEvent', 'userBehaviorSignal', 'userEngagementSnapshot', 'userHealthSnapshot',
   'userIdentitySnapshot', 'userRetentionSnapshot', 'experimentAssignment', 'chatMessage', 'userFact',
 ]; // 30 FKs to User with onDelete: Cascade (each has a userId scalar)
-// SetNull tables that carry a userId scalar (orphan-swept by userId).
-const SETNULL_USERID_TABLES = ['aICallLog', 'consentLog', 'userAuditLog', 'dataAccessLog', 'erasureEvent'];
+// SetNull tables that carry a userId scalar (orphan-swept by userId). aiSpendAlert added in E47-A10C.
+const SETNULL_USERID_TABLES = ['aICallLog', 'consentLog', 'userAuditLog', 'dataAccessLog', 'erasureEvent', 'aiSpendAlert'];
 // Recipe is also SetNull but de-links via `authorId` (not userId) — checked explicitly, not in the userId sweep.
-const EXPECTED_FK_TO_USER = { total: 36, cascade: 30, setNull: 6, restrict: 0 }; // tripwire vs live schema
+const EXPECTED_FK_TO_USER = { total: 37, cascade: 30, setNull: 7, restrict: 0 }; // tripwire vs live schema (E47-A10C: +aiSpendAlert SetNull)
 
 async function main() {
   const baseUrl = process.env.DATABASE_URL;
@@ -173,6 +173,8 @@ async function main() {
     const accessT = await prisma.dataAccessLog.create({ data: { userId: T.id, resource: 'profile', action: 'read', details: 'read target-T@example.com', ip: '203.0.113.50' } });
     // AICallLog seeded with DISTINCTIVE markers so we can observe whether eraseUser scrubs them.
     const aiT = await prisma.aICallLog.create({ data: { userId: T.id, model: 'stub', provider: 'stub', status: 'ok', guardHits: [], toolCalls: [], metadata: { marker: 'AICALL_META_MARKER' }, errorMessage: 'AICALL_ERR_MARKER' } });
+    // E47-A10C: AiSpendAlert is SetNull — seed one for the target to verify it survives de-linked.
+    const alertT = await prisma.aiSpendAlert.create({ data: { userId: T.id, thresholdType: 'token_daily', thresholdValue: 160000, observedValue: 161000, dayUtc: '2026-06-14', status: 'triggered', severity: 'warning', metadata: { kind: 'ai_spend_alert' }, schemaVersion: 1 } });
 
     // --- bystander rows (must remain fully intact, including PII) ---
     await prisma.userPreference.create({ data: { userId: B.id } });
@@ -250,6 +252,9 @@ async function main() {
       `(current design: metadata/errorMessage RETAINED — PII-free at write; defence-in-depth scrub is a reviewer/ADV decision)`);
     const recipeTRow = await prisma.recipe.findUnique({ where: { id: recipeT.id } });
     check('Recipe survives with authorId SetNull', recipeTRow && recipeTRow.authorId === null, recipeTRow ? `authorId=${recipeTRow.authorId}` : 'missing');
+    // E47-A10C: AiSpendAlert survives the user's deletion, de-linked (userId null) — does not block erasure.
+    const alertRow = await prisma.aiSpendAlert.findUnique({ where: { id: alertT.id } });
+    check('AiSpendAlert survives with userId SetNull (tombstone)', alertRow && alertRow.userId === null, alertRow ? `userId=${alertRow.userId}` : 'missing');
 
     // 6f. residual PII scrubbed on surviving (de-linked) rows
     const consentRow = await prisma.consentLog.findUnique({ where: { id: consentT.id } });

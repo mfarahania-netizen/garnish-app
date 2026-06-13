@@ -13,8 +13,10 @@ import { NutritionClaimGuardService } from '../guards/nutrition-claim.guard';
 import { AiCostControllerService } from '../cost/ai-cost-controller.service';
 import { AiCallLogService } from '../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
-import { resolveAiCostPolicy, estimateCostUsd, AI_COST_SCHEMA_VERSION, UsageSource } from '../cost/ai-cost-policy';
+import { resolveAiCostPolicy, AI_COST_SCHEMA_VERSION, UsageSource } from '../cost/ai-cost-policy';
+import { estimateCostUsdFromCatalog } from '../cost/ai-cost-rate-catalog';
 import { PersistedDailyBudgetService } from '../cost/persisted-daily-budget.service';
+import { SpendAlertService } from '../cost/spend-alert.service';
 import { isLiveModelConfigured } from '../providers/model-provider.factory';
 
 /**
@@ -45,6 +47,8 @@ export class AiOrchestratorService {
     private readonly snapshots: BehavioralContextSnapshotService,
     // E47-A10B: optional persisted daily-budget gate (wired in the app; absent in unit constructions).
     @Optional() private readonly persistedBudget?: PersistedDailyBudgetService,
+    // E47-A10C: optional spend-alert evaluator (wired in the app; absent in unit constructions).
+    @Optional() private readonly spendAlerts?: SpendAlertService,
   ) {}
 
   async run(request: AiCallRequest): Promise<AiCallResult> {
@@ -137,12 +141,45 @@ export class AiOrchestratorService {
     if (nut.blocked) {
       guardHits.push('nutrition_claim');
       // a provider call DID happen → record the attempted usage on the ledger row
-      return this.finish({ request, status: 'blocked_nutrition', model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: nut.reasons, start });
+      const blockedResult = await this.finish({ request, status: 'blocked_nutrition', model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: nut.reasons, start });
+      await this.maybeEvaluateSpendAlerts(request, model); // provider tokens were consumed
+      return blockedResult;
     }
 
     // success — record actual usage
     this.cost.record({ userId: request.userId, tokens: (inputTokens ?? 0) + (outputTokens ?? 0) });
-    return this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: [], start });
+    const okResult = await this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: [], start });
+    await this.maybeEvaluateSpendAlerts(request, model);
+    return okResult;
+  }
+
+  /**
+   * E47-A10C: after a LIVE provider call consumed tokens, evaluate per-user daily spend-alert
+   * thresholds and persist any newly-crossed alert. Best-effort — NEVER breaks the AI response, and
+   * skipped entirely on the default stub path (no live config / no services wired).
+   */
+  private async maybeEvaluateSpendAlerts(request: AiCallRequest, model: string | null): Promise<void> {
+    if (!this.spendAlerts || !this.persistedBudget || !request.userId || !isLiveModelConfigured()) return;
+    try {
+      // single clock for both the token-sum window and the alert's dayUtc (consistent UTC-day boundary)
+      const now = new Date();
+      const consumedTokensToday = await this.persistedBudget.consumedTokensToday(request.userId, now);
+      await this.spendAlerts.evaluateDaily(
+        {
+          userId: request.userId,
+          provider: this.model.name,
+          model: model ?? null,
+          consumedTokensToday,
+          // null until verified rates exist → the cost-alert stays inactive (no faked cost). WARNING for a
+          // future rate-enabler: this field is a per-user DAILY cost aggregate — do NOT wire the per-call
+          // `estimate.cost` here; build a daily estimatedCost sum (analogous to consumedTokensToday) first.
+          estimatedCostUsdToday: null,
+        },
+        now,
+      );
+    } catch (err) {
+      this.logger.warn(`spend-alert evaluation failed (non-fatal): ${err instanceof Error ? err.name : 'error'}`);
+    }
   }
 
   private async finish(args: {
@@ -166,10 +203,13 @@ export class AiOrchestratorService {
     const policy = resolveAiCostPolicy();
     const usageSource: UsageSource = args.usageSource ?? 'unavailable';
     const totalTokens = args.totalTokens ?? (args.inputTokens != null || args.outputTokens != null ? (args.inputTokens ?? 0) + (args.outputTokens ?? 0) : null);
-    // estimatedCostUsd: only when a per-model rate exists (none configured by default → null; no faked precision)
-    const estimatedCost = estimateCostUsd(args.model, args.inputTokens, args.outputTokens, policy);
-    // cost is "estimated" whenever we have no precise USD figure (always true today)
+    // estimatedCostUsd: only when a VERIFIED catalog rate exists for this provider/model (E47-A10C).
+    // Production catalog is empty → null (no faked precision). Missing input/output split → null.
+    const estimate = estimateCostUsdFromCatalog(this.model.name, args.model, args.inputTokens, args.outputTokens);
+    const estimatedCost = estimate.cost;
+    // cost is "estimated" whenever we have no precise USD figure (true unless a verified rate produced one)
     const costIsEstimated = estimatedCost === null ? true : usageSource !== 'provider';
+    const currency = estimate.currency ?? policy.currency;
     // persist an audit row for EVERY terminal path (success or blocked); never throws.
     const logged = await this.callLog.record({
       userId: args.request.userId,
@@ -186,7 +226,7 @@ export class AiOrchestratorService {
       totalTokens,
       usageSource,
       costIsEstimated,
-      currency: policy.currency,
+      currency,
       costSchemaVersion: AI_COST_SCHEMA_VERSION,
       guardHits: args.guardHits,
       toolCalls: args.toolCalls,

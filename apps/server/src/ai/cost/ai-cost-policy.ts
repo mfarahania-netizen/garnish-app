@@ -25,6 +25,9 @@ export interface ModelRate {
   outputPer1k: number;
 }
 
+/** Alert at 80% of the daily token budget (E47-A10C spend-alert foundation). */
+export const DAILY_TOKEN_ALERT_THRESHOLD = Math.floor(PER_USER_DAILY_MAX_TOKENS * 0.8);
+
 export interface AiCostPolicy {
   perRequestMaxTokens: number;
   perUserDailyMaxTokens: number;
@@ -33,6 +36,10 @@ export interface AiCostPolicy {
   modelRatesUsdPer1k: Record<string, ModelRate>;
   /** Live model is allowed only when the env gate is satisfied (never on by default). */
   liveModelAllowed: boolean;
+  /** Daily per-user token-usage alert threshold (null disables). */
+  dailyTokenAlertThreshold: number | null;
+  /** Daily per-user estimated-cost (USD) alert threshold (null disables — default, until verified rates exist). */
+  dailyEstimatedCostAlertUsd: number | null;
   schemaVersion: number;
 }
 
@@ -42,6 +49,8 @@ export const DEFAULT_AI_COST_POLICY: AiCostPolicy = {
   currency: DEFAULT_CURRENCY,
   modelRatesUsdPer1k: {}, // no rates configured → no cost computed (placeholders only)
   liveModelAllowed: false,
+  dailyTokenAlertThreshold: DAILY_TOKEN_ALERT_THRESHOLD,
+  dailyEstimatedCostAlertUsd: null, // cost alerting inactive until verified rates exist (no faked cost)
   schemaVersion: AI_COST_SCHEMA_VERSION,
 };
 

@@ -45,6 +45,7 @@ model User {
   aiCallLogs   AICallLog[]
   chatMessages ChatMessage[]
   userFacts    UserFact[]
+  aiSpendAlerts AiSpendAlert[] // E47-A10C spend-alert foundation (SetNull on delete)
 
   // E39-1A erasure FK repair — behavioral / intelligence relations (additive)
   featureVector         UserFeatureVector?
@@ -755,6 +756,30 @@ model AICallLog {
   @@index([status])
   @@index([conversationId])
   @@index([provider, model, createdAt])
+}
+
+// E47-A10C — spend-alert foundation (governance only; NOT billing, no charging).
+// Persists a record when a per-user daily token/estimated-cost threshold is crossed. SetNull on user
+// delete (erasure-safe). Best-effort app-level dedup per (userId, dayUtc, thresholdType) — not race-proof
+// (no DB unique constraint); acceptable for dev/beta. Indexes are non-unique by design.
+model AiSpendAlert {
+  id             String   @id @default(uuid())
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  thresholdType  String // 'token_daily' | 'estimated_cost_daily'
+  thresholdValue Float
+  observedValue  Float
+  provider       String?
+  model          String?
+  dayUtc         String // 'YYYY-MM-DD' (UTC)
+  status         String // 'triggered' | 'resolved' | 'suppressed'
+  severity       String // 'info' | 'warning' | 'critical'
+  metadata       Json // PII-free only
+  schemaVersion  Int
+  createdAt      DateTime @default(now())
+
+  @@index([userId, dayUtc])
+  @@index([thresholdType, dayUtc])
 }
 
 // Persisted chat messages for AI Core v1 (no medical/vision claim expansion).
