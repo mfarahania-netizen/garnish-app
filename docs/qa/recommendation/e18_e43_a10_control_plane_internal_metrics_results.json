@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-control-plane-evaluation",
+  "totalChecks": 234,
+  "passedChecks": 234,
+  "failedChecks": 0,
+  "categories": {
+    "config_parsing": {
+      "total": 9,
+      "passed": 9
+    },
+    "access_model": {
+      "total": 144,
+      "passed": 144
+    },
+    "production_lockout": {
+      "total": 1,
+      "passed": 1
+    },
+    "missing_guard_behavior": {
+      "total": 1,
+      "passed": 1
+    },
+    "service_only_mode": {
+      "total": 1,
+      "passed": 1
+    },
+    "summary_shape": {
+      "total": 10,
+      "passed": 10
+    },
+    "no_product_enablement": {
+      "total": 5,
+      "passed": 5
+    },
+    "no_ranking_change": {
+      "total": 5,
+      "passed": 5
+    },
+    "no_public_endpoint": {
+      "total": 5,
+      "passed": 5
+    },
+    "no_user_visible": {
+      "total": 5,
+      "passed": 5
+    },
+    "promotion_gate": {
+      "total": 17,
+      "passed": 17
+    },
+    "trace_summary_safety": {
+      "total": 5,
+      "passed": 5
+    },
+    "no_raw_trace_exposure": {
+      "total": 5,
+      "passed": 5
+    },
+    "retention_summary": {
+      "total": 5,
+      "passed": 5
+    },
+    "performance_summary": {
+      "total": 5,
+      "passed": 5
+    },
+    "failure_buckets": {
+      "total": 5,
+      "passed": 5
+    },
+    "simulation_artifact_reader": {
+      "total": 2,
+      "passed": 2
+    },
+    "no_r3_r4_closure": {
+      "total": 1,
+      "passed": 1
+    },
+    "artifact_safety": {
+      "total": 3,
+      "passed": 3
+    }
+  },
+  "controlPlaneSummary": {
+    "mode": "service_only",
+    "qualityStatus": "shadow_quality_observable",
+    "failureBuckets": 12,
+    "limitations": 1
+  },
+  "accessSummary": {
+    "defaultMode": "off",
+    "productionDevApiBlocked": true,
+    "publicEndpointExposed": false,
+    "requiresAdmin": true
+  },
+  "promotionGateSummary": {
+    "allowed": false,
+    "status": "not_ready",
+    "nextRequiredGate": "A11_FOUNDER_APPROVED_LIMITED_DEV_EXPERIMENT"
+  },
+  "traceSummary": {
+    "traceCount": 35,
+    "sampleSizeWarning": false
+  },
+  "simulationArtifactSummary": {
+    "present": false,
+    "reChecksPassed": false
+  },
+  "retentionSummary": {
+    "destructiveOperationUsed": false,
+    "requiresFounderApproval": true
+  },
+  "runtimeSafetySummary": {
+    "liveResponseChanged": false,
+    "liveRankingChanged": false,
+    "decisionTraceExposedToUser": false,
+    "publicEndpointExposed": false
+  },
+  "productUseEnabled": false,
+  "liveRankingChangedForUser": false,
+  "networkCallsDuringGate": 0,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "Control plane is internal/dev read-only; no public endpoint, no UI.",
+    "Trace analysis is observational over redacted traces only.",
+    "Promotion is design-readiness only; A11 (Founder-approved limited dev experiment) required before any live ranking change."
+  ]
+}

@@ -22,11 +22,13 @@ import { RecommendationShadowA8Service, SHADOW_CONSENT_PORT, SHADOW_PROFILE_FEED
 import { createPrismaShadowDataPort } from './runtime-shadow/recommendation-shadow-data-port';
 import { PrismaRecommendationShadowTraceStore } from './runtime-shadow/recommendation-shadow-trace-store';
 import { createPrismaShadowProfileFeedPort, createPrismaShadowConsentPort, createPrismaShadowTraceReadPort, createPrismaShadowTraceRetentionPort } from './runtime-shadow/recommendation-shadow-a8-adapters';
+import { RecommendationShadowControlPlaneService } from './runtime-shadow/control-plane/recommendation-shadow-control-plane.service';
+import { RecommendationShadowControlPlaneController } from './runtime-shadow/control-plane/recommendation-shadow-control-plane-controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
-  controllers: [RecommendationController, RecommendationDiagnosticsController],
+  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController],
   providers: [
     CandidateGeneratorService,
     RankingService,
@@ -53,6 +55,8 @@ import { PrismaService } from '../prisma/prisma.service';
     { provide: SHADOW_PROFILE_FEED_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowProfileFeedPort(prisma as any), inject: [PrismaService] },
     { provide: SHADOW_TRACE_READ_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowTraceReadPort(prisma as any), inject: [PrismaService] },
     { provide: SHADOW_RETENTION_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowTraceRetentionPort(prisma as any), inject: [PrismaService] },
+    // E18/E43-A10 internal/dev control plane (default OFF; admin-guarded + access-gated controller).
+    RecommendationShadowControlPlaneService,
   ],
 })
 export class RecommendationModule {}

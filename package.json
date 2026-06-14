@@ -26,6 +26,7 @@
     "recommendation:eval:shadow-a7": "pnpm --dir apps/server recommendation:eval:shadow-a7",
     "recommendation:eval:shadow-a8": "pnpm --dir apps/server recommendation:eval:shadow-a8",
     "recommendation:eval:shadow-a9": "pnpm --dir apps/server recommendation:eval:shadow-a9",
+    "recommendation:eval:shadow-a10": "pnpm --dir apps/server recommendation:eval:shadow-a10",
     "recipes:validate:international-150": "pnpm --dir apps/server recipes:validate:international-150",
     "recipes:import:international-150:dry-run": "pnpm --dir apps/server recipes:import:international-150:dry-run",
     "recipes:import:international-150": "pnpm --dir apps/server recipes:import:international-150",
