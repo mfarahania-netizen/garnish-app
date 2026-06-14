@@ -98,11 +98,12 @@ export class RecommendationShadowA8Service {
 
       // ── consent (fail-closed; never fabricated) ──
       const consent = await resolveRecommendationShadowConsent(
-        { consentPurposes: ctx.requestConsentPurposes },
+        { consentPurposes: ctx.requestConsentPurposes, devFixtureConsentPurposes: ctx.devFixtureConsentPurposes },
         ctx.userId,
-        // devEnv is production-safe: NODE_ENV must be non-production for dev-fixture consent to even be
-        // considered (and only then in request_or_dev_fixture mode). In production this is always false.
-        { mode: a8.consentMode, port: this.consentPort, devEnv: (ctx.env ?? process.env).NODE_ENV !== 'production' },
+        // devEnv is fail-closed: NODE_ENV must be EXPLICITLY set and non-production for dev-fixture consent
+        // to even be considered (and only then in request_or_dev_fixture mode). Missing/undefined NODE_ENV
+        // → false (never honor dev fixtures). In production this is always false.
+        { mode: a8.consentMode, port: this.consentPort, devEnv: isDevEnv(ctx.env) },
       );
       if (!consent.canRunShadow) {
         this.record({ skip: 'consent', consentBlockReason: consent.reason.slice(0, 40) });
@@ -168,6 +169,13 @@ export class RecommendationShadowA8Service {
     this.record({ retentionEligible: plan.eligibleForDeletionCount, retentionDryRunEligibleCount: plan.eligibleForDeletionCount });
     return plan;
   }
+}
+
+/** Fail-closed dev-env check: NODE_ENV must be explicitly set AND non-production. Undefined → false. */
+function isDevEnv(env?: NodeJS.ProcessEnv): boolean {
+  const e = env ?? process.env;
+  const nodeEnv = e?.NODE_ENV;
+  return typeof nodeEnv === 'string' && nodeEnv.length > 0 && nodeEnv !== 'production';
 }
 
 function disabled(config: ShadowRuntimeConfig, userId: string, liveCandidateIds: string[]): ShadowRuntimeResult {

@@ -187,6 +187,8 @@ export interface ShadowA8ObserveContext {
   surface?: string;
   context?: DecisionContext;
   requestConsentPurposes?: string[];
+  /** dev/test only — labeled dev-fixture consent (honored ONLY in request_or_dev_fixture + non-prod). */
+  devFixtureConsentPurposes?: string[];
   now?: Date;
   env?: NodeJS.ProcessEnv;
   configOverride?: { mode: 'off' | 'shadow'; sampleRate: number };

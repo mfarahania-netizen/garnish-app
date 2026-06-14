@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-dev-traffic-simulation",
+  "totalChecks": 404,
+  "passedChecks": 404,
+  "failedChecks": 0,
+  "categories": {
+    "simulation_shape": {
+      "total": 4,
+      "passed": 4
+    },
+    "user_matrix": {
+      "total": 27,
+      "passed": 27
+    },
+    "context_matrix": {
+      "total": 2,
+      "passed": 2
+    },
+    "consent_matrix": {
+      "total": 28,
+      "passed": 28
+    },
+    "recipe_universe": {
+      "total": 4,
+      "passed": 4
+    },
+    "run_counts": {
+      "total": 3,
+      "passed": 3
+    },
+    "trace_eligibility": {
+      "total": 3,
+      "passed": 3
+    },
+    "response_ranking_immutability": {
+      "total": 268,
+      "passed": 268
+    },
+    "redaction": {
+      "total": 28,
+      "passed": 28
+    },
+    "default_off": {
+      "total": 1,
+      "passed": 1
+    },
+    "quality_thresholds": {
+      "total": 7,
+      "passed": 7
+    },
+    "failure_buckets": {
+      "total": 7,
+      "passed": 7
+    },
+    "performance_guard": {
+      "total": 7,
+      "passed": 7
+    },
+    "online_analysis": {
+      "total": 8,
+      "passed": 8
+    },
+    "retention_dry_run": {
+      "total": 5,
+      "passed": 5
+    },
+    "no_product_enablement": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "simulationSummary": {
+    "simulatedUsers": 24,
+    "contexts": 7,
+    "consentStates": 6,
+    "simulatedRequests": 240,
+    "allowedShadowRuns": 192,
+    "blockedConsentOrSafetyRuns": 48,
+    "traceWriteEligibleRuns": 120,
+    "retentionDryRunEligibleTraces": 15
+  },
+  "recipeUniverseSummary": {
+    "expectedTotal": 350,
+    "observedTotal": 350,
+    "coverageRatio": 1,
+    "candidateCoverageCount": 10
+  },
+  "qualityThresholdSummary": {
+    "status": "shadow_quality_observable",
+    "passed": 11,
+    "failed": 0,
+    "warnings": 1,
+    "promotionAllowed": false
+  },
+  "failureBucketSummary": {
+    "missing_consent": {
+      "count": 48,
+      "severity": "low"
+    },
+    "profile_feed_missing": {
+      "count": 64,
+      "severity": "low"
+    },
+    "low_input_readiness": {
+      "count": 16,
+      "severity": "medium"
+    },
+    "unsafe_trace": {
+      "count": 0,
+      "severity": "blocking"
+    },
+    "trace_write_denied": {
+      "count": 72,
+      "severity": "low"
+    },
+    "trace_write_failed": {
+      "count": 0,
+      "severity": "high"
+    },
+    "major_divergence": {
+      "count": 0,
+      "severity": "medium"
+    },
+    "weak_shadow_confidence": {
+      "count": 16,
+      "severity": "medium"
+    },
+    "candidate_metadata_missing": {
+      "count": 0,
+      "severity": "medium"
+    },
+    "default_off_skip": {
+      "count": 0,
+      "severity": "low"
+    },
+    "safety_gate_block": {
+      "count": 0,
+      "severity": "low"
+    },
+    "simulation_fixture_gap": {
+      "count": 0,
+      "severity": "medium"
+    }
+  },
+  "performanceSummary": {
+    "runCount": 240,
+    "averageSimulatedRuntimeMs": 9.58,
+    "p95SimulatedRuntimeMs": 15,
+    "maxSimulatedRuntimeMs": 16,
+    "networkCalls": 0,
+    "defaultOffDbIoCount": 0,
+    "traceWritesAttempted": 120,
+    "traceWritesAllowed": 120
+  },
+  "onlineAnalysisSummary": {
+    "traceCount": 120,
+    "averageTopKOverlap": 0.5,
+    "majorDivergenceRate": 0.25,
+    "sampleSizeWarning": false,
+    "productUseEnabled": false
+  },
+  "retentionReadinessSummary": {
+    "destructiveOperationUsed": false,
+    "requiresFounderApproval": true,
+    "mode": "dry_run"
+  },
+  "runtimeSafetySummary": {
+    "liveResponseChanged": false,
+    "liveRankingChanged": false,
+    "decisionTraceExposedToUser": false
+  },
+  "productUseEnabled": false,
+  "liveRankingChangedForUser": false,
+  "promotionAllowed": false,
+  "dbWritesDuringDefaultOffMode": 0,
+  "networkCallsDuringGate": 0,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "Simulation is offline/synthetic — not real production traffic.",
+    "Profile rebuild uses approximate persisted-signal mapping; cold-start fallback for sparse users.",
+    "Promotion is design-readiness only; a Founder-approved, consent-gated, safety-reviewed limited dev experiment (A10) is required before any live ranking change."
+  ]
+}
