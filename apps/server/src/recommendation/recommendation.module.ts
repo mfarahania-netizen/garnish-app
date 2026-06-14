@@ -18,8 +18,10 @@ import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { RecommendationShadowRuntimeService, SHADOW_DATA_PORT, SHADOW_TRACE_STORE } from './runtime-shadow/recommendation-shadow-runtime.service';
+import { RecommendationShadowA8Service, SHADOW_CONSENT_PORT, SHADOW_PROFILE_FEED_PORT, SHADOW_TRACE_READ_PORT, SHADOW_RETENTION_PORT } from './runtime-shadow/recommendation-shadow-a8-service';
 import { createPrismaShadowDataPort } from './runtime-shadow/recommendation-shadow-data-port';
 import { PrismaRecommendationShadowTraceStore } from './runtime-shadow/recommendation-shadow-trace-store';
+import { createPrismaShadowProfileFeedPort, createPrismaShadowConsentPort, createPrismaShadowTraceReadPort, createPrismaShadowTraceRetentionPort } from './runtime-shadow/recommendation-shadow-a8-adapters';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
@@ -44,6 +46,13 @@ import { PrismaService } from '../prisma/prisma.service';
     // default-off → never invoked, so no extra DB read/write on the live path).
     { provide: SHADOW_DATA_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowDataPort(prisma as any), inject: [PrismaService] },
     { provide: SHADOW_TRACE_STORE, useFactory: (prisma: PrismaService) => new PrismaRecommendationShadowTraceStore(prisma as any), inject: [PrismaService] },
+    // E18/E43-A8 consent-aware orchestrator + ports (used ONLY when the matching A8 mode is enabled;
+    // default-off → never invoked, no extra DB IO on the live path).
+    RecommendationShadowA8Service,
+    { provide: SHADOW_CONSENT_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowConsentPort(prisma as any), inject: [PrismaService] },
+    { provide: SHADOW_PROFILE_FEED_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowProfileFeedPort(prisma as any), inject: [PrismaService] },
+    { provide: SHADOW_TRACE_READ_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowTraceReadPort(prisma as any), inject: [PrismaService] },
+    { provide: SHADOW_RETENTION_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowTraceRetentionPort(prisma as any), inject: [PrismaService] },
   ],
 })
 export class RecommendationModule {}

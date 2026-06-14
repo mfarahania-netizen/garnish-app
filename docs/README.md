@@ -38,7 +38,9 @@
   [E18/E43-A6 Shadow Runtime Integration Gate](execution/E18_E43_A6_SHADOW_RUNTIME_RECOMMENDATION_INTEGRATION_GATE_REPORT.md) ·
   [E18/E43-A6 Shadow Runtime Integration Gate v1](recommendation/E18_E43_A6_SHADOW_RUNTIME_RECOMMENDATION_INTEGRATION_GATE.md) — runs the A5 engine **beside** live ranking behind a default-OFF env gate (`RECOMMENDATION_SHADOW_RUNTIME_MODE`); **does NOT change live ranking or the user-visible response**, no persistence, no DB migration, `rankingChangedForUser`/`productUseEnabled` always false ·
   [E18/E43-A7 Scoring Input + Trace Persistence + Experiment Readiness](execution/E18_E43_A7_SCORING_INPUT_PROVIDER_TRACE_PERSISTENCE_AND_EXPERIMENT_READINESS_REPORT.md) ·
-  [E18/E43-A7 design doc](recommendation/E18_E43_A7_SCORING_INPUT_TRACE_PERSISTENCE_EXPERIMENT_READINESS.md) — safe scoring-input provider + readiness + default-OFF experiment + **redacted, env-gated** shadow-trace persistence (additive `RecommendationShadowTrace` table); still **no live ranking/response change**, no trace exposed to users, `productUseEnabled` always false
+  [E18/E43-A7 design doc](recommendation/E18_E43_A7_SCORING_INPUT_TRACE_PERSISTENCE_EXPERIMENT_READINESS.md) — safe scoring-input provider + readiness + default-OFF experiment + **redacted, env-gated** shadow-trace persistence (additive `RecommendationShadowTrace` table); still **no live ranking/response change**, no trace exposed to users, `productUseEnabled` always false ·
+  [E18/E43-A8 Persisted Feed + Consent + Online Shadow Analysis](execution/E18_E43_A8_PERSISTED_SIGNAL_PROFILE_FEED_CONSENT_PLUMBING_ONLINE_SHADOW_ANALYSIS_REPORT.md) ·
+  [E18/E43-A8 design doc](recommendation/E18_E43_A8_PERSISTED_SIGNAL_PROFILE_FEED_CONSENT_ONLINE_SHADOW_ANALYSIS.md) — persisted profile feed (rebuild-from-signals) + **consent plumbing** (fail-closed) + read-only online shadow analysis + **dry-run** retention; default-OFF, **no live ranking/response change**, no trace exposed to users, no destructive retention, `productUseEnabled` always false
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -92,6 +94,7 @@
 - Recommendation — Decision intelligence gate: [e18_e43_a5_recommendation_decision_intelligence_results.json](qa/recommendation/e18_e43_a5_recommendation_decision_intelligence_results.json)
 - Recommendation — Shadow runtime gate: [e18_e43_a6_shadow_runtime_recommendation_results.json](qa/recommendation/e18_e43_a6_shadow_runtime_recommendation_results.json)
 - Recommendation — Shadow A7 scoring-input/trace/experiment gate: [e18_e43_a7_scoring_input_trace_experiment_results.json](qa/recommendation/e18_e43_a7_scoring_input_trace_experiment_results.json)
+- Recommendation — Shadow A8 persisted-feed/consent/online-analysis gate: [e18_e43_a8_persisted_profile_consent_online_shadow_results.json](qa/recommendation/e18_e43_a8_persisted_profile_consent_online_shadow_results.json)
 - Recipes — International Core 150 DB import: [international_core_150_db_import_results_v0_6_0.json](qa/recipes/international_core_150_db_import_results_v0_6_0.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 

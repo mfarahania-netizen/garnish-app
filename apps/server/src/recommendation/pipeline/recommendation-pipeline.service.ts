@@ -3,7 +3,7 @@ import { FeatureStoreService } from '../../behavior-engine/feature-store/feature
 import { ExplainabilityService } from '../explainability/explainability.service';
 import { CandidateGeneratorService } from './candidate-generator';
 import { RankingService } from './ranking.service';
-import { RecommendationShadowRuntimeService } from '../runtime-shadow/recommendation-shadow-runtime.service';
+import { RecommendationShadowA8Service } from '../runtime-shadow/recommendation-shadow-a8-service';
 
 interface RecommendationRankItem {
   recipeId: string;
@@ -23,9 +23,9 @@ export class RecommendationPipelineService {
     private readonly rankingService: RankingService,
     private readonly featureStore: FeatureStoreService,
     private readonly explainabilityService: ExplainabilityService,
-    // E18/E43-A6: optional shadow runtime hook. Default OFF; never wired into the user response.
-    // @Optional() keeps existing construction/tests working when it is absent (undefined).
-    @Optional() private readonly shadowRuntime?: RecommendationShadowRuntimeService,
+    // E18/E43-A6/A7/A8: optional shadow runtime hook (A8 consent-aware orchestrator). Default OFF; never
+    // wired into the user response. @Optional() keeps existing construction/tests working when absent.
+    @Optional() private readonly shadowRuntime?: RecommendationShadowA8Service,
   ) {}
 
   async getRecommendations(userId: string, limit = 10) {
