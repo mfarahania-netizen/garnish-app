@@ -22,7 +22,9 @@
 - Data: [Ingredient Dictionary — Recipe Resolver Alias Patch 00](execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md)
 - Analytics / Event foundation (E43):
   [E43 Event Envelope (W6 code contract)](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
-  [E43-A1 Event Envelope code contract + ingest gate](execution/E43_A1_CANONICAL_EVENT_ENVELOPE_CODE_CONTRACT_AND_INGEST_GATE_REPORT.md)
+  [E43-A1 Event Envelope code contract + ingest gate](execution/E43_A1_CANONICAL_EVENT_ENVELOPE_CODE_CONTRACT_AND_INGEST_GATE_REPORT.md) ·
+  [E43-A2 taxonomy-bound producer migration + shadow runtime integration](execution/E43_A2_TAXONOMY_BOUND_EVENT_PRODUCER_MIGRATION_AND_SHADOW_RUNTIME_INTEGRATION_REPORT.md) ·
+  [E43-A2 producer migration map](analytics/E43_A2_EVENT_PRODUCER_MIGRATION_MAP.md) — Event Envelope is **code-backed**; runtime producer migration is **staged** (one shadow integration; BIP v1 **not** complete, analytics **not** fully migrated)
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -69,7 +71,8 @@
 ## QA reports
 - AI eval results: [e47_a6_eval_results.json](qa/ai/e47_a6_eval_results.json) ·
   AI live-smoke results: [e47_a7_live_smoke_results.json](qa/ai/e47_a7_live_smoke_results.json)
-- Analytics — Event Envelope contract gate: [e43_a1_event_envelope_contract_results.json](qa/analytics/e43_a1_event_envelope_contract_results.json)
+- Analytics — Event Envelope contract gate: [e43_a1_event_envelope_contract_results.json](qa/analytics/e43_a1_event_envelope_contract_results.json) ·
+  Event producer migration gate: [e43_a2_event_producer_migration_results.json](qa/analytics/e43_a2_event_producer_migration_results.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

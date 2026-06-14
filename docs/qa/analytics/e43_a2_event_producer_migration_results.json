@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-deterministic",
+  "totalChecks": 21,
+  "passedChecks": 21,
+  "failedChecks": 0,
+  "categoryBreakdown": {
+    "taxonomy": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "inventory": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "runtime_guard": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "integration": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "artifact_safety": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "taxonomySummary": {
+    "families": 11,
+    "legacyEventTypeCount": 117,
+    "canonicalPlannedEventTypeCount": 13,
+    "strictRejectsUnknown": true,
+    "shadowAllowsUnknownWithWarning": true
+  },
+  "producerInventorySummary": {
+    "coverage": "targeted_static_scan",
+    "totalProducers": 20,
+    "uniqueIds": true,
+    "byFamily": {
+      "behavior": 9,
+      "ai": 3,
+      "recommendation": 2,
+      "recipe": 1,
+      "planner": 1,
+      "grocery": 1,
+      "notification": 2,
+      "consent": 1
+    },
+    "byPriority": {
+      "P0": 1,
+      "P2": 8,
+      "P1": 5,
+      "P3": 6
+    },
+    "byStatus": {
+      "shadow_guarded": 1,
+      "not_started": 19
+    },
+    "familyGaps": [
+      "cook",
+      "admin",
+      "workflow",
+      "notification"
+    ]
+  },
+  "runtimeGuardSummary": {
+    "modes": [
+      "off",
+      "shadow",
+      "strict"
+    ],
+    "offSkips": true,
+    "shadowAcceptsCanonical": true,
+    "shadowNormalizesLegacy": true,
+    "shadowRedactsPII": true,
+    "strictRejectsInvalid": true,
+    "strictRejectsNoConsent": true,
+    "strictRejectsPII": true,
+    "neverThrows": true
+  },
+  "runtimeIntegrationSummary": {
+    "integratedProducerId": "prod-analytics-trackevent",
+    "integratedAt": "analytics.service.trackEvent",
+    "mode": "observational",
+    "defaultRuntimeMode": "shadow",
+    "dropsEvents": false,
+    "newDbWrites": 0,
+    "logsRedacted": true
+  },
+  "migrationMapSummary": {
+    "document": "docs/analytics/E43_A2_EVENT_PRODUCER_MIGRATION_MAP.md",
+    "producersMapped": 20,
+    "familyGaps": 4
+  },
+  "piiRedactionSummary": {
+    "vectorsRedacted": 1,
+    "leaks": 0
+  },
+  "dbMigrationRequired": false,
+  "dbWritesDuringGate": 0,
+  "runtimeModeDefault": "shadow",
+  "remainingIntegrationGaps": [
+    "Only 1 of ~21 producers is shadow-guarded (analytics.service.trackEvent); the rest are not_started.",
+    "No producer emits canonical_v2 yet; runtime emission/migration is staged.",
+    "Notification SEND/SUPPRESS decisions are not logged as events (Layer-10 gap).",
+    "No admin-action audit producer; no WAT/workflow producer; cook family has no server producer.",
+    "No DB migration / no envelope columns on UserEvent (deferred).",
+    "Shadow integration is observational (never drops events), even in strict mode."
+  ],
+  "redactedFailureDetails": []
+}
