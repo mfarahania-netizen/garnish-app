@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T17:07:09.297Z",
+  "runMode": "import",
+  "sourceFolder": "garnish_recipe_international_core_150_draft_candidate_v0_6_0",
+  "sourceVersion": "v0.6.0",
+  "inputRecipeCount": 150,
+  "sequenceRange": [
+    205,
+    354
+  ],
+  "sequenceContiguous": true,
+  "existingDbRecipeCountBefore": 200,
+  "nonInternationalRecipeCount": 200,
+  "plannedInsertCount": 0,
+  "plannedSkipCount": 150,
+  "actualInsertCount": 150,
+  "thisRunCreatedCount": 0,
+  "actualSkipCount": 150,
+  "dbRecipeCountAfter": 350,
+  "conflictCount": 0,
+  "duplicateRecipeIdCount": 0,
+  "duplicateSlugCount": 0,
+  "duplicateTitleFaCount": 0,
+  "invalidIngredientIdCount": 0,
+  "invalidIngredientCodeCount": 0,
+  "ingredientIdCodeMismatchCount": 0,
+  "newIngredientIdsCreated": 0,
+  "unresolvedIngredientCount": 0,
+  "medicalNutritionClaimHits": 0,
+  "strictDietPlanningTrueCount": 0,
+  "readyForImportTrueCount": 150,
+  "readyForImportFalseCount": 0,
+  "transactionUsed": true,
+  "destructiveOperationUsed": false,
+  "dbMigrationRequired": false,
+  "importIdempotencyVerified": true,
+  "secondRunInsertCount": 0,
+  "apiVerification": {
+    "performed": true,
+    "total": 350
+  },
+  "sampleImportedSlugsVerified": [
+    "risotto-alla-milanese",
+    "caprese-salad",
+    "potato-gnocchi-pomodoro",
+    "bruschetta-pomodoro",
+    "chicken-jiaozi"
+  ],
+  "sampleExistingSlugsVerified": [
+    "tas-kabab",
+    "saffron-joojeh-kabab",
+    "ghormeh-sabzi",
+    "fesenjan",
+    "abgoosht"
+  ],
+  "userInteractionsPreserved": {
+    "favoriteRecipe": 10,
+    "recommendationExposure": 5,
+    "mealSlotWithRecipe": 21
+  },
+  "redactedFailureDetails": [],
+  "remainingGaps": []
+}

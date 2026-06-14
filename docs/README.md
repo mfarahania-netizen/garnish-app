@@ -19,7 +19,9 @@
 ## Phase & task reports
 - Shell/Nav: [Phase 3](execution/PHASE_3_SHELL_NAV_REPORT.md) · [Phase 3.1](execution/PHASE_3_1_MICRO_CLEANUP_REPORT.md)
 - Home (technical pass, **visual rejected**): [Phase 4A report](execution/PHASE_4A_HOME_COMMAND_CENTER_REPORT.md) · [Phase 4A visual QA](qa/phase4a/PHASE_4A_VISUAL_QA_REPORT.md)
-- Data: [Ingredient Dictionary — Recipe Resolver Alias Patch 00](execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md)
+- Data: [Ingredient Dictionary — Recipe Resolver Alias Patch 00](execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md) ·
+  [International Core 150 DB Import v0.6.0](execution/INTERNATIONAL_CORE_150_DB_IMPORT_V0_6_0_REPORT.md) ·
+  [International Core 150 import doc](recipes/INTERNATIONAL_CORE_150_IMPORT_V0_6_0.md) — 150 international recipes imported (dev DB total **350** = 200 preserved + 150 new); no new ingredient IDs, no migration, no AI/recommendation/UI change
 - Analytics / Event foundation (E43):
   [E43 Event Envelope (W6 code contract)](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [E43-A1 Event Envelope code contract + ingest gate](execution/E43_A1_CANONICAL_EVENT_ENVELOPE_CODE_CONTRACT_AND_INGEST_GATE_REPORT.md) ·
@@ -87,6 +89,7 @@
   UserFoodIdentityGraph gate: [e43_a4_user_food_identity_graph_results.json](qa/behavior/e43_a4_user_food_identity_graph_results.json)
 - Recommendation — Decision intelligence gate: [e18_e43_a5_recommendation_decision_intelligence_results.json](qa/recommendation/e18_e43_a5_recommendation_decision_intelligence_results.json)
 - Recommendation — Shadow runtime gate: [e18_e43_a6_shadow_runtime_recommendation_results.json](qa/recommendation/e18_e43_a6_shadow_runtime_recommendation_results.json)
+- Recipes — International Core 150 DB import: [international_core_150_db_import_results_v0_6_0.json](qa/recipes/international_core_150_db_import_results_v0_6_0.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

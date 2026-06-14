@@ -37,7 +37,11 @@
     "data:import:aliases": "node scripts/data/import-aliases.js",
     "recipes:validate:v0.6.1": "node scripts/recipes/validate-phase-one-200-v0-6-1.js",
     "recipes:import:v0.6.1:dry": "node --env-file=.env scripts/recipes/import-phase-one-200-v0-6-1.js --dry-run",
-    "recipes:import:v0.6.1": "node --env-file=.env scripts/recipes/import-phase-one-200-v0-6-1.js --apply"
+    "recipes:import:v0.6.1": "node --env-file=.env scripts/recipes/import-phase-one-200-v0-6-1.js --apply",
+    "recipes:validate:international-150": "node scripts/recipes/validate-international-core-150-v0-6-0.js",
+    "recipes:import:international-150:dry-run": "node --env-file=.env scripts/recipes/import-international-core-150-v0-6-0.js --dry-run",
+    "recipes:import:international-150": "node --env-file=.env scripts/recipes/import-international-core-150-v0-6-0.js --apply",
+    "recipes:verify:international-150": "node --env-file=.env scripts/recipes/verify-international-core-150-v0-6-0.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

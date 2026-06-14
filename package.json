@@ -22,7 +22,11 @@
     "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals",
     "behavior:eval:profile": "pnpm --dir apps/server behavior:eval:profile",
     "recommendation:eval:decision-intelligence": "pnpm --dir apps/server recommendation:eval:decision-intelligence",
-    "recommendation:eval:shadow-runtime": "pnpm --dir apps/server recommendation:eval:shadow-runtime"
+    "recommendation:eval:shadow-runtime": "pnpm --dir apps/server recommendation:eval:shadow-runtime",
+    "recipes:validate:international-150": "pnpm --dir apps/server recipes:validate:international-150",
+    "recipes:import:international-150:dry-run": "pnpm --dir apps/server recipes:import:international-150:dry-run",
+    "recipes:import:international-150": "pnpm --dir apps/server recipes:import:international-150",
+    "recipes:verify:international-150": "pnpm --dir apps/server recipes:verify:international-150"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

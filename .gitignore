@@ -21,3 +21,7 @@ package-lock.json
 *.rar
 *.zip
 *.log
+
+# Founder-supplied recipe import source packages (unzipped inputs — not committed; imported via scripts)
+/garnish_recipe_international_core_150_draft_candidate_v0_6_0/
+/garnish_recipe_*_draft_candidate_*/
