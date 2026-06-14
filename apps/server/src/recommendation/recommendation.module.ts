@@ -27,11 +27,12 @@ import { RecommendationShadowControlPlaneController } from './runtime-shadow/con
 import { RecommendationLabController } from './runtime-shadow/lab/recommendation-lab-controller';
 import { RecommendationFounderReviewService } from './runtime-shadow/lab/founder-review/recommendation-founder-review-service';
 import { RecommendationFounderReviewController } from './runtime-shadow/lab/founder-review/recommendation-founder-review-controller';
+import { RecommendationExperimentExecutionController } from './runtime-shadow/lab/execution/recommendation-experiment-execution-controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
-  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController],
+  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController, RecommendationExperimentExecutionController],
   providers: [
     CandidateGeneratorService,
     RankingService,

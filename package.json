@@ -29,6 +29,7 @@
     "recommendation:eval:shadow-a10": "pnpm --dir apps/server recommendation:eval:shadow-a10",
     "recommendation:eval:lab-a11": "pnpm --dir apps/server recommendation:eval:lab-a11",
     "recommendation:eval:founder-review-a12": "pnpm --dir apps/server recommendation:eval:founder-review-a12",
+    "recommendation:eval:experiment-a13": "pnpm --dir apps/server recommendation:eval:experiment-a13",
     "recipes:validate:international-150": "pnpm --dir apps/server recipes:validate:international-150",
     "recipes:import:international-150:dry-run": "pnpm --dir apps/server recipes:import:international-150:dry-run",
     "recipes:import:international-150": "pnpm --dir apps/server recipes:import:international-150",
