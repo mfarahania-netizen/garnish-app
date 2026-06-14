@@ -16,7 +16,8 @@
     "recipes:import:v0.6.1:dry": "pnpm --dir apps/server recipes:import:v0.6.1:dry",
     "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1",
     "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression",
-    "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness"
+    "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness",
+    "analytics:eval:event-envelope": "pnpm --dir apps/server analytics:eval:event-envelope"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

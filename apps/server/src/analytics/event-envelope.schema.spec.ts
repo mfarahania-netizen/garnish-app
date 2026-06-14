@@ -5,11 +5,14 @@ import {
   CanonicalEventEnvelopeSchema,
   ActorTypeEnum,
   SourceEnum,
+  EventSourceEnum,
   VisibilityEnum,
   ConsentPurposeEnum,
   PrivacyClassEnum,
   RetentionPolicyEnum,
   CanonicalEventEnvelope,
+  normalizeLegacyEventEnvelope,
+  redactEventEnvelopeForArtifact,
 } from './event-envelope.schema';
 
 const TIMES = {
@@ -299,5 +302,220 @@ describe('assertNoPIIInMetadata', () => {
       expect(e).toBeInstanceOf(PIIDetectedError);
       expect((e as PIIDetectedError).issues[0].path).toBe('metadata.a.email');
     }
+  });
+});
+
+/* ───────────────────────────── E43-A1 additions ───────────────────────────── */
+
+describe('E43-A1 — validateEventEnvelope returns the canonical { ok, value, errors, warnings } shape', () => {
+  const valid = {
+    eventId: '0190a000-0000-7000-8000-00000000ee01',
+    eventType: 'recipe_viewed',
+    actorType: ActorTypeEnum.user,
+    actorId: 'user_123',
+    source: SourceEnum.webPwa,
+    surface: 'home',
+    consentPurpose: ConsentPurposeEnum.analytics,
+    schemaVersion: 2,
+    ...TIMES,
+  };
+
+  it('valid → { ok:true, value, errors:[], warnings:[] } (and ok === valid)', () => {
+    const r = validateEventEnvelope(valid);
+    expect(r.ok).toBe(true);
+    expect(r.ok).toBe(r.valid);
+    expect(r.value).not.toBeNull();
+    expect(r.errors).toEqual([]);
+    expect(r.warnings).toEqual([]);
+  });
+
+  it('invalid → { ok:false, value:null, errors:[...], warnings:[] }', () => {
+    const r = validateEventEnvelope({ ...valid, actorType: 'robot' });
+    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(r.valid);
+    expect(r.value).toBeNull();
+    expect(r.errors.length).toBeGreaterThan(0);
+    expect(Array.isArray(r.warnings)).toBe(true);
+  });
+
+  it('non-object root → ok:false with a (root) error and empty warnings', () => {
+    const r = validateEventEnvelope(42);
+    expect(r.ok).toBe(false);
+    expect(r.errors[0].path).toBe('(root)');
+    expect(r.warnings).toEqual([]);
+  });
+
+  it('emits a NON-FATAL warning (not error) for a backward-tolerant schemaVersion drift', () => {
+    const r = validateEventEnvelope({ ...valid, schemaVersion: 1 });
+    expect(r.ok).toBe(true); // still valid — backward tolerant
+    expect(r.warnings.some((w) => w.path === 'schemaVersion')).toBe(true);
+  });
+
+  it('EventSourceEnum is an alias of SourceEnum', () => {
+    expect(EventSourceEnum).toBe(SourceEnum);
+    expect(EventSourceEnum.webPwa).toBe('web-pwa');
+  });
+});
+
+describe('E43-A1 — assertNoPIIInMetadata catches credentials/tokens/conn-strings/embedded-phone/free-text', () => {
+  it('rejects a JWT value under any key', () => {
+    expect(() =>
+      assertNoPIIInMetadata({ ref: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abc123' }),
+    ).toThrow(PIIDetectedError);
+  });
+  it('rejects a Bearer token value', () => {
+    expect(() => assertNoPIIInMetadata({ auth: 'Bearer abcdef0123456789' })).toThrow(PIIDetectedError);
+  });
+  it('rejects API-key-like values (sk-/AIza/ghp/xoxb)', () => {
+    for (const v of ['sk-ABCDEF0123456789', 'AIzaSyABCDEFGHIJ0123456', 'ghp_ABCDEF0123456789', 'xoxb-ABCDEF012345']) {
+      expect(() => assertNoPIIInMetadata({ k: v })).toThrow(PIIDetectedError);
+    }
+  });
+  it('rejects a private-key block', () => {
+    expect(() => assertNoPIIInMetadata({ k: '-----BEGIN RSA PRIVATE KEY-----' })).toThrow(PIIDetectedError);
+  });
+  it('rejects DB connection strings', () => {
+    for (const v of ['postgres://u:p@host:5432/db', 'mysql://root:secret@localhost/app', 'mongodb+srv://a:b@cluster/db']) {
+      expect(() => assertNoPIIInMetadata({ db: v })).toThrow(PIIDetectedError);
+    }
+  });
+  it('rejects an embedded Iranian mobile inside longer text', () => {
+    expect(() => assertNoPIIInMetadata({ ref: 'order ref 09123456789 thanks' })).toThrow(PIIDetectedError);
+    expect(() => assertNoPIIInMetadata({ ref: 'contact +989123456789' })).toThrow(PIIDetectedError);
+  });
+  it('rejects long free-form user text', () => {
+    const prose =
+      'so basically the user typed a very long message about their day and what they cooked and how ' +
+      'they felt about it and then kept going on and on with lots of personal detail well beyond a label';
+    expect(() => assertNoPIIInMetadata({ blob: prose })).toThrow(PIIDetectedError);
+  });
+  it('still accepts the allowed structured metadata shapes (no false positives)', () => {
+    expect(() => assertNoPIIInMetadata({ runId: 'ops:weekly-kpi-draft', stepId: 'draft-summary' })).not.toThrow();
+    expect(() => assertNoPIIInMetadata({ snapshotHash: 'sha256:deadbeefcafe' })).not.toThrow();
+    expect(() => assertNoPIIInMetadata({ experimentArm: 'briefing-copy-a' })).not.toThrow();
+    expect(() => assertNoPIIInMetadata({ suppressedReason: 'fatigue_cap' })).not.toThrow();
+    expect(() => assertNoPIIInMetadata({ position: 3, mergedCount: 2, blockedBeforeProvider: true })).not.toThrow();
+  });
+
+  it('does NOT flag bare 8–15 digit numeric IDs/counts/timestamps as phones (separator required)', () => {
+    // adversarial-review fix: bare digit-runs are opaque ids, not phones.
+    for (const v of ['12345678', '1234567890', '1718385600000', '999999999999999']) {
+      expect(() => assertNoPIIInMetadata({ tokenCount: v })).not.toThrow();
+      expect(() => assertNoPIIInMetadata({ stringified: v })).not.toThrow();
+    }
+  });
+
+  it('STILL flags formatted phones and bare Iranian mobiles', () => {
+    expect(() => assertNoPIIInMetadata({ ref: '+98 912 345 6789' })).toThrow(PIIDetectedError); // formatted
+    expect(() => assertNoPIIInMetadata({ ref: '021-12345678' })).toThrow(PIIDetectedError); // separator
+    expect(() => assertNoPIIInMetadata({ ref: '09123456789' })).toThrow(PIIDetectedError); // bare Iranian (embedded RE)
+    expect(() => assertNoPIIInMetadata({ ref: 'call 09123456789 now' })).toThrow(PIIDetectedError); // embedded Iranian
+  });
+});
+
+describe('E43-A1 — normalizeLegacyEventEnvelope (backward tolerance, ADR §9/§14)', () => {
+  const NOW = '2026-06-14T08:00:00.000Z';
+
+  it('passes a canonical v2 input straight through with normalizedFrom:canonical, no warnings', () => {
+    const canonical = {
+      eventId: '0190a000-0000-7000-8000-00000000ce01',
+      eventType: 'recipe_viewed',
+      actorType: ActorTypeEnum.user,
+      actorId: 'user_1',
+      source: SourceEnum.cron,
+      consentPurpose: ConsentPurposeEnum.core,
+      schemaVersion: 2,
+      ...TIMES,
+    };
+    const r = normalizeLegacyEventEnvelope(canonical);
+    expect(r.ok).toBe(true);
+    expect(r.normalizedFrom).toBe('canonical');
+    expect(r.warnings).toEqual([]);
+  });
+
+  it('normalizes a legacy UserEvent shape (type/userId/page/timestamp) WITH a caller consent default', () => {
+    const legacy = { type: 'recipe_view', userId: 'user_900', page: 'home', timestamp: NOW };
+    const r = normalizeLegacyEventEnvelope(legacy, { defaultConsentPurpose: ConsentPurposeEnum.analytics });
+    expect(r.ok).toBe(true);
+    expect(r.normalizedFrom).toBe('legacy');
+    const v = r.value as CanonicalEventEnvelope;
+    expect(v.eventType).toBe('recipe_view');
+    expect(v.actorId).toBe('user_900');
+    expect(v.source).toBe(SourceEnum.webPwa); // inferred from page
+    expect(v.surface).toBe('home'); // page → surface
+    expect(v.subjectId).toBe('user_900'); // subject inferred as actor
+    expect(v.consentPurpose).toBe(ConsentPurposeEnum.analytics);
+    expect(r.warnings.length).toBeGreaterThan(0); // inferences recorded
+  });
+
+  it('does NOT silently fabricate consent — legacy without consent + no default → rejected', () => {
+    const legacy = { type: 'recipe_view', userId: 'user_900', page: 'home', timestamp: NOW };
+    const r = normalizeLegacyEventEnvelope(legacy); // no defaultConsentPurpose
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.path === 'consentPurpose')).toBe(true);
+  });
+
+  it('infers source=server (no surface required) for a legacy cron event', () => {
+    const legacy = { type: 'cron_behavior_engine_run', userId: 'system', timestamp: NOW };
+    const r = normalizeLegacyEventEnvelope(legacy, { defaultConsentPurpose: ConsentPurposeEnum.core });
+    expect(r.ok).toBe(true);
+    expect((r.value as CanonicalEventEnvelope).source).toBe(SourceEnum.server);
+  });
+
+  it('drops untrusted legacy payload (does not copy into metadata) and warns', () => {
+    const legacy = { type: 'x', userId: 'u1', page: 'home', timestamp: NOW, payload: { freeText: 'whatever a user typed' } };
+    const r = normalizeLegacyEventEnvelope(legacy, { defaultConsentPurpose: ConsentPurposeEnum.core });
+    expect(r.ok).toBe(true);
+    expect((r.value as CanonicalEventEnvelope).metadata).toBeUndefined();
+    expect(r.warnings.some((w) => w.path === 'payload')).toBe(true);
+  });
+
+  it('generates a deterministic eventId when provided via options', () => {
+    const legacy = { type: 'x', userId: 'u1', page: 'home', timestamp: NOW };
+    const r = normalizeLegacyEventEnvelope(legacy, {
+      defaultConsentPurpose: ConsentPurposeEnum.core,
+      eventId: 'fixed-event-id-1',
+    });
+    expect((r.value as CanonicalEventEnvelope).eventId).toBe('fixed-event-id-1');
+  });
+});
+
+describe('E43-A1 — redactEventEnvelopeForArtifact (deterministic, log-safe)', () => {
+  it('replaces PII-keyed values and scrubs secret substrings, preserving structure', () => {
+    const dirty = {
+      eventType: 'x',
+      actorId: 'user_1',
+      email: 'jane.doe@example.com',
+      metadata: {
+        note: 'free text',
+        token: 'Bearer abcdef0123456789',
+        nested: { phone: '09123456789', apiKey: 'AIzaSyABCDEFGHIJ0123456' },
+      },
+    };
+    const out = redactEventEnvelopeForArtifact(dirty) as any;
+    const json = JSON.stringify(out);
+    // structure preserved
+    expect(out.eventType).toBe('x');
+    expect(out.actorId).toBe('user_1');
+    expect(out.metadata.nested).toBeDefined();
+    // no raw secret/PII survives
+    expect(json).not.toMatch(/jane\.doe@example\.com/);
+    expect(json).not.toMatch(/AIza[A-Za-z0-9_-]{8,}/);
+    expect(json).not.toMatch(/eyJ[A-Za-z0-9._-]{10,}/);
+    expect(json).not.toMatch(/\b0?9\d{9}\b/);
+    // denylisted keys are marked redacted
+    expect(out.email).toBe('[redacted-pii-key]');
+  });
+
+  it('scrubs a secret-bearing string value even under an innocuous key', () => {
+    const out = redactEventEnvelopeForArtifact({ desc: 'use postgres://u:p@host/db now' }) as any;
+    expect(out.desc).not.toMatch(/postgres:\/\//);
+    expect(out.desc).toContain('[redacted-conn-string]');
+  });
+
+  it('returns null for null/undefined input and never throws', () => {
+    expect(redactEventEnvelopeForArtifact(null)).toBeNull();
+    expect(redactEventEnvelopeForArtifact(undefined)).toBeNull();
+    expect(() => redactEventEnvelopeForArtifact('plain string')).not.toThrow();
   });
 });

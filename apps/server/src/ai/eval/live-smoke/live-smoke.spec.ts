@@ -12,12 +12,16 @@ describe('E47-A7 — controlled live Gemini smoke gate', () => {
 
   beforeAll(async () => {
     result = await runLiveSmoke(process.env);
-    try {
-      const outDir = path.resolve(__dirname, '../../../../../..', 'docs/qa/ai');
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(path.join(outDir, 'e47_a7_live_smoke_results.json'), JSON.stringify(result, null, 2));
-    } catch {
-      /* artifact write is best-effort */
+    // Only persist on a real live run. A default offline/skip run must NOT overwrite the committed
+    // live-execution artifact with a skip-stub (E43-A1 hardening: prevents historical-artifact churn).
+    if (result.status === 'executed') {
+      try {
+        const outDir = path.resolve(__dirname, '../../../../../..', 'docs/qa/ai');
+        fs.mkdirSync(outDir, { recursive: true });
+        fs.writeFileSync(path.join(outDir, 'e47_a7_live_smoke_results.json'), JSON.stringify(result, null, 2));
+      } catch {
+        /* artifact write is best-effort */
+      }
     }
     // Real Gemini calls are slow (~10-15s each × 3 safe prompts); the default 5s beforeAll timeout
     // is too short for a valid-key live run (it would fail the suite even on a perfect run). In the

@@ -20,6 +20,9 @@
 - Shell/Nav: [Phase 3](execution/PHASE_3_SHELL_NAV_REPORT.md) · [Phase 3.1](execution/PHASE_3_1_MICRO_CLEANUP_REPORT.md)
 - Home (technical pass, **visual rejected**): [Phase 4A report](execution/PHASE_4A_HOME_COMMAND_CENTER_REPORT.md) · [Phase 4A visual QA](qa/phase4a/PHASE_4A_VISUAL_QA_REPORT.md)
 - Data: [Ingredient Dictionary — Recipe Resolver Alias Patch 00](execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md)
+- Analytics / Event foundation (E43):
+  [E43 Event Envelope (W6 code contract)](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
+  [E43-A1 Event Envelope code contract + ingest gate](execution/E43_A1_CANONICAL_EVENT_ENVELOPE_CODE_CONTRACT_AND_INGEST_GATE_REPORT.md)
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -66,6 +69,7 @@
 ## QA reports
 - AI eval results: [e47_a6_eval_results.json](qa/ai/e47_a6_eval_results.json) ·
   AI live-smoke results: [e47_a7_live_smoke_results.json](qa/ai/e47_a7_live_smoke_results.json)
+- Analytics — Event Envelope contract gate: [e43_a1_event_envelope_contract_results.json](qa/analytics/e43_a1_event_envelope_contract_results.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

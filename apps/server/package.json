@@ -19,6 +19,7 @@
     "ai:live-smoke": "jest src/ai/eval/live-smoke",
     "ai:eval:regression": "jest src/ai/eval/output-safety",
     "ai:eval:pilot-readiness": "jest src/ai/eval/pilot-readiness",
+    "analytics:eval:event-envelope": "jest src/analytics/event-envelope",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

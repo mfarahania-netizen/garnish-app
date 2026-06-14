@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-deterministic",
+  "totalChecks": 46,
+  "passedChecks": 46,
+  "failedChecks": 0,
+  "categoryBreakdown": {
+    "schema": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "examples": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "pii": {
+      "total": 14,
+      "passed": 14,
+      "failed": 0
+    },
+    "ingest_strict": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "ingest_legacy": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "redaction": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "safety": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "exampleCount": 15,
+  "piiDetectionSummary": {
+    "vectors": 10,
+    "detected": 10,
+    "missed": 0,
+    "safeAccepted": 4
+  },
+  "strictModeSummary": {
+    "validAccepted": true,
+    "invalidRejected": true,
+    "piiRejected": true
+  },
+  "legacyNormalizationSummary": {
+    "legacyCases": 2,
+    "normalized": 2,
+    "noSilentConsent": true,
+    "warningsEmitted": 8
+  },
+  "dbMigrationRequired": false,
+  "dbWritesDuringGate": 0,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "analytics.service.trackEvent still writes the legacy UserEvent shape; gate not wired into the live ingest path (Founder-gated log-only adoption deferred per E43-W6).",
+    "No additive nullable envelope columns on UserEvent yet (no DB migration in E43-A1).",
+    "Other producers (AICallLog, RecommendationExposure/Attribution, behavior-engine cron) not yet emitting canonical envelopes.",
+    "eventType is not cross-checked against event-taxonomy.ts (decoupled for backward tolerance).",
+    "PII detection is deterministic/heuristic (no NLP); policy relies on keeping metadata small and structured."
+  ]
+}

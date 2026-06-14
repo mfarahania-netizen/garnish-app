@@ -12,12 +12,16 @@ describe('E47-A8 — controlled live chat adapter smoke', () => {
 
   beforeAll(async () => {
     result = await runChatAdapterSmoke(process.env);
-    try {
-      const outDir = path.resolve(__dirname, '../../../../../..', 'docs/qa/ai');
-      fs.mkdirSync(outDir, { recursive: true });
-      fs.writeFileSync(path.join(outDir, 'e47_a8_chat_adapter_results.json'), JSON.stringify(result, null, 2));
-    } catch {
-      /* artifact write is best-effort */
+    // Only persist on a real live run. A default offline/skip run must NOT overwrite the committed
+    // live-execution artifact with a skip-stub (E43-A1 hardening: prevents historical-artifact churn).
+    if (result.status === 'executed') {
+      try {
+        const outDir = path.resolve(__dirname, '../../../../../..', 'docs/qa/ai');
+        fs.mkdirSync(outDir, { recursive: true });
+        fs.writeFileSync(path.join(outDir, 'e47_a8_chat_adapter_results.json'), JSON.stringify(result, null, 2));
+      } catch {
+        /* artifact write is best-effort */
+      }
     }
     // Real Gemini calls are slow (~10-15s); the default 5s beforeAll timeout is too short for a live
     // run. In the default no-flag path runChatAdapterSmoke skips instantly, so this is inert there.
