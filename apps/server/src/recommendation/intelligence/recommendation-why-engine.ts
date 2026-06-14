@@ -108,6 +108,7 @@ export function generateRecommendationWhy(decision: RecommendationCandidateDecis
   // safety: assert every produced string is safe (no creepy/medical/protected/manipulative phrasing).
   assertSafeWhy(primaryReason);
   for (const s of supportingReasons) assertSafeWhy(s);
+  for (const l of limitations) assertSafeWhy(l);
 
   return { primaryReason, supportingReasons, limitations, reasonCodes: codes };
 }

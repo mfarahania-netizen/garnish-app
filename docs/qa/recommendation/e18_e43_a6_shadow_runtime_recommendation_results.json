@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-deterministic",
+  "totalChecks": 280,
+  "passedChecks": 280,
+  "failedChecks": 0,
+  "categories": {
+    "runtime_mode_parsing": {
+      "total": 11,
+      "passed": 11
+    },
+    "sampling_gate": {
+      "total": 8,
+      "passed": 8
+    },
+    "safety_gate": {
+      "total": 29,
+      "passed": 29
+    },
+    "integration_safety": {
+      "total": 31,
+      "passed": 31
+    },
+    "live_response_immutability": {
+      "total": 14,
+      "passed": 14
+    },
+    "live_ranking_immutability": {
+      "total": 2,
+      "passed": 2
+    },
+    "comparison_metrics": {
+      "total": 46,
+      "passed": 46
+    },
+    "divergence_analysis": {
+      "total": 29,
+      "passed": 29
+    },
+    "shadow_scorer_call_isolation": {
+      "total": 15,
+      "passed": 15
+    },
+    "redaction": {
+      "total": 24,
+      "passed": 24
+    },
+    "no_product_enablement": {
+      "total": 25,
+      "passed": 25
+    },
+    "overclaim_prevention": {
+      "total": 27,
+      "passed": 27
+    },
+    "artifact_safety": {
+      "total": 16,
+      "passed": 16
+    },
+    "no_db_network": {
+      "total": 3,
+      "passed": 3
+    }
+  },
+  "runtimeModeSummary": {
+    "defaultMode": "off",
+    "defaultSampleRate": 0,
+    "invalidModeFallsBackToOff": true,
+    "invalidRateFallsBackToZero": true
+  },
+  "safetyGateSummary": {
+    "blockCodeCount": 11,
+    "allBlockCodesExercised": true,
+    "validInputAllowed": true
+  },
+  "integrationSummary": {
+    "integrationAdded": true,
+    "integrationPoint": "RecommendationPipelineService.getRecommendations (after live ranking, default OFF, try/catch isolated, @Optional hook)",
+    "liveResponseChanged": false,
+    "liveRankingChanged": false,
+    "dbWritesAdded": false,
+    "networkCallsAdded": false
+  },
+  "comparisonSummary": {
+    "simulatedUsers": 12,
+    "candidateCount": 30,
+    "histories": 8,
+    "distinctShadowFingerprints": 12,
+    "majorDivergenceCases": 12,
+    "alignedCases": 0
+  },
+  "divergenceSummary": {
+    "reasonCodeCount": 13,
+    "reasonCodesObserved": [
+      "cook_success_boost",
+      "dismiss_history",
+      "effort_context_shift",
+      "insufficient_history",
+      "missing_candidate_metadata",
+      "novelty_boost",
+      "recent_overexposure",
+      "safety_soft_suppression",
+      "skill_mismatch",
+      "taste_profile_shift",
+      "weak_profile_confidence"
+    ]
+  },
+  "shadowIsolationSummary": {
+    "offModeProducesNoTrace": true,
+    "malformedGraphHandled": true,
+    "inputArraysNotMutated": true,
+    "throwsEscaped": 0
+  },
+  "productUseEnabled": false,
+  "rankingChangedForUser": false,
+  "dbMigrationRequired": false,
+  "dbWritesDuringGate": 0,
+  "networkCallsDuringGate": 0,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "Live graph + candidate-metadata + history provider not wired (A6 default path runs no DB reads) — A7.",
+    "Shadow traces are not persisted (no audit model) — A7 may add a gated, consent-checked store.",
+    "No experiment design / live-vs-shadow online evaluation yet — A7."
+  ]
+}

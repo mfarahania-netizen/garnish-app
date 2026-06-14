@@ -24,6 +24,7 @@
     "behavior:eval:signals": "jest src/behavior-engine/signals/signal-registry src/behavior-engine/signals/signal-confidence src/behavior-engine/signals/signal-explainability src/behavior-engine/signals/signal-observation-engine src/behavior-engine/signals/signal-qa-gate",
     "behavior:eval:profile": "jest src/behavior-engine/profile",
     "recommendation:eval:decision-intelligence": "jest src/recommendation/intelligence",
+    "recommendation:eval:shadow-runtime": "jest src/recommendation/runtime-shadow",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

@@ -32,7 +32,9 @@
   [E43-A4 UserFoodIdentityGraph v1](behavior/E43_A4_USER_FOOD_IDENTITY_GRAPH_V1.md) — UserFoodIdentityGraph v1 is **code-backed** (pure, 11 dimensions, 12-persona simulation); behavioral profile snapshot readiness exists as **contracts only** (`safeForProductUse` always false); does **not** complete BIP v1 or enable product personalization/ranking/notifications/AI/voice
 - Recommendation intelligence (E18/E43):
   [E18/E43-A5 Recommendation Decision Intelligence + Exposure/Outcome Attribution + Why Engine](execution/E18_E43_A5_RECOMMENDATION_DECISION_INTELLIGENCE_EXPOSURE_OUTCOME_ATTRIBUTION_WHY_ENGINE_REPORT.md) ·
-  [E18/E43-A5 Decision Intelligence v1](recommendation/E18_E43_A5_RECOMMENDATION_DECISION_INTELLIGENCE_V1.md) — SHADOW decision brain (transparent scoring + attribution + safe Why); **does NOT change live ranking** or enable product personalization (`productUseEnabled` / `safeForProductUse` always false)
+  [E18/E43-A5 Decision Intelligence v1](recommendation/E18_E43_A5_RECOMMENDATION_DECISION_INTELLIGENCE_V1.md) — SHADOW decision brain (transparent scoring + attribution + safe Why); **does NOT change live ranking** or enable product personalization (`productUseEnabled` / `safeForProductUse` always false) ·
+  [E18/E43-A6 Shadow Runtime Integration Gate](execution/E18_E43_A6_SHADOW_RUNTIME_RECOMMENDATION_INTEGRATION_GATE_REPORT.md) ·
+  [E18/E43-A6 Shadow Runtime Integration Gate v1](recommendation/E18_E43_A6_SHADOW_RUNTIME_RECOMMENDATION_INTEGRATION_GATE.md) — runs the A5 engine **beside** live ranking behind a default-OFF env gate (`RECOMMENDATION_SHADOW_RUNTIME_MODE`); **does NOT change live ranking or the user-visible response**, no persistence, no DB migration, `rankingChangedForUser`/`productUseEnabled` always false
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -84,6 +86,7 @@
 - Behavior — Signal observation gate: [e43_a3_signal_observation_results.json](qa/behavior/e43_a3_signal_observation_results.json) ·
   UserFoodIdentityGraph gate: [e43_a4_user_food_identity_graph_results.json](qa/behavior/e43_a4_user_food_identity_graph_results.json)
 - Recommendation — Decision intelligence gate: [e18_e43_a5_recommendation_decision_intelligence_results.json](qa/recommendation/e18_e43_a5_recommendation_decision_intelligence_results.json)
+- Recommendation — Shadow runtime gate: [e18_e43_a6_shadow_runtime_recommendation_results.json](qa/recommendation/e18_e43_a6_shadow_runtime_recommendation_results.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

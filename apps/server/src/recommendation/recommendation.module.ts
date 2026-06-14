@@ -17,6 +17,7 @@ import { TasteAffinityBuilder } from './taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { RecommendationShadowRuntimeService } from './runtime-shadow/recommendation-shadow-runtime.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
@@ -34,6 +35,8 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     TasteAffinityBuilder,
     RecipeEmbeddingService,
     GovernanceInsightsService,
+    // E18/E43-A6 shadow runtime (default OFF; provider absent → no DB reads, no user-visible change).
+    RecommendationShadowRuntimeService,
   ],
 })
 export class RecommendationModule {}

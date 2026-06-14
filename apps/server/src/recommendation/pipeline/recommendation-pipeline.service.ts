@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { FeatureStoreService } from '../../behavior-engine/feature-store/feature-store.service';
 import { ExplainabilityService } from '../explainability/explainability.service';
 import { CandidateGeneratorService } from './candidate-generator';
 import { RankingService } from './ranking.service';
+import { RecommendationShadowRuntimeService } from '../runtime-shadow/recommendation-shadow-runtime.service';
 
 interface RecommendationRankItem {
   recipeId: string;
@@ -22,6 +23,9 @@ export class RecommendationPipelineService {
     private readonly rankingService: RankingService,
     private readonly featureStore: FeatureStoreService,
     private readonly explainabilityService: ExplainabilityService,
+    // E18/E43-A6: optional shadow runtime hook. Default OFF; never wired into the user response.
+    // @Optional() keeps existing construction/tests working when it is absent (undefined).
+    @Optional() private readonly shadowRuntime?: RecommendationShadowRuntimeService,
   ) {}
 
   async getRecommendations(userId: string, limit = 10) {
@@ -35,7 +39,7 @@ export class RecommendationPipelineService {
     const ranked = await this.rankingService.rank(userId, candidateIds);
     const recommendations = ranked.slice(0, limit);
 
-    return recommendations.map((item: RecommendationRankItem) => {
+    const response = recommendations.map((item: RecommendationRankItem) => {
       const matchedSignals = Array.isArray(item.matchedSignals) ? item.matchedSignals : [];
       const scores = item.scores || {};
 
@@ -68,5 +72,30 @@ export class RecommendationPipelineService {
         },
       };
     });
+
+    // E18/E43-A6 shadow runtime hook — runs BESIDE live ranking, AFTER the response is built.
+    // It is default-OFF, fully isolated, and CANNOT change `response`, the ranking, or the request.
+    // The shadow result is intentionally discarded (never returned to the user).
+    await this.maybeRunShadowRuntime(userId, ranked.slice(0, limit), limit);
+
+    return response;
+  }
+
+  /**
+   * Invoke the optional shadow runtime. Guarded + try/catch isolated: any fault is swallowed so the live
+   * request is never affected. Passes only a fresh copy of recipeIds (no live object references).
+   */
+  private async maybeRunShadowRuntime(
+    userId: string,
+    rankedTop: RecommendationRankItem[],
+    limit: number,
+  ): Promise<void> {
+    if (!this.shadowRuntime) return;
+    try {
+      const liveCandidateIds = rankedTop.map((item) => item.recipeId);
+      await this.shadowRuntime.observe({ userId, liveCandidateIds, topK: limit });
+    } catch {
+      // shadow runtime must never affect the live recommendation response.
+    }
   }
 }
