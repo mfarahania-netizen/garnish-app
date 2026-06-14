@@ -30,6 +30,9 @@
   [E43-A3 Signal Registry v1](behavior/E43_A3_SIGNAL_REGISTRY_V1.md) — SignalObservation Engine v1 is **code-backed** (pure, deterministic, 44 signals); does **not** complete BIP v1, no UserFoodIdentityGraph, no recommendation/notification/AI-personalization change ·
   [E43-A4 UserFoodIdentityGraph + Profile Snapshot Readiness](execution/E43_A4_USER_FOOD_IDENTITY_GRAPH_AND_BEHAVIORAL_PROFILE_SNAPSHOT_READINESS_REPORT.md) ·
   [E43-A4 UserFoodIdentityGraph v1](behavior/E43_A4_USER_FOOD_IDENTITY_GRAPH_V1.md) — UserFoodIdentityGraph v1 is **code-backed** (pure, 11 dimensions, 12-persona simulation); behavioral profile snapshot readiness exists as **contracts only** (`safeForProductUse` always false); does **not** complete BIP v1 or enable product personalization/ranking/notifications/AI/voice
+- Recommendation intelligence (E18/E43):
+  [E18/E43-A5 Recommendation Decision Intelligence + Exposure/Outcome Attribution + Why Engine](execution/E18_E43_A5_RECOMMENDATION_DECISION_INTELLIGENCE_EXPOSURE_OUTCOME_ATTRIBUTION_WHY_ENGINE_REPORT.md) ·
+  [E18/E43-A5 Decision Intelligence v1](recommendation/E18_E43_A5_RECOMMENDATION_DECISION_INTELLIGENCE_V1.md) — SHADOW decision brain (transparent scoring + attribution + safe Why); **does NOT change live ranking** or enable product personalization (`productUseEnabled` / `safeForProductUse` always false)
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -80,6 +83,7 @@
   Event producer migration gate: [e43_a2_event_producer_migration_results.json](qa/analytics/e43_a2_event_producer_migration_results.json)
 - Behavior — Signal observation gate: [e43_a3_signal_observation_results.json](qa/behavior/e43_a3_signal_observation_results.json) ·
   UserFoodIdentityGraph gate: [e43_a4_user_food_identity_graph_results.json](qa/behavior/e43_a4_user_food_identity_graph_results.json)
+- Recommendation — Decision intelligence gate: [e18_e43_a5_recommendation_decision_intelligence_results.json](qa/recommendation/e18_e43_a5_recommendation_decision_intelligence_results.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

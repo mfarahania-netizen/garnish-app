@@ -20,7 +20,8 @@
     "analytics:eval:event-envelope": "pnpm --dir apps/server analytics:eval:event-envelope",
     "analytics:eval:event-producers": "pnpm --dir apps/server analytics:eval:event-producers",
     "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals",
-    "behavior:eval:profile": "pnpm --dir apps/server behavior:eval:profile"
+    "behavior:eval:profile": "pnpm --dir apps/server behavior:eval:profile",
+    "recommendation:eval:decision-intelligence": "pnpm --dir apps/server recommendation:eval:decision-intelligence"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 
