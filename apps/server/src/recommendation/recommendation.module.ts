@@ -17,7 +17,10 @@ import { TasteAffinityBuilder } from './taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
-import { RecommendationShadowRuntimeService } from './runtime-shadow/recommendation-shadow-runtime.service';
+import { RecommendationShadowRuntimeService, SHADOW_DATA_PORT, SHADOW_TRACE_STORE } from './runtime-shadow/recommendation-shadow-runtime.service';
+import { createPrismaShadowDataPort } from './runtime-shadow/recommendation-shadow-data-port';
+import { PrismaRecommendationShadowTraceStore } from './runtime-shadow/recommendation-shadow-trace-store';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
@@ -35,8 +38,12 @@ import { RecommendationShadowRuntimeService } from './runtime-shadow/recommendat
     TasteAffinityBuilder,
     RecipeEmbeddingService,
     GovernanceInsightsService,
-    // E18/E43-A6 shadow runtime (default OFF; provider absent → no DB reads, no user-visible change).
+    // E18/E43-A6 shadow runtime (default OFF; no user-visible change).
     RecommendationShadowRuntimeService,
+    // E18/E43-A7 shadow data port + redacted trace store (used ONLY when shadow/trace modes are enabled;
+    // default-off → never invoked, so no extra DB read/write on the live path).
+    { provide: SHADOW_DATA_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowDataPort(prisma as any), inject: [PrismaService] },
+    { provide: SHADOW_TRACE_STORE, useFactory: (prisma: PrismaService) => new PrismaRecommendationShadowTraceStore(prisma as any), inject: [PrismaService] },
   ],
 })
 export class RecommendationModule {}

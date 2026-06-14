@@ -628,6 +628,28 @@ model RecommendationMetrics {
   @@index([metricDate, windowDays])
 }
 
+// E18/E43-A7: redacted SHADOW recommendation decision trace (additive, no FK, default writes OFF).
+// Stores ONLY minimized/redacted shadow comparison data — never raw recipe body, raw user text, AI
+// prompt/output, PII, or medical/protected labels. Not user-facing; does not affect live ranking.
+model RecommendationShadowTrace {
+  id                String   @id @default(uuid())
+  userId            String?
+  requestId         String?
+  experimentKey     String?
+  liveFingerprint   String
+  shadowFingerprint String
+  topKOverlap       Float?
+  rankShiftCount    Int?
+  majorDivergence   Boolean
+  reasonCodes       Json
+  summary           Json
+  createdAt         DateTime @default(now())
+
+  @@index([userId])
+  @@index([experimentKey])
+  @@index([createdAt])
+}
+
 model UserBehaviorSignal {
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
