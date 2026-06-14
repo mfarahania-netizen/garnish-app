@@ -24,11 +24,12 @@ import { PrismaRecommendationShadowTraceStore } from './runtime-shadow/recommend
 import { createPrismaShadowProfileFeedPort, createPrismaShadowConsentPort, createPrismaShadowTraceReadPort, createPrismaShadowTraceRetentionPort } from './runtime-shadow/recommendation-shadow-a8-adapters';
 import { RecommendationShadowControlPlaneService } from './runtime-shadow/control-plane/recommendation-shadow-control-plane.service';
 import { RecommendationShadowControlPlaneController } from './runtime-shadow/control-plane/recommendation-shadow-control-plane-controller';
+import { RecommendationLabController } from './runtime-shadow/lab/recommendation-lab-controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
-  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController],
+  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController],
   providers: [
     CandidateGeneratorService,
     RankingService,
