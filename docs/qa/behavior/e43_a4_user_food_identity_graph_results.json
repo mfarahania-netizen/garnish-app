@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-14T00:00:00.000Z",
+  "runMode": "offline-deterministic",
+  "totalChecks": 157,
+  "passedChecks": 157,
+  "failedChecks": 0,
+  "categoryBreakdown": {
+    "graph_completeness": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0
+    },
+    "dimension_aggregation": {
+      "total": 17,
+      "passed": 17,
+      "failed": 0
+    },
+    "confidence_aggregation": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "evidence_lineage": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "conflict_resolution": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0
+    },
+    "recency_freshness": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "privacy_consent": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "explainability_safety": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0
+    },
+    "downstream_readiness": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "multi_user_simulation": {
+      "total": 60,
+      "passed": 60,
+      "failed": 0
+    },
+    "non_collapse_distinctiveness": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0
+    },
+    "artifact_redaction": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    "no_db_network": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "overclaim_prevention": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    }
+  },
+  "graphSummary": {
+    "dimensions": 11,
+    "graphVersion": 1,
+    "fullUserOverallConfidence": 0.6,
+    "fullUserStrongest": [
+      "safetyBoundaries",
+      "onboardingColdStart",
+      "aiInteraction"
+    ]
+  },
+  "dimensionSummary": {
+    "keys": [
+      "taste",
+      "effort",
+      "skill",
+      "routine",
+      "recommendationBehavior",
+      "notificationBehavior",
+      "plannerBehavior",
+      "groceryBehavior",
+      "aiInteraction",
+      "onboardingColdStart",
+      "safetyBoundaries"
+    ],
+    "nonEmptyForFullUser": 11
+  },
+  "confidenceSummary": {
+    "transparent": true,
+    "evidenceWeighted": true,
+    "conservativeCaps": true
+  },
+  "conflictResolutionSummary": {
+    "neverErasesEvidence": true,
+    "contextSplitSupported": true,
+    "lowersConfidenceOnContradiction": true
+  },
+  "privacyConsentSummary": {
+    "highestClassWins": true,
+    "p2NeverDowngraded": true,
+    "b2bBlocked": true,
+    "noMedicalOrProtected": true
+  },
+  "downstreamReadinessSummary": {
+    "contracts": [
+      "recommendation",
+      "notification",
+      "aiSnapshot",
+      "foodDna",
+      "plannerGrocery",
+      "voiceIntent"
+    ],
+    "safeForProductUseAlwaysFalse": true
+  },
+  "simulationSummary": {
+    "simulatedUsers": 12,
+    "distinctProfileFingerprints": 12,
+    "collapsedProfiles": 0,
+    "profiles": [
+      {
+        "id": "sim-quick-weekday",
+        "label": "quick weekday cook",
+        "strongestDimensions": [
+          "effort",
+          "recommendationBehavior",
+          "taste"
+        ],
+        "weakestDimensions": [
+          "taste",
+          "recommendationBehavior",
+          "effort"
+        ],
+        "readiness": {
+          "recommendation": "ready_shadow",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.5706
+      },
+      {
+        "id": "sim-weekend-explorer",
+        "label": "weekend explorer",
+        "strongestDimensions": [
+          "taste",
+          "effort",
+          "routine"
+        ],
+        "weakestDimensions": [
+          "routine",
+          "effort",
+          "taste"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.6263
+      },
+      {
+        "id": "sim-cautious-beginner",
+        "label": "cautious beginner",
+        "strongestDimensions": [
+          "skill",
+          "effort"
+        ],
+        "weakestDimensions": [
+          "effort",
+          "skill"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.28
+      },
+      {
+        "id": "sim-high-skill",
+        "label": "high-skill complex cook",
+        "strongestDimensions": [
+          "skill",
+          "effort"
+        ],
+        "weakestDimensions": [
+          "effort",
+          "skill"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.755
+      },
+      {
+        "id": "sim-notif-fatigued",
+        "label": "notification-fatigued user",
+        "strongestDimensions": [
+          "notificationBehavior"
+        ],
+        "weakestDimensions": [
+          "notificationBehavior"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.65
+      },
+      {
+        "id": "sim-notif-responsive",
+        "label": "notification-responsive user",
+        "strongestDimensions": [
+          "notificationBehavior",
+          "routine"
+        ],
+        "weakestDimensions": [
+          "routine",
+          "notificationBehavior"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "ready_shadow",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.637
+      },
+      {
+        "id": "sim-planner-heavy",
+        "label": "planner-heavy user",
+        "strongestDimensions": [
+          "plannerBehavior",
+          "routine"
+        ],
+        "weakestDimensions": [
+          "routine",
+          "plannerBehavior"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.6364
+      },
+      {
+        "id": "sim-grocery-friction",
+        "label": "grocery-friction user",
+        "strongestDimensions": [
+          "groceryBehavior"
+        ],
+        "weakestDimensions": [
+          "groceryBehavior"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.45
+      },
+      {
+        "id": "sim-ai-help-seeking",
+        "label": "AI-help-seeking user",
+        "strongestDimensions": [
+          "aiInteraction"
+        ],
+        "weakestDimensions": [
+          "aiInteraction"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.6
+      },
+      {
+        "id": "sim-ai-negative",
+        "label": "AI-negative-feedback user",
+        "strongestDimensions": [
+          "aiInteraction"
+        ],
+        "weakestDimensions": [
+          "aiInteraction"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.52
+      },
+      {
+        "id": "sim-onboarding-vs-behavior",
+        "label": "onboarding-adventurous-but-behavior-conservative user",
+        "strongestDimensions": [
+          "taste",
+          "onboardingColdStart"
+        ],
+        "weakestDimensions": [
+          "onboardingColdStart",
+          "taste"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.4738
+      },
+      {
+        "id": "sim-mixed-contradictory",
+        "label": "mixed/contradictory user",
+        "strongestDimensions": [
+          "effort",
+          "notificationBehavior",
+          "recommendationBehavior"
+        ],
+        "weakestDimensions": [
+          "recommendationBehavior",
+          "notificationBehavior",
+          "effort"
+        ],
+        "readiness": {
+          "recommendation": "not_ready",
+          "notification": "not_ready",
+          "aiSnapshot": "not_ready",
+          "foodDna": "not_ready",
+          "plannerGrocery": "not_ready",
+          "voiceIntent": "not_ready"
+        },
+        "confidence": 0.4044
+      }
+    ]
+  },
+  "explainabilitySummary": {
+    "allGraphsSafe": true,
+    "scannerCatchesLaundering": true,
+    "scannerCatchesCreepy": true
+  },
+  "dbMigrationRequired": false,
+  "dbWritesDuringGate": 0,
+  "networkCallsDuringGate": 0,
+  "productUseEnabled": false,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "Graph is PURE — not persisted (no UserFoodIdentityGraph table) and not wired into runtime.",
+    "Downstream readiness is a CONTRACT only; safeForProductUse is always false (no product enablement).",
+    "No prediction layer; no recommendation-ranking / notification-engine / Food-DNA / AI-personalization / voice change.",
+    "Ingredient/cuisine identity (name-list fields) requires a recipe-data join (staged; empty in v1).",
+    "Confidence/decay model is conservative v1."
+  ]
+}

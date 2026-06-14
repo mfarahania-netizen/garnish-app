@@ -19,7 +19,8 @@
     "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness",
     "analytics:eval:event-envelope": "pnpm --dir apps/server analytics:eval:event-envelope",
     "analytics:eval:event-producers": "pnpm --dir apps/server analytics:eval:event-producers",
-    "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals"
+    "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals",
+    "behavior:eval:profile": "pnpm --dir apps/server behavior:eval:profile"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

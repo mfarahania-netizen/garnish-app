@@ -50,6 +50,7 @@ export const FORBIDDEN_INFERENCE_TERMS: readonly string[] = [
   'anxiety disorder',
   'criminal',
   'medical condition',
+  'medical', // defense-in-depth: block standalone "medical" (advice/history/etc.) in any user-facing text
   'condition', // defense-in-depth: a health-app explanation referencing "a condition" is almost always medical
   'disease',
   'disorder',
@@ -124,7 +125,7 @@ export const SIGNAL_REGISTRY: readonly SignalRegistryEntry[] = [
   mk({ signalKey: 'routine.meal_time_pattern', description: 'Typical times of day you engage with meals.', allowedEventFamilies: ['recipe', 'planner', 'behavior'], allowedEventTypes: ['recipe_view', 'recipe_viewed', 'cook_complete'], direction: 'neutral', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on the times of day you usually browse or cook.' }),
   mk({ signalKey: 'routine.weekly_planning_pattern', description: 'Weekly meal-planning rhythm.', allowedEventFamilies: ['planner'], allowedEventTypes: ['mealplan_add', 'mealplan_generate', 'planner_autofill_accepted'], direction: 'positive', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on which days you tend to plan meals.' }),
   mk({ signalKey: 'routine.shopping_day_pattern', description: 'Recurring grocery/shopping days.', allowedEventFamilies: ['grocery'], allowedEventTypes: ['shopping_item_add', 'shopping_add_from_plan', 'grocery_item_merged'], direction: 'neutral', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on which days you usually build your shopping list.' }),
-  mk({ signalKey: 'routine.late_night_decision', description: 'Late-evening meal decision tendency (non-medical).', allowedEventFamilies: ['behavior', 'recipe'], allowedEventTypes: ['recipe_view', 'recipe_viewed'], direction: 'neutral', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on how often you browse meals late in the evening.' }),
+  mk({ signalKey: 'routine.late_night_decision', description: 'Late-evening meal decision tendency (engagement timing only).', allowedEventFamilies: ['behavior', 'recipe'], allowedEventTypes: ['recipe_view', 'recipe_viewed'], direction: 'neutral', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on how often you browse meals late in the evening.' }),
   mk({ signalKey: 'routine.weekend_cooking_pattern', description: 'Weekend vs weekday cooking rhythm.', allowedEventFamilies: ['cook', 'planner'], allowedEventTypes: ['cook_complete', 'mealplan_add'], direction: 'neutral', valueType: 'distribution', consentPurpose: 'analytics', explainabilityTemplate: 'Based on whether you cook more on weekends than weekdays.' }),
 
   /* ── recommendation behavior ── */
