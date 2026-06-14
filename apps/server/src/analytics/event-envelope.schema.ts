@@ -615,20 +615,29 @@ function scrubSecretsFromString(s: string): string {
  * Never throws. Returns `null` for null/undefined input.
  */
 export function redactEventEnvelopeForArtifact(input: unknown): unknown {
-  const redact = (node: unknown): unknown => {
+  // E43-A3 hardening: guard against circular references and pathological nesting so redaction can
+  // never stack-overflow / loop. Semantics for normal acyclic, finite inputs are unchanged.
+  const seen = new WeakSet<object>();
+  const MAX_DEPTH = 12;
+  const redact = (node: unknown, depth: number): unknown => {
     if (node === null || node === undefined) return node;
     if (typeof node === 'string') return scrubSecretsFromString(node);
     if (typeof node === 'number' || typeof node === 'boolean') return node;
-    if (Array.isArray(node)) return node.map(redact);
+    if (depth >= MAX_DEPTH) return '[redacted-depth]';
+    if (typeof node === 'object') {
+      if (seen.has(node as object)) return '[redacted-circular]';
+      seen.add(node as object);
+    }
+    if (Array.isArray(node)) return node.map((v) => redact(v, depth + 1));
     if (isPlainObject(node)) {
       const out: Record<string, unknown> = {};
       for (const [key, val] of Object.entries(node)) {
-        out[key] = PII_KEY_DENYLIST.has(normalizeKey(key)) ? '[redacted-pii-key]' : redact(val);
+        out[key] = PII_KEY_DENYLIST.has(normalizeKey(key)) ? '[redacted-pii-key]' : redact(val, depth + 1);
       }
       return out;
     }
     return '[redacted-unknown]';
   };
   if (input === null || input === undefined) return null;
-  return redact(input);
+  return redact(input, 0);
 }

@@ -18,7 +18,8 @@
     "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression",
     "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness",
     "analytics:eval:event-envelope": "pnpm --dir apps/server analytics:eval:event-envelope",
-    "analytics:eval:event-producers": "pnpm --dir apps/server analytics:eval:event-producers"
+    "analytics:eval:event-producers": "pnpm --dir apps/server analytics:eval:event-producers",
+    "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

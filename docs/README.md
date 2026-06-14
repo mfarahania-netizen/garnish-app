@@ -25,6 +25,9 @@
   [E43-A1 Event Envelope code contract + ingest gate](execution/E43_A1_CANONICAL_EVENT_ENVELOPE_CODE_CONTRACT_AND_INGEST_GATE_REPORT.md) ·
   [E43-A2 taxonomy-bound producer migration + shadow runtime integration](execution/E43_A2_TAXONOMY_BOUND_EVENT_PRODUCER_MIGRATION_AND_SHADOW_RUNTIME_INTEGRATION_REPORT.md) ·
   [E43-A2 producer migration map](analytics/E43_A2_EVENT_PRODUCER_MIGRATION_MAP.md) — Event Envelope is **code-backed**; runtime producer migration is **staged** (one shadow integration; BIP v1 **not** complete, analytics **not** fully migrated)
+- Behavioral intelligence (E43):
+  [E43-A3 SignalObservation Engine + Signal Registry v1](execution/E43_A3_SIGNAL_OBSERVATION_ENGINE_AND_SIGNAL_REGISTRY_V1_REPORT.md) ·
+  [E43-A3 Signal Registry v1](behavior/E43_A3_SIGNAL_REGISTRY_V1.md) — SignalObservation Engine v1 is **code-backed** (pure, deterministic, 44 signals); does **not** complete BIP v1, no UserFoodIdentityGraph, no recommendation/notification/AI-personalization change
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -73,6 +76,7 @@
   AI live-smoke results: [e47_a7_live_smoke_results.json](qa/ai/e47_a7_live_smoke_results.json)
 - Analytics — Event Envelope contract gate: [e43_a1_event_envelope_contract_results.json](qa/analytics/e43_a1_event_envelope_contract_results.json) ·
   Event producer migration gate: [e43_a2_event_producer_migration_results.json](qa/analytics/e43_a2_event_producer_migration_results.json)
+- Behavior — Signal observation gate: [e43_a3_signal_observation_results.json](qa/behavior/e43_a3_signal_observation_results.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
 ## Data

@@ -518,4 +518,23 @@ describe('E43-A1 — redactEventEnvelopeForArtifact (deterministic, log-safe)', 
     expect(redactEventEnvelopeForArtifact(undefined)).toBeNull();
     expect(() => redactEventEnvelopeForArtifact('plain string')).not.toThrow();
   });
+
+  it('E43-A3: survives a circular reference without throwing (depth/cycle guard)', () => {
+    const a: any = { eventType: 'x', nested: {} };
+    a.nested.back = a; // cycle
+    let out: any;
+    expect(() => {
+      out = redactEventEnvelopeForArtifact(a);
+    }).not.toThrow();
+    const json = JSON.stringify(out); // must be serializable (no cycle survives)
+    expect(json).toContain('[redacted-circular]');
+    expect(out.eventType).toBe('x');
+  });
+
+  it('E43-A3: caps pathological nesting depth without stack overflow', () => {
+    let deep: any = { v: 1 };
+    for (let i = 0; i < 5000; i++) deep = { child: deep };
+    expect(() => redactEventEnvelopeForArtifact(deep)).not.toThrow();
+    expect(JSON.stringify(redactEventEnvelopeForArtifact(deep))).toContain('[redacted-depth]');
+  });
 });
