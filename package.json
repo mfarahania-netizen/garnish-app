@@ -15,7 +15,8 @@
     "recipes:validate:v0.6.1": "pnpm --dir apps/server recipes:validate:v0.6.1",
     "recipes:import:v0.6.1:dry": "pnpm --dir apps/server recipes:import:v0.6.1:dry",
     "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1",
-    "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression"
+    "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression",
+    "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

@@ -8,8 +8,13 @@ async function main() {
   // ---------- تنظیمات تست ----------
   const TEST_USER_ID = '76722b8e-0063-48c0-8031-71f306aad907'; // کاربر تست
   // انتخاب یک غذای واقعی که در لیست پیشنهادات آمده بود (جوجه کباب زعفرانی)
-  const TEST_RECIPE_ID = '8cae757c-91e7-4a5d-bca3-af2fde6193d7'; 
-  const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NjcyMmI4ZS0wMDYzLTQ4YzAtODAzMS03MWYzMDZhYWQ5MDciLCJwaG9uZSI6IjA5MTIzNDU2Nzg5IiwiaWF0IjoxNzgwODI0MDI0LCJleHAiOjE3ODE0Mjg4MjR9.ha0ntP0w0NDdX8xT4HhsRq1e3H5Fe-uhTW6hZi07_z8';
+  const TEST_RECIPE_ID = '8cae757c-91e7-4a5d-bca3-af2fde6193d7';
+  // dev-only: supply a FRESH local JWT via env (no hardcoded token / no embedded PII committed).
+  const TOKEN = process.env.TEST_JWT || '';
+  if (!TOKEN) {
+    console.error('Set TEST_JWT (a local dev JWT) to run this dev script, e.g. TEST_JWT=... node scripts/dev/test-exposure-final.js');
+    return;
+  }
 
   console.log('🧪 شروع تست نهایی Exposure Penalty...\n');
 
