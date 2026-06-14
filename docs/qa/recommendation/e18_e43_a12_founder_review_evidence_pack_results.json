@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-15T00:00:00.000Z",
+  "runMode": "offline-founder-review-evidence-evaluation",
+  "totalChecks": 392,
+  "passedChecks": 392,
+  "failedChecks": 0,
+  "categories": {
+    "config_parsing": {
+      "total": 9,
+      "passed": 9
+    },
+    "access_model": {
+      "total": 96,
+      "passed": 96
+    },
+    "production_lockout": {
+      "total": 4,
+      "passed": 4
+    },
+    "plan_model": {
+      "total": 12,
+      "passed": 12
+    },
+    "plan_pipeline": {
+      "total": 10,
+      "passed": 10
+    },
+    "evidence_pack": {
+      "total": 16,
+      "passed": 16
+    },
+    "integration_a11": {
+      "total": 20,
+      "passed": 20
+    },
+    "integration_a10": {
+      "total": 10,
+      "passed": 10
+    },
+    "integration_a9": {
+      "total": 10,
+      "passed": 10
+    },
+    "integration_a8": {
+      "total": 20,
+      "passed": 20
+    },
+    "safety_checklist": {
+      "total": 48,
+      "passed": 48
+    },
+    "promotion_review": {
+      "total": 25,
+      "passed": 25
+    },
+    "rollback_proof": {
+      "total": 21,
+      "passed": 21
+    },
+    "dossier": {
+      "total": 24,
+      "passed": 24
+    },
+    "no_product_enablement": {
+      "total": 10,
+      "passed": 10
+    },
+    "no_ranking_change": {
+      "total": 10,
+      "passed": 10
+    },
+    "runtime_safety": {
+      "total": 10,
+      "passed": 10
+    },
+    "no_raw_leak": {
+      "total": 21,
+      "passed": 21
+    },
+    "founder_decision_model": {
+      "total": 10,
+      "passed": 10
+    },
+    "no_r3_r4_closure": {
+      "total": 1,
+      "passed": 1
+    },
+    "no_public_endpoint": {
+      "total": 1,
+      "passed": 1
+    },
+    "artifact_safety": {
+      "total": 4,
+      "passed": 4
+    }
+  },
+  "planSummary": {
+    "scope": "dev_shadow_only",
+    "requiredApprovals": [
+      "founder"
+    ],
+    "promotionAllowed": false,
+    "liveRankingChangeAllowed": false,
+    "userResponseChangeAllowed": false
+  },
+  "evidencePackSummary": {
+    "evidenceComplete": true,
+    "integratesA8": true,
+    "integratesA9": true,
+    "integratesA10": true,
+    "integratesA11": true
+  },
+  "safetyChecklistSummary": {
+    "criticalFailureCount": 0,
+    "status": "pass"
+  },
+  "rollbackProofSummary": {
+    "killSwitchBlocksExecution": true,
+    "productionBlocked": true,
+    "disableByEnv": true,
+    "destructiveRollbackRequired": false
+  },
+  "dossierSummary": {
+    "requiredFounderDecision": true,
+    "allowedDecisionOptions": [
+      "reject",
+      "request_more_evidence",
+      "approve_limited_dev_shadow_experiment"
+    ]
+  },
+  "accessSummary": {
+    "publicEndpointExposed": false,
+    "productionExecutionBlocked": true,
+    "requiresAdmin": true
+  },
+  "runtimeSafetySummary": {
+    "liveResponseChanged": false,
+    "liveRankingChanged": false,
+    "decisionTraceExposedToUser": false,
+    "productUseEnabled": false
+  },
+  "retentionSummary": {
+    "destructiveOperationUsed": false,
+    "requiresFounderApproval": true
+  },
+  "promotionAllowed": false,
+  "liveRankingChangedForUser": false,
+  "networkCallsDuringGate": 0,
+  "redactedFailureDetails": [],
+  "remainingIntegrationGaps": [
+    "Internal/dev evidence only — no public endpoint, no UI; evidence pack runs only registered templates.",
+    "Shadow batches are offline/synthetic; trace analysis is observational over redacted traces.",
+    "Promotion is founder-review readiness only; A13 (Founder-approved limited dev shadow experiment EXECUTION) required before any live ranking change."
+  ]
+}

@@ -25,11 +25,13 @@ import { createPrismaShadowProfileFeedPort, createPrismaShadowConsentPort, creat
 import { RecommendationShadowControlPlaneService } from './runtime-shadow/control-plane/recommendation-shadow-control-plane.service';
 import { RecommendationShadowControlPlaneController } from './runtime-shadow/control-plane/recommendation-shadow-control-plane-controller';
 import { RecommendationLabController } from './runtime-shadow/lab/recommendation-lab-controller';
+import { RecommendationFounderReviewService } from './runtime-shadow/lab/founder-review/recommendation-founder-review-service';
+import { RecommendationFounderReviewController } from './runtime-shadow/lab/founder-review/recommendation-founder-review-controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
-  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController],
+  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController],
   providers: [
     CandidateGeneratorService,
     RankingService,
@@ -58,6 +60,9 @@ import { PrismaService } from '../prisma/prisma.service';
     { provide: SHADOW_RETENTION_PORT, useFactory: (prisma: PrismaService) => createPrismaShadowTraceRetentionPort(prisma as any), inject: [PrismaService] },
     // E18/E43-A10 internal/dev control plane (default OFF; admin-guarded + access-gated controller).
     RecommendationShadowControlPlaneService,
+    // E18/E43-A12 internal/dev founder-review evidence pack (default OFF; admin-guarded + access-gated
+    // controller; read-only/dry-run; promotionAllowed always false).
+    RecommendationFounderReviewService,
   ],
 })
 export class RecommendationModule {}

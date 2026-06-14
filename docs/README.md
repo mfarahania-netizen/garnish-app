@@ -46,7 +46,9 @@
   [E18/E43-A10 Limited Dev Experiment Control Plane + Internal Metrics](execution/E18_E43_A10_LIMITED_DEV_EXPERIMENT_CONTROL_PLANE_INTERNAL_METRICS_API_REPORT.md) ·
   [E18/E43-A10 design doc](recommendation/E18_E43_A10_LIMITED_DEV_EXPERIMENT_CONTROL_PLANE_INTERNAL_METRICS_API.md) — internal/dev read-only control plane (quality/trace/threshold/failure/promotion summaries) behind a default-OFF, admin-guarded, access-gated route; **no public endpoint**, no live ranking/response change, no trace exposed to users, `promotionGate.allowed` always false ·
   [E18/E43-A11 Recommendation Lab / Controlled Dev Experiment Engine](execution/E18_E43_A11_RECOMMENDATION_LAB_CONTROLLED_DEV_EXPERIMENT_ENGINE_REPORT.md) ·
-  [E18/E43-A11 design doc](recommendation/E18_E43_A11_RECOMMENDATION_LAB_CONTROLLED_DEV_EXPERIMENT_ENGINE.md) — internal/dev controlled-experiment engine: bounded named shadow experiments (5-template registry, no arbitrary code) → quality scorecard + promotion-readiness, behind a default-OFF, admin-guarded, access-gated route with a non-bypassable kill switch; **no public endpoint**, no live ranking/response change, no trace exposed to users, `promotionGate.allowed` always false (next gate A12)
+  [E18/E43-A11 design doc](recommendation/E18_E43_A11_RECOMMENDATION_LAB_CONTROLLED_DEV_EXPERIMENT_ENGINE.md) — internal/dev controlled-experiment engine: bounded named shadow experiments (5-template registry, no arbitrary code) → quality scorecard + promotion-readiness, behind a default-OFF, admin-guarded, access-gated route with a non-bypassable kill switch; **no public endpoint**, no live ranking/response change, no trace exposed to users, `promotionGate.allowed` always false (next gate A12) ·
+  [E18/E43-A12 Founder Review Evidence Pack](execution/E18_E43_A12_FOUNDER_REVIEWED_LIMITED_DEV_SHADOW_EXPERIMENT_EVIDENCE_PACK_REPORT.md) ·
+  [E18/E43-A12 design doc](recommendation/E18_E43_A12_FOUNDER_REVIEWED_LIMITED_DEV_SHADOW_EXPERIMENT_EVIDENCE_PACK.md) — internal/dev Founder-review evidence system: reproducible redacted evidence pack (A11 lab + A10 control plane + A9 simulation + A8 trace/retention) + safety checklist + evidence-backed rollback/kill-switch proof + Founder dossier, behind a default-OFF, admin-guarded, access-gated route; **no public endpoint**, no live ranking/response change, no trace exposed to users, `promotionAllowed` always false, Founder decision required (next gate A13)
 - AI Core (E47):
   [E43 Event Envelope](execution/E43_EVENT_ENVELOPE_CODE_CONTRACT_REPORT.md) ·
   [A1 skeleton](execution/E47_A1_AI_CORE_SKELETON_REPORT.md) ·
@@ -104,6 +106,7 @@
 - Recommendation — Shadow A9 dev-traffic experiment simulation gate: [e18_e43_a9_dev_traffic_shadow_experiment_results.json](qa/recommendation/e18_e43_a9_dev_traffic_shadow_experiment_results.json)
 - Recommendation — Shadow A10 control-plane internal-metrics gate: [e18_e43_a10_control_plane_internal_metrics_results.json](qa/recommendation/e18_e43_a10_control_plane_internal_metrics_results.json)
 - Recommendation — Lab A11 controlled-dev-experiment gate: [e18_e43_a11_recommendation_lab_results.json](qa/recommendation/e18_e43_a11_recommendation_lab_results.json)
+- Recommendation — A12 founder-review evidence-pack gate: [e18_e43_a12_founder_review_evidence_pack_results.json](qa/recommendation/e18_e43_a12_founder_review_evidence_pack_results.json)
 - Recipes — International Core 150 DB import: [international_core_150_db_import_results_v0_6_0.json](qa/recipes/international_core_150_db_import_results_v0_6_0.json)
 - Phase 4A screenshots + report: [qa/phase4a/](qa/phase4a/)
 
