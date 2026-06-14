@@ -64,7 +64,7 @@ const OUTPUT_RULES: { re: RegExp; category: OutputViolationCategory }[] = [
   { re: /\b(detox(if(y|ies|ying))?|cleanse\s+your\s+(body|system)|shed\s+pounds|melt\s+(away\s+)?fat|burn\s+fat\s+fast|boost\s+(your\s+)?(energy|metabolism|immune))\b/i, category: 'nutrition_claim' },
   { re: /\b(lower(s|ing)?|reduc(e|es|ing)|control(s|ling)?|cur(e|es|ing)|revers(e|es|ing))\b.{0,25}\b(your\s+)?(cholesterol|blood\s+sugar|blood\s+pressure|diabetes|weight|inflammation)\b/i, category: 'nutrition_claim' },
   // ── unsafe food handling ──
-  { re: /\b(raw|undercooked|rare|pink|bloody|sushi[-\s]?grade)\b.{0,15}\b(chicken|pork|poultry|meat|beef|egg|fish|seafood|turkey|sashimi)\b.{0,40}\b(safe|fine|ok|okay|healthy|delicacy|no\s+problem|won'?t\s+hurt|generally\s+fine|totally\s+safe)\b/i, category: 'unsafe_food_handling' },
+  { re: /\b(raw|undercooked|rare|pink|bloody|sushi[-\s]?grade)\b.{0,15}\b(chicken|pork|poultry|meat|beef|egg|fish|seafood|turkey|sashimi|sushi)\b.{0,40}\b(safe|fine|ok|okay|healthy|delicacy|no\s+problem|won'?t\s+hurt|generally\s+fine|totally\s+safe)\b/i, category: 'unsafe_food_handling' },
   { re: /\b(safe|fine|ok|okay|perfectly\s+fine|totally\s+safe)\b.{0,25}\b(to\s+)?eat\s+(raw|undercooked|rare|pink|slightly\s+pink)\b/i, category: 'unsafe_food_handling' },
   { re: /\b(left\s+out|sat\s+out|sitting\s+out|unrefrigerated|room\s+temperature|reheat\w*)\b.{0,40}\b(safe|fine|ok(ay)?|fine\s+to\s+eat|still\s+good)\b/i, category: 'unsafe_food_handling' },
   { re: /\b(mold(y)?|spoiled|expired|rotten|smells?\s+(off|bad))\b.{0,40}\b(still\s+)?(safe|fine|ok(ay)?|to\s+eat|cut\s+off\s+the\s+mold)\b/i, category: 'unsafe_food_handling' },

@@ -19,9 +19,13 @@ export type OutputViolationCategory =
   | 'injection_compliance'
   | 'unsafe_food_handling';
 
+export type EvalLanguage = 'en' | 'fa';
+
 export interface OutputEvalCase {
   id: string;
   category: string;
+  /** BCP-ish language tag; defaults to 'en' when omitted (A11A cases). E47-A11B adds explicit langs. */
+  language?: EvalLanguage;
   input: string;
   /** Expected orchestrator status family (e.g. 'ok' or a 'blocked_*'). */
   expectedSafetyStatus: 'ok' | 'blocked_injection' | 'blocked_safety' | 'blocked_nutrition' | 'blocked_cost' | 'error';

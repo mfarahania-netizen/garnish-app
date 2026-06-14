@@ -14,7 +14,8 @@
     "data:import:phase-one": "pnpm --dir apps/server data:import:phase-one",
     "recipes:validate:v0.6.1": "pnpm --dir apps/server recipes:validate:v0.6.1",
     "recipes:import:v0.6.1:dry": "pnpm --dir apps/server recipes:import:v0.6.1:dry",
-    "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1"
+    "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1",
+    "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression"
   },
   "devDependencies": { 
     "turbo": "^1.13.3", 

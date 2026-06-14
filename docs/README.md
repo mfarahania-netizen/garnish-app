@@ -36,7 +36,8 @@
   [A10A persisted AI cost ledger (R3 mitigation)](execution/E47_A10A_PERSISTED_AI_COST_LEDGER_REPORT.md) ·
   [A10B persisted daily user budget (R3 mitigation)](execution/E47_A10B_PERSISTED_DAILY_USER_BUDGET_REPORT.md) ·
   [A10C cost-rate catalog & spend alerting (R3 mitigation)](execution/E47_A10C_AI_COST_RATE_CATALOG_AND_SPEND_ALERTING_REPORT.md) ·
-  [A11A output safety/quality eval harness (R4 mitigation)](execution/E47_A11A_LIVE_OUTPUT_SAFETY_QUALITY_EVAL_HARNESS_REPORT.md)
+  [A11A output safety/quality eval harness (R4 mitigation)](execution/E47_A11A_LIVE_OUTPUT_SAFETY_QUALITY_EVAL_HARNESS_REPORT.md) ·
+  [A11B regression corpus & continuous eval gate (R4 mitigation)](execution/E47_A11B_LARGER_REGRESSION_CORPUS_AND_CONTINUOUS_EVAL_GATE_REPORT.md)
 - Docs: [README source-of-truth cleanup](execution/DOCS_README_SOURCE_OF_TRUTH_REPORT.md)
 
 ## Design system (GES)
