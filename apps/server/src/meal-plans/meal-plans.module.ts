@@ -12,5 +12,6 @@ import { ProfileModule } from '../behavior-engine/profile/profile.module';
   imports: [ProfileModule],
   providers: [MealPlansService, MealPlanPlannerService],
   controllers: [MealPlansController],
+  exports: [MealPlansService], // HABIT-L4-12: BriefingService reuses getCurrentPlan for plan-gap nudges
 })
 export class MealPlansModule {}

@@ -85,6 +85,23 @@ export const NOTIFICATION_TRIGGERS: readonly NotificationTrigger[] = [
     maxPerWeek: 5,
     template: (p) => ({ title: 'دستاورد تازه! 🎉', body: p?.title ? `«${p.title}» رو باز کردی.` : 'یه دستاورد تازه باز کردی.' }),
   },
+  // HABIT-L4-12 — the daily ritual + kind, opt-out-respecting re-engagement (delivery via the INE only).
+  {
+    key: 'daily_briefing',
+    description: "The user's once-per-day personalized briefing is ready.",
+    priority: 6,
+    consentPurpose: 'personalization',
+    maxPerWeek: 7, // at most one per day
+    template: (p) => ({ title: 'برنامهٔ امروزت 🍳', body: p?.summary ?? 'یه پیشنهاد و چند نکتهٔ کوچیک برای امروز آماده‌ست.' }),
+  },
+  {
+    key: 'reengagement_gentle',
+    description: 'Kind, no-pressure re-engagement after a quiet stretch (no guilt, no urgency).',
+    priority: 3,
+    consentPurpose: 'personalization',
+    maxPerWeek: 1,
+    template: () => ({ title: 'هر وقت آماده بودی، اینجاییم 🙂', body: 'هفتهٔ شلوغی بود؟ یه چیز سادهٔ خوشمزه برات داریم — بدون هیچ عجله‌ای.' }),
+  },
 ] as const;
 
 const BY_KEY = new Map(NOTIFICATION_TRIGGERS.map((t) => [t.key, t]));

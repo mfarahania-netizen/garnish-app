@@ -223,6 +223,10 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /briefing/today": {
+      "status": "deferred:E-briefing-ui",
+      "reason": "HABIT-L4-12: owner-only daily briefing (reuse-composed pick/nudge/progress); backend-only this sprint (Home/Briefing UI is Phase 3 / Claude Design)."
+    },
     "GET /exposure-memory": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
@@ -446,6 +450,10 @@
     "POST /auth/register": {
       "status": "frontend:auth/AuthPage",
       "reason": "Authentication surface (rate-limited)."
+    },
+    "POST /briefing/feedback": {
+      "status": "deferred:E-briefing-ui",
+      "reason": "HABIT-L4-12: owner logs accept/reject/swap on the briefing; routed to the existing analytics ingest (signal loop). UI is Phase 3."
     },
     "POST /favorites/:recipeId": {
       "status": "frontend:favorites/FavoritesPage",

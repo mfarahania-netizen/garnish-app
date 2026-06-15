@@ -11,5 +11,6 @@ import { ProfileModule } from '../behavior-engine/profile/profile.module';
   imports: [ProfileModule],
   providers: [ShoppingListService],
   controllers: [ShoppingListController],
+  exports: [ShoppingListService], // HABIT-L4-12: BriefingService reuses getList for shopping nudges
 })
 export class ShoppingListModule {}

@@ -16,9 +16,9 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 104,
+    "endpoints": 106,
     "internalEndpoints": 9,
-    "controllers": 21,
+    "controllers": 22,
     "routes": 17,
     "protectedRoutes": 11,
     "frontendCallSites": 75,
@@ -5987,6 +5987,40 @@
       "auth": "throttler",
       "isInternal": false,
       "calledByFrontend": true
+    },
+    {
+      "id": "POST /briefing/feedback",
+      "verb": "POST",
+      "path": "/briefing/feedback",
+      "controller": "BriefingController",
+      "handler": "feedback",
+      "file": "apps/server/src/briefing/briefing.controller.ts",
+      "controllerBasePath": "/briefing",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /briefing/today",
+      "verb": "GET",
+      "path": "/briefing/today",
+      "controller": "BriefingController",
+      "handler": "today",
+      "file": "apps/server/src/briefing/briefing.controller.ts",
+      "controllerBasePath": "/briefing",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
     },
     {
       "id": "GET /exposure-memory",
