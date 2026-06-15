@@ -451,6 +451,10 @@
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
     },
+    "POST /meal-plans/propose": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "PLANNER-L4-09 intelligent weekly plan PROPOSAL (allergy hard-exclude, variety, pantry reuse, WHY); rendered by the plan-page ProposePlanPanel. Proposes, never auto-applies."
+    },
     "POST /meal-plans/slots": {
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
@@ -478,6 +482,10 @@
     "POST /recommendations/run-signal-detector": {
       "status": "admin",
       "reason": "Admin maintenance trigger (signal detector)."
+    },
+    "POST /shopping-list/from-plan": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "PLANNER-L4-09 build/sync the shopping list from the meal plan (aggregate+merge vs 1008, scale, categorize); called by the shopping-page BuildFromPlanButton."
     },
     "POST /shopping-list/items": {
       "status": "frontend:shopping-list/ShoppingListPage",

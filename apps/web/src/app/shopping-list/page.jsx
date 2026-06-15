@@ -11,6 +11,7 @@ import {
   IconChevronUp, IconX, IconMoodEmpty, IconCircleCheck
 } from '@tabler/icons-react';
 import { useShoppingListQuery } from '../../hooks/useShoppingListQuery';
+import BuildFromPlanButton from './components/BuildFromPlanButton';
 import { useRecipes } from '../../hooks/useRecipes';
 import { useMealPlannerQuery } from '../../hooks/useMealPlannerQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -195,6 +196,8 @@ export default function ShoppingListPage() {
 
   return (
     <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 100px' }}>
+      {/* PLANNER-L4-09: build the list from this week's meal plan (functional) */}
+      <BuildFromPlanButton />
       {/* هدر شیشه‌ای */}
       <Paper
         p="md"

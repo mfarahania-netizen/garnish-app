@@ -1,11 +1,15 @@
 import { Controller, Get, Post, Body, Req, UseGuards, Delete, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MealPlansService } from './meal-plans.service';
+import { MealPlanPlannerService } from './planner/meal-plan-planner.service';
 
 @Controller('meal-plans')
 @UseGuards(AuthGuard('jwt'))
 export class MealPlansController {
-  constructor(private readonly mealPlansService: MealPlansService) {}
+  constructor(
+    private readonly mealPlansService: MealPlansService,
+    private readonly planner: MealPlanPlannerService,
+  ) {}
 
   @Get()
   getCurrentPlan(@Req() req) {
@@ -37,5 +41,15 @@ export class MealPlansController {
   @Post('generate')
   generatePlan(@Req() req) {
     return this.mealPlansService.generateSmartPlan(req.user.userId);
+  }
+
+  /**
+   * PLANNER-L4-09: intelligent weekly plan PROPOSAL — reuses getLivingUserProfile + S07 fit, HARD-excludes
+   * declared allergies, optimizes variety/effort/pantry-reuse with per-slot WHY. PROPOSES ONLY (writes
+   * nothing); the user accepts via POST /meal-plans/slots (the existing apply path).
+   */
+  @Post('propose')
+  proposePlan(@Req() req, @Body() body: { meals?: string[]; days?: number }) {
+    return this.planner.proposePlan(req.user.userId, { meals: body?.meals, days: body?.days });
   }
 }

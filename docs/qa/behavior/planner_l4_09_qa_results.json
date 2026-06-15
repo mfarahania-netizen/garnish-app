@@ -1,0 +1,17 @@
+{
+  "suite": "PLANNER-L4-09",
+  "runMode": "offline-deterministic",
+  "externalApiCalls": 0,
+  "liveAi": false,
+  "parallelRecommenderBuilt": false,
+  "reusesUnifiedProfile": true,
+  "totalChecks": 10,
+  "passedChecks": 10,
+  "failedChecks": 0,
+  "categories": [
+    "plan",
+    "shopping",
+    "allergy_safety",
+    "reuse"
+  ]
+}

@@ -16,12 +16,12 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 100,
+    "endpoints": 102,
     "internalEndpoints": 9,
     "controllers": 20,
     "routes": 17,
     "protectedRoutes": 11,
-    "frontendCallSites": 72,
+    "frontendCallSites": 74,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -6071,6 +6071,23 @@
       "calledByFrontend": true
     },
     {
+      "id": "POST /meal-plans/propose",
+      "verb": "POST",
+      "path": "/meal-plans/propose",
+      "controller": "MealPlansController",
+      "handler": "proposePlan",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "POST /meal-plans/slots",
       "verb": "POST",
       "path": "/meal-plans/slots",
@@ -6671,6 +6688,23 @@
       "path": "/shopping-list",
       "controller": "ShoppingListController",
       "handler": "getList",
+      "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
+      "controllerBasePath": "/shopping-list",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /shopping-list/from-plan",
+      "verb": "POST",
+      "path": "/shopping-list/from-plan",
+      "controller": "ShoppingListController",
+      "handler": "buildFromPlan",
       "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
       "controllerBasePath": "/shopping-list",
       "guards": [
@@ -7373,6 +7407,13 @@
     },
     {
       "verb": "POST",
+      "raw": "/meal-plans/propose",
+      "normalized": "/meal-plans/propose",
+      "file": "apps/web/src/app/plan/components/ProposePlanPanel.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
       "raw": "/meal-plans/slots",
       "normalized": "/meal-plans/slots",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
@@ -7502,6 +7543,13 @@
       "raw": "/shopping-list",
       "normalized": "/shopping-list",
       "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/shopping-list/from-plan",
+      "normalized": "/shopping-list/from-plan",
+      "file": "apps/web/src/app/shopping-list/components/BuildFromPlanButton.jsx",
       "dynamic": false
     },
     {

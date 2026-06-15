@@ -15,6 +15,7 @@ import { useMealPlannerQuery } from '../../hooks/useMealPlannerQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
+import ProposePlanPanel from './components/ProposePlanPanel';
 import Fuse from 'fuse.js';
 
 const mealMeta = {
@@ -88,7 +89,9 @@ export default function WeeklyPlanPage() {
 
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 120px' }}>
-      
+      {/* PLANNER-L4-09: intelligent weekly plan proposal (functional; proposes, does not auto-apply) */}
+      <ProposePlanPanel />
+
       {/* هدر */}
       <Paper
         p="lg"

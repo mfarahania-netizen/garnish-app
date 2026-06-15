@@ -19,6 +19,16 @@ export class ShoppingListController {
     return this.shoppingListService.addItems(req.user.userId, body.items);
   }
 
+  /**
+   * PLANNER-L4-09: build/sync the shopping list from the current meal plan — aggregate + resolve+merge
+   * vs the 1008 dictionary, scale by household, categorize, de-dupe against existing items. Manual
+   * add/edit/check stays intact (only NEW items are added).
+   */
+  @Post('from-plan')
+  buildFromPlan(@Req() req) {
+    return this.shoppingListService.buildFromPlan(req.user.userId);
+  }
+
   @Patch('items/:id')
   toggleItem(@Param('id') id: string, @Req() req, @Body() updateDto: UpdateShoppingItemDto) {
     return this.shoppingListService.toggleItem(id, req.user.userId);
