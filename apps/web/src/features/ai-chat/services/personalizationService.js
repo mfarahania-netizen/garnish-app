@@ -1,35 +1,12 @@
-const STORAGE_KEY = 'garnish_ai_preferences';
-
-export const loadUserPreferences = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
-};
-
-export const saveUserPreferences = (prefs) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
-};
-
-export const getUserContext = () => {
-  // دریافت تنظیمات از Contextهای موجود
-  const stored = localStorage.getItem('garnish_user');
-  const user = stored ? JSON.parse(stored) : null;
-  
-  const dietPrefs = localStorage.getItem('garnish_diet_prefs');
-  const diet = dietPrefs ? JSON.parse(dietPrefs) : {};
-  
-  return {
-    phone: user?.phone || null,
-    name: user?.name || 'کاربر',
-    diet: diet.diet || [],
-    allergies: diet.allergies || [],
-    skillLevel: diet.skillLevel || 'متوسط',
-    favorites: JSON.parse(localStorage.getItem('garnish_favorites') || '[]'),
-    recentRecipes: JSON.parse(localStorage.getItem('garnish_recent_recipes') || '[]'),
-    weeklyPlan: JSON.parse(localStorage.getItem('garnish_weekly_plan') || '[]'),
-  };
-};
+/**
+ * AI-chat ephemeral context helpers.
+ *
+ * NOTE (GARNISH-RESET-01, Amendment 2 §A2.3): the previous localStorage-based "personalization" preference
+ * store (`loadUserPreferences` / `saveUserPreferences` / `getUserContext` reading `garnish_*` keys) was
+ * REMOVED. It was fake client-side personalization. Real personalization context comes from the server
+ * (the `/ai/chat` BehavioralContextSnapshot orchestrator); the client only contributes lightweight,
+ * ephemeral time/season hints below — no persisted preference store, no localStorage.
+ */
 
 export const getTimeBasedContext = () => {
   const hour = new Date().getHours();

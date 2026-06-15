@@ -11,6 +11,13 @@ Phase 4A passed technical scans but **failed visual / product-quality review**. 
 **Founder / Claude Max / UX**. The Phase 4A technical cleanup is **kept** (not rolled back); only the
 **visual direction is marked rejected**.
 
+> **Amendment 2 alignment (proposed, pending founder ratification — RESET-01, 2026-06-15):**
+> - **§A2.1 — L4 quality bar:** a clean technical scan (token purity, passing build) is explicitly **not**
+>   acceptance. UI must meet the L4 visual/product bar; this is exactly why Phase 4A was rejected.
+> - **§A2.4 — visual direction is the unblock:** the freeze lifts only when an **approved visual spec /
+>   screenshot direction** (Founder / Claude Max / UX) exists. The visual spec — not more CA token work — is
+>   the single blocker. See the mandatory order in "Next UI process" below.
+
 ## Phase status
 
 | Phase | Scope | Status |

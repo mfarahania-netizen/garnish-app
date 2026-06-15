@@ -15,6 +15,7 @@
 | D8 | 2026-06-13 | Health Mode | Build now vs. delay | Delay to Year 3 | Legal/safety boundary (Art.9) | F+ADV | Legal opinion + Art.9 controls |
 | D9 | 2026-06-13 | Family layer | Build now vs. delay | Delay to Year 2–3, schema-ready only | No fabricated demand | F | ≥8% EU waitlist + stable revenue |
 | D10 | 2026-06-13 | Native mobile | Native now vs. PWA-first | PWA-OS now; Expo/RN decision months 6–12 | mobile-first founder, API-first ready | EL | Spike + PWA retention evidence |
+| D11 | 2026-06-15 | **Constitution Amendment 2 (PROPOSED — pending founder ratification)** | Continue building recommendation A-layers vs. freeze + raise quality bar + correct drift | **Proposed:** (A2.1) adopt an **L4 quality bar** (technical pass ≠ acceptance; visual/product bar governs UI); (A2.2) **freeze the recommendation stack at A14** (no new `runtime-shadow` A-layer; default-OFF; no live ranking/response change); (A2.3) **remove fake/junk** (fake voice input, localStorage "personalization"); (A2.4) the **approved visual direction is the UI unblock**. Re-aligns work onto the Constitution W1–W26 plan. | Drift: an over-built internal recommendation experimentation stack vs. the ~6-month launch plan; honesty + L4 quality | F | **Founder ratification** (then supersede this row with the ratified Amendment 2 doc in `docs/execution/`) |
 
 ## How to use
 - Append a new row for any decision that closes a real fork; never edit a decided row — supersede it with a new dated row referencing the old `Decision ID`.

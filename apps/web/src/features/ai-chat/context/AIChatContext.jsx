@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { processQuery, initAIEngine } from '../services/aiEngine';
-import { loadUserPreferences, getTimeBasedContext, getSeasonContext } from '../services/personalizationService';
+import { getTimeBasedContext, getSeasonContext } from '../services/personalizationService';
 import { useRecipeContext } from '../../../context/RecipeContext';
 
 const AIChatContext = createContext();
@@ -10,6 +10,8 @@ export const AIChatProvider = ({ children }) => {
   const { recipes } = useRecipeContext();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  // Ephemeral, in-memory preferences only (no localStorage store — RESET-01 / Amendment 2 §A2.3).
+  // Real personalization context comes from the server (/ai/chat BehavioralContextSnapshot orchestrator).
   const [preferences, setPreferences] = useState({});
   const messagesEndRef = useRef(null);
 
@@ -19,11 +21,6 @@ export const AIChatProvider = ({ children }) => {
       initAIEngine(recipes);
     }
   }, [recipes]);
-
-  // بارگذاری تنظیمات کاربر
-  useEffect(() => {
-    setPreferences(loadUserPreferences());
-  }, []);
 
   const scrollToBottom = () => {
     setTimeout(() => {
