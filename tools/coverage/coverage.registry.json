@@ -407,6 +407,18 @@
       "status": "frontend:ai-chat/AIChatPage",
       "reason": "E47-L4 allergen-aware ingredient substitutions; called by features/ai-chat GroundedAssist."
     },
+    "GET /profile": {
+      "status": "deferred:E-profile-ui",
+      "reason": "PROFILE-L4-05 living-profile read (owner-only, consent-aware). Backend-first; profile UI is a later phase."
+    },
+    "GET /profile/next-question": {
+      "status": "deferred:E-profile-ui",
+      "reason": "PROFILE-L4-05 onboarding question engine (next-question logic). Backend-first; onboarding UI is a later phase."
+    },
+    "POST /profile/answer": {
+      "status": "deferred:E-profile-ui",
+      "reason": "PROFILE-L4-05 declared-answer submit (consent-gated, banded). Backend-first; onboarding UI is a later phase."
+    },
     "POST /analytics/event": {
       "status": "frontend:_global/useAnalytics",
       "reason": "App-wide analytics event ingestion (useAnalytics hook)."

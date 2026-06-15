@@ -16,9 +16,9 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 95,
+    "endpoints": 98,
     "internalEndpoints": 9,
-    "controllers": 19,
+    "controllers": 20,
     "routes": 17,
     "protectedRoutes": 11,
     "frontendCallSites": 71,
@@ -6192,6 +6192,57 @@
       ],
       "public": false,
       "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /profile",
+      "verb": "GET",
+      "path": "/profile",
+      "controller": "ProfileController",
+      "handler": "getProfile",
+      "file": "apps/server/src/behavior-engine/profile/read/profile.controller.ts",
+      "controllerBasePath": "/profile",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /profile/answer",
+      "verb": "POST",
+      "path": "/profile/answer",
+      "controller": "ProfileController",
+      "handler": "answer",
+      "file": "apps/server/src/behavior-engine/profile/read/profile.controller.ts",
+      "controllerBasePath": "/profile",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /profile/next-question",
+      "verb": "GET",
+      "path": "/profile/next-question",
+      "controller": "ProfileController",
+      "handler": "nextQuestion",
+      "file": "apps/server/src/behavior-engine/profile/read/profile.controller.ts",
+      "controllerBasePath": "/profile",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
       "isInternal": false,
       "calledByFrontend": false
     },

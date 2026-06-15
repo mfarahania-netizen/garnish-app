@@ -20,6 +20,7 @@ import { SupportModule } from './support/support.module';
 import { AdminModule } from './admin/admin.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { BehaviorEngineModule } from './behavior-engine/behavior-engine.module';
+import { ProfileModule } from './behavior-engine/profile/profile.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { OutcomesModule } from './outcomes/outcomes.module';
 import { ExperimentationModule } from './experimentation/experimentation.module';
@@ -53,6 +54,7 @@ import { GovernanceModule } from './governance/governance.module';
     AdminModule,
     AnalyticsModule,
     BehaviorEngineModule,
+    ProfileModule,
     RecommendationModule,
     OutcomesModule,
     ExperimentationModule,
