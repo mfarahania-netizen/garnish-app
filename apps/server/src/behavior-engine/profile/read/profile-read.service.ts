@@ -18,7 +18,9 @@ import { buildDeclaredProfile, ownerReadView, validateDeclaredAnswer } from '../
 import { getDeclaredDef } from '../declared/declared-dimension-registry';
 import { DeclaredAnswer, DeclaredConsentState, DeclaredConsentPurpose } from '../declared/declared-profile.types';
 import { QuestionSelectionService } from '../onboarding/question-selection.service';
-import { composeLivingProfile, COLD_START_OBSERVED, LivingProfile } from './living-profile';
+import { composeLivingUserProfile, LivingUserProfile } from './living-profile';
+import { buildUserFoodIdentityGraph } from '../user-food-identity-graph.builder';
+import { UserFoodIdentityGraph } from '../user-food-identity-graph.types';
 
 const FACT_PREFIX = 'declared.';
 const VALID_PURPOSES = new Set<DeclaredConsentPurpose>(['core', 'analytics', 'personalization']);
@@ -90,13 +92,32 @@ export class ProfileReadService {
     return answers;
   }
 
-  async getLivingProfile(userId: string, now: Date = new Date()): Promise<LivingProfile> {
+  /**
+   * CANONICAL ENTRY POINT (UNIFY-06): the ONE unified living profile every future feature should call.
+   * Composes the existing OBSERVED graph (by reference, unchanged) + DECLARED profile (owner view) +
+   * cross-layer RECONCILIATION + maturity. Owner-only; sensitive declared data stays in this owner read
+   * and is NEVER fed into the observed graph or runtime-shadow.
+   */
+  async getLivingUserProfile(userId: string, now: Date = new Date()): Promise<LivingUserProfile> {
     const consent = await this.getConsentState(userId);
     const answers = await this.getDeclaredAnswers(userId);
     const declared = buildDeclaredProfile(userId, answers, consent, { now });
-    // owner sees full declared; observed is cold-start until signal hydration (stage-2 plug-in)
     const ownerDeclared = ownerReadView(declared, true);
-    return composeLivingProfile(ownerDeclared, COLD_START_OBSERVED, now);
+    // Build the OBSERVED graph via the existing builder (shadow mode = cold-start when no observations
+    // are hydrated yet). We pass NO declared/sensitive data into it — the observed contract is untouched.
+    let observedGraph: UserFoodIdentityGraph | null = null;
+    try {
+      const built = buildUserFoodIdentityGraph([], { userId, mode: 'shadow', now });
+      observedGraph = built.blocked ? null : built.graph;
+    } catch (err) {
+      this.logger.warn(`observed graph unavailable; composing declared-only: ${err instanceof Error ? err.name : 'error'}`);
+    }
+    return composeLivingUserProfile(ownerDeclared, observedGraph, now);
+  }
+
+  /** Back-compat alias → the canonical unified profile. */
+  async getLivingProfile(userId: string, now: Date = new Date()): Promise<LivingUserProfile> {
+    return this.getLivingUserProfile(userId, now);
   }
 
   async getNextQuestion(userId: string, now: Date = new Date()) {

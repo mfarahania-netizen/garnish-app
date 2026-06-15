@@ -14,10 +14,10 @@ import { ProfileReadService } from './profile-read.service';
 export class ProfileController {
   constructor(private readonly profile: ProfileReadService) {}
 
-  /** Owner-only living profile: declared + observed summary + maturity/coverage + per-dim confidence. */
+  /** Owner-only UNIFIED living profile: observed + declared + reconciled + maturity (canonical entry point). */
   @Get()
   async getProfile(@Req() req: any) {
-    return this.profile.getLivingProfile(req.user.userId);
+    return this.profile.getLivingUserProfile(req.user.userId);
   }
 
   /** Onboarding question engine: which question to ask next, and why (consent + gap driven). */
