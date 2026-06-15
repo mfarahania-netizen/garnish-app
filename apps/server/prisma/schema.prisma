@@ -63,6 +63,12 @@ model User {
 
   // E39-1B erasure-proof ledger (audit-long; SetNull so it survives deletion)
   erasureEvents ErasureEvent[]
+
+  // GAMIFY-L4-11 — honest gamification (additive; all Cascade → erasure-safe)
+  gamificationStreak       UserStreak?
+  gamificationAchievements UserAchievement[]
+  gamificationProgress     UserProgress[]
+  gamificationEvents       GamificationEvent[]
 }
 
 model UserPreference {
@@ -836,4 +842,67 @@ model UserFact {
 
   @@unique([userId, key])
   @@index([userId])
+}
+
+// ============================================================
+// GAMIFY-L4-11 — Honest gamification engine persistence — ADDITIVE ONLY.
+// Server-authoritative: every row is derived from the trusted signal/event store
+// (UserEvent type='cook_complete' etc.), NEVER client-asserted. All relations are
+// onDelete: Cascade → erased automatically with the user (classified user_owned_active
+// in retention-policy.ts). NO leaderboard/ranking/comparison data is ever stored.
+// ============================================================
+
+// One streak record per user. Weekly cadence (cook-days/week, not punishing daily pressure)
+// with a single grace week ("freeze") so a busy week does not cruelly reset. Private only.
+model UserStreak {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentWeeks Int      @default(0)
+  longestWeeks Int      @default(0)
+  graceUsed    Boolean  @default(false)
+  lastCookWeek String? // ISO week key (e.g. 2026-W24) of the most recent counted week
+  updatedAt    DateTime @updatedAt
+}
+
+// Unlocked achievements. (userId, achievementKey) unique → idempotent, no double-award.
+model UserAchievement {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementKey String
+  unlockedAt     DateTime @default(now())
+
+  @@unique([userId, achievementKey])
+  @@index([userId])
+}
+
+// Per-track mastery/progress (track = 'overall' or a cuisine/skill area). Honest, derived.
+model UserProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     String
+  level     Int      @default(1)
+  levelName String   @default("novice")
+  score     Float    @default(0)
+  basis     String? // JSON explainability of how the level was earned
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, track])
+  @@index([userId])
+}
+
+// Append-only award ledger. Each row records a real earned award (achievement/milestone/
+// level-up) derived from signals — the anti-cheat record of truth.
+model GamificationEvent {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String // 'achievement_unlocked' | 'streak_milestone' | 'mastery_levelup'
+  refKey    String // achievementKey / milestone weeks / track
+  detail    String? // JSON, PII-free
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

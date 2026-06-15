@@ -68,6 +68,23 @@ export const NOTIFICATION_TRIGGERS: readonly NotificationTrigger[] = [
     maxPerWeek: 1,
     template: () => ({ title: 'دلتنگت شدیم!', body: 'مدتیه سر نزدی — بیا یه غذای خوشمزه با هم بپزیم.' }),
   },
+  // GAMIFY-L4-11 — gamification feeds the INE as TRIGGERS (no parallel notifier). Kind, non-shaming copy.
+  {
+    key: 'streak_at_risk',
+    description: 'A private cooking streak is at risk this week (kind nudge, no pressure).',
+    priority: 4,
+    consentPurpose: 'personalization',
+    maxPerWeek: 1,
+    template: (p) => ({ title: 'رشتهٔ آشپزی‌ت', body: p?.message ?? 'یه آشپزی کوچیک این هفته، رشتهٔ آشپزی‌ت رو نگه می‌داره 🙂' }),
+  },
+  {
+    key: 'achievement_unlocked',
+    description: 'The user earned a new achievement (celebratory).',
+    priority: 5,
+    consentPurpose: 'personalization',
+    maxPerWeek: 5,
+    template: (p) => ({ title: 'دستاورد تازه! 🎉', body: p?.title ? `«${p.title}» رو باز کردی.` : 'یه دستاورد تازه باز کردی.' }),
+  },
 ] as const;
 
 const BY_KEY = new Map(NOTIFICATION_TRIGGERS.map((t) => [t.key, t]));

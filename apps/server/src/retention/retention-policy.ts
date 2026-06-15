@@ -71,6 +71,11 @@ export const RETENTION_POLICY: readonly RetentionRule[] = [
   { model: 'preferenceHistory', class: 'user_owned_active', note: 'user-owned preference-change history (allergy/health/diet) — audit trail, NOT pruned; handled by erasure/export' },
   { model: 'userBehaviorProfile', class: 'user_owned_active', note: 'current profile state' },
   { model: 'recipe', class: 'user_owned_active', note: 'user-authored or catalog content' },
+  // GAMIFY-L4-11 — user-owned gamification state; erased via Cascade, not retention-pruned
+  { model: 'userStreak', class: 'user_owned_active', note: 'user-owned streak state; erased with the user' },
+  { model: 'userAchievement', class: 'user_owned_active', note: 'user-owned unlocked achievements; erased with the user' },
+  { model: 'userProgress', class: 'user_owned_active', note: 'user-owned mastery/progress; erased with the user' },
+  { model: 'gamificationEvent', class: 'user_owned_active', note: 'user-owned award ledger; erased with the user' },
 
   // ── review_required — EXCLUDED (derived state / reference content; pending a policy decision) ──
   { model: 'userFeatureVector', class: 'review_required', note: 'current derived state, regenerable' },

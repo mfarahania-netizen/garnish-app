@@ -25,6 +25,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
 import { OutcomesModule } from './outcomes/outcomes.module';
 import { ExperimentationModule } from './experimentation/experimentation.module';
 import { GovernanceModule } from './governance/governance.module';
+import { GamificationModule } from './gamification/gamification.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { GovernanceModule } from './governance/governance.module';
     OutcomesModule,
     ExperimentationModule,
     GovernanceModule,
+    GamificationModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

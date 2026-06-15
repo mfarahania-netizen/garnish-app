@@ -239,6 +239,10 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /gamification/me": {
+      "status": "deferred:E-gamification-ui",
+      "reason": "GAMIFY-L4-11: owner-only private read of the user's streak/achievements/mastery; backend-only this sprint (visual UI is Phase 3 / Claude Design)."
+    },
     "GET /governance": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."

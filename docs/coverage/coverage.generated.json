@@ -12,13 +12,13 @@
     "eventTaxonomyFrontend": "apps/web/src/lib/eventTaxonomy.js"
   },
   "counts": {
-    "models": 52,
+    "models": 56,
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 103,
+    "endpoints": 104,
     "internalEndpoints": 9,
-    "controllers": 20,
+    "controllers": 21,
     "routes": 17,
     "protectedRoutes": 11,
     "frontendCallSites": 75,
@@ -1053,6 +1053,74 @@
         {
           "name": "recipe",
           "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "GamificationEvent",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "kind",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "refKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "detail",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
           "list": false,
           "optional": false
         }
@@ -3381,6 +3449,80 @@
           "type": "ErasureEvent",
           "list": true,
           "optional": false
+        },
+        {
+          "name": "gamificationStreak",
+          "type": "UserStreak",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "gamificationAchievements",
+          "type": "UserAchievement",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "gamificationProgress",
+          "type": "UserProgress",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "gamificationEvents",
+          "type": "GamificationEvent",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserAchievement",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "achievementKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "unlockedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
         }
       ]
     },
@@ -4760,6 +4902,92 @@
       ]
     },
     {
+      "name": "UserProgress",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "track",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "level",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "levelName",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "score",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "basis",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
       "name": "UserRetentionSnapshot",
       "dbName": null,
       "fields": [
@@ -4915,6 +5143,83 @@
           "name": "events",
           "type": "UserEvent",
           "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserStreak",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "currentWeeks",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "longestWeeks",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "graceUsed",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "lastCookWeek",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
           "optional": false
         }
       ]
@@ -5794,6 +6099,23 @@
       ],
       "public": false,
       "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /gamification/me",
+      "verb": "GET",
+      "path": "/gamification/me",
+      "controller": "GamificationController",
+      "handler": "me",
+      "file": "apps/server/src/gamification/gamification.controller.ts",
+      "controllerBasePath": "/gamification",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
       "isInternal": false,
       "calledByFrontend": false
     },
