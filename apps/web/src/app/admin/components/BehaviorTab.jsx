@@ -27,7 +27,7 @@ export default function BehaviorTab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>پروفایل رفتاری</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>پروفایل رفتاری</Text>
 
       <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
         <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>

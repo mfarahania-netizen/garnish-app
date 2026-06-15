@@ -62,7 +62,7 @@ export default function EventsTab() {
   return (
     <Stack gap="lg">
       <Group justify="space-between" align="flex-end">
-        <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>رویدادها</Text>
+        <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>رویدادها</Text>
         <Group gap="sm">
           <DatePickerInput
             type="range"

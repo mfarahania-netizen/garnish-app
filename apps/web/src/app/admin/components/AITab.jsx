@@ -27,7 +27,7 @@ export default function AITab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>دستیار هوش مصنوعی</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>دستیار هوش مصنوعی</Text>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
         <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>

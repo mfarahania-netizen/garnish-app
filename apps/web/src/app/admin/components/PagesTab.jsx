@@ -27,7 +27,7 @@ export default function PagesTab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>تحلیل صفحات</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>تحلیل صفحات</Text>
 
       {pages?.topPages?.length > 0 && (
         <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>

@@ -6,7 +6,11 @@ import { Center, Loader, Stack, Text, Button } from '@mantine/core';
 import { IconLock } from '@tabler/icons-react';
 import AdminLayout from './components/AdminLayout';
 
-import DashboardTab from './components/DashboardTab';
+import OverviewTab from './components/OverviewTab';
+import FunnelsTab from './components/FunnelsTab';
+import TrendsTab from './components/TrendsTab';
+import CohortTab from './components/CohortTab';
+import ProductIntelligenceTab from './components/ProductIntelligenceTab';
 import UsersTab from './components/UsersTab';
 import RecipesTab from './components/RecipesTab';
 import SearchTab from './components/SearchTab';
@@ -18,7 +22,6 @@ import TicketsTab from './components/TicketsTab';
 import BehaviorTab from './components/BehaviorTab';
 import PagesTab from './components/PagesTab';
 import HealthTab from './components/HealthTab';
-import IntelligenceTab from './components/IntelligenceTab';
 
 export default function AdminDashboard() {
   const { token } = useAuth();
@@ -47,7 +50,11 @@ export default function AdminDashboard() {
   if (isAdmin === null) return <Center style={{ height: '100vh' }}><Loader /></Center>;
 
   const tabs = {
-    dashboard: <DashboardTab />,
+    dashboard: <OverviewTab />,
+    funnels: <FunnelsTab />,
+    trends: <TrendsTab />,
+    cohort: <CohortTab />,
+    intelligence: <ProductIntelligenceTab />,
     users: <UsersTab />,
     recipes: <RecipesTab />,
     search: <SearchTab />,
@@ -59,12 +66,11 @@ export default function AdminDashboard() {
     behavior: <BehaviorTab />,
     pages: <PagesTab />,
     health: <HealthTab />,
-    intelligence: <IntelligenceTab />,
   };
 
   return (
     <AdminLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {tabs[activeTab] || <DashboardTab />}
+      {tabs[activeTab] || <OverviewTab />}
     </AdminLayout>
   );
 }

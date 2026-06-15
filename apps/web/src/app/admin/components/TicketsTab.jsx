@@ -53,7 +53,7 @@ export default function TicketsTab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>تیکت‌ها</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>تیکت‌ها</Text>
       <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>
         {loading ? <Center py="md"><Loader /></Center> : tickets.length === 0 ? <Text c="dimmed" ta="center">تیکتی وجود ندارد</Text> : (
           <Stack gap="md">

@@ -27,7 +27,7 @@ export default function ShoppingTab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>سبد خرید</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>سبد خرید</Text>
 
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
         <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>

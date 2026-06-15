@@ -47,7 +47,7 @@ export default function UsersTab() {
 
   return (
     <Stack gap="lg">
-      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1A237E'}>کاربران</Text>
+      <Text fw={800} size="1.8rem" c={dark ? 'white' : '#1F1B16'}>کاربران</Text>
 
       <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="lg">
         <Paper p="lg" style={{ background: cardBg, backdropFilter: 'blur(12px)', borderRadius: 16, border: borderStyle }}>
