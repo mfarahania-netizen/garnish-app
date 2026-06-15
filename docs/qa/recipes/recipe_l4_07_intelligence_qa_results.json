@@ -1,0 +1,19 @@
+{
+  "suite": "RECIPE-L4-07-intelligence",
+  "runMode": "offline-deterministic",
+  "dbWritesDuringGate": 0,
+  "networkCallsDuringGate": 0,
+  "productUseEnabled": false,
+  "reusesUnifiedProfile": true,
+  "parallelRecommenderBuilt": false,
+  "totalChecks": 9,
+  "passedChecks": 9,
+  "failedChecks": 0,
+  "categories": [
+    "integrity",
+    "allergy_safety",
+    "dietary",
+    "non_medical",
+    "sparse"
+  ]
+}

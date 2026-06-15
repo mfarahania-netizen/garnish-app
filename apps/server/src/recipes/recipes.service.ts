@@ -66,6 +66,8 @@ export class RecipesService {
         steps: true,
         nutrition: true,
         searchTerms: true,
+        // RECIPE-L4-07: owner-safe author attribution (display name + avatar ONLY — never email/phone).
+        author: { select: { id: true, name: true, avatar: true } },
       },
     });
     return recipe ? this.presentRecipe(recipe) : null;

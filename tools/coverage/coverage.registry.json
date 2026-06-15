@@ -34,16 +34,16 @@
       "reason": "Allergen badges in the features card."
     },
     "Recipe.author": {
-      "status": "must-render",
-      "reason": "DROPPED: authorship attribution stored but rendered nowhere. Flagged debt — belongs as a recipe-detail byline."
+      "status": "frontend:recipe-detail/RecipeByline",
+      "reason": "RECIPE-L4-07: author attribution (owner-safe display name) rendered in the recipe-detail byline."
     },
     "Recipe.authorId": {
       "status": "internal",
       "reason": "Foreign-key column backing the author relation; the author relation is the user-facing concept."
     },
     "Recipe.categories": {
-      "status": "must-render",
-      "reason": "DROPPED: secondary category tags stored but rendered nowhere (note: `category` singular IS rendered). Flagged debt."
+      "status": "frontend:recipe-detail/RecipeByline",
+      "reason": "RECIPE-L4-07: category chips rendered in the recipe-detail byline; also usable as a filter facet (/recipes?category=)."
     },
     "Recipe.category": {
       "status": "frontend:recipe-detail/RecipeHero",
@@ -134,8 +134,8 @@
       "reason": "ORM-managed mutation timestamp; not a product surface."
     },
     "Recipe.videoUrl": {
-      "status": "deferred:E-recipe-media",
-      "reason": "Stored but rendered NOWHERE — deferred to the recipe media/gallery epic."
+      "status": "frontend:recipe-detail/RecipeVideo",
+      "reason": "RECIPE-L4-07: video block (allowlisted/sanitized https source) rendered on the recipe detail page."
     }
   },
   "endpoints": {
@@ -270,6 +270,10 @@
     "GET /recipes/:id": {
       "status": "frontend:recipe-detail/RecipeDetailPage",
       "reason": "Recipe detail fetch."
+    },
+    "GET /recipes/:id/full": {
+      "status": "deferred:E-recipe-fit-ui",
+      "reason": "RECIPE-L4-07 consolidated rich read (recipe + integrity + personalized fit + safety + swaps). Backend-first; the rich fit UI is a later phase."
     },
     "GET /recipes/my": {
       "status": "frontend:my-recipes/MyRecipesPage",

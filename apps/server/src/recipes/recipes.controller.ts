@@ -1,13 +1,17 @@
 import { Controller, Get, Post, Param, Body, Req, UseGuards, Patch, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RecipesService } from './recipes.service';
+import { RecipeRichnessService } from './intelligence/recipe-richness.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
 
 @Controller('recipes')
 export class RecipesController {
-  constructor(private readonly recipesService: RecipesService) {}
+  constructor(
+    private readonly recipesService: RecipesService,
+    private readonly richness: RecipeRichnessService,
+  ) {}
 
   @Get()
   findAll(
@@ -36,6 +40,17 @@ export class RecipesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.recipesService.findOne(id);
+  }
+
+  /**
+   * RECIPE-L4-07: consolidated rich read — full recipe + integrity + personalized fit + safety +
+   * grounded substitution swaps, in ONE authed call (reuses getLivingUserProfile + S1 substitutions).
+   * Owner/authed; declared allergies stay a hard safety filter (never softened).
+   */
+  @Get(':id/full')
+  @UseGuards(AuthGuard('jwt'))
+  getFull(@Param('id') id: string, @Req() req) {
+    return this.richness.getRichRecipe(id, req.user.userId);
   }
 
   @Post()

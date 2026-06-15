@@ -8,6 +8,8 @@ import { EventType } from '../../../lib/eventTaxonomy';
 import { IconAlertTriangle, IconChefHat, IconArrowRight, IconArrowUp } from '@tabler/icons-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import RecipeHero from './components/RecipeHero';
+import RecipeByline from './components/RecipeByline';
+import RecipeVideo from './components/RecipeVideo';
 import FeaturesCard from './components/FeaturesCard';
 import TimingCard from './components/TimingCard';
 import NutritionCard from './components/NutritionCard';
@@ -135,6 +137,9 @@ export default function RecipeDetailPage() {
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
       <RecipeHero recipe={finalRecipe} favorite={favorite} onToggleFavorite={handleToggleFavorite} onShare={handleShare} />
+      {/* RECIPE-L4-07: surface previously-dropped fields — author attribution + categories, and video */}
+      <RecipeByline recipe={finalRecipe} />
+      <RecipeVideo recipe={finalRecipe} />
       {excerpt && (
         <Paper p="md" radius="lg" mb="lg" style={{ background: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,107,53,0.2)' }}>
           <Text size="sm" c="dimmed" lineClamp={showFullExcerpt ? 0 : 3} style={{ lineHeight: 1.8 }}>{excerpt}</Text>

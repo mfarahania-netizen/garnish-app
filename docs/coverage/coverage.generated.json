@@ -16,7 +16,7 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 98,
+    "endpoints": 99,
     "internalEndpoints": 9,
     "controllers": 20,
     "routes": 17,
@@ -4927,7 +4927,9 @@
       "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
       "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
       "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
+      "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
       "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
+      "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
       "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
       "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
       "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
@@ -4950,8 +4952,11 @@
       },
       {
         "field": "author",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
       },
       {
         "field": "authorId",
@@ -4960,13 +4965,17 @@
       },
       {
         "field": "categories",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
       },
       {
         "field": "category",
         "rendered": true,
         "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
           "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx"
         ]
       },
@@ -5026,6 +5035,8 @@
           "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
           "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
           "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
+          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
+          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
           "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
           "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx"
@@ -5095,6 +5106,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
+          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
           "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx"
         ]
@@ -5121,8 +5133,10 @@
       },
       {
         "field": "videoUrl",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx"
+        ]
       }
     ]
   },
@@ -6299,6 +6313,23 @@
       "path": "/recipes/:id",
       "controller": "RecipesController",
       "handler": "update",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recipes/:id/full",
+      "verb": "GET",
+      "path": "/recipes/:id/full",
+      "controller": "RecipesController",
+      "handler": "getFull",
       "file": "apps/server/src/recipes/recipes.controller.ts",
       "controllerBasePath": "/recipes",
       "guards": [
