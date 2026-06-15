@@ -387,9 +387,25 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /ai/recipes/:id/technique": {
+      "status": "frontend:ai-chat/AIChatPage",
+      "reason": "E47-L4 technique/step help, grounded in the recipe's own steps/tips/tools; called by features/ai-chat GroundedAssist."
+    },
     "POST /ai/chat": {
       "status": "frontend:ai-chat/AIChatPage",
       "reason": "AI chat surface."
+    },
+    "POST /ai/pairings": {
+      "status": "frontend:ai-chat/AIChatPage",
+      "reason": "E47-L4 ingredient pairing by factual corpus co-occurrence; called by features/ai-chat GroundedAssist."
+    },
+    "POST /ai/pantry-match": {
+      "status": "frontend:ai-chat/AIChatPage",
+      "reason": "E47-L4 pantry→recipe matcher (ingredient overlap); called by features/ai-chat GroundedAssist."
+    },
+    "POST /ai/substitutions": {
+      "status": "frontend:ai-chat/AIChatPage",
+      "reason": "E47-L4 allergen-aware ingredient substitutions; called by features/ai-chat GroundedAssist."
     },
     "POST /analytics/event": {
       "status": "frontend:_global/useAnalytics",

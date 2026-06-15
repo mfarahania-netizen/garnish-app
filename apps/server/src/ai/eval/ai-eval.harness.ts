@@ -10,6 +10,11 @@ import { SearchRecipesTool } from '../tools/search-recipes.tool';
 import { ExplainRecommendationTool } from '../tools/explain-recommendation.tool';
 import { GetUserFoodContextTool } from '../tools/get-user-food-context.tool';
 import { LogAiFeedbackTool } from '../tools/log-ai-feedback.tool';
+import { SuggestSubstitutionsTool } from '../tools/suggest-substitutions.tool';
+import { MatchPantryRecipesTool } from '../tools/match-pantry-recipes.tool';
+import { ExplainRecipeStepTool } from '../tools/explain-recipe-step.tool';
+import { SuggestPairingsTool } from '../tools/suggest-pairings.tool';
+import { AiAssistService } from '../assist/ai-assist.service';
 import { UserFactService, SensitiveFactRejectedError } from '../facts/user-fact.service';
 import { resolveAiProviderConfig } from '../providers/model-provider.factory';
 import { ModelProvider, BehavioralContextSnapshot } from '../ai-core.types';
@@ -121,6 +126,49 @@ async function runChat(c: EvalCase) {
   };
 }
 
+/** Prisma mock for the L4 grounded tools, driven by per-case fixtures (faithful to the real queries). */
+function groundingPrisma(c: EvalCase): any {
+  const ingredients = c.fixtureIngredients ?? [];
+  const recipes = c.fixtureRecipes ?? [];
+  const recipe = c.fixtureRecipe ?? null;
+  return {
+    ingredient: {
+      findMany: async (args: any) => {
+        if (args?.where?.category !== undefined) {
+          const notId = args?.where?.NOT?.id;
+          return ingredients.filter((i: any) => i.category === args.where.category && i.id !== notId);
+        }
+        const ors = args?.where?.OR ?? [];
+        const needle = ors[0]?.nameFa?.contains;
+        if (!needle) return [];
+        const hit = ingredients.find((i: any) => [i.nameFa, i.nameEn, i.code].some((v: any) => v && String(v).includes(String(needle))));
+        return hit ? [hit] : [];
+      },
+    },
+    recipe: {
+      findMany: async () => recipes,
+      findUnique: async (args: any) => (recipe && recipe.id === args?.where?.id ? recipe : null),
+    },
+    aICallLog: { create: async () => ({ id: 'l' }) },
+  };
+}
+
+/** Shared grounding assertions: result status + SURFACED name inclusion/exclusion (no fabrication). */
+function checkToolGrounding(out: any, e: EvalCase['expect'], actual: Record<string, unknown>, failures: string[]) {
+  actual.resultStatus = out.resultStatus;
+  // Only the names actually SURFACED to the user (not diagnostic fields like `dropped`).
+  const surfaced: string[] = [];
+  for (const k of ['substitutions', 'pairings']) {
+    if (Array.isArray(out[k])) for (const it of out[k]) if (it?.name) surfaced.push(String(it.name));
+  }
+  if (Array.isArray(out.matches)) for (const m of out.matches) if (m?.title) surfaced.push(String(m.title));
+  const surfacedStr = surfaced.join('\n');
+  actual.surfaced = surfaced;
+  if (e.toolResultStatus && out.resultStatus !== e.toolResultStatus) failures.push(`resultStatus: expected ${e.toolResultStatus}, got ${out.resultStatus}`);
+  for (const n of e.includesNames ?? []) if (!surfacedStr.includes(n)) failures.push(`expected surfaced output to include "${n}" (got ${JSON.stringify(surfaced)})`);
+  for (const n of e.excludesNames ?? []) if (surfacedStr.includes(n)) failures.push(`expected surfaced output to EXCLUDE "${n}"`);
+}
+
 async function runCase(c: EvalCase): Promise<EvalCaseResult> {
   const failures: string[] = [];
   const actual: Record<string, unknown> = {};
@@ -174,6 +222,10 @@ async function runCase(c: EvalCase): Promise<EvalCaseResult> {
       new ExplainRecommendationTool(prisma),
       new GetUserFoodContextTool(),
       new LogAiFeedbackTool(new AiCallLogService(prisma)),
+      new SuggestSubstitutionsTool(prisma),
+      new MatchPantryRecipesTool(prisma),
+      new ExplainRecipeStepTool(prisma),
+      new SuggestPairingsTool(prisma),
     );
     const names = registry.list().sort();
     actual.toolNames = names;
@@ -184,6 +236,27 @@ async function runCase(c: EvalCase): Promise<EvalCaseResult> {
     const selected = cfg.provider === 'gemini' && cfg.liveEnabled && cfg.apiKey ? 'gemini' : 'stub';
     actual.configProvider = selected;
     if (e.configProvider && selected !== e.configProvider) failures.push(`configProvider: expected ${e.configProvider}, got ${selected}`);
+  } else if (c.kind === 'tool_substitution') {
+    const out: any = await new SuggestSubstitutionsTool(groundingPrisma(c)).handler(c.toolInput ?? {}, { userId: 'eval-user', snapshot: SNAP });
+    checkToolGrounding(out, e, actual, failures);
+  } else if (c.kind === 'tool_pantry') {
+    const out: any = await new MatchPantryRecipesTool(groundingPrisma(c)).handler(c.toolInput ?? {}, { userId: 'eval-user', snapshot: SNAP });
+    checkToolGrounding(out, e, actual, failures);
+  } else if (c.kind === 'tool_technique') {
+    const out: any = await new ExplainRecipeStepTool(groundingPrisma(c)).handler(c.toolInput ?? {}, { userId: 'eval-user', snapshot: SNAP });
+    checkToolGrounding(out, e, actual, failures);
+  } else if (c.kind === 'tool_pairing') {
+    const out: any = await new SuggestPairingsTool(groundingPrisma(c)).handler(c.toolInput ?? {}, { userId: 'eval-user', snapshot: SNAP });
+    checkToolGrounding(out, e, actual, failures);
+  } else if (c.kind === 'assist_guard') {
+    const snapshots: any = { build: async () => SNAP, validate: () => true };
+    const fakeTool = { name: 'suggest_substitutions', description: 'eval', handler: async () => ({ resultStatus: 'ok', substitutions: [{ name: 'سیر', reason: 'eval' }], note: c.assistNote ?? '' }) };
+    const svc = new AiAssistService(snapshots, new NutritionClaimGuardService(), fakeTool as any, fakeTool as any, fakeTool as any, fakeTool as any);
+    const out: any = await svc.substitutions('eval-user', {});
+    actual.nutritionGuard = out.nutritionGuard;
+    actual.substitutionsPreserved = Array.isArray(out.substitutions) && out.substitutions.length > 0;
+    const blocked = out.nutritionGuard === 'blocked';
+    if (e.nutritionGuardBlocked !== undefined && blocked !== e.nutritionGuardBlocked) failures.push(`nutritionGuardBlocked: expected ${e.nutritionGuardBlocked}, got ${blocked}`);
   }
 
   return { id: c.id, category: c.category, description: c.description, kind: c.kind, passed: failures.length === 0, failures, actual };

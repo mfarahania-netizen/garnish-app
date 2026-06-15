@@ -18,6 +18,11 @@ import { SearchRecipesTool } from './tools/search-recipes.tool';
 import { ExplainRecommendationTool } from './tools/explain-recommendation.tool';
 import { GetUserFoodContextTool } from './tools/get-user-food-context.tool';
 import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
+import { SuggestSubstitutionsTool } from './tools/suggest-substitutions.tool';
+import { MatchPantryRecipesTool } from './tools/match-pantry-recipes.tool';
+import { ExplainRecipeStepTool } from './tools/explain-recipe-step.tool';
+import { SuggestPairingsTool } from './tools/suggest-pairings.tool';
+import { AiAssistService } from './assist/ai-assist.service';
 
 /**
  * AI Core v1 skeleton (E47-A1).
@@ -49,6 +54,11 @@ import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
     ExplainRecommendationTool,
     GetUserFoodContextTool,
     LogAiFeedbackTool,
+    SuggestSubstitutionsTool,
+    MatchPantryRecipesTool,
+    ExplainRecipeStepTool,
+    SuggestPairingsTool,
+    AiAssistService,
     { provide: AI_MODEL_PROVIDER, useFactory: () => createModelProvider(resolveAiProviderConfig()) },
   ],
   exports: [
@@ -59,6 +69,7 @@ import { LogAiFeedbackTool } from './tools/log-ai-feedback.tool';
     AiCostControllerService,
     ChatMessageService,
     UserFactService,
+    AiAssistService,
   ],
 })
 export class AiCoreModule {}

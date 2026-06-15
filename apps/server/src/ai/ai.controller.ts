@@ -1,12 +1,17 @@
 // apps/server/src/ai/ai.controller.ts
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
+import { AiAssistService } from './assist/ai-assist.service';
+import { MissingBehavioralContextError } from './ai-core.types';
 
 @Controller('ai')
 export class AiController {
-  constructor(private readonly chatOrchestration: ChatOrchestrationService) {}
+  constructor(
+    private readonly chatOrchestration: ChatOrchestrationService,
+    private readonly assist: AiAssistService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Throttle({ default: { limit: 20, ttl: 60000 } }) // افزایش محدودیت مخصوص چت
@@ -23,5 +28,51 @@ export class AiController {
       conversationId: body.conversationId,
     });
     return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId };
+  }
+
+  /**
+   * E47-L4 grounded assistant endpoints. Each builds the mandatory BehavioralContextSnapshot, runs
+   * exactly ONE read-only deterministic tool over the recipe/ingredient corpus, and routes the NL
+   * output through the nutrition-claim guard. No live LLM, no autonomy. A missing snapshot fails fast
+   * → a safe degraded payload (never a leak).
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('substitutions')
+  async substitutions(@Req() req, @Body() body: { ingredient: string; avoidAllergens?: string[]; dislikes?: string[]; limit?: number }) {
+    return this.safe(() => this.assist.substitutions(req.user.userId, { ...body }));
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('pantry-match')
+  async pantryMatch(@Req() req, @Body() body: { have: string[]; limit?: number }) {
+    return this.safe(() => this.assist.pantryMatch(req.user.userId, { ...body }));
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Get('recipes/:id/technique')
+  async technique(@Req() req, @Param('id') id: string, @Query('step') step?: string) {
+    return this.safe(() => this.assist.technique(req.user.userId, { recipeId: id, step: step != null && step !== '' ? Number(step) : undefined }));
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('pairings')
+  async pairings(@Req() req, @Body() body: { ingredient?: string; recipeId?: string; limit?: number }) {
+    return this.safe(() => this.assist.pairings(req.user.userId, { ...body }));
+  }
+
+  /** Map a fail-fast missing-snapshot into a safe degraded payload (no internal leak). */
+  private async safe<T>(fn: () => Promise<T>): Promise<T | { resultStatus: 'unavailable'; reason: string }> {
+    try {
+      return await fn();
+    } catch (err) {
+      if (err instanceof MissingBehavioralContextError) {
+        return { resultStatus: 'unavailable', reason: 'context_unavailable' };
+      }
+      throw err;
+    }
   }
 }

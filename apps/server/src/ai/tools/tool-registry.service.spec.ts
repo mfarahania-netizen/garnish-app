@@ -3,10 +3,26 @@ import { SearchRecipesTool } from './search-recipes.tool';
 import { ExplainRecommendationTool } from './explain-recommendation.tool';
 import { GetUserFoodContextTool } from './get-user-food-context.tool';
 import { LogAiFeedbackTool } from './log-ai-feedback.tool';
+import { SuggestSubstitutionsTool } from './suggest-substitutions.tool';
+import { MatchPantryRecipesTool } from './match-pantry-recipes.tool';
+import { ExplainRecipeStepTool } from './explain-recipe-step.tool';
+import { SuggestPairingsTool } from './suggest-pairings.tool';
+
+const APPROVED_TOOLS = [
+  'explain_recipe_step',
+  'explain_recommendation',
+  'get_user_food_context',
+  'log_ai_feedback',
+  'match_pantry_recipes',
+  'search_recipes',
+  'suggest_pairings',
+  'suggest_substitutions',
+];
 
 function makeRegistry() {
   const prisma = {
-    recipe: { findMany: jest.fn().mockResolvedValue([]) },
+    recipe: { findMany: jest.fn().mockResolvedValue([]), findUnique: jest.fn().mockResolvedValue(null) },
+    ingredient: { findMany: jest.fn().mockResolvedValue([]) },
     recommendationExposure: { findFirst: jest.fn().mockResolvedValue(null) },
   } as any;
   const callLog = { record: jest.fn().mockResolvedValue({ id: 'log_1' }) } as any;
@@ -15,17 +31,19 @@ function makeRegistry() {
     new ExplainRecommendationTool(prisma),
     new GetUserFoodContextTool(),
     new LogAiFeedbackTool(callLog),
+    new SuggestSubstitutionsTool(prisma),
+    new MatchPantryRecipesTool(prisma),
+    new ExplainRecipeStepTool(prisma),
+    new SuggestPairingsTool(prisma),
   );
 }
 
-describe('ToolRegistryService (E47-A4)', () => {
+describe('ToolRegistryService (E47-A4 + L4)', () => {
   const registry = makeRegistry();
 
-  it('registers EXACTLY the four approved tools', () => {
-    expect([...registry.list()].sort()).toEqual(
-      ['explain_recommendation', 'get_user_food_context', 'log_ai_feedback', 'search_recipes'],
-    );
-    expect(registry.getTools()).toHaveLength(4);
+  it('registers EXACTLY the approved tool set (4 A4 base + 4 L4 grounded)', () => {
+    expect([...registry.list()].sort()).toEqual(APPROVED_TOOLS);
+    expect(registry.getTools()).toHaveLength(8);
   });
 
   it('resolves a known tool and returns undefined for unknown / autonomous tools', () => {

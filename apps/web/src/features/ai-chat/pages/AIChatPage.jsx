@@ -9,6 +9,7 @@ import { EventType } from '../../../lib/eventTaxonomy';
 import ChatHeader from '../components/ChatHeader';
 import MessageBubble from '../components/MessageBubble';
 import ChatInput from '../components/ChatInput';
+import GroundedAssist from '../components/GroundedAssist';
 
 export default function AIChatPage() {
   const { trackEvent } = useAnalytics();
@@ -62,6 +63,8 @@ export default function AIChatPage() {
   return (
     <Container fluid p={0} style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#0b0e14' }}>
       <ChatHeader onClear={handleClear} />
+      {/* E47-L4 grounded assistant tools (functional, not visual — Phase 3 owns styling) */}
+      <GroundedAssist />
       <ScrollArea style={{ flex: 1 }} px="md" pt="sm" onScrollPositionChange={handleScroll} viewportRef={viewportRef} type="never">
         <Stack gap="sm">
           <AnimatePresence>

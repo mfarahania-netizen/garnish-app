@@ -16,12 +16,12 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 91,
+    "endpoints": 95,
     "internalEndpoints": 9,
     "controllers": 19,
     "routes": 17,
     "protectedRoutes": 11,
-    "frontendCallSites": 67,
+    "frontendCallSites": 71,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -5525,6 +5525,74 @@
       "calledByFrontend": true
     },
     {
+      "id": "POST /ai/pairings",
+      "verb": "POST",
+      "path": "/ai/pairings",
+      "controller": "AiController",
+      "handler": "pairings",
+      "file": "apps/server/src/ai/ai.controller.ts",
+      "controllerBasePath": "/ai",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /ai/pantry-match",
+      "verb": "POST",
+      "path": "/ai/pantry-match",
+      "controller": "AiController",
+      "handler": "pantryMatch",
+      "file": "apps/server/src/ai/ai.controller.ts",
+      "controllerBasePath": "/ai",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /ai/recipes/:id/technique",
+      "verb": "GET",
+      "path": "/ai/recipes/:id/technique",
+      "controller": "AiController",
+      "handler": "technique",
+      "file": "apps/server/src/ai/ai.controller.ts",
+      "controllerBasePath": "/ai",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /ai/substitutions",
+      "verb": "POST",
+      "path": "/ai/substitutions",
+      "controller": "AiController",
+      "handler": "substitutions",
+      "file": "apps/server/src/ai/ai.controller.ts",
+      "controllerBasePath": "/ai",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "POST /analytics/event",
       "verb": "POST",
       "path": "/analytics/event",
@@ -7093,6 +7161,34 @@
       "verb": "POST",
       "raw": "/ai/chat",
       "normalized": "/ai/chat",
+      "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/ai/pairings",
+      "normalized": "/ai/pairings",
+      "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/ai/pantry-match",
+      "normalized": "/ai/pantry-match",
+      "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/ai/recipes/${recipeId}/technique",
+      "normalized": "/ai/recipes/*/technique",
+      "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/ai/substitutions",
+      "normalized": "/ai/substitutions",
       "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
       "dynamic": false
     },

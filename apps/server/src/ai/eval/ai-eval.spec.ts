@@ -57,10 +57,37 @@ describe('E47-A6 — AI Eval Suite gate (deterministic; stub/mock provider only)
     }
   });
 
-  it('keeps the tool registry at exactly four approved tools', () => {
+  it('keeps the tool registry at exactly the approved set (4 A4 base + 4 L4 grounded)', () => {
     const reg = result.cases.find((c) => c.category === 'tool_registry');
     expect(reg?.passed).toBe(true);
-    expect(reg?.actual.toolNames).toEqual(['explain_recommendation', 'get_user_food_context', 'log_ai_feedback', 'search_recipes']);
+    expect(reg?.actual.toolNames).toEqual([
+      'explain_recipe_step',
+      'explain_recommendation',
+      'get_user_food_context',
+      'log_ai_feedback',
+      'match_pantry_recipes',
+      'search_recipes',
+      'suggest_pairings',
+      'suggest_substitutions',
+    ]);
+  });
+
+  it('E47-L4: grounded tools are correct and degrade gracefully (no fabrication)', () => {
+    const l4 = result.cases.filter((c) => c.category.startsWith('l4_'));
+    expect(l4.length).toBeGreaterThanOrEqual(8);
+    for (const c of l4) expect(c.passed).toBe(true);
+    // explicit degradation statuses are exercised
+    const statuses = l4.map((c) => c.actual.resultStatus);
+    expect(statuses).toEqual(expect.arrayContaining(['ingredient_not_found', 'no_match', 'recipe_not_found', 'insufficient_data']));
+  });
+
+  it('E47-L4: the nutrition-claim guard is ENFORCED on grounded-tool output', () => {
+    const blocked = result.cases.find((c) => c.id === 'l4-guard-01');
+    const passed = result.cases.find((c) => c.id === 'l4-guard-02');
+    expect(blocked?.passed).toBe(true);
+    expect(blocked?.actual.nutritionGuard).toBe('blocked');
+    expect(blocked?.actual.substitutionsPreserved).toBe(true); // structured data kept when NL note is blocked
+    expect(passed?.actual.nutritionGuard).toBe('pass');
   });
 
   it('verifies AICallLog is written (with required fields) for success and blocked paths', () => {

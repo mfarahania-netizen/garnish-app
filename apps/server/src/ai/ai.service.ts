@@ -135,6 +135,9 @@ export class AiService {
     if (personalizationReasons.length > 0) {
       response += `\n\n💡 (بر اساس ${personalizationReasons.join(' و ')} فیلتر شده است.)`;
     }
+    // E47-L4: cite the grounding source + result count, and frame as cooking guidance (not nutrition
+    // advice) so the deterministic answer is explicitly grounded and never overclaims.
+    response += `\n\n📚 این ${top.length} پیشنهاد از میان ${recipes.length} غذای یافت‌شده در پایگاه رسپی گارنیش است (راهنمای آشپزی، نه توصیهٔ تغذیه‌ای).`;
 
     return response;
   }
