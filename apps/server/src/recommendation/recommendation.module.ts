@@ -28,11 +28,13 @@ import { RecommendationLabController } from './runtime-shadow/lab/recommendation
 import { RecommendationFounderReviewService } from './runtime-shadow/lab/founder-review/recommendation-founder-review-service';
 import { RecommendationFounderReviewController } from './runtime-shadow/lab/founder-review/recommendation-founder-review-controller';
 import { RecommendationExperimentExecutionController } from './runtime-shadow/lab/execution/recommendation-experiment-execution-controller';
+import { RecommendationActivationReviewService } from './runtime-shadow/lab/activation-review/recommendation-activation-review-service';
+import { RecommendationActivationReviewController } from './runtime-shadow/lab/activation-review/recommendation-activation-review-controller';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
-  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController, RecommendationExperimentExecutionController],
+  controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController, RecommendationExperimentExecutionController, RecommendationActivationReviewController],
   providers: [
     CandidateGeneratorService,
     RankingService,
@@ -64,6 +66,9 @@ import { PrismaService } from '../prisma/prisma.service';
     // E18/E43-A12 internal/dev founder-review evidence pack (default OFF; admin-guarded + access-gated
     // controller; read-only/dry-run; promotionAllowed always false).
     RecommendationFounderReviewService,
+    // E18/E43-A14 internal/dev founder results-review + safe limited activation plan (default OFF; admin-
+    // guarded + access-gated; planning/dry-run only; never activates; production readiness always red).
+    RecommendationActivationReviewService,
   ],
 })
 export class RecommendationModule {}
