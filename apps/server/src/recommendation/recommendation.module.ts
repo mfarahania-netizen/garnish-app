@@ -13,6 +13,7 @@ import { ExposureTrackingService } from './exposure/exposure-tracking.service';
 import { RecommendationEvaluatorService } from './evaluation/recommendation-evaluator.service';
 import { RecommendationRewardService } from './evaluation/recommendation-reward.service';
 import { RecommendationMetricsService } from './evaluation/recommendation-metrics.service';
+import { RecommendationEvalService } from './evaluation/recommendation-eval.service';
 import { TasteAffinityBuilder } from './taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
@@ -47,6 +48,7 @@ import { PrismaService } from '../prisma/prisma.service';
     RecommendationEvaluatorService,
     RecommendationRewardService,
     RecommendationMetricsService,
+    RecommendationEvalService,
     TasteAffinityBuilder,
     RecipeEmbeddingService,
     GovernanceInsightsService,

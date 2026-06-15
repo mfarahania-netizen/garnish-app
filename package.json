@@ -20,6 +20,7 @@
     "recipes:import:v0.6.1": "pnpm --dir apps/server recipes:import:v0.6.1",
     "ai:eval:regression": "pnpm --dir apps/server ai:eval:regression",
     "ai:eval:pilot-readiness": "pnpm --dir apps/server ai:eval:pilot-readiness",
+    "recsys:eval": "pnpm --dir apps/server recsys:eval",
     "analytics:eval:event-envelope": "pnpm --dir apps/server analytics:eval:event-envelope",
     "analytics:eval:event-producers": "pnpm --dir apps/server analytics:eval:event-producers",
     "behavior:eval:signals": "pnpm --dir apps/server behavior:eval:signals",

@@ -21,6 +21,7 @@
     "ai:live-smoke": "jest src/ai/eval/live-smoke",
     "ai:eval:regression": "jest src/ai/eval/output-safety",
     "ai:eval:pilot-readiness": "jest src/ai/eval/pilot-readiness",
+    "recsys:eval": "jest src/recommendation/evaluation/recommendation-eval src/recommendation/evaluation/eval-l4-15",
     "analytics:eval:event-envelope": "jest src/analytics/event-envelope",
     "analytics:eval:event-producers": "jest src/analytics/event-taxonomy.contract src/analytics/event-producer-inventory src/analytics/event-envelope-runtime-guard",
     "behavior:eval:signals": "jest src/behavior-engine/signals/signal-registry src/behavior-engine/signals/signal-confidence src/behavior-engine/signals/signal-explainability src/behavior-engine/signals/signal-observation-engine src/behavior-engine/signals/signal-qa-gate",

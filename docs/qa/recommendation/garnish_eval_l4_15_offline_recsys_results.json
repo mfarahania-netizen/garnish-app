@@ -1,0 +1,80 @@
+{
+  "sprint": "GARNISH-EVAL-L4-15",
+  "layer": "offline recsys eval harness + metrics",
+  "totalChecks": 9,
+  "failedChecks": [],
+  "checks": {
+    "no_runtime_shadow_import": true,
+    "deterministic_no_random": true,
+    "offline_numbers_now": true,
+    "allergy_guard_passes": true,
+    "allergy_guard_detects_leak": true,
+    "online_honest_null": true,
+    "popularity_honest_null": true,
+    "reuses_s9_representation": true,
+    "reuses_assess_recipe_fit": true
+  },
+  "report": {
+    "suite": "RECSYS-OFFLINE-L4-15",
+    "catalogSize": 3,
+    "fixtures": 5,
+    "deterministic": true,
+    "offline": {
+      "catalogCoverage": {
+        "value": 1,
+        "threshold": 0.05,
+        "pass": true,
+        "note": "fraction of catalog recommendable across fixtures"
+      },
+      "diversity": {
+        "value": 0.925,
+        "threshold": 0.05,
+        "pass": true,
+        "note": "avg intra-list dissimilarity (S9 content vectors)"
+      },
+      "fitQuality": {
+        "value": 0.786,
+        "threshold": 0.4,
+        "pass": true,
+        "note": "avg assessRecipeFit fitScore across recommended items"
+      },
+      "popularityBias": {
+        "value": null,
+        "threshold": 0.6,
+        "pass": true,
+        "awaitingPilot": true,
+        "note": "no popularity signal yet (favorites/views) — awaiting pilot"
+      }
+    },
+    "allergySafety": {
+      "fixturesChecked": 2,
+      "leaks": 0,
+      "pass": true,
+      "note": "declared-allergy fixtures must yield ZERO allergen recommendations (cold-start/ranked)"
+    },
+    "online": {
+      "clickThroughRate": {
+        "value": null,
+        "threshold": null,
+        "pass": true,
+        "awaitingPilot": true,
+        "note": "awaiting real users (Track 7 pilot) — not fabricated"
+      },
+      "saveRate": {
+        "value": null,
+        "threshold": null,
+        "pass": true,
+        "awaitingPilot": true,
+        "note": "awaiting real users (Track 7 pilot) — not fabricated"
+      },
+      "cookRate": {
+        "value": null,
+        "threshold": null,
+        "pass": true,
+        "awaitingPilot": true,
+        "note": "awaiting real users (Track 7 pilot) — not fabricated"
+      }
+    },
+    "overallPass": true
+  }
+}
