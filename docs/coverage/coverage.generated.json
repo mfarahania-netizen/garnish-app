@@ -16,12 +16,12 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 102,
+    "endpoints": 103,
     "internalEndpoints": 9,
     "controllers": 20,
     "routes": 17,
     "protectedRoutes": 11,
-    "frontendCallSites": 74,
+    "frontendCallSites": 75,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -6211,6 +6211,23 @@
       "calledByFrontend": true
     },
     {
+      "id": "GET /notifications/ine/preview",
+      "verb": "GET",
+      "path": "/notifications/ine/preview",
+      "controller": "NotificationsController",
+      "handler": "inePreview",
+      "file": "apps/server/src/notifications/notifications.controller.ts",
+      "controllerBasePath": "/notifications",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "GET /outcomes",
       "verb": "GET",
       "path": "/outcomes",
@@ -7452,6 +7469,13 @@
       "raw": "/notifications/generate",
       "normalized": "/notifications/generate",
       "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/notifications/ine/preview",
+      "normalized": "/notifications/ine/preview",
+      "file": "apps/web/src/features/notifications/components/IneNotificationPreview.jsx",
       "dynamic": false
     },
     {

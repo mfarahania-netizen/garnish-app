@@ -1,19 +1,36 @@
 // apps/server/src/notifications/notification-scheduler.service.ts
-import { Injectable } from '@nestjs/common';
+//
+// GARNISH-NOTIF-L4-10: the 3 previously-blind crons now route their decision logic through the
+// Notification Intelligence Engine (IneService) in DRY-RUN. Each cron records an explainable INE
+// decision per candidate; it dispatches the existing in-app notification ONLY when the real-send flag
+// is enabled (INE_REAL_SEND_ENABLED, default OFF) AND the INE decided 'send'. Consent, quiet hours, and
+// fatigue are therefore enforced before anything is ever created. No push/email provider is involved.
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from './notifications.service';
+import { IneService, TriggerCandidate } from './ine/ine.service';
+import { IneDecision } from './ine/ine-pipeline';
 import { getStartOfWeek } from '../utils/date.utils';
 
 @Injectable()
 export class NotificationSchedulerService {
+  private readonly logger = new Logger(NotificationSchedulerService.name);
   // حافظهٔ موقت برای جلوگیری از ارسال تکراری اعلان‌ها
   private lastMealReminder = new Map<string, Date>();
 
   constructor(
     private prisma: PrismaService,
     private notificationsService: NotificationsService,
+    private ine: IneService,
   ) {}
+
+  /** Dispatch the real in-app notification ONLY when the INE said 'send' and real-send is enabled. */
+  private async dispatchIfEnabled(decision: IneDecision | undefined, dispatch: () => Promise<any>): Promise<boolean> {
+    if (!decision || decision.decision !== 'send' || !this.ine.realSendEnabled()) return false;
+    await dispatch();
+    return true;
+  }
 
   @Cron('0 10 * * *')
   async handleDailyReminders() {
@@ -35,24 +52,26 @@ export class NotificationSchedulerService {
       },
     });
 
-    const notifications: Promise<any>[] = [];
-
+    let dispatched = 0;
     for (const user of usersWithData) {
+      const candidates: TriggerCandidate[] = [];
       const list = user.shoppingList[0];
-      if (list && list.items.length > 0) {
-        notifications.push(
-          this.notificationsService.notifyShoppingReminder(user.id, list.items.length)
-        );
-      }
+      if (list && list.items.length > 0) candidates.push({ triggerKey: 'shopping_unchecked', payload: { count: list.items.length } });
       const plan = user.mealPlans[0];
-      if (!plan || plan.slots.length === 0) {
-        notifications.push(
-          this.notificationsService.notifyWeeklyPlanEmpty(user.id)
+      if (!plan || plan.slots.length === 0) candidates.push({ triggerKey: 'weekly_plan_gap' });
+      if (candidates.length === 0) continue;
+
+      const decisions = await this.ine.decideForUser(user.id, candidates);
+      for (const d of decisions) {
+        const sent = await this.dispatchIfEnabled(d, () =>
+          d.triggerKey === 'shopping_unchecked'
+            ? this.notificationsService.notifyShoppingReminder(user.id, list!.items.length)
+            : this.notificationsService.notifyWeeklyPlanEmpty(user.id),
         );
+        if (sent) dispatched++;
       }
     }
-
-    await Promise.allSettled(notifications);
+    this.logger.log(`[INE dry-run] daily reminders evaluated for ${usersWithData.length} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
@@ -60,6 +79,7 @@ export class NotificationSchedulerService {
     const now = new Date();
     const todayDayOfWeek = now.getDay();
     const startOfWeek = getStartOfWeek();
+    const hour = now.getHours();
 
     const mealPlans = await this.prisma.mealPlan.findMany({
       where: { weekStart: startOfWeek },
@@ -67,59 +87,51 @@ export class NotificationSchedulerService {
     });
 
     for (const plan of mealPlans) {
-      const todaySlots = plan.slots.filter(s => s.dayOfWeek === todayDayOfWeek);
-      const hasLunch = todaySlots.some(s => s.mealType === 'ناهار');
-      const hasDinner = todaySlots.some(s => s.mealType === 'شام');
-      const hour = now.getHours();
+      const todaySlots = plan.slots.filter((s) => s.dayOfWeek === todayDayOfWeek);
+      const meal = this.dueMeal(todaySlots, hour);
+      if (!meal) continue;
 
-      // بررسی ناهار
-      if (!hasLunch && hour >= 11 && hour < 13) {
-        const key = `${plan.userId}:ناهار`;
-        const last = this.lastMealReminder.get(key);
-        // اگر قبلاً ارسال نشده یا بیش از ۲ ساعت گذشته، ارسال کن
-        if (!last || (now.getTime() - last.getTime()) > 2 * 60 * 60 * 1000) {
-          await this.notificationsService.notifyMealReminder(plan.userId, 'ناهار');
-          this.lastMealReminder.set(key, now);
-        }
-      }
+      // اگر قبلاً ارسال نشده یا بیش از ۲ ساعت گذشته (eligibility window only)
+      const key = `${plan.userId}:${meal}`;
+      const last = this.lastMealReminder.get(key);
+      if (last && now.getTime() - last.getTime() <= 2 * 60 * 60 * 1000) continue;
 
-      // بررسی شام
-      if (!hasDinner && hour >= 16 && hour < 18) {
-        const key = `${plan.userId}:شام`;
-        const last = this.lastMealReminder.get(key);
-        if (!last || (now.getTime() - last.getTime()) > 2 * 60 * 60 * 1000) {
-          await this.notificationsService.notifyMealReminder(plan.userId, 'شام');
-          this.lastMealReminder.set(key, now);
-        }
-      }
+      const [decision] = await this.ine.decideForUser(plan.userId, [{ triggerKey: 'meal_time_nudge', payload: { meal } }], now);
+      const sent = await this.dispatchIfEnabled(decision, () => this.notificationsService.notifyMealReminder(plan.userId, meal));
+      if (sent) this.lastMealReminder.set(key, now);
     }
   }
 
-  // 🆕 هر دوشنبه ساعت ۹ صبح – کاربران با ریسک ریزش بالا
+  /** Which meal (if any) is due now and not yet planned today. */
+  private dueMeal(todaySlots: { mealType: string }[], hour: number): 'ناهار' | 'شام' | null {
+    if (hour >= 11 && hour < 13 && !todaySlots.some((s) => s.mealType === 'ناهار')) return 'ناهار';
+    if (hour >= 16 && hour < 18 && !todaySlots.some((s) => s.mealType === 'شام')) return 'شام';
+    return null;
+  }
+
+  // 🆕 هر دوشنبه ساعت ۹ صبح – کاربران با ریسک ریزش بالا (now consent-gated via the INE)
   @Cron('0 9 * * 1')
   async handleChurnRiskNotifications() {
     const highRiskUsers = await this.prisma.userBehaviorProfile.findMany({
-      where: {
-        churnRiskScore: { gte: 70 },
-      },
+      where: { churnRiskScore: { gte: 70 } },
       select: { userId: true },
     });
 
-    console.log(`⚠️ Found ${highRiskUsers.length} users with high churn risk.`);
-
-    const notifications = highRiskUsers.map(profile =>
-      this.prisma.notification.create({
-        data: {
-          userId: profile.userId,
-          title: 'دلتنگت شدیم! 😢',
-          body: 'مدتیه که کمتر از گارنیش استفاده می‌کنی. بیا دوباره با هم غذاهای خوشمزه بپزیم!',
-          type: 'churn_risk',
-        },
-      })
-    );
-
-    const results = await Promise.allSettled(notifications);
-    const succeeded = results.filter(r => r.status === 'fulfilled').length;
-    console.log(`✅ Churn risk notifications sent: ${succeeded} succeeded.`);
+    let dispatched = 0;
+    for (const profile of highRiskUsers) {
+      const [decision] = await this.ine.decideForUser(profile.userId, [{ triggerKey: 'churn_reengagement' }]);
+      const sent = await this.dispatchIfEnabled(decision, () =>
+        this.prisma.notification.create({
+          data: {
+            userId: profile.userId,
+            title: 'دلتنگت شدیم! 😢',
+            body: 'مدتیه که کمتر از گارنیش استفاده می‌کنی. بیا دوباره با هم غذاهای خوشمزه بپزیم!',
+            type: 'churn_reengagement',
+          },
+        }),
+      );
+      if (sent) dispatched++;
+    }
+    this.logger.log(`[INE dry-run] churn-risk evaluated for ${highRiskUsers.length} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
   }
 }

@@ -1,0 +1,248 @@
+{
+  "sprint": "GARNISH-NOTIF-L4-10",
+  "engine": "NotificationIntelligenceEngine",
+  "mode": "DRY-RUN",
+  "totalChecks": 10,
+  "failedChecks": [],
+  "checks": {
+    "registry_consistent": true,
+    "zero_real_sends": true,
+    "all_dry_run": true,
+    "has_send": true,
+    "has_suppress": true,
+    "has_defer": true,
+    "consent_gate_fires": true,
+    "quiet_gate_fires": true,
+    "fatigue_gate_fires": true,
+    "all_explainable": true
+  },
+  "report": {
+    "personas": 7,
+    "totalDecisions": 9,
+    "wouldSend": 2,
+    "suppressed": 5,
+    "deferred": 2,
+    "realSends": 0,
+    "byTrigger": {
+      "meal_time_nudge": {
+        "send": 1,
+        "suppress": 0,
+        "defer": 2
+      },
+      "shopping_unchecked": {
+        "send": 1,
+        "suppress": 1,
+        "defer": 0
+      },
+      "discovery_similar": {
+        "send": 0,
+        "suppress": 2,
+        "defer": 0
+      },
+      "churn_reengagement": {
+        "send": 0,
+        "suppress": 1,
+        "defer": 0
+      },
+      "weekly_plan_gap": {
+        "send": 0,
+        "suppress": 1,
+        "defer": 0
+      }
+    },
+    "byReason": {
+      "relevant": 2,
+      "quiet hours now": 1,
+      "no consent for \"personalization\"": 2,
+      "daily cap reached": 1,
+      "recent dismissals": 1,
+      "best window ~12:00": 1,
+      "low relevance": 1
+    },
+    "decisions": [
+      {
+        "userId": "active-consented-noon",
+        "triggerKey": "meal_time_nudge",
+        "decision": "send",
+        "relevance": 0.601,
+        "sendWindowHour": 12,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "relevant (0.601) + good time (~12:00) + within frequency caps"
+        ],
+        "content": {
+          "title": "وقت غذا",
+          "body": "هنوز وعده امروز رو انتخاب نکردی — یه پیشنهاد ببین."
+        },
+        "dryRun": true,
+        "persona": "active-consented-noon"
+      },
+      {
+        "userId": "active-consented-noon",
+        "triggerKey": "shopping_unchecked",
+        "decision": "send",
+        "relevance": 0.513,
+        "sendWindowHour": 12,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "relevant (0.513) + good time (~12:00) + within frequency caps"
+        ],
+        "content": {
+          "title": "لیست خرید",
+          "body": "4 مورد در لیست خریدت تیک نخورده."
+        },
+        "dryRun": true,
+        "persona": "active-consented-noon"
+      },
+      {
+        "userId": "quiet-hours-night",
+        "triggerKey": "meal_time_nudge",
+        "decision": "defer",
+        "relevance": 0.601,
+        "sendWindowHour": 12,
+        "gates": {
+          "consent": true,
+          "quietHours": false,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "quiet hours now (23:00) — deferred to ~12:00"
+        ],
+        "content": {
+          "title": "وقت غذا",
+          "body": "هنوز وعده امروز رو انتخاب نکردی — یه پیشنهاد ببین."
+        },
+        "dryRun": true,
+        "persona": "quiet-hours-night"
+      },
+      {
+        "userId": "no-personalization-consent",
+        "triggerKey": "discovery_similar",
+        "decision": "suppress",
+        "relevance": 0,
+        "sendWindowHour": null,
+        "gates": {
+          "consent": false,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "no consent for \"personalization\""
+        ],
+        "content": null,
+        "dryRun": true,
+        "persona": "no-personalization-consent"
+      },
+      {
+        "userId": "no-personalization-consent",
+        "triggerKey": "churn_reengagement",
+        "decision": "suppress",
+        "relevance": 0,
+        "sendWindowHour": null,
+        "gates": {
+          "consent": false,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "no consent for \"personalization\""
+        ],
+        "content": null,
+        "dryRun": true,
+        "persona": "no-personalization-consent"
+      },
+      {
+        "userId": "fatigued-daily-cap",
+        "triggerKey": "shopping_unchecked",
+        "decision": "suppress",
+        "relevance": 0.513,
+        "sendWindowHour": null,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": false,
+          "relevance": true
+        },
+        "reasons": [
+          "daily cap reached (2/2 in 24h)"
+        ],
+        "content": null,
+        "dryRun": true,
+        "persona": "fatigued-daily-cap"
+      },
+      {
+        "userId": "dismisser",
+        "triggerKey": "weekly_plan_gap",
+        "decision": "suppress",
+        "relevance": 0.425,
+        "sendWindowHour": null,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": false,
+          "relevance": true
+        },
+        "reasons": [
+          "recent dismissals (3)"
+        ],
+        "content": null,
+        "dryRun": true,
+        "persona": "dismisser"
+      },
+      {
+        "userId": "early-morning-defer",
+        "triggerKey": "meal_time_nudge",
+        "decision": "defer",
+        "relevance": 0.601,
+        "sendWindowHour": 12,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": true
+        },
+        "reasons": [
+          "best window ~12:00"
+        ],
+        "content": {
+          "title": "وقت غذا",
+          "body": "هنوز وعده امروز رو انتخاب نکردی — یه پیشنهاد ببین."
+        },
+        "dryRun": true,
+        "persona": "early-morning-defer"
+      },
+      {
+        "userId": "weekly-capped",
+        "triggerKey": "discovery_similar",
+        "decision": "suppress",
+        "relevance": 0.249,
+        "sendWindowHour": null,
+        "gates": {
+          "consent": true,
+          "quietHours": true,
+          "fatigue": true,
+          "relevance": false
+        },
+        "reasons": [
+          "low relevance (0.249 < 0.3)"
+        ],
+        "content": null,
+        "dryRun": true,
+        "persona": "weekly-capped"
+      }
+    ]
+  }
+}

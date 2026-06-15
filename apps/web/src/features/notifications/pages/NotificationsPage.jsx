@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationsQuery } from '../../../hooks/useNotificationsQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
+import IneNotificationPreview from '../components/IneNotificationPreview'; // NOTIF-L4-10 dry-run preview
 
 const timeAgo = (dateString) => {
   const now = new Date();
@@ -99,6 +100,9 @@ export default function NotificationsPage() {
           </Button>
         </Group>
       </Paper>
+
+      {/* NOTIF-L4-10: dry-run preview of the Notification Intelligence Engine */}
+      <IneNotificationPreview />
 
       {/* فیلتر */}
       <SegmentedControl
