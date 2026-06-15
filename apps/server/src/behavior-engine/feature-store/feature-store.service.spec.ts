@@ -20,6 +20,9 @@ describe('FeatureStoreService', () => {
       },
       userEvent: {
         count: jest.fn().mockResolvedValue(0),
+        // getDataMaturity() reads recent events via findMany — mock it so the data-maturity
+        // path resolves (empty = low maturity; the asserted signals come from count() below).
+        findMany: jest.fn().mockResolvedValue([]),
       },
       userFeatureVector: { upsert: jest.fn() },
       userFeature: { deleteMany: jest.fn(), createMany: jest.fn() },

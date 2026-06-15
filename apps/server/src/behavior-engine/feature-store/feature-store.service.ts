@@ -420,7 +420,7 @@ export class FeatureStoreService {
   }
 
   async findUsersByFeature(featureKey: string, minValue: number): Promise<string[]> {
-    const rows = await this.prisma.userFeature.findMany({
+    const rows: { userId: string }[] = await this.prisma.userFeature.findMany({
       where: { featureKey, value: { gte: minValue } },
       select: { userId: true },
     });

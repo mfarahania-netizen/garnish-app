@@ -189,7 +189,9 @@ describe('RankingService', () => {
 
     const ranked = await service.rank('fitness-user', ['a', 'b', 'c']);
 
-    expect(new Set(ranked.map((item) => item.mealType)).size).toBe(1);
+    // mealType is a parsed list (string[]) per item — compare by value, not by array reference,
+    // to assert the top list stays mono-mealType (all 'lunch').
+    expect(new Set(ranked.map((item) => JSON.stringify(item.mealType))).size).toBe(1);
     expect(ranked[0].finalScore).toBeGreaterThanOrEqual(ranked[1].finalScore);
     expect(ranked[1].finalScore).toBeGreaterThanOrEqual(ranked[2].finalScore);
   });

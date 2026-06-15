@@ -90,7 +90,7 @@ export class CandidateGeneratorService {
     });
     const terms = [...new Set(searchTerms.map(s => s.term))];
 
-    const similarRecipes = await this.prisma.searchTerm.findMany({
+    const similarRecipes: { recipeId: string }[] = await this.prisma.searchTerm.findMany({
       where: { term: { in: terms }, recipeId: { notIn: [...recipeIds] } },
       select: { recipeId: true },
       take: 20,
@@ -168,7 +168,7 @@ export class CandidateGeneratorService {
     if (similarUsers.length === 0) return [];
 
     const similarUserIds = similarUsers.map(u => u.userId);
-    const favoriteRecipes = await this.prisma.favoriteRecipe.findMany({
+    const favoriteRecipes: { recipeId: string }[] = await this.prisma.favoriteRecipe.findMany({
       where: { userId: { in: similarUserIds } },
       select: { recipeId: true },
       take: 20,
@@ -238,7 +238,7 @@ export class CandidateGeneratorService {
     if (shoppingItems.length === 0) return [];
 
     const ingredientNames = shoppingItems.map(i => i.name);
-    const recipes = await this.prisma.recipeIngredient.findMany({
+    const recipes: { recipeId: string }[] = await this.prisma.recipeIngredient.findMany({
       where: { name: { in: ingredientNames } },
       select: { recipeId: true },
       take: 20,
