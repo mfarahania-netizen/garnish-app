@@ -16,7 +16,7 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 106,
+    "endpoints": 110,
     "internalEndpoints": 9,
     "controllers": 22,
     "routes": 17,
@@ -5492,6 +5492,26 @@
       "calledByFrontend": true
     },
     {
+      "id": "GET /admin/analytics/cohorts",
+      "verb": "GET",
+      "path": "/admin/analytics/cohorts",
+      "controller": "AdminController",
+      "handler": "getCohorts",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
       "id": "GET /admin/analytics/events",
       "verb": "GET",
       "path": "/admin/analytics/events",
@@ -5510,6 +5530,26 @@
       "auth": "jwt+roles(admin)",
       "isInternal": false,
       "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/funnels",
+      "verb": "GET",
+      "path": "/admin/analytics/funnels",
+      "controller": "AdminController",
+      "handler": "getFunnels",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/meal-planning",
@@ -5550,6 +5590,26 @@
       "auth": "jwt+roles(admin)",
       "isInternal": false,
       "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/product-intelligence",
+      "verb": "GET",
+      "path": "/admin/analytics/product-intelligence",
+      "controller": "AdminController",
+      "handler": "getProductIntelligence",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/recipes-stats",
@@ -5650,6 +5710,26 @@
       "auth": "jwt+roles(admin)",
       "isInternal": false,
       "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/trends",
+      "verb": "GET",
+      "path": "/admin/analytics/trends",
+      "controller": "AdminController",
+      "handler": "getTrends",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/user-stats",

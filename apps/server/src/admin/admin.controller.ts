@@ -93,4 +93,17 @@ export class AdminController {
 
   @Get('analytics/system-health')
   getSystemHealth() { return this.adminService.getSystemHealth(); }
+
+  // ── ANALYTICS-L4-16: computation engine (funnels / trends / cohorts / product-intelligence) ──
+  @Get('analytics/funnels')
+  getFunnels() { return this.adminService.getFunnels(); }
+
+  @Get('analytics/trends')
+  getTrends(@Query('bucket') bucket: string, @Query('days') days: string) { return this.adminService.getTrends(bucket, days); }
+
+  @Get('analytics/cohorts')
+  getCohorts() { return this.adminService.getCohorts(); }
+
+  @Get('analytics/product-intelligence')
+  getProductIntelligence() { return this.adminService.getProductIntelligence(); }
 }

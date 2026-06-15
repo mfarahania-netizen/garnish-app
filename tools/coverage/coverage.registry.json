@@ -167,9 +167,17 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /admin/analytics/cohorts": {
+      "status": "admin",
+      "reason": "ANALYTICS-L4-16: admin-gated cohort/retention math (honest awaiting_pilot pre-pilot); for the S13 dashboard."
+    },
     "GET /admin/analytics/events": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/funnels": {
+      "status": "admin",
+      "reason": "ANALYTICS-L4-16: admin-gated onboarding/cook funnels (drop-off from UserEvent); for the S13 dashboard."
     },
     "GET /admin/analytics/meal-planning": {
       "status": "admin",
@@ -178,6 +186,10 @@
     "GET /admin/analytics/page-views": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/product-intelligence": {
+      "status": "admin",
+      "reason": "ANALYTICS-L4-16: admin-gated product-intelligence (FoodDNA bands, recsys quality via S11 harness, briefing rates, INE distribution, gamification aggregates); real or honest awaiting_pilot."
     },
     "GET /admin/analytics/recipes-stats": {
       "status": "admin",
@@ -198,6 +210,10 @@
     "GET /admin/analytics/system-health": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/trends": {
+      "status": "admin",
+      "reason": "ANALYTICS-L4-16: admin-gated time-bucketed trend series (cooks/searches/plans/saves/AI) from UserEvent; for the S13 dashboard."
     },
     "GET /admin/analytics/user-stats": {
       "status": "admin",

@@ -1,10 +1,20 @@
 // apps/server/src/admin/admin.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytics-intelligence.service';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private analyticsIntelligence: AnalyticsIntelligenceService, // ANALYTICS-L4-16
+  ) {}
+
+  // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
+  getFunnels() { return this.analyticsIntelligence.getFunnels(); }
+  getTrends(bucket?: string, days?: string) { return this.analyticsIntelligence.getTrends({ bucket: bucket === 'week' ? 'week' : 'day', days: parseInt(days ?? '') || 30 }); }
+  getCohorts() { return this.analyticsIntelligence.getCohorts(); }
+  getProductIntelligence() { return this.analyticsIntelligence.getProductIntelligence(); }
 
   async getDashboardStats() {
     const [recipeCount, userCount, ticketCount] = await Promise.all([
