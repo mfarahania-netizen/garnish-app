@@ -1,4 +1,5 @@
 import { RecipeSearchService } from './recipe-search.service';
+import { RecipeContentFeatureStore } from './recipe-content-feature-store.service';
 import { composeLivingUserProfile } from '../../behavior-engine/profile/read/living-profile';
 import { buildDeclaredProfile } from '../../behavior-engine/profile/declared/declared-profile.builder';
 
@@ -16,7 +17,7 @@ function makeService() {
   const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
   declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: ['peanut'], confidence: 0.9, recencyScore: 1 } as any;
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };
-  return { svc: new RecipeSearchService(prisma, profiles), prisma, profiles };
+  return { svc: new RecipeSearchService(prisma, profiles, new RecipeContentFeatureStore(prisma)), prisma, profiles };
 }
 
 describe('RecipeSearchService — semantic search', () => {

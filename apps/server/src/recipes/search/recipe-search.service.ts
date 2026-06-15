@@ -12,13 +12,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProfileReadService } from '../../behavior-engine/profile/read/profile-read.service';
-import { buildTfidfIndex, searchIndex, similarIndex, TfidfIndex, SearchDocInput } from './tfidf';
+import { searchIndex } from './tfidf';
+import { RecipeContentFeatureStore } from './recipe-content-feature-store.service';
 import { analyzeRecipeIntegrity } from '../intelligence/recipe-integrity';
 import { assessRecipeFit } from '../intelligence/recipe-fit';
-import { toStringArray } from '../../ai/tools/grounding-utils';
-
-const INDEX_TTL_MS = 5 * 60 * 1000;
-const CORPUS_CAP = 2000;
 
 const FIT_MULTIPLIER: Record<string, number> = { avoid_allergen: 0.05, caution: 0.6, ok: 1, great_fit: 1.3 };
 
@@ -41,47 +38,23 @@ export interface SearchResponse {
 @Injectable()
 export class RecipeSearchService {
   private readonly logger = new Logger(RecipeSearchService.name);
-  private index: TfidfIndex | null = null;
-  private indexedAt = 0;
   /** observed but unwired: queries that returned nothing — the "wanted-but-missing" signal (taste.unmet_search_demand). */
   private readonly unmetSearchLog: string[] = [];
 
-  constructor(private readonly prisma: PrismaService, private readonly profiles: ProfileReadService) {}
-
-  private buildDocText(r: any): string {
-    const ingredients = (r.ingredients ?? []).map((i: any) => i.name).filter(Boolean);
-    const terms = (r.searchTerms ?? []).map((t: any) => t.term).filter(Boolean);
-    const cats = toStringArray(r.categories);
-    // weight title (×3) and ingredients (×2) — they matter most for recipe search
-    return [r.title, r.title, r.title, ...ingredients, ...ingredients, r.description, r.diet, r.mealType, r.region, ...cats, ...terms]
-      .filter(Boolean)
-      .join(' ');
-  }
-
-  async buildIndex(force = false): Promise<TfidfIndex> {
-    if (!force && this.index && Date.now() - this.indexedAt < INDEX_TTL_MS) return this.index;
-    const recipes = await this.prisma.recipe.findMany({
-      where: { isPublic: true },
-      take: CORPUS_CAP,
-      select: { id: true, title: true, description: true, diet: true, mealType: true, region: true, categories: true, difficulty: true, cookingTime: true, ingredients: { select: { name: true } }, searchTerms: { select: { term: true } } },
-    });
-    const docs: SearchDocInput[] = recipes.map((r) => ({
-      id: r.id,
-      title: r.title,
-      text: this.buildDocText(r),
-      facets: { diet: r.diet, mealType: r.mealType, region: r.region, difficulty: r.difficulty, cookingTime: r.cookingTime, categories: toStringArray(r.categories) },
-    }));
-    this.index = buildTfidfIndex(docs);
-    this.indexedAt = Date.now();
-    return this.index;
-  }
+  // EMBED-L4-13: the TF-IDF index + content representation now come from the ONE content feature store
+  // (buildContentDoc) — search & similar read the same consistent source.
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly profiles: ProfileReadService,
+    private readonly content: RecipeContentFeatureStore,
+  ) {}
 
   async search(query: string, opts: { limit?: number; userId?: string } = {}): Promise<SearchResponse> {
     const limit = Math.min(Math.max(Number(opts.limit) || 20, 1), 50);
     const q = (query ?? '').trim();
     if (q.length < 2) return { query: q, results: [], total: 0, resultStatus: 'empty_query', personalized: false, unmetSearch: false };
 
-    const index = await this.buildIndex();
+    const index = await this.content.getIndex();
     const hits = searchIndex(index, q, limit * 2);
     if (hits.length === 0) {
       this.recordUnmetSearch(q);
@@ -101,32 +74,15 @@ export class RecipeSearchService {
     return { query: q, results: results.slice(0, limit), total: hits.length, resultStatus: 'ok', personalized, unmetSearch: false };
   }
 
+  /** Better, explainable "similar recipes": TF-IDF term overlap blended with content-facet alignment. */
   async similar(recipeId: string, opts: { limit?: number } = {}) {
     const limit = Math.min(Math.max(Number(opts.limit) || 6, 1), 20);
-    const index = await this.buildIndex();
-    const sims = similarIndex(index, recipeId, limit);
+    const { neighbors, status } = await this.content.neighbors(recipeId, limit);
     return {
       recipeId,
-      results: sims.map((s) => ({
-        recipeId: s.id,
-        title: s.title,
-        score: s.score,
-        why: this.explainSimilarity(index, recipeId, s.id, s.sharedTerms),
-      })),
-      resultStatus: sims.length ? 'ok' : index.docs.has(recipeId) ? 'no_similar' : 'recipe_not_found',
+      results: neighbors.map((n) => ({ recipeId: n.recipeId, title: n.title, score: n.score, why: n.why })),
+      resultStatus: status,
     };
-  }
-
-  /** Classify shared terms into ingredient / cuisine / effort buckets for an explainable "similar because…". */
-  private explainSimilarity(index: TfidfIndex, baseId: string, otherId: string, sharedTerms: string[]) {
-    const base = index.docs.get(baseId)?.facets ?? {};
-    const other = index.docs.get(otherId)?.facets ?? {};
-    const reasons: string[] = [];
-    if (sharedTerms.length) reasons.push(`shared key terms: ${sharedTerms.slice(0, 5).join(', ')}`);
-    if (base.region && base.region === other.region) reasons.push(`same cuisine (${base.region})`);
-    if (base.mealType && base.mealType === other.mealType) reasons.push(`same meal type (${base.mealType})`);
-    if (base.difficulty && base.difficulty === other.difficulty) reasons.push(`comparable effort (${base.difficulty})`);
-    return { sharedTerms, reasons };
   }
 
   /** Re-rank by personal fit, REUSING getLivingUserProfile + assessRecipeFit. Allergen conflict → demoted + cautioned. */

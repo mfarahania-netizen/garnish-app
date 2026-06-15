@@ -9,6 +9,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { buildTfidfIndex, searchIndex, similarIndex } from './tfidf';
 import { RecipeSearchService } from './recipe-search.service';
+import { RecipeContentFeatureStore } from './recipe-content-feature-store.service';
 import { composeLivingUserProfile } from '../../behavior-engine/profile/read/living-profile';
 import { buildDeclaredProfile } from '../../behavior-engine/profile/declared/declared-profile.builder';
 
@@ -50,7 +51,7 @@ describe('Search QA gate (SEARCH-L4-08)', () => {
     const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
     declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: ['peanut'], confidence: 0.9, recencyScore: 1 } as any;
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };
-    const svc = new RecipeSearchService(prisma, profiles);
+    const svc = new RecipeSearchService(prisma, profiles, new RecipeContentFeatureStore(prisma));
 
     const empty = await svc.search('zzqx-nothing-matches');
     check('unmet_search_signal', 'unmet', empty.unmetSearch === true && svc.getUnmetSearchCount() === 1);

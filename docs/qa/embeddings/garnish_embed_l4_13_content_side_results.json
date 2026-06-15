@@ -1,0 +1,21 @@
+{
+  "sprint": "GARNISH-EMBED-L4-13",
+  "layer": "content-side representation + feature store",
+  "totalChecks": 7,
+  "failedChecks": [],
+  "checks": {
+    "no_runtime_shadow_import": true,
+    "no_randomness": true,
+    "no_external_or_vectordb_dep": true,
+    "deterministic_vector": true,
+    "principled_ranking": true,
+    "search_reads_store": true,
+    "embedding_uses_principled_vector": true
+  },
+  "wiredVisibleFeatures": [
+    "recipe search",
+    "similar recipes",
+    "recommendation candidate-generator embedding bucket"
+  ],
+  "deferred": "user-side learning → Track 7 (R-T7-USERSIDE-EMBEDDING, D13)"
+}
