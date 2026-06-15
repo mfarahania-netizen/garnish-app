@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { RecipesController } from './recipes.controller';
 import { RecipeRichnessService } from './intelligence/recipe-richness.service';
+import { RecipeSearchService } from './search/recipe-search.service';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { AiCoreModule } from '../ai/ai-core.module';
 
@@ -12,8 +13,8 @@ import { AiCoreModule } from '../ai/ai-core.module';
  */
 @Module({
   imports: [ProfileModule, AiCoreModule],
-  providers: [RecipesService, RecipeRichnessService],
+  providers: [RecipesService, RecipeRichnessService, RecipeSearchService],
   controllers: [RecipesController],
-  exports: [RecipesService],
+  exports: [RecipesService, RecipeSearchService],
 })
 export class RecipesModule {}

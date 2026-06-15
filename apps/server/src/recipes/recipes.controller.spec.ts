@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RecipesController } from './recipes.controller';
 import { RecipesService } from './recipes.service';
 import { RecipeRichnessService } from './intelligence/recipe-richness.service';
+import { RecipeSearchService } from './search/recipe-search.service';
 
 describe('RecipesController', () => {
   let controller: RecipesController;
@@ -14,6 +15,7 @@ describe('RecipesController', () => {
       providers: [
         { provide: RecipesService, useValue: {} },
         { provide: RecipeRichnessService, useValue: {} },
+        { provide: RecipeSearchService, useValue: {} },
       ],
     }).compile();
 

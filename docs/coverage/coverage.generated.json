@@ -16,12 +16,12 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 99,
+    "endpoints": 100,
     "internalEndpoints": 9,
     "controllers": 20,
     "routes": 17,
     "protectedRoutes": 11,
-    "frontendCallSites": 71,
+    "frontendCallSites": 72,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -4930,6 +4930,7 @@
       "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
       "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
       "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
+      "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
       "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
       "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
       "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
@@ -5037,6 +5038,7 @@
           "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
           "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
           "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
+          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
           "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
           "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx"
@@ -5090,8 +5092,10 @@
       },
       {
         "field": "status",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx"
+        ]
       },
       {
         "field": "tips",
@@ -5107,6 +5111,7 @@
         "files": [
           "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
           "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
+          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
           "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx"
         ]
@@ -6342,6 +6347,21 @@
       "calledByFrontend": false
     },
     {
+      "id": "GET /recipes/:id/similar",
+      "verb": "GET",
+      "path": "/recipes/:id/similar",
+      "controller": "RecipesController",
+      "handler": "similar",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "GET /recipes/my",
       "verb": "GET",
       "path": "/recipes/my",
@@ -7426,6 +7446,13 @@
       "raw": "/recipes/${id}",
       "normalized": "/recipes/*",
       "file": "apps/web/src/app/recipe/[id]/page.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/${recipeId}/similar",
+      "normalized": "/recipes/*/similar",
+      "file": "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
       "dynamic": true
     },
     {

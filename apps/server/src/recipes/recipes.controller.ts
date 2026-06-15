@@ -2,6 +2,7 @@ import { Controller, Get, Post, Param, Body, Req, UseGuards, Patch, Query } from
 import { AuthGuard } from '@nestjs/passport';
 import { RecipesService } from './recipes.service';
 import { RecipeRichnessService } from './intelligence/recipe-richness.service';
+import { RecipeSearchService } from './search/recipe-search.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
@@ -11,6 +12,7 @@ export class RecipesController {
   constructor(
     private readonly recipesService: RecipesService,
     private readonly richness: RecipeRichnessService,
+    private readonly searchService: RecipeSearchService,
   ) {}
 
   @Get()
@@ -25,10 +27,28 @@ export class RecipesController {
     return this.recipesService.findAll(skip, limitNum, category);
   }
 
+  /**
+   * SEARCH-L4-08: deterministic semantic search (TF-IDF). Public/anonymous base ranking. Backward
+   * compatible — returns a recipe[] (ranked by relevance) with an added `_search {score, matchedTerms}`;
+   * falls back to the legacy contains-search if the corpus index is empty. Honest empty (no fabrication).
+   */
   @Get('search')
-  search(@Query() query: SearchRecipesDto) {
+  async search(@Query() query: SearchRecipesDto) {
     const limitNum = parseInt(query.limit, 10) || 10;
-    return this.recipesService.search(query.q, limitNum);
+    const ranked = await this.searchService.search(query.q, { limit: limitNum });
+    if (ranked.resultStatus !== 'ok') {
+      // legacy fallback keeps behavior for empty_query and lets contains catch anything the index missed
+      return this.recipesService.search(query.q, limitNum);
+    }
+    const ordered = await this.recipesService.findByIdsOrdered(ranked.results.map((r) => r.recipeId));
+    const whyById = new Map(ranked.results.map((r) => [r.recipeId, { score: r.score, matchedTerms: r.why.matchedTerms }]));
+    return ordered.map((recipe: any) => ({ ...recipe, _search: whyById.get(recipe.id) ?? null }));
+  }
+
+  /** SEARCH-L4-08: "similar recipes" / more-like-this — deterministic nearest neighbors + WHY. Public. */
+  @Get(':id/similar')
+  similar(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.searchService.similar(id, { limit: limit ? parseInt(limit, 10) : undefined });
   }
 
   @Get('my')

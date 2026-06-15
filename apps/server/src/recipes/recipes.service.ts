@@ -73,6 +73,17 @@ export class RecipesService {
     return recipe ? this.presentRecipe(recipe) : null;
   }
 
+  /** Load + present recipes for the given ids, preserving the order of `ids` (used by semantic search). */
+  async findByIdsOrdered(ids: string[]) {
+    if (!ids.length) return [];
+    const recipes = await this.prisma.recipe.findMany({
+      where: { id: { in: ids } },
+      include: { ingredients: { include: { ingredient: true }, take: 5 }, nutrition: true },
+    });
+    const byId = new Map(recipes.map((r) => [r.id, this.presentRecipe(r)]));
+    return ids.map((id) => byId.get(id)).filter(Boolean);
+  }
+
   async getMyRecipes(userId: string) {
     const recipes = await this.prisma.recipe.findMany({
       where: { authorId: userId },

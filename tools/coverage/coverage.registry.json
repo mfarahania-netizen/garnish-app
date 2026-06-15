@@ -275,6 +275,10 @@
       "status": "deferred:E-recipe-fit-ui",
       "reason": "RECIPE-L4-07 consolidated rich read (recipe + integrity + personalized fit + safety + swaps). Backend-first; the rich fit UI is a later phase."
     },
+    "GET /recipes/:id/similar": {
+      "status": "frontend:recipe-detail/SimilarRecipes",
+      "reason": "SEARCH-L4-08 deterministic 'similar recipes' (TF-IDF nearest-neighbor); rendered by the recipe-detail SimilarRecipes component."
+    },
     "GET /recipes/my": {
       "status": "frontend:my-recipes/MyRecipesPage",
       "reason": "A user’s own submitted recipes."

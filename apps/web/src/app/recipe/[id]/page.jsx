@@ -10,6 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import RecipeHero from './components/RecipeHero';
 import RecipeByline from './components/RecipeByline';
 import RecipeVideo from './components/RecipeVideo';
+import SimilarRecipes from './components/SimilarRecipes';
 import FeaturesCard from './components/FeaturesCard';
 import TimingCard from './components/TimingCard';
 import NutritionCard from './components/NutritionCard';
@@ -182,6 +183,8 @@ export default function RecipeDetailPage() {
         <TipsSection tips={tips} />
         <FaqSection faq={faq} />
       </Accordion>
+      {/* SEARCH-L4-08: deterministic "similar recipes" (nearest-neighbor, explainable) */}
+      <SimilarRecipes recipeId={finalRecipe.id} />
       <Button
         fullWidth
         size="lg"

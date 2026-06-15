@@ -36,6 +36,29 @@ The repo is **pinned to Prisma `5.22.0`** (`prisma` + `@prisma/client`, exact, i
 
 CI already uses the correct local invocation (`pnpm --dir apps/server exec prisma generate`). This guard is for local dev habits.
 
+## ⚠️ Clean-install verification — use an ISOLATED git worktree (never the primary checkout)
+
+A clean-install check does `rm -rf node_modules && pnpm install`. If you run that in your primary
+checkout **while `pnpm dev` is watching**, the watcher momentarily loses `@types/jest`/deps and prints a
+transient `TS2688: Cannot find type definition file for 'jest'` (harmless, but noisy). Do it in a
+throwaway worktree instead, so your primary `node_modules` (and dev server) are never touched:
+
+```bash
+git worktree add ../garnish-verify <branch>     # isolated checkout of the branch
+cd ../garnish-verify
+pnpm install --frozen-lockfile
+pnpm --dir apps/server exec prisma generate
+pnpm build            # prod build — compiles WITHOUT @types/jest (tsconfig.build.json types:["node"])
+pnpm coverage:check
+pnpm test             # tests DO see jest (base tsconfig types:["jest"] + ts-jest)
+cd -
+git worktree remove ../garnish-verify
+```
+
+> Build hygiene (SEARCH-L4-08): `tsconfig.build.json` sets `compilerOptions.types: ["node"]` so the prod
+> build never pulls test (`jest`) globals; the base `tsconfig.json` keeps `["jest"]` for spec compilation
+> via ts-jest / `nest start --watch`. Verified: the build file-graph contains 0 `@types/jest` entries.
+
 > Note: `prebuild: prisma generate` is intentionally **not** wired — it would double-run with CI's
 > dedicated `Generate Prisma client` step. Use `db:generate` (above) as the canonical local command.
 
