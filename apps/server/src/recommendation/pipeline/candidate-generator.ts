@@ -3,6 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FeatureStoreService } from '../../behavior-engine/feature-store/feature-store.service';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
+import { ProfileReadService } from '../../behavior-engine/profile/read/profile-read.service';
+import { RecipeContentFeatureStore } from '../../recipes/search/recipe-content-feature-store.service';
+import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
+import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
+
+// COLDSTART-L4-14: full recipe shape needed for assessRecipeFit + analyzeRecipeIntegrity (allergy-safe fit).
+const FIT_SELECT = {
+  id: true, title: true, diet: true, difficulty: true, cookingTime: true, allergens: true, categories: true, region: true,
+  ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } },
+} as const;
 
 @Injectable()
 export class CandidateGeneratorService {
@@ -10,6 +20,8 @@ export class CandidateGeneratorService {
     private prisma: PrismaService,
     private featureStore: FeatureStoreService,
     private embeddingService: RecipeEmbeddingService,
+    private profiles: ProfileReadService,
+    private content: RecipeContentFeatureStore,
   ) {}
 
   async generate(userId: string, limit = 50): Promise<string[]> {
@@ -248,70 +260,74 @@ export class CandidateGeneratorService {
   }
 
   private async getColdStartRecipes(userId: string): Promise<string[]> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        preferences: true,
-        healthGoals: { include: { healthGoal: true } },
-        cuisines: { include: { cuisine: true } },
-      },
-    });
-
-    if (!user) return [];
-
     const hasBehaviorHistory = await this.prisma.userEvent.count({
       where: { userId, timestamp: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
     });
-
     if (hasBehaviorHistory > 5) return [];
+    const candidates = await this.coldStartCandidates(userId);
+    return candidates.map((c) => c.recipeId);
+  }
 
-    const where: any = {};
+  /**
+   * COLDSTART-L4-14: profile-grounded, ALLERGY-SAFE, content-aware, fit-ranked cold-start.
+   *
+   * Reads the canonical living profile (declared diet/effort/skill + the reconciled HARD allergy set) via
+   * getLivingUserProfile — NOT raw `user.preferences` — and ranks by genuine fit (assessRecipeFit), never
+   * by `createdAt`. Declared allergies are a HARD filter: an allergen-conflicting recipe (recommendation
+   * 'avoid_allergen', fitScore 0) is NEVER returned. Content-similar neighbours (S9 RecipeContentFeatureStore)
+   * augment the set, filtered the same allergy-safe way. Explainable (per-pick fit reasons). Deterministic.
+   */
+  async coldStartCandidates(userId: string): Promise<Array<{ recipeId: string; fitScore: number; recommendation: string; reasons: string[] }>> {
+    let profile: any;
+    try {
+      profile = await this.profiles.getLivingUserProfile(userId);
+    } catch {
+      return []; // cannot establish the safe allergy set → surface nothing rather than something unsafe
+    }
+    if (!profile) return [];
 
-    if (user.preferences?.diet) {
-      where.diet = user.preferences.diet;
+    // Narrow the pool by declared diet (best-effort); the allergy HARD filter + fit ranking do the real work,
+    // so even a broad pool stays safe.
+    const where = this.coldStartWhere(profile);
+    let pool = await this.prisma.recipe.findMany({ where, select: FIT_SELECT, take: 50 });
+    if (pool.length === 0) pool = await this.prisma.recipe.findMany({ where: { isPublic: true }, select: FIT_SELECT, take: 50 });
+
+    let ranked = this.fitRank(pool, profile);
+
+    // content augmentation (S9): neighbours of the best-fit anchor, fit-filtered the same allergy-safe way
+    const anchor = ranked[0]?.recipeId;
+    if (anchor) {
+      try {
+        const { neighbors } = await this.content.neighbors(anchor, 10);
+        const have = new Set(ranked.map((r) => r.recipeId));
+        const extraIds = neighbors.map((n) => n.recipeId).filter((id) => !have.has(id));
+        if (extraIds.length) {
+          const extra = await this.prisma.recipe.findMany({ where: { id: { in: extraIds } }, select: FIT_SELECT });
+          ranked = ranked.concat(this.fitRank(extra, profile));
+        }
+      } catch { /* content store unavailable → fit-ranked pool only */ }
     }
 
-    if (user.preferences?.skillLevel && user.preferences.skillLevel !== 'advanced') {
-      where.cookingTime = { lte: user.preferences.skillLevel === 'beginner' ? 30 : 45 };
-    }
+    ranked.sort((a, b) => b.fitScore - a.fitScore || a.recipeId.localeCompare(b.recipeId));
+    return ranked.slice(0, 20);
+  }
 
-    if (user.preferences?.budget) {
-      where.cost = { contains: user.preferences.budget };
-    }
+  /** assessRecipeFit each recipe; HARD-drop allergen conflicts (the cold-start safety fix). */
+  private fitRank(recipes: any[], profile: any) {
+    return recipes
+      .map((r) => {
+        const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;
+        const fit = assessRecipeFit(r, profile, derived);
+        return { recipeId: r.id, fitScore: fit.fitScore, recommendation: fit.recommendation, reasons: (fit.reasons ?? []).slice(0, 3) };
+      })
+      .filter((x) => x.recommendation !== 'avoid_allergen'); // declared allergies are never surfaced in cold-start
+  }
 
-    const healthGoalNames = user.healthGoals.map((item: any) => item.healthGoal.name);
-    if (healthGoalNames.length > 0) {
-      where.OR = [
-        ...(where.OR || []),
-        ...healthGoalNames.map((goal: string) => ({ categories: { contains: goal } })),
-      ];
-    }
-
-    const cuisineNames = user.cuisines.map((item: any) => item.cuisine.name);
-    if (cuisineNames.length > 0) {
-      where.region = { in: cuisineNames };
-    }
-
-    const recipes = await this.prisma.recipe.findMany({
-      where,
-      select: { id: true },
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (recipes?.length > 0) {
-      return recipes.map((recipe) => recipe.id);
-    }
-
-    const fallback = await this.prisma.recipe.findMany({
-      where: {
-        isPublic: true,
-      },
-      select: { id: true },
-      take: 20,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return (fallback || []).map((recipe) => recipe.id);
+  /** Best-effort soft pool filter from the declared/reconciled profile (NOT the allergy set — that's the hard fit filter). */
+  private coldStartWhere(profile: any): any {
+    const where: any = { isPublic: true };
+    const diet = profile?.reconciled?.dimensions?.['dietary_pattern']?.reconciledValue ?? profile?.declared?.dimensions?.['dietary.pattern']?.value;
+    if (typeof diet === 'string' && diet.length) where.diet = diet;
+    return where;
   }
 }

@@ -17,6 +17,8 @@ import { TasteAffinityBuilder } from './taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 import { GovernanceInsightsService } from '../governance/governance-insights.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { ProfileModule } from '../behavior-engine/profile/profile.module';
+import { RecipesModule } from '../recipes/recipes.module';
 import { RecommendationShadowRuntimeService, SHADOW_DATA_PORT, SHADOW_TRACE_STORE } from './runtime-shadow/recommendation-shadow-runtime.service';
 import { RecommendationShadowA8Service, SHADOW_CONSENT_PORT, SHADOW_PROFILE_FEED_PORT, SHADOW_TRACE_READ_PORT, SHADOW_RETENTION_PORT } from './runtime-shadow/recommendation-shadow-a8-service';
 import { createPrismaShadowDataPort } from './runtime-shadow/recommendation-shadow-data-port';
@@ -33,7 +35,7 @@ import { RecommendationActivationReviewController } from './runtime-shadow/lab/a
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
-  imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule],
+  imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule, ProfileModule, RecipesModule],
   controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController, RecommendationExperimentExecutionController, RecommendationActivationReviewController],
   providers: [
     CandidateGeneratorService,

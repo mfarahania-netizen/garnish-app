@@ -1,0 +1,19 @@
+{
+  "sprint": "GARNISH-COLDSTART-L4-14",
+  "scope": "live pipeline cold-start + content ranking (allergy-safe)",
+  "totalChecks": 10,
+  "failedChecks": [],
+  "checks": {
+    "no_runtime_shadow_import": true,
+    "reads_living_profile": true,
+    "no_raw_preferences_constraint": true,
+    "allergy_hard_filter": true,
+    "ranked_by_fit_not_createdat": true,
+    "reuses_s9_content_store": true,
+    "no_randomness": true,
+    "blend_flagged": true,
+    "blend_history_aware": true,
+    "flag_default_on": true
+  },
+  "flag": "COLDSTART_RANKING_BLEND_ENABLED"
+}

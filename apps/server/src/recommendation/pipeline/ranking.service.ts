@@ -6,6 +6,7 @@ import { ExperimentEngine } from '../../experimentation/experiment-engine.servic
 import { ExposureTrackingService } from '../exposure/exposure-tracking.service';
 import { TasteAffinityBuilder } from '../taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
+import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
 
 type FeatureMap = Record<string, number>;
 
@@ -792,6 +793,13 @@ export class RankingService {
   ): Record<string, number> {
     const reliability = this.clamp(Number(features['_data_behavioralReliability'] ?? 0.65));
     if (reliability >= 0.65) return weights;
+
+    // COLDSTART-L4-14: history-aware cold-start blend (default ON). Leans toward content (S9) + popularity
+    // + ingredient signal and away from not-yet-existing behaviour/outcome, smoothly by reliability.
+    // Disabling the flag falls back to the legacy maturity scaling below (existing path stays safe).
+    if (coldStartBlendEnabled()) {
+      return this.normalizeWeights(coldStartWeightBlend(weights, reliability));
+    }
 
     const adjusted = { ...weights };
     const behaviorScale = 0.45 + reliability * 0.75;
