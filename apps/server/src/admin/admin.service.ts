@@ -2,12 +2,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytics-intelligence.service';
+import { OpsIntelligenceService } from '../analytics/intelligence/ops-intelligence.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private prisma: PrismaService,
     private analyticsIntelligence: AnalyticsIntelligenceService, // ANALYTICS-L4-16
+    private opsIntelligence: OpsIntelligenceService, // OPS-L4-18
   ) {}
 
   // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
@@ -15,6 +17,11 @@ export class AdminService {
   getTrends(bucket?: string, days?: string) { return this.analyticsIntelligence.getTrends({ bucket: bucket === 'week' ? 'week' : 'day', days: parseInt(days ?? '') || 30 }); }
   getCohorts() { return this.analyticsIntelligence.getCohorts(); }
   getProductIntelligence() { return this.analyticsIntelligence.getProductIntelligence(); }
+
+  // ── OPS-L4-18: operational health / safety-compliance evidence / economics (real or honest awaiting) ──
+  getOpsHealth() { return this.opsIntelligence.getHealth(); }
+  getOpsSafetyCompliance() { return this.opsIntelligence.getSafetyCompliance(); }
+  getOpsEconomics() { return this.opsIntelligence.getEconomics(); }
 
   async getDashboardStats() {
     const [recipeCount, userCount, ticketCount] = await Promise.all([

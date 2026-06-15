@@ -10,7 +10,7 @@ import {
   IconCalendar, IconShoppingCart, IconRobot, IconActivity,
   IconTicket, IconBrain, IconChartBar, IconSettings,
   IconLogout, IconSparkles, IconChevronLeft, IconChevronRight, IconReportAnalytics,
-  IconFilter, IconTrendingUp, IconUsersGroup
+  IconFilter, IconTrendingUp, IconUsersGroup, IconStethoscope, IconShieldCheck, IconCoins
 } from '@tabler/icons-react';
 
 // GARNISH-DASHBOARD-L4-17: GES saffron-anchored nav palette (no rainbow non-brand hex).
@@ -24,6 +24,9 @@ const TABS = [
   { value: 'trends', label: 'روندها', icon: IconTrendingUp, color: G.success },
   { value: 'cohort', label: 'کوهورت و بازگشت', icon: IconUsersGroup, color: G.warning },
   { value: 'intelligence', label: 'هوش محصول', icon: IconReportAnalytics, color: G.saffron },
+  { value: 'opshealth', label: 'سلامت عملیاتی', icon: IconStethoscope, color: G.success },
+  { value: 'safety', label: 'ایمنی و انطباق', icon: IconShieldCheck, color: G.verified },
+  { value: 'economics', label: 'اقتصاد و هزینه', icon: IconCoins, color: G.warning },
   { value: 'users', label: 'کاربران', icon: IconUsers, color: G.info },
   { value: 'recipes', label: 'رسپی‌ها', icon: IconChefHat, color: G.success },
   { value: 'search', label: 'جستجوها', icon: IconSearch, color: G.warning },

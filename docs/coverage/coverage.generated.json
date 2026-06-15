@@ -16,12 +16,12 @@
     "recipeScalarFields": 27,
     "recipeRelations": 10,
     "recipeTotalFields": 37,
-    "endpoints": 110,
+    "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
     "routes": 17,
     "protectedRoutes": 11,
-    "frontendCallSites": 75,
+    "frontendCallSites": 76,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -5509,7 +5509,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/events",
@@ -5549,7 +5549,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/meal-planning",
@@ -5609,7 +5609,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/recipes-stats",
@@ -5689,7 +5689,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/system-health",
@@ -5729,7 +5729,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/user-stats",
@@ -5770,6 +5770,66 @@
       "auth": "jwt+roles(admin)",
       "isInternal": false,
       "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/ops/economics",
+      "verb": "GET",
+      "path": "/admin/ops/economics",
+      "controller": "AdminController",
+      "handler": "getOpsEconomics",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /admin/ops/health",
+      "verb": "GET",
+      "path": "/admin/ops/health",
+      "controller": "AdminController",
+      "handler": "getOpsHealth",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /admin/ops/safety-compliance",
+      "verb": "GET",
+      "path": "/admin/ops/safety-compliance",
+      "controller": "AdminController",
+      "handler": "getOpsSafetyCompliance",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/recipes",
@@ -6977,7 +7037,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /recommendations/debug-features",
@@ -7112,7 +7172,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /review-report",
@@ -7629,9 +7689,9 @@
     },
     {
       "verb": "GET",
-      "raw": "/admin/analytics/events?limit=2000&page=1",
-      "normalized": "/admin/analytics/events",
-      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
+      "raw": "/admin/analytics/cohorts",
+      "normalized": "/admin/analytics/cohorts",
+      "file": "apps/web/src/app/admin/components/CohortTab.jsx",
       "dynamic": false
     },
     {
@@ -7640,6 +7700,13 @@
       "normalized": "/admin/analytics/events",
       "file": "apps/web/src/app/admin/components/EventsTab.jsx",
       "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/funnels",
+      "normalized": "/admin/analytics/funnels",
+      "file": "apps/web/src/app/admin/components/FunnelsTab.jsx",
+      "dynamic": false
     },
     {
       "verb": "GET",
@@ -7653,6 +7720,13 @@
       "raw": "/admin/analytics/page-views",
       "normalized": "/admin/analytics/page-views",
       "file": "apps/web/src/app/admin/components/PagesTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/product-intelligence",
+      "normalized": "/admin/analytics/product-intelligence",
+      "file": "apps/web/src/app/admin/components/ProductIntelligenceTab.jsx",
       "dynamic": false
     },
     {
@@ -7678,17 +7752,24 @@
     },
     {
       "verb": "GET",
-      "raw": "/admin/analytics/stats",
-      "normalized": "/admin/analytics/stats",
-      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
       "raw": "/admin/analytics/system-health",
       "normalized": "/admin/analytics/system-health",
       "file": "apps/web/src/app/admin/components/HealthTab.jsx",
       "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/trends?bucket=day&days=30",
+      "normalized": "/admin/analytics/trends",
+      "file": "apps/web/src/app/admin/components/OverviewTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/trends?bucket=${bucket}&days=${days}",
+      "normalized": "/admin/analytics/trends",
+      "file": "apps/web/src/app/admin/components/TrendsTab.jsx",
+      "dynamic": true
     },
     {
       "verb": "GET",
@@ -7701,7 +7782,7 @@
       "verb": "GET",
       "raw": "/admin/dashboard",
       "normalized": "/admin/dashboard",
-      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
+      "file": "apps/web/src/app/admin/components/OverviewTab.jsx",
       "dynamic": false
     },
     {
@@ -7982,20 +8063,6 @@
       "raw": "/recommendations?limit=6",
       "normalized": "/recommendations",
       "file": "apps/web/src/app/home/page.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/recommendations/compare",
-      "normalized": "/recommendations/compare",
-      "file": "apps/web/src/app/admin/components/IntelligenceTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/report",
-      "normalized": "/report",
-      "file": "apps/web/src/app/admin/components/IntelligenceTab.jsx",
       "dynamic": false
     },
     {

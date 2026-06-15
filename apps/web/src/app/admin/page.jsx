@@ -11,6 +11,9 @@ import FunnelsTab from './components/FunnelsTab';
 import TrendsTab from './components/TrendsTab';
 import CohortTab from './components/CohortTab';
 import ProductIntelligenceTab from './components/ProductIntelligenceTab';
+import OpsHealthTab from './components/OpsHealthTab';
+import SafetyComplianceTab from './components/SafetyComplianceTab';
+import EconomicsTab from './components/EconomicsTab';
 import UsersTab from './components/UsersTab';
 import RecipesTab from './components/RecipesTab';
 import SearchTab from './components/SearchTab';
@@ -55,6 +58,9 @@ export default function AdminDashboard() {
     trends: <TrendsTab />,
     cohort: <CohortTab />,
     intelligence: <ProductIntelligenceTab />,
+    opshealth: <OpsHealthTab />,
+    safety: <SafetyComplianceTab />,
+    economics: <EconomicsTab />,
     users: <UsersTab />,
     recipes: <RecipesTab />,
     search: <SearchTab />,

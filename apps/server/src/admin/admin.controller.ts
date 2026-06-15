@@ -106,4 +106,14 @@ export class AdminController {
 
   @Get('analytics/product-intelligence')
   getProductIntelligence() { return this.adminService.getProductIntelligence(); }
+
+  // ── OPS-L4-18: operational health / safety-compliance / economics ──
+  @Get('ops/health')
+  getOpsHealth() { return this.adminService.getOpsHealth(); }
+
+  @Get('ops/safety-compliance')
+  getOpsSafetyCompliance() { return this.adminService.getOpsSafetyCompliance(); }
+
+  @Get('ops/economics')
+  getOpsEconomics() { return this.adminService.getOpsEconomics(); }
 }

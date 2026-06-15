@@ -223,6 +223,18 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /admin/ops/economics": {
+      "status": "admin",
+      "reason": "OPS-L4-18: admin-gated economics/cost accounting (token usage rollups; cost honest-null until verified rates; revenue 'not yet'). Dashboard EconomicsTab."
+    },
+    "GET /admin/ops/health": {
+      "status": "admin",
+      "reason": "OPS-L4-18: admin-gated operational health (AI-call latency p50/p95, error/guard-block rate, event-quality, scheduled jobs). Dashboard OpsHealthTab."
+    },
+    "GET /admin/ops/safety-compliance": {
+      "status": "admin",
+      "reason": "OPS-L4-18: admin-gated safety/compliance evidence (REAL guard-fire counts over the fixture corpus, allergy hard-filter indicator, consent posture, INE dry-run state). Dashboard SafetyComplianceTab."
+    },
     "GET /admin/recipes": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
