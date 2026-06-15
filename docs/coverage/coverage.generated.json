@@ -1,0 +1,7549 @@
+{
+  "generatedBy": "tools/coverage/coverage-scan.mjs",
+  "schemaVersion": 1,
+  "doNotEdit": "GENERATED ARTIFACT — overwritten by `pnpm coverage:scan`. Hand-edit coverage.registry.json instead.",
+  "sources": {
+    "schema": "apps/server/prisma/schema.prisma",
+    "serverSrc": "apps/server/src",
+    "appJsx": "apps/web/src/App.jsx",
+    "apiClient": "apps/web/src/lib/apiClient.js",
+    "recipeDetailDir": "apps/web/src/app/recipe/[id]",
+    "eventTaxonomyBackend": "apps/server/src/analytics/event-taxonomy.ts",
+    "eventTaxonomyFrontend": "apps/web/src/lib/eventTaxonomy.js"
+  },
+  "counts": {
+    "models": 52,
+    "recipeScalarFields": 27,
+    "recipeRelations": 10,
+    "recipeTotalFields": 37,
+    "endpoints": 91,
+    "internalEndpoints": 9,
+    "controllers": 19,
+    "routes": 17,
+    "protectedRoutes": 11,
+    "frontendCallSites": 67,
+    "backendEvents": 117,
+    "frontendEvents": 116
+  },
+  "models": [
+    {
+      "name": "AICallLog",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "eventId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "conversationId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "surface",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "model",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "provider",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "latencyMs",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "estimatedInputTokens",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "estimatedOutputTokens",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "estimatedCost",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "totalTokens",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "usageSource",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "costIsEstimated",
+          "type": "Boolean",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "currency",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "costSchemaVersion",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "guardHits",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "toolCalls",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "metadata",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorCode",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "errorMessage",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "AiSpendAlert",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "thresholdType",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "thresholdValue",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "observedValue",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "provider",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "model",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dayUtc",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "severity",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "metadata",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "Allergy",
+      "dbName": "allergies",
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "users",
+          "type": "UserAllergy",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ChatMessage",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "conversationId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "role",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "content",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contentSafetyStatus",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "model",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "aiCallLogId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ConsentLog",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "purpose",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "granted",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "ip",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "Cuisine",
+      "dbName": "cuisines",
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "users",
+          "type": "UserCuisine",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "DataAccessLog",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "resource",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "details",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "ip",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "accessedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "ErasureEvent",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "subjectHash",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "reason",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "metadata",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "Experiment",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "variantA",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "variantB",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isActive",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "assignments",
+          "type": "ExperimentAssignment",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ExperimentAssignment",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "experimentId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "variant",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "experiment",
+          "type": "Experiment",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "FavoriteRecipe",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "addedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "FeatureContributionLog",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "featureKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "contribution",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "finalScore",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "HealthGoal",
+      "dbName": "health_goals",
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "users",
+          "type": "UserHealthGoal",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "Ingredient",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "code",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "version",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "batch",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "nameFa",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "nameEn",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "subCategory",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "ingredientState",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dietFlags",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "allergens",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "nutritionPer100g",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "nutritionConfidence",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tasteProfile",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "textureProfile",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "cookingBehavior",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "healthContext",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "substitutionOptions",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "media",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "aiContext",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "marketAvailability",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "cuisineRelevance",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dataQuality",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeInputAliases",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "resolverDefaults",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "raw",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "recipeIngredients",
+          "type": "RecipeIngredient",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "MealPlan",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "weekStart",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "slots",
+          "type": "MealSlot",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "MealSlot",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "mealPlanId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dayOfWeek",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "mealType",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "mealPlan",
+          "type": "MealPlan",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "body",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isRead",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "data",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "Nutrition",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "calories",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "protein",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "carbs",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "fat",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "fiber",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "PreferenceHistory",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "fieldName",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "oldValue",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "newValue",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "changedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "Recipe",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "region",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "difficulty",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "cookingTime",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "servings",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "imageUrl",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "videoUrl",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "authorId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isPublic",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "adminNote",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "prepTime",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "totalTime",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "tools",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "tips",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "faq",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "mealType",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "diet",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "categories",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "allergens",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "occasion",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "cost",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "author",
+          "type": "User",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "ingredients",
+          "type": "RecipeIngredient",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "steps",
+          "type": "RecipeStep",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "nutrition",
+          "type": "Nutrition",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "searchTerms",
+          "type": "SearchTerm",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "favoriteBy",
+          "type": "FavoriteRecipe",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "mealSlots",
+          "type": "MealSlot",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "recommendationExposures",
+          "type": "RecommendationExposure",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "featureContributionLogs",
+          "type": "FeatureContributionLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "recommendationAttributionEvents",
+          "type": "RecommendationAttributionEvent",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "RecipeIngredient",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "ingredientId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "amount",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "unit",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "notes",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "order",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "ingredient",
+          "type": "Ingredient",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "RecipeStep",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "instruction",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "duration",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "imageUrl",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "order",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "RecommendationAttributionEvent",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "eventType",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "source",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "occurredAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "RecommendationExposure",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "source",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "viewedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "scorePenalty",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "RecommendationMetrics",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "metricDate",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "windowDays",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalImpressions",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalClicks",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalSaves",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalCooks",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalDismisses",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "totalExposures",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "clickThroughRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "saveRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "cookRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "frictionRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recommendationQuality",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recommendationReward",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "topSignals",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "topFeatures",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "RecommendationShadowTrace",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "requestId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "experimentKey",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "liveFingerprint",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "shadowFingerprint",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "topKOverlap",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "rankShiftCount",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "majorDivergence",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "reasonCodes",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "summary",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "SearchTerm",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recipeId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "term",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "recipe",
+          "type": "Recipe",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ShoppingItem",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "shoppingListId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "amount",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "unit",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isChecked",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "addedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "shoppingList",
+          "type": "ShoppingList",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "ShoppingList",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "items",
+          "type": "ShoppingItem",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "SignalObservation",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "signalName",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "eventId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "weight",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "observedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "event",
+          "type": "UserEvent",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "SupportTicket",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "subject",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "priority",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "replies",
+          "type": "TicketReply",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "TicketReply",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "ticketId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isStaff",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "ticket",
+          "type": "SupportTicket",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "phone",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "avatar",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "isAdmin",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "preferences",
+          "type": "UserPreference",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "recipes",
+          "type": "Recipe",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "favorites",
+          "type": "FavoriteRecipe",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "mealPlans",
+          "type": "MealPlan",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "shoppingList",
+          "type": "ShoppingList",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "notifications",
+          "type": "Notification",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "tickets",
+          "type": "SupportTicket",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "sessions",
+          "type": "UserSession",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "events",
+          "type": "UserEvent",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "recommendationExposures",
+          "type": "RecommendationExposure",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "featureContributionLogs",
+          "type": "FeatureContributionLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "recommendationAttributions",
+          "type": "RecommendationAttributionEvent",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "profile",
+          "type": "UserBehaviorProfile",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "auditLogs",
+          "type": "UserAuditLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "dataAccessLogs",
+          "type": "DataAccessLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "consentLogs",
+          "type": "ConsentLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "preferenceHistories",
+          "type": "PreferenceHistory",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "allergies",
+          "type": "UserAllergy",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "cuisines",
+          "type": "UserCuisine",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "healthGoals",
+          "type": "UserHealthGoal",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "aiCallLogs",
+          "type": "AICallLog",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "chatMessages",
+          "type": "ChatMessage",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "userFacts",
+          "type": "UserFact",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "aiSpendAlerts",
+          "type": "AiSpendAlert",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "featureVector",
+          "type": "UserFeatureVector",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "features",
+          "type": "UserFeature",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "outcomes",
+          "type": "UserOutcome",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "identityDimensions",
+          "type": "UserIdentityDimension",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "behaviorTimelines",
+          "type": "UserBehaviorTimeline",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "signalObservations",
+          "type": "SignalObservation",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "behaviorSignals",
+          "type": "UserBehaviorSignal",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "engagementSnapshot",
+          "type": "UserEngagementSnapshot",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "healthSnapshot",
+          "type": "UserHealthSnapshot",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "identitySnapshot",
+          "type": "UserIdentitySnapshot",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "retentionSnapshot",
+          "type": "UserRetentionSnapshot",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "experimentAssignments",
+          "type": "ExperimentAssignment",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "erasureEvents",
+          "type": "ErasureEvent",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserAllergy",
+      "dbName": "user_allergies",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "allergyId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "allergy",
+          "type": "Allergy",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserAuditLog",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "action",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "details",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "ip",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "userAgent",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
+        }
+      ]
+    },
+    {
+      "name": "UserBehaviorProfile",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "favoriteFoods",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "dislikedFoods",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "budgetRange",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "shoppingPattern",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "mealTiming",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "cookingSkill",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "healthGoals",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "motivationStyle",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "consistencyScore",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "churnRiskScore",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "familySize",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "favoriteIngredients",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "dislikedIngredients",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "preferredMealTimes",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "weeklyPatterns",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "cookingFrequency",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "budgetScore",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "healthAdherenceScore",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserBehaviorSignal",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "signalName",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "signalDomain",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "signalType",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "confidence",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "sampleSize",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "consistency",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "halfLifeDays",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "lastDetected",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserBehaviorTimeline",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dimensionKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recordedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserCuisine",
+      "dbName": "user_cuisines",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "cuisineId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "cuisine",
+          "type": "Cuisine",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserEngagementSnapshot",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "avgSessionDuration",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "avgTimeBetweenSessions",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "daysSinceLastMealPlan",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "activeDaysLast30",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserEvent",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "timestamp",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "sessionId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "page",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "duration",
+          "type": "Int",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "payload",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "enrichment",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "session",
+          "type": "UserSession",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "signalObservations",
+          "type": "SignalObservation",
+          "list": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserFact",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "key",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "source",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "confidence",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "expiresAt",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserFeature",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "featureKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserFeatureVector",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "features",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "version",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserHealthGoal",
+      "dbName": "user_health_goals",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "healthGoalId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "healthGoal",
+          "type": "HealthGoal",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserHealthSnapshot",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "mealPlanCompletionRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "goalCompletionRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "nutritionViewFrequency",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "hasActiveHealthGoal",
+          "type": "Boolean",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserIdentityDimension",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "dimensionKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "value",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "confidence",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "evidenceCount",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "lastEvidenceAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserIdentitySnapshot",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recipeSaveRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "recipeCookRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "shoppingCompletionRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "aiAcceptanceRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "aiDismissRate",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserOutcome",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "metricName",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "baselineValue",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "metricValue",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "improvementPercent",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "trend",
+          "type": "Float",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "period",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "sources",
+          "type": "Json",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "recordedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserPreference",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "diet",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "skillLevel",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "budget",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserRetentionSnapshot",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "daysSinceLastActive",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "sessionTrend",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "engagementTrend",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "retentionScore",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "churnRisk",
+          "type": "Float",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "UserSession",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "startTime",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "endTime",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "device",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "ip",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        },
+        {
+          "name": "events",
+          "type": "UserEvent",
+          "list": true,
+          "optional": false
+        }
+      ]
+    }
+  ],
+  "recipeRenderedFields": {
+    "scope": "apps/web/src/app/recipe/[id]",
+    "scannedFiles": [
+      "apps/web/src/app/recipe/[id]/components/FaqSection.jsx",
+      "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
+      "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
+      "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
+      "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
+      "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
+      "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
+      "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
+      "apps/web/src/app/recipe/[id]/components/ToolsSection.jsx",
+      "apps/web/src/app/recipe/[id]/components/helpers.js",
+      "apps/web/src/app/recipe/[id]/page.jsx"
+    ],
+    "fields": [
+      {
+        "field": "adminNote",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "allergens",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
+        ]
+      },
+      {
+        "field": "author",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "authorId",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "categories",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "category",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx"
+        ]
+      },
+      {
+        "field": "cookingTime",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
+        ]
+      },
+      {
+        "field": "cost",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
+          "apps/web/src/app/recipe/[id]/components/helpers.js"
+        ]
+      },
+      {
+        "field": "createdAt",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "description",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "diet",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
+        ]
+      },
+      {
+        "field": "difficulty",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
+        ]
+      },
+      {
+        "field": "faq",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FaqSection.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "id",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
+          "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
+          "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
+          "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
+          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "imageUrl",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "isPublic",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "mealType",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
+        ]
+      },
+      {
+        "field": "occasion",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
+        ]
+      },
+      {
+        "field": "prepTime",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
+        ]
+      },
+      {
+        "field": "region",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
+          "apps/web/src/app/recipe/[id]/components/helpers.js"
+        ]
+      },
+      {
+        "field": "servings",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
+        ]
+      },
+      {
+        "field": "status",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "tips",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "title",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
+          "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "tools",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/ToolsSection.jsx",
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
+      },
+      {
+        "field": "totalTime",
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
+        ]
+      },
+      {
+        "field": "updatedAt",
+        "rendered": false,
+        "files": []
+      },
+      {
+        "field": "videoUrl",
+        "rendered": false,
+        "files": []
+      }
+    ]
+  },
+  "endpoints": [
+    {
+      "id": "GET /admin/analytics/ai-interaction",
+      "verb": "GET",
+      "path": "/admin/analytics/ai-interaction",
+      "controller": "AdminController",
+      "handler": "getAIInteractionStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/behavior-profiles",
+      "verb": "GET",
+      "path": "/admin/analytics/behavior-profiles",
+      "controller": "AdminController",
+      "handler": "getBehaviorProfiles",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/events",
+      "verb": "GET",
+      "path": "/admin/analytics/events",
+      "controller": "AdminController",
+      "handler": "getRecentEvents",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/meal-planning",
+      "verb": "GET",
+      "path": "/admin/analytics/meal-planning",
+      "controller": "AdminController",
+      "handler": "getMealPlanningStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/page-views",
+      "verb": "GET",
+      "path": "/admin/analytics/page-views",
+      "controller": "AdminController",
+      "handler": "getPageViewStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/recipes-stats",
+      "verb": "GET",
+      "path": "/admin/analytics/recipes-stats",
+      "controller": "AdminController",
+      "handler": "getRecipeStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/search-queries",
+      "verb": "GET",
+      "path": "/admin/analytics/search-queries",
+      "controller": "AdminController",
+      "handler": "getTopSearchQueries",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/shopping",
+      "verb": "GET",
+      "path": "/admin/analytics/shopping",
+      "controller": "AdminController",
+      "handler": "getShoppingAnalytics",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/stats",
+      "verb": "GET",
+      "path": "/admin/analytics/stats",
+      "controller": "AdminController",
+      "handler": "getAnalyticsStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/system-health",
+      "verb": "GET",
+      "path": "/admin/analytics/system-health",
+      "controller": "AdminController",
+      "handler": "getSystemHealth",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/analytics/user-stats",
+      "verb": "GET",
+      "path": "/admin/analytics/user-stats",
+      "controller": "AdminController",
+      "handler": "getUserStats",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/dashboard",
+      "verb": "GET",
+      "path": "/admin/dashboard",
+      "controller": "AdminController",
+      "handler": "getDashboard",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/recipes",
+      "verb": "GET",
+      "path": "/admin/recipes",
+      "controller": "AdminController",
+      "handler": "getRecipes",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /admin/recipes/:id/approve",
+      "verb": "PATCH",
+      "path": "/admin/recipes/:id/approve",
+      "controller": "AdminController",
+      "handler": "approveRecipe",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "PATCH /admin/recipes/:id/reject",
+      "verb": "PATCH",
+      "path": "/admin/recipes/:id/reject",
+      "controller": "AdminController",
+      "handler": "rejectRecipe",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /admin/tickets",
+      "verb": "GET",
+      "path": "/admin/tickets",
+      "controller": "AdminController",
+      "handler": "getTickets",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /admin/tickets/:id/respond",
+      "verb": "POST",
+      "path": "/admin/tickets/:id/respond",
+      "controller": "AdminController",
+      "handler": "respondToTicket",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /admin/tickets/:id/status",
+      "verb": "PATCH",
+      "path": "/admin/tickets/:id/status",
+      "controller": "AdminController",
+      "handler": "updateTicketStatus",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /admin/users",
+      "verb": "GET",
+      "path": "/admin/users",
+      "controller": "AdminController",
+      "handler": "getUsers",
+      "file": "apps/server/src/admin/admin.controller.ts",
+      "controllerBasePath": "/admin",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /ai/chat",
+      "verb": "POST",
+      "path": "/ai/chat",
+      "controller": "AiController",
+      "handler": "chat",
+      "file": "apps/server/src/ai/ai.controller.ts",
+      "controllerBasePath": "/ai",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /analytics/event",
+      "verb": "POST",
+      "path": "/analytics/event",
+      "controller": "AnalyticsController",
+      "handler": "trackEvent",
+      "file": "apps/server/src/analytics/analytics.controller.ts",
+      "controllerBasePath": "/analytics",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /attribution",
+      "verb": "GET",
+      "path": "/attribution",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getAttribution",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /auth/login",
+      "verb": "POST",
+      "path": "/auth/login",
+      "controller": "AuthController",
+      "handler": "login",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [
+        "ThrottlerGuard"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "throttler",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /auth/register",
+      "verb": "POST",
+      "path": "/auth/register",
+      "controller": "AuthController",
+      "handler": "register",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [
+        "ThrottlerGuard"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "throttler",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /exposure-memory",
+      "verb": "GET",
+      "path": "/exposure-memory",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getExposureMemory",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /favorites",
+      "verb": "GET",
+      "path": "/favorites",
+      "controller": "FavoritesController",
+      "handler": "findAll",
+      "file": "apps/server/src/favorites/favorites.controller.ts",
+      "controllerBasePath": "/favorites",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "DELETE /favorites/:recipeId",
+      "verb": "DELETE",
+      "path": "/favorites/:recipeId",
+      "controller": "FavoritesController",
+      "handler": "remove",
+      "file": "apps/server/src/favorites/favorites.controller.ts",
+      "controllerBasePath": "/favorites",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /favorites/:recipeId",
+      "verb": "POST",
+      "path": "/favorites/:recipeId",
+      "controller": "FavoritesController",
+      "handler": "add",
+      "file": "apps/server/src/favorites/favorites.controller.ts",
+      "controllerBasePath": "/favorites",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /feature-importance",
+      "verb": "GET",
+      "path": "/feature-importance",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getFeatureImportance",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /feature-vector",
+      "verb": "GET",
+      "path": "/feature-vector",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getFeatureVector",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /governance",
+      "verb": "GET",
+      "path": "/governance",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getGovernance",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /internal/recommendation-shadow/activation-review/dry-run",
+      "verb": "POST",
+      "path": "/internal/recommendation-shadow/activation-review/dry-run",
+      "controller": "RecommendationActivationReviewController",
+      "handler": "dryRun",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/activation-review/recommendation-activation-review-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/activation-review",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /internal/recommendation-shadow/activation-review/summary",
+      "verb": "GET",
+      "path": "/internal/recommendation-shadow/activation-review/summary",
+      "controller": "RecommendationActivationReviewController",
+      "handler": "summary",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/activation-review/recommendation-activation-review-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/activation-review",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /internal/recommendation-shadow/control-plane/summary",
+      "verb": "GET",
+      "path": "/internal/recommendation-shadow/control-plane/summary",
+      "controller": "RecommendationShadowControlPlaneController",
+      "handler": "summary",
+      "file": "apps/server/src/recommendation/runtime-shadow/control-plane/recommendation-shadow-control-plane-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/control-plane",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /internal/recommendation-shadow/experiment-execution/run",
+      "verb": "POST",
+      "path": "/internal/recommendation-shadow/experiment-execution/run",
+      "controller": "RecommendationExperimentExecutionController",
+      "handler": "run",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/execution/recommendation-experiment-execution-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/experiment-execution",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /internal/recommendation-shadow/experiment-execution/summary",
+      "verb": "GET",
+      "path": "/internal/recommendation-shadow/experiment-execution/summary",
+      "controller": "RecommendationExperimentExecutionController",
+      "handler": "summary",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/execution/recommendation-experiment-execution-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/experiment-execution",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /internal/recommendation-shadow/founder-review/evidence-pack",
+      "verb": "POST",
+      "path": "/internal/recommendation-shadow/founder-review/evidence-pack",
+      "controller": "RecommendationFounderReviewController",
+      "handler": "evidencePack",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/founder-review/recommendation-founder-review-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/founder-review",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /internal/recommendation-shadow/founder-review/summary",
+      "verb": "GET",
+      "path": "/internal/recommendation-shadow/founder-review/summary",
+      "controller": "RecommendationFounderReviewController",
+      "handler": "summary",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/founder-review/recommendation-founder-review-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/founder-review",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /internal/recommendation-shadow/lab/run",
+      "verb": "POST",
+      "path": "/internal/recommendation-shadow/lab/run",
+      "controller": "RecommendationLabController",
+      "handler": "run",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/recommendation-lab-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/lab",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /internal/recommendation-shadow/lab/summary",
+      "verb": "GET",
+      "path": "/internal/recommendation-shadow/lab/summary",
+      "controller": "RecommendationLabController",
+      "handler": "summary",
+      "file": "apps/server/src/recommendation/runtime-shadow/lab/recommendation-lab-controller.ts",
+      "controllerBasePath": "/internal/recommendation-shadow/lab",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": true,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /lifestyle",
+      "verb": "GET",
+      "path": "/lifestyle",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getLifestyle",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /meal-plans",
+      "verb": "GET",
+      "path": "/meal-plans",
+      "controller": "MealPlansController",
+      "handler": "getCurrentPlan",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /meal-plans",
+      "verb": "POST",
+      "path": "/meal-plans",
+      "controller": "MealPlansController",
+      "handler": "savePlan",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /meal-plans/generate",
+      "verb": "POST",
+      "path": "/meal-plans/generate",
+      "controller": "MealPlansController",
+      "handler": "generatePlan",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /meal-plans/slots",
+      "verb": "POST",
+      "path": "/meal-plans/slots",
+      "controller": "MealPlansController",
+      "handler": "addMealSlot",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "DELETE /meal-plans/slots/:dayOfWeek/:mealType",
+      "verb": "DELETE",
+      "path": "/meal-plans/slots/:dayOfWeek/:mealType",
+      "controller": "MealPlansController",
+      "handler": "removeMealSlot",
+      "file": "apps/server/src/meal-plans/meal-plans.controller.ts",
+      "controllerBasePath": "/meal-plans",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /metrics",
+      "verb": "GET",
+      "path": "/metrics",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getMetrics",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /notifications",
+      "verb": "GET",
+      "path": "/notifications",
+      "controller": "NotificationsController",
+      "handler": "findAll",
+      "file": "apps/server/src/notifications/notifications.controller.ts",
+      "controllerBasePath": "/notifications",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "DELETE /notifications/:id",
+      "verb": "DELETE",
+      "path": "/notifications/:id",
+      "controller": "NotificationsController",
+      "handler": "remove",
+      "file": "apps/server/src/notifications/notifications.controller.ts",
+      "controllerBasePath": "/notifications",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /notifications/:id/read",
+      "verb": "PATCH",
+      "path": "/notifications/:id/read",
+      "controller": "NotificationsController",
+      "handler": "markAsRead",
+      "file": "apps/server/src/notifications/notifications.controller.ts",
+      "controllerBasePath": "/notifications",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /notifications/generate",
+      "verb": "POST",
+      "path": "/notifications/generate",
+      "controller": "NotificationsController",
+      "handler": "generate",
+      "file": "apps/server/src/notifications/notifications.controller.ts",
+      "controllerBasePath": "/notifications",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /outcomes",
+      "verb": "GET",
+      "path": "/outcomes",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getOutcomes",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recipes",
+      "verb": "GET",
+      "path": "/recipes",
+      "controller": "RecipesController",
+      "handler": "findAll",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /recipes",
+      "verb": "POST",
+      "path": "/recipes",
+      "controller": "RecipesController",
+      "handler": "create",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /recipes/:id",
+      "verb": "GET",
+      "path": "/recipes/:id",
+      "controller": "RecipesController",
+      "handler": "findOne",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /recipes/:id",
+      "verb": "PATCH",
+      "path": "/recipes/:id",
+      "controller": "RecipesController",
+      "handler": "update",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recipes/my",
+      "verb": "GET",
+      "path": "/recipes/my",
+      "controller": "RecipesController",
+      "handler": "getMyRecipes",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /recipes/search",
+      "verb": "GET",
+      "path": "/recipes/search",
+      "controller": "RecipesController",
+      "handler": "search",
+      "file": "apps/server/src/recipes/recipes.controller.ts",
+      "controllerBasePath": "/recipes",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /recommendation-quality",
+      "verb": "GET",
+      "path": "/recommendation-quality",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getRecommendationQuality",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendation-reward",
+      "verb": "GET",
+      "path": "/recommendation-reward",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getRecommendationReward",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendations",
+      "verb": "GET",
+      "path": "/recommendations",
+      "controller": "RecommendationController",
+      "handler": "getRecommendations",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /recommendations/build-identity",
+      "verb": "POST",
+      "path": "/recommendations/build-identity",
+      "controller": "RecommendationController",
+      "handler": "buildIdentity",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /recommendations/build-snapshots",
+      "verb": "POST",
+      "path": "/recommendations/build-snapshots",
+      "controller": "RecommendationController",
+      "handler": "buildSnapshots",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendations/compare",
+      "verb": "GET",
+      "path": "/recommendations/compare",
+      "controller": "RecommendationController",
+      "handler": "compareScenarios",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /recommendations/debug-features",
+      "verb": "GET",
+      "path": "/recommendations/debug-features",
+      "controller": "RecommendationController",
+      "handler": "debugFeatures",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendations/embedding/:recipeId",
+      "verb": "GET",
+      "path": "/recommendations/embedding/:recipeId",
+      "controller": "RecommendationController",
+      "handler": "getEmbedding",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /recommendations/impression",
+      "verb": "POST",
+      "path": "/recommendations/impression",
+      "controller": "RecommendationController",
+      "handler": "trackImpression",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendations/lifestyle",
+      "verb": "GET",
+      "path": "/recommendations/lifestyle",
+      "controller": "RecommendationController",
+      "handler": "getLifestyle",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "POST /recommendations/run-signal-detector",
+      "verb": "POST",
+      "path": "/recommendations/run-signal-detector",
+      "controller": "RecommendationController",
+      "handler": "runSignalDetector",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /recommendations/test-penalty/:recipeId",
+      "verb": "GET",
+      "path": "/recommendations/test-penalty/:recipeId",
+      "controller": "RecommendationController",
+      "handler": "testPenalty",
+      "file": "apps/server/src/recommendation/recommendation.controller.ts",
+      "controllerBasePath": "/recommendations",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /report",
+      "verb": "GET",
+      "path": "/report",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getReport",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /review-report",
+      "verb": "GET",
+      "path": "/review-report",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getReviewReport",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /shopping-list",
+      "verb": "GET",
+      "path": "/shopping-list",
+      "controller": "ShoppingListController",
+      "handler": "getList",
+      "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
+      "controllerBasePath": "/shopping-list",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /shopping-list/items",
+      "verb": "POST",
+      "path": "/shopping-list/items",
+      "controller": "ShoppingListController",
+      "handler": "addItems",
+      "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
+      "controllerBasePath": "/shopping-list",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "DELETE /shopping-list/items/:id",
+      "verb": "DELETE",
+      "path": "/shopping-list/items/:id",
+      "controller": "ShoppingListController",
+      "handler": "removeItem",
+      "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
+      "controllerBasePath": "/shopping-list",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /shopping-list/items/:id",
+      "verb": "PATCH",
+      "path": "/shopping-list/items/:id",
+      "controller": "ShoppingListController",
+      "handler": "toggleItem",
+      "file": "apps/server/src/shopping-list/shopping-list.controller.ts",
+      "controllerBasePath": "/shopping-list",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /signals",
+      "verb": "GET",
+      "path": "/signals",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getSignals",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /summary",
+      "verb": "GET",
+      "path": "/summary",
+      "controller": "RecommendationDiagnosticsController",
+      "handler": "getSummary",
+      "file": "apps/server/src/recommendation/diagnostics.controller.ts",
+      "controllerBasePath": "/",
+      "guards": [
+        "AuthGuard('jwt')",
+        "RolesGuard",
+        "AuthGuard('jwt')"
+      ],
+      "roles": [
+        "admin"
+      ],
+      "public": false,
+      "auth": "jwt+roles(admin)",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /support/tickets",
+      "verb": "GET",
+      "path": "/support/tickets",
+      "controller": "SupportController",
+      "handler": "getTickets",
+      "file": "apps/server/src/support/support.controller.ts",
+      "controllerBasePath": "/support",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /support/tickets",
+      "verb": "POST",
+      "path": "/support/tickets",
+      "controller": "SupportController",
+      "handler": "createTicket",
+      "file": "apps/server/src/support/support.controller.ts",
+      "controllerBasePath": "/support",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /support/tickets/:id",
+      "verb": "GET",
+      "path": "/support/tickets/:id",
+      "controller": "SupportController",
+      "handler": "getTicket",
+      "file": "apps/server/src/support/support.controller.ts",
+      "controllerBasePath": "/support",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "PATCH /support/tickets/:id/close",
+      "verb": "PATCH",
+      "path": "/support/tickets/:id/close",
+      "controller": "SupportController",
+      "handler": "closeTicket",
+      "file": "apps/server/src/support/support.controller.ts",
+      "controllerBasePath": "/support",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /support/tickets/:id/replies",
+      "verb": "POST",
+      "path": "/support/tickets/:id/replies",
+      "controller": "SupportController",
+      "handler": "addReply",
+      "file": "apps/server/src/support/support.controller.ts",
+      "controllerBasePath": "/support",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /upload/avatar",
+      "verb": "POST",
+      "path": "/upload/avatar",
+      "controller": "UploadController",
+      "handler": "uploadAvatar",
+      "file": "apps/server/src/users/upload.controller.ts",
+      "controllerBasePath": "/upload",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /users/consent",
+      "verb": "POST",
+      "path": "/users/consent",
+      "controller": "UsersController",
+      "handler": "grantConsent",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "DELETE /users/me",
+      "verb": "DELETE",
+      "path": "/users/me",
+      "controller": "UsersController",
+      "handler": "deleteAccount",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /users/me",
+      "verb": "GET",
+      "path": "/users/me",
+      "controller": "UsersController",
+      "handler": "getProfile",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /users/me",
+      "verb": "PATCH",
+      "path": "/users/me",
+      "controller": "UsersController",
+      "handler": "updateProfile",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /users/me/export",
+      "verb": "GET",
+      "path": "/users/me/export",
+      "controller": "UsersController",
+      "handler": "exportMe",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": false
+    },
+    {
+      "id": "GET /users/preferences",
+      "verb": "GET",
+      "path": "/users/preferences",
+      "controller": "UsersController",
+      "handler": "getPreferences",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PUT /users/preferences",
+      "verb": "PUT",
+      "path": "/users/preferences",
+      "controller": "UsersController",
+      "handler": "updatePreferences",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    }
+  ],
+  "routes": [
+    {
+      "path": "(index)",
+      "component": "HomePage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "/",
+      "component": null,
+      "protected": false,
+      "admin": false,
+      "layoutOnly": true
+    },
+    {
+      "path": "add-recipe",
+      "component": "AddRecipePage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "admin",
+      "component": "AdminDashboard",
+      "protected": true,
+      "admin": true,
+      "layoutOnly": false
+    },
+    {
+      "path": "ai-chat",
+      "component": "AIChatPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "auth",
+      "component": "AuthPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "category/:keyword",
+      "component": "CategoryPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "favorites",
+      "component": "FavoritesPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "my-recipes",
+      "component": "MyRecipesPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "notifications",
+      "component": "NotificationsPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "plan",
+      "component": "PlanPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "preferences",
+      "component": "PreferencesPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "profile",
+      "component": "ProfilePage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "recipe/:id",
+      "component": "RecipeDetailPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "recipes",
+      "component": "RecipesPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "shopping-list",
+      "component": "ShoppingListPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "support",
+      "component": "SupportPage",
+      "protected": true,
+      "admin": false,
+      "layoutOnly": false
+    }
+  ],
+  "frontendCalls": [
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/ai-interaction",
+      "normalized": "/admin/analytics/ai-interaction",
+      "file": "apps/web/src/app/admin/components/AITab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/behavior-profiles",
+      "normalized": "/admin/analytics/behavior-profiles",
+      "file": "apps/web/src/app/admin/components/BehaviorTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/behavior-profiles",
+      "normalized": "/admin/analytics/behavior-profiles",
+      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/events?limit=2000&page=1",
+      "normalized": "/admin/analytics/events",
+      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/events?${params.toString()}",
+      "normalized": "/admin/analytics/events",
+      "file": "apps/web/src/app/admin/components/EventsTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/meal-planning",
+      "normalized": "/admin/analytics/meal-planning",
+      "file": "apps/web/src/app/admin/components/MealPlanTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/page-views",
+      "normalized": "/admin/analytics/page-views",
+      "file": "apps/web/src/app/admin/components/PagesTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/recipes-stats",
+      "normalized": "/admin/analytics/recipes-stats",
+      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/search-queries",
+      "normalized": "/admin/analytics/search-queries",
+      "file": "apps/web/src/app/admin/components/SearchTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/shopping",
+      "normalized": "/admin/analytics/shopping",
+      "file": "apps/web/src/app/admin/components/ShoppingTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/stats",
+      "normalized": "/admin/analytics/stats",
+      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/system-health",
+      "normalized": "/admin/analytics/system-health",
+      "file": "apps/web/src/app/admin/components/HealthTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/user-stats",
+      "normalized": "/admin/analytics/user-stats",
+      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/dashboard",
+      "normalized": "/admin/dashboard",
+      "file": "apps/web/src/app/admin/components/DashboardTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/recipes?page=${p}&limit=${LIMIT}",
+      "normalized": "/admin/recipes",
+      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/admin/recipes/${recipeId}/${endpoint}",
+      "normalized": "/admin/recipes/*/*",
+      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/tickets?page=${p}&limit=${LIMIT}",
+      "normalized": "/admin/tickets",
+      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/admin/tickets/${ticketId}/respond",
+      "normalized": "/admin/tickets/*/respond",
+      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/admin/tickets/${ticketId}/status",
+      "normalized": "/admin/tickets/*/status",
+      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/users?page=${page}&limit=${LIMIT}",
+      "normalized": "/admin/users",
+      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/ai/chat",
+      "normalized": "/ai/chat",
+      "file": "apps/web/src/features/ai-chat/services/aiEngine.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/analytics/event",
+      "normalized": "/analytics/event",
+      "file": "apps/web/src/hooks/useAnalytics.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/login",
+      "normalized": "/auth/login",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/register",
+      "normalized": "/auth/register",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/favorites",
+      "normalized": "/favorites",
+      "file": "apps/web/src/hooks/useFavoritesQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/favorites",
+      "normalized": "/favorites",
+      "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/favorites/${recipeId}",
+      "normalized": "/favorites/*",
+      "file": "apps/web/src/hooks/useFavoritesQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/favorites/${recipeId}",
+      "normalized": "/favorites/*",
+      "file": "apps/web/src/hooks/useFavoritesQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/meal-plans",
+      "normalized": "/meal-plans",
+      "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/meal-plans",
+      "normalized": "/meal-plans",
+      "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans",
+      "normalized": "/meal-plans",
+      "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans/generate",
+      "normalized": "/meal-plans/generate",
+      "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans/slots",
+      "normalized": "/meal-plans/slots",
+      "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}",
+      "normalized": "/meal-plans/slots/*/*",
+      "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/notifications",
+      "normalized": "/notifications",
+      "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/notifications/${id}",
+      "normalized": "/notifications/*",
+      "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/notifications/${id}/read",
+      "normalized": "/notifications/*/read",
+      "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/notifications/generate",
+      "normalized": "/notifications/generate",
+      "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes?category=${encodeURIComponent(keyword)}&limit=100",
+      "normalized": "/recipes",
+      "file": "apps/web/src/app/category/[keyword]/page.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes?page=1&limit=200",
+      "normalized": "/recipes",
+      "file": "apps/web/src/app/plan/page.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes?page=${page}&limit=${limit}",
+      "normalized": "/recipes",
+      "file": "apps/web/src/hooks/useRecipes.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/recipes",
+      "normalized": "/recipes",
+      "file": "apps/web/src/features/add-recipe/context/AddRecipeContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/${id}",
+      "normalized": "/recipes/*",
+      "file": "apps/web/src/app/recipe/[id]/page.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/my",
+      "normalized": "/recipes/my",
+      "file": "apps/web/src/features/add-recipe/pages/MyRecipesPage.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/my",
+      "normalized": "/recipes/my",
+      "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/search?q=${encodeURIComponent(value)}&limit=5",
+      "normalized": "/recipes/search",
+      "file": "apps/web/src/app/home/page.jsx",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/recommendations?limit=6",
+      "normalized": "/recommendations",
+      "file": "apps/web/src/app/home/page.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recommendations/compare",
+      "normalized": "/recommendations/compare",
+      "file": "apps/web/src/app/admin/components/IntelligenceTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/report",
+      "normalized": "/report",
+      "file": "apps/web/src/app/admin/components/IntelligenceTab.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/shopping-list",
+      "normalized": "/shopping-list",
+      "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/shopping-list/items",
+      "normalized": "/shopping-list/items",
+      "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/shopping-list/items/${itemId}",
+      "normalized": "/shopping-list/items/*",
+      "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/shopping-list/items/${itemId}",
+      "normalized": "/shopping-list/items/*",
+      "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/support/tickets",
+      "normalized": "/support/tickets",
+      "file": "apps/web/src/hooks/useSupportQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/support/tickets",
+      "normalized": "/support/tickets",
+      "file": "apps/web/src/hooks/useSupportQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/support/tickets/${ticketId}/close",
+      "normalized": "/support/tickets/*/close",
+      "file": "apps/web/src/hooks/useSupportQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/support/tickets/${ticketId}/replies",
+      "normalized": "/support/tickets/*/replies",
+      "file": "apps/web/src/hooks/useSupportQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/upload/avatar",
+      "normalized": "/upload/avatar",
+      "file": "apps/web/src/features/profile/pages/ProfilePage.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/components/ConsentModal.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/components/ConsentModal.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/components/ConsentModal.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/app/admin/page.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/hooks/usePreferencesQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PUT",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/hooks/usePreferencesQuery.js",
+      "dynamic": false
+    }
+  ],
+  "events": {
+    "backendCount": 117,
+    "frontendCount": 116,
+    "bothCount": 116,
+    "both": [
+      "add_recipe_error",
+      "add_recipe_submit",
+      "add_recipe_view",
+      "admin_recipe_approve",
+      "admin_recipe_reject",
+      "admin_tab_change",
+      "admin_ticket_reply",
+      "admin_ticket_status",
+      "admin_view",
+      "ai_chat_button_click",
+      "ai_chat_started",
+      "ai_error",
+      "ai_message_send",
+      "ai_response_dislike",
+      "ai_response_like",
+      "ai_suggestion_generated",
+      "allergy_changed",
+      "allergy_cleared",
+      "avatar_change",
+      "badge_view",
+      "banner_click",
+      "category_click",
+      "category_recipe_click",
+      "category_view",
+      "diet_changed",
+      "excerpt_toggle",
+      "family_member_add",
+      "family_plan_create",
+      "faq_collapse",
+      "faq_expand",
+      "faq_read",
+      "favorite_add",
+      "favorite_remove",
+      "favorite_view",
+      "features_collapse",
+      "features_expand",
+      "features_read",
+      "filter_use",
+      "goal_complete",
+      "home_scroll_to_bottom",
+      "ingredients_collapse",
+      "ingredients_expand",
+      "ingredients_read",
+      "login",
+      "logout",
+      "mealplan_add",
+      "mealplan_clear",
+      "mealplan_generate",
+      "mealplan_remove",
+      "my_recipe_click",
+      "my_recipes_view",
+      "not_interested",
+      "notification_delete",
+      "notification_filter",
+      "notification_generate",
+      "notification_read",
+      "notifications_view",
+      "nutrition_collapse",
+      "nutrition_expand",
+      "nutrition_read",
+      "page_view",
+      "preference_edit_start",
+      "preference_update",
+      "profile_edit",
+      "profile_navigate",
+      "profile_view",
+      "quick_exit",
+      "recipe_scroll_to_bottom",
+      "recipe_share",
+      "recipe_skip",
+      "recipe_view",
+      "recommendation_click",
+      "recommendation_cook",
+      "recommendation_dismiss",
+      "recommendation_ignore",
+      "recommendation_impression",
+      "recommendation_save",
+      "register",
+      "search_query",
+      "search_result_click",
+      "session_end",
+      "session_start",
+      "shopping_add_from_fav",
+      "shopping_add_from_plan",
+      "shopping_add_manual",
+      "shopping_item_add",
+      "shopping_item_remove",
+      "shopping_item_toggle",
+      "shopping_remove",
+      "shopping_toggle",
+      "skill_changed",
+      "start_cooking_click",
+      "steps_collapse",
+      "steps_expand",
+      "steps_read",
+      "streak_update",
+      "support_contact_click",
+      "support_ticket_close",
+      "support_ticket_create",
+      "ticket_close",
+      "ticket_create",
+      "ticket_reply",
+      "timing_collapse",
+      "timing_expand",
+      "timing_read",
+      "tips_collapse",
+      "tips_expand",
+      "tips_read",
+      "today_special_click",
+      "tools_collapse",
+      "tools_expand",
+      "tools_read",
+      "view_all_recipes_click",
+      "voice_search_error",
+      "voice_search_start",
+      "voice_search_success"
+    ],
+    "backendOnly": [
+      "resolve_miss"
+    ],
+    "frontendOnly": []
+  }
+}

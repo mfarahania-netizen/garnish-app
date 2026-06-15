@@ -17,10 +17,13 @@
 | D10 | 2026-06-13 | Native mobile | Native now vs. PWA-first | PWA-OS now; Expo/RN decision months 6–12 | mobile-first founder, API-first ready | EL | Spike + PWA retention evidence |
 | D11 | 2026-06-15 | **Constitution Amendment 2 (PROPOSED — pending founder ratification)** | Continue building recommendation A-layers vs. freeze + raise quality bar + correct drift | **Proposed:** (A2.1) adopt an **L4 quality bar** (technical pass ≠ acceptance; visual/product bar governs UI); (A2.2) **freeze the recommendation stack at A14** (no new `runtime-shadow` A-layer; default-OFF; no live ranking/response change); (A2.3) **remove fake/junk** (fake voice input, localStorage "personalization"); (A2.4) the **approved visual direction is the UI unblock**. Re-aligns work onto the Constitution W1–W26 plan. | Drift: an over-built internal recommendation experimentation stack vs. the ~6-month launch plan; honesty + L4 quality | F | **Founder ratification** (then supersede this row with the ratified Amendment 2 doc in `docs/execution/`) |
 
+| D12 | 2026-06-15 | Coverage gate is standing release discipline | (a) keep coverage manual/ad-hoc; (b) generated-from-code matrix + **blocking** CI gate; (c) generate but non-blocking | **(b)** generated backend↔frontend↔design coverage matrix + **blocking** `pnpm coverage:check` in CI (UNREGISTERED + UNMAPPED fail). **Every future feature sprint must end with `pnpm coverage:check` green** — moving entries from `must-render`/`deferred:` → `frontend:<ref>` as they get surfaced. | Humans can't track 91 endpoints × 37 Recipe fields; the audit proved capabilities get silently dropped (`recipe.author`/`categories`/`videoUrl`). Generated-from-code + blocking makes drift impossible to merge silently. | EL/F | Gate proves noisy/brittle (false blocks) → revisit thresholds, not the principle (GARNISH-COVERAGE-03) |
+
 ## How to use
 - Append a new row for any decision that closes a real fork; never edit a decided row — supersede it with a new dated row referencing the old `Decision ID`.
 - Operational/security events (e.g. key rotation date for E1) are logged here too.
 - File-Closing Rule: requests outside the 5 allowed triggers are rejected and recorded here.
 
 ## Change history
+- 2026-06-15 — **D12 added (GARNISH-COVERAGE-03):** the backend↔frontend↔design coverage gate is a standing, blocking release discipline; every future feature sprint must end with `pnpm coverage:check` green. See `docs/execution/GARNISH_COVERAGE_03_REPORT.md`.
 - 2026-06-13 — Seeded with 10 initial decisions per A1.5.

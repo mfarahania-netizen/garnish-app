@@ -1,0 +1,471 @@
+{
+  "$schema": "coverage.registry — HAND-MAINTAINED. The ONLY hand-edited coverage file.",
+  "$docs": "See docs/execution/GARNISH_COVERAGE_03_REPORT.md. Each entry is a deliberate decision with a one-line reason.",
+  "policy": {
+    "trackedFieldEntities": [
+      "Recipe"
+    ],
+    "statusGrammar": {
+      "frontend:<route/component>": "Must surface on the frontend AND is verified mapped (route/call) or rendered (Recipe detail heuristic). Losing the mapping BLOCKS.",
+      "must-render": "Belongs on the frontend but is NOT yet surfaced — acknowledged debt. Non-blocking; surfaced in the gap report.",
+      "internal": "Never user-facing (FKs, internal flags, dev probes, shadow/governance internals).",
+      "admin": "Admin-only surface (admin dashboard / RolesGuard).",
+      "deferred:<epic/reason>": "Intentionally postponed to a named epic. Non-blocking; surfaced in the gap report."
+    },
+    "gate": {
+      "UNREGISTERED": "block",
+      "UNMAPPED": "block",
+      "ORPHAN_ENDPOINT": "warn",
+      "ORPHAN_EVENT": "warn"
+    },
+    "notes": [
+      "Field-level coverage is enforced for trackedFieldEntities (Recipe). Other models are tracked at the model level, not field level.",
+      "Endpoints under the internal/ path prefix are auto-classified internal and need no explicit entry.",
+      "A frontend:recipe-detail/* field is verified via the (heuristic) detail-page render scan. A frontend:* field on another surface (e.g. recipe-card) is treated as mapped-but-unverified (the heuristic only scans the detail page)."
+    ]
+  },
+  "fields": {
+    "Recipe.adminNote": {
+      "status": "admin",
+      "reason": "Admin moderation note; never user-facing."
+    },
+    "Recipe.allergens": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Allergen badges in the features card."
+    },
+    "Recipe.author": {
+      "status": "must-render",
+      "reason": "DROPPED: authorship attribution stored but rendered nowhere. Flagged debt — belongs as a recipe-detail byline."
+    },
+    "Recipe.authorId": {
+      "status": "internal",
+      "reason": "Foreign-key column backing the author relation; the author relation is the user-facing concept."
+    },
+    "Recipe.categories": {
+      "status": "must-render",
+      "reason": "DROPPED: secondary category tags stored but rendered nowhere (note: `category` singular IS rendered). Flagged debt."
+    },
+    "Recipe.category": {
+      "status": "frontend:recipe-detail/RecipeHero",
+      "reason": "Primary category badge in the hero."
+    },
+    "Recipe.cookingTime": {
+      "status": "frontend:recipe-detail/TimingCard",
+      "reason": "Cook time in the timing card."
+    },
+    "Recipe.cost": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Cost badge in the features card."
+    },
+    "Recipe.createdAt": {
+      "status": "deferred:E-recipe-metadata",
+      "reason": "System timestamp; could surface as \"added on\" — deferred."
+    },
+    "Recipe.description": {
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "Shown as the excerpt/summary block."
+    },
+    "Recipe.diet": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Diet badge in the features card."
+    },
+    "Recipe.difficulty": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Difficulty badge in the features card."
+    },
+    "Recipe.faq": {
+      "status": "frontend:recipe-detail/FaqSection",
+      "reason": "FAQ accordion section."
+    },
+    "Recipe.id": {
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "Primary key; drives fetch/favorite/share on the detail page."
+    },
+    "Recipe.imageUrl": {
+      "status": "frontend:recipe-card/RecipeCard",
+      "reason": "Thumbnail on recipe cards/list; the detail hero uses a gradient, so this is not detail-page-verifiable."
+    },
+    "Recipe.isPublic": {
+      "status": "internal",
+      "reason": "Server-side visibility filter; not a rendered field."
+    },
+    "Recipe.mealType": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Meal-type badges in the features card."
+    },
+    "Recipe.occasion": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Occasion badges in the features card."
+    },
+    "Recipe.prepTime": {
+      "status": "frontend:recipe-detail/TimingCard",
+      "reason": "Prep time in the timing card."
+    },
+    "Recipe.region": {
+      "status": "frontend:recipe-detail/FeaturesCard",
+      "reason": "Region badge in the features card."
+    },
+    "Recipe.servings": {
+      "status": "frontend:recipe-detail/TimingCard",
+      "reason": "Servings in the timing card."
+    },
+    "Recipe.status": {
+      "status": "admin",
+      "reason": "Recipe moderation status; admin approval workflow."
+    },
+    "Recipe.tips": {
+      "status": "frontend:recipe-detail/TipsSection",
+      "reason": "Tips accordion section."
+    },
+    "Recipe.title": {
+      "status": "frontend:recipe-detail/RecipeHero",
+      "reason": "Recipe title rendered in the hero."
+    },
+    "Recipe.tools": {
+      "status": "frontend:recipe-detail/ToolsSection",
+      "reason": "Tools accordion section."
+    },
+    "Recipe.totalTime": {
+      "status": "frontend:recipe-detail/TimingCard",
+      "reason": "Total time in the timing card."
+    },
+    "Recipe.updatedAt": {
+      "status": "internal",
+      "reason": "ORM-managed mutation timestamp; not a product surface."
+    },
+    "Recipe.videoUrl": {
+      "status": "deferred:E-recipe-media",
+      "reason": "Stored but rendered NOWHERE — deferred to the recipe media/gallery epic."
+    }
+  },
+  "endpoints": {
+    "DELETE /favorites/:recipeId": {
+      "status": "frontend:favorites/FavoritesPage",
+      "reason": "Favorites surface (also the recipe-detail favorite toggle)."
+    },
+    "DELETE /meal-plans/slots/:dayOfWeek/:mealType": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly meal-plan surface."
+    },
+    "DELETE /notifications/:id": {
+      "status": "frontend:notifications/NotificationsPage",
+      "reason": "Notifications surface."
+    },
+    "DELETE /shopping-list/items/:id": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping-list surface."
+    },
+    "DELETE /users/me": {
+      "status": "deferred:E-gdpr-self-service",
+      "reason": "Account erasure endpoint; self-service delete UI not built."
+    },
+    "GET /admin/analytics/ai-interaction": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/behavior-profiles": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/events": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/meal-planning": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/page-views": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/recipes-stats": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/search-queries": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/shopping": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/stats": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/system-health": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/analytics/user-stats": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/dashboard": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/recipes": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/tickets": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/users": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /attribution": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /exposure-memory": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /favorites": {
+      "status": "frontend:favorites/FavoritesPage",
+      "reason": "Favorites surface (also the recipe-detail favorite toggle)."
+    },
+    "GET /feature-importance": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /feature-vector": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /governance": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /lifestyle": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /meal-plans": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly meal-plan surface."
+    },
+    "GET /metrics": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /notifications": {
+      "status": "frontend:notifications/NotificationsPage",
+      "reason": "Notifications surface."
+    },
+    "GET /outcomes": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /recipes": {
+      "status": "frontend:recipes/RecipesPage",
+      "reason": "Recipe list/browse feed."
+    },
+    "GET /recipes/:id": {
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "Recipe detail fetch."
+    },
+    "GET /recipes/my": {
+      "status": "frontend:my-recipes/MyRecipesPage",
+      "reason": "A user’s own submitted recipes."
+    },
+    "GET /recipes/search": {
+      "status": "frontend:recipes/RecipesPage",
+      "reason": "Recipe search."
+    },
+    "GET /recommendation-quality": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /recommendation-reward": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /recommendations": {
+      "status": "frontend:home/HomePage",
+      "reason": "Personalized recommendations on the home feed."
+    },
+    "GET /recommendations/compare": {
+      "status": "admin",
+      "reason": "Scenario comparison consumed by the admin IntelligenceTab."
+    },
+    "GET /recommendations/debug-features": {
+      "status": "internal",
+      "reason": "Developer diagnostics (placeholder feature values)."
+    },
+    "GET /recommendations/embedding/:recipeId": {
+      "status": "internal",
+      "reason": "Developer diagnostics (placeholder embedding)."
+    },
+    "GET /recommendations/lifestyle": {
+      "status": "deferred:E-recommendation-lifestyle",
+      "reason": "Placeholder; lifestyle graph not yet available."
+    },
+    "GET /recommendations/test-penalty/:recipeId": {
+      "status": "internal",
+      "reason": "Developer diagnostics (exposure-penalty probe)."
+    },
+    "GET /report": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /review-report": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /shopping-list": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping-list surface."
+    },
+    "GET /signals": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /summary": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /support/tickets": {
+      "status": "frontend:support/SupportPage",
+      "reason": "Support tickets surface."
+    },
+    "GET /support/tickets/:id": {
+      "status": "deferred:E-support-ticket-detail",
+      "reason": "Single-ticket detail endpoint; the support UI uses the ticket list + replies, with no dedicated detail view yet."
+    },
+    "GET /users/me": {
+      "status": "frontend:profile/ProfilePage",
+      "reason": "Current-user profile load."
+    },
+    "GET /users/me/export": {
+      "status": "deferred:E-gdpr-self-service",
+      "reason": "Data-export endpoint; self-service export UI not built."
+    },
+    "GET /users/preferences": {
+      "status": "frontend:preferences/PreferencesPage",
+      "reason": "Load preferences."
+    },
+    "PATCH /admin/recipes/:id/approve": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "PATCH /admin/recipes/:id/reject": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "PATCH /admin/tickets/:id/status": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "PATCH /notifications/:id/read": {
+      "status": "frontend:notifications/NotificationsPage",
+      "reason": "Notifications surface."
+    },
+    "PATCH /recipes/:id": {
+      "status": "deferred:E-recipe-edit-ui",
+      "reason": "Edit endpoint exists; no frontend edit UI yet (add-recipe does create only)."
+    },
+    "PATCH /shopping-list/items/:id": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping-list surface."
+    },
+    "PATCH /support/tickets/:id/close": {
+      "status": "frontend:support/SupportPage",
+      "reason": "Support tickets surface."
+    },
+    "PATCH /users/me": {
+      "status": "frontend:profile/ProfilePage",
+      "reason": "Profile edit."
+    },
+    "POST /admin/tickets/:id/respond": {
+      "status": "admin",
+      "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "POST /ai/chat": {
+      "status": "frontend:ai-chat/AIChatPage",
+      "reason": "AI chat surface."
+    },
+    "POST /analytics/event": {
+      "status": "frontend:_global/useAnalytics",
+      "reason": "App-wide analytics event ingestion (useAnalytics hook)."
+    },
+    "POST /auth/login": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Authentication surface (rate-limited)."
+    },
+    "POST /auth/register": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Authentication surface (rate-limited)."
+    },
+    "POST /favorites/:recipeId": {
+      "status": "frontend:favorites/FavoritesPage",
+      "reason": "Favorites surface (also the recipe-detail favorite toggle)."
+    },
+    "POST /meal-plans": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly meal-plan surface."
+    },
+    "POST /meal-plans/generate": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly meal-plan surface."
+    },
+    "POST /meal-plans/slots": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly meal-plan surface."
+    },
+    "POST /notifications/generate": {
+      "status": "frontend:notifications/NotificationsPage",
+      "reason": "Notifications surface."
+    },
+    "POST /recipes": {
+      "status": "frontend:add-recipe/AddRecipePage",
+      "reason": "Create a recipe."
+    },
+    "POST /recommendations/build-identity": {
+      "status": "admin",
+      "reason": "Admin maintenance trigger (identity builder)."
+    },
+    "POST /recommendations/build-snapshots": {
+      "status": "admin",
+      "reason": "Admin maintenance trigger (snapshot builder)."
+    },
+    "POST /recommendations/impression": {
+      "status": "deferred:E-recommendation-impression-api",
+      "reason": "Frontend currently emits impressions via the analytics event pipeline (trackEvent), not this dedicated endpoint."
+    },
+    "POST /recommendations/run-signal-detector": {
+      "status": "admin",
+      "reason": "Admin maintenance trigger (signal detector)."
+    },
+    "POST /shopping-list/items": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping-list surface."
+    },
+    "POST /support/tickets": {
+      "status": "frontend:support/SupportPage",
+      "reason": "Support tickets surface."
+    },
+    "POST /support/tickets/:id/replies": {
+      "status": "frontend:support/SupportPage",
+      "reason": "Support tickets surface."
+    },
+    "POST /upload/avatar": {
+      "status": "frontend:profile/ProfilePage",
+      "reason": "Avatar upload from the profile page."
+    },
+    "POST /users/consent": {
+      "status": "frontend:_global/ConsentModal",
+      "reason": "Analytics consent capture."
+    },
+    "PUT /users/preferences": {
+      "status": "frontend:preferences/PreferencesPage",
+      "reason": "Save preferences."
+    }
+  }
+}

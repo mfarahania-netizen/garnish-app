@@ -38,17 +38,25 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # Non-blocking for now — tracked as R20 (lint/format debt). Remove
-      # continue-on-error once the formatting backlog is cleared.
+      # Blocking gate (GARNISH-COVERAGE-03): fails CI if a Recipe field or a
+      # non-internal endpoint exists in code but is missing from the coverage
+      # registry (UNREGISTERED), or a registry frontend:<ref> is no longer
+      # routed/called/rendered (UNMAPPED). Prevents silent backend↔frontend drift.
+      - name: Coverage gate
+        run: pnpm coverage:check
+
+      # Non-blocking for now — tracked as R20 (lint/format debt: residual
+      # prettier/CRLF + @typescript-eslint/no-unsafe-* warnings; pnpm lint exits 0
+      # but the format-pass close is deferred). Remove continue-on-error once that
+      # backlog is cleared.
       - name: Lint
         run: pnpm lint
         continue-on-error: true
 
-      # Non-blocking for now — tracked as R19 (4 pre-existing failing specs).
-      # Remove continue-on-error once those specs are fixed.
+      # Blocking gate: tests must pass. R19 is CLOSED (GREENBUILD-02) — the suite
+      # is green (142 suites / 1152 tests, 0 failures), so a test failure now fails CI.
       - name: Test
         run: pnpm test
-        continue-on-error: true
 
   secret-scan:
     name: gitleaks
