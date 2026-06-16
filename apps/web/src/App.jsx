@@ -9,6 +9,7 @@ import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
+import OnboardingPage from './app/onboarding/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -80,6 +81,7 @@ export default function App() {
                 <BrowserRouter>
                   <Routes>
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
+                    <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
                     <Route element={<AppShell />}>
                       <Route index element={<HomePage />} />

@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 3,
+    "routes": 4,
     "protectedRoutes": 0,
-    "frontendCallSites": 46,
+    "frontendCallSites": 49,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7403,7 +7403,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "DELETE /users/me",
@@ -7519,6 +7519,13 @@
     {
       "path": "*",
       "component": "NotFound",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "/onboarding",
+      "component": "OnboardingPage",
       "protected": false,
       "admin": false,
       "layoutOnly": false
@@ -7813,6 +7820,20 @@
       "dynamic": true
     },
     {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
       "verb": "GET",
       "raw": "/users/me",
       "normalized": "/users/me",
@@ -7845,6 +7866,13 @@
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
       "file": "apps/web/src/hooks/usePreferencesQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PUT",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
       "dynamic": false
     },
     {

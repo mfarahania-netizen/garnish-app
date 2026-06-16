@@ -548,12 +548,12 @@
       "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:profile/ProfilePage when rebuilt. Avatar upload from the profile page."
     },
     "POST /users/consent": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:_global/ConsentModal when rebuilt. Analytics consent capture."
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "FE-ONBOARDING: onboarding grants consent at account creation (personalization, which gates the taste profile; + core). useOnboarding.submit."
     },
     "PUT /users/preferences": {
-      "status": "frontend:preferences/PreferencesPage",
-      "reason": "Save preferences."
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "FE-ONBOARDING: onboarding saves the supported preferences (diet/allergies/skillLevel/budget/healthGoals) after signup; also the future PreferencesPage. useOnboarding.submit."
     }
   }
 }
