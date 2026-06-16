@@ -324,8 +324,8 @@
       "reason": "A user’s own submitted recipes."
     },
     "GET /recipes/search": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:recipes/RecipesPage when rebuilt. Recipe search."
+      "status": "frontend:discover/DiscoveryPage",
+      "reason": "FE-ONBOARDING-ACCESS-DISCOVERY: the کشف/Discovery search (TF-IDF, _search.matchedTerms → WhyChip). useDiscovery on DiscoveryPage."
     },
     "GET /recommendation-quality": {
       "status": "admin",

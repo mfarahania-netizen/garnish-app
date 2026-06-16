@@ -1,12 +1,10 @@
 import { Box, Text, UnstyledButton } from '@mantine/core';
-import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   IconChevronRight, IconArrowLeft, IconCircleCheckFilled, IconCheck, IconPlus, IconMinus,
   IconAlertTriangle, IconInfoCircle, IconShieldHalf, IconSparkles, IconTrendingUp, IconLeaf,
   IconDeviceMobile, IconLock, IconEye, IconEyeOff,
 } from '@tabler/icons-react';
-import { useAuth } from '../../context/AuthContext';
 import { useOnboarding } from './useOnboarding';
 import { toFaDigits } from '../../components/ges/format';
 import { prefersReducedMotion } from '../../lib/motion';
@@ -204,7 +202,7 @@ function Field({ label, icon: Icon, children, helper }) {
 const inputStyle = { flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' };
 
 /* ── steps ── */
-function Welcome({ onStart, onLogin }) {
+function Welcome({ onStart, onLogin, showLogin = true }) {
   return (
     <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-6)' }}>
       <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
@@ -217,9 +215,11 @@ function Welcome({ onStart, onLogin }) {
       </Box>
       <Box style={{ paddingBlockEnd: 'calc(var(--g-space-6) + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
         <UnstyledButton type="button" onClick={onStart} style={primaryBtn(false)}>بزن بریم</UnstyledButton>
-        <UnstyledButton type="button" onClick={onLogin} style={{ inlineSize: '100%', paddingBlock: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)', textAlign: 'center' }}>
-          قبلاً حساب داری؟ <Text component="span" style={{ color: 'var(--g-color-brand-700)' }}>ورود</Text>
-        </UnstyledButton>
+        {showLogin ? (
+          <UnstyledButton type="button" onClick={onLogin} style={{ inlineSize: '100%', paddingBlock: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)', textAlign: 'center' }}>
+            قبلاً حساب داری؟ <Text component="span" style={{ color: 'var(--g-color-brand-700)' }}>ورود</Text>
+          </UnstyledButton>
+        ) : null}
       </Box>
     </Box>
   );
@@ -284,8 +284,8 @@ function Reveal({ o }) {
         ) : null}
       </Box>
       <Box style={{ paddingBlockEnd: 'calc(var(--g-space-6) + env(safe-area-inset-bottom))' }}>
-        <UnstyledButton type="button" onClick={o.next} style={primaryBtn(false)}>
-          <IconArrowLeft size={18} stroke={1.8} aria-hidden="true" />ذخیره و ادامه
+        <UnstyledButton type="button" onClick={o.authed ? o.finish : o.next} disabled={o.submitting} aria-disabled={o.submitting} style={primaryBtn(o.submitting)}>
+          <IconArrowLeft size={18} stroke={1.8} aria-hidden="true" />{o.submitting ? 'در حال ذخیره…' : 'ذخیره و ادامه'}
         </UnstyledButton>
       </Box>
     </Box>
@@ -353,16 +353,11 @@ function Auth({ o }) {
 }
 
 export default function OnboardingPage() {
-  const { token } = useAuth();
   const o = useOnboarding();
-
-  // a returning, signed-in user is never forced back through onboarding
-  if (token) return <Navigate to="/" replace />;
-
   const a = o.answers;
   return (
     <Column>
-      {o.step === 1 ? <Welcome onStart={o.next} onLogin={o.goLogin} /> : null}
+      {o.step === 1 ? <Welcome onStart={o.next} onLogin={o.goLogin} showLogin={!o.authed} /> : null}
 
       {o.step >= 2 && o.step <= 5 ? (
         <QuestionShell o={o}>

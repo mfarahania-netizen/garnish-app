@@ -7,9 +7,11 @@ import { garnishTheme } from './theme/garnish-theme';
 import { AuthProvider } from './context/AuthContext';
 import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
+import RequireAuth from './shell/RequireAuth';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
 import OnboardingPage from './app/onboarding/page';
+import DiscoveryPage from './app/discover/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -83,9 +85,12 @@ export default function App() {
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
-                    <Route element={<AppShell />}>
-                      <Route index element={<HomePage />} />
-                      <Route path="*" element={<NotFound />} />
+                    <Route element={<RequireAuth />}>
+                      <Route element={<AppShell />}>
+                        <Route index element={<HomePage />} />
+                        <Route path="/discover" element={<DiscoveryPage />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Route>
                     </Route>
                   </Routes>
                 </BrowserRouter>

@@ -36,7 +36,8 @@ function authError(err, mode) {
 
 export function useOnboarding() {
   const navigate = useNavigate();
-  const { register, login } = useAuth();
+  const { register, login, token } = useAuth();
+  const authed = !!token; // re-entry: an already signed-in user revisiting onboarding
 
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState(initialAnswers);
@@ -117,6 +118,21 @@ export function useOnboarding() {
     return body;
   }, [answers]);
 
+  // persist consent + the supported preferences for an ALREADY signed-in user (re-entry from the
+  // menu): no account step — save straight away and return Home.
+  const persist = useCallback(async () => {
+    try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); } catch { /* non-blocking */ }
+    try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
+    try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
+  }, [buildPreferences]);
+
+  const finish = useCallback(async () => {
+    setSubmitting(true);
+    await persist();
+    setSubmitting(false);
+    navigate('/', { replace: true });
+  }, [persist, navigate]);
+
   const submit = useCallback(async () => {
     if (!canSubmit) return;
     setSubmitting(true);
@@ -130,15 +146,10 @@ export function useOnboarding() {
       setSubmitting(false);
       return;
     }
-    if (isSignup) {
-      // consent first (personalization gates the taste profile), then the supported preferences
-      try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); } catch { /* account exists; non-blocking */ }
-      try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
-      try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
-    }
+    if (isSignup) await persist(); // consent (personalization gates the profile) + supported preferences
     setSubmitting(false);
     navigate('/', { replace: true });
-  }, [canSubmit, isSignup, phone, password, register, login, authMode, buildPreferences, navigate]);
+  }, [canSubmit, isSignup, phone, password, register, login, authMode, persist, navigate]);
 
   return {
     step, go, next, back, skip,
@@ -156,5 +167,6 @@ export function useOnboarding() {
     consent, toggleConsent: () => setConsent((c) => !c),
     canSubmit, submitting, error,
     submit,
+    authed, finish,
   };
 }

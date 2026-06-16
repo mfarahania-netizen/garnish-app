@@ -19,6 +19,7 @@ import {
   IconSettings,
   IconBell,
   IconHelpCircle,
+  IconRefresh,
 } from '@tabler/icons-react';
 
 // BottomNav — 5 primary tabs (RTL order: first item renders at the inline-start / right).
@@ -41,6 +42,7 @@ export const DRAWER_PRIMARY = [
 ];
 
 export const DRAWER_SECONDARY = [
+  { label: 'بازنگری ذائقه', to: '/onboarding', Icon: IconRefresh },
   { label: 'تنظیمات', to: '/settings', Icon: IconSettings },
   { label: 'اعلان‌ها', to: '/notifications', Icon: IconBell },
   { label: 'کمک و پشتیبانی', to: '/support', Icon: IconHelpCircle },

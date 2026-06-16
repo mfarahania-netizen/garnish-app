@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 4,
+    "routes": 5,
     "protectedRoutes": 0,
-    "frontendCallSites": 49,
+    "frontendCallSites": 53,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -6885,7 +6885,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /recommendation-quality",
@@ -7524,6 +7524,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/discover",
+      "component": "DiscoveryPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/onboarding",
       "component": "OnboardingPage",
       "protected": false,
@@ -7718,6 +7725,13 @@
       "verb": "GET",
       "raw": "/recipes",
       "normalized": "/recipes",
+      "file": "apps/web/src/app/discover/useDiscovery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes",
+      "normalized": "/recipes",
       "file": "apps/web/src/app/home/lib/useHomeData.js",
       "dynamic": false
     },
@@ -7754,6 +7768,20 @@
       "raw": "/recipes/my",
       "normalized": "/recipes/my",
       "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/search",
+      "normalized": "/recipes/search",
+      "file": "apps/web/src/app/discover/useDiscovery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recommendations",
+      "normalized": "/recommendations",
+      "file": "apps/web/src/app/discover/useDiscovery.js",
       "dynamic": false
     },
     {
@@ -7859,6 +7887,13 @@
       "raw": "/users/me",
       "normalized": "/users/me",
       "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/app/discover/useDiscovery.js",
       "dynamic": false
     },
     {

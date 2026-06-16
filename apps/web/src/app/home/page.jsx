@@ -3,7 +3,7 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { MotionConfig, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  IconLeaf, IconFlame, IconUser, IconSparkles, IconSearch, IconFridge,
+  IconLeaf, IconFlame, IconUser, IconSparkles, IconFridge,
   IconSunrise, IconSun, IconMoon, IconCookie, IconCake,
   IconBowlSpoon, IconBurger, IconSalad, IconSoup, IconPlant2, IconCandy,
   IconBookmark, IconCalendarHeart,
@@ -194,7 +194,7 @@ export default function HomePage() {
   }, []);
 
   const openRecipe = useCallback((id) => { if (id) navigate(`/recipe/${id}`); }, [navigate]);
-  const goDiscover = useCallback(() => showToast('کشف به‌زودی فعال می‌شود', IconSearch), [showToast]);
+  const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
   const toggleSave = useCallback((id) => { setSaved((s) => ({ ...s, [id]: !s[id] })); showToast('به ذخیره‌ها اضافه شد', IconBookmark); }, [showToast]);
 
   if (status === 'loading') return <HomeLoading />;
