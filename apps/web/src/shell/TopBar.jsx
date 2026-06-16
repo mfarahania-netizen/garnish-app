@@ -6,9 +6,9 @@ import { IconBell, IconMenu2 } from '@tabler/icons-react';
  * TopBar — persistent app header.
  *
  * Three-slot grid so the wordmark stays optically centered regardless of the
- * side controls: bell at the inline-start (right, in RTL), logo centered,
- * hamburger at the inline-end (left). The hamburger calls `onMenuOpen` to open
- * the working NavDrawer. Sticky, safe-area aware, token-pure chrome.
+ * side controls: hamburger at the inline-start (RIGHT in RTL) — the same side
+ * the NavDrawer opens from — logo centered, bell at the inline-end (LEFT). The
+ * hamburger calls `onMenuOpen`. Sticky, safe-area aware, token-pure chrome.
  */
 const iconButton = {
   display: 'inline-flex',
@@ -43,9 +43,9 @@ export default function TopBar({ onMenuOpen }) {
           paddingBlock: 'var(--g-space-2)',
         }}
       >
-        {/* inline-start (right in RTL) — notifications */}
-        <UnstyledButton component={Link} to="/notifications" aria-label="اعلان‌ها" style={iconButton}>
-          <IconBell size={22} stroke={1.8} aria-hidden="true" />
+        {/* inline-start (RIGHT in RTL) — open the navigation drawer (drawer opens from the right) */}
+        <UnstyledButton type="button" onClick={onMenuOpen} aria-label="باز کردن منو" style={iconButton}>
+          <IconMenu2 size={24} stroke={1.8} aria-hidden="true" />
         </UnstyledButton>
 
         {/* center — wordmark → home */}
@@ -55,9 +55,9 @@ export default function TopBar({ onMenuOpen }) {
           </UnstyledButton>
         </Box>
 
-        {/* inline-end (left in RTL) — open the navigation drawer */}
-        <UnstyledButton type="button" onClick={onMenuOpen} aria-label="باز کردن منو" style={iconButton}>
-          <IconMenu2 size={24} stroke={1.8} aria-hidden="true" />
+        {/* inline-end (LEFT in RTL) — notifications */}
+        <UnstyledButton component={Link} to="/notifications" aria-label="اعلان‌ها" style={iconButton}>
+          <IconBell size={22} stroke={1.8} aria-hidden="true" />
         </UnstyledButton>
       </Box>
     </Box>

@@ -1,14 +1,15 @@
 /* ============================================================
-   GARNISH — font loading (FE-RESET-A)
-   Self-hosted Vazirmatn from public/fonts, font-display:swap → no FOIT
-   (text renders in the fallback immediately, then swaps in). The family
-   stacks live in tokens.css (--g-font-fa); base.css applies them via
-   :lang(fa). This file is intentionally minimal — only the @font-face.
+   GARNISH — font loading (FE-HOME)
+   Self-hosted Vazirmatn VARIABLE font (weights 100–900) from
+   src/assets/fonts (Vite-bundled + hashed), font-display:swap → no FOIT.
+   tokens.css owns the family stacks (--g-font-fa); base.css applies them via
+   :lang(fa) + [dir="rtl"] so Persian always renders in real Vazirmatn at the
+   requested weight — never a synthesized bold or a Latin fallback.
    ============================================================ */
 @font-face {
   font-family: 'Vazirmatn';
-  src: url('/fonts/Vazirmatn-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('./assets/fonts/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
