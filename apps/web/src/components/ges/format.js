@@ -17,5 +17,10 @@ export function faDuration(minutes) {
 }
 
 // Difficulty token -> Persian label.
-const DIFFICULTY = { easy: 'آسان', medium: 'متوسط', hard: 'سخت', آسان: 'آسان', متوسط: 'متوسط', سخت: 'سخت' };
+const DIFFICULTY = {
+  easy: 'آسان', beginner: 'آسان', simple: 'آسان',
+  medium: 'متوسط', intermediate: 'متوسط', moderate: 'متوسط',
+  hard: 'سخت', advanced: 'سخت', expert: 'سخت', difficult: 'سخت',
+  آسان: 'آسان', متوسط: 'متوسط', سخت: 'سخت',
+};
 export const faDifficulty = (d) => DIFFICULTY[String(d || '').toLowerCase()] || DIFFICULTY[d] || '';

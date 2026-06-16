@@ -9,12 +9,16 @@ import {
   IconHome,
   IconCompass,
   IconCalendarEvent,
+  IconCalendarWeek,
   IconShoppingCart,
   IconHeart,
   IconUser,
-  IconTrophy,
+  IconUserCircle,
+  IconLeaf,
+  IconSparkles,
   IconSettings,
-  IconHeadset,
+  IconBell,
+  IconHelpCircle,
 } from '@tabler/icons-react';
 
 // BottomNav — 5 primary tabs (RTL order: first item renders at the inline-start / right).
@@ -26,15 +30,18 @@ export const BOTTOM_TABS = [
   { label: 'پروفایل', to: '/profile', Icon: IconUser },
 ];
 
-// Hamburger Drawer — the full nav (9 destinations per the approved design).
-export const DRAWER_ITEMS = [
-  { label: 'خانه', to: '/', Icon: IconHome, end: true },
-  { label: 'کشف', to: '/discover', Icon: IconCompass },
-  { label: 'برنامه', to: '/plan', Icon: IconCalendarEvent },
+// Hamburger Drawer — two grouped sections, matching the approved mockup. Each item
+// is a real route (unbuilt paths land on the in-shell 404); rendered ONCE.
+export const DRAWER_PRIMARY = [
+  { label: 'پروفایل من', to: '/profile', Icon: IconUserCircle },
+  { label: 'شناسهٔ ذائقه', to: '/food-dna', Icon: IconLeaf },
+  { label: 'برنامهٔ هفتگی', to: '/plan', Icon: IconCalendarWeek },
   { label: 'لیست خرید', to: '/shopping-list', Icon: IconShoppingCart },
-  { label: 'علاقه‌مندی‌ها', to: '/favorites', Icon: IconHeart },
-  { label: 'پروفایل', to: '/profile', Icon: IconUser },
-  { label: 'دستاوردها', to: '/achievements', Icon: IconTrophy },
+  { label: 'دستیار آشپزی', to: '/assist', Icon: IconSparkles },
+];
+
+export const DRAWER_SECONDARY = [
   { label: 'تنظیمات', to: '/settings', Icon: IconSettings },
-  { label: 'پشتیبانی', to: '/support', Icon: IconHeadset },
+  { label: 'اعلان‌ها', to: '/notifications', Icon: IconBell },
+  { label: 'کمک و پشتیبانی', to: '/support', Icon: IconHelpCircle },
 ];

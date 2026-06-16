@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
 import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/format';
-import { FIT_LABEL, recipeFitReasons, faAllergen } from '../../home/lib/reasons';
+import { FIT_LABEL, recipeFitReasons, faAllergen, faCategory } from '../../home/lib/reasons';
 
 const asText = (s) => (typeof s === 'string' ? s : s?.text || s?.instruction || s?.description || s?.step || s?.body || '');
 const faqItem = (f) => ({ q: asText(f?.question || f?.q || f?.title) || asText(f), a: asText(f?.answer || f?.a || f?.body) });
@@ -54,7 +54,8 @@ export function useRecipeDetail(id) {
       id: r.id,
       title: r.title || 'دستور',
       imageUrl: r.imageUrl || null,
-      categories: (Array.isArray(r.categories) ? r.categories : []).slice(0, 3),
+      // localized to Persian — never a raw enum key like "main_course"
+      categories: [...new Set((Array.isArray(r.categories) ? r.categories : []).map(faCategory).filter(Boolean))].slice(0, 3),
       cookTimeText: faDuration(r.cookingTime || r.totalTime),
       difficultyText: faDifficulty(r.difficulty),
       servingsText: r.servings ? `${toFaDigits(r.servings)} نفر` : '',

@@ -97,6 +97,40 @@ export function recipeFitReasons(fit, max = 3) {
   return out.slice(0, max);
 }
 
+// ── Recipe category / course / meal-type / diet enums → Persian (Recipe Detail tags) ──
+// The catalog mixes machine enum keys (e.g. "main_course") with already-Persian tags. We map
+// every known key to a Persian label; a Persian value passes through; an unknown machine key is
+// humanized (snake_case → spaced) so a raw key like "main_course" is NEVER shown verbatim.
+const CATEGORY_LABELS = {
+  // course
+  main_course: 'غذای اصلی', main_dish: 'غذای اصلی', main: 'غذای اصلی', entree: 'غذای اصلی',
+  side_dish: 'مخلفات', side: 'مخلفات', appetizer: 'پیش‌غذا', starter: 'پیش‌غذا',
+  dessert: 'دسر', sweet: 'شیرینی', drink: 'نوشیدنی', beverage: 'نوشیدنی', smoothie: 'اسموتی',
+  soup: 'سوپ', stew: 'خورشت', salad: 'سالاد', bread: 'نان', sauce: 'سس', dip: 'دیپ',
+  snack: 'میان‌وعده', condiment: 'چاشنی', pickle: 'ترشی',
+  // meal type
+  breakfast: 'صبحانه', brunch: 'بنونه', lunch: 'ناهار', dinner: 'شام', supper: 'شام',
+  // diet / attributes
+  vegetarian: 'گیاهی', vegan: 'وگن', gluten_free: 'بدون گلوتن', dairy_free: 'بدون لبنیات',
+  low_carb: 'کم‌کربوهیدرات', keto: 'کتو', high_protein: 'پرپروتئین', low_calorie: 'کم‌کالری',
+  healthy: 'سالم', quick: 'سریع', easy: 'آسان', budget: 'کم‌هزینه', kid_friendly: 'مناسب کودک',
+  // cuisine
+  persian: 'ایرانی', iranian: 'ایرانی', italian: 'ایتالیایی', asian: 'آسیایی',
+  middle_eastern: 'خاورمیانه‌ای', mediterranean: 'مدیترانه‌ای', indian: 'هندی', mexican: 'مکزیکی',
+};
+
+const humanize = (s) => String(s).replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+const hasPersian = (s) => /[؀-ۿ]/.test(String(s));
+
+export function faCategory(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  const key = raw.toLowerCase().replace(/\s+/g, '_');
+  if (CATEGORY_LABELS[key]) return CATEGORY_LABELS[key];
+  if (hasPersian(raw)) return raw;        // already a Persian tag — keep
+  return humanize(raw);                   // unknown machine key — humanize, never show raw snake_case
+}
+
 // allergen token -> Persian (for the demoted-not-hidden safety banner)
 const ALLERGEN_LABELS = {
   gluten: 'گلوتن', wheat: 'گندم', dairy: 'لبنیات', milk: 'شیر', lactose: 'لاکتوز',

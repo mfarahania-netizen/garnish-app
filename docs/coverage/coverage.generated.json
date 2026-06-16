@@ -21,7 +21,7 @@
     "controllers": 22,
     "routes": 3,
     "protectedRoutes": 0,
-    "frontendCallSites": 45,
+    "frontendCallSites": 46,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7698,6 +7698,13 @@
       "raw": "/profile",
       "normalized": "/profile",
       "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/profile",
+      "normalized": "/profile",
+      "file": "apps/web/src/shell/NavDrawer.jsx",
       "dynamic": false
     },
     {

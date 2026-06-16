@@ -102,6 +102,32 @@ function RecipeLoading() {
   );
 }
 
+/**
+ * HeroMedia — the recipe photo when it actually loads, else the branded placeholder.
+ * A bad/relative imageUrl would otherwise render the browser's broken-image glyph + alt
+ * text (the "۱:۲ … 📷" strip): onError swaps to the placeholder, and alt="" keeps the hero
+ * decorative (the real title is a heading below) so no broken-alt text ever shows.
+ */
+function HeroMedia({ imageUrl, title }) {
+  const [broken, setBroken] = useState(false);
+  const showImg = !!imageUrl && !broken;
+  return (
+    <>
+      {showImg ? (
+        <img
+          src={imageUrl}
+          alt=""
+          onError={() => setBroken(true)}
+          style={{ position: 'absolute', inset: 0, inlineSize: '100%', blockSize: '100%', objectFit: 'cover' }}
+        />
+      ) : (
+        <PlatePlaceholder label={title} seed={(title || '').length} glyphSize={56} />
+      )}
+      {showImg ? <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'var(--g-scrim-photo)' }} /> : null}
+    </>
+  );
+}
+
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -128,14 +154,9 @@ export default function RecipeDetailPage() {
     <Column>
       <Box component="main" style={{ flex: 1, overflowY: 'auto' }}>
         {/* HERO */}
-        <Box style={{ position: 'relative', blockSize: recipe.imageUrl ? 240 : 168 }}>
-          {recipe.imageUrl ? (
-            <img src={recipe.imageUrl} alt={recipe.title} style={{ position: 'absolute', inset: 0, inlineSize: '100%', blockSize: '100%', objectFit: 'cover' }} />
-          ) : (
-            <PlatePlaceholder label={recipe.title} seed={(recipe.title || '').length} glyphSize={56} />
-          )}
-          {recipe.imageUrl ? <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'var(--g-scrim-photo)' }} /> : null}
-          <Box className="g-safe-top" style={{ position: 'absolute', insetBlockStart: 0, insetInline: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--g-space-3)' }}>
+        <Box style={{ position: 'relative', blockSize: 248 }}>
+          <HeroMedia imageUrl={recipe.imageUrl} title={recipe.title} />
+          <Box style={{ position: 'absolute', insetBlockStart: 0, insetInline: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)', paddingBlockStart: 'calc(var(--g-space-3) + env(safe-area-inset-top))' }}>
             <CircleBtn icon={IconChevronRight} label="بازگشت" onClick={back} />
             <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
               <CircleBtn icon={saved ? IconBookmarkFilled : IconBookmark} label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'} accent onClick={() => { setSaved((s) => !s); showToast('به ذخیره‌ها اضافه شد', IconBookmark); }} />
