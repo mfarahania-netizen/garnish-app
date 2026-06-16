@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 17,
-    "protectedRoutes": 11,
-    "frontendCallSites": 76,
+    "routes": 2,
+    "protectedRoutes": 0,
+    "frontendCallSites": 38,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -5227,22 +5227,7 @@
   ],
   "recipeRenderedFields": {
     "scope": "apps/web/src/app/recipe/[id]",
-    "scannedFiles": [
-      "apps/web/src/app/recipe/[id]/components/FaqSection.jsx",
-      "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
-      "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
-      "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
-      "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
-      "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
-      "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
-      "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
-      "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
-      "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
-      "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
-      "apps/web/src/app/recipe/[id]/components/ToolsSection.jsx",
-      "apps/web/src/app/recipe/[id]/components/helpers.js",
-      "apps/web/src/app/recipe/[id]/page.jsx"
-    ],
+    "scannedFiles": [],
     "fields": [
       {
         "field": "adminNote",
@@ -5251,18 +5236,13 @@
       },
       {
         "field": "allergens",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "author",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "authorId",
@@ -5271,34 +5251,23 @@
       },
       {
         "field": "categories",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "category",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
-          "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "cookingTime",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "cost",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
-          "apps/web/src/app/recipe/[id]/components/helpers.js"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "createdAt",
@@ -5307,47 +5276,28 @@
       },
       {
         "field": "description",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "diet",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "difficulty",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "faq",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FaqSection.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "id",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
-          "apps/web/src/app/recipe/[id]/components/IngredientsSection.jsx",
-          "apps/web/src/app/recipe/[id]/components/NutritionCard.jsx",
-          "apps/web/src/app/recipe/[id]/components/RecipeByline.jsx",
-          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
-          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
-          "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
-          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "imageUrl",
@@ -5361,80 +5311,53 @@
       },
       {
         "field": "mealType",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "occasion",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "prepTime",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "region",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/FeaturesCard.jsx",
-          "apps/web/src/app/recipe/[id]/components/helpers.js"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "servings",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "status",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "tips",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/TipsSection.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "title",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/RecipeHero.jsx",
-          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx",
-          "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
-          "apps/web/src/app/recipe/[id]/components/StepsSection.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "tools",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/ToolsSection.jsx",
-          "apps/web/src/app/recipe/[id]/page.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "totalTime",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/TimingCard.jsx"
-        ]
+        "rendered": false,
+        "files": []
       },
       {
         "field": "updatedAt",
@@ -5443,10 +5366,8 @@
       },
       {
         "field": "videoUrl",
-        "rendered": true,
-        "files": [
-          "apps/web/src/app/recipe/[id]/components/RecipeVideo.jsx"
-        ]
+        "rendered": false,
+        "files": []
       }
     ]
   },
@@ -5469,7 +5390,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/behavior-profiles",
@@ -5489,7 +5410,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/cohorts",
@@ -5509,7 +5430,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/events",
@@ -5529,7 +5450,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/funnels",
@@ -5549,7 +5470,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/meal-planning",
@@ -5569,7 +5490,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/page-views",
@@ -5589,7 +5510,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/product-intelligence",
@@ -5609,7 +5530,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/recipes-stats",
@@ -5629,7 +5550,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/search-queries",
@@ -5649,7 +5570,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/shopping",
@@ -5669,7 +5590,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/stats",
@@ -5709,7 +5630,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/trends",
@@ -5729,7 +5650,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/analytics/user-stats",
@@ -5749,7 +5670,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/dashboard",
@@ -5769,7 +5690,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/ops/economics",
@@ -5849,7 +5770,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "PATCH /admin/recipes/:id/approve",
@@ -5909,7 +5830,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /admin/tickets/:id/respond",
@@ -5929,7 +5850,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "PATCH /admin/tickets/:id/status",
@@ -5949,7 +5870,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /admin/users",
@@ -5969,7 +5890,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /ai/chat",
@@ -6581,7 +6502,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /meal-plans/slots",
@@ -6721,7 +6642,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /outcomes",
@@ -6840,7 +6761,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "PATCH /recipes/:id",
@@ -6889,7 +6810,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /recipes/my",
@@ -6921,7 +6842,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "GET /recommendation-quality",
@@ -6980,7 +6901,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /recommendations/build-identity",
@@ -7227,7 +7148,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /shopping-list/items",
@@ -7422,7 +7343,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /users/consent",
@@ -7439,7 +7360,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "DELETE /users/me",
@@ -7547,286 +7468,20 @@
   "routes": [
     {
       "path": "(index)",
-      "component": "HomePage",
+      "component": "Placeholder",
       "protected": false,
       "admin": false,
       "layoutOnly": false
     },
     {
-      "path": "/",
-      "component": null,
+      "path": "*",
+      "component": "NotFound",
       "protected": false,
-      "admin": false,
-      "layoutOnly": true
-    },
-    {
-      "path": "add-recipe",
-      "component": "AddRecipePage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "admin",
-      "component": "AdminDashboard",
-      "protected": true,
-      "admin": true,
-      "layoutOnly": false
-    },
-    {
-      "path": "ai-chat",
-      "component": "AIChatPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "auth",
-      "component": "AuthPage",
-      "protected": false,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "category/:keyword",
-      "component": "CategoryPage",
-      "protected": false,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "favorites",
-      "component": "FavoritesPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "my-recipes",
-      "component": "MyRecipesPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "notifications",
-      "component": "NotificationsPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "plan",
-      "component": "PlanPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "preferences",
-      "component": "PreferencesPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "profile",
-      "component": "ProfilePage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "recipe/:id",
-      "component": "RecipeDetailPage",
-      "protected": false,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "recipes",
-      "component": "RecipesPage",
-      "protected": false,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "shopping-list",
-      "component": "ShoppingListPage",
-      "protected": true,
-      "admin": false,
-      "layoutOnly": false
-    },
-    {
-      "path": "support",
-      "component": "SupportPage",
-      "protected": true,
       "admin": false,
       "layoutOnly": false
     }
   ],
   "frontendCalls": [
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/ai-interaction",
-      "normalized": "/admin/analytics/ai-interaction",
-      "file": "apps/web/src/app/admin/components/AITab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/behavior-profiles",
-      "normalized": "/admin/analytics/behavior-profiles",
-      "file": "apps/web/src/app/admin/components/BehaviorTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/behavior-profiles",
-      "normalized": "/admin/analytics/behavior-profiles",
-      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/cohorts",
-      "normalized": "/admin/analytics/cohorts",
-      "file": "apps/web/src/app/admin/components/CohortTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/events?${params.toString()}",
-      "normalized": "/admin/analytics/events",
-      "file": "apps/web/src/app/admin/components/EventsTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/funnels",
-      "normalized": "/admin/analytics/funnels",
-      "file": "apps/web/src/app/admin/components/FunnelsTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/meal-planning",
-      "normalized": "/admin/analytics/meal-planning",
-      "file": "apps/web/src/app/admin/components/MealPlanTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/page-views",
-      "normalized": "/admin/analytics/page-views",
-      "file": "apps/web/src/app/admin/components/PagesTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/product-intelligence",
-      "normalized": "/admin/analytics/product-intelligence",
-      "file": "apps/web/src/app/admin/components/ProductIntelligenceTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/recipes-stats",
-      "normalized": "/admin/analytics/recipes-stats",
-      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/search-queries",
-      "normalized": "/admin/analytics/search-queries",
-      "file": "apps/web/src/app/admin/components/SearchTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/shopping",
-      "normalized": "/admin/analytics/shopping",
-      "file": "apps/web/src/app/admin/components/ShoppingTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/system-health",
-      "normalized": "/admin/analytics/system-health",
-      "file": "apps/web/src/app/admin/components/HealthTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/trends?bucket=day&days=30",
-      "normalized": "/admin/analytics/trends",
-      "file": "apps/web/src/app/admin/components/OverviewTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/trends?bucket=${bucket}&days=${days}",
-      "normalized": "/admin/analytics/trends",
-      "file": "apps/web/src/app/admin/components/TrendsTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/analytics/user-stats",
-      "normalized": "/admin/analytics/user-stats",
-      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/dashboard",
-      "normalized": "/admin/dashboard",
-      "file": "apps/web/src/app/admin/components/OverviewTab.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/recipes?page=${p}&limit=${LIMIT}",
-      "normalized": "/admin/recipes",
-      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "PATCH",
-      "raw": "/admin/recipes/${recipeId}/${endpoint}",
-      "normalized": "/admin/recipes/*/*",
-      "file": "apps/web/src/app/admin/components/RecipesTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/tickets?page=${p}&limit=${LIMIT}",
-      "normalized": "/admin/tickets",
-      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "POST",
-      "raw": "/admin/tickets/${ticketId}/respond",
-      "normalized": "/admin/tickets/*/respond",
-      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "PATCH",
-      "raw": "/admin/tickets/${ticketId}/status",
-      "normalized": "/admin/tickets/*/status",
-      "file": "apps/web/src/app/admin/components/TicketsTab.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/admin/users?page=${page}&limit=${LIMIT}",
-      "normalized": "/admin/users",
-      "file": "apps/web/src/app/admin/components/UsersTab.jsx",
-      "dynamic": true
-    },
     {
       "verb": "POST",
       "raw": "/ai/chat",
@@ -7941,13 +7596,6 @@
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/propose",
-      "normalized": "/meal-plans/propose",
-      "file": "apps/web/src/app/plan/components/ProposePlanPanel.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
       "raw": "/meal-plans/slots",
       "normalized": "/meal-plans/slots",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
@@ -7990,27 +7638,6 @@
     },
     {
       "verb": "GET",
-      "raw": "/notifications/ine/preview",
-      "normalized": "/notifications/ine/preview",
-      "file": "apps/web/src/features/notifications/components/IneNotificationPreview.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/recipes?category=${encodeURIComponent(keyword)}&limit=100",
-      "normalized": "/recipes",
-      "file": "apps/web/src/app/category/[keyword]/page.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/recipes?page=1&limit=200",
-      "normalized": "/recipes",
-      "file": "apps/web/src/app/plan/page.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
       "raw": "/recipes?page=${page}&limit=${limit}",
       "normalized": "/recipes",
       "file": "apps/web/src/hooks/useRecipes.js",
@@ -8025,27 +7652,6 @@
     },
     {
       "verb": "GET",
-      "raw": "/recipes/${id}",
-      "normalized": "/recipes/*",
-      "file": "apps/web/src/app/recipe/[id]/page.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/recipes/${recipeId}/similar",
-      "normalized": "/recipes/*/similar",
-      "file": "apps/web/src/app/recipe/[id]/components/SimilarRecipes.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/recipes/my",
-      "normalized": "/recipes/my",
-      "file": "apps/web/src/features/add-recipe/pages/MyRecipesPage.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
       "raw": "/recipes/my",
       "normalized": "/recipes/my",
       "file": "apps/web/src/hooks/useProfileQuery.js",
@@ -8053,30 +7659,9 @@
     },
     {
       "verb": "GET",
-      "raw": "/recipes/search?q=${encodeURIComponent(value)}&limit=5",
-      "normalized": "/recipes/search",
-      "file": "apps/web/src/app/home/page.jsx",
-      "dynamic": true
-    },
-    {
-      "verb": "GET",
-      "raw": "/recommendations?limit=6",
-      "normalized": "/recommendations",
-      "file": "apps/web/src/app/home/page.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
       "raw": "/shopping-list",
       "normalized": "/shopping-list",
       "file": "apps/web/src/hooks/useShoppingListQuery.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/shopping-list/from-plan",
-      "normalized": "/shopping-list/from-plan",
-      "file": "apps/web/src/app/shopping-list/components/BuildFromPlanButton.jsx",
       "dynamic": false
     },
     {
@@ -8127,41 +7712,6 @@
       "normalized": "/support/tickets/*/replies",
       "file": "apps/web/src/hooks/useSupportQuery.js",
       "dynamic": true
-    },
-    {
-      "verb": "POST",
-      "raw": "/upload/avatar",
-      "normalized": "/upload/avatar",
-      "file": "apps/web/src/features/profile/pages/ProfilePage.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/users/consent",
-      "normalized": "/users/consent",
-      "file": "apps/web/src/components/ConsentModal.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/users/consent",
-      "normalized": "/users/consent",
-      "file": "apps/web/src/components/ConsentModal.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/users/consent",
-      "normalized": "/users/consent",
-      "file": "apps/web/src/components/ConsentModal.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/users/me",
-      "normalized": "/users/me",
-      "file": "apps/web/src/app/admin/page.jsx",
-      "dynamic": false
     },
     {
       "verb": "GET",
