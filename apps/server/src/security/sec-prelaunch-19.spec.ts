@@ -83,7 +83,7 @@ describe('R18 — ops/diagnostics RBAC (non-admin denied; ops routes admin-gated
 });
 
 // ── R17: RecipeContext crash fix ──
-describe('R17 — RecipeContext exists, is wired, and the 4 surfaces consume it', () => {
+describe('R17 — RecipeContext exists, is wired, and surviving surfaces consume it', () => {
   it('RecipeContext.jsx exists and exports RecipeProvider + useRecipeContext', () => {
     const ctx = readRepo('apps/web/src/context/RecipeContext.jsx');
     expect(ctx).toMatch(/export function RecipeProvider/);
@@ -97,12 +97,13 @@ describe('R17 — RecipeContext exists, is wired, and the 4 surfaces consume it'
     expect(app).toMatch(/<RecipeProvider>/);
   });
 
-  it('all 4 surfaces import useRecipeContext from context/RecipeContext and read recipes', () => {
+  it('all surviving surfaces import useRecipeContext from context/RecipeContext and read recipes', () => {
+    // FE-RESET-A wiped the broken UI layer; AddFromFavoritesModal, AddFromPlanModal, and
+    // RecipePickerModal were deleted with it. RecipeContext itself is PRESERVED and is still
+    // wired at the app root (asserted above) — R17's intent (no missing-context crash) holds.
+    // Re-add each surface to this list when its screen is rebuilt in a later content sprint.
     const files = [
-      'apps/web/src/components/shopping/AddFromFavoritesModal.jsx',
-      'apps/web/src/components/shopping/AddFromPlanModal.jsx',
       'apps/web/src/features/ai-chat/context/AIChatContext.jsx',
-      'apps/web/src/features/meal-planner/components/RecipePickerModal.jsx',
     ];
     for (const f of files) {
       const src = readRepo(f);
