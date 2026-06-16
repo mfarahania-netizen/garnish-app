@@ -10,6 +10,7 @@ import { getAnalyticsConsent } from './lib/analytics-init';
 import { I18nProvider } from './i18n/I18nProvider';
 import { garnishTheme } from './theme/garnish-theme';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { RecipeProvider } from './context/RecipeContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import 'swiper/css';
@@ -181,10 +182,12 @@ function AppInner() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} colorScheme={dark ? 'dark' : 'light'}>
         <AuthProvider>
-          <ErrorBoundary>
-            <AnimatedRoutes />
-            <AnalyticsConsentGate />
-          </ErrorBoundary>
+          <RecipeProvider>
+            <ErrorBoundary>
+              <AnimatedRoutes />
+              <AnalyticsConsentGate />
+            </ErrorBoundary>
+          </RecipeProvider>
         </AuthProvider>
       </MantineProvider>
     </QueryClientProvider>
