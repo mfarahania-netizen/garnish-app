@@ -20,7 +20,7 @@ export default function WhyChip({ reasons = [], label = 'چرا این؟' }) {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 'var(--g-space-1)',
-            minBlockSize: 32,
+            minBlockSize: 44,
             paddingInline: 'var(--g-space-3)',
             borderRadius: 'var(--g-radius-chip)',
             background: 'var(--g-color-brand-50)',

@@ -51,7 +51,7 @@ export default function RecipeCard({
         />
 
         {allergen ? (
-          <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'rgba(31,27,22,.06)', zIndex: 1 }} />
+          <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'color-mix(in srgb, var(--g-color-text-primary) 6%, transparent)', zIndex: 1 }} />
         ) : null}
 
         {fit === 'great' ? (

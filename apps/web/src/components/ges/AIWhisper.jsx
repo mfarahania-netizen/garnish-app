@@ -1,5 +1,5 @@
 import { Box, Text, UnstyledButton } from '@mantine/core';
-import { IconSparkles, IconCheck, IconX } from '@tabler/icons-react';
+import { IconSparkles } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 /**
@@ -74,7 +74,6 @@ export default function AIWhisper({ text, sub, acceptLabel = 'ببین', dismiss
             fontWeight: 600,
           }}
         >
-          <IconCheck size={16} stroke={2} aria-hidden="true" />
           {acceptLabel}
         </UnstyledButton>
         <UnstyledButton
@@ -94,7 +93,6 @@ export default function AIWhisper({ text, sub, acceptLabel = 'ببین', dismiss
             fontWeight: 600,
           }}
         >
-          <IconX size={16} stroke={2} aria-hidden="true" />
           {dismissLabel}
         </UnstyledButton>
       </Box>
