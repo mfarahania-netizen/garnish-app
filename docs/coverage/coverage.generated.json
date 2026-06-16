@@ -21,7 +21,7 @@
     "controllers": 22,
     "routes": 2,
     "protectedRoutes": 0,
-    "frontendCallSites": 38,
+    "frontendCallSites": 42,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -6212,7 +6212,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /governance",
@@ -6680,7 +6680,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "POST /profile/answer",
@@ -6901,7 +6901,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "POST /recommendations/build-identity",
@@ -7468,7 +7468,7 @@
   "routes": [
     {
       "path": "(index)",
-      "component": "Placeholder",
+      "component": "HomePage",
       "protected": false,
       "admin": false,
       "layoutOnly": false
@@ -7568,6 +7568,13 @@
     },
     {
       "verb": "GET",
+      "raw": "/gamification/me",
+      "normalized": "/gamification/me",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
       "raw": "/meal-plans",
       "normalized": "/meal-plans",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
@@ -7638,6 +7645,13 @@
     },
     {
       "verb": "GET",
+      "raw": "/profile",
+      "normalized": "/profile",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
       "raw": "/recipes?page=${page}&limit=${limit}",
       "normalized": "/recipes",
       "file": "apps/web/src/hooks/useRecipes.js",
@@ -7655,6 +7669,13 @@
       "raw": "/recipes/my",
       "normalized": "/recipes/my",
       "file": "apps/web/src/hooks/useProfileQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recommendations",
+      "normalized": "/recommendations",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
       "dynamic": false
     },
     {
@@ -7712,6 +7733,13 @@
       "normalized": "/support/tickets/*/replies",
       "file": "apps/web/src/hooks/useSupportQuery.js",
       "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
     },
     {
       "verb": "GET",

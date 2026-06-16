@@ -7,7 +7,7 @@ import { garnishTheme } from './theme/garnish-theme';
 import { AuthProvider } from './context/AuthContext';
 import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
-import Placeholder from './shell/Placeholder';
+import HomePage from './app/home/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -79,7 +79,7 @@ export default function App() {
                 <BrowserRouter>
                   <Routes>
                     <Route element={<AppShell />}>
-                      <Route index element={<Placeholder />} />
+                      <Route index element={<HomePage />} />
                       <Route path="*" element={<NotFound />} />
                     </Route>
                   </Routes>

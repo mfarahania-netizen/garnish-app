@@ -272,8 +272,8 @@
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
     "GET /gamification/me": {
-      "status": "deferred:E-gamification-ui",
-      "reason": "GAMIFY-L4-11: owner-only private read of the user's streak/achievements/mastery; backend-only this sprint (visual UI is Phase 3 / Claude Design)."
+      "status": "frontend:home/HomePage",
+      "reason": "FE-HOME: owner-only streak/achievements read — surfaced as the Home greeting streak badge (useHomeData on HomePage)."
     },
     "GET /governance": {
       "status": "admin",
@@ -336,8 +336,8 @@
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
     "GET /recommendations": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:home/HomePage when rebuilt. Personalized recommendations on the home feed."
+      "status": "frontend:home/HomePage",
+      "reason": "Personalized recommendations on the Home feed — picks + AI Whisper (FE-HOME: useHomeData on HomePage)."
     },
     "GET /recommendations/compare": {
       "status": "admin",
@@ -456,8 +456,8 @@
       "reason": "E47-L4 allergen-aware ingredient substitutions; called by features/ai-chat GroundedAssist."
     },
     "GET /profile": {
-      "status": "deferred:E-profile-ui",
-      "reason": "PROFILE-L4-05 living-profile read (owner-only, consent-aware). Backend-first; profile UI is a later phase."
+      "status": "frontend:home/HomePage",
+      "reason": "Living taste-profile read — Home Food DNA maturity ring (FE-HOME: useHomeData on HomePage)."
     },
     "GET /profile/next-question": {
       "status": "deferred:E-profile-ui",
