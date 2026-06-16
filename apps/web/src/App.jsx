@@ -27,6 +27,7 @@ const CategoryPage = lazy(() => import('./app/category/[keyword]/page'));
 const PlanPage = lazy(() => import('./app/plan/page'));
 const ShoppingListPage = lazy(() => import('./app/shopping-list/page'));
 const AdminDashboard = lazy(() => import('./app/admin/page'));
+const GesGallery = lazy(() => import('./app/_ges/page'));
 const FavoritesPage = lazy(() => import('./app/favorites/page'));
 const ProfilePage = lazy(() => import('./features/profile/pages/ProfilePage'));
 const AddRecipePage = lazy(() => import('./features/add-recipe').then((module) => ({ default: module.AddRecipePage })));
@@ -136,6 +137,16 @@ function AnimatedRoutes() {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+
+        {/* Internal GES component gallery (DS-ALIGN-L4-20) — admin/dev-gated verification surface */}
+        <Route
+          path="_ges"
+          element={
+            <AdminRoute>
+              <GesGallery />
             </AdminRoute>
           }
         />

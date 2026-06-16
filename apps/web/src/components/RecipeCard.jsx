@@ -1,29 +1,110 @@
-import { Box, Text, Group, Paper, Badge } from '@mantine/core';
+import { Box, Text, Group } from '@mantine/core';
 import {
   IconChefHat, IconCake, IconGlassFull, IconSoup, IconSalad,
-  IconClock, IconBolt, IconHeart
+  IconClock, IconBolt, IconHeart,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { pressResponse, withReducedMotion } from '../lib/motion';
 import { useAnalytics } from '../hooks/useAnalytics';
 
-// پالت رنگی مدرن بر اساس نوع غذا
-const typeConfig = {
-  main:      { color: '#FF6B35', bg: 'linear-gradient(135deg, #FF6B35, #FF8F65)', icon: IconChefHat },
-  appetizer: { color: '#2ECC71', bg: 'linear-gradient(135deg, #2ECC71, #58D68D)', icon: IconSalad },
-  dessert:   { color: '#E91E63', bg: 'linear-gradient(135deg, #E91E63, #F06292)', icon: IconCake },
-  drink:     { color: '#00BCD4', bg: 'linear-gradient(135deg, #00BCD4, #4DD0E1)', icon: IconGlassFull },
-  bread:     { color: '#FF9800', bg: 'linear-gradient(135deg, #FF9800, #FFB74D)', icon: IconSoup },
-  sauce:     { color: '#9C27B0', bg: 'linear-gradient(135deg, #9C27B0, #CE93D8)', icon: IconSoup },
+/**
+ * RecipeCard (PL row 15) — the recipe unit used across rails/grids/sliders.
+ *
+ * GES-reconciled (DS-ALIGN-L4-20): token-pure (no hardcoded hex / gradients /
+ * glass), RTL-correct (logical properties only; no physical left/right/ltr),
+ * motion via the sanctioned pressResponse preset (no ad-hoc whileHover), 4:3
+ * media with the photo scrim token, a branded placeholder when there is no
+ * photo (never another dish's image), a 2-line title clamp, and at most three
+ * meta chips. The whole card is a single real button (keyboard + focus ring
+ * from base.css), aria-labelled by the dish name.
+ *
+ * Public API is preserved for page-level callers (S21 page alignment depends on
+ * it): props `{ recipe, onClick }`; default behavior navigates to the detail
+ * route and emits the existing `recipe_view` analytics event.
+ */
+
+// Type → calm glyph (informational only; color comes from tokens, never per-type hex).
+const TYPE_ICON = {
+  main: IconChefHat,
+  appetizer: IconSalad,
+  dessert: IconCake,
+  drink: IconGlassFull,
+  bread: IconSoup,
+  sauce: IconSoup,
 };
-const defaultType = { color: '#607D8B', bg: 'linear-gradient(135deg, #607D8B, #90A4AE)', icon: IconChefHat };
+
+// Difficulty → semantic state tone (token-mapped, never raw color).
+const DIFFICULTY_TONE = {
+  آسان: { fg: 'var(--g-color-state-success-fg)', bg: 'var(--g-color-state-success-bg)' },
+  متوسط: { fg: 'var(--g-color-state-warning-fg)', bg: 'var(--g-color-state-warning-bg)' },
+};
+const difficultyToneFor = (d) =>
+  DIFFICULTY_TONE[d] || { fg: 'var(--g-color-state-danger-fg)', bg: 'var(--g-color-state-danger-bg)' };
+
+function MetaChip({ icon, children }) {
+  return (
+    <Box
+      component="span"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 'var(--g-space-1)',
+        paddingInline: 'var(--g-space-2)',
+        paddingBlock: '2px',
+        borderRadius: 'var(--g-radius-chip)',
+        background: 'var(--g-color-bg-canvas)',
+        border: '1px solid var(--g-color-border-subtle)',
+        color: 'var(--g-color-text-secondary)',
+        fontFamily: 'var(--g-font-text)',
+        fontSize: 'var(--g-font-size-12)',
+        fontWeight: 500,
+        lineHeight: 'var(--g-leading-heading)',
+        maxInlineSize: '100%',
+      }}
+    >
+      {icon}
+      <Box
+        component="span"
+        style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+}
+
+// Small overlaid flag pill on the media (quick / healthy). Tokenized, not color-only.
+function FlagPill({ icon, label }) {
+  return (
+    <Box
+      component="span"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '2px',
+        paddingInline: 'var(--g-space-2)',
+        paddingBlock: '2px',
+        borderRadius: 'var(--g-radius-chip)',
+        background: 'var(--g-color-bg-surface)',
+        color: 'var(--g-color-text-primary)',
+        fontFamily: 'var(--g-font-text)',
+        fontSize: 'var(--g-font-size-12)',
+        fontWeight: 600,
+        boxShadow: 'var(--g-shadow-1)',
+      }}
+    >
+      {icon}
+      {label}
+    </Box>
+  );
+}
 
 export default function RecipeCard({ recipe, onClick: externalOnClick }) {
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
-  const { id, title, cook_time, difficulty, foodType, isQuick, isHealthy, mealType, region } = recipe;
-  const config = typeConfig[foodType] || defaultType;
-  const TypeIcon = config.icon;
+  const { id, title, cook_time, difficulty, foodType, isQuick, isHealthy, mealType } = recipe;
+  const TypeIcon = TYPE_ICON[foodType] || IconChefHat;
 
   const handleClick = () => {
     trackEvent('recipe_view', { recipeId: id, title });
@@ -35,114 +116,118 @@ export default function RecipeCard({ recipe, onClick: externalOnClick }) {
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -3, scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
-      style={{ height: '100%' }}
+    <motion.button
+      type="button"
+      onClick={handleClick}
+      aria-label={title}
+      {...withReducedMotion(pressResponse)}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        inlineSize: '100%',
+        blockSize: '100%',
+        textAlign: 'start',
+        cursor: 'pointer',
+        overflow: 'hidden',
+        padding: 0,
+        background: 'var(--g-color-bg-surface)',
+        border: '1px solid var(--g-color-border-subtle)',
+        borderRadius: 'var(--g-radius-card)',
+        boxShadow: 'var(--g-shadow-1)',
+        color: 'var(--g-color-text-primary)',
+      }}
     >
-      <Paper
-        shadow="sm"
-        radius="lg"
-        onClick={handleClick}
+      {/* Media — 4:3 branded placeholder (calm brand tint + type glyph), scrim for overlays. */}
+      <Box
         style={{
-          overflow: 'hidden',
-          background: 'rgba(255,255,255,0.7)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          cursor: 'pointer',
-          height: '100%',
+          position: 'relative',
+          inlineSize: '100%',
+          aspectRatio: '4 / 3',
+          background: 'var(--g-color-brand-50)',
           display: 'flex',
-          flexDirection: 'column',
-          transition: 'box-shadow 0.2s, transform 0.2s',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
         }}
       >
-        {/* بخش تصویر با پوشش رنگی */}
+        <TypeIcon size={48} stroke={1.4} color="var(--g-color-food-saffron)" aria-hidden="true" />
+
+        {/* Scrim so overlaid pills stay legible on any future photo */}
         <Box
+          aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, background: 'var(--g-scrim-photo)' }}
+        />
+
+        {/* Quick / healthy flags (inline-start top), order follows dir */}
+        <Group
+          gap="var(--g-space-1)"
+          wrap="nowrap"
+          style={{ position: 'absolute', insetBlockStart: 'var(--g-space-2)', insetInlineStart: 'var(--g-space-2)' }}
+        >
+          {isQuick && <FlagPill icon={<IconBolt size={12} aria-hidden="true" />} label="سریع" />}
+          {isHealthy && <FlagPill icon={<IconHeart size={12} aria-hidden="true" />} label="سالم" />}
+        </Group>
+
+        {/* Difficulty (inline-end bottom) */}
+        {difficulty && (
+          <Box
+            component="span"
+            style={{
+              position: 'absolute',
+              insetBlockEnd: 'var(--g-space-2)',
+              insetInlineEnd: 'var(--g-space-2)',
+              paddingInline: 'var(--g-space-2)',
+              paddingBlock: '2px',
+              borderRadius: 'var(--g-radius-chip)',
+              fontFamily: 'var(--g-font-text)',
+              fontSize: 'var(--g-font-size-12)',
+              fontWeight: 600,
+              background: difficultyToneFor(difficulty).bg,
+              color: difficultyToneFor(difficulty).fg,
+            }}
+          >
+            {difficulty}
+          </Box>
+        )}
+      </Box>
+
+      {/* Body — 2-line title clamp + ≤3 meta chips */}
+      <Box
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          gap: 'var(--g-space-2)',
+          paddingInline: 'var(--g-space-3)',
+          paddingBlock: 'var(--g-space-3)',
+        }}
+      >
+        <Text
           style={{
-            height: 140,
-            background: config.bg,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
+            fontFamily: 'var(--g-font-display)',
+            fontSize: 'var(--g-font-size-14)',
+            fontWeight: 600,
+            lineHeight: 'var(--g-leading-heading)',
+            color: 'var(--g-color-text-primary)',
+            textAlign: 'start',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
           }}
         >
-          <TypeIcon size={48} color="rgba(255,255,255,0.9)" />
+          {title}
+        </Text>
 
-          {/* برچسب‌های سریع/سالم */}
-          <Group gap="xs" style={{ position: 'absolute', top: 10, left: 10, direction: 'ltr' }}>
-            {isQuick && (
-              <Badge
-                size="sm"
-                variant="filled"
-                leftSection={<IconBolt size={12} />}
-                color="yellow"
-                style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#FFD54F' }}
-              >
-                سریع
-              </Badge>
-            )}
-            {isHealthy && (
-              <Badge
-                size="sm"
-                variant="filled"
-                leftSection={<IconHeart size={12} />}
-                color="teal"
-                style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#81C784' }}
-              >
-                سالم
-              </Badge>
-            )}
-          </Group>
-
-          {/* سختی */}
-          {difficulty && (
-            <Badge
-              size="xs"
-              variant="light"
-              color={difficulty === 'آسان' ? 'green' : difficulty === 'متوسط' ? 'yellow' : 'red'}
-              style={{ position: 'absolute', bottom: 8, right: 8 }}
-            >
-              {difficulty}
-            </Badge>
+        <Group gap="var(--g-space-1)" wrap="wrap" style={{ rowGap: 'var(--g-space-1)' }}>
+          {cook_time && (
+            <MetaChip icon={<IconClock size={12} aria-hidden="true" />}>{cook_time}</MetaChip>
           )}
-        </Box>
-
-        {/* اطلاعات اصلی */}
-        <Box px="sm" py="sm" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <Text fw={600} size="sm" lineClamp={2} mb={4} style={{ color: '#1A237E' }}>
-            {title}
-          </Text>
-
-          <Group gap="xs" wrap="wrap" align="center" style={{ rowGap: 4 }}>
-            {/* زمان پخت */}
-            {cook_time && (
-              <Badge variant="light" color="gray" size="xs" leftSection={<IconClock size={12} />}>
-                {cook_time}
-              </Badge>
-            )}
-            {/* نوع غذا (دسته‌بندی اصلی) */}
-            {foodType && (
-              <Badge variant="light" color="orange" size="xs">
-                {foodType}
-              </Badge>
-            )}
-            {/* وعده غذایی (در صورت وجود) */}
-            {mealType && (
-              <Badge variant="outline" color="indigo" size="xs">
-                {mealType}
-              </Badge>
-            )}
-            {/* منطقه (اختیاری) */}
-            {region && region !== 'international' && (
-              <Badge variant="dot" color="teal" size="xs">
-                {region === 'persian' ? 'ایرانی' : region}
-              </Badge>
-            )}
-          </Group>
-        </Box>
-      </Paper>
-    </motion.div>
+          {foodType && <MetaChip>{foodType}</MetaChip>}
+          {mealType && <MetaChip>{mealType}</MetaChip>}
+        </Group>
+      </Box>
+    </motion.button>
   );
 }
