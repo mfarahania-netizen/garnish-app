@@ -1,1 +1,0 @@
-export { ProfileProvider, useProfile } from './context/ProfileContext';
