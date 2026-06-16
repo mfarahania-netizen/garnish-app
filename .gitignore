@@ -27,3 +27,6 @@ package-lock.json
 /garnish_recipe_*_draft_candidate_*/
 # Design reference (read-only visual target — never imported or bundled)
 design-reference/
+
+# Founder design handoff bundle (read-only visual target — never imported/bundled)
+home-screen-design-exploration/

@@ -308,12 +308,12 @@
       "reason": "Recipe list/browse feed."
     },
     "GET /recipes/:id": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:recipe-detail/RecipeDetailPage when rebuilt. Recipe detail fetch."
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "Recipe detail fetch — public fallback for logged-out Recipe Detail (FE-HOMEFIX-RECIPE: useRecipeDetail)."
     },
     "GET /recipes/:id/full": {
-      "status": "deferred:E-recipe-fit-ui",
-      "reason": "RECIPE-L4-07 consolidated rich read (recipe + integrity + personalized fit + safety + swaps). Backend-first; the rich fit UI is a later phase."
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "RECIPE-L4-07 consolidated rich read (recipe + integrity + personalized fit + safety + swaps) — Recipe Detail screen (FE-HOMEFIX-RECIPE: useRecipeDetail)."
     },
     "GET /recipes/:id/similar": {
       "status": "deferred:E-fe-reset-a",

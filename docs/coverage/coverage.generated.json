@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 2,
+    "routes": 3,
     "protectedRoutes": 0,
-    "frontendCallSites": 43,
+    "frontendCallSites": 45,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -5227,7 +5227,10 @@
   ],
   "recipeRenderedFields": {
     "scope": "apps/web/src/app/recipe/[id]",
-    "scannedFiles": [],
+    "scannedFiles": [
+      "apps/web/src/app/recipe/[id]/page.jsx",
+      "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+    ],
     "fields": [
       {
         "field": "adminNote",
@@ -5236,13 +5239,19 @@
       },
       {
         "field": "allergens",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "author",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "authorId",
@@ -5251,18 +5260,25 @@
       },
       {
         "field": "categories",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "category",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx"
+        ]
       },
       {
         "field": "cookingTime",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "cost",
@@ -5276,8 +5292,11 @@
       },
       {
         "field": "description",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "diet",
@@ -5286,23 +5305,34 @@
       },
       {
         "field": "difficulty",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "faq",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "id",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "imageUrl",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "isPublic",
@@ -5331,23 +5361,34 @@
       },
       {
         "field": "servings",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "status",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "tips",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "title",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "tools",
@@ -5356,8 +5397,10 @@
       },
       {
         "field": "totalTime",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "updatedAt",
@@ -6761,7 +6804,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "PATCH /recipes/:id",
@@ -6795,7 +6838,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /recipes/:id/similar",
@@ -7479,6 +7522,13 @@
       "protected": false,
       "admin": false,
       "layoutOnly": false
+    },
+    {
+      "path": "/recipe/:id",
+      "component": "RecipeDetailPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
     }
   ],
   "frontendCalls": [
@@ -7670,6 +7720,20 @@
       "normalized": "/recipes",
       "file": "apps/web/src/features/add-recipe/context/AddRecipeContext.jsx",
       "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/${id}",
+      "normalized": "/recipes/*",
+      "file": "apps/web/src/app/recipe/[id]/useRecipeDetail.js",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes/${id}/full",
+      "normalized": "/recipes/*/full",
+      "file": "apps/web/src/app/recipe/[id]/useRecipeDetail.js",
+      "dynamic": true
     },
     {
       "verb": "GET",

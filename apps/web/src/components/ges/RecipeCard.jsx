@@ -60,7 +60,7 @@ export default function RecipeCard({
       }}
     >
       <Box style={{ position: 'relative', aspectRatio: '16 / 9' }}>
-        <PlatePlaceholder label={title} seed={placeholderSeed} />
+        <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
 
         <UnstyledButton
           type="button"
@@ -141,10 +141,16 @@ export default function RecipeCard({
 
         {!compact && !caution && !allergen && (reasonText || reasons.length) ? (
           <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)', paddingBlockStart: 'var(--g-space-3)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
-            <IconInfoCircle size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
-            <Text component="p" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>
-              {reasonText || 'بر اساس ذائقه‌ات'}
-            </Text>
+            {reasonText ? (
+              <>
+                <IconInfoCircle size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+                <Text component="p" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>
+                  {reasonText}
+                </Text>
+              </>
+            ) : (
+              <Box style={{ flex: 1 }} />
+            )}
             <WhyChip reasons={reasons} />
           </Box>
         ) : null}

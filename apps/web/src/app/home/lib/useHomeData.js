@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
 import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/format';
-import { reasonLabels, fitFromScore, DNA_BAND } from './reasons';
+import { reasonLabels, fitFromScore, DNA_BAND, traitsFromProfile } from './reasons';
 import { weekdayTimeLine } from './greeting';
 
 /**
@@ -29,7 +29,7 @@ export function useHomeData() {
   const recs = useQuery({ queryKey: ['home', 'recommendations'], queryFn: () => apiClient.get('/recommendations', { params: { limit: 12 } }).then((r) => r.data), enabled });
   const profile = useQuery({ queryKey: ['home', 'profile'], queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
   const gamification = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
-  const recipes = useQuery({ queryKey: ['home', 'recipes'], queryFn: () => apiClient.get('/recipes', { params: { limit: 24 } }).then((r) => r.data), enabled });
+  const recipes = useQuery({ queryKey: ['home', 'recipes'], queryFn: () => apiClient.get('/recipes', { params: { limit: 60 } }).then((r) => r.data), enabled });
 
   return useMemo(() => {
     const name = me.data?.name || '';
@@ -55,7 +55,9 @@ export function useHomeData() {
       score: typeof maturity?.overallScore === 'number' ? maturity.overallScore : 0,
       headline: (DNA_BAND[band] || DNA_BAND.developing).title,
       tone: (DNA_BAND[band] || DNA_BAND.developing).tone,
-      traits: reasonLabels(recList.flatMap((r) => r.matchedSignals || r.reasonSignals || []), 3),
+      // traits = the profile's taste/behaviour DIMENSIONS (never recipe ingredients like قارچ);
+      // empty while cold-starting (honest forming state).
+      traits: traitsFromProfile(profile.data, 3),
     };
 
     // ── Gamification (private; real streak + mastery) ──
@@ -82,8 +84,10 @@ export function useHomeData() {
         cookTimeText: faDuration(recipe?.cookingTime),
         difficultyText: faDifficulty(recipe?.difficulty),
         servingsText: recipe?.servings ? `${toFaDigits(recipe.servings)} نفر` : '',
+        // Real signals power the WhyChip popover (on tap). No inline reason line on the card face
+        // — the API returns the same top signals per item, so an inline line would just repeat.
         reasons: labels,
-        reasonText: labels.length ? `${labels.join(' · ')} — مثل ذائقه‌ات` : '',
+        reasonText: '',
       };
     });
 

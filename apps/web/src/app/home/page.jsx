@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { MotionConfig, motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   IconLeaf, IconFlame, IconUser, IconSparkles, IconSearch, IconFridge,
   IconSunrise, IconSun, IconMoon, IconCookie, IconCake,
   IconBowlSpoon, IconBurger, IconSalad, IconSoup, IconPlant2, IconCandy,
-  IconToolsKitchen2, IconBookmark, IconCalendarHeart,
+  IconBookmark, IconCalendarHeart,
 } from '@tabler/icons-react';
 import { useHomeData } from './lib/useHomeData';
 import { toFaDigits } from '../../components/ges/format';
@@ -177,6 +178,7 @@ function HomeLoading() {
 }
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const { status, greeting, dna, gam, whisper, picks, rails, resume, refetch } = useHomeData();
   const [whisperDismissed, setWhisperDismissed] = useState(false);
   const [saved, setSaved] = useState({});
@@ -191,7 +193,7 @@ export default function HomePage() {
     toastTimer.current = setTimeout(() => setToast(null), 2200);
   }, []);
 
-  const openRecipe = useCallback(() => showToast('این دستور به‌زودی باز می‌شود', IconToolsKitchen2), [showToast]);
+  const openRecipe = useCallback((id) => { if (id) navigate(`/recipe/${id}`); }, [navigate]);
   const goDiscover = useCallback(() => showToast('کشف به‌زودی فعال می‌شود', IconSearch), [showToast]);
   const toggleSave = useCallback((id) => { setSaved((s) => ({ ...s, [id]: !s[id] })); showToast('به ذخیره‌ها اضافه شد', IconBookmark); }, [showToast]);
 
@@ -226,7 +228,7 @@ export default function HomePage() {
             {gam.show ? <GamificationStrip headline={gam.headline} progressLabel={gam.progressLabel} progress={gam.progress} /> : null}
 
             {whisper && !whisperDismissed ? (
-              <AIWhisper text={whisper.text} sub={whisper.sub} onAccept={openRecipe} onDismiss={() => setWhisperDismissed(true)} />
+              <AIWhisper text={whisper.text} sub={whisper.sub} onAccept={() => openRecipe(whisper.recipeId)} onDismiss={() => setWhisperDismissed(true)} />
             ) : null}
 
             <MealTypeRow onPick={goDiscover} />
@@ -240,7 +242,7 @@ export default function HomePage() {
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
                 {picks.map((p, i) => (
                   <Box key={p.recipeId} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
-                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={!!saved[p.recipeId]} onSave={() => toggleSave(p.recipeId)} onOpen={openRecipe} />
+                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={!!saved[p.recipeId]} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} />
                   </Box>
                 ))}
               </Box>
@@ -251,7 +253,7 @@ export default function HomePage() {
             <RecipeRail title="تازه‌ها" icon={IconSparkles} items={rails.fresh} saved={saved} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
 
             <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
-              <OccasionCard title="حال‌وهوای شب یلدا" badge="مناسبتی" seed={3} onClick={() => showToast('مجموعهٔ مناسبتی به‌زودی', IconCalendarHeart)} />
+              <OccasionCard title="حال‌وهوای شب یلدا" badge="مناسبتی" onClick={() => showToast('مجموعهٔ مناسبتی به‌زودی', IconCalendarHeart)} />
             </Box>
 
             {resume ? (
