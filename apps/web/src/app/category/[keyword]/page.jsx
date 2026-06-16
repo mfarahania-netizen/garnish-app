@@ -1,23 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Container, Title, SimpleGrid, Skeleton, Text,
-  useMantineColorScheme, Box, Group, ActionIcon, Alert
-} from '@mantine/core';
+import { Container, SimpleGrid, Box, ActionIcon } from '@mantine/core';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import RecipeCard from '../../../components/RecipeCard';
-import { IconAlertTriangle, IconArrowUp, IconCategory } from '@tabler/icons-react';
+import { SectionHeader, EmptyState, ErrorState, LoadingSkeleton } from '../../../components/ges';
+import { IconArrowUp } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
+import { withReducedMotion, riseIn } from '../../../lib/motion';
 import { EventType } from '../../../lib/eventTaxonomy';
 
 export default function CategoryPage() {
   const { keyword } = useParams();
   const navigate = useNavigate();
   const { trackEvent } = useAnalytics();
-  const { colorScheme } = useMantineColorScheme();
-  const dark = colorScheme === 'dark';
 
   useEffect(() => {
     trackEvent(EventType.CATEGORY_VIEW, { keyword });
@@ -34,18 +31,13 @@ export default function CategoryPage() {
 
   const recipes = data?.data || [];
   const total = data?.total || 0;
-
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (isLoading || !keyword) {
     return (
       <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
-        <Skeleton height={36} width="70%" mb="md" />
-        <SimpleGrid cols={2} spacing="sm">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} height={200} radius="lg" />
-          ))}
-        </SimpleGrid>
+        <Box mb="md"><LoadingSkeleton shape="text" lines={1} label="در حال بارگذاری" /></Box>
+        <LoadingSkeleton shape="list" lines={6} label="در حال بارگذاری رسپی‌ها" />
       </Container>
     );
   }
@@ -53,9 +45,7 @@ export default function CategoryPage() {
   if (error) {
     return (
       <Container size="xs" py="xl" style={{ maxWidth: 420, margin: '0 auto' }}>
-        <Alert color="red" title="خطا در بارگذاری" icon={<IconAlertTriangle size={20} />}>
-          مشکلی در دریافت رسپی‌ها پیش آمده است.
-        </Alert>
+        <ErrorState title="خطا در بارگذاری" message="مشکلی در دریافت رسپی‌ها پیش آمد." retryLabel="تلاش دوباره" onRetry={() => window.location.reload()} />
       </Container>
     );
   }
@@ -63,35 +53,25 @@ export default function CategoryPage() {
   if (recipes.length === 0) {
     return (
       <Container size="xs" py="xl" style={{ maxWidth: 420, margin: '0 auto' }}>
-        <Alert color="orange" title="غذایی پیدا نشد" icon={<IconAlertTriangle size={20} />}>
-          متأسفانه هیچ رسپی در دسته «{keyword}» یافت نشد.
-        </Alert>
+        <EmptyState
+          title={`در دستهٔ «${keyword}» چیزی نیست`}
+          message="رسپی‌ای در این دسته پیدا نشد. دسته‌های دیگر را ببین."
+          actionLabel="کاوش رسپی‌ها"
+          onAction={() => navigate('/recipes')}
+        />
       </Container>
     );
   }
 
   return (
     <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
-      <Box mb="md">
-        <Group gap="xs" align="center">
-          <IconCategory size={28} style={{ color: '#FF6B35' }} />
-          <Title order={4} c={dark ? 'white' : 'navy.9'}>
-            🍽️ {keyword || 'همه غذاها'}
-          </Title>
-        </Group>
-        <Text size="xs" c="dimmed" mt={4}>
-          {total} رسپی در این دسته
-        </Text>
+      <Box mb="md" mt="xs">
+        <SectionHeader as="h1" title={keyword || 'همه غذاها'} subtitle={`${total} رسپی در این دسته`} />
       </Box>
 
       <SimpleGrid cols={2} spacing="sm">
         {recipes.map((recipe, index) => (
-          <motion.div
-            key={recipe.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.3 }}
-          >
+          <motion.div key={recipe.id} variants={withReducedMotion(riseIn)} initial="initial" animate="animate" transition={{ delay: Math.min(index, 6) * 0.04 }}>
             <RecipeCard
               recipe={recipe}
               onClick={() => {
@@ -103,20 +83,9 @@ export default function CategoryPage() {
         ))}
       </SimpleGrid>
 
-      <ActionIcon
-        variant="light"
-        color="orange"
-        size="xl"
-        radius="xl"
-        style={{
-          position: 'fixed',
-          bottom: 80,
-          right: 16,
-          zIndex: 50,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        }}
-        onClick={scrollToTop}
-      >
+      <ActionIcon variant="filled" color="saffron" size="xl" radius="xl"
+        style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 'var(--g-z-sticky)', boxShadow: 'var(--g-shadow-2)' }}
+        onClick={scrollToTop} aria-label="برگشت به بالا">
         <IconArrowUp size={18} />
       </ActionIcon>
     </Container>

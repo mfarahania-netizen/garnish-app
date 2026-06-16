@@ -2,17 +2,17 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   Container, Title, Text, SimpleGrid,
-  Group, Badge, Box,
+  Group, Box,
   Popover, ScrollArea, ActionIcon, Tooltip,
   Autocomplete
 } from '@mantine/core';
 import {
   IconSearch, IconRobot,
-  IconStars, IconMicrophone, IconArrowUp,
+  IconMicrophone, IconArrowUp,
   IconSparkles, IconChefHat, IconArrowRight
 } from '@tabler/icons-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules'; // فقط Autoplay نیاز داریم
+import { Autoplay } from 'swiper/modules';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRecipes } from '../../hooks/useRecipes';
@@ -21,7 +21,8 @@ import apiClient from '../../lib/apiClient';
 import RecipeCard from '../../components/RecipeCard';
 import {
   CardShell, SectionHeader, Button,
-  LoadingSkeleton, ErrorState, EmptyState
+  LoadingSkeleton, ErrorState, EmptyState,
+  FoodDnaRing, GamificationStrip, AIWhisper, Chip,
 } from '../../components/ges';
 import { riseIn, gentleFade, pressResponse, withReducedMotion } from '../../lib/motion';
 
@@ -47,19 +48,15 @@ const bannerSlides = [
 ];
 
 const FILTER_CHIPS = [
-  { label: '⚡ سریع', key: 'isQuick' },
-  { label: '💚 سالم', key: 'isHealthy' },
-  { label: '🌿 گیاهی', key: 'vegetarian' },
-  { label: '🇮🇷 ایرانی', key: 'persian' },
+  { label: 'سریع', key: 'isQuick' },
+  { label: 'سالم', key: 'isHealthy' },
+  { label: 'گیاهی', key: 'vegetarian' },
+  { label: 'ایرانی', key: 'persian' },
 ];
 
-const TOP_CATEGORIES = ['کباب', 'خورشت', 'پلو', 'آش', 'دسر', 'سالاد', 'نوشیدنی', 'غذای ساده و فوری', 'دلمه'];
-
-const CATEGORY_EMOJIS = {
-  'کباب': '🍢', 'خورشت': '🥘', 'پلو': '🍚', 'آش': '🍜',
-  'غذای ساده و فوری': '⚡', 'دلمه': '🫔', 'سالاد': '🥗',
-  'دسر': '🍰', 'نوشیدنی': '🍹',
-};
+// Two category rows (the approved Home structure): dish-type + lighter fare.
+const CATEGORY_ROW_PRIMARY = ['کباب', 'خورشت', 'پلو', 'آش', 'دلمه'];
+const CATEGORY_ROW_SECONDARY = ['سالاد', 'دسر', 'نوشیدنی', 'غذای ساده و فوری'];
 
 function applyChipFilters(recipes, activeChips) {
   if (!recipes) return [];
@@ -98,6 +95,10 @@ export default function HomePage() {
   const [recommendations, setRecommendations] = useState([]);
   const [recsLoading, setRecsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  // GES Home: real personal signals (token-gated, honest-null if absent)
+  const [dnaBand, setDnaBand] = useState(null);          // profile.maturity.band
+  const [gami, setGami] = useState(null);                // /gamification/me
+  const [whisperDismissed, setWhisperDismissed] = useState(false);
   const scrollEventFired = useRef(false);
   const searchTimer = useRef(null);
 
@@ -125,7 +126,7 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleWindowScroll);
   }, [handleWindowScroll, trackEvent]);
 
-  // دریافت پیشنهادهای شخصی‌سازی‌شده (فقط در صورت وجود توکن)
+  // دریافت پیشنهادهای شخصی‌سازی‌شده + سیگنال‌های شخصی (فقط در صورت وجود توکن)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -146,7 +147,22 @@ export default function HomePage() {
         setRecsLoading(false);
       }
     };
+    // Food DNA maturity (real band) + private gamification progress — both best-effort.
+    const fetchProfileBand = async () => {
+      try {
+        const { data } = await apiClient.get('/profile');
+        setDnaBand(data?.maturity?.band ?? null);
+      } catch { /* honest-null: section hidden when unavailable */ }
+    };
+    const fetchGamification = async () => {
+      try {
+        const { data } = await apiClient.get('/gamification/me');
+        setGami(data ?? null);
+      } catch { /* honest-null */ }
+    };
     fetchRecommendations();
+    fetchProfileBand();
+    fetchGamification();
   }, [trackEvent]);
 
   const handleSearchChange = useCallback((value) => {
@@ -219,12 +235,10 @@ export default function HomePage() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // فعال‌سازی با کیبورد برای سطوح کلیک‌پذیرِ غیر-دکمه (دسترسی‌پذیری WCAG 2.1.1)
   const onKeyActivate = (fn) => (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); }
   };
 
-  // آماده‌سازی داده‌های تب‌ها
   const quickRecipes = useMemo(() => recipes?.filter(r => {
     const ct = parseInt(r.cook_time, 10) || parseInt(r.cookingTime, 10);
     return !isNaN(ct) && ct <= 30;
@@ -238,6 +252,14 @@ export default function HomePage() {
     return filteredRecipes;
   }, [activeTab, quickRecipes, popularRecipes, filteredRecipes]);
 
+  // The top personal pick surfaced as an honest in-context AI whisper (disclosed).
+  const whisperPick = useMemo(() => {
+    if (!recommendations?.length) return null;
+    const r = recommendations[0];
+    return { ...r, id: r.recipeId || r.id, reason: r.why || r.reason || '' };
+  }, [recommendations]);
+
+  // ── State: loading ──
   if (isLoading) {
     return (
       <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
@@ -247,6 +269,7 @@ export default function HomePage() {
     );
   }
 
+  // ── State: error ──
   if (isError) {
     return (
       <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
@@ -261,20 +284,60 @@ export default function HomePage() {
     );
   }
 
+  // ── State: empty (no recipes at all) ──
+  if (!recipes || recipes.length === 0) {
+    return (
+      <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 100px' }}>
+        <EmptyState
+          title="هنوز رسپی‌ای نیست"
+          message="به‌زودی رسپی‌های تازه اینجا ظاهر می‌شوند. می‌توانی از دستیار هوش مصنوعی شروع کنی."
+          actionLabel="پرسیدن از دستیار"
+          onAction={() => navigate('/ai-chat')}
+        />
+      </Container>
+    );
+  }
+
   return (
     <Container size="sm" style={{ maxWidth: 480, margin: '0 auto', padding: '0 12px 120px' }}>
-      {/* هدر ساده و مدرن */}
-      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 20, marginTop: 8 }}>
+      {/* هدر + سلام */}
+      <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 'var(--g-space-5)', marginTop: 'var(--g-space-2)' }}>
         <Group justify="space-between" align="center">
           <div>
             <Group gap={8}>
               <IconChefHat size={28} color="var(--g-color-brand-600)" />
               <Title order={3} c="var(--g-color-text-primary)" style={{ fontWeight: 800, letterSpacing: '-0.5px' }}>Garnish OS</Title>
             </Group>
-            <Text size="sm" c="var(--g-color-text-secondary)">دستیار هوشمند تغذیه و آشپزی شما</Text>
+            <Text size="sm" c="var(--g-color-text-secondary)">امروز چی دوست داری بپزی؟</Text>
           </div>
         </Group>
       </motion.div>
+
+      {/* Food DNA + پیشرفت شخصی (داده‌های واقعی، فقط برای کاربر واردشده) */}
+      {(dnaBand || gami) && (
+        <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 'var(--g-space-5)' }}>
+          <CardShell>
+            <Group justify="space-between" align="center" wrap="nowrap" style={{ gap: 'var(--g-space-4)' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <SectionHeader as="h2" title="ذائقهٔ غذایی تو" subtitle="هرچه بیشتر بپزی و انتخاب کنی، پیشنهادها دقیق‌تر می‌شوند." />
+                {gami && (
+                  <Box mt="var(--g-space-3)">
+                    <GamificationStrip
+                      streakDays={gami?.streak?.currentWeeks ?? 0}
+                      streakState={(gami?.streak?.currentWeeks ?? 0) > 0 ? 'active' : 'broken'}
+                      streakLabelSingular="هفته پشت‌سرهم"
+                      streakLabelPlural="هفته پشت‌سرهم"
+                      restartLabel="شروع تازه — هر وقت خواستی"
+                      achievement={gami?.achievements?.allEarned?.[0]?.title ? { label: gami.achievements.allEarned[0].title } : null}
+                    />
+                  </Box>
+                )}
+              </div>
+              {dnaBand && <FoodDnaRing band={dnaBand} size={108} label="ذائقهٔ تو" />}
+            </Group>
+          </CardShell>
+        </motion.div>
+      )}
 
       {/* بنر اسلایدر */}
       <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
@@ -356,14 +419,13 @@ export default function HomePage() {
                       }}
                       style={{ padding: '12px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                     >
-                      <Text size="xl">🍽️</Text>
+                      <IconChefHat size={18} color="var(--g-color-food-saffron)" aria-hidden="true" />
                       <div style={{ flex: 1 }}>
                         <Text size="sm" fw={600}>{recipe.title}</Text>
                         <Text size="xs" c="var(--g-color-text-muted)">
-                          {(recipe.ingredients || []).slice(0, 2).map(i => i.name).join('، ')}
+                          {(recipe._search?.matchedTerms || []).slice(0, 3).join('، ')}
                         </Text>
                       </div>
-                      <Badge variant="light" color="saffron" size="sm" radius="xl">{recipe.cookingTime ? `${recipe.cookingTime} دقیقه` : ''}</Badge>
                     </motion.div>
                   ))}
                 </ScrollArea.Autosize>
@@ -381,44 +443,40 @@ export default function HomePage() {
         </Group>
       </motion.div>
 
-      {/* فیلتر چیپس */}
+      {/* فیلتر چیپس — از کیت GES */}
       <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <ScrollArea type="never" mb="lg">
           <Group gap="xs" wrap="nowrap">
             {FILTER_CHIPS.map(chip => {
               const isActive = activeChips.includes(chip.key);
               return (
-                <motion.div key={chip.key} {...pressResponse}>
-                  <Badge
-                    variant={isActive ? 'filled' : 'outline'}
-                    size="lg"
-                    radius="xl"
-                    role="button"
-                    tabIndex={0}
-                    aria-pressed={isActive}
-                    aria-label={chip.label}
-                    style={{
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      padding: '8px 18px',
-                      fontWeight: 500,
-                      backgroundColor: isActive ? 'var(--g-color-brand-600)' : 'transparent',
-                      color: isActive ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)',
-                      border: `1px solid ${isActive ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`
-                    }}
-                    onClick={() => handleFilterToggle(chip.key, isActive)}
-                    onKeyDown={onKeyActivate(() => handleFilterToggle(chip.key, isActive))}
-                  >
-                    {chip.label}
-                  </Badge>
-                </motion.div>
+                <Chip
+                  key={chip.key}
+                  label={chip.label}
+                  selected={isActive}
+                  onClick={() => handleFilterToggle(chip.key, isActive)}
+                />
               );
             })}
           </Group>
         </ScrollArea>
       </motion.div>
 
-      {/* غذای ویژه امروز (کارت بزرگ) */}
+      {/* پیشنهاد هوش مصنوعی برای امشب — AI Whisper (افشای شفاف) */}
+      {whisperPick && !whisperDismissed && (
+        <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 'var(--g-space-5)' }}>
+          <AIWhisper
+            text={`برای امشب: ${whisperPick.title || 'یک پیشنهاد تازه'}`}
+            reason={whisperPick.reason || 'بر اساس انتخاب‌های اخیر تو'}
+            acceptLabel="ببین"
+            dismissLabel="نه الان"
+            onAccept={() => { navigate(`/recipe/${whisperPick.id}`); trackEvent('recommendation_click', { recipeId: whisperPick.id, surface: 'home_whisper' }); }}
+            onDismiss={() => { setWhisperDismissed(true); trackEvent('whisper_dismissed', { surface: 'home' }); }}
+          />
+        </motion.div>
+      )}
+
+      {/* غذای ویژه امروز */}
       {todaySpecial && (
         <motion.div
           variants={withReducedMotion(riseIn)} initial="initial" animate="animate" {...pressResponse}
@@ -426,91 +484,70 @@ export default function HomePage() {
           style={{ marginBottom: 'var(--g-space-5)', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
         >
           <CardShell>
-            <Group justify="space-between" wrap="nowrap" align="flex-start">
-              <div>
-                <Badge
-                  variant="filled"
-                  color="saffron"
-                  size="sm"
-                  mb="xs"
-                  leftSection={<IconStars size={14} />}
-                  radius="xl"
-                >
-                  پیشنهاد سرآشپز امروز
-                </Badge>
-                <Title order={3} c="var(--g-color-text-primary)" mb="xs">{todaySpecial.title}</Title>
-                <Text size="xs" c="var(--g-color-text-secondary)" mb="md">
-                  {todaySpecial.cook_time ? `⏱ ${todaySpecial.cook_time}` : ''}
-                  {todaySpecial.difficulty ? `  •  📊 ${todaySpecial.difficulty}` : ''}
-                </Text>
-                <Button
-                  variant="secondary"
-                  leftIcon={<IconArrowRight size={16} />}
-                  onClick={(e) => { e.stopPropagation(); navigate(`/recipe/${todaySpecial.id}`); }}
-                >
-                  دیدن رسپی
-                </Button>
-              </div>
-              <Text style={{ fontSize: 80, opacity: 0.08, transform: 'rotate(15deg)', position: 'absolute', top: 10, right: 20, pointerEvents: 'none' }}>
-                🍽️
+            <SectionHeader as="h2" title="پیشنهاد سرآشپز امروز" subtitle={todaySpecial.title} />
+            <Group mt="var(--g-space-3)" gap="var(--g-space-3)" align="center">
+              <Text size="xs" c="var(--g-color-text-secondary)">
+                {todaySpecial.cook_time ? `⏱ ${todaySpecial.cook_time}` : ''}
+                {todaySpecial.difficulty ? `  •  ${todaySpecial.difficulty}` : ''}
               </Text>
+              <Button
+                variant="secondary"
+                leftIcon={<IconArrowRight size={16} />}
+                onClick={(e) => { e.stopPropagation(); navigate(`/recipe/${todaySpecial.id}`); }}
+              >
+                دیدن رسپی
+              </Button>
             </Group>
           </CardShell>
         </motion.div>
       )}
 
-      {/* پیشنهادهای ویژه برای شما (در صورت وجود توکن) */}
+      {/* برای تو امشب — پیشنهادهای شخصی‌سازی‌شده */}
       {!recsLoading && recommendations.length > 0 && (
         <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" style={{ marginBottom: 'var(--g-space-5)' }}>
-          <CardShell>
-            <SectionHeader
-              as="h2"
-              title="پیشنهادهای ویژه برای شما"
-              action={<Badge variant="light" color="saffron" size="sm" radius="xl">شخصی‌سازی شده</Badge>}
-            />
-            <SimpleGrid cols={1} spacing="sm">
-              {recommendations.slice(0, 4).map(rec => {
-                const adaptedRecipe = { ...rec, id: rec.recipeId || rec.id };
-                return (
-                  <RecipeCard
-                    key={adaptedRecipe.id}
-                    recipe={adaptedRecipe}
-                    onClick={() => {
-                      navigate(`/recipe/${adaptedRecipe.id}`);
-                      trackEvent('recommendation_click', { recipeId: adaptedRecipe.id });
-                    }}
-                  />
-                );
-              })}
-            </SimpleGrid>
-          </CardShell>
+          <SectionHeader as="h2" title="برای تو امشب" />
+          <SimpleGrid cols={1} spacing="sm" mt="var(--g-space-3)">
+            {recommendations.slice(0, 4).map(rec => {
+              const adaptedRecipe = { ...rec, id: rec.recipeId || rec.id };
+              return (
+                <RecipeCard
+                  key={adaptedRecipe.id}
+                  recipe={adaptedRecipe}
+                  onClick={() => {
+                    navigate(`/recipe/${adaptedRecipe.id}`);
+                    trackEvent('recommendation_click', { recipeId: adaptedRecipe.id });
+                  }}
+                />
+              );
+            })}
+          </SimpleGrid>
         </motion.div>
       )}
 
-      {/* دسته‌بندی‌ها */}
+      {/* دو ردیف دسته‌بندی (Chip) */}
       <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <Box mb="xl">
-          <SectionHeader as="h2" title="📂 دسته‌بندی‌ها" />
-          <SimpleGrid cols={3} spacing="sm" style={{ alignItems: 'start' }}>
-            {TOP_CATEGORIES.map((cat) => (
-              <CardShell
-                key={cat}
-                interactive
-                onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 80, textAlign: 'center' }}>
-                  <Text size={30} style={{ lineHeight: 1.2 }}>{CATEGORY_EMOJIS[cat] || '🍽️'}</Text>
-                  <Text size="xs" fw={600} c="var(--g-color-text-primary)" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                    {cat}
-                  </Text>
-                </div>
-              </CardShell>
-            ))}
-          </SimpleGrid>
+          <SectionHeader as="h2" title="دسته‌بندی غذاها" />
+          <ScrollArea type="never" mt="var(--g-space-3)" mb="var(--g-space-2)">
+            <Group gap="xs" wrap="nowrap">
+              {CATEGORY_ROW_PRIMARY.map((cat) => (
+                <Chip key={cat} variant="category" label={cat}
+                  onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }} />
+              ))}
+            </Group>
+          </ScrollArea>
+          <ScrollArea type="never">
+            <Group gap="xs" wrap="nowrap">
+              {CATEGORY_ROW_SECONDARY.map((cat) => (
+                <Chip key={cat} variant="category" label={cat}
+                  onClick={() => { navigate(`/category/${cat}`); trackEvent('category_click', { category: cat }); }} />
+              ))}
+            </Group>
+          </ScrollArea>
         </Box>
       </motion.div>
 
-      {/* هوش مصنوعی — سطح AI طبق توکن‌های GES */}
+      {/* هوش مصنوعی — ورودی گفتگو */}
       <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate" {...pressResponse}>
         <Box
           mb="xl"
@@ -541,7 +578,7 @@ export default function HomePage() {
         </Box>
       </motion.div>
 
-      {/* تب‌ها برای رسپی‌ها */}
+      {/* ریل رسپی‌ها با تب */}
       <motion.div variants={withReducedMotion(riseIn)} initial="initial" animate="animate">
         <Group mb="md" gap="xs">
           {[
@@ -566,13 +603,13 @@ export default function HomePage() {
             onAction={() => { setActiveChips([]); setActiveTab('all'); }}
           />
         ) : (
-          <SimpleGrid cols={1} spacing="sm" mb="lg">
-            {tabRecipes.slice(0, 4).map(recipe => (
+          <SimpleGrid cols={2} spacing="sm" mb="lg">
+            {tabRecipes.slice(0, 6).map(recipe => (
               <RecipeCard key={recipe.id} recipe={recipe} onClick={() => { navigate(`/recipe/${recipe.id}`); trackEvent('recipe_view', { recipeId: recipe.id }); }} />
             ))}
           </SimpleGrid>
         )}
-        {total > 4 && (
+        {total > 6 && (
           <Button
             variant="primary"
             fullWidth
@@ -600,6 +637,7 @@ export default function HomePage() {
             radius="xl"
             style={{ boxShadow: 'var(--g-shadow-2)' }}
             onClick={scrollToTop}
+            aria-label="برگشت به بالا"
           >
             <IconArrowUp size={22} />
           </ActionIcon>
