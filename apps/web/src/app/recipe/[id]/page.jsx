@@ -272,8 +272,8 @@ export default function RecipeDetailPage() {
           fullWidth
           leftIcon={<IconChefHat size={20} />}
           onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             trackEvent(EventType.START_COOKING_CLICK, { recipeId: finalRecipe.id });
+            navigate(`/cook/${finalRecipe.id}`);
           }}
         >
           بپز

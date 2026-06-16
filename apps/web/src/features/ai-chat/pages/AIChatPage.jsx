@@ -61,7 +61,7 @@ export default function AIChatPage() {
   useEffect(() => { scrollToBottom(); }, [messages]);
 
   return (
-    <Container fluid p={0} style={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#0b0e14' }}>
+    <Container fluid p={0} style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--g-color-bg-surface)' }}>
       <ChatHeader onClear={handleClear} />
       {/* E47-L4 grounded assistant tools (functional, not visual — Phase 3 owns styling) */}
       <GroundedAssist />
@@ -87,7 +87,7 @@ export default function AIChatPage() {
           {(styles) => (
             <Tooltip label="برو به آخر">
               <ActionIcon variant="filled" color="orange" size="lg" radius="xl" onClick={scrollToBottom}
-                style={{ ...styles, position: 'absolute', bottom: 90, right: 20, zIndex: 20, boxShadow: '0 4px 12px rgba(255,107,53,0.3)' }}>
+                style={{ ...styles, position: 'absolute', bottom: 90, right: 20, zIndex: 20, boxShadow: 'var(--g-shadow-2)' }}>
                 <IconChevronDown size={20} />
               </ActionIcon>
             </Tooltip>

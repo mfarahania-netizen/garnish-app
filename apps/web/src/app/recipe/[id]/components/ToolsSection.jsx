@@ -22,7 +22,7 @@ export default function ToolsSection({ tools }) {
       <Accordion.Control>
         <Group justify="space-between" style={{ width: '100%' }}>
           <Group gap="xs">
-            <IconTools size={20} color="#FF6B35" />
+            <IconTools size={20} color="var(--g-color-food-saffron)" />
             <Text fw={700} size="sm">ابزارها</Text>
           </Group>
           <Badge variant="light" color="orange" size="sm">{parsedTools.length} عدد</Badge>
@@ -31,7 +31,7 @@ export default function ToolsSection({ tools }) {
       <Accordion.Panel>
         <Group gap="sm">
           {parsedTools.map((tool, idx) => (
-            <Paper key={`${tool}-${idx}`} p="xs" radius="md" withBorder style={{ background: 'rgba(255,255,255,0.75)' }}>
+            <Paper key={`${tool}-${idx}`} p="xs" radius="md" withBorder style={{ background: 'var(--g-color-bg-surface)' }}>
               <Group gap={6} wrap="nowrap">
                 <Text>{getToolEmoji(tool)}</Text>
                 <Text size="xs">{tool}</Text>

@@ -27,7 +27,7 @@ export default function SimilarRecipes({ recipeId }) {
 
   return (
     <Paper p="md" radius="lg" mb="lg" withBorder data-testid="similar-recipes">
-      <Group gap="xs" mb="sm"><IconToolsKitchen2 size={18} color="#FF6B35" /><Text size="sm" fw={700}>غذاهای مشابه</Text></Group>
+      <Group gap="xs" mb="sm"><IconToolsKitchen2 size={18} color="var(--g-color-food-saffron)" /><Text size="sm" fw={700}>غذاهای مشابه</Text></Group>
       <Stack gap={6}>
         {state.results.map((r) => (
           <Anchor key={r.recipeId} component={Link} to={`/recipe/${r.recipeId}`} underline="never">

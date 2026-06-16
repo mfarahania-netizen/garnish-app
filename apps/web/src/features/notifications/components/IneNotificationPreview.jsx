@@ -34,7 +34,7 @@ export default function IneNotificationPreview() {
   return (
     <Paper p="md" radius="lg" mb="lg" withBorder data-testid="ine-preview">
       <Group gap="xs" mb="sm">
-        <IconBrain size={18} color="#FF6B35" />
+        <IconBrain size={18} color="var(--g-color-food-saffron)" />
         <Text size="sm" fw={700}>پیش‌نمایش هوشمند اعلان‌ها</Text>
         {state.data?.dryRun && <Badge size="xs" color="blue" variant="light">آزمایشی</Badge>}
       </Group>

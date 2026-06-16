@@ -16,7 +16,7 @@ export default function ThinkingIndicator() {
           width: 36,
           height: 36,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #FF6B35, #FF8F65)',
+          background: 'linear-gradient(135deg, var(--g-color-brand-400), var(--g-color-brand-600))',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -32,7 +32,7 @@ export default function ThinkingIndicator() {
             custom={i}
             variants={dotVariants}
             animate="animate"
-            style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF6B35' }}
+            style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--g-color-food-saffron)' }}
           />
         ))}
       </Group>

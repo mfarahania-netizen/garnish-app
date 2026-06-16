@@ -15,7 +15,7 @@ export default function RecipeByline({ recipe }) {
   return (
     <Group gap="xs" mb="md" wrap="wrap" data-testid="recipe-byline">
       {authorName && (
-        <Group gap={4}><IconUser size={14} color="#888" /><Text size="xs" c="dimmed">به‌کوشش {authorName}</Text></Group>
+        <Group gap={4}><IconUser size={14} color="var(--g-color-text-muted)" /><Text size="xs" c="dimmed">به‌کوشش {authorName}</Text></Group>
       )}
       {cats.map((c) => (
         // categories double as a filter facet (links to the category-filtered recipe list)

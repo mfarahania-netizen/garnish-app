@@ -171,8 +171,8 @@ export default function PreferencesPage() {
     <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
       <Box mb="lg" mt="md">
         <Group gap="xs" align="center">
-          <IconPalette size={32} style={{ color: '#FF6B35' }} />
-          <Title order={3} style={{ color: '#1A237E' }}>تنظیمات سلیقه</Title>
+          <IconPalette size={32} style={{ color: 'var(--g-color-food-saffron)' }} />
+          <Title order={3} style={{ color: 'var(--g-color-text-primary)' }}>تنظیمات سلیقه</Title>
         </Group>
         <Text size="xs" c="dimmed" mt={4}>
           رژیم غذایی، سطح مهارت و آلرژی‌های خود را مدیریت کنید
@@ -189,13 +189,13 @@ export default function PreferencesPage() {
             transition={{ duration: 0.3 }}
           >
             <Paper p="lg" radius="xl" style={{
-              border: '1px solid #FF6B35',
-              background: dark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)',
+              border: '1px solid var(--g-color-food-saffron)',
+              background: dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-bg-surface)',
               backdropFilter: 'blur(8px)',
-              boxShadow: dark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
+              boxShadow: dark ? 'none' : 'var(--g-shadow-1)',
             }}>
               <Group justify="space-between" mb="md">
-                <Text fw={700} size="sm" c={dark ? '#fff' : '#1A237E'}>خلاصه سلیقهٔ شما</Text>
+                <Text fw={700} size="sm" c={dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-text-primary)'}>خلاصه سلیقهٔ شما</Text>
                 <Button 
                   variant="light" 
                   color="orange" 
@@ -247,8 +247,8 @@ export default function PreferencesPage() {
             transition={{ duration: 0.3 }}
           >
             <Paper p="md" radius="lg" style={{
-              border: '1px solid #FF6B35',
-              background: dark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)',
+              border: '1px solid var(--g-color-food-saffron)',
+              background: dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-bg-surface)',
               backdropFilter: 'blur(8px)',
             }}>
               <Stack gap="md">
@@ -397,7 +397,7 @@ export default function PreferencesPage() {
           bottom: 80,
           right: 16,
           zIndex: 50,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--g-shadow-1)',
         }}
         onClick={scrollToTop}
       >

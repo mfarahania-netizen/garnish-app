@@ -36,6 +36,12 @@ const SupportPage = lazy(() => import('./features/support/pages/SupportPage'));
 const PreferencesPage = lazy(() => import('./features/profile/pages/PreferencesPage'));
 const AIChatPage = lazy(() => import('./features/ai-chat/pages/AIChatPage'));
 const NotificationsPage = lazy(() => import('./features/notifications/pages/NotificationsPage'));
+// S22 — missing screens
+const OnboardingPage = lazy(() => import('./app/onboarding/page'));
+const CookModePage = lazy(() => import('./app/cook/[id]/page'));
+const FoodDnaPage = lazy(() => import('./app/food-dna/page'));
+const AchievementsPage = lazy(() => import('./app/achievements/page'));
+const SettingsPage = lazy(() => import('./app/settings/page'));
 
 function RouteFallback() {
   return (
@@ -129,6 +135,10 @@ function AnimatedRoutes() {
           <Route path="favorites" element={<ProtectedRoute><PageWrapper><FavoritesPage /></PageWrapper></ProtectedRoute>} />
           <Route path="ai-chat" element={<ProtectedRoute><PageWrapper><AIChatPage /></PageWrapper></ProtectedRoute>} />
           <Route path="notifications" element={<ProtectedRoute><PageWrapper><NotificationsPage /></PageWrapper></ProtectedRoute>} />
+          {/* S22 — missing screens (in-layout; handle no-token gracefully) */}
+          <Route path="food-dna" element={<PageWrapper><FoodDnaPage /></PageWrapper>} />
+          <Route path="achievements" element={<PageWrapper><AchievementsPage /></PageWrapper>} />
+          <Route path="settings" element={<PageWrapper><SettingsPage /></PageWrapper>} />
         </Route>
 
         {/* 🆕 مسیر admin مستقل، بدون MainLayout */}
@@ -150,6 +160,10 @@ function AnimatedRoutes() {
             </AdminRoute>
           }
         />
+
+        {/* S22 — immersive standalone screens (no bottom nav) */}
+        <Route path="onboarding" element={<OnboardingPage />} />
+        <Route path="cook/:id" element={<CookModePage />} />
       </Routes>
       </Suspense>
     </AnimatePresence>

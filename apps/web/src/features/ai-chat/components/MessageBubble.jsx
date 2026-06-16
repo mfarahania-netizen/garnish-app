@@ -25,13 +25,13 @@ export default function MessageBubble({ message, index }) {
         <Box
           p="md"
           style={{
-            background: isUser ? 'linear-gradient(135deg, #1e3a5f, #2a4a6b)' : 'rgba(255,255,255,0.07)',
+            background: isUser ? 'linear-gradient(135deg, var(--g-color-text-primary), var(--g-color-text-primary))' : 'var(--g-color-bg-surface)',
             borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-            border: `1px solid ${isUser ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'}`,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            border: `1px solid ${isUser ? 'var(--g-color-border-subtle)' : 'var(--g-color-border-subtle)'}`,
+            boxShadow: 'var(--g-shadow-1)',
           }}
         >
-          <Text size="sm" style={{ color: '#fff', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          <Text size="sm" style={{ color: isUser ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-primary)', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
             {message.text}
           </Text>
         </Box>

@@ -10,7 +10,7 @@ export default function StepsSection({ steps }) {
       <Accordion.Control>
         <Group justify="space-between" style={{ width: '100%' }}>
           <Group gap="xs">
-            <IconChefHat size={20} color="#FF6B35" />
+            <IconChefHat size={20} color="var(--g-color-food-saffron)" />
             <Text fw={700} size="sm">مراحل پخت</Text>
           </Group>
           <Badge variant="light" color="orange" size="sm">{steps.length} مرحله</Badge>
@@ -18,7 +18,7 @@ export default function StepsSection({ steps }) {
       </Accordion.Control>
       <Accordion.Panel>
         <Box style={{ position: 'relative', paddingRight: 36 }}>
-          <div style={{ position: 'absolute', top: 10, right: 16, bottom: 10, width: 2, background: 'linear-gradient(to bottom, #FF6B35, #1A237E)' }} />
+          <div style={{ position: 'absolute', top: 10, right: 16, bottom: 10, width: 2, background: 'linear-gradient(to bottom, var(--g-color-brand-400), var(--g-color-brand-600))' }} />
           <Stack gap="xl">
             {steps.map((step, idx) => (
               <motion.div key={step.id || idx} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.03 }}>

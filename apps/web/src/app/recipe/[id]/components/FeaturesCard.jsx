@@ -61,20 +61,20 @@ export default function FeaturesCard({ recipe }) {
       radius="lg"
       mb="lg"
       style={{
-        background: 'rgba(255,255,255,0.72)',
+        background: 'var(--g-color-bg-surface)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(0,0,0,0.05)',
+        border: '1px solid var(--g-color-border-subtle)',
         cursor: 'pointer',
       }}
       onClick={toggle}
     >
       <Group justify="space-between" align="center">
         <Group gap="xs">
-          <IconInfoCircle size={20} color="#FF6B35" />
-          <Text size="sm" fw={700} c="#1A237E">ویژگی‌های غذا</Text>
+          <IconInfoCircle size={20} color="var(--g-color-food-saffron)" />
+          <Text size="sm" fw={700} c="var(--g-color-text-primary)">ویژگی‌های غذا</Text>
         </Group>
         <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ type: 'spring', stiffness: 200, damping: 20 }}>
-          <IconArrowDown size={18} color="#666" />
+          <IconArrowDown size={18} color="var(--g-color-text-muted)" />
         </motion.div>
       </Group>
       {open && (
@@ -124,7 +124,7 @@ export default function FeaturesCard({ recipe }) {
 
 function FeatureBadge({ color, icon, label, value }) {
   return (
-    <Paper p="xs" radius="md" withBorder style={{ borderColor: '#eee' }}>
+    <Paper p="xs" radius="md" withBorder style={{ borderColor: 'var(--g-color-border-subtle)' }}>
       <Group gap="xs" wrap="nowrap" align="flex-start">
         <ThemeIcon size="sm" radius="md" color={color} variant="light" style={{ flexShrink: 0 }}>{icon}</ThemeIcon>
         <div style={{ minWidth: 0 }}>

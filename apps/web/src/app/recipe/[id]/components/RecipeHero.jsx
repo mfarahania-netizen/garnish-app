@@ -8,11 +8,11 @@ export default function RecipeHero({ recipe, favorite, onToggleFavorite, onShare
     <Paper
       radius="xl"
       style={{
-        background: 'linear-gradient(135deg, #1A237E, #FF6B35)',
+        background: 'linear-gradient(135deg, var(--g-color-brand-400), var(--g-color-brand-600))',
         padding: 0,
         overflow: 'hidden',
         marginBottom: 24,
-        boxShadow: '0 12px 30px rgba(26,35,126,0.3)',
+        boxShadow: 'var(--g-shadow-1)',
         position: 'relative',
       }}
     >
@@ -37,7 +37,7 @@ export default function RecipeHero({ recipe, favorite, onToggleFavorite, onShare
                 size="lg"
                 radius="xl"
                 onClick={onToggleFavorite}
-                style={{ backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
+                style={{ backgroundColor: 'var(--g-color-bg-surface)', backdropFilter: 'blur(4px)' }}
               >
                 <IconHeart size={18} fill={favorite ? 'white' : 'none'} color="white" />
               </ActionIcon>
@@ -48,7 +48,7 @@ export default function RecipeHero({ recipe, favorite, onToggleFavorite, onShare
                 size="lg"
                 radius="xl"
                 onClick={onShare}
-                style={{ backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}
+                style={{ backgroundColor: 'var(--g-color-bg-surface)', backdropFilter: 'blur(4px)' }}
               >
                 <IconShare size={18} color="white" />
               </ActionIcon>

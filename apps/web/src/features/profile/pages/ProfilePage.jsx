@@ -17,6 +17,7 @@ import {
 import { useProfileQuery } from '../../../hooks/useProfileQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import apiClient from '../../../lib/apiClient'; // 🆕
+import { FoodDnaRing, CardShell } from '../../../components/ges';
 
 const chefLevels = [
   { minXP: 0, title: 'نوآموز', color: 'gray' },
@@ -35,7 +36,13 @@ export default function ProfilePage() {
   const dark = colorScheme === 'dark';
   const [nameModalOpen, { open: openNameModal, close: closeNameModal }] = useDisclosure(false);
   const [newName, setNewName] = useState('');
+  const [dnaBand, setDnaBand] = useState(null); // real Food DNA maturity band (S22)
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!user) return;
+    apiClient.get('/profile').then(({ data }) => setDnaBand(data?.maturity?.band ?? null)).catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     if (user) trackEvent('profile_view');
@@ -92,9 +99,9 @@ export default function ProfilePage() {
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const textColor = dark ? '#fff' : '#1A237E';
-  const cardBg = dark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)';
-  const borderColor = '#FF6B35';
+  const textColor = dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-text-primary)';
+  const cardBg = dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-bg-surface)';
+  const borderColor = 'var(--g-color-food-saffron)';
 
   const statCards = [
     { value: stats.recipeCount, label: 'رسپی', icon: IconPencil, color: 'blue' },
@@ -105,7 +112,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}>
-        <IconUser size={48} color="#FF6B35" />
+        <IconUser size={48} color="var(--g-color-food-saffron)" />
         <Text fw={700} mb="sm" c={textColor}>پروفایل کاربر</Text>
         <Text size="sm" c="dimmed" mb="xl">برای دیدن پروفایل خود وارد شوید</Text>
         <Button fullWidth size="md" radius="xl" onClick={() => navigate('/auth')}>ورود / عضویت</Button>
@@ -130,6 +137,23 @@ export default function ProfilePage() {
 
   return (
     <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 40px' }}>
+      {/* S22 — Food DNA summary + quick links to the new screens */}
+      <Box mb="md" mt="md">
+        <CardShell>
+          <Group justify="space-between" align="center" wrap="nowrap" style={{ gap: 'var(--g-space-3)' }}>
+            <Stack style={{ flex: 1, minWidth: 0, gap: 'var(--g-space-2)' }}>
+              <Text fw={700} c="var(--g-color-text-primary)">ذائقهٔ غذایی تو</Text>
+              <Group gap="var(--g-space-2)" wrap="wrap">
+                <Button variant="light" color="saffron" radius="xl" size="xs" onClick={() => navigate('/food-dna')}>ذائقهٔ من</Button>
+                <Button variant="light" color="saffron" radius="xl" size="xs" onClick={() => navigate('/achievements')}>دستاوردها</Button>
+                <Button variant="light" color="gray" radius="xl" size="xs" onClick={() => navigate('/settings')}>تنظیمات</Button>
+              </Group>
+            </Stack>
+            {dnaBand && <FoodDnaRing band={dnaBand} size={84} label="ذائقه" />}
+          </Group>
+        </CardShell>
+      </Box>
+
       {/* هدر گرادیانتی */}
       <Paper
         p="lg"
@@ -137,16 +161,16 @@ export default function ProfilePage() {
         mb="md"
         style={{
           background: dark
-            ? 'linear-gradient(135deg, #1A237E 0%, #283593 100%)'
-            : 'linear-gradient(135deg, #FF6B35 0%, #FF8A65 100%)',
+            ? 'linear-gradient(135deg, var(--g-color-text-primary) 0%, var(--g-color-text-primary) 100%)'
+            : 'linear-gradient(135deg, var(--g-color-brand-400) 0%, var(--g-color-brand-600) 100%)',
           color: 'white',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--g-shadow-1)',
         }}
       >
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-        <div style={{ position: 'absolute', bottom: -20, left: -20, width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'var(--g-color-bg-surface)' }} />
+        <div style={{ position: 'absolute', bottom: -20, left: -20, width: 80, height: 80, borderRadius: '50%', background: 'var(--g-color-bg-surface)' }} />
 
         <Group wrap="nowrap" style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ position: 'relative' }}>
@@ -155,13 +179,13 @@ export default function ProfilePage() {
               radius="xl"
               src={profile.avatar ? `http://localhost:3000${profile.avatar}` : undefined}
               color="white"
-              style={{ border: '3px solid rgba(255,255,255,0.3)' }}
+              style={{ border: '3px solid var(--g-color-border-subtle)' }}
             >
               {!profile.avatar && <Text size={26}>{profile.name?.charAt(0) || user.name?.charAt(0)}</Text>}
             </Avatar>
             <ActionIcon
               size="xs" radius="xl" variant="filled" color="white"
-              style={{ position: 'absolute', bottom: 0, right: 0, border: '2px solid #FF6B35', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+              style={{ position: 'absolute', bottom: 0, right: 0, border: '2px solid var(--g-color-food-saffron)', boxShadow: 'var(--g-shadow-1)' }}
               onClick={() => fileInputRef.current?.click()}
             >
               <IconCamera size={10} />
@@ -182,7 +206,7 @@ export default function ProfilePage() {
               <Badge variant="light" color="white" size="sm">سطح {chefLevels.indexOf(currentLevel) + 1}</Badge>
             </Group>
             <Progress value={progressValue} color="yellow" size="sm" radius="xl" />
-            <Text size="xs" mt={4} style={{ color: 'rgba(255,255,255,0.8)' }}>
+            <Text size="xs" mt={4} style={{ color: 'white' }}>
               {totalXP} XP {nextLevel ? `(تا ${nextLevel.title} ${nextLevel.minXP - totalXP} XP)` : '(حداکثر)'}
             </Text>
           </div>
@@ -201,7 +225,7 @@ export default function ProfilePage() {
               backdropFilter: 'blur(8px)',
               border: `1px solid ${borderColor}`,
               textAlign: 'center',
-              boxShadow: dark ? 'none' : '0 2px 10px rgba(0,0,0,0.05)',
+              boxShadow: dark ? 'none' : 'var(--g-shadow-1)',
             }}
           >
             <Stack gap={4} align="center">
@@ -218,15 +242,15 @@ export default function ProfilePage() {
       {/* لینک‌های سریع */}
       <Paper radius="lg" mb="md" style={{ overflow: 'hidden', background: cardBg, backdropFilter: 'blur(8px)', border: `1px solid ${borderColor}` }}>
         <UnstyledButton onClick={() => handleNavigation('/favorites')} style={linkStyle(dark)}>
-          <Group gap="sm"><IconHeart size={20} color="#e91e63" /><Text size="sm" fw={600} c={textColor}>علاقمندی‌ها</Text></Group>
+          <Group gap="sm"><IconHeart size={20} color="var(--g-color-food-saffron)" /><Text size="sm" fw={600} c={textColor}>علاقمندی‌ها</Text></Group>
           <IconChevronLeft size={18} style={{ transform: 'rotate(180deg)' }} color="dimmed" />
         </UnstyledButton>
         <UnstyledButton onClick={() => handleNavigation('/my-recipes')} style={linkStyle(dark)}>
-          <Group gap="sm"><IconPencil size={20} color="#4CAF50" /><Text size="sm" fw={600} c={textColor}>رسپی‌های ارسالی من</Text></Group>
+          <Group gap="sm"><IconPencil size={20} color="var(--g-color-state-success-fg)" /><Text size="sm" fw={600} c={textColor}>رسپی‌های ارسالی من</Text></Group>
           <IconChevronLeft size={18} style={{ transform: 'rotate(180deg)' }} color="dimmed" />
         </UnstyledButton>
         <UnstyledButton onClick={() => handleNavigation('/preferences')} style={{ ...linkStyle(dark), borderBottom: 'none' }}>
-          <Group gap="sm"><IconSettings size={20} color="#FF6B35" /><Text size="sm" fw={600} c={textColor}>تنظیمات سلیقه</Text></Group>
+          <Group gap="sm"><IconSettings size={20} color="var(--g-color-food-saffron)" /><Text size="sm" fw={600} c={textColor}>تنظیمات سلیقه</Text></Group>
           <IconChevronLeft size={18} style={{ transform: 'rotate(180deg)' }} color="dimmed" />
         </UnstyledButton>
       </Paper>
@@ -234,7 +258,7 @@ export default function ProfilePage() {
       {/* آکاردئون‌ها */}
       <Accordion multiple variant="contained" radius="lg" mb="md" chevronPosition="left">
         <Accordion.Item value="badges">
-          <Accordion.Control icon={<IconTrophy size={20} color="#FF6B35" />} onClick={() => trackEvent('badge_view')}>
+          <Accordion.Control icon={<IconTrophy size={20} color="var(--g-color-food-saffron)" />} onClick={() => trackEvent('badge_view')}>
             <Text size="sm" fw={600} c={textColor}>نشان‌ها و دستاوردها</Text>
           </Accordion.Control>
           <Accordion.Panel>
@@ -243,7 +267,7 @@ export default function ProfilePage() {
                 {badges.map(badge => (
                   <Paper key={badge.id} p="sm" radius="md" style={{
                     borderRight: `4px solid ${badge.color}`,
-                    background: dark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)',
+                    background: dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-bg-surface)',
                   }}>
                     <Group gap="sm" wrap="nowrap">
                       <Text size="xl">{badge.icon}</Text>
@@ -263,7 +287,7 @@ export default function ProfilePage() {
         </Accordion.Item>
 
         <Accordion.Item value="recipes">
-          <Accordion.Control icon={<IconPencil size={20} color="#FF6B35" />} onClick={() => trackEvent('my_recipes_view')}>
+          <Accordion.Control icon={<IconPencil size={20} color="var(--g-color-food-saffron)" />} onClick={() => trackEvent('my_recipes_view')}>
             <Text size="sm" fw={600} c={textColor}>رسپی‌های من</Text>
           </Accordion.Control>
           <Accordion.Panel>
@@ -271,8 +295,8 @@ export default function ProfilePage() {
               <Text size="sm" c="dimmed" ta="center" py="md">هنوز رسپی اضافه نکرده‌اید</Text>
             ) : (
               myRecipes.slice(0, 5).map((recipe) => (
-                <Group key={recipe.id} justify="space-between" py={6} px="sm" style={{ borderRadius: 8, backgroundColor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', marginBottom: 4 }}>
-                  <Text size="sm" c={dark ? '#ccc' : '#333'} style={{ cursor: 'pointer' }} onClick={() => navigate(`/recipe/${recipe.id}`)}>{recipe.title}</Text>
+                <Group key={recipe.id} justify="space-between" py={6} px="sm" style={{ borderRadius: 8, backgroundColor: dark ? 'var(--g-color-bg-surface)' : 'var(--g-color-border-subtle)', marginBottom: 4 }}>
+                  <Text size="sm" c={dark ? 'var(--g-color-border-subtle)' : 'var(--g-color-border-strong)'} style={{ cursor: 'pointer' }} onClick={() => navigate(`/recipe/${recipe.id}`)}>{recipe.title}</Text>
                   <Text size="xs" c="dimmed">{recipe.cook_time || ''}</Text>
                 </Group>
               ))
@@ -301,7 +325,7 @@ export default function ProfilePage() {
 
       <ActionIcon
         variant="light" color="orange" size="xl" radius="xl"
-        style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 50, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+        style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 50, boxShadow: 'var(--g-shadow-1)' }}
         onClick={scrollToTop}
       >
         <IconArrowUp size={18} />
@@ -316,6 +340,6 @@ const linkStyle = (dark) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  borderBottom: `1px solid ${dark ? '#333' : '#f0f0f0'}`,
+  borderBottom: `1px solid ${dark ? 'var(--g-color-border-strong)' : 'var(--g-color-border-subtle)'}`,
   cursor: 'pointer',
 });

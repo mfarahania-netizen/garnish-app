@@ -33,7 +33,7 @@ export default function NotificationPopover({ children }) {
             <ScrollArea h={220}>
               <Stack gap="xs">
                 {latestUnread.map(n => (
-                  <Paper key={n.id} p="xs" radius="md" withBorder style={{ borderColor: '#FF6B35' }}>
+                  <Paper key={n.id} p="xs" radius="md" withBorder style={{ borderColor: 'var(--g-color-food-saffron)' }}>
                     <Text size="xs" fw={600}>{n.title}</Text>
                     <Text size="xs" c="dimmed" lineClamp={2}>{n.body}</Text>
                     <Group justify="flex-end" mt={4}>

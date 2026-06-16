@@ -1,17 +1,19 @@
 import { useState, useMemo } from 'react';
 import {
-  Container, Title, Group, Text, Paper, Stack, Badge,
-  ActionIcon, Button, Alert, SegmentedControl
+  Container, Group, Text, Stack, Box, SegmentedControl, ActionIcon,
 } from '@mantine/core';
 import {
-  IconTrash, IconCheck, IconBell, IconSparkles,
-  IconArrowUp, IconBellOff, IconClock
+  IconTrash, IconBell, IconSparkles, IconArrowUp, IconClock, IconBellOff, IconSettings,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotificationsQuery } from '../../../hooks/useNotificationsQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
-import { EventType } from '../../../lib/eventTaxonomy'; // 👈 اضافه شد
-import IneNotificationPreview from '../components/IneNotificationPreview'; // NOTIF-L4-10 dry-run preview
+import { EventType } from '../../../lib/eventTaxonomy';
+import IneNotificationPreview from '../components/IneNotificationPreview';
+import {
+  NotificationRow, SectionHeader, StatusBadge, Button as GesButton, EmptyState,
+} from '../../../components/ges';
 
 const timeAgo = (dateString) => {
   const now = new Date();
@@ -25,14 +27,18 @@ const timeAgo = (dateString) => {
   return `${Math.floor(hours / 24)} روز پیش`;
 };
 
+const iconFor = (type) =>
+  type === 'suggestion' ? <IconSparkles size={18} aria-hidden="true" />
+  : type === 'reminder' ? <IconClock size={18} aria-hidden="true" />
+  : <IconBell size={18} aria-hidden="true" />;
+
 export default function NotificationsPage() {
+  const navigate = useNavigate();
   const {
     notifications, unreadCount, isGenerating,
-    generateSuggestion, markAsRead, deleteNotification
+    generateSuggestion, markAsRead, deleteNotification,
   } = useNotificationsQuery();
   const { trackEvent } = useAnalytics();
-
-  const dark = false;
   const [filter, setFilter] = useState('unread');
 
   const filteredNotifications = useMemo(() => {
@@ -41,146 +47,77 @@ export default function NotificationsPage() {
     return notifications;
   }, [notifications, filter]);
 
-  const handleGenerateSuggestion = () => {
-    trackEvent(EventType.NOTIFICATION_GENERATE);
-    generateSuggestion();
-  };
-
-  const handleMarkAsRead = (id) => {
-    trackEvent(EventType.NOTIFICATION_READ, { notificationId: id });
-    markAsRead(id);
-  };
-
-  const handleDeleteNotification = (id) => {
-    trackEvent(EventType.NOTIFICATION_DELETE, { notificationId: id });
-    deleteNotification(id);
-  };
-
-  const handleFilterChange = (value) => {
-    setFilter(value);
-    trackEvent(EventType.NOTIFICATION_FILTER, { filter: value });
-  };
-
+  const handleGenerateSuggestion = () => { trackEvent(EventType.NOTIFICATION_GENERATE); generateSuggestion(); };
+  const handleMarkAsRead = (id) => { trackEvent(EventType.NOTIFICATION_READ, { notificationId: id }); markAsRead(id); };
+  const handleDeleteNotification = (id) => { trackEvent(EventType.NOTIFICATION_DELETE, { notificationId: id }); deleteNotification(id); };
+  const handleFilterChange = (value) => { setFilter(value); trackEvent(EventType.NOTIFICATION_FILTER, { filter: value }); };
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   return (
     <Container size="xs" style={{ maxWidth: 420, margin: '0 auto', padding: '0 8px 100px' }}>
-      {/* هدر */}
-      <Paper
-        p="md"
-        radius="xl"
-        mb="lg"
-        mt="md"
-        style={{
-          background: 'rgba(255,255,255,0.7)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,107,53,0.2)',
-        }}
-      >
-        <Group justify="space-between" align="center">
-          <Group gap="xs">
-            <IconBell size={32} style={{ color: '#FF6B35' }} />
-            <div>
-              <Title order={3} style={{ color: '#1A237E' }}>اعلان‌ها</Title>
-              {unreadCount > 0 && (
-                <Badge color="orange" variant="filled" size="sm">{unreadCount} خوانده نشده</Badge>
-              )}
-            </div>
-          </Group>
-          <Button
-            variant="light"
-            color="orange"
-            radius="xl"
-            size="xs"
-            leftSection={<IconSparkles size={16} />}
-            onClick={handleGenerateSuggestion}
-            loading={isGenerating}
-          >
-            پیشنهاد هوشمند
-          </Button>
+      <Group justify="space-between" align="center" mt="md" mb="lg">
+        <SectionHeader as="h1" title="اعلان‌ها" subtitle={unreadCount > 0 ? undefined : 'آرام و بدون فشار — هر زمان می‌تونی خاموششون کنی'} />
+        <Group gap="xs" wrap="nowrap">
+          {unreadCount > 0 && <StatusBadge tone="info">{`${unreadCount} خوانده‌نشده`}</StatusBadge>}
+          <ActionIcon variant="subtle" onClick={() => navigate('/settings')} aria-label="تنظیمات اعلان‌ها" style={{ color: 'var(--g-color-text-secondary)' }}>
+            <IconSettings size={20} />
+          </ActionIcon>
         </Group>
-      </Paper>
+      </Group>
+
+      <Box mb="md">
+        <GesButton variant="secondary" leftIcon={<IconSparkles size={16} />} loading={isGenerating} onClick={handleGenerateSuggestion}>
+          پیشنهاد هوشمند
+        </GesButton>
+      </Box>
 
       {/* NOTIF-L4-10: dry-run preview of the Notification Intelligence Engine */}
       <IneNotificationPreview />
 
-      {/* فیلتر */}
       <SegmentedControl
         value={filter}
         onChange={handleFilterChange}
         data={[
-          { label: 'خوانده نشده', value: 'unread' },
+          { label: 'خوانده‌نشده', value: 'unread' },
           { label: 'همه', value: 'all' },
-          { label: 'خوانده شده', value: 'read' },
+          { label: 'خوانده‌شده', value: 'read' },
         ]}
-        fullWidth
-        radius="xl"
-        mb="lg"
-        color="orange"
+        fullWidth radius="xl" mb="lg" color="saffron"
       />
 
-      {/* لیست اعلان‌ها */}
       {filteredNotifications.length === 0 ? (
-        <Alert color="orange" radius="lg" icon={<IconBellOff size={18} />}>
-          <Text size="sm">اعلانی برای نمایش وجود ندارد.</Text>
-        </Alert>
+        <EmptyState
+          icon={<IconBellOff size={28} stroke={1.5} aria-hidden="true" />}
+          title="اعلانی نیست"
+          message="اینجا آرام است. اعلان‌های مفید و ملایم اینجا ظاهر می‌شوند."
+        />
       ) : (
         <Stack gap="sm">
           <AnimatePresence>
             {filteredNotifications.map((n) => (
-              <motion.div
-                key={n.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Paper
-                  p="sm"
-                  radius="md"
-                  style={{
-                    background: dark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.8)',
-                    backdropFilter: 'blur(8px)',
-                    border: `1px solid ${n.isRead ? '#eee' : '#FF6B35'}`,
-                    borderRight: `4px solid ${n.isRead ? '#ddd' : '#FF6B35'}`,
-                    opacity: n.isRead ? 0.7 : 1,
-                  }}
-                >
-                  <Group justify="space-between" mb={4}>
-                    <Group gap="xs">
-                      <Badge color={n.isRead ? 'gray' : 'orange'} variant="light" size="sm">
-                        {n.type === 'suggestion' ? 'پیشنهاد' : n.type === 'reminder' ? 'یادآوری' : 'سیستم'}
-                      </Badge>
-                      <Text size="xs" c="dimmed" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <IconClock size={12} />
-                        {timeAgo(n.createdAt)}
-                      </Text>
-                    </Group>
-                    <Group gap={4}>
-                      {!n.isRead && (
-                        <ActionIcon variant="subtle" color="green" size="sm" onClick={() => handleMarkAsRead(n.id)}>
-                          <IconCheck size={16} />
-                        </ActionIcon>
-                      )}
-                      <ActionIcon variant="subtle" color="red" size="sm" onClick={() => handleDeleteNotification(n.id)}>
-                        <IconTrash size={16} />
-                      </ActionIcon>
-                    </Group>
-                  </Group>
-                  <Text fw={600} size="sm" mb={4}>{n.title}</Text>
-                  <Text size="sm" c="dimmed" style={{ whiteSpace: 'pre-wrap' }}>{n.body}</Text>
-                </Paper>
+              <motion.div key={n.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}>
+                <Group wrap="nowrap" align="flex-start" style={{ gap: 'var(--g-space-1)' }}>
+                  <Box style={{ flex: 1, minWidth: 0 }}>
+                    <NotificationRow
+                      title={n.title}
+                      body={n.body}
+                      timestamp={timeAgo(n.createdAt)}
+                      icon={iconFor(n.type)}
+                      state={n.isRead ? 'read' : 'unread'}
+                      onOpen={() => handleMarkAsRead(n.id)}
+                    />
+                  </Box>
+                  <ActionIcon variant="subtle" color="red" onClick={() => handleDeleteNotification(n.id)} aria-label="حذف اعلان">
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </Group>
               </motion.div>
             ))}
           </AnimatePresence>
         </Stack>
       )}
 
-      <ActionIcon
-        variant="light" color="orange" size="xl" radius="xl"
-        style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 50 }}
-        onClick={scrollToTop}
-      >
+      <ActionIcon variant="filled" color="saffron" size="xl" radius="xl" style={{ position: 'fixed', bottom: 80, right: 16, zIndex: 'var(--g-z-sticky)', boxShadow: 'var(--g-shadow-2)' }} onClick={scrollToTop} aria-label="برگشت به بالا">
         <IconArrowUp size={18} />
       </ActionIcon>
     </Container>

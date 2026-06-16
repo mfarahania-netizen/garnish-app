@@ -31,7 +31,7 @@ export default function RecipeVideo({ recipe }) {
 
   return (
     <Paper p="sm" radius="lg" mb="lg" withBorder data-testid="recipe-video">
-      <Group gap="xs" mb="xs"><IconVideo size={18} color="#FF6B35" /><Text size="sm" fw={700}>ویدیوی آموزشی</Text></Group>
+      <Group gap="xs" mb="xs"><IconVideo size={18} color="var(--g-color-food-saffron)" /><Text size="sm" fw={700}>ویدیوی آموزشی</Text></Group>
       {safe.kind === 'embed' && (
         <div style={{ position: 'relative', paddingTop: '56.25%' }}>
           <iframe src={safe.src} title="recipe video" allow="encrypted-media; picture-in-picture" allowFullScreen

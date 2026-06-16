@@ -17,7 +17,7 @@ export default function TipsSection({ tips }) {
       <Accordion.Control>
         <Group justify="space-between" style={{ width: '100%' }}>
           <Group gap="xs">
-            <IconBulb size={20} color="#FF6B35" />
+            <IconBulb size={20} color="var(--g-color-food-saffron)" />
             <Text fw={700} size="sm">نکات</Text>
           </Group>
           <Badge variant="light" color="orange" size="sm">{parsedTips.length} نکته</Badge>
@@ -26,9 +26,9 @@ export default function TipsSection({ tips }) {
       <Accordion.Panel>
         <Stack gap="sm">
           {parsedTips.map((tip, idx) => (
-            <Paper key={idx} p="sm" radius="md" style={{ borderRight: '4px solid #4CAF50', background: 'rgba(76,175,80,0.06)' }}>
+            <Paper key={idx} p="sm" radius="md" style={{ borderRight: '4px solid var(--g-color-state-success-fg)', background: 'var(--g-color-state-success-bg)' }}>
               <Group gap={10} align="flex-start" wrap="nowrap">
-                <IconCircleCheck size={18} color="#4CAF50" style={{ marginTop: 2, flexShrink: 0 }} />
+                <IconCircleCheck size={18} color="var(--g-color-state-success-fg)" style={{ marginTop: 2, flexShrink: 0 }} />
                 <Text size="sm" style={{ lineHeight: 1.8 }}>{typeof tip === 'string' ? tip : tip.instruction || tip.text || ''}</Text>
               </Group>
             </Paper>

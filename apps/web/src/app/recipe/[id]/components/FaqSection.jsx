@@ -17,7 +17,7 @@ export default function FaqSection({ faq }) {
       <Accordion.Control>
         <Group justify="space-between" style={{ width: '100%' }}>
           <Group gap="xs">
-            <IconQuestionMark size={20} color="#FF6B35" />
+            <IconQuestionMark size={20} color="var(--g-color-food-saffron)" />
             <Text fw={700} size="sm">سوالات متداول</Text>
           </Group>
           <Badge variant="light" color="orange" size="sm">{parsedFaq.length} پرسش</Badge>
@@ -26,7 +26,7 @@ export default function FaqSection({ faq }) {
       <Accordion.Panel>
         <Stack gap="sm">
           {parsedFaq.map((faqItem, idx) => (
-            <Paper key={idx} p="sm" radius="md" withBorder style={{ background: 'rgba(255,255,255,0.75)' }}>
+            <Paper key={idx} p="sm" radius="md" withBorder style={{ background: 'var(--g-color-bg-surface)' }}>
               <Group gap={6} align="flex-start" wrap="nowrap" mb={6}>
                 <Text style={{ fontSize: '1.1rem' }}>؟</Text>
                 <Text size="sm" fw={700} style={{ lineHeight: 1.6 }}>

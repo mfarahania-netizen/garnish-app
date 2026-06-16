@@ -28,22 +28,22 @@ export default function TimingCard({ recipe }) {
       radius="lg"
       mb="lg"
       style={{
-        background: 'rgba(255,255,255,0.72)',
+        background: 'var(--g-color-bg-surface)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255,107,53,0.15)',
+        border: '1px solid var(--g-color-border-subtle)',
         cursor: 'pointer',
       }}
       onClick={toggle}
     >
       <Group justify="space-between" align="center">
         <Group gap="xs">
-          <IconClockHour4 size={20} color="#FF6B35" />
-          <Text size="sm" fw={700} c="#1A237E">زمان‌بندی</Text>
+          <IconClockHour4 size={20} color="var(--g-color-food-saffron)" />
+          <Text size="sm" fw={700} c="var(--g-color-text-primary)">زمان‌بندی</Text>
         </Group>
         <Group gap="xs">
           {totalTime && <Text size="xs" c="dimmed">{formatTime(totalTime)}</Text>}
           <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ type: 'spring', stiffness: 200, damping: 20 }}>
-            <IconArrowDown size={18} color="#666" />
+            <IconArrowDown size={18} color="var(--g-color-text-muted)" />
           </motion.div>
         </Group>
       </Group>

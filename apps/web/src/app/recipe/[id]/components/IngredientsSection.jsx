@@ -29,7 +29,7 @@ export default function IngredientsSection({ ingredients }) {
       <Accordion.Control>
         <Group justify="space-between" style={{ width: '100%' }}>
           <Group gap="xs">
-            <IconToolsKitchen size={20} color="#FF6B35" />
+            <IconToolsKitchen size={20} color="var(--g-color-food-saffron)" />
             <Text fw={700} size="sm">مواد اولیه</Text>
           </Group>
           <Badge variant="light" color="orange" size="sm">{ingredients.length} قلم</Badge>
@@ -47,8 +47,8 @@ export default function IngredientsSection({ ingredients }) {
                 p="sm"
                 radius="md"
                 style={{
-                  borderRight: '4px solid #FF6B35',
-                  background: 'rgba(255,255,255,0.86)',
+                  borderRight: '4px solid var(--g-color-food-saffron)',
+                  background: 'var(--g-color-bg-surface)',
                   backdropFilter: 'blur(4px)',
                 }}
               >
