@@ -1,15 +1,13 @@
 import { Box } from '@mantine/core';
-import { IconChefHat, IconSoup, IconSalad, IconMeat, IconBread, IconLeaf } from '@tabler/icons-react';
+import { IconSoup, IconSalad, IconMeat, IconChefHat, IconBread, IconLeaf } from '@tabler/icons-react';
 
 /**
- * PlatePlaceholder — the honest branded stand-in for a missing food photo.
+ * PlatePlaceholder — honest branded stand-in for a missing food photo.
  *
- * A warm saffron-tinted tile with a centered low-opacity dish glyph on a soft
- * "plate" ring. This is NEVER a gray gradient and never fake stock of another
- * dish — per GES, the only image fallback. Token-pure (warm brand tints + saffron
- * glyph); scales to any host aspect ratio (4:3 / 16:9 / 1:1). The glyph is
- * decorative (the dish name is the card title); the tile carries the label as its
- * accessible name. Food glyphs do not mirror in RTL.
+ * A warm saffron-tinted tile with a SMALL, low-opacity dish glyph (capped, scales
+ * down on small thumbnails) — never a gray gradient, never a giant glyph filling
+ * the card, never an empty box. Fills its host media slot (16:9 / 1:1 / banner).
+ * Token-pure; the glyph is decorative (the dish name is the card title).
  */
 const GLYPHS = [IconSoup, IconSalad, IconMeat, IconChefHat, IconBread, IconLeaf];
 
@@ -23,27 +21,13 @@ export default function PlatePlaceholder({ label = '', seed = 0 }) {
     <Box
       role="img"
       aria-label={label || 'تصویر غذا'}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'grid',
-        placeItems: 'center',
-        background: warm,
-      }}
+      style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', background: warm }}
     >
-      <Box
+      <Glyph
         aria-hidden="true"
-        style={{
-          inlineSize: '52%',
-          aspectRatio: '1 / 1',
-          borderRadius: '50%',
-          border: '1px solid var(--g-color-brand-200)',
-          display: 'grid',
-          placeItems: 'center',
-        }}
-      >
-        <Glyph style={{ inlineSize: '52%', blockSize: '52%', color: 'var(--g-color-brand-600)', opacity: 0.5 }} stroke={1.5} />
-      </Box>
+        stroke={1.5}
+        style={{ blockSize: '30%', inlineSize: 'auto', maxBlockSize: 44, minBlockSize: 15, color: 'var(--g-color-brand-600)', opacity: 0.4 }}
+      />
     </Box>
   );
 }

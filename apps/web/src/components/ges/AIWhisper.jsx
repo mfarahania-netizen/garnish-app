@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
  * real, never decorative. Enters with a settle motion (opacity+rise; rise is dropped under
  * reduced motion via the page's MotionConfig). Token-pure.
  */
-export default function AIWhisper({ text, sub, acceptLabel = 'ببین', dismissLabel = 'نه الان', onAccept, onDismiss }) {
+export default function AIWhisper({ text, sub, acceptLabel = 'بله، بچین', dismissLabel = 'الان نه', onAccept, onDismiss }) {
   return (
     <Box
       component={motion.div}

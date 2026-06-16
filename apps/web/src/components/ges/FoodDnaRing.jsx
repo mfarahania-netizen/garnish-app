@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Box, Text } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion, duration, ease } from '../../lib/motion';
@@ -6,28 +7,39 @@ import { toFaDigits } from './format';
 /**
  * FoodDnaRing — the calm taste-maturity ring (NOT a %-anxiety bar, no medical claim).
  *
- * A soft donut arc that fills by maturity (0..1). Track = warm border; arc = saffron
- * (brand-600 when developing/mature, the lighter brand-400 while still forming). Center
- * shows the percent + a small caption ("بلوغ ذائقه"). The fill animates with framer-motion
- * (no extra CSS keyframe — base.css reserves keyframes for the shimmer) and is disabled under
- * prefers-reduced-motion (jumps straight to the target). Token-pure.
- *
- * Props: value (0..1), size (px), caption, tone ('mature' | 'forming'), label (override).
+ * Soft donut arc filling by maturity (0..1). Track = warm border; arc = a saffron
+ * gradient (brand-400 → brand-600) when developing/mature, a lighter solid while
+ * forming, with a gentle saffron drop-shadow. Center shows the percent + caption
+ * ("بلوغ ذائقه"). Fills via framer-motion (no extra CSS keyframe — base.css reserves
+ * those for the shimmer) and is disabled under prefers-reduced-motion. Token-pure.
  */
-export default function FoodDnaRing({ value = 0, size = 100, caption = 'بلوغ ذائقه', tone = 'mature', label }) {
+export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ ذائقه', tone = 'mature', label }) {
+  const gid = `dnaArc${useId().replace(/:/g, '')}`; // sanitize React useId for use in SVG url(#…)
   const clamped = Math.max(0, Math.min(1, Number(value) || 0));
-  const sw = Math.max(6, Math.round(size * 0.09));
+  const sw = Math.max(7, Math.round(size * 0.096));
   const r = (size - sw) / 2;
   const circumference = 2 * Math.PI * r;
   const target = circumference * (1 - clamped);
-  const arc = tone === 'forming' ? 'var(--g-color-brand-400)' : 'var(--g-color-brand-600)';
+  const arc = tone === 'forming' ? 'var(--g-color-brand-300)' : `url(#${gid})`;
   const reduce = prefersReducedMotion();
   const pct = label ?? `${toFaDigits(Math.round(clamped * 100))}٪`;
   const big = size >= 96;
 
   return (
     <Box role="img" aria-label={`${caption}: ${pct}`} style={{ position: 'relative', inlineSize: size, blockSize: size, flexShrink: 0 }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }} aria-hidden="true">
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        style={{ transform: 'rotate(-90deg)', filter: 'drop-shadow(0 3px 5px color-mix(in srgb, var(--g-color-brand-600) 22%, transparent))' }}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="var(--g-color-brand-400)" />
+            <stop offset="1" stopColor="var(--g-color-brand-600)" />
+          </linearGradient>
+        </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--g-color-border-subtle)" strokeWidth={sw} />
         <motion.circle
           cx={size / 2}

@@ -21,7 +21,7 @@
     "controllers": 22,
     "routes": 2,
     "protectedRoutes": 0,
-    "frontendCallSites": 42,
+    "frontendCallSites": 43,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7647,6 +7647,13 @@
       "verb": "GET",
       "raw": "/profile",
       "normalized": "/profile",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recipes",
+      "normalized": "/recipes",
       "file": "apps/web/src/app/home/lib/useHomeData.js",
       "dynamic": false
     },

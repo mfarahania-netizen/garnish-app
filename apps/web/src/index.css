@@ -13,3 +13,12 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* Horizontal rails: hide the scrollbar (touch-scroll), keep keyboard/scroll behaviour. */
+.g-norail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.g-norail::-webkit-scrollbar {
+  display: none;
+}
