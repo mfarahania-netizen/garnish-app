@@ -39,7 +39,7 @@ function ShoppingError({ onRetry }) {
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-1)' }}>
       <Box aria-hidden="true" style={{ inlineSize: 56, blockSize: 56, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)', marginBlockEnd: 'var(--g-space-2)' }}><IconCloudOff size={26} stroke={1.6} /></Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>یه مشکلی پیش اومد</Text>
-      <Text component="p" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', margin: 'var(--g-space-1) 0 0' }}><IconShieldCheck size={13} stroke={1.8} aria-hidden="true" />لیستت آفلاین ذخیره‌ست</Text>
+      <Text component="p" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', margin: 'var(--g-space-1) 0 0' }}><IconShieldCheck size={13} stroke={1.8} aria-hidden="true" />لیستت روی حسابت محفوظه</Text>
       <UnstyledButton type="button" onClick={onRetry} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconRefresh size={16} stroke={1.8} aria-hidden="true" />تلاش دوباره</UnstyledButton>
     </Box>
   );
@@ -58,7 +58,9 @@ export default function ShoppingListPage() {
     const r = await s.buildFromPlan();
     if (!r.ok) { showToast('الان نشد — دوباره امتحان کن', IconCloudOff); return; }
     if (r.noPlan) { showToast('اول یک برنامهٔ هفته بچین', IconWand); navigate('/plan'); return; }
-    showToast(`از برنامه ساخته شد · ${toFaDigits(r.added)} مورد${r.merged ? ` · ${toFaDigits(r.merged)} ادغام` : ''}`, IconWand);
+    if (!r.added && !r.merged) { showToast('همه‌چیز از قبل توی لیسته', IconCheck); return; }
+    const flag = r.flagged ? ` · ${toFaDigits(r.flagged)} نیاز به بررسی واحد` : '';
+    showToast(`از برنامه ساخته شد · ${toFaDigits(r.added)} مورد${r.merged ? ` · ${toFaDigits(r.merged)} ادغام` : ''}${flag}`, IconWand);
   };
   const onAdd = async () => { const ok = await s.addManual(draft); if (ok) { setDraft(''); showToast('به لیست اضافه شد', IconPlus); } else showToast('اضافه نشد — دوباره امتحان کن', IconCloudOff); };
 

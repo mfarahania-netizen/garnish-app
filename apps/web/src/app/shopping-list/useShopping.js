@@ -85,7 +85,7 @@ export function useShopping() {
       const res = await apiClient.post('/shopping-list/from-plan').then((r) => r.data);
       setOverrides({});
       await list.refetch();
-      return { ok: true, added: res?.added ?? 0, merged: res?.merged ?? 0, noPlan: res?.resultStatus === 'no_plan' };
+      return { ok: true, added: res?.added ?? 0, merged: res?.merged ?? 0, flagged: res?.flagged ?? 0, noPlan: res?.resultStatus === 'no_plan' };
     } catch {
       return { ok: false };
     } finally {
