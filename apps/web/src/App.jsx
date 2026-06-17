@@ -21,6 +21,7 @@ import AssistantPage from './app/assistant/page';
 import SettingsPage from './app/settings/page';
 import NotificationsPage from './app/notifications/page';
 import AchievementsPage from './app/achievements/page';
+import AdminPage from './app/admin/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -95,6 +96,7 @@ export default function App() {
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
                     <Route path="/cook/:id" element={<CookPage />} />
+                    <Route path="/admin" element={<AdminPage />} />
                     <Route element={<RequireAuth />}>
                       <Route element={<AppShell />}>
                         <Route index element={<HomePage />} />

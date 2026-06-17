@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 15,
+    "routes": 16,
     "protectedRoutes": 0,
-    "frontendCallSites": 82,
+    "frontendCallSites": 87,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -5573,7 +5573,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/recipes-stats",
@@ -5693,7 +5693,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/analytics/user-stats",
@@ -5713,7 +5713,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/dashboard",
@@ -5773,7 +5773,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/ops/safety-compliance",
@@ -5793,7 +5793,7 @@
       "public": false,
       "auth": "jwt+roles(admin)",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /admin/recipes",
@@ -7531,6 +7531,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/admin",
+      "component": "AdminPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/assistant",
       "component": "AssistantPage",
       "protected": false,
@@ -7616,6 +7623,41 @@
     }
   ],
   "frontendCalls": [
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/product-intelligence",
+      "normalized": "/admin/analytics/product-intelligence",
+      "file": "apps/web/src/app/admin/useAdmin.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/trends",
+      "normalized": "/admin/analytics/trends",
+      "file": "apps/web/src/app/admin/useAdmin.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/analytics/user-stats",
+      "normalized": "/admin/analytics/user-stats",
+      "file": "apps/web/src/app/admin/useAdmin.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/ops/health",
+      "normalized": "/admin/ops/health",
+      "file": "apps/web/src/app/admin/useAdmin.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/admin/ops/safety-compliance",
+      "normalized": "/admin/ops/safety-compliance",
+      "file": "apps/web/src/app/admin/useAdmin.js",
+      "dynamic": false
+    },
     {
       "verb": "POST",
       "raw": "/ai/chat",
