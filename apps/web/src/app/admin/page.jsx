@@ -108,7 +108,7 @@ export default function AdminPage() {
           ))}
         </Box>
         <UnstyledButton type="button" onClick={a.refetchAll} aria-label="به‌روزرسانی" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconRefresh size={18} stroke={1.8} /></UnstyledButton>
-        <UnstyledButton type="button" onClick={onExport} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}><IconDownload size={16} stroke={1.8} aria-hidden="true" />خروجی</UnstyledButton>
+        <UnstyledButton type="button" onClick={onExport} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}><IconDownload size={16} stroke={1.8} aria-hidden="true" />خروجی</UnstyledButton>
       </Box>
 
       {a.status === 'loading' ? (
