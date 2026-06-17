@@ -183,4 +183,5 @@ const ALLERGEN_LABELS = {
   soy: 'سویا', soya: 'سویا', sesame: 'کنجد', fish: 'ماهی', shellfish: 'صدف', seafood: 'غذای دریایی',
   mustard: 'خردل', celery: 'کرفس', honey: 'عسل',
 };
-export const faAllergen = (a) => ALLERGEN_LABELS[String(a || '').toLowerCase()] || a;
+// safety-critical: never drop an allergen, but never leak a raw token either — humanize unknowns.
+export const faAllergen = (a) => ALLERGEN_LABELS[String(a || '').toLowerCase()] || (hasPersian(a) ? String(a) : humanize(a));

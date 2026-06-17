@@ -15,7 +15,7 @@ import Toast from '../../components/ges/Toast';
 import { SkeletonLine, SkeletonCircle } from '../../components/ges/LoadingSkeleton';
 
 const PAGE = { display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-6)' };
-const sectionTitle = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 2px var(--g-space-3)' };
+const sectionTitle = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', marginBlock: 'var(--g-space-6) var(--g-space-3)', marginInline: 2 };
 const cardWrap = { background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' };
 const rowBtn = { display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 52, paddingInline: 'var(--g-space-4)' };
 
@@ -49,6 +49,16 @@ function QuickRow({ icon: Icon, label, onClick, last }) {
   );
 }
 
+function KnownRow({ icon: Icon, iconColor, children, onEdit, divider }) {
+  return (
+    <UnstyledButton type="button" onClick={onEdit} aria-label="ویرایش" style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)', borderBlockStart: divider ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+      <Icon size={19} stroke={1.8} aria-hidden="true" style={{ color: iconColor, flexShrink: 0 }} />
+      <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)' }}>{children}</Text>
+      <IconPencil size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+    </UnstyledButton>
+  );
+}
+
 /* ── Profile view ── */
 function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
   const { header, dna, progress, known } = p;
@@ -70,7 +80,7 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
             {header.since ? `عضو از ${header.since} · ` : ''}{header.cooksText}
           </Text>
         </Box>
-        <UnstyledButton type="button" onClick={() => showToast('ویرایش پروفایل به‌زودی', IconPencil)} aria-label="ویرایش" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <UnstyledButton type="button" onClick={() => showToast('ویرایش پروفایل به‌زودی', IconPencil)} aria-label="ویرایش" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
           <IconPencil size={18} stroke={1.8} />
         </UnstyledButton>
       </Box>
@@ -115,21 +125,19 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
       <Text component="h2" style={sectionTitle}>آنچه از تو می‌دانیم</Text>
       <Box style={cardWrap}>
         {known.dietLabel ? (
-          <Box style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)' }}>
-            <IconPlant2 size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-            <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)' }}>بیشتر غذای <b>{known.dietLabel}</b> را دوست داری</Text>
-          </Box>
+          <KnownRow icon={IconPlant2} iconColor="var(--g-color-brand-600)" onEdit={() => navigate('/onboarding')}>
+            بیشتر غذای <b>{known.dietLabel}</b> را دوست داری
+          </KnownRow>
         ) : null}
-        {known.allergen ? (
-          <Box style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)', borderBlockStart: known.dietLabel ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
-            <IconAlertTriangle size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-allergen-fg)' }} />
-            <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)' }}>حساسیت به <b>{known.allergen}</b> — پرچمِ ایمنی فعال است</Text>
-          </Box>
-        ) : null}
-        {!known.dietLabel && !known.allergen ? (
+        {known.allergens.map((a, i) => (
+          <KnownRow key={a} icon={IconAlertTriangle} iconColor="var(--g-color-allergen-fg)" divider={i > 0 || !!known.dietLabel} onEdit={() => navigate('/onboarding')}>
+            حساسیت به <b>{a}</b> — پرچمِ ایمنی فعال است
+          </KnownRow>
+        ))}
+        {!known.dietLabel && !known.allergens.length ? (
           <Box style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)' }}>
             <IconLeaf size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-            <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>هرچی بیشتر بپزی، بهتر می‌شناسیمت.</Text>
+            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>هرچی بیشتر بپزی، بهتر می‌شناسیمت.</Text>
           </Box>
         ) : null}
       </Box>
@@ -157,7 +165,7 @@ function DnaView({ p, onBack, navigate }) {
   return (
     <Box style={PAGE}>
       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-4)' }}>
-        <UnstyledButton type="button" onClick={onBack} aria-label="بازگشت" style={{ inlineSize: 40, blockSize: 40, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-secondary)' }}>
+        <UnstyledButton type="button" onClick={onBack} aria-label="بازگشت" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-secondary)' }}>
           <IconChevronRight size={20} stroke={1.8} />
         </UnstyledButton>
         <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>شناسهٔ ذائقه</Text>
@@ -180,7 +188,12 @@ function DnaView({ p, onBack, navigate }) {
                 <Box key={d.key} style={{ paddingBlock: 'var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
                   <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: 'var(--g-space-2)' }}>
                     <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{d.label}</Text>
-                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{faPercent(d.value * 100)}</Text>
+                    <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+                      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{faPercent(d.value * 100)}</Text>
+                      <UnstyledButton type="button" onClick={() => navigate('/onboarding')} aria-label="ویرایش" style={{ inlineSize: 44, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}>
+                        <IconPencil size={15} stroke={1.8} />
+                      </UnstyledButton>
+                    </Box>
                   </Box>
                   <Box aria-hidden="true" style={{ blockSize: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-border-subtle)', overflow: 'hidden' }}>
                     <Box style={{ inlineSize: `${Math.round(d.value * 100)}%`, blockSize: '100%', background: d.band === 'low' ? 'var(--g-color-brand-300)' : 'var(--g-color-brand-500)' }} />
