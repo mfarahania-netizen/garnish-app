@@ -15,6 +15,7 @@ import OnboardingPage from './app/onboarding/page';
 import DiscoveryPage from './app/discover/page';
 import ProfilePage from './app/profile/page';
 import PlanPage from './app/plan/page';
+import ShoppingListPage from './app/shopping-list/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -96,6 +97,7 @@ export default function App() {
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/food-dna" element={<ProfilePage initialView="dna" />} />
                         <Route path="/plan" element={<PlanPage />} />
+                        <Route path="/shopping-list" element={<ShoppingListPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>
                     </Route>

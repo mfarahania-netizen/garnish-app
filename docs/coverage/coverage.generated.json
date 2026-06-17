@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 9,
+    "routes": 10,
     "protectedRoutes": 0,
-    "frontendCallSites": 63,
+    "frontendCallSites": 67,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7191,7 +7191,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "POST /shopping-list/items",
@@ -7571,6 +7571,13 @@
       "protected": false,
       "admin": false,
       "layoutOnly": false
+    },
+    {
+      "path": "/shopping-list",
+      "component": "ShoppingListPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
     }
   ],
   "frontendCalls": [
@@ -7879,7 +7886,28 @@
       "verb": "GET",
       "raw": "/shopping-list",
       "normalized": "/shopping-list",
+      "file": "apps/web/src/app/shopping-list/useShopping.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/shopping-list",
+      "normalized": "/shopping-list",
       "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/shopping-list/from-plan",
+      "normalized": "/shopping-list/from-plan",
+      "file": "apps/web/src/app/shopping-list/useShopping.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/shopping-list/items",
+      "normalized": "/shopping-list/items",
+      "file": "apps/web/src/app/shopping-list/useShopping.js",
       "dynamic": false
     },
     {
@@ -7894,6 +7922,13 @@
       "raw": "/shopping-list/items/${itemId}",
       "normalized": "/shopping-list/items/*",
       "file": "apps/web/src/hooks/useShoppingListQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/shopping-list/items/${it.id}",
+      "normalized": "/shopping-list/items/*",
+      "file": "apps/web/src/app/shopping-list/useShopping.js",
       "dynamic": true
     },
     {

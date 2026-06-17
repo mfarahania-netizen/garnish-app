@@ -528,8 +528,8 @@
       "reason": "Admin maintenance trigger (signal detector)."
     },
     "POST /shopping-list/from-plan": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:shopping-list/ShoppingListPage when rebuilt. PLANNER-L4-09 build/sync the shopping list from the meal plan (aggregate+merge vs 1008, scale, categorize); called by the shopping-page BuildFromPlanButton."
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "FE-SHOPPING: «از روی برنامه» builds/syncs the list from the week's meal plan (aggregate+merge+scale+categorize); useShopping.buildFromPlan."
     },
     "POST /shopping-list/items": {
       "status": "frontend:shopping-list/ShoppingListPage",
