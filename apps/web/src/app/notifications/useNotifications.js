@@ -62,7 +62,12 @@ export function useNotifications() {
 
   const markRead = useCallback(async (id) => {
     setReadOverride((m) => ({ ...m, [id]: true }));
-    try { await apiClient.patch(`/notifications/${id}/read`); } catch { /* optimistic; refetch will resync */ }
+    try {
+      await apiClient.patch(`/notifications/${id}/read`);
+    } catch {
+      // self-correct: roll back the optimistic read so the UI never claims read when the server didn't persist
+      setReadOverride((m) => { const next = { ...m }; delete next[id]; return next; });
+    }
   }, []);
 
   const markAll = useCallback(async () => {

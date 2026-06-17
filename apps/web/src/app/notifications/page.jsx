@@ -10,12 +10,12 @@ const TONE_BG = { brand: 'var(--g-color-brand-50)', success: 'var(--g-color-stat
 
 function Row({ n, onOpen }) {
   return (
-    <UnstyledButton type="button" onClick={onOpen} aria-label={n.title} style={{ display: 'flex', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', padding: 'var(--g-space-3) var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: n.isRead ? 'var(--g-color-bg-surface)' : 'var(--g-color-ai-surface)', border: `1px solid ${n.isRead ? 'var(--g-color-border-subtle)' : 'var(--g-color-brand-200)'}` }}>
+    <UnstyledButton type="button" onClick={onOpen} aria-label={`${n.isRead ? '' : 'خوانده‌نشده، '}${n.title}`} style={{ display: 'flex', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', padding: 'var(--g-space-3) var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: n.isRead ? 'var(--g-color-bg-surface)' : 'var(--g-color-ai-surface)', border: `1px solid ${n.isRead ? 'var(--g-color-border-subtle)' : 'var(--g-color-brand-200)'}` }}>
       <Box aria-hidden="true" style={{ inlineSize: 40, blockSize: 40, flexShrink: 0, borderRadius: 'var(--g-radius-input)', background: TONE_BG[n.tone], color: TONE_FG[n.tone], display: 'grid', placeItems: 'center' }}><n.Icon size={20} stroke={1.8} /></Box>
       <Box style={{ flex: 1, minInlineSize: 0 }}>
         <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)' }}>
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{n.title}</Text>
-          {!n.isRead ? <Box aria-label="خوانده‌نشده" style={{ inlineSize: 8, blockSize: 8, borderRadius: '50%', background: 'var(--g-color-brand-600)' }} /> : null}
+          {!n.isRead ? <Box aria-hidden="true" style={{ inlineSize: 8, blockSize: 8, borderRadius: '50%', background: 'var(--g-color-brand-600)' }} /> : null}
         </Box>
         {n.body ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: '4px 0 0' }}>{n.body}</Text> : null}
         {n.timeText ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 6 }}>{n.timeText}</Text> : null}
