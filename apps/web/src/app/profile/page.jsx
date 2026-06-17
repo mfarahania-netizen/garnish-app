@@ -80,7 +80,7 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
         <Box style={{ flex: 1, minInlineSize: 0 }}>
           <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{header.name}</Text>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '3px 0 0' }}>
-            {header.since ? `عضو از ${header.since} · ` : ''}{header.cooksText}
+            {[header.since ? `عضو از ${header.since}` : '', header.cooksText].filter(Boolean).join(' · ')}
           </Text>
         </Box>
         <UnstyledButton type="button" onClick={() => showToast('ویرایش پروفایل به‌زودی', IconPencil)} aria-label="ویرایش" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -116,13 +116,20 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
         </Box>
       </UnstyledButton>
 
-      {/* پیشرفتِ تو */}
+      {/* پیشرفتِ تو — honest "unavailable" note when gamification is down, never zeroed cards */}
       <Text component="h2" style={sectionTitle}>پیشرفتِ تو</Text>
-      <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 'var(--g-space-2)' }}>
-        <StatCard icon={IconFlame} value={toFaDigits(progress.streakWeeks)} label="هفته پیاپی" />
-        <StatCard icon={IconToolsKitchen2} value={toFaDigits(progress.totalCooks)} label="پخته‌شده" />
-        <StatCard icon={IconAward} value={toFaDigits(progress.badges)} label="نشان" onClick={() => navigate('/achievements')} />
-      </Box>
+      {progress ? (
+        <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 'var(--g-space-2)' }}>
+          <StatCard icon={IconFlame} value={toFaDigits(progress.streakWeeks)} label="هفته پیاپی" />
+          <StatCard icon={IconToolsKitchen2} value={toFaDigits(progress.totalCooks)} label="پخته‌شده" />
+          <StatCard icon={IconAward} value={toFaDigits(progress.badges)} label="نشان" onClick={() => navigate('/achievements')} />
+        </Box>
+      ) : (
+        <Box style={{ ...cardWrap, padding: 'var(--g-space-4)', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+          <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>پیشرفتت این لحظه در دسترس نیست — کمی بعد دوباره سر بزن.</Text>
+        </Box>
+      )}
 
       {/* آنچه از تو می‌دانیم */}
       <Text component="h2" style={sectionTitle}>آنچه از تو می‌دانیم</Text>

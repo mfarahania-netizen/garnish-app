@@ -91,6 +91,23 @@ describe('ProfilePage smoke', () => {
     expect(screen.getByText('خروج از حساب')).toBeInTheDocument();
   });
 
+  it('degrades honestly when gamification is unavailable (null progress)', () => {
+    // Secondary /gamification/me failed → the hook keeps status 'ready' (critical reads ok) but
+    // sets progress=null + cooksText=''. The page must still render + show the honest unavailable
+    // note instead of zeroed stat cards or a blanked screen.
+    const shape = readyShape();
+    shape.progress = null;
+    shape.header.cooksText = '';
+    shape.header.streakWeeks = 0;
+    useProfile.mockReturnValue(shape);
+    renderWithProviders(<ProfilePage initialView="profile" />);
+    expect(screen.getByRole('heading', { level: 1, name: 'تست کاربر' })).toBeInTheDocument();
+    expect(screen.getByText('پیشرفتِ تو')).toBeInTheDocument();
+    expect(screen.getByText('پیشرفتت این لحظه در دسترس نیست — کمی بعد دوباره سر بزن.')).toBeInTheDocument();
+    // No fabricated "پخته‌شده" stat-card label should appear when progress is null.
+    expect(screen.queryByText('پخته‌شده')).not.toBeInTheDocument();
+  });
+
   it('renders the DNA breakdown view', () => {
     useProfile.mockReturnValue(readyShape());
     renderWithProviders(<ProfilePage initialView="dna" />);

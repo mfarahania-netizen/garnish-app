@@ -41,11 +41,14 @@ export function useProfile() {
   const prefs = useQuery({ queryKey: ['discover', 'preferences'], queryFn: () => apiClient.get('/users/preferences').then((r) => r.data), enabled });
 
   return useMemo(() => {
-    const anyLoading = me.isLoading || profile.isLoading || gamification.isLoading;
-    const anyError = me.isError || profile.isError || gamification.isError;
+    // Critical reads = identity (/users/me) + taste profile (/profile). Gamification + preferences are
+    // SECONDARY enrichment: a failure there must NOT blank the whole screen (Home already tolerates a
+    // gamification outage the same way). This keeps a single secondary 500 from nuking the Profile.
+    const criticalLoading = me.isLoading || profile.isLoading;
+    const criticalError = me.isError || profile.isError;
     let status = 'ready';
-    if (anyLoading) status = 'loading';
-    else if (anyError || !me.data) status = 'error';
+    if (criticalLoading) status = 'loading';
+    else if (criticalError || !me.data) status = 'error';
 
     if (status !== 'ready') {
       return { status, refetch: () => { me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); } };
@@ -56,9 +59,12 @@ export function useProfile() {
     const band = maturity?.band || 'empty';
     const score = typeof maturity?.overallScore === 'number' ? maturity.overallScore : 0;
 
-    const totalCooks = gamification.data?.stats?.totalCooks ?? 0;
-    const streakWeeks = gamification.data?.streak?.currentWeeks ?? 0;
-    const badges = Array.isArray(gamification.data?.achievements?.earned) ? gamification.data.achievements.earned.length : 0;
+    // Gamification down (or still erroring) → expose NOTHING fabricated: a neutral header + null
+    // progress, never a false «۰ پخته» / «no streak» claim when the data merely failed to load.
+    const gamOk = !gamification.isError && !!gamification.data;
+    const totalCooks = gamOk ? (gamification.data?.stats?.totalCooks ?? 0) : null;
+    const streakWeeks = gamOk ? (gamification.data?.streak?.currentWeeks ?? 0) : 0;
+    const badges = gamOk && Array.isArray(gamification.data?.achievements?.earned) ? gamification.data.achievements.earned.length : 0;
 
     const traits = traitsFromProfile(profile.data, 3);
     const since = memberSince(me.data?.createdAt);
@@ -75,7 +81,7 @@ export function useProfile() {
         name,
         initial: name.charAt(0) || 'گ',
         since,
-        cooksText: totalCooks > 0 ? `${toFaDigits(totalCooks)} دستور پخته` : 'هنوز دستوری ثبت نشده',
+        cooksText: totalCooks == null ? '' : (totalCooks > 0 ? `${toFaDigits(totalCooks)} دستور پخته` : 'هنوز دستوری ثبت نشده'),
         streakWeeks,
       },
       dna: {
@@ -87,11 +93,9 @@ export function useProfile() {
         reconciliation: tasteReconciliation(profile.data),
         forming: band === 'empty' || band === 'forming',
       },
-      progress: {
-        streakWeeks,
-        totalCooks,
-        badges,
-      },
+      // null when gamification is unavailable → the page shows an honest "unavailable" note rather
+      // than zeroed stat cards that would read as "you've done nothing".
+      progress: gamOk ? { streakWeeks, totalCooks: totalCooks ?? 0, badges } : null,
       known: {
         // only a REAL localized dietary pattern — never shoehorn a behaviour trait into a diet claim
         dietLabel,
