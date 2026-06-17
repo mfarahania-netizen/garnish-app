@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, within, fireEvent } from '@testing-library/react';
 import { IconSalad, IconMeat } from '@tabler/icons-react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import ShoppingListPage from './page';
@@ -24,6 +24,7 @@ function baseHook(overrides = {}) {
     done: 0,
     checkedOf: vi.fn(() => false),
     toggle: vi.fn(),
+    remove: vi.fn(),
     addManual: vi.fn(),
     buildFromPlan: vi.fn(),
     busy: false,
@@ -97,5 +98,19 @@ describe('ShoppingListPage smoke', () => {
 
     // The manual-add affordance is always present.
     expect(screen.getByRole('button', { name: 'افزودن' })).toBeInTheDocument();
+  });
+
+  it('each item is deletable — the trash control calls remove()', () => {
+    const remove = vi.fn();
+    const groups = [{
+      key: 'produce', label: 'میوه و سبزی', Icon: IconSalad, order: 1,
+      items: [{ id: 'p1', name: 'گوجه', amount: 2, unit: 'عدد', category: 'vegetable', isChecked: false }],
+    }];
+    useShopping.mockReturnValue(baseHook({ status: 'ready', groups, total: 1, done: 0, remove }));
+    renderWithProviders(<ShoppingListPage />);
+    const del = screen.getByRole('button', { name: 'حذف از لیست' });
+    expect(del).toBeInTheDocument();
+    fireEvent.click(del);
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 });

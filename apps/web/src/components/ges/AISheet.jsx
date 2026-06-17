@@ -1,21 +1,43 @@
+import { useState, useEffect } from 'react';
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
-import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft } from '@tabler/icons-react';
+import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck } from '@tabler/icons-react';
+import { toFaDigits } from './format';
 
 /**
- * AISheet — "برای من تنظیمش کن": a disclosed, hedged bottom sheet that lets the user ask the
- * assistant to tune the recipe (servings / ingredient swaps / time). It is DISCLOSED (AI glyph +
- * "AI"), HEDGED (AI can be wrong; nutrition always shows its source), and PROPOSES — it never
- * auto-applies. Any tune routes through `onAsk` to the assistant; this sprint shows no fabricated
- * answer (the real propose→«بله، اعمال کن»/«بی‌خیال» loop lands with the AI Chat screen). Mantine
- * Drawer gives focus-trap / ESC / overlay-close. Token-pure.
+ * AISheet — "برای من تنظیمش کن": a disclosed, hedged, IN-CONTEXT bottom sheet to tune the recipe.
+ *
+ * DISCLOSED (AI glyph + "AI"), HEDGED ("AI can be wrong; nutrition shows its source), and strictly
+ * PROPOSES — it NEVER auto-applies and NEVER navigates away to the generic assistant. Tuning servings
+ * is a real, deterministic proposal the user confirms with «بله، اعمال کن» / «بی‌خیال» (the page applies
+ * it locally). Swaps/timing are shown honestly as step-by-step help that lives in Cook Mode — no
+ * fabricated AI answer, no navigation. Mantine Drawer gives focus-trap / ESC / overlay-close.
  */
 const OPTIONS = [
-  { key: 'servings', label: 'تعداد نفرات', Icon: IconUsers },
+  { key: 'servings', label: 'تنظیم تعداد نفرات', Icon: IconUsers },
   { key: 'swap', label: 'جایگزینِ مواد', Icon: IconReplace },
-  { key: 'time', label: 'زمان', Icon: IconClock },
+  { key: 'time', label: 'تنظیم زمان', Icon: IconClock },
 ];
 
-export default function AISheet({ opened, onClose, recipeTitle, onAsk }) {
+const Disclosure = () => (
+  <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-4)' }}>
+    <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 2 }} />
+    <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: 0 }}>
+      پاسخِ هوش مصنوعی ممکن است اشتباه کند و هر تغییری پیش از اعمال از تو می‌پرسد. اعداد ارزش غذایی همیشه با منبع نشان داده می‌شوند.
+    </Text>
+  </Box>
+);
+
+export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings }) {
+  const [mode, setMode] = useState(null); // null = menu · 'servings' | 'swap' | 'time' = proposal
+  const [servings, setServings] = useState(baseServings);
+
+  // Reopen always starts on the menu, seeded from the recipe's current servings.
+  useEffect(() => {
+    if (opened) { setMode(null); setServings(baseServings > 0 ? baseServings : 4); }
+  }, [opened, baseServings]);
+
+  const applyServings = () => { onApplyServings?.(servings); onClose?.(); };
+
   return (
     <Drawer
       opened={opened}
@@ -46,27 +68,61 @@ export default function AISheet({ opened, onClose, recipeTitle, onAsk }) {
         </Box>
       ) : null}
 
-      <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
-        {OPTIONS.map(({ key, label, Icon }) => (
-          <UnstyledButton
-            key={key}
-            type="button"
-            onClick={() => onAsk?.(key)}
-            style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minBlockSize: 52, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}
-          >
-            <Icon size={20} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
-            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{label}</Text>
-            <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
-          </UnstyledButton>
-        ))}
-      </Box>
+      {/* ── menu ── */}
+      {mode === null ? (
+        <>
+          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
+            {OPTIONS.map(({ key, label, Icon }) => (
+              <UnstyledButton
+                key={key}
+                type="button"
+                onClick={() => setMode(key)}
+                style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minBlockSize: 52, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}
+              >
+                <Icon size={20} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+                <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{label}</Text>
+                <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
+              </UnstyledButton>
+            ))}
+          </Box>
+          <Disclosure />
+        </>
+      ) : null}
 
-      <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-4)' }}>
-        <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 2 }} />
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: 0 }}>
-          پاسخِ هوش مصنوعی ممکن است اشتباه کند و هر تغییری پیش از اعمال از تو می‌پرسد. اعداد ارزش غذایی همیشه با منبع نشان داده می‌شوند.
-        </Text>
-      </Box>
+      {/* ── servings proposal (real, deterministic, propose-not-auto) ── */}
+      {mode === 'servings' ? (
+        <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
+          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', margin: 0 }}>برای چند نفر تنظیمش کنم؟</Text>
+          <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-4)' }}>
+            <UnstyledButton type="button" onClick={() => setServings((n) => Math.max(1, n - 1))} aria-label="کمتر" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconMinus size={18} stroke={2} /></UnstyledButton>
+            <Text component="span" aria-live="polite" style={{ minInlineSize: 64, textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>{toFaDigits(servings)} نفر</Text>
+            <UnstyledButton type="button" onClick={() => setServings((n) => Math.min(20, n + 1))} aria-label="بیشتر" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconPlus size={18} stroke={2} /></UnstyledButton>
+          </Box>
+          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-3) 0 0', textAlign: 'center' }}>مقدار مواد را به‌نسبت در نظر بگیر — پیشنهاد است، خودکار چیزی عوض نمی‌شود.</Text>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
+            <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>بی‌خیال</UnstyledButton>
+            <UnstyledButton type="button" onClick={applyServings} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-1)', minBlockSize: 48, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconCheck size={16} stroke={2} aria-hidden="true" />بله، اعمال کن</UnstyledButton>
+          </Box>
+        </Box>
+      ) : null}
+
+      {/* ── swap / time: honest in-context (no fabricated answer, no navigation away) ── */}
+      {mode === 'swap' || mode === 'time' ? (
+        <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', padding: 'var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)' }}>
+            <IconSparkles size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 1 }} />
+            <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)', margin: 0 }}>
+              {mode === 'swap'
+                ? 'سرِ پخت، مرحله‌به‌مرحله جایگزینِ هم‌خانواده پیشنهاد می‌دم — همون‌جا می‌پرسم و با تأییدت ادامه می‌دم.'
+                : 'زمان‌ها رو سرِ پخت، مرحله‌به‌مرحله کنارت تنظیم می‌کنم — با تأیید خودت، نه خودکار.'}
+            </Text>
+          </Box>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
+            <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>باشه</UnstyledButton>
+          </Box>
+          <Disclosure />
+        </Box>
+      ) : null}
     </Drawer>
   );
 }

@@ -13,7 +13,7 @@ import { toFaDigits } from './format';
  * ("بلوغ ذائقه"). Fills via framer-motion (no extra CSS keyframe — base.css reserves
  * those for the shimmer) and is disabled under prefers-reduced-motion. Token-pure.
  */
-export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ ذائقه', tone = 'mature', label }) {
+export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ ذائقه', tone = 'mature', label, showValue = true, centerIcon: CenterIcon }) {
   const gid = `dnaArc${useId().replace(/:/g, '')}`; // sanitize React useId for use in SVG url(#…)
   const clamped = Math.max(0, Math.min(1, Number(value) || 0));
   const sw = Math.max(7, Math.round(size * 0.096));
@@ -24,9 +24,12 @@ export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ
   const reduce = prefersReducedMotion();
   const pct = label ?? `${toFaDigits(Math.round(clamped * 100))}٪`;
   const big = size >= 96;
+  // showValue=false → a calm "forming" ring with NO percentage (used on the onboarding reveal, where a
+  // number would read as a maturity score it isn't); optionally a center glyph instead.
+  const ariaLabel = showValue ? `${caption}: ${pct}` : (caption || 'ذائقه در حال شکل‌گیری');
 
   return (
-    <Box role="img" aria-label={`${caption}: ${pct}`} style={{ position: 'relative', inlineSize: size, blockSize: size, flexShrink: 0 }}>
+    <Box role="img" aria-label={ariaLabel} style={{ position: 'relative', inlineSize: size, blockSize: size, flexShrink: 0 }}>
       <svg
         width={size}
         height={size}
@@ -56,9 +59,13 @@ export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ
         />
       </svg>
       <Box style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: big ? 'var(--g-font-size-22)' : 'var(--g-font-size-16)', lineHeight: 1, color: 'var(--g-color-text-primary)' }}>
-          {pct}
-        </Text>
+        {showValue ? (
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: big ? 'var(--g-font-size-22)' : 'var(--g-font-size-16)', lineHeight: 1, color: 'var(--g-color-text-primary)' }}>
+            {pct}
+          </Text>
+        ) : CenterIcon ? (
+          <CenterIcon size={big ? 40 : 26} stroke={1.6} aria-hidden="true" style={{ color: 'var(--g-color-brand-500)' }} />
+        ) : null}
         {caption ? (
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-12)', marginBlockStart: 3, color: 'var(--g-color-text-muted)' }}>
             {caption}

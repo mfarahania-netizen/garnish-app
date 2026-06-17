@@ -59,7 +59,10 @@ export default function RecipeCard({
         blockSize: '100%',
       }}
     >
-      <Box style={{ position: 'relative', aspectRatio: '16 / 9' }}>
+      {/* Bulletproof 16:9 — padding-top (56.25%) gives the height from the width in EVERY engine/cache
+          state, so the media is always short+wide (never near-square) regardless of `aspect-ratio` support.
+          The placeholder + overlays fill it via position:absolute inset:0. */}
+      <Box style={{ position: 'relative', inlineSize: '100%', blockSize: 0, paddingBlockStart: '56.25%', overflow: 'hidden' }}>
         <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
 
         <UnstyledButton

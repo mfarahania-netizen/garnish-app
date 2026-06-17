@@ -266,13 +266,13 @@ function Reveal({ o }) {
               style={{ position: 'absolute', inlineSize: 140, blockSize: 140, borderRadius: '50%', background: 'var(--g-color-brand-400)' }}
             />
           ) : null}
-          <FoodDnaRing value={o.revealValue} size={168} tone="forming" caption="شروعِ شناخت" />
+          <FoodDnaRing value={0.2} size={168} tone="forming" showValue={false} centerIcon={IconLeaf} caption="" />
         </Box>
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-5)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
           <IconTrendingUp size={14} stroke={1.8} aria-hidden="true" />در حال شکل‌گیری
         </Box>
         <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-28)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', textWrap: 'balance', margin: 'var(--g-space-3) 0 0', color: 'var(--g-color-text-primary)' }}>ذائقه‌ات داره شکل می‌گیره</Text>
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 'var(--g-space-2) 0 0' }}>از همین چند پاسخ، این‌طور می‌شناسیمت:</Text>
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 'var(--g-space-2) 0 0' }}>از همین چند پاسخ، این‌طور شروع کردیم به شناختت:</Text>
         {o.traits.length ? (
           <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', justifyContent: 'center', marginBlockStart: 'var(--g-space-3)' }}>
             {o.traits.map((t) => (

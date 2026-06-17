@@ -136,6 +136,7 @@ export default function RecipeDetailPage() {
   const { status, recipe, nutrition, fit, refetch } = useRecipeDetail(id);
   const [saved, setSaved] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [servedFor, setServedFor] = useState(null); // locally-applied serving target from the AI sheet
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
@@ -151,6 +152,10 @@ export default function RecipeDetailPage() {
 
   const isAllergen = fit?.recommendation === 'avoid_allergen';
   const isGreat = fit?.recommendation === 'great_fit';
+  const baseServings = (() => {
+    const m = String(recipe.servingsText || '').replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).match(/\d+/);
+    return m ? Number(m[0]) : 4;
+  })();
 
   return (
     <Column>
@@ -174,7 +179,7 @@ export default function RecipeDetailPage() {
             <Box style={{ inlineSize: 1, background: 'var(--g-color-border-subtle)', marginBlock: 'var(--g-space-3)' }} />
             <MetaCell icon={IconChartBar} value={recipe.difficultyText || '—'} label="سختی" />
             <Box style={{ inlineSize: 1, background: 'var(--g-color-border-subtle)', marginBlock: 'var(--g-space-3)' }} />
-            <MetaCell icon={IconUsers} value={recipe.servingsText || '—'} label="برای" />
+            <MetaCell icon={IconUsers} value={servedFor ? `${toFaDigits(servedFor)} نفر` : (recipe.servingsText || '—')} label={servedFor ? 'تنظیم‌شده' : 'برای'} />
           </Box>
 
           {/* TITLE + category chips */}
@@ -236,7 +241,7 @@ export default function RecipeDetailPage() {
                   <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
                     <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-brand-300)', flexShrink: 0 }} />
                     <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
-                    <UnstyledButton type="button" onClick={() => showToast('پیشنهادِ جایگزین در دستیار', IconSparkles)} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
+                    <UnstyledButton type="button" onClick={() => showToast('سرِ پخت، جایگزین پیشنهاد می‌دم', IconSparkles)} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
                     {ing.amountText ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{ing.amountText}</Text> : null}
                   </Box>
                 ))}
@@ -316,7 +321,13 @@ export default function RecipeDetailPage() {
         </UnstyledButton>
       </Box>
 
-      <AISheet opened={sheetOpen} onClose={() => setSheetOpen(false)} recipeTitle={recipe.title} onAsk={() => { setSheetOpen(false); navigate('/assistant'); }} />
+      <AISheet
+        opened={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        recipeTitle={recipe.title}
+        baseServings={servedFor || baseServings}
+        onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
+      />
       <Toast toast={toast} />
     </Column>
   );

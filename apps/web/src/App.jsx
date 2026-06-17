@@ -101,8 +101,11 @@ export default function App() {
                       <Route element={<AppShell />}>
                         <Route index element={<HomePage />} />
                         <Route path="/discover" element={<DiscoveryPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/food-dna" element={<ProfilePage initialView="dna" />} />
+                        {/* distinct keys → each route remounts ProfilePage with the right initial view
+                            («پروفایل من» = profile, «شناسهٔ ذائقه» = the Food-DNA breakdown), so the two
+                            drawer links never collapse to the same screen */}
+                        <Route path="/profile" element={<ProfilePage key="profile" />} />
+                        <Route path="/food-dna" element={<ProfilePage key="dna" initialView="dna" />} />
                         <Route path="/plan" element={<PlanPage />} />
                         <Route path="/shopping-list" element={<ShoppingListPage />} />
                         <Route path="/favorites" element={<FavoritesPage />} />

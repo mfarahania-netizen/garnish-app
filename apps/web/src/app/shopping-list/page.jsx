@@ -1,25 +1,32 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck } from '@tabler/icons-react';
+import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
 import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
-function GroceryRow({ item, checked, onToggle, first }) {
+function GroceryRow({ item, checked, onToggle, onRemove, first }) {
   return (
-    <UnstyledButton type="button" onClick={onToggle} aria-pressed={checked} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 48, paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)', opacity: checked ? 0.6 : 1 }}>
-      <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-        {checked ? <IconCheck size={14} stroke={2.4} /> : null}
-      </Box>
-      <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: checked ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)', textDecoration: checked ? 'line-through' : 'none' }}>{item.name}</Text>
-      {checked ? (
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', whiteSpace: 'nowrap' }}>گرفتم</Text>
-      ) : item.amount || item.unit ? (
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{toFaDigits([item.amount, item.unit].filter(Boolean).join(' '))}</Text>
-      ) : null}
-    </UnstyledButton>
+    <Box style={{ display: 'flex', alignItems: 'center', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)', opacity: checked ? 0.6 : 1 }}>
+      {/* the row body toggles the no-shame checked state (accessible name = the item) */}
+      <UnstyledButton type="button" onClick={onToggle} aria-pressed={checked} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minBlockSize: 48, paddingInlineStart: 'var(--g-space-4)', paddingInlineEnd: 'var(--g-space-2)', paddingBlock: 'var(--g-space-3)' }}>
+        <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          {checked ? <IconCheck size={14} stroke={2.4} /> : null}
+        </Box>
+        <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: checked ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)', textDecoration: checked ? 'line-through' : 'none' }}>{item.name}</Text>
+        {checked ? (
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', whiteSpace: 'nowrap' }}>گرفتم</Text>
+        ) : item.amount || item.unit ? (
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{toFaDigits([item.amount, item.unit].filter(Boolean).join(' '))}</Text>
+        ) : null}
+      </UnstyledButton>
+      {/* delete — removes the item from the real list (optimistic) */}
+      <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از لیست" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}>
+        <IconTrash size={18} stroke={1.8} aria-hidden="true" />
+      </UnstyledButton>
+    </Box>
   );
 }
 
@@ -96,7 +103,7 @@ export default function ShoppingListPage() {
                       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{g.label}</Text>
                     </Box>
                     <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', overflow: 'hidden' }}>
-                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} first={i === 0} />)}
+                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} first={i === 0} />)}
                     </Box>
                   </Box>
                 ))}
