@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 5,
+    "routes": 7,
     "protectedRoutes": 0,
-    "frontendCallSites": 53,
+    "frontendCallSites": 57,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7531,8 +7531,22 @@
       "layoutOnly": false
     },
     {
+      "path": "/food-dna",
+      "component": "ProfilePage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/onboarding",
       "component": "OnboardingPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "/profile",
+      "component": "ProfilePage",
       "protected": false,
       "admin": false,
       "layoutOnly": false
@@ -7639,6 +7653,13 @@
     },
     {
       "verb": "GET",
+      "raw": "/gamification/me",
+      "normalized": "/gamification/me",
+      "file": "apps/web/src/app/profile/useProfile.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
       "raw": "/meal-plans",
       "normalized": "/meal-plans",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
@@ -7712,6 +7733,13 @@
       "raw": "/profile",
       "normalized": "/profile",
       "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/profile",
+      "normalized": "/profile",
+      "file": "apps/web/src/app/profile/useProfile.js",
       "dynamic": false
     },
     {
@@ -7872,6 +7900,13 @@
       "verb": "GET",
       "raw": "/users/me",
       "normalized": "/users/me",
+      "file": "apps/web/src/app/profile/useProfile.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
       "file": "apps/web/src/context/AuthContext.jsx",
       "dynamic": false
     },
@@ -7894,6 +7929,13 @@
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
       "file": "apps/web/src/app/discover/useDiscovery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/app/profile/useProfile.js",
       "dynamic": false
     },
     {

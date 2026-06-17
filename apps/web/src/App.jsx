@@ -12,6 +12,7 @@ import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
 import OnboardingPage from './app/onboarding/page';
 import DiscoveryPage from './app/discover/page';
+import ProfilePage from './app/profile/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -89,6 +90,8 @@ export default function App() {
                       <Route element={<AppShell />}>
                         <Route index element={<HomePage />} />
                         <Route path="/discover" element={<DiscoveryPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/food-dna" element={<ProfilePage initialView="dna" />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>
                     </Route>

@@ -78,6 +78,51 @@ export function traitsFromProfile(profile, max = 3) {
   return out;
 }
 
+// ── Profile DNA breakdown — per-dimension confidence from the REAL reconciled profile (never raw keys) ──
+// /profile.reconciled.dimensions is keyed dietary_pattern|effort|skill|allergies (each with a 0..1
+// confidence + status). We skip 'allergies' (a safety constraint, not a taste %) and unknown/empty dims,
+// and only render dimensions we have a Persian label for — a raw key is NEVER shown.
+const DIM_KEY_LABELS = {
+  dietary_pattern: 'الگوی غذایی', 'dietary.pattern': 'الگوی غذایی',
+  effort: 'زمان و سرعتِ پخت', 'constraints.cooking_time_workday': 'زمان و سرعتِ پخت',
+  skill: 'مهارتِ آشپزی', 'constraints.cooking_skill': 'مهارتِ آشپزی',
+  budget: 'بودجه', 'constraints.weekly_budget_band': 'بودجه',
+  variety: 'تنوعِ آشپزی', spicy: 'تندپسندی',
+};
+export function dimensionBreakdown(profile, max = 5) {
+  const dims = profile?.reconciled?.dimensions || {};
+  const rows = [];
+  for (const [k, d] of Object.entries(dims)) {
+    if (!d || k === 'allergies') continue;
+    if (d.status === 'unknown' || d.status === 'empty') continue;
+    const label = DIM_KEY_LABELS[k] || DIMENSION_LABELS[k];
+    if (!label) continue;
+    const c = Math.max(0, Math.min(1, Number(d.confidence) || 0));
+    if (c <= 0) continue;
+    rows.push({ key: k, label, value: c, band: c >= 0.6 ? 'high' : c >= 0.3 ? 'med' : 'low' });
+  }
+  rows.sort((a, b) => b.value - a.value);
+  return rows.slice(0, max);
+}
+
+// ── Honest reconciliation — surface a real declared↔observed divergence (both kept), never invented ──
+const RECON_FA = {
+  plant_forward: 'گیاه‌محور', plant_based: 'گیاه‌محور', flexitarian: 'گیاه‌محور', vegetarian: 'گیاه‌خوار',
+  vegan: 'وگن', pescatarian: 'ماهی‌خوار', omnivore: 'همه‌چیزخوار', meat_inclusive: 'غذای گوشتی',
+  mediterranean: 'مدیترانه‌ای', keto: 'کتو', low_carb: 'کم‌کربوهیدرات', halal: 'حلال',
+};
+export function tasteReconciliation(profile) {
+  const dims = profile?.reconciled?.dimensions || {};
+  for (const d of Object.values(dims)) {
+    if (d?.status === 'declared_observed_conflict' && d.declared && d.observed) {
+      const declared = RECON_FA[String(d.declared.value)];
+      const observed = RECON_FA[String(d.observed.value)];
+      if (declared && observed && declared !== observed) return { specific: true, declared, observed };
+    }
+  }
+  return { specific: false };
+}
+
 // ── Recipe Detail: honest fit (built from structured fields, never English reasons) ──
 export const FIT_LABEL = {
   great_fit: 'عالی برای تو',
