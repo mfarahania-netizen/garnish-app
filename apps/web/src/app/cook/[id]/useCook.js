@@ -25,7 +25,9 @@ function extractFa(data) {
   visit(data, 0);
   if (!out.length) return null;
   out.sort((a, b) => b.length - a.length);
-  return out[0];
+  // strip stray Latin-word fragments so only Persian reaches the user (digits/units survive)
+  const cleaned = out[0].replace(/[A-Za-z]+/g, ' ').replace(/\s{2,}/g, ' ').replace(/^[\s:،.\-–]+/, '').trim();
+  return cleaned.length >= 6 ? cleaned : null;
 }
 
 export function useCook(id) {
@@ -42,16 +44,17 @@ export function useCook(id) {
   const steps = detail.recipe?.steps || [];
   const total = steps.length;
 
+  // side effects at the top level (never inside a setState updater → no StrictMode double-fire)
   const next = useCallback(() => {
-    setStep((s) => {
-      if (s >= total - 1) {
+    if (step >= total - 1) {
+      if (!finished) {
         setFinished(true);
         if (token) trackEvent('recipe_cooked', { recipeId: id });
-        return s;
       }
-      return s + 1;
-    });
-  }, [total, token, trackEvent, id]);
+      return;
+    }
+    setStep((s) => s + 1);
+  }, [step, total, finished, token, trackEvent, id]);
 
   const prev = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
 
@@ -59,7 +62,9 @@ export function useCook(id) {
     setSheetOpen(true);
     setHelp({ loading: true, text: null, error: false });
     try {
-      const data = await apiClient.get(`/ai/recipes/${id}/technique`, { params: { step } }).then((r) => r.data);
+      // backend step is 1-based; honor the honest-degradation contract (only render an 'ok' result)
+      const data = await apiClient.get(`/ai/recipes/${id}/technique`, { params: { step: step + 1 } }).then((r) => r.data);
+      if (data?.resultStatus && data.resultStatus !== 'ok') { setHelp({ loading: false, text: null, error: true }); return; }
       const text = extractFa(data);
       setHelp({ loading: false, text, error: !text });
     } catch {

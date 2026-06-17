@@ -190,15 +190,24 @@ export default function CookPage() {
       </Box>
 
       {/* AI help sheet (disclosed + hedged + grounded) */}
-      <Drawer opened={c.sheetOpen} onClose={c.closeHelp} position="bottom" withCloseButton={false} size="auto" zIndex={500} aria-label="کمک هوش مصنوعی برای این مرحله" overlayProps={{ backgroundOpacity: 0.42, blur: 2 }} styles={{ content: { background: 'var(--g-color-bg-surface)', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)' }, body: { padding: 'var(--g-space-5)' } }}>
-        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Drawer
+        opened={c.sheetOpen}
+        onClose={c.closeHelp}
+        position="bottom"
+        withCloseButton
+        closeButtonProps={{ 'aria-label': 'بستن' }}
+        size="auto"
+        zIndex={500}
+        title={(
           <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
             <Box aria-hidden="true" style={{ inlineSize: 24, blockSize: 24, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}><IconSparkles size={13} stroke={1.8} /></Box>
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>دستیارِ AI</Text>
           </Box>
-          <UnstyledButton type="button" onClick={c.closeHelp} aria-label="بستن" style={{ inlineSize: 44, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={20} stroke={1.8} /></UnstyledButton>
-        </Box>
-        <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
+        )}
+        overlayProps={{ backgroundOpacity: 0.42, blur: 2 }}
+        styles={{ content: { background: 'var(--g-color-bg-surface)', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-5)' } }}
+      >
+        <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
           <IconTag size={13} stroke={1.8} aria-hidden="true" />دربارهٔ: مرحلهٔ {toFaDigits(c.step + 1)} از {toFaDigits(c.total)}
         </Box>
         <Box style={{ marginBlockStart: 'var(--g-space-4)', minBlockSize: 64 }}>
