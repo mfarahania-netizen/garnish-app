@@ -3,9 +3,10 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
-  IconPlus, IconCalendarPlus, IconCloudOff, IconRefresh, IconClock,
+  IconPlus, IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
 
@@ -20,20 +21,28 @@ function Tile({ title }) {
   );
 }
 
-function SlotCard({ slot, onOpen, onAccept, onAddManual, accepted }) {
+function SlotCard({ slot, onOpen, onAccept, onAddManual, onRemove, accepted }) {
   if (slot?.kind === 'filled' || accepted) {
+    const canRemove = slot?.kind === 'filled' && !!onRemove;
     return (
-      <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)' }}>
-        <Tile title={slot.title} />
-        <Box style={{ padding: 'var(--g-space-2)' }}>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{slot.title}</Text>
-          {accepted ? (
-            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)' }}><IconCheck size={11} stroke={2.4} aria-hidden="true" />اضافه شد</Box>
-          ) : slot.cookTimeText ? (
-            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box>
-          ) : null}
-        </Box>
-      </UnstyledButton>
+      <Box style={{ position: 'relative' }}>
+        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)' }}>
+          <Tile title={slot.title} />
+          <Box style={{ padding: 'var(--g-space-2)' }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{slot.title}</Text>
+            {accepted ? (
+              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)' }}><IconCheck size={11} stroke={2.4} aria-hidden="true" />اضافه شد</Box>
+            ) : slot.cookTimeText ? (
+              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box>
+            ) : null}
+          </Box>
+        </UnstyledButton>
+        {canRemove ? (
+          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-state-danger-fg)', boxShadow: 'var(--g-shadow-1)' }}>
+            <IconTrash size={16} stroke={1.8} />
+          </UnstyledButton>
+        ) : null}
+      </Box>
     );
   }
   if (slot?.kind === 'suggested') {
@@ -100,6 +109,7 @@ function EmptyWeek({ onPropose, proposing }) {
 export default function PlanPage() {
   const navigate = useNavigate();
   const m = useMealPlan();
+  const { trackEvent } = useAnalytics();
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
@@ -109,24 +119,29 @@ export default function PlanPage() {
   const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
   const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
   const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
+  // real delete: honest toast + the mealplan_remove signal fire ONLY on a successful DELETE
+  const onRemoveSlot = async (dayOfWeek, mealType, recipeId) => {
+    const ok = await m.removeSlot(dayOfWeek, mealType);
+    if (ok) { showToast('از برنامه حذف شد', IconTrash); trackEvent('mealplan_remove', { dayOfWeek, mealType, recipeId }); }
+    else showToast('حذف نشد، دوباره تلاش کن', IconCloudOff);
+  };
 
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* header */}
-      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
-        <Box>
-          <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برنامهٔ هفته</Text>
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
-        </Box>
-        <UnstyledButton type="button" onClick={() => showToast('دستیارِ برنامه به‌زودی', IconSparkles)} aria-label="دستیار" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-brand-600)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconSparkles size={20} stroke={1.8} /></UnstyledButton>
+      {/* header — single clear plan-generation entry point lives below («برنامهٔ هفته رو بچین»);
+          the redundant dead "دستیار" button was removed (FE-PLAN-AND-MODALS FIX 4). */}
+      <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+        <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برنامهٔ هفته</Text>
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
       </Box>
 
       {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} /> : (
         <>
-          {/* week columns (RTL: first day at the inline-start/right) */}
-          <Box className="g-norail" style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-2)', alignItems: 'flex-start' }}>
+          {/* week columns (RTL: first day at the inline-start/right). g-weekscroll = thin visible
+              scrollbar so all 7 days are reachable with a mouse on desktop (FE-PLAN-AND-MODALS FIX 3). */}
+          <Box className="g-weekscroll" style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', alignItems: 'flex-start' }}>
             {m.week.days.map((day) => (
               <Box key={day.dayOfWeek} style={{ flex: '0 0 140px' }}>
                 <Box style={{ textAlign: 'center', marginBlockEnd: 'var(--g-space-3)' }}>
@@ -153,6 +168,7 @@ export default function PlanPage() {
                           onOpen={() => openRecipe((filled || sugg)?.recipeId)}
                           onAccept={() => onAcceptSlot(sugg)}
                           onAddManual={() => showToast('افزودن وعده به‌زودی', IconPlus)}
+                          onRemove={filled ? () => onRemoveSlot(day.dayOfWeek, meal.key, filled.recipeId) : undefined}
                         />
                       </Box>
                     );

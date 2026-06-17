@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { faDuration } from '../../components/ges/format';
 
@@ -11,7 +11,7 @@ import { faDuration } from '../../components/ges/format';
  * The proposal's English `why` is NEVER rendered; only the real fitScore drives a localized confidence.
  */
 
-const MEALS = [{ key: 'lunch', label: 'ناهار' }, { key: 'dinner', label: 'شام' }];
+const MEALS = [{ key: 'breakfast', label: 'صبحانه' }, { key: 'lunch', label: 'ناهار' }, { key: 'dinner', label: 'شام' }];
 const DAY_LABELS = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
 
 const faDay = (d) => { try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' }).format(d); } catch { return ''; } };
@@ -34,6 +34,7 @@ function buildWeek() {
 const confFromFit = (s) => (s >= 0.6 ? 'high' : s >= 0.4 ? 'med' : 'low');
 
 export function useMealPlan() {
+  const queryClient = useQueryClient();
   const plan = useQuery({ queryKey: ['plan', 'current'], queryFn: () => apiClient.get('/meal-plans').then((r) => r.data) });
   const [proposal, setProposal] = useState(null); // ProposedSlot[] | null
   const [proposing, setProposing] = useState(false);
@@ -71,7 +72,7 @@ export function useMealPlan() {
   const propose = useCallback(async () => {
     setProposing(true); setProposeError(false);
     try {
-      const data = await apiClient.post('/meal-plans/propose', { days: 7, meals: ['lunch', 'dinner'] }).then((r) => r.data);
+      const data = await apiClient.post('/meal-plans/propose', { days: 7, meals: ['breakfast', 'lunch', 'dinner'] }).then((r) => r.data);
       setProposal(Array.isArray(data?.slots) ? data.slots : []);
       return true;
     } catch {
@@ -83,6 +84,25 @@ export function useMealPlan() {
   }, []);
 
   const clearProposal = useCallback(() => { setProposal(null); setAccepted({}); }, []);
+
+  // delete a real, already-saved slot via DELETE /meal-plans/slots/:dayOfWeek/:mealType.
+  // Optimistic: drop it from the cached plan immediately; on failure, revert the cache + return false
+  // (so the caller never claims a delete that did not happen).
+  const removeSlot = useCallback(async (dayOfWeek, mealType) => {
+    const key = ['plan', 'current'];
+    const prev = queryClient.getQueryData(key);
+    queryClient.setQueryData(key, (old) => (
+      old?.slots ? { ...old, slots: old.slots.filter((s) => !(s.dayOfWeek === dayOfWeek && s.mealType === mealType)) } : old
+    ));
+    try {
+      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}`);
+      await plan.refetch();
+      return true;
+    } catch {
+      queryClient.setQueryData(key, prev); // revert to server truth
+      return false;
+    }
+  }, [plan, queryClient]);
 
   const acceptSlot = useCallback(async (s) => {
     const key = `${s.dayOfWeek}:${s.mealType}`;
@@ -129,6 +149,6 @@ export function useMealPlan() {
     hasPlan,
     proposalActive: !!proposal,
     proposing, proposeError, applying,
-    propose, clearProposal, acceptSlot, acceptAll,
+    propose, clearProposal, acceptSlot, acceptAll, removeSlot,
   };
 }

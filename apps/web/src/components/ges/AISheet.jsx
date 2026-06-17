@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
 import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck } from '@tabler/icons-react';
 import { toFaDigits } from './format';
+import { bottomSheetStyles } from './sheet';
 
 /**
  * AISheet — "برای من تنظیمش کن": a disclosed, hedged, IN-CONTEXT bottom sheet to tune the recipe.
@@ -56,11 +57,11 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text>
         </Box>
       }
-      styles={{
+      styles={bottomSheetStyles({
         content: { height: 'auto', maxHeight: '85vh', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' },
         header: { background: 'var(--g-color-bg-surface)' },
         body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' },
-      }}
+      })}
     >
       {recipeTitle ? (
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>

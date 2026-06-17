@@ -22,3 +22,20 @@
 .g-norail::-webkit-scrollbar {
   display: none;
 }
+
+/* Weekly-plan row: a thin, ALWAYS-VISIBLE token-styled scrollbar so every day (شنبه…جمعه) is reachable
+   with a mouse on desktop (g-norail hid it → later days were unreachable without touch-swipe). */
+.g-weekscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--g-color-border-strong) transparent;
+}
+.g-weekscroll::-webkit-scrollbar {
+  height: 8px;
+}
+.g-weekscroll::-webkit-scrollbar-thumb {
+  background: var(--g-color-border-strong);
+  border-radius: 999px;
+}
+.g-weekscroll::-webkit-scrollbar-track {
+  background: transparent;
+}

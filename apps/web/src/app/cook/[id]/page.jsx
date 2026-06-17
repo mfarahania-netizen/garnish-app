@@ -8,6 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { useCook } from './useCook';
 import { toFaDigits } from '../../../components/ges/format';
+import { bottomSheetStyles } from '../../../components/ges/sheet';
 import { prefersReducedMotion } from '../../../lib/motion';
 import { SkeletonLine } from '../../../components/ges/LoadingSkeleton';
 import Toast from '../../../components/ges/Toast';
@@ -211,7 +212,7 @@ export default function CookPage() {
           </Box>
         )}
         overlayProps={{ backgroundOpacity: 0.42, blur: 2 }}
-        styles={{ content: { background: 'var(--g-color-bg-surface)', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-5)' } }}
+        styles={bottomSheetStyles({ content: { background: 'var(--g-color-bg-surface)', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-5)' } })}
       >
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
           <IconTag size={13} stroke={1.8} aria-hidden="true" />دربارهٔ: مرحلهٔ {toFaDigits(c.step + 1)} از {toFaDigits(c.total)}

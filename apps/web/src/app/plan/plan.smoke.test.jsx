@@ -1,6 +1,9 @@
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import PlanPage from './page';
+
+// isolate the page from real analytics (the delete path fires trackEvent('mealplan_remove'))
+vi.mock('../../hooks/useAnalytics', () => ({ useAnalytics: () => ({ trackEvent: vi.fn() }) }));
 
 // jsdom on Node >=20 does not expose window.localStorage unless --localstorage-file
 // is passed; the shared harness mounts AuthProvider which reads localStorage.getItem
@@ -61,6 +64,7 @@ const makeHook = (overrides = {}) => ({
   clearProposal: vi.fn(),
   acceptSlot: vi.fn().mockResolvedValue(true),
   acceptAll: vi.fn().mockResolvedValue({ ok: true, failed: 0, total: 0 }),
+  removeSlot: vi.fn().mockResolvedValue(true),
   ...overrides,
 });
 
@@ -120,5 +124,42 @@ describe('PlanPage smoke', () => {
     renderWithProviders(<PlanPage />);
     expect(screen.getByText('این یک پیشنهاد است — بازبینی کن و بپذیر')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'پذیرفتنِ برنامه' })).toBeInTheDocument();
+  });
+
+  // FIX 4: the redundant dead "دستیار" header button is gone (one clear «بچین» entry point remains).
+  it('does NOT render the removed dead "دستیار" header button', () => {
+    useMealPlan.mockReturnValue(makeHook({ hasPlan: false, proposalActive: false }));
+    renderWithProviders(<PlanPage />);
+    expect(screen.queryByRole('button', { name: 'دستیار' })).not.toBeInTheDocument();
+  });
+
+  // FIX 1: a filled slot has a real delete affordance; the success toast is gated on a real success.
+  it('delete: tapping × calls removeSlot and shows the success toast ONLY on success', async () => {
+    const removeSlot = vi.fn().mockResolvedValue(true);
+    useMealPlan.mockReturnValue(makeHook({ hasPlan: true, filled: { '0:lunch': { recipeId: 'r1', title: 'قورمه‌سبزی', cookTimeText: '۹۰ دقیقه' } }, removeSlot }));
+    renderWithProviders(<PlanPage />);
+    fireEvent.click(screen.getByRole('button', { name: 'حذف از برنامه' }));
+    expect(removeSlot).toHaveBeenCalledWith(0, 'lunch');
+    expect(await screen.findByText('از برنامه حذف شد')).toBeInTheDocument();
+  });
+
+  it('delete: a FAILED delete shows an honest error toast, never a success message', async () => {
+    const removeSlot = vi.fn().mockResolvedValue(false);
+    useMealPlan.mockReturnValue(makeHook({ hasPlan: true, filled: { '0:lunch': { recipeId: 'r1', title: 'قورمه‌سبزی', cookTimeText: '۹۰ دقیقه' } }, removeSlot }));
+    renderWithProviders(<PlanPage />);
+    fireEvent.click(screen.getByRole('button', { name: 'حذف از برنامه' }));
+    expect(await screen.findByText('حذف نشد، دوباره تلاش کن')).toBeInTheDocument();
+    expect(screen.queryByText('از برنامه حذف شد')).not.toBeInTheDocument();
+  });
+
+  // FIX 2: the grid renders a breakfast (صبحانه) row when the hook provides the breakfast meal.
+  it('renders a breakfast (صبحانه) row', () => {
+    useMealPlan.mockReturnValue(makeHook({
+      meals: [{ key: 'breakfast', label: 'صبحانه' }, { key: 'lunch', label: 'ناهار' }, { key: 'dinner', label: 'شام' }],
+      hasPlan: true,
+      filled: { '0:breakfast': { recipeId: 'rb', title: 'املت', cookTimeText: '۱۰ دقیقه' } },
+    }));
+    renderWithProviders(<PlanPage />);
+    expect(screen.getAllByText('صبحانه').length).toBeGreaterThan(0);
   });
 });

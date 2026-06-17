@@ -19,6 +19,7 @@ import NutritionBadge from '../../../components/ges/NutritionBadge';
 import AISheet from '../../../components/ges/AISheet';
 import Toast from '../../../components/ges/Toast';
 import { SkeletonLine } from '../../../components/ges/LoadingSkeleton';
+import { bottomSheetStyles } from '../../../components/ges/sheet';
 
 const Column = ({ children }) => (
   <Box style={{ minBlockSize: '100dvh', display: 'flex', justifyContent: 'center', background: 'var(--g-color-bg-canvas)' }}>
@@ -136,7 +137,7 @@ function HeroMedia({ imageUrl, title }) {
 
 // minimal, token-pure day/meal picker → POST /meal-plans/slots (dayOfWeek 0=Sat..6=Fri, like the planner)
 const PLAN_DAYS = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
-const PLAN_MEALS = [{ id: 'lunch', label: 'ناهار' }, { id: 'dinner', label: 'شام' }];
+const PLAN_MEALS = [{ id: 'breakfast', label: 'صبحانه' }, { id: 'lunch', label: 'ناهار' }, { id: 'dinner', label: 'شام' }];
 const todaySatIdx = () => (new Date().getDay() + 1) % 7;
 function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
   const [day, setDay] = useState(todaySatIdx());
@@ -145,7 +146,7 @@ function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
   const chip = (active) => ({ minBlockSize: 44, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${active ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: active ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', color: active ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 });
   const heading = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' };
   return (
-    <Drawer opened={opened} onClose={onClose} position="bottom" zIndex={400} withCloseButton closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }} title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>افزودن به برنامهٔ هفته</Text>} overlayProps={{ backgroundOpacity: 0.42, blur: 1 }} transitionProps={{ transition: 'slide-up', duration: 240 }} styles={{ content: { height: 'auto', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } }}>
+    <Drawer opened={opened} onClose={onClose} position="bottom" zIndex={400} withCloseButton closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }} title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>افزودن به برنامهٔ هفته</Text>} overlayProps={{ backgroundOpacity: 0.42, blur: 1 }} transitionProps={{ transition: 'slide-up', duration: 240 }} styles={bottomSheetStyles({ content: { height: 'auto', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } })}>
       <Text component="p" style={{ ...heading, margin: 'var(--g-space-2) 0 var(--g-space-2)' }}>روز</Text>
       <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
         {PLAN_DAYS.map((d, i) => <UnstyledButton key={i} type="button" onClick={() => setDay(i)} aria-pressed={day === i} style={chip(day === i)}>{d}</UnstyledButton>)}
