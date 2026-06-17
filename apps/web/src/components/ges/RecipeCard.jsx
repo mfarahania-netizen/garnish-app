@@ -46,6 +46,8 @@ export default function RecipeCard({
   onSave,
   onOpen,
   compact = false,
+  // Short fixed media height: full-width picks = 140px; compact (rails/grids) = 110px. Callers can override.
+  mediaHeight = compact ? 110 : 140,
 }) {
   const SaveIcon = saved ? IconBookmarkFilled : IconBookmark;
   return (
@@ -59,10 +61,12 @@ export default function RecipeCard({
         blockSize: '100%',
       }}
     >
-      {/* 16:9 media — the SINGLE source of truth for the card image ratio (no competing height /
-          padding-top). Short+wide on the full-width picks AND the narrow rails alike. The branded
-          placeholder + overlays fill it via position:absolute inset:0; the glyph is a small FIXED size. */}
-      <Box style={{ position: 'relative', inlineSize: '100%', aspectRatio: '16 / 9', overflow: 'hidden' }}>
+      {/* SHORT FIXED-HEIGHT media (founder-approved deviation from a 16:9 hero): a full-width pick at
+          16:9 is physically too tall on mobile, so the image is a short wide banner of a fixed
+          `mediaHeight` (140px picks / smaller for rails) — NO aspect-ratio that scales tall with width.
+          The branded placeholder + overlays fill it via position:absolute inset:0; the glyph is a small
+          FIXED size. */}
+      <Box style={{ position: 'relative', inlineSize: '100%', blockSize: mediaHeight, overflow: 'hidden' }}>
         <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
 
         <UnstyledButton

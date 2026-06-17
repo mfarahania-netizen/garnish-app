@@ -148,7 +148,7 @@ function CuisineRow({ onPick }) {
 function StarterCard({ label, seed }) {
   return (
     <Box style={{ flex: 1, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', boxShadow: 'var(--g-shadow-1)', overflow: 'hidden' }}>
-      <Box style={{ position: 'relative', aspectRatio: '16 / 9' }}><PlatePlaceholder label={label} seed={seed} /></Box>
+      <Box style={{ position: 'relative', blockSize: 140, overflow: 'hidden' }}><PlatePlaceholder label={label} seed={seed} /></Box>
       <Text component="div" style={{ padding: 'var(--g-space-2) var(--g-space-3)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{label}</Text>
     </Box>
   );

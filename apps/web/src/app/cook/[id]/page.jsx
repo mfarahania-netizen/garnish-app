@@ -3,7 +3,7 @@ import { Box, Text, UnstyledButton, Drawer } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  IconX, IconChevronRight, IconChevronLeft, IconClockPlay, IconPlayerPause, IconRefresh,
+  IconChevronRight, IconChevronLeft, IconClockPlay, IconPlayerPause, IconRefresh,
   IconSparkles, IconTag, IconInfoCircle, IconCheck, IconHeart, IconCloudOff, IconFlame,
 } from '@tabler/icons-react';
 import { useCook } from './useCook';
@@ -33,11 +33,11 @@ function stepMinutes(text) {
   return mins > 0 && mins <= 600 ? mins : 0;
 }
 
+// Cook content fills the AppShell <main> (which already provides the centred 480 column + the app
+// TopBar/BottomNav chrome) — so this is just a flex column, not its own full-screen shell.
 const Column = ({ children }) => (
-  <Box style={{ minBlockSize: '100dvh', display: 'flex', justifyContent: 'center', background: 'var(--g-color-bg-canvas)' }}>
-    <Box style={{ position: 'relative', width: '100%', maxInlineSize: 480, minBlockSize: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--g-color-bg-canvas)', borderInline: '1px solid var(--g-color-border-subtle)' }}>
-      {children}
-    </Box>
+  <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', minBlockSize: 0 }}>
+    {children}
   </Box>
 );
 
@@ -164,10 +164,10 @@ export default function CookPage() {
   return (
     <Column>
       {/* top */}
-      <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-5)', paddingBlockStart: 'calc(var(--g-space-3) + env(safe-area-inset-top))', paddingBlockEnd: 'var(--g-space-3)' }}>
+      <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-5)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)' }}>
+        {/* in-cook sub-header: recipe title + step counter (the app TopBar above provides back/menu) */}
         <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-3)' }}>
-          <UnstyledButton type="button" onClick={exit} aria-label="بستن حالت پخت" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconX size={20} stroke={1.8} /></UnstyledButton>
-          <Text component="span" style={{ flex: 1, textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.recipe.title}</Text>
+          <Text component="span" style={{ flex: 1, minInlineSize: 0, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.recipe.title}</Text>
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-brand-700)', flexShrink: 0 }}>مرحلهٔ {toFaDigits(c.step + 1)} از {toFaDigits(c.total)}</Text>
         </Box>
         <Box aria-hidden="true" style={{ blockSize: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-border-subtle)', overflow: 'hidden' }}>

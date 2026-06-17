@@ -107,8 +107,9 @@ describe('CookPage smoke', () => {
     renderPage();
     expect(screen.getByText('کمک برای این مرحله')).toBeInTheDocument();
     expect(screen.getByText('بعدی')).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'بستن حالت پخت' }),
-    ).toBeInTheDocument();
+    // Cook now renders inside the app shell (TopBar provides back); the in-cook sub-header shows the
+    // recipe title + step counter instead of its own X close.
+    expect(screen.getByText('خورش قورمه‌سبزی')).toBeInTheDocument();
+    expect(screen.getByText('مرحلهٔ ۱ از ۳')).toBeInTheDocument();
   });
 });

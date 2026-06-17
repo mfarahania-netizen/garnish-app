@@ -13,6 +13,7 @@ import RecipeDetailPage from './app/recipe/[id]/page';
 import CookPage from './app/cook/[id]/page';
 import OnboardingPage from './app/onboarding/page';
 import DiscoveryPage from './app/discover/page';
+import RecipesPage from './app/recipes/page';
 import ProfilePage from './app/profile/page';
 import PlanPage from './app/plan/page';
 import ShoppingListPage from './app/shopping-list/page';
@@ -95,12 +96,17 @@ export default function App() {
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
-                    <Route path="/cook/:id" element={<CookPage />} />
                     <Route path="/admin" element={<AdminPage />} />
+                    {/* Cook Mode wears the standard app shell (TopBar + BottomNav) but stays publicly
+                        reachable from a recipe — same access level as Recipe Detail, so NOT behind RequireAuth */}
+                    <Route element={<AppShell />}>
+                      <Route path="/cook/:id" element={<CookPage />} />
+                    </Route>
                     <Route element={<RequireAuth />}>
                       <Route element={<AppShell />}>
                         <Route index element={<HomePage />} />
                         <Route path="/discover" element={<DiscoveryPage />} />
+                        <Route path="/recipes" element={<RecipesPage />} />
                         {/* distinct keys → each route remounts ProfilePage with the right initial view
                             («پروفایل من» = profile, «شناسهٔ ذائقه» = the Food-DNA breakdown), so the two
                             drawer links never collapse to the same screen */}
