@@ -10,6 +10,7 @@ import AppShell from './shell/AppShell';
 import RequireAuth from './shell/RequireAuth';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
+import CookPage from './app/cook/[id]/page';
 import OnboardingPage from './app/onboarding/page';
 import DiscoveryPage from './app/discover/page';
 import ProfilePage from './app/profile/page';
@@ -86,6 +87,7 @@ export default function App() {
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
+                    <Route path="/cook/:id" element={<CookPage />} />
                     <Route element={<RequireAuth />}>
                       <Route element={<AppShell />}>
                         <Route index element={<HomePage />} />

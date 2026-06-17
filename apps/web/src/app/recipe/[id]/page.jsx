@@ -5,7 +5,7 @@ import {
   IconChevronRight, IconChevronDown, IconBookmark, IconBookmarkFilled, IconShare2,
   IconClock, IconChartBar, IconUsers, IconHeartCheck, IconAlertTriangle, IconSparkles,
   IconChevronLeft, IconListNumbers, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
-  IconInfoCircle, IconToolsKitchen2, IconCloudOff, IconRefresh,
+  IconInfoCircle, IconCloudOff, IconRefresh,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
 import { toFaDigits } from '../../../components/ges/format';
@@ -309,7 +309,7 @@ export default function RecipeDetailPage() {
         <UnstyledButton type="button" aria-label="به برنامه" onClick={() => showToast('به برنامه به‌زودی', IconCalendarPlus)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 46, blockSize: 46, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' }}>
           <IconCalendarPlus size={19} stroke={1.8} />
         </UnstyledButton>
-        <UnstyledButton type="button" onClick={() => showToast('حالت پخت به‌زودی فعال می‌شود', IconToolsKitchen2)} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
+        <UnstyledButton type="button" onClick={() => navigate(`/cook/${id}`)} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
           <IconFlame size={18} stroke={1.8} aria-hidden="true" />بپز
         </UnstyledButton>
       </Box>

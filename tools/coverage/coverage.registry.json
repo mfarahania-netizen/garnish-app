@@ -436,8 +436,8 @@
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
     "GET /ai/recipes/:id/technique": {
-      "status": "frontend:ai-chat/AIChatPage",
-      "reason": "E47-L4 technique/step help, grounded in the recipe's own steps/tips/tools; called by features/ai-chat GroundedAssist."
+      "status": "frontend:cook/CookPage",
+      "reason": "FE-COOK: grounded per-step «کمک برای این مرحله» help in Cook Mode (useCook → GET /ai/recipes/:id/technique?step=); disclosed + hedged. Also the future ai-chat GroundedAssist."
     },
     "POST /ai/chat": {
       "status": "frontend:ai-chat/AIChatPage",
