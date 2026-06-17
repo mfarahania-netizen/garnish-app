@@ -12,6 +12,7 @@ const BASE_CONFIDENCE_MAP: Record<string, number> = {
   recommendation_dismiss: 1.0,
   ai_chat_started: 1.0,
   ai_message_send: 1.0,
+  cook_complete: 1.0, // the canonical completion signal — a deliberate, high-value user action
   mealplan_add: 0.9,
   recommendation_click: 0.9,
   recipe_view: 0.7,
@@ -23,6 +24,39 @@ const BASE_CONFIDENCE_MAP: Record<string, number> = {
   category_view: 0.9,
   category_click: 0.9,
 };
+
+/**
+ * DELIBERATE_SIGNALS — high-value, USER-INITIATED events that must ALWAYS be recorded; the bot/duplicate
+ * heuristic is BYPASSED for them.
+ *
+ * The bug this fixes: `calcBotProbability` keys its high-frequency counter on `bot:<userId>` ALONE —
+ * shared across every event type. A heavy `recipe_view` / `recommendation_impression` burst (now common
+ * since impressions fire on scroll/open) poisons that counter, so a real `cook_complete` fired right after
+ * is rejected as "bot" → no UserEvent is written → gamification counts 0 cooks and the behavior engine is
+ * starved of the favorite/mealplan/cook signals. The gate had it backwards: high-frequency NOISE was
+ * exempt while high-value DELIBERATE signals were not. These are low-frequency, deliberate judgments and
+ * must never be dropped.
+ *
+ * Membership is a strict subset of the behavior engine's POSITIVE_EVENTS / EXPLICIT_FEEDBACK_EVENTS
+ * (signal-observation-engine.ts) — no invented type strings. (The brief also named `favorite_remove` and
+ * `mealplan_remove`; those are NOT in POSITIVE_EVENTS/EXPLICIT_FEEDBACK_EVENTS — `favorite_remove` is not a
+ * tracked type at all and `mealplan_remove` is a NEGATIVE_EVENT — so per the "do not invent types" rule
+ * they are intentionally excluded.)
+ */
+const DELIBERATE_SIGNALS = new Set<string>([
+  'cook_complete',
+  'favorite_add',
+  'mealplan_add',
+  'recommendation_save',
+  'recommendation_cook',
+  'shopping_item_add',
+  'ai_message_send',
+  'onboarding_answered',
+  'preference_update',
+]);
+
+/** Narrow accidental-double-fire window for deliberate signals (e.g. a double-tap on «پایان»). */
+const DELIBERATE_DEDUP_MS = 2000;
 
 export interface QualityResult {
   isValid: boolean;
@@ -40,6 +74,27 @@ export class EventQualityService {
   private readonly interactionMap = new Map<string, number[]>();
 
   assess(event: { userId: string; type: string; payload?: any }): QualityResult {
+    // DELIBERATE SIGNALS FIRST: high-value, user-initiated events are ALWAYS accepted — the bot/duplicate
+    // heuristic is bypassed entirely (a real cook must never be dropped because the user was scrolling
+    // first). The only guard kept is a very narrow ≤2s exact-duplicate check (same user+type+payload) to
+    // absorb an accidental double-click; it is independent of the high-frequency interaction counter.
+    if (DELIBERATE_SIGNALS.has(event.type)) {
+      const baseConfidence = BASE_CONFIDENCE_MAP[event.type] ?? 1.0;
+      if (this.isAccidentalDoubleFire(event)) {
+        return {
+          isValid: false,
+          confidence: 0,
+          reason: 'duplicate',
+          evidence: { duplicateCheck: true, botProbability: 0, baseConfidence },
+        };
+      }
+      return {
+        isValid: true,
+        confidence: baseConfidence,
+        evidence: { duplicateCheck: false, botProbability: 0, baseConfidence },
+      };
+    }
+
     // رویدادهایی که ذاتاً تکراری بودن در آنها طبیعی است (نمایش صفحه، بازدیدها، کلیک روی دسته‌بندی)
     const nonDuplicateEvents = [
       'page_view',
@@ -95,6 +150,27 @@ export class EventQualityService {
       confidence: finalConfidence,
       evidence: { duplicateCheck: false, botProbability, baseConfidence },
     };
+  }
+
+  /**
+   * Accidental double-fire guard for DELIBERATE signals only: true iff the SAME (userId, type, payload)
+   * was already seen within the last DELIBERATE_DEDUP_MS (≤2s). Uses a dedicated `ddup:` key so it never
+   * touches the bot:/dup: high-frequency counters — two DISTINCT deliberate actions (different payload,
+   * e.g. cooking two different recipes) are never collapsed, and the same action >2s apart is accepted.
+   */
+  private isAccidentalDoubleFire(event: { userId: string; type: string; payload?: any }): boolean {
+    const payloadKey = JSON.stringify(event.payload || {}).slice(0, 50);
+    const key = `ddup:${event.userId}:${event.type}:${payloadKey}`;
+    const now = Date.now();
+    const last = this.interactionMap.get(key) || [];
+    const recent = last.filter((t) => now - t < DELIBERATE_DEDUP_MS);
+    if (recent.length > 0) {
+      // keep the existing timestamp window; do not extend it on a rejected double-fire
+      this.interactionMap.set(key, recent);
+      return true;
+    }
+    this.interactionMap.set(key, [now]);
+    return false;
   }
 
   private checkDuplicate(event: { userId: string; type: string; payload?: any }): boolean {
