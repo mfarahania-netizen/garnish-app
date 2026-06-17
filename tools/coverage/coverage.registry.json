@@ -156,8 +156,8 @@
       "reason": "Shopping-list surface."
     },
     "DELETE /users/me": {
-      "status": "deferred:E-gdpr-self-service",
-      "reason": "Account erasure endpoint; self-service delete UI not built."
+      "status": "frontend:settings/SettingsPage",
+      "reason": "FE-SETTINGS: GDPR account deletion (2-step confirm → logout); useSettings.deleteAccount."
     },
     "GET /admin/analytics/ai-interaction": {
       "status": "admin",
@@ -392,8 +392,8 @@
       "reason": "Current-user profile load."
     },
     "GET /users/me/export": {
-      "status": "deferred:E-gdpr-self-service",
-      "reason": "Data-export endpoint; self-service export UI not built."
+      "status": "frontend:settings/SettingsPage",
+      "reason": "FE-SETTINGS: GDPR data export (downloads garnish-data.json); useSettings.exportData."
     },
     "GET /users/preferences": {
       "status": "frontend:preferences/PreferencesPage",

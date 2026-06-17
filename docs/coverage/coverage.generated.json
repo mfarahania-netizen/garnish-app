@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 12,
+    "routes": 13,
     "protectedRoutes": 0,
-    "frontendCallSites": 72,
+    "frontendCallSites": 78,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7420,7 +7420,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /users/me",
@@ -7471,7 +7471,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "GET /users/preferences",
@@ -7582,6 +7582,13 @@
     {
       "path": "/recipe/:id",
       "component": "RecipeDetailPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "/settings",
+      "component": "SettingsPage",
       "protected": false,
       "admin": false,
       "layoutOnly": false
@@ -8030,6 +8037,20 @@
       "dynamic": false
     },
     {
+      "verb": "POST",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
+      "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
       "verb": "GET",
       "raw": "/users/me",
       "normalized": "/users/me",
@@ -8041,6 +8062,13 @@
       "raw": "/users/me",
       "normalized": "/users/me",
       "file": "apps/web/src/app/profile/useProfile.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/app/settings/useSettings.js",
       "dynamic": false
     },
     {
@@ -8066,6 +8094,13 @@
     },
     {
       "verb": "GET",
+      "raw": "/users/me/export",
+      "normalized": "/users/me/export",
+      "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
       "file": "apps/web/src/app/discover/useDiscovery.js",
@@ -8082,6 +8117,13 @@
       "verb": "GET",
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
+      "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
       "file": "apps/web/src/hooks/usePreferencesQuery.js",
       "dynamic": false
     },
@@ -8090,6 +8132,13 @@
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
       "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PUT",
+      "raw": "/users/preferences",
+      "normalized": "/users/preferences",
+      "file": "apps/web/src/app/settings/useSettings.js",
       "dynamic": false
     },
     {
