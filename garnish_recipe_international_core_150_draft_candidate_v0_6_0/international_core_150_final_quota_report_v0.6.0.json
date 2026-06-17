@@ -1,0 +1,42 @@
+{
+  "reportType": "international_core_150_final_quota_report",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "targetQuota": {
+    "Italian": 20,
+    "Chinese": 10,
+    "Levantine": 10,
+    "Turkish": 10,
+    "Japanese": 10,
+    "Thai": 10,
+    "British": 10,
+    "French": 10,
+    "Dutch": 10,
+    "Spanish": 10,
+    "German": 10,
+    "Other": 30
+  },
+  "actualQuota": {
+    "Italian": 20,
+    "Chinese": 10,
+    "Levantine": 10,
+    "Turkish": 10,
+    "Japanese": 10,
+    "Thai": 10,
+    "British": 10,
+    "French": 10,
+    "Dutch": 10,
+    "Spanish": 10,
+    "German": 10,
+    "Other": 30
+  },
+  "finalQuotaMatchesTarget150": true,
+  "total": 150,
+  "perBatchContribution": {
+    "batch01": 30,
+    "batch02": 30,
+    "batch03": 30,
+    "batch04": 30,
+    "batch05": 30
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "reportType": "allergen_consistency_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "detectorRules": [
+    "soy_sauce->soy+gluten",
+    "tofu->soy",
+    "sesame_oil/seeds/tahini->sesame",
+    "dashi_powder->fish",
+    "bulgur/couscous/barley/semolina->gluten",
+    "dijon/mustard->mustard",
+    "fish_sauce->fish",
+    "shrimp/prawn/oyster_sauce/mussel/squid/calamari->shellfish",
+    "cod/haddock/salmon/pollock/anchovy->fish",
+    "peanut->peanuts",
+    "almond/walnut/hazelnut/pistachio/cashew/pine_nut->tree_nuts",
+    "wheat_flour/bread/breadcrumbs/phyllo/puff_pastry/pasta/egg_noodles/ramen_noodles/semolina->gluten (almond_flour, coconut_flour and rice_noodles EXCLUDED — rice noodles are gluten-free; wheat/egg noodles and soy sauce still trigger gluten)",
+    "butter/cheese/cream/milk/yogurt/ricotta/mozzarella/parmesan/gouda/gruyere/feta->dairy (coconut milk EXCLUDED)",
+    "egg/mayonnaise->egg (eggplant NOT egg)"
+  ],
+  "knownAllergenGapCount": 0,
+  "knownAllergenGapsRemaining": [],
+  "falseVegetarianDietFlagCount": 0,
+  "falseVeganDietFlagCount": 0,
+  "falseGlutenFreeDietFlagCount": 0,
+  "falseVegetarianRecipes": [],
+  "falseVeganRecipes": [],
+  "falseGlutenFreeRecipes": []
+}

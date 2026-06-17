@@ -1,0 +1,15 @@
+{
+  "reportType": "diet_flag_consistency_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "falseVegetarianDietFlagCount": 0,
+  "falseVeganDietFlagCount": 0,
+  "falseGlutenFreeDietFlagCount": 0,
+  "dietFlagDistribution": {
+    "vegetarian": 83,
+    "gluten_free": 41,
+    "vegan": 24,
+    "protein_forward": 63
+  },
+  "rule": "vegetarian excludes meat/poultry/fish/shellfish/meat-stock/fish-stock/gelatin; vegan additionally excludes dairy and egg; gluten_free excludes wheat/bread/pasta/noodles/phyllo/puff_pastry/bulgur/couscous/barley/semolina (almond_flour and coconut_flour allowed)"
+}

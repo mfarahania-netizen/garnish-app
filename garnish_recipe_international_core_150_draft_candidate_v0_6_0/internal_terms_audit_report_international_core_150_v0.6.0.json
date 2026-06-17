@@ -1,0 +1,32 @@
+{
+  "reportType": "internal_terms_audit_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "bannedInternalEnglishTerms": [
+    "batch",
+    "garnish",
+    "dictionary",
+    "ingredientid",
+    "resolver",
+    "unresolved",
+    "phase",
+    "import",
+    "metadata"
+  ],
+  "productFacingInternalTermHits": 0,
+  "termHits": [],
+  "bannedGenericPersianPhrases": [
+    "مواد اصلی",
+    "مواد همراه",
+    "طبق نیاز",
+    "همین غذا",
+    "تا آماده شود",
+    "خوب مخلوط کنید",
+    "به مقدار لازم",
+    "در صورت تمایل",
+    "کاملاً بپزید",
+    "مواد را آماده کنید"
+  ],
+  "templatePhraseHitsBlocking": 0,
+  "phraseHits": []
+}

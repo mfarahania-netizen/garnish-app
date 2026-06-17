@@ -1,0 +1,22 @@
+{
+  "reportType": "duplicate_exclusion_report_against_v0.6.1_and_within_international_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "withinMerged150": {
+    "duplicateRecipeId": 0,
+    "duplicateSlug": 0,
+    "duplicateLegacyId": 0,
+    "duplicateTitleFa": 0,
+    "identityDuplicateWithinInternational150": 0
+  },
+  "vsV061": {
+    "exactDuplicateBySlugTitleId": 0,
+    "identityDuplicateAgainstExistingCorpus": 0,
+    "identityDuplicates": []
+  },
+  "rememberedCases": {
+    "lasagna-bolognese": "rejected earlier as a duplicate of v0.6.1 lasagna; never present in any accepted batch and not reintroduced",
+    "chow-mein": "present in batch03, accepted as distinct from v0.6.1 vegetable-noodles by protein, sauce and cuisine identity; not flagged as identity duplicate"
+  },
+  "method": "exact slug/title/recipeId checks plus canonical-identity check (slug canonicalization within 150 and reserved v0.6.1 keyword check)"
+}

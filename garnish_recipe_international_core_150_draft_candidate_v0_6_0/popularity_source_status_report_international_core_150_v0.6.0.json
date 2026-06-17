@@ -1,0 +1,8 @@
+{
+  "reportType": "popularity_source_status_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "popularitySourceStatus": "requires_live_web_verification",
+  "allRecipesCarryRequiresLiveWebVerification": true,
+  "disclaimer": "no live web verification was performed across batches; selection rests on established culinary prominence; no claim of latest-survey-verified, current-research, or live-verified popularity is made; sourceUrls are intentionally empty"
+}

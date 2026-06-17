@@ -1,0 +1,73 @@
+{
+  "reportType": "international_core_150_batch_source_integrity_report",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "sources": [
+    {
+      "batch": "batch01",
+      "version": "v0.1.2",
+      "file": "recipes.international.core-150.batch01-ranks001-030.v0.1.2.json",
+      "sha256": "90c695a6f20f374aa24ba5ccf2643839edb7c6b8fc9f6173444c90f038c362d6",
+      "recipeCount": 30,
+      "seqRange": [
+        205,
+        234
+      ],
+      "seqContiguousAsExpected": true,
+      "verdict": "INTERNATIONAL_CORE_150_BATCH01_RANKS001_030_V0_1_2_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch02",
+      "version": "v0.2.0",
+      "file": "recipes.international.core-150.batch02-ranks031-060.v0.2.0.json",
+      "sha256": "338c115825ceb1746ce4c26743f1011eb47ef0738e89e7167925e8d05de727dc",
+      "recipeCount": 30,
+      "seqRange": [
+        235,
+        264
+      ],
+      "seqContiguousAsExpected": true,
+      "verdict": "INTERNATIONAL_CORE_150_BATCH02_RANKS031_060_V0_2_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch03",
+      "version": "v0.3.1",
+      "file": "recipes.international.core-150.batch03-ranks061-090.v0.3.1.json",
+      "sha256": "a260f15479df0c457de60a90104cd2251a49d043f38b0d98e9445a695e380966",
+      "recipeCount": 30,
+      "seqRange": [
+        265,
+        294
+      ],
+      "seqContiguousAsExpected": true,
+      "verdict": "INTERNATIONAL_CORE_150_BATCH03_RANKS061_090_V0_3_1_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch04",
+      "version": "v0.4.0",
+      "file": "recipes.international.core-150.batch04-ranks091-120.v0.4.0.json",
+      "sha256": "53193028fd61c75c4b55dd7ba9904d9a7121b6ef34d68c715bb287b2ff8bbe87",
+      "recipeCount": 30,
+      "seqRange": [
+        295,
+        324
+      ],
+      "seqContiguousAsExpected": true,
+      "verdict": "INTERNATIONAL_CORE_150_BATCH04_RANKS091_120_V0_4_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch05",
+      "version": "v0.5.0",
+      "file": "recipes.international.core-150.batch05-ranks121-150.v0.5.0.json",
+      "sha256": "b12112ceee0766253f94fec8d835a9cbd7e45f6467d4ae213d47de3dc4a85568",
+      "recipeCount": 30,
+      "seqRange": [
+        325,
+        354
+      ],
+      "seqContiguousAsExpected": true,
+      "verdict": "INTERNATIONAL_CORE_150_BATCH05_RANKS121_150_V0_5_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    }
+  ],
+  "note": "sha256 is of each accepted source batch main JSON as merged; six recipes received minimal documented serving/FAQ/mistake rewrites at merge time (see merge manifest) to resolve aggregate semantic collisions, so those objects are intentionally not byte-identical to their source"
+}

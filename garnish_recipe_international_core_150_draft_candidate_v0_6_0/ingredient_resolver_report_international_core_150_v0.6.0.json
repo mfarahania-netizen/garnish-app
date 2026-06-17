@@ -1,0 +1,317 @@
+{
+  "reportType": "ingredient_resolver_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "dictionaryItemCount": 1008,
+  "totalIngredientLines": 1389,
+  "resolverAgreeCount": 1222,
+  "resolverDivergenceCount": 167,
+  "allDivergencesHaveValidPair": true,
+  "invalidIngredientId": 0,
+  "invalidIngredientCode": 0,
+  "ingredientIdCodeMismatch": 0,
+  "newIngredientIdsCreated": 0,
+  "unresolvedIngredientCount": 0,
+  "divergences": [
+    {
+      "slug": "risotto-alla-milanese",
+      "authoredIngredientId": "ing_chicken_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "caprese-salad",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "potato-gnocchi-pomodoro",
+      "authoredIngredientId": "ing_tomato_passata",
+      "resolverIngredientId": "ing_canned_tomato_puree",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "bruschetta-pomodoro",
+      "authoredIngredientId": "ing_baguette",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "bruschetta-pomodoro",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "chicken-jiaozi",
+      "authoredIngredientId": "ing_dumpling_wrappers",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "chicken-jiaozi",
+      "authoredIngredientId": "ing_chicken_thigh_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "kung-pao-chicken",
+      "authoredIngredientId": "ing_sichuan_peppercorns",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tabbouleh",
+      "authoredIngredientId": "ing_lemon_raw",
+      "resolverIngredientId": "ing_lime_raw",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tabbouleh",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "baba-ghanoush",
+      "authoredIngredientId": "ing_lemon_raw",
+      "resolverIngredientId": "ing_lime_raw",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "baba-ghanoush",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "menemen",
+      "authoredIngredientId": "ing_bell_pepper_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "imam-bayildi",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "manti",
+      "authoredIngredientId": "ing_dumpling_wrappers",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "thai-green-curry",
+      "authoredIngredientId": "ing_kaffir_lime_leaves",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tom-kha-gai",
+      "authoredIngredientId": "ing_kaffir_lime_leaves",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tom-kha-gai",
+      "authoredIngredientId": "ing_chili_pepper_raw",
+      "resolverIngredientId": "ing_black_pepper_ground",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "ratatouille",
+      "authoredIngredientId": "ing_zucchini_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "ratatouille",
+      "authoredIngredientId": "ing_bay_leaf_dried",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "french-onion-soup",
+      "authoredIngredientId": "ing_beef_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "french-onion-soup",
+      "authoredIngredientId": "ing_baguette",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "french-onion-soup",
+      "authoredIngredientId": "ing_bay_leaf_dried",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "gazpacho",
+      "authoredIngredientId": "ing_baguette",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "gazpacho",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "shepherds-pie",
+      "authoredIngredientId": "ing_worcestershire_sauce",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "shepherds-pie",
+      "authoredIngredientId": "ing_beef_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "chicken-schnitzel",
+      "authoredIngredientId": "ing_lemon_raw",
+      "resolverIngredientId": "ing_lime_raw",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "kartoffelsalat",
+      "authoredIngredientId": "ing_vegetable_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "greek-salad",
+      "authoredIngredientId": "ing_bell_pepper_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "greek-salad",
+      "authoredIngredientId": "ing_red_onion_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "greek-salad",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "hungarian-goulash",
+      "authoredIngredientId": "ing_beef_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tiramisu",
+      "authoredIngredientId": "ing_cocoa_powder_unsweetened",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "minestrone-soup",
+      "authoredIngredientId": "ing_zucchini_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "minestrone-soup",
+      "authoredIngredientId": "ing_tomato_passata",
+      "resolverIngredientId": "ing_canned_tomato_puree",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "minestrone-soup",
+      "authoredIngredientId": "ing_vegetable_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "eggplant-parmigiana",
+      "authoredIngredientId": "ing_tomato_passata",
+      "resolverIngredientId": "ing_canned_tomato_puree",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "moussaka",
+      "authoredIngredientId": "ing_tomato_passata",
+      "resolverIngredientId": "ing_canned_tomato_puree",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "tzatziki",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "swedish-meatballs",
+      "authoredIngredientId": "ing_beef_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "hot-and-sour-soup",
+      "authoredIngredientId": "ing_vegetable_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "hot-and-sour-soup",
+      "authoredIngredientId": "ing_chili_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "hummus",
+      "authoredIngredientId": "ing_lemon_raw",
+      "resolverIngredientId": "ing_lime_raw",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "hummus",
+      "authoredIngredientId": "ing_olive_oil",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "lahmacun",
+      "authoredIngredientId": "ing_active_dry_yeast",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "red-lentil-soup",
+      "authoredIngredientId": "ing_vegetable_stock_liquid",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "red-lentil-soup",
+      "authoredIngredientId": "ing_lemon_raw",
+      "resolverIngredientId": "ing_lime_raw",
+      "authoredPairValid": true
+    },
+    {
+      "slug": "chicken-katsu",
+      "authoredIngredientId": "ing_ketchup",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    },
+    {
+      "slug": "chicken-katsu",
+      "authoredIngredientId": "ing_cabbage_raw",
+      "resolverIngredientId": null,
+      "authoredPairValid": true
+    }
+  ]
+}

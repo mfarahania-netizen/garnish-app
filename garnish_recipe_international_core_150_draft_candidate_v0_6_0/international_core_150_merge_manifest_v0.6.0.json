@@ -1,0 +1,114 @@
+{
+  "reportType": "international_core_150_merge_manifest",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "mergeOrder": [
+    "batch01 seq205-234",
+    "batch02 seq235-264",
+    "batch03 seq265-294",
+    "batch04 seq295-324",
+    "batch05 seq325-354"
+  ],
+  "recipeCount": 150,
+  "sequenceRange": [
+    205,
+    354
+  ],
+  "sequenceContiguous": true,
+  "sourceBatches": [
+    {
+      "batch": "batch01",
+      "version": "v0.1.2",
+      "verdict": "INTERNATIONAL_CORE_150_BATCH01_RANKS001_030_V0_1_2_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch02",
+      "version": "v0.2.0",
+      "verdict": "INTERNATIONAL_CORE_150_BATCH02_RANKS031_060_V0_2_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch03",
+      "version": "v0.3.1",
+      "verdict": "INTERNATIONAL_CORE_150_BATCH03_RANKS061_090_V0_3_1_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch04",
+      "version": "v0.4.0",
+      "verdict": "INTERNATIONAL_CORE_150_BATCH04_RANKS091_120_V0_4_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    },
+    {
+      "batch": "batch05",
+      "version": "v0.5.0",
+      "verdict": "INTERNATIONAL_CORE_150_BATCH05_RANKS121_150_V0_5_0_ACCEPTED_AS_DRAFT_IMPORT_CANDIDATE_NOT_FINAL_IMPORT"
+    }
+  ],
+  "preservationPolicy": "recipe objects preserved byte-identical from accepted batches EXCEPT minimal documented edits below, made solely to resolve cross-batch semantic-blocking collisions discovered at merge time",
+  "mergeTimeBlockingResolutionEdits": [
+    {
+      "slug": "hot-and-sour-soup",
+      "pairedWith": "miso-soup (batch01)",
+      "reason": "serving line ~0.80 vs miso-soup; reworded hot-and-sour-soup (batch02)",
+      "old": "داغ، پیش از غذا یا همراهِ یک بشقابِ غذای چینی سرو شود.",
+      "new": "این سوپ را داغ، در شروعِ وعده یا کنارِ یک بشقاب غذای چینی سرو کنید."
+    },
+    {
+      "slug": "larb-gai",
+      "pairedWith": "tom-kha-gai (batch01)",
+      "reason": "step line ~0.80 vs tom-kha-gai; reworded larb-gai (batch03)",
+      "old": "آبِ لیمو و سس ماهی را خارج از حرارت اضافه کنید تا ترشی و عطرشان تازه بماند.",
+      "new": "آبِ لیمو و سس ماهیِ لاب را پس از برداشتن از حرارت بریزید تا ترشی و عطرشان نپرد."
+    },
+    {
+      "slug": "mercimek-koftesi",
+      "pairedWith": "arancini (batch02)",
+      "reason": "serving line ~0.81 vs arancini; reworded mercimek-koftesi (batch05)",
+      "old": "به‌عنوانِ پیش‌غذا یا بخشی از سفرهٔ مزه عالی است.",
+      "new": "این کوفته‌ها برای پیش‌غذا یا سفرهٔ مزه عالی‌اند."
+    },
+    {
+      "slug": "pollo-al-ajillo",
+      "pairedWith": "gratin-dauphinois (batch02)",
+      "reason": "serving line ~0.81 vs gratin-dauphinois; reworded pollo-al-ajillo (batch04)",
+      "old": "یک سالادِ سبزِ ساده، چربیِ این مرغِ سیری را متعادل می‌کند.",
+      "new": "چربیِ این مرغِ سیری را می‌توان با یک سالادِ سبزِ ساده متعادل کرد."
+    },
+    {
+      "slug": "oliebollen",
+      "pairedWith": "pastel-de-nata (batch03)",
+      "reason": "serving line ~0.80 vs pastel-de-nata; reworded oliebollen (batch04)",
+      "old": "گرم و تازه، با پودرِ قندِ فراوان روی آن سرو شود.",
+      "new": "اولی‌بولن را گرم و تازه و با پاششِ سخاوتمندانهٔ پودرِ قند سرو کنید."
+    },
+    {
+      "slug": "beef-and-broccoli",
+      "pairedWith": "pad-krapow-gai (batch03)",
+      "reason": "FAQ line ~0.80 vs pad-krapow-gai; reworded beef-and-broccoli (batch04)",
+      "old": "چرا غذای تابه‌ای به حرارتِ بالا نیاز دارد؟",
+      "new": "چرا تفتِ گوشت و بروکلی به حرارتِ بالا نیاز دارد؟"
+    },
+    {
+      "slug": "beef-and-broccoli",
+      "pairedWith": "salade-nicoise (batch03)",
+      "reason": "mistake line ~0.82 vs salade-nicoise; reworded beef-and-broccoli (batch04)",
+      "old": "پختِ زیادِ بروکلی، آن را نرم و بی‌رنگ می‌کند.",
+      "new": "اگر بروکلی زیاد بپزد، نرم و بی‌رنگ می‌شود."
+    },
+    {
+      "slug": "pollo-al-ajillo",
+      "pairedWith": "pasta-all-arrabbiata (batch04)",
+      "reason": "second-order serving collision ~0.83 vs arrabbiata; reworded pollo-al-ajillo (batch04)",
+      "old": "چربیِ این مرغِ سیری را می‌توان با یک سالادِ سبزِ ساده متعادل کرد.",
+      "new": "یک سالادِ سبزِ سبک، سنگینیِ این مرغِ سیری را می‌گیرد."
+    }
+  ],
+  "mergeTimeEditCount": 8,
+  "recipesEdited": [
+    "beef-and-broccoli",
+    "hot-and-sour-soup",
+    "larb-gai",
+    "mercimek-koftesi",
+    "oliebollen",
+    "pollo-al-ajillo"
+  ],
+  "v061Used": "duplicate/identity and semantic validation only; NOT merged into this package"
+}

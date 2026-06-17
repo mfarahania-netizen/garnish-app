@@ -1,0 +1,19 @@
+{
+  "reportType": "semantic_copy_audit_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "scope": [
+    "within merged 150",
+    "vs v0.6.1 200 baseline"
+  ],
+  "blockingThreshold": 0.8,
+  "thresholdLowered": false,
+  "semanticTemplateCopyRiskBlocking": 0,
+  "maxSimilarity": 0.797,
+  "reviewPairs": 2424,
+  "duplicateStepInstructionHighRiskWithin150": 0,
+  "duplicateStepInstructionHighRiskVsV061": 0,
+  "duplicateFAQHighRiskWithin150": 0,
+  "duplicateFAQHighRiskVsV061": 0,
+  "mergeTimeBlockingResolutionEditCount": 8
+}

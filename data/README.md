@@ -25,6 +25,17 @@
 - The earlier `seq19` / "khoresh kangar" entry remains **removed**; sequences `19,138,178,195` are the only allowed gaps. Removed slugs (faloodeh-shirazi, khoresh-chaghaleh-badam, ash-soraneh-kermanshahi) absent; replacements (khoresh-sib, anar-polo-shirazi, tahandaz-morgh) present.
 - Validate: `pnpm recipes:validate:v0.6.1` · dry-run: `pnpm recipes:import:v0.6.1:dry` · import: `pnpm recipes:import:v0.6.1`. Report: `data/recipes/phase-one/v0.6.1/import_report_v0.6.1.json`. See [`data/recipes/phase-one/v0.6.1/README.md`](recipes/phase-one/v0.6.1/README.md).
 
+## Recipes — International Core 150 v0.6.0 (draft candidate SOURCE, reproducible)
+- The International Core 150 v0.6.0 **draft-candidate SOURCE** is committed at the repo root
+  (`garnish_recipe_international_core_150_draft_candidate_v0_6_0/`, 14 JSON files) and is **reproducible**:
+  `node apps/server/scripts/recipes/validate-international-core-150-v0-6-0.js` → **PASS** (150 recipes,
+  0 unresolved, **0 new ingredient IDs**, 0 duplicates).
+- **Status: DRAFT, pending external audit — NOT final-imported** (verdict
+  `INTERNATIONAL_CORE_150_DRAFT_CANDIDATE_V0_6_0_READY_FOR_EXTERNAL_AUDIT_NOT_FINAL_IMPORT`). Committed for
+  reproducibility only; **not** promoted to imported/final and **not** in any database.
+- Active recipe sources remain **200 (v0.6.1, dev-preview)** + **122 (legacy)**. The 150 is **not**
+  production/final; no specific live-DB total is asserted here — only the SOURCE reproducibility is recorded.
+
 ## Import / search policy
 - **One** ingredient source only (the active array file above). Importers are idempotent (upsert).
 - **Water / warm water / soda water** are treated as **process liquids, not searchable ingredients**.

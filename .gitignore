@@ -22,8 +22,9 @@ package-lock.json
 *.zip
 *.log
 
-# Founder-supplied recipe import source packages (unzipped inputs — not committed; imported via scripts)
-/garnish_recipe_international_core_150_draft_candidate_v0_6_0/
+# Founder-supplied recipe import source packages (unzipped inputs — generally not committed; imported via scripts)
+# EXCEPTION: garnish_recipe_international_core_150_draft_candidate_v0_6_0/ IS intentionally committed
+# (force-tracked) as the reproducible validator source — see data/README.md. Future drafts stay ignored.
 /garnish_recipe_*_draft_candidate_*/
 # Design reference (read-only visual target — never imported or bundled)
 design-reference/

@@ -1,0 +1,15 @@
+{
+  "reportType": "template_copy_audit_report_international_core_150",
+  "version": "v0.6.0",
+  "createdAt": "2026-06-14T16:17:24.018173Z",
+  "methodology": "merged 150 compared within-150 and vs the 200-recipe v0.6.1 baseline",
+  "blockingThreshold": 0.8,
+  "reviewThreshold": 0.68,
+  "jaccardPrefilter": 0.3,
+  "semanticTemplateCopyRiskBlocking": 0,
+  "maxSemanticSimilarity": 0.797,
+  "reviewPairs": 2424,
+  "duplicateStepInstructionHighRisk": 0,
+  "duplicateFAQHighRisk": 0,
+  "note": "threshold never lowered; eight minimal documented merge-time edits across six recipes cleared all aggregate cross-batch collisions to 0; remaining similarity is generic culinary phrasing below threshold"
+}
