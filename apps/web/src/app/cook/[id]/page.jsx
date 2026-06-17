@@ -87,7 +87,7 @@ function CookError({ onRetry, onExit, title }) {
 function CookLoading() {
   return (
     <Column>
-      <Box style={{ padding: 'var(--g-space-5)' }}>
+      <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-5)' }}>
         <Box className="g-skeleton" style={{ blockSize: 6, borderRadius: 'var(--g-radius-chip)' }} />
         <Box className="g-skeleton" style={{ inlineSize: 64, blockSize: 64, borderRadius: 'var(--g-radius-card)', marginBlockStart: 'var(--g-space-6)' }} />
         <SkeletonLine w="95%" h={18} style={{ marginBlockStart: 'var(--g-space-5)' }} />

@@ -51,7 +51,7 @@ export default function NotificationsPage() {
       </Box>
 
       {n.status === 'loading' ? (
-        <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', padding: 'var(--g-space-4)' }}>
+        <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', padding: 'var(--g-space-4)' }}>
           {[0, 1, 2].map((i) => <Box key={i} style={{ display: 'flex', gap: 'var(--g-space-3)', padding: 'var(--g-space-3)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}><Box className="g-skeleton" style={{ inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)' }} /><Box style={{ flex: 1 }}><SkeletonLine w="50%" h={12} /><SkeletonLine w="85%" h={10} style={{ marginBlockStart: 'var(--g-space-2)' }} /></Box></Box>)}
         </Box>
       ) : n.status === 'error' ? (

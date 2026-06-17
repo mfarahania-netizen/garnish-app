@@ -50,8 +50,11 @@ function QuickRow({ icon: Icon, label, onClick, last }) {
 }
 
 function KnownRow({ icon: Icon, iconColor, children, onEdit, divider }) {
+  // No row-level aria-label: the visible text (the known preference/allergen) IS the accessible
+  // name; the button role + the (decorative) pencil convey it's editable. A label like "ویرایش"
+  // would mask the actual content a screen-reader user needs to hear.
   return (
-    <UnstyledButton type="button" onClick={onEdit} aria-label="ویرایش" style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)', borderBlockStart: divider ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+    <UnstyledButton type="button" onClick={onEdit} style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)', borderBlockStart: divider ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
       <Icon size={19} stroke={1.8} aria-hidden="true" style={{ color: iconColor, flexShrink: 0 }} />
       <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)' }}>{children}</Text>
       <IconPencil size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
@@ -243,7 +246,7 @@ function DnaView({ p, onBack, navigate }) {
 
 function ProfileLoading() {
   return (
-    <Box style={PAGE}>
+    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={PAGE}>
       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)' }}>
         <SkeletonCircle size={64} />
         <Box style={{ flex: 1 }}><SkeletonLine w="55%" h={16} /><SkeletonLine w="38%" h={12} style={{ marginBlockStart: 'var(--g-space-2)' }} /></Box>

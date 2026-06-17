@@ -58,6 +58,11 @@ export default function NotFound() {
         component={Link}
         to="/"
         style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minBlockSize: 44,
+          paddingInline: 'var(--g-space-4)',
           marginBlockStart: 'var(--g-space-2)',
           color: 'var(--g-color-brand-600)',
           fontFamily: 'var(--g-font-fa)',

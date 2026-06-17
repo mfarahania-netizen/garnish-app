@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
   if (s.status === 'loading') {
     return (
-      <Box style={{ padding: 'var(--g-space-4)' }}>
+      <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
         <SkeletonLine w="40%" h={14} />
         <Box className="g-skeleton" style={{ blockSize: 120, borderRadius: 'var(--g-radius-card)', marginBlockStart: 'var(--g-space-3)' }} />
         <Box className="g-skeleton" style={{ blockSize: 120, borderRadius: 'var(--g-radius-card)', marginBlockStart: 'var(--g-space-4)' }} />

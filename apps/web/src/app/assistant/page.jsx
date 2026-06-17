@@ -51,8 +51,8 @@ export default function AssistantPage() {
         <UnstyledButton type="button" onClick={a.reset} aria-label="گفتگوی تازه" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconEdit size={18} stroke={1.8} /></UnstyledButton>
       </Box>
 
-      {/* thread / starter */}
-      <Box ref={mainRef} style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-4)' }}>
+      {/* thread / starter — live region so a screen-reader hears the assistant's reply + thinking state */}
+      <Box ref={mainRef} aria-live="polite" aria-busy={a.thinking ? 'true' : 'false'} style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-4)' }}>
         {a.isEmpty ? (
           <>
             <Box style={{ textAlign: 'center', paddingBlock: 'var(--g-space-5)' }}>

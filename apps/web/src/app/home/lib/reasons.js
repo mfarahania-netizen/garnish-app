@@ -144,8 +144,9 @@ export function recipeFitReasons(fit, max = 3) {
 
 // ── Recipe category / course / meal-type / diet enums → Persian (Recipe Detail tags) ──
 // The catalog mixes machine enum keys (e.g. "main_course") with already-Persian tags. We map
-// every known key to a Persian label; a Persian value passes through; an unknown machine key is
-// humanized (snake_case → spaced) so a raw key like "main_course" is NEVER shown verbatim.
+// every known key to a Persian label; a Persian value passes through; an unknown, non-Persian key
+// is DROPPED (returns '') — a cosmetic tag is never worth surfacing raw snake_case or de-keyed
+// English in a Persian UI. (Allergens differ: see faAllergen — safety means never dropping a token.)
 const CATEGORY_LABELS = {
   // course
   main_course: 'غذای اصلی', main_dish: 'غذای اصلی', main: 'غذای اصلی', entree: 'غذای اصلی',
@@ -173,7 +174,8 @@ export function faCategory(value) {
   const key = raw.toLowerCase().replace(/\s+/g, '_');
   if (CATEGORY_LABELS[key]) return CATEGORY_LABELS[key];
   if (hasPersian(raw)) return raw;        // already a Persian tag — keep
-  return humanize(raw);                   // unknown machine key — humanize, never show raw snake_case
+  return '';                              // unknown, non-Persian key — DROP it (callers .filter(Boolean));
+                                          // never surface raw snake_case OR de-keyed English in a Persian UI
 }
 
 // allergen token -> Persian (for the demoted-not-hidden safety banner)

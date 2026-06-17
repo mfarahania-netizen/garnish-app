@@ -79,7 +79,7 @@ export default function ShoppingListPage() {
 
       <Box style={{ flex: 1 }}>
         {s.status === 'loading' ? (
-          <Box style={{ padding: 'var(--g-space-4)' }}>
+          <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
             <SkeletonLine w="40%" h={14} />
             <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', marginBlockStart: 'var(--g-space-3)' }}>
               {[0, 1, 2].map((i) => <Box key={i} style={{ minBlockSize: 48, borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', display: 'flex', alignItems: 'center', paddingInline: 'var(--g-space-4)' }}><SkeletonLine w="60%" h={12} /></Box>)}

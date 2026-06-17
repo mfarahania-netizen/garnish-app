@@ -89,14 +89,16 @@ function RecipeError({ onRetry }) {
 function RecipeLoading() {
   return (
     <Column>
-      <Box className="g-skeleton" style={{ blockSize: 200, borderRadius: 0 }} />
-      <Box style={{ padding: 'var(--g-space-4)' }}>
-        <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
-          <SkeletonLine w="100%" h={56} /><SkeletonLine w="100%" h={56} /><SkeletonLine w="100%" h={56} />
+      <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…">
+        <Box className="g-skeleton" style={{ blockSize: 200, borderRadius: 0 }} />
+        <Box style={{ padding: 'var(--g-space-4)' }}>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
+            <SkeletonLine w="100%" h={56} /><SkeletonLine w="100%" h={56} /><SkeletonLine w="100%" h={56} />
+          </Box>
+          <SkeletonLine w="70%" h={20} style={{ marginBlockStart: 'var(--g-space-4)' }} />
+          <SkeletonLine w="90%" h={12} style={{ marginBlockStart: 'var(--g-space-3)' }} />
+          <SkeletonLine w="80%" h={12} style={{ marginBlockStart: 'var(--g-space-2)' }} />
         </Box>
-        <SkeletonLine w="70%" h={20} style={{ marginBlockStart: 'var(--g-space-4)' }} />
-        <SkeletonLine w="90%" h={12} style={{ marginBlockStart: 'var(--g-space-3)' }} />
-        <SkeletonLine w="80%" h={12} style={{ marginBlockStart: 'var(--g-space-2)' }} />
       </Box>
     </Column>
   );

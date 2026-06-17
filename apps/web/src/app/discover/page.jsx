@@ -146,7 +146,7 @@ function UnmetSearch({ query, onPick }) {
 
 function ResultsLoading() {
   return (
-    <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
+    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ marginBlockStart: 'var(--g-space-4)' }}>
       <SkeletonLine w="35%" h={14} />
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-4)' }}>
         <SkeletonCard /><SkeletonCard />

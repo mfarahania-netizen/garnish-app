@@ -13,7 +13,7 @@ const grid2 = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--g-s
 
 function FavLoading() {
   return (
-    <Box style={{ padding: 'var(--g-space-4)' }}>
+    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
       <Box style={grid2}><SkeletonCard /><SkeletonCard /></Box>
     </Box>
   );

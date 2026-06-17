@@ -61,7 +61,7 @@ function SlotCard({ slot, onOpen, onAccept, onAddManual, accepted }) {
 
 function PlanLoading() {
   return (
-    <Box style={{ padding: 'var(--g-space-4)' }}>
+    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
       <Box style={{ display: 'flex', gap: 'var(--g-space-3)', overflow: 'hidden' }}>
         {[0, 1, 2].map((i) => (
           <Box key={i} style={{ flex: '0 0 140px' }}>

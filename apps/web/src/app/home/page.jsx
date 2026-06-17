@@ -156,7 +156,7 @@ function StarterCard({ label, seed }) {
 
 function HomeLoading() {
   return (
-    <Box style={PAGE}>
+    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={PAGE}>
       <SkeletonLine w="100%" h={50} radius="var(--g-radius-input)" />
       <Box component="header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--g-space-3)' }}>
         <Box style={{ flex: 1 }}><SkeletonLine w={90} h={12} /><SkeletonLine w={170} h={20} style={{ marginBlockStart: 'var(--g-space-2)' }} /></Box>
