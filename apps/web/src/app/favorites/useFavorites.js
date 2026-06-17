@@ -33,7 +33,7 @@ export function useFavorites() {
   });
   const suggestions = useMemo(() => {
     const list = Array.isArray(recs.data) ? recs.data : [];
-    return list.slice(0, 3).map((r) => ({ recipeId: r.recipeId, title: r.title || 'دستور پیشنهادی', seed: seed(r.recipeId) }));
+    return list.filter((r) => r && r.recipeId).slice(0, 3).map((r) => ({ recipeId: r.recipeId, title: r.title || 'دستور پیشنهادی', seed: seed(r.recipeId) }));
   }, [recs.data]);
 
   const unsave = useCallback(async (recipeId) => {

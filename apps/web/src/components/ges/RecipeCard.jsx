@@ -92,17 +92,23 @@ export default function RecipeCard({
           <UnstyledButton
             type="button"
             onClick={onSave}
-            aria-label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'}
+            aria-label={saved ? `برداشتن «${title}» از ذخیره‌ها` : `ذخیرهٔ «${title}»`}
             aria-pressed={saved}
             style={{
-              position: 'absolute', insetBlockStart: 10, insetInlineEnd: 10, zIndex: 2,
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              inlineSize: 36, blockSize: 36, borderRadius: '50%',
-              background: 'color-mix(in srgb, var(--g-color-text-inverse) 92%, transparent)',
-              color: 'var(--g-color-brand-600)', boxShadow: 'var(--g-shadow-1)',
+              position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, zIndex: 2,
+              display: 'grid', placeItems: 'center', inlineSize: 44, blockSize: 44, background: 'transparent',
             }}
           >
-            <SaveIcon size={18} stroke={1.8} />
+            <Box
+              aria-hidden="true"
+              style={{
+                display: 'grid', placeItems: 'center', inlineSize: 36, blockSize: 36, borderRadius: '50%',
+                background: 'color-mix(in srgb, var(--g-color-text-inverse) 92%, transparent)',
+                color: 'var(--g-color-brand-600)', boxShadow: 'var(--g-shadow-1)',
+              }}
+            >
+              <SaveIcon size={18} stroke={1.8} />
+            </Box>
           </UnstyledButton>
         ) : null}
       </Box>

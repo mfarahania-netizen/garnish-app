@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconBookmark, IconBookmarkPlus, IconCompass, IconCloudOff, IconRefresh } from '@tabler/icons-react';
+import { IconBookmark, IconBookmarkOff, IconBookmarkPlus, IconCompass, IconCloudOff, IconRefresh } from '@tabler/icons-react';
 import { useFavorites } from './useFavorites';
 import { toFaDigits } from '../../components/ges/format';
 import RecipeCard from '../../components/ges/RecipeCard';
@@ -35,7 +35,7 @@ function FavEmpty({ suggestions, onOpen, onSave, onDiscover }) {
       <Box style={{ textAlign: 'center' }}>
         <Box aria-hidden="true" style={{ inlineSize: 76, blockSize: 76, margin: '0 auto', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)' }}><IconBookmark size={34} stroke={1.6} /></Box>
         <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-4) 0 0' }}>هنوز چیزی ذخیره نکردی</Text>
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-2) 0 0' }}>با این سه پیشنهاد شروع کن.</Text>
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-2) 0 0' }}>{suggestions.length ? 'با این پیشنهادها شروع کن.' : 'بریم چند دستور کشف کنیم.'}</Text>
       </Box>
       {suggestions.length ? (
         <Box style={{ ...grid2, marginBlockStart: 'var(--g-space-5)' }}>
@@ -59,7 +59,7 @@ export default function FavoritesPage() {
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   const showToast = useCallback((message, Icon) => { clearTimeout(toastTimer.current); setToast({ message, Icon }); toastTimer.current = setTimeout(() => setToast(null), 2000); }, []);
   const openRecipe = (id) => { if (id) navigate(`/recipe/${id}`); };
-  const onUnsave = async (id) => { const ok = await f.unsave(id); showToast(ok ? 'از ذخیره‌ها برداشته شد' : 'برداشته نشد — دوباره امتحان کن', IconBookmark); };
+  const onUnsave = async (id) => { const ok = await f.unsave(id); showToast(ok ? 'از ذخیره‌ها برداشته شد' : 'برداشته نشد — دوباره امتحان کن', ok ? IconBookmarkOff : IconBookmark); };
   const onSaveSuggestion = async (id) => { const ok = await f.save(id); showToast(ok ? 'ذخیره شد' : 'ذخیره نشد — دوباره امتحان کن', IconBookmarkPlus); };
 
   return (
