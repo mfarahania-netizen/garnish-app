@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 10,
+    "routes": 11,
     "protectedRoutes": 0,
-    "frontendCallSites": 67,
+    "frontendCallSites": 71,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7538,6 +7538,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/favorites",
+      "component": "FavoritesPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/food-dna",
       "component": "ProfilePage",
       "protected": false,
@@ -7648,6 +7655,13 @@
       "verb": "GET",
       "raw": "/favorites",
       "normalized": "/favorites",
+      "file": "apps/web/src/app/favorites/useFavorites.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/favorites",
+      "normalized": "/favorites",
       "file": "apps/web/src/hooks/useFavoritesQuery.js",
       "dynamic": false
     },
@@ -7662,7 +7676,21 @@
       "verb": "DELETE",
       "raw": "/favorites/${recipeId}",
       "normalized": "/favorites/*",
+      "file": "apps/web/src/app/favorites/useFavorites.js",
+      "dynamic": true
+    },
+    {
+      "verb": "DELETE",
+      "raw": "/favorites/${recipeId}",
+      "normalized": "/favorites/*",
       "file": "apps/web/src/hooks/useFavoritesQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "POST",
+      "raw": "/favorites/${recipeId}",
+      "normalized": "/favorites/*",
+      "file": "apps/web/src/app/favorites/useFavorites.js",
       "dynamic": true
     },
     {
@@ -7873,6 +7901,13 @@
       "raw": "/recommendations",
       "normalized": "/recommendations",
       "file": "apps/web/src/app/discover/useDiscovery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/recommendations",
+      "normalized": "/recommendations",
+      "file": "apps/web/src/app/favorites/useFavorites.js",
       "dynamic": false
     },
     {
