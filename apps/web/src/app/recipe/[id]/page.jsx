@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, Text, UnstyledButton } from '@mantine/core';
+import { Box, Text, UnstyledButton, Drawer } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   IconChevronRight, IconChevronDown, IconBookmark, IconBookmarkFilled, IconShare2,
@@ -8,6 +8,10 @@ import {
   IconInfoCircle, IconCloudOff, IconRefresh,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
+import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
+import { useAnalytics } from '../../../hooks/useAnalytics';
+import { useAuth } from '../../../context/AuthContext';
+import apiClient from '../../../lib/apiClient';
 import { toFaDigits } from '../../../components/ges/format';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
@@ -130,15 +134,45 @@ function HeroMedia({ imageUrl, title }) {
   );
 }
 
+// minimal, token-pure day/meal picker → POST /meal-plans/slots (dayOfWeek 0=Sat..6=Fri, like the planner)
+const PLAN_DAYS = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
+const PLAN_MEALS = [{ id: 'lunch', label: 'ناهار' }, { id: 'dinner', label: 'شام' }];
+const todaySatIdx = () => (new Date().getDay() + 1) % 7;
+function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
+  const [day, setDay] = useState(todaySatIdx());
+  const [meal, setMeal] = useState('dinner');
+  useEffect(() => { if (opened) { setDay(todaySatIdx()); setMeal('dinner'); } }, [opened]);
+  const chip = (active) => ({ minBlockSize: 44, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${active ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: active ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', color: active ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 });
+  const heading = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' };
+  return (
+    <Drawer opened={opened} onClose={onClose} position="bottom" zIndex={400} withCloseButton closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }} title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>افزودن به برنامهٔ هفته</Text>} overlayProps={{ backgroundOpacity: 0.42, blur: 1 }} transitionProps={{ transition: 'slide-up', duration: 240 }} styles={{ content: { height: 'auto', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } }}>
+      <Text component="p" style={{ ...heading, margin: 'var(--g-space-2) 0 var(--g-space-2)' }}>روز</Text>
+      <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+        {PLAN_DAYS.map((d, i) => <UnstyledButton key={i} type="button" onClick={() => setDay(i)} aria-pressed={day === i} style={chip(day === i)}>{d}</UnstyledButton>)}
+      </Box>
+      <Text component="p" style={{ ...heading, margin: 'var(--g-space-4) 0 var(--g-space-2)' }}>وعده</Text>
+      <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
+        {PLAN_MEALS.map((m) => <UnstyledButton key={m.id} type="button" onClick={() => setMeal(m.id)} aria-pressed={meal === m.id} style={chip(meal === m.id)}>{m.label}</UnstyledButton>)}
+      </Box>
+      <UnstyledButton type="button" onClick={() => onConfirm(day, meal)} disabled={busy} aria-disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 48, marginBlockStart: 'var(--g-space-5)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, opacity: busy ? 0.6 : 1 }}>{busy ? 'در حال افزودن…' : 'افزودن به برنامه'}</UnstyledButton>
+    </Drawer>
+  );
+}
+
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { status, recipe, nutrition, fit, refetch } = useRecipeDetail(id);
-  const [saved, setSaved] = useState(false);
+  const { token } = useAuth();
+  const { isFavorite, addFavorite, removeFavorite } = useFavoritesQuery();
+  const { trackEvent } = useAnalytics();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [planOpen, setPlanOpen] = useState(false);
+  const [planBusy, setPlanBusy] = useState(false);
   const [servedFor, setServedFor] = useState(null); // locally-applied serving target from the AI sheet
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
+  const viewedRef = useRef(false); // fire recipe_view at most once per recipe (StrictMode-safe)
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   const showToast = useCallback((message, Icon) => {
     clearTimeout(toastTimer.current);
@@ -146,6 +180,41 @@ export default function RecipeDetailPage() {
     toastTimer.current = setTimeout(() => setToast(null), 2200);
   }, []);
   const back = () => navigate(-1);
+
+  // honest telemetry: one recipe_view per loaded recipe, logged-in only
+  useEffect(() => {
+    if (status === 'ready' && recipe && id && token && !viewedRef.current) {
+      viewedRef.current = true;
+      trackEvent('recipe_view', { recipeId: id });
+    }
+  }, [status, recipe, id, token, trackEvent]);
+
+  // real favorites write: confirmation toast ONLY on success; fire favorite_add once per successful add
+  const toggleSave = useCallback(() => {
+    if (!id) return;
+    if (isFavorite(id)) {
+      removeFavorite(id, { onSuccess: () => showToast('از ذخیره‌ها برداشته شد', IconBookmark), onError: () => showToast('انجام نشد، دوباره تلاش کن', IconBookmark) });
+    } else {
+      addFavorite(id, { onSuccess: () => { showToast('به ذخیره‌ها اضافه شد', IconBookmark); trackEvent('favorite_add', { recipeId: id }); }, onError: () => showToast('ذخیره نشد، دوباره تلاش کن', IconBookmark) });
+    }
+  }, [id, isFavorite, addFavorite, removeFavorite, showToast, trackEvent]);
+
+  // real add-to-plan via the EXISTING POST /meal-plans/slots contract (same body the planner uses)
+  const addToPlan = useCallback(async (dayOfWeek, mealType) => {
+    setPlanBusy(true);
+    try {
+      await apiClient.post('/meal-plans/slots', { dayOfWeek, mealType, recipeId: id });
+      setPlanOpen(false);
+      showToast('به برنامه اضافه شد', IconCalendarPlus);
+      trackEvent('mealplan_add', { recipeId: id });
+    } catch {
+      showToast('اضافه نشد، دوباره تلاش کن', IconCloudOff);
+    } finally {
+      setPlanBusy(false);
+    }
+  }, [id, showToast, trackEvent]);
+
+  const saved = isFavorite(id);
 
   if (status === 'loading') return <RecipeLoading />;
   if (status === 'error' || status === 'empty' || !recipe) return <RecipeError onRetry={() => (status === 'empty' ? back() : refetch())} />;
@@ -166,7 +235,7 @@ export default function RecipeDetailPage() {
           <Box style={{ position: 'absolute', insetBlockStart: 0, insetInline: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)', paddingBlockStart: 'calc(var(--g-space-3) + env(safe-area-inset-top))' }}>
             <CircleBtn icon={IconChevronRight} label="بازگشت" onClick={back} />
             <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
-              <CircleBtn icon={saved ? IconBookmarkFilled : IconBookmark} label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'} accent onClick={() => { setSaved((s) => !s); showToast('به ذخیره‌ها اضافه شد', IconBookmark); }} />
+              <CircleBtn icon={saved ? IconBookmarkFilled : IconBookmark} label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'} accent onClick={toggleSave} />
               <CircleBtn icon={IconShare2} label="هم‌رسانی" onClick={() => showToast('هم‌رسانی به‌زودی', IconShare2)} />
             </Box>
           </Box>
@@ -313,7 +382,7 @@ export default function RecipeDetailPage() {
 
       {/* ACTION SHELF */}
       <Box style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-3) + env(safe-area-inset-bottom))', background: 'var(--g-color-bg-surface-raised)', borderBlockStart: '1px solid var(--g-color-border-subtle)', boxShadow: 'var(--g-shadow-2)' }}>
-        <UnstyledButton type="button" aria-label="به برنامه" onClick={() => showToast('به برنامه به‌زودی', IconCalendarPlus)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 46, blockSize: 46, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' }}>
+        <UnstyledButton type="button" aria-label="به برنامه" onClick={() => setPlanOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 46, blockSize: 46, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' }}>
           <IconCalendarPlus size={19} stroke={1.8} />
         </UnstyledButton>
         <UnstyledButton type="button" onClick={() => navigate(`/cook/${id}`)} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
@@ -328,6 +397,7 @@ export default function RecipeDetailPage() {
         baseServings={servedFor ?? baseServings}
         onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
       />
+      <PlanPickerSheet opened={planOpen} onClose={() => setPlanOpen(false)} busy={planBusy} onConfirm={addToPlan} />
       <Toast toast={toast} />
     </Column>
   );

@@ -9,6 +9,9 @@ import {
   IconBookmark, IconCalendarHeart,
 } from '@tabler/icons-react';
 import { useHomeData } from './lib/useHomeData';
+import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
+import { useAnalytics } from '../../hooks/useAnalytics';
+import { useImpressionObserver } from '../../hooks/useImpressionObserver';
 import { toFaDigits } from '../../components/ges/format';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import AIWhisper from '../../components/ges/AIWhisper';
@@ -181,9 +184,12 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { status, greeting, dna, gam, whisper, picks, rails, resume, refetch } = useHomeData();
   const [whisperDismissed, setWhisperDismissed] = useState(false);
-  const [saved, setSaved] = useState({});
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
+  // server-truth favorites (no local fake state); honest favorite signal; viewport impression telemetry
+  const { isFavorite, addFavorite, removeFavorite } = useFavoritesQuery();
+  const { trackEvent } = useAnalytics();
+  const { observe } = useImpressionObserver({ enabled: true, source: 'home' });
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
@@ -195,7 +201,22 @@ export default function HomePage() {
 
   const openRecipe = useCallback((id) => { if (id) navigate(`/recipe/${id}`); }, [navigate]);
   const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
-  const toggleSave = useCallback((id) => { setSaved((s) => ({ ...s, [id]: !s[id] })); showToast('به ذخیره‌ها اضافه شد', IconBookmark); }, [showToast]);
+  // real favorites write: confirmation toast ONLY on a successful call; revert is automatic (server truth);
+  // fire the explicit `favorite_add` signal once per successful add.
+  const toggleSave = useCallback((id) => {
+    if (!id) return;
+    if (isFavorite(id)) {
+      removeFavorite(id, {
+        onSuccess: () => showToast('از ذخیره‌ها برداشته شد', IconBookmark),
+        onError: () => showToast('انجام نشد، دوباره تلاش کن', IconBookmark),
+      });
+    } else {
+      addFavorite(id, {
+        onSuccess: () => { showToast('به ذخیره‌ها اضافه شد', IconBookmark); trackEvent('favorite_add', { recipeId: id }); },
+        onError: () => showToast('ذخیره نشد، دوباره تلاش کن', IconBookmark),
+      });
+    }
+  }, [isFavorite, addFavorite, removeFavorite, showToast, trackEvent]);
 
   if (status === 'loading') return <HomeLoading />;
 
@@ -223,7 +244,7 @@ export default function HomePage() {
 
         {status === 'ready' ? (
           <>
-            <FoodDnaCard dna={dna} onOpen={() => showToast('شناسهٔ ذائقه به‌زودی فعال می‌شود', IconLeaf)} />
+            <FoodDnaCard dna={dna} onOpen={() => navigate('/food-dna')} />
 
             {gam.show ? <GamificationStrip headline={gam.headline} progressLabel={gam.progressLabel} progress={gam.progress} /> : null}
 
@@ -241,16 +262,16 @@ export default function HomePage() {
               </Box>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
                 {picks.map((p, i) => (
-                  <Box key={p.recipeId} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
-                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={!!saved[p.recipeId]} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} />
+                  <Box key={p.recipeId} ref={observe(p.recipeId)} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
+                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} />
                   </Box>
                 ))}
               </Box>
             </Box>
 
-            <RecipeRail title="بر اساس آشپزخونه‌ات" icon={IconFridge} items={rails.pantry} saved={saved} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
-            <RecipeRail title="محبوب‌ها" icon={IconFlame} items={rails.popular} saved={saved} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
-            <RecipeRail title="تازه‌ها" icon={IconSparkles} items={rails.fresh} saved={saved} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
+            <RecipeRail title="بر اساس آشپزخونه‌ات" icon={IconFridge} items={rails.pantry} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
+            <RecipeRail title="محبوب‌ها" icon={IconFlame} items={rails.popular} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
+            <RecipeRail title="تازه‌ها" icon={IconSparkles} items={rails.fresh} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
 
             <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
               <OccasionCard title="حال‌وهوای شب یلدا" badge="مناسبتی" onClick={() => showToast('مجموعهٔ مناسبتی به‌زودی', IconCalendarHeart)} />
