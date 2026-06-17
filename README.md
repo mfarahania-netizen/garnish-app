@@ -7,13 +7,13 @@
 >
 > **Doc roles:** this root README = developer overview + current status snapshot · [`docs/README.md`](docs/README.md) = documentation index · [`data/README.md`](data/README.md) = data-layer source of truth · the Constitution = execution source of truth.
 
-## Current status snapshot (updated 2026-06-15)
+## Current status snapshot (updated 2026-06-18)
 - **Quality bar: L4** (Amendment 2 §A2.1 — proposed, pending founder ratification; logged in [DECISION_LOG](docs/execution/DECISION_LOG.md)). A clean technical scan is **not** acceptance; the visual/product bar governs UI work.
 - **Recommendation stack: FROZEN at A14** (Amendment 2 §A2.2). The internal shadow/lab/experiment line (A5–A14) is complete and **default-OFF**; no new recommendation `runtime-shadow` A-layer is built. **No live ranking change, no user-visible recommendation response change** — A14 is founder-review/activation-PLANNING only (production readiness red; live activation needs explicit founder go-ahead). See [recommendation reports](docs/README.md).
-- **UI migration: FROZEN** after Phase 4A (Home) — *technical pass, visual/product-quality rejected*. No Phase 4B until an approved visual spec (Amendment 2 §A2.4 — the approved visual direction is the unblock). See [UI_MIGRATION_STATUS](docs/execution/UI_MIGRATION_STATUS.md).
-- **Junk removal (RESET-01, 2026-06-15):** the fake client-side **voice input** (`VoiceInput.jsx` + its `speechService` browser-speech wrapper — no voice backend exists) was removed, and the fake **localStorage "personalization"** preference store in ai-chat was removed (ephemeral React state only; real personalization comes from the server orchestrator). No capability was lost — both were non-functional/fake.
-- **AI Core (E47 A1–A9):** single Orchestrator + mandatory BehavioralContextSnapshot · DB persistence (AICallLog / ChatMessage / UserFact) · legacy chat routed **through** the orchestrator · real read-only tools (**exactly 4**, no model-driven execution) · Gemini provider **behind** the provider interface · deterministic eval gate + guard hardening · controlled live-Gemini smoke **PASS** (A7) · controlled **live chat adapter** behind explicit flags (A8) · runtime-boundary & product-safety gate (A9).
-- **Live Gemini is NOT product-enabled** — gated/dev-only behind explicit env flags (`AI_PROVIDER=gemini` + `AI_LIVE_ENABLED=true` + `AI_CHAT_LIVE_ENABLED` + real key); **default behavior is deterministic/stub** (flags unset). No streaming · no model-driven tools · no agents · no vision · no medical/diet advice. **AI Core is not complete.**
+- **Frontend: Track-5 RESET — rebuild in progress, screenshot-gated.** The earlier UI (rejected at the Phase-4A visual bar) was **wiped and is being rebuilt screen-by-screen to the approved mockup** on the GES primitive kit (RTL-first, variable Vazirmatn). All 14 screens have been rebuilt; a first **web smoke-test net** (Vitest 4 + Testing Library + jsdom) guards them. Real actions are wired to **real, existing** endpoints (favorites, meal-plan slots, recommendation impressions) with **honest** success/error states (confirmation only after a real successful call; revert + honest error on failure) — no lying toasts, token-pure (GES CSS-vars only). See [UI_MIGRATION_STATUS](docs/execution/UI_MIGRATION_STATUS.md).
+- **AI Core (E47 A1–A12) + grounded assistant:** single Orchestrator + mandatory BehavioralContextSnapshot · DB persistence (AICallLog / ChatMessage / UserFact) · legacy chat routed **through** the orchestrator · real read-only tools · Gemini provider **behind** the provider interface · cost ledger/daily budget + spend alerts · deterministic + output-safety eval gates · controlled live-Gemini smoke **PASS** (A7) · controlled **live chat adapter** behind explicit flags (A8) · runtime-boundary & product-safety gate (A9). **The chat reply is now GROUNDED in the real recipe corpus behind a HARD, server-side allergy gate** that runs before any reply is composed and before anything reaches a model (reuses the audited `assessRecipeFit`/`analyzeRecipeIntegrity` + the reconciled declared-allergy set; declared allergens are **never** put in a prompt). Empty safe set → honest "no safe match"; never an invented recipe.
+- **Live Gemini is NOT product-enabled** — gated/dev-only behind explicit env flags (`AI_PROVIDER=gemini` + `AI_LIVE_ENABLED=true` + `AI_CHAT_LIVE_ENABLED` + real key); **default behavior is deterministic/grounded** (flags unset). No streaming · no model-driven tools · no agents · no vision · no medical/diet advice. **AI Core is not complete.**
+- **Analytics / gamification honesty:** deliberate, user-initiated signals (`cook_complete` / `favorite_add` / `mealplan_add` …) now **bypass the anti-bot/duplicate gate** so a real cook fired right after a heavy scroll/impression burst is never silently dropped; high-frequency noise (views/impressions/page_view) stays gated. Gamification is server-authoritative and counts only real `cook_complete` events.
 - **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **200** (v0.6.1) **dev/preview import** to local `garnish_db` (2026-06-13) — superset upsert of the prior 122 (0 deletions, interactions preserved); **not final production data**, production import remains a separate gated decision. **Nutrition is not source-locked / not a final verified dataset.** See [data/README](data/README.md).
 - **Open security / compliance:** E1 secret **history purge — plan ready, history rewrite pending founder execution** (R-E1-HISTORY-DEAD-SECRETS — keys already rotated, repo private; HUMAN-GATED force-push, see [E1_HISTORY_PURGE_PLAN](docs/security/E1_HISTORY_PURGE_PLAN.md); working-tree secret scan = 0). **R16 / E39 GDPR privacy = BASELINE-CLOSED for dev/beta** (2026-06-14 final gate: erasure + export + retention-dry-run verified; legacy destructive cron neutralized) — **controlled destructive prune deferred** as a future operational task. See [E39 Final Privacy Gate](docs/security/E39_FINAL_PRIVACY_GATE_REPORT.md).
 
@@ -41,19 +41,25 @@ European audience.
   WAT ops → compliance → observability → admin.
 
 ## 5. Data layer ✅
-- **122 recipes / 1223 ingredient lines / 1008 ingredients**, 0 unresolved (verified in DB).
+- **~350 recipes (dev/preview) / 1008 ingredients**, 0 unresolved (verified in DB). The dev DB is a
+  superset upsert: 200 (v0.6.1) + 150 international-core (v0.6.0); **not final production data** — the
+  production import remains a separate gated decision, and **nutrition is not source-locked**.
 - **Ingredient Resolver** (E11 ✅): free text → `ingredientId` via a normalized alias index
   (10,304 aliases across all 1008 ingredients), names, and codes. `apps/server/src/ingredients/`.
 - Import/validate: `pnpm --dir apps/server data:validate:aliases` / `data:import:aliases` (and the
   `phase-one` / `ingredients` equivalents). See §14.
 
 ## 6. AI Core status & boundaries
-- **Reality today:** rule-based assistant (`apps/server/src/ai`, Gemini-backed). The single
-  **Orchestrator + Tool Registry + mandatory BehavioralContextSnapshot** is **🔧 In execution (E47, W6–W8)** — not yet built.
+- **Reality today:** the single **Orchestrator + Tool Registry + mandatory BehavioralContextSnapshot** is
+  **built** (`apps/server/src/ai`, E47 A1–A12): every AI call routes through one orchestrator
+  (snapshot-validate → prompt-injection → cost → safety → model → nutrition-claim → audit log). Chat is
+  **grounded** in the real recipe corpus behind a **HARD, server-side allergy gate** (reuses the audited
+  `assessRecipeFit`/`analyzeRecipeIntegrity`); the default reply is deterministic. A real live LLM (Gemini)
+  sits **behind** the provider interface and stays **OFF** unless explicit env flags are set (see snapshot).
 - **Boundaries (E47 Annex):** no autonomous agents, no multi-agent/LangGraph, no medical or
   nutrition-specialist claims, no irreversible actions without explicit user confirmation; streaming for chat only.
 - **No image/photo recognition:** there is no real vision capability. The earlier *simulated* "fridge-photo"
-  ingredient detection was removed (no fake placeholder); the assistant is text-only.
+  ingredient detection was removed (no fake placeholder); the assistant is text-only. **AI Core is not complete.**
 
 ## 7. BIP (Behavioral Intelligence Platform)
 Base exists (`apps/server/src/behavior-engine`). Envelope design is set (ADR-0001 ✅); full v1
@@ -62,15 +68,18 @@ Base exists (`apps/server/src/behavior-engine`). Envelope design is set (ADR-000
 ## 8. Recommendation Engine ✅ (base)
 candidate → rank → exposure → outcome pipeline (`apps/server/src/recommendation`).
 
-## 9. GES / Design System — foundation installed, UI migration PARTIAL 🔧
+## 9. GES / Design System — Track-5 rebuild on the GES kit 🔧
 - **Docs (exist):** `docs/design/GARNISH_EXPERIENCE_SYSTEM_v1.md`, `DESIGN_IMPLEMENTATION_GUIDE.md`,
   `DESIGN_QA_CHECKLIST.md`, `COMPONENT_MIGRATION_MAP.md`, `COMPONENT_PATTERN_LIBRARY_v1.md`.
 - **Foundation (installed):** `apps/web/src/styles/tokens.css` + `base.css`, `theme/garnish-theme.js`,
   `lib/motion.js` — imported once at the app entry; the Mantine theme is wired to the tokens.
-- **Primitives (exist):** 17 token-pure components under `apps/web/src/components/ges/`.
-- **Migration status: PARTIAL — NOT complete.** App surfaces (Home, AI Chat, Admin, shell/nav, …) are
-  **not yet migrated** to GES; that work is paused pending approval. The design pack is marked
-  `DRAFT_PENDING_UX_APPROVAL`. **No production-ready UX is claimed.**
+- **Primitives:** token-pure GES components under `apps/web/src/components/ges/`.
+- **Rebuild status (Track-5 reset):** the prior surfaces (rejected at the Phase-4A visual bar) were wiped;
+  all 14 screens have been **rebuilt screen-by-screen to the approved mockup** on the GES kit and are
+  **screenshot-gated** by the founder each sprint. Token-purity is enforced (non-brand hex
+  `#FF6B35`/`#1A237E`/`#4CAF50` must grep to 0); RTL + variable Vazirmatn + `prefers-reduced-motion`;
+  ≥44px tap targets; every fetching screen ships loading/empty/error/data states. A web smoke-test net
+  (Vitest) guards the routes. **Production-ready UX is still founder-gated, not auto-claimed.**
 
 ## 10. Execution gates
 - **G1 (W13):** security scans 0, import live, Food DNA e2e, Briefing live, erasure test green, AI safety eval pass.

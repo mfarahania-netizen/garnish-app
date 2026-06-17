@@ -19,6 +19,22 @@
 ## Phase & task reports
 - Shell/Nav: [Phase 3](execution/PHASE_3_SHELL_NAV_REPORT.md) · [Phase 3.1](execution/PHASE_3_1_MICRO_CLEANUP_REPORT.md)
 - Home (technical pass, **visual rejected**): [Phase 4A report](execution/PHASE_4A_HOME_COMMAND_CENTER_REPORT.md) · [Phase 4A visual QA](qa/phase4a/PHASE_4A_VISUAL_QA_REPORT.md)
+- **Frontend — Track-5 reset (UI wiped, rebuilt screen-by-screen to the approved mockup, screenshot-gated):**
+  per-screen builds — [Home](execution/GARNISH_FE_HOME_COMPLETE_REPORT.md) ·
+  [Onboarding](execution/GARNISH_FE_ONBOARDING_REPORT.md) ·
+  [Discovery/Access](execution/GARNISH_FE_ONBOARDING_ACCESS_DISCOVERY_REPORT.md) ·
+  [Cook](execution/GARNISH_FE_COOK_REPORT.md) · [Meal-plan](execution/GARNISH_FE_MEALPLAN_REPORT.md) ·
+  [Shopping](execution/GARNISH_FE_SHOPPING_REPORT.md) · [Favorites](execution/GARNISH_FE_FAVORITES_REPORT.md) ·
+  [AI Companion](execution/GARNISH_FE_AICOMPANION_REPORT.md) · [Profile](execution/GARNISH_FE_PROFILE_REPORT.md) ·
+  [Settings](execution/GARNISH_FE_SETTINGS_REPORT.md) · [Notifications](execution/GARNISH_FE_NOTIFICATIONS_REPORT.md) ·
+  [Achievements](execution/GARNISH_FE_ACHIEVEMENTS_REPORT.md) · [Admin](execution/GARNISH_FE_ADMIN_REPORT.md) ·
+  [Full audit + first web smoke net](execution/GARNISH_FE_FULL_AUDIT_REPORT.md). Fix sprints —
+  [Fixbatch-1](execution/GARNISH_FE_FIXBATCH_1_REPORT.md) ·
+  [Picks/cook-loop](execution/GARNISH_FE_FIX_PICKS_COOKLOOP_REPORT.md) ·
+  [Card-height/cook-header/recipes-link](execution/GARNISH_FE_FIX_CARDHEIGHT_COOKHEADER_RECIPESLINK_REPORT.md) ·
+  [Cook-header/AI-search/cook-log](execution/GARNISH_FIX_COOKHEADER_AISEARCH_COOKLOG_REPORT.md) ·
+  [Wire real actions + instrumentation](execution/GARNISH_FE_WIRE_REAL_ACTIONS_REPORT.md) — real actions wired
+  to existing endpoints with honest states; token-pure; no fabricated event types.
 - Data: [Ingredient Dictionary — Recipe Resolver Alias Patch 00](execution/INGREDIENT_DICTIONARY_RECIPE_RESOLVER_ALIAS_PATCH_00_REPORT.md) ·
   [International Core 150 DB Import v0.6.0](execution/INTERNATIONAL_CORE_150_DB_IMPORT_V0_6_0_REPORT.md) ·
   [International Core 150 import doc](recipes/INTERNATIONAL_CORE_150_IMPORT_V0_6_0.md) — 150 international recipes imported (dev DB total **350** = 200 preserved + 150 new); no new ingredient IDs, no migration, no AI/recommendation/UI change
@@ -71,7 +87,13 @@
   [A10C cost-rate catalog & spend alerting (R3 mitigation)](execution/E47_A10C_AI_COST_RATE_CATALOG_AND_SPEND_ALERTING_REPORT.md) ·
   [A11A output safety/quality eval harness (R4 mitigation)](execution/E47_A11A_LIVE_OUTPUT_SAFETY_QUALITY_EVAL_HARNESS_REPORT.md) ·
   [A11B regression corpus & continuous eval gate (R4 mitigation)](execution/E47_A11B_LARGER_REGRESSION_CORPUS_AND_CONTINUOUS_EVAL_GATE_REPORT.md) ·
-  [A12 AI internal pilot-readiness failure-injection gate](execution/E47_A12_AI_INTERNAL_PILOT_READINESS_FAILURE_INJECTION_GATE_REPORT.md)
+  [A12 AI internal pilot-readiness failure-injection gate](execution/E47_A12_AI_INTERNAL_PILOT_READINESS_FAILURE_INJECTION_GATE_REPORT.md) ·
+  [Grounded assistant (chat grounded in the corpus behind a HARD allergy gate; live OFF)](execution/GARNISH_AI_GROUNDED_ASSISTANT_REPORT.md)
+- Analytics / gamification honesty:
+  [Deliberate-signal event-quality fix](execution/GARNISH_BE_FIX_EVENT_QUALITY_REPORT.md) — high-value
+  user-initiated signals (cook_complete/favorite_add/mealplan_add…) bypass the anti-bot/duplicate gate so a
+  real cook is never dropped after a scroll/impression burst; noise stays gated; gamification counts only
+  real `cook_complete` events.
 - Docs: [README source-of-truth cleanup](execution/DOCS_README_SOURCE_OF_TRUTH_REPORT.md)
 
 ## Design system (GES)
