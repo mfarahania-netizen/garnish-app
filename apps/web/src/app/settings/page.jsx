@@ -45,7 +45,7 @@ function Chip({ label, on, onClick, danger }) {
   const bg = danger ? 'var(--g-color-allergen-bg)' : on ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)';
   const bd = danger ? 'var(--g-color-allergen-fg)' : on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)';
   return (
-    <UnstyledButton type="button" onClick={onClick} aria-pressed={on} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 38, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
+    <UnstyledButton type="button" onClick={onClick} aria-pressed={on} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
       {danger ? <IconAlertTriangle size={12} stroke={2} aria-hidden="true" style={{ opacity: on ? 1 : 0.6 }} /> : (on ? <IconCheck size={12} stroke={2.4} aria-hidden="true" /> : <IconPlus size={12} stroke={2} aria-hidden="true" />)}
       {label}
     </UnstyledButton>
@@ -54,7 +54,7 @@ function Chip({ label, on, onClick, danger }) {
 
 function Seg({ active, label, soon, onClick }) {
   return (
-    <UnstyledButton type="button" onClick={onClick} aria-pressed={active} style={{ minBlockSize: 36, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', background: active ? 'var(--g-color-brand-600)' : 'transparent', color: active ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
+    <UnstyledButton type="button" onClick={onClick} aria-pressed={active} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', background: active ? 'var(--g-color-brand-600)' : 'transparent', color: active ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
       {label}{soon ? <Text component="span" style={{ fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}> · به‌زودی</Text> : null}
     </UnstyledButton>
   );

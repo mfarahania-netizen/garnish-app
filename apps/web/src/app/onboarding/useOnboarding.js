@@ -121,7 +121,7 @@ export function useOnboarding() {
   // persist consent + the supported preferences for an ALREADY signed-in user (re-entry from the
   // menu): no account step — save straight away and return Home.
   const persist = useCallback(async () => {
-    try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); } catch { /* non-blocking */ }
+    try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); try { localStorage.setItem('garnish.consent.personalization', 'true'); } catch { /* */ } } catch { /* non-blocking */ }
     try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
     try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
   }, [buildPreferences]);

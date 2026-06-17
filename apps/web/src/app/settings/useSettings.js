@@ -34,7 +34,8 @@ export function useSettings() {
   const [allergens, setAllergens] = useState({}); // id → true
   const [notif, setNotif] = useState(() => ({ ...DEFAULT_NOTIF, ...readJson(NOTIF_KEY, {}) }));
   const [consent, setConsent] = useState(() => ({
-    personalization: readJson(PERS_KEY, true),
+    // conservative default: never assert a grant we can't verify (onboarding seeds this on real grant)
+    personalization: readJson(PERS_KEY, false),
     analytics: (typeof getAnalyticsConsent === 'function' ? getAnalyticsConsent() : null) === 'granted',
   }));
   const [hydrated, setHydrated] = useState(false);
@@ -93,7 +94,8 @@ export function useSettings() {
   }, [flash]);
 
   const toggleConsent = useCallback(async (key) => {
-    const nextVal = !consent[key];
+    const prev = consent[key];
+    const nextVal = !prev;
     setConsent((c) => ({ ...c, [key]: nextVal }));
     const type = key === 'personalization' ? 'personalization' : 'analytics';
     if (key === 'analytics') { if (nextVal) enableAnalytics(); else disableAnalytics(); }
@@ -102,6 +104,10 @@ export function useSettings() {
       await apiClient.post('/users/consent', { type, granted: nextVal });
       flash(nextVal ? 'رضایت ثبت شد' : 'رضایت لغو شد', 'ok');
     } catch {
+      // revert — never show a successful-looking consent change that did not persist server-side
+      setConsent((c) => ({ ...c, [key]: prev }));
+      if (key === 'analytics') { if (prev) enableAnalytics(); else disableAnalytics(); }
+      if (key === 'personalization') { try { localStorage.setItem(PERS_KEY, JSON.stringify(prev)); } catch { /* */ } }
       flash('ثبت نشد — دوباره امتحان کن', 'err');
     }
   }, [consent, flash]);
