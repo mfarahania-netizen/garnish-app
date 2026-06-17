@@ -440,8 +440,8 @@
       "reason": "FE-COOK: grounded per-step «کمک برای این مرحله» help in Cook Mode (useCook → GET /ai/recipes/:id/technique?step=); disclosed + hedged. Also the future ai-chat GroundedAssist."
     },
     "POST /ai/chat": {
-      "status": "frontend:ai-chat/AIChatPage",
-      "reason": "AI chat surface."
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "FE-AICOMPANION: the L3 AI assistant chat (server-guarded reply; disclosed + hedged + kind-refusal). useAssistant.send."
     },
     "POST /ai/pairings": {
       "status": "frontend:ai-chat/AIChatPage",

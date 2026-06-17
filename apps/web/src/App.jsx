@@ -17,6 +17,7 @@ import ProfilePage from './app/profile/page';
 import PlanPage from './app/plan/page';
 import ShoppingListPage from './app/shopping-list/page';
 import FavoritesPage from './app/favorites/page';
+import AssistantPage from './app/assistant/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -100,6 +101,7 @@ export default function App() {
                         <Route path="/plan" element={<PlanPage />} />
                         <Route path="/shopping-list" element={<ShoppingListPage />} />
                         <Route path="/favorites" element={<FavoritesPage />} />
+                        <Route path="/assistant" element={<AssistantPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>
                     </Route>

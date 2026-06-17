@@ -314,7 +314,7 @@ export default function RecipeDetailPage() {
         </UnstyledButton>
       </Box>
 
-      <AISheet opened={sheetOpen} onClose={() => setSheetOpen(false)} recipeTitle={recipe.title} onAsk={() => { setSheetOpen(false); showToast('دستیار هوش مصنوعی به‌زودی فعال می‌شود', IconSparkles); }} />
+      <AISheet opened={sheetOpen} onClose={() => setSheetOpen(false)} recipeTitle={recipe.title} onAsk={() => { setSheetOpen(false); navigate('/assistant'); }} />
       <Toast toast={toast} />
     </Column>
   );

@@ -38,7 +38,7 @@ export const DRAWER_PRIMARY = [
   { label: 'شناسهٔ ذائقه', to: '/food-dna', Icon: IconLeaf },
   { label: 'برنامهٔ هفتگی', to: '/plan', Icon: IconCalendarWeek },
   { label: 'لیست خرید', to: '/shopping-list', Icon: IconShoppingCart },
-  { label: 'دستیار آشپزی', to: '/assist', Icon: IconSparkles },
+  { label: 'دستیار آشپزی', to: '/assistant', Icon: IconSparkles },
 ];
 
 export const DRAWER_SECONDARY = [

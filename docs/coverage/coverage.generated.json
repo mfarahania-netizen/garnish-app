@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 11,
+    "routes": 12,
     "protectedRoutes": 0,
-    "frontendCallSites": 71,
+    "frontendCallSites": 72,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7524,6 +7524,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/assistant",
+      "component": "AssistantPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/cook/:id",
       "component": "CookPage",
       "protected": false,
@@ -7588,6 +7595,13 @@
     }
   ],
   "frontendCalls": [
+    {
+      "verb": "POST",
+      "raw": "/ai/chat",
+      "normalized": "/ai/chat",
+      "file": "apps/web/src/app/assistant/useAssistant.js",
+      "dynamic": false
+    },
     {
       "verb": "POST",
       "raw": "/ai/chat",
