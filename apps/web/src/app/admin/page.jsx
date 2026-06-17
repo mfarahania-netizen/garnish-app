@@ -61,6 +61,9 @@ function HBar({ label, value, max, suffix }) {
 
 const GUARD_FA = { ai_safety: 'ایمنی هوش مصنوعی', prompt_injection: 'تزریق پرامپت', nutrition_claim: 'ادعای تغذیه‌ای' };
 const BAND_FA = { empty: 'تازه', forming: 'در حال شکل‌گیری', developing: 'در حال رشد', mature: 'پخته' };
+const RECSYS_FA = { catalogCoverage: 'پوشش کاتالوگ', coverage: 'پوشش', diversity: 'تنوع', fitQuality: 'کیفیت تناسب', quality: 'کیفیت', popularityBias: 'سوگیری محبوبیت' };
+// recsys.offline is Record<string, MetricResult{value,threshold,pass,note}> — only render numeric 0..1 values
+const recsysRows = (offline) => Object.entries(offline || {}).filter(([, m]) => m && typeof m.value === 'number');
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -101,7 +104,7 @@ export default function AdminPage() {
         </Box>
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}>
           {a.ranges.map((r) => (
-            <UnstyledButton key={r.id} type="button" onClick={() => a.setDays(r.id)} aria-pressed={a.days === r.id} style={{ minBlockSize: 36, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', background: a.days === r.id ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: a.days === r.id ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{r.label}</UnstyledButton>
+            <UnstyledButton key={r.id} type="button" onClick={() => a.setDays(r.id)} aria-pressed={a.days === r.id} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--g-radius-chip)', background: a.days === r.id ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: a.days === r.id ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{r.label}</UnstyledButton>
           ))}
         </Box>
         <UnstyledButton type="button" onClick={a.refetchAll} aria-label="به‌روزرسانی" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconRefresh size={18} stroke={1.8} /></UnstyledButton>
@@ -134,8 +137,8 @@ export default function AdminPage() {
           </Box>
           <Box style={grid(190)}>
             <Kpi icon={IconShieldCheck} label="گاردهای ایمنی" real value={toFaDigits(d.guards.blocked)} sub={`از ${toFaDigits(d.guards.cases)} موردِ پیکره · مسدودشده`} />
-            <Kpi icon={IconShieldHalf} label="فیلتر آلرژن" real value={d.allergen?.pass ? 'گذراند' : (d.allergen ? 'بررسی' : '—')} sub={d.allergen ? `${toFaDigits(d.allergen.leaks)} نشت` : 'در حال ارزیابی'} />
-            <Kpi icon={IconClock} label="تأخیر p۹۵ (ms)" real={d.latency.real} value={d.latency.p95 != null ? toFaDigits(d.latency.p95) : '—'} sub={d.latency.p50 != null ? `p۵۰ ${toFaDigits(d.latency.p50)}ms · از فراخوان‌های ثبت‌شده` : ''} awaitNote="در انتظار فراخوان‌های واقعی" />
+            <Kpi icon={IconShieldHalf} label="فیلتر آلرژن" real={!!d.allergen} value={d.allergen?.pass ? 'گذراند' : 'بررسی'} sub={d.allergen ? `${toFaDigits(d.allergen.leaks)} نشت` : ''} awaitNote="در حال ارزیابی" />
+            <Kpi icon={IconClock} label="تأخیر p۹۵ (ms)" real={d.latency.real && d.latency.p95 != null} value={d.latency.p95 != null ? toFaDigits(d.latency.p95) : 'بدون نمونهٔ موفق'} sub={d.latency.p50 != null ? `p۵۰ ${toFaDigits(d.latency.p50)}ms · از فراخوان‌های ثبت‌شده` : ''} awaitNote="در انتظار فراخوان‌های واقعی" />
             <Kpi icon={IconChartBar} label="کیفیت رویداد" real={d.eventQuality.real} value={d.eventQuality.rate != null ? faPercent(d.eventQuality.rate * 100) : '—'} sub="رویدادهای معتبر" awaitNote="در انتظار رویدادهای واقعی" />
           </Box>
 
@@ -179,8 +182,8 @@ export default function AdminPage() {
             <Box>
               <Text component="h2" style={sectionTitle}>کیفیت پیشنهادگر</Text>
               <Box style={card}>
-                {Object.keys(d.recsys.offline).length ? (
-                  Object.entries(d.recsys.offline).filter(([, v]) => typeof v === 'number').slice(0, 4).map(([k, v]) => <HBar key={k} label={k} value={Math.round(v * 100)} max={100} suffix="٪" />)
+                {recsysRows(d.recsys.offline).length ? (
+                  recsysRows(d.recsys.offline).slice(0, 5).map(([k, m]) => <HBar key={k} label={RECSYS_FA[k] || k} value={Math.round(m.value * 100)} max={100} suffix="٪" />)
                 ) : (
                   <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', textAlign: 'center', paddingBlock: 'var(--g-space-4)' }}>از هارنس ارزیابی S۱۱ · در حال آماده‌سازی</Text>
                 )}

@@ -60,13 +60,11 @@ export function useAdmin() {
       },
       allergen: s.allergySafety ? { pass: !!s.allergySafety.pass, leaks: s.allergySafety.leaks ?? 0, indicator: s.allergySafety.indicator || '' } : null,
       notif: s.notificationDelivery ? { posture: s.notificationDelivery.posture || 'dry-run', realSendEnabled: !!s.notificationDelivery.realSendEnabled } : null,
-      consent: { real: s.consentPosture?.status === 'real', byPurpose: s.consentPosture?.byPurpose || {} },
       foodDna: { real: i.foodDna?.status === 'real', bands: i.foodDna?.bands || {}, sampled: i.foodDna?.sampled ?? 0 },
       recsys: {
-        real: i.recsys?.status === 'real' || !!i.recsys?.offline,
-        offline: i.recsys?.offline || {},
+        real: i.recsys?.status === 'real', // strictly the backend status — never an always-true offline-presence OR
+        offline: i.recsys?.offline || {}, // Record<string, MetricResult{value,threshold,pass,note}>
         allergySafety: i.recsys?.allergySafety || null,
-        online: i.recsys?.online || {},
       },
       readiness: {
         jobs: h.scheduledJobs?.jobs || [],
