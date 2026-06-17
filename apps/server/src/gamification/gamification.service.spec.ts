@@ -40,6 +40,18 @@ describe('GamificationService — honest, server-authoritative', () => {
     expect(created.userAchievement.map((a) => a.achievementKey)).toContain('first_cook');
   });
 
+  it('COOK RECORDING: a single cook_complete event increments cooks + moves the weekly streak; engine reads the canonical type', async () => {
+    const { svc, prisma } = makeService({ events: [cookInWeek(0)] });
+    const state = await svc.recomputeForUser('u1', now);
+    // a real completed cook = a real +1 (no longer stuck at اولین آشپزی / سطح ۱)
+    expect(state.stats.totalCooks).toBe(1);
+    expect(state.streak.currentWeeks).toBeGreaterThanOrEqual(1);
+    // contract: the engine counts UserEvent type 'cook_complete' — the FE must emit exactly this
+    expect(prisma.userEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ type: { in: ['cook_complete'] } }) }),
+    );
+  });
+
   it('a user with ZERO cook events earns NOTHING (client cannot self-assert progress)', async () => {
     const { svc, created } = makeService({ events: [] });
     const state = await svc.recomputeForUser('u1', now);

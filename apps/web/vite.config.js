@@ -25,6 +25,12 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Make autoUpdate actually instant: a new SW activates + claims open clients immediately and
+        // old precaches are purged — so a deploy/refresh always serves the NEW build (this was the real
+        // reason a hard refresh still showed the old chrome-less Cook Mode).
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /\/api\/.*/i,
@@ -32,7 +38,9 @@ export default defineConfig({
             options: { cacheName: 'api-cache', expiration: { maxEntries: 50, maxAgeSeconds: 86400 } },
           },
           {
-            urlPattern: /\.(js|css|png|jpg|svg|woff2|ttf)$/i,
+            // images/fonts only — the hashed JS/CSS are PRECACHED (versioned), so they must NOT be
+            // StaleWhileRevalidate'd here or an updated app keeps serving stale code for a load.
+            urlPattern: /\.(png|jpg|jpeg|svg|woff2|ttf)$/i,
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'asset-cache' },
           },

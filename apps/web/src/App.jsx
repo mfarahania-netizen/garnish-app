@@ -92,6 +92,20 @@ export default function App() {
             <AuthProvider>
               <RecipeProvider>
                 <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </RecipeProvider>
+            </AuthProvider>
+          </MantineProvider>
+        </QueryClientProvider>
+      </DirectionProvider>
+    </ErrorBoundary>
+  );
+}
+
+/** The route tree, exported so tests can mount it under a MemoryRouter and verify the shell wraps a route. */
+export function AppRoutes() {
+  return (
                   <Routes>
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
@@ -123,12 +137,5 @@ export default function App() {
                       </Route>
                     </Route>
                   </Routes>
-                </BrowserRouter>
-              </RecipeProvider>
-            </AuthProvider>
-          </MantineProvider>
-        </QueryClientProvider>
-      </DirectionProvider>
-    </ErrorBoundary>
   );
 }

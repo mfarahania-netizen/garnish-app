@@ -9,8 +9,9 @@ import { useRecipeDetail } from '../../recipe/[id]/useRecipeDetail';
  * useCook — immersive step-by-step cook flow over the recipe's REAL steps (GET /recipes/:id/full
  * via useRecipeDetail). Step AI help is grounded on the real GET /ai/recipes/:id/technique?step=
  * endpoint, disclosed + hedged, with a Persian-only defensive render (never raw English/[object Object])
- * and an honest fallback. Finish records a REAL recipe_cooked analytics event (logged-in) and shows the
- * CURRENT streak factually — there is no FE cook-write endpoint, so we never claim a fabricated increment.
+ * and an honest fallback. Finish records a REAL `cook_complete` event (logged-in, POST /analytics/event →
+ * UserEvent) — the canonical type the gamification engine counts, so a completed cook genuinely moves the
+ * streak/level. Honest: a real completed cook = a real +1; we never fabricate an increment.
  */
 
 // pull the longest Persian string from an unknown grounded-tool response (no English / no [object Object])
@@ -49,7 +50,10 @@ export function useCook(id) {
     if (step >= total - 1) {
       if (!finished) {
         setFinished(true);
-        if (token) trackEvent('recipe_cooked', { recipeId: id });
+        // Emit the CANONICAL completion event the gamification engine actually counts
+        // (UserEvent type 'cook_complete' → streak/mastery). The old 'recipe_cooked' was never
+        // counted (gamification reads type IN ['cook_complete']) so the streak never moved.
+        if (token) trackEvent('cook_complete', { recipeId: id });
       }
       return;
     }

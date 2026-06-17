@@ -146,9 +146,12 @@ export class AiService {
     const where: any = {};
 
     if (ingredients.length > 0) {
+      // Match ingredient names by SUBSTRING (contains), not exact equality. A query term like «مرغ»
+      // must match recipe ingredients such as «ران مرغ» / «سینه مرغ»; the old `name: { in: ingredients }`
+      // required an exact equal, matched nothing, and fell through to the random-suggestion fallback.
       where.ingredients = {
         some: {
-          name: { in: ingredients },
+          OR: ingredients.map((ing) => ({ name: { contains: ing, mode: 'insensitive' } })),
         },
       };
     }

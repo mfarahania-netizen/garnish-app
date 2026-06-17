@@ -30,9 +30,11 @@ export class SearchRecipesTool implements AiTool {
         where: {
           isPublic: true, // respect visibility
           OR: [
-            { title: { contains: query } },
-            { description: { contains: query } },
-            { ingredients: { some: { name: { contains: query } } } },
+            { title: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            // RecipeIngredient.name holds the Persian ingredient text (e.g. «ران مرغ») — `contains`
+            // (substring), insensitive, so «مرغ» matches it.
+            { ingredients: { some: { name: { contains: query, mode: 'insensitive' } } } },
           ],
         },
         take: limit,
