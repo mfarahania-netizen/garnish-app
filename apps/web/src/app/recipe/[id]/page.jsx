@@ -325,7 +325,7 @@ export default function RecipeDetailPage() {
         opened={sheetOpen}
         onClose={() => setSheetOpen(false)}
         recipeTitle={recipe.title}
-        baseServings={servedFor || baseServings}
+        baseServings={servedFor ?? baseServings}
         onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
       />
       <Toast toast={toast} />

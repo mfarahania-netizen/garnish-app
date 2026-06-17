@@ -1,6 +1,7 @@
 import { Box, Image, UnstyledButton } from '@mantine/core';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IconBell, IconMenu2, IconChevronRight } from '@tabler/icons-react';
+import { BOTTOM_TABS } from './navConfig';
 
 /**
  * TopBar — persistent app header.
@@ -21,13 +22,17 @@ const iconButton = {
   background: 'transparent',
 };
 
-// The bottom-nav tabs — these show the hamburger (drawer access), not a back control.
-const TAB_PATHS = new Set(['/', '/plan', '/discover', '/favorites', '/profile']);
+// The bottom-nav tabs (derived from navConfig so it can't drift) show the hamburger (drawer
+// access), not a back control; every other pushed route shows back.
+const TAB_PATHS = new Set(BOTTOM_TABS.map((t) => t.to));
 
 export default function TopBar({ onMenuOpen }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isTab = TAB_PATHS.has(pathname);
+  // Back pops history, but falls back to Home on a cold deep-link (no prior in-app entry) so the
+  // chevron is never a no-op. React Router stores a monotonic history index in window.history.state.
+  const goBack = () => { if (window.history.state && window.history.state.idx > 0) navigate(-1); else navigate('/'); };
   return (
     <Box
       component="header"
@@ -56,7 +61,7 @@ export default function TopBar({ onMenuOpen }) {
             <IconMenu2 size={24} stroke={1.8} aria-hidden="true" />
           </UnstyledButton>
         ) : (
-          <UnstyledButton type="button" onClick={() => navigate(-1)} aria-label="بازگشت" style={iconButton}>
+          <UnstyledButton type="button" onClick={goBack} aria-label="بازگشت" style={iconButton}>
             <IconChevronRight size={24} stroke={1.8} aria-hidden="true" />
           </UnstyledButton>
         )}

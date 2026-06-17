@@ -40,9 +40,14 @@ const NAME_AISLES = [
   ['grain', ['برنج', 'نان', 'ماکارونی', 'اسپاگتی', 'رشته', 'عدس', 'لوبیا', 'نخود', 'ماش', 'لپه', 'آرد', 'جو', 'بلغور', 'گندم', 'کینوا', 'بیسکویت', 'بلغور']],
   ['produce', ['سبزی', 'کاهو', 'گوجه', 'پیاز', 'سیر', 'هویج', 'کدو', 'بادمجان', 'فلفل', 'اسفناج', 'کرفس', 'جعفری', 'گشنیز', 'نعنا', 'ریحان', 'تره', 'قارچ', 'خیار', 'لیمو', 'سیب', 'موز', 'پرتقال', 'انار', 'انگور', 'توت', 'میوه', 'کلم', 'شلغم', 'چغندر', 'ذرت', 'هندوانه', 'خربزه', 'آلو', 'هلو', 'زردآلو', 'انجیر', 'نارنگی']],
 ];
+// plant-based "milks" carry a dairy keyword (شیر) but are NOT dairy — don't mislabel them.
+const PLANT_MILK = ['بادام', 'سویا', 'جو دوسر', 'جودوسر', 'نارگیل', 'برنج'];
 const inferAisle = (name) => {
   const n = String(name || '');
-  for (const [group, words] of NAME_AISLES) if (words.some((w) => n.includes(w))) return group;
+  for (const [group, words] of NAME_AISLES) {
+    if (group === 'dairy' && PLANT_MILK.some((w) => n.includes(w))) continue; // شیر بادام / سویا → not dairy
+    if (words.some((w) => n.includes(w))) return group;
+  }
   return 'other';
 };
 const aisleOf = (it) => {

@@ -9,9 +9,11 @@ import { toFaDigits } from './format';
  *
  * Soft donut arc filling by maturity (0..1). Track = warm border; arc = a saffron
  * gradient (brand-400 → brand-600) when developing/mature, a lighter solid while
- * forming, with a gentle saffron drop-shadow. Center shows the percent + caption
- * ("بلوغ ذائقه"). Fills via framer-motion (no extra CSS keyframe — base.css reserves
- * those for the shimmer) and is disabled under prefers-reduced-motion. Token-pure.
+ * forming, with a gentle saffron drop-shadow. Center shows the percent + caption by
+ * default; pass `showValue={false}` (optionally with `centerIcon`) for a calm, score-free
+ * forming ring — used on the onboarding reveal, where a number would imply a maturity it
+ * isn't. Fills via framer-motion (no extra CSS keyframe — base.css reserves those for the
+ * shimmer) and is disabled under prefers-reduced-motion. Token-pure.
  */
 export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ ذائقه', tone = 'mature', label, showValue = true, centerIcon: CenterIcon }) {
   const gid = `dnaArc${useId().replace(/:/g, '')}`; // sanitize React useId for use in SVG url(#…)

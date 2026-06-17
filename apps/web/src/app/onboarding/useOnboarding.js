@@ -98,12 +98,8 @@ export function useOnboarding() {
     return true;
   }, [step, answers.work, answers.pattern]);
 
-  // honest reveal preview — completeness derived from the user's REAL answers (0..1), forming tone
-  const engaged = [
-    answers.work, answers.household, answers.pattern, answers.skill, answers.budget,
-    Object.keys(answers.goals).length > 0, Object.keys(answers.allergens).length > 0, Object.keys(answers.dislikes).length > 0,
-  ].filter(Boolean).length;
-  const revealValue = engaged / 8;
+  // The reveal is a warm "we've started" moment, NOT a score — the ring is a calm forming visual with
+  // no percentage (see page.jsx), so we expose only the derived trait chips, never a completeness number.
   const traits = useMemo(() => deriveTraits(answers), [answers]);
 
   // auth validation. Signup needs a strong-enough password (helper says ≥۸); LOGIN must NOT enforce
@@ -177,7 +173,7 @@ export function useOnboarding() {
     countFa: String(answers.count).replace(/[0-9]/g, (d) => FA[+d]),
     canContinue,
     progressIndex: Math.max(1, step - 1), progressTotal: 4,
-    revealValue, traits,
+    traits,
     authMode, isSignup, toggleAuth, goLogin,
     phone, setPhone, phoneValid,
     password, setPassword, passValid,
