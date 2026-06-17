@@ -4,6 +4,7 @@ import { AiOrchestratorService } from '../orchestrator/ai-orchestrator.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
+import { GroundedReplyService, GroundingResult } from './grounded-reply.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
 import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 
@@ -31,11 +32,19 @@ const STUB_MODEL = 'stub-model-v0';
  *   1. build a minimal BehavioralContextSnapshot (no health/allergy inference),
  *   2. persist the user ChatMessage,
  *   3. run the orchestrator (mandatory snapshot, guards, cost, AICallLog, STUB model provider),
- *   4. reply = a safe blocked message (blocked/error) OR the deterministic recipe-search reply
+ *   4. reply = a safe blocked message (blocked/error) OR the GROUNDED, allergy-safe deterministic reply
  *      (live Gemini disabled) for safe prompts,
  *   5. persist the assistant ChatMessage, linked to the AICallLog row.
  *
- * No live LLM, no Gemini, no autonomous agents, no vision, no medical/diet advice.
+ * AI-GROUNDED-ASSISTANT: the chat reply is now GROUNDED in the real recipe corpus and allergy-safe.
+ * The HARD allergy gate (GroundedReplyService) runs server-side BEFORE any reply is composed and
+ * BEFORE anything reaches a model. The deterministic composer renders only the SAFE recipe set (or an
+ * honest no-safe-match message); the legacy un-allergy-filtered `AiService.handlePrompt` is no longer
+ * wired into the chat reply (the method itself is retained for back-compat / other callers). When
+ * chat-live is explicitly enabled (OFF by default), the model sees ONLY the safe set (no declared
+ * allergens) and its output passes an allergy-safety OUTPUT gate before it is surfaced.
+ *
+ * No live LLM by default, no autonomous agents, no vision, no medical/diet advice.
  */
 @Injectable()
 export class ChatOrchestrationService {
@@ -44,6 +53,7 @@ export class ChatOrchestrationService {
     private readonly snapshots: BehavioralContextSnapshotService,
     private readonly chatMessages: ChatMessageService,
     private readonly legacyAi: AiService,
+    private readonly grounded: GroundedReplyService,
   ) {}
 
   async handleChat(input: HandleChatInput): Promise<HandleChatResult> {
@@ -58,6 +68,18 @@ export class ChatOrchestrationService {
       content: input.prompt,
     });
 
+    const chatLiveEnabled = resolveChatLiveEnabled(process.env);
+
+    // LIVE rails only: build the allergy-safe grounding BEFORE the model call so the model sees ONLY
+    // the already-filtered SAFE set (NO declared allergens) via a grounded prompt. The deterministic
+    // (default) path builds grounding lazily AFTER the guards pass — never for a blocked prompt.
+    let grounding: GroundingResult | null = null;
+    let orchestratorPrompt = input.prompt;
+    if (chatLiveEnabled) {
+      grounding = await this.grounded.buildGrounding(input.userId, input.prompt, snapshot);
+      orchestratorPrompt = this.grounded.buildLivePrompt(input.prompt, grounding);
+    }
+
     let status: AiCallStatus;
     let model: string | null = STUB_MODEL;
     let aiCallLogId: string | null = null;
@@ -68,7 +90,7 @@ export class ChatOrchestrationService {
     try {
       const result = await this.orchestrator.run({
         userId: input.userId,
-        prompt: input.prompt,
+        prompt: orchestratorPrompt,
         snapshot,
         surface: 'chat',
         conversationId,
@@ -98,21 +120,33 @@ export class ChatOrchestrationService {
       return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null };
     }
 
-    // E47-A8: surface the LIVE, post-guarded model output ONLY when chat-live is explicitly enabled
-    // (general live flags + chat kill switch) AND the orchestrator returned a safe non-empty answer.
-    // Otherwise fall back to the deterministic rule-based recipe reply (the safe default).
-    const chatLiveEnabled = resolveChatLiveEnabled(process.env);
+    // E47-A8 + AI-GROUNDED-ASSISTANT: surface the LIVE, post-guarded model output ONLY when chat-live is
+    // explicitly enabled (general live flags + chat kill switch), the orchestrator returned a safe
+    // non-empty answer, AND that output PASSES the allergy-safety OUTPUT gate. Otherwise fall back to the
+    // GROUNDED, allergy-safe deterministic reply (the safe default) — never the un-filtered legacy reply.
     let reply: string;
     let providerMode: 'gemini' | 'deterministic';
     if (blocked || status === 'error') {
       reply = this.safeBlockedReply(status, reasons);
       providerMode = 'deterministic';
-    } else if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
-      reply = modelText; // live Gemini output, already passed the orchestrator's outbound guards
-      providerMode = 'gemini';
     } else {
-      reply = await this.legacyAi.handlePrompt(input.prompt, input.userId);
-      providerMode = 'deterministic';
+      // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
+      // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
+      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, input.prompt, snapshot));
+      if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
+        // live output gate: discard model text that names a declared allergen or a HARD-dropped recipe.
+        const screen = await this.grounded.screenLiveOutput(input.userId, modelText, g);
+        if (screen.safe) {
+          reply = modelText; // passed the orchestrator's outbound guards AND the allergy-safety gate
+          providerMode = 'gemini';
+        } else {
+          reply = this.grounded.composeDeterministicReply(g);
+          providerMode = 'deterministic';
+        }
+      } else {
+        reply = this.grounded.composeDeterministicReply(g);
+        providerMode = 'deterministic';
+      }
     }
 
     await this.chatMessages.create({

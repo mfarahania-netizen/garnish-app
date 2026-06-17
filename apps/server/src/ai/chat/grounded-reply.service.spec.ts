@@ -1,0 +1,167 @@
+import { GroundedReplyService } from './grounded-reply.service';
+
+/**
+ * AI-GROUNDED-ASSISTANT — the safety-critical unit tests.
+ *
+ * These exercise the REAL audited safety primitives (assessRecipeFit + analyzeRecipeIntegrity are
+ * imported by the service and NOT mocked) over a controlled recipe pool. The HARD allergy gate test is
+ * the binding one: a leak (any avoid_allergen recipe surfaced) is a REJECT_FOR_SAFETY.
+ */
+
+// search_recipes tool stub → returns the given candidate ids in order.
+function toolsReturning(ids: string[]) {
+  const handler = jest.fn().mockResolvedValue({ tool: 'search_recipes', results: ids.map((id) => ({ id })) });
+  return { getTool: jest.fn().mockReturnValue({ name: 'search_recipes', handler }), _handler: handler } as any;
+}
+
+// a profile shaped exactly as assessRecipeFit reads it: reconciled.dimensions.allergies.reconciledValue.
+function profileWithAllergies(allergies: string[]) {
+  return { reconciled: { dimensions: allergies.length ? { allergies: { reconciledValue: allergies } } : {} } };
+}
+
+// recipe in the FIT_SELECT shape. `declared` → recipe.allergens JSON string; `derived` → an ingredient
+// whose dictionary entry carries the allergen (drives analyzeRecipeIntegrity).
+function recipe(id: string, opts: { title?: string; declared?: string[]; derived?: string[] } = {}) {
+  const ingredients: any[] = [{ name: 'برنج', ingredient: { allergens: { eu14: [], us9: [], other: [], mayContain: [] } } }];
+  if (opts.derived?.length) {
+    ingredients.push({ name: 'ماده‌ی حساس', ingredient: { allergens: { eu14: opts.derived, us9: [], other: [], mayContain: [] } } });
+  }
+  return {
+    id,
+    title: opts.title ?? `recipe ${id}`,
+    diet: 'omnivore',
+    difficulty: 'آسان',
+    cookingTime: 30,
+    allergens: JSON.stringify(opts.declared ?? []),
+    categories: '[]',
+    region: null,
+    ingredients,
+  };
+}
+
+function makeService(opts: { profile?: any; profileThrows?: boolean; pool?: any[]; ids?: string[] }) {
+  const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(opts.pool ?? []) } };
+  const profiles: any = {
+    getLivingUserProfile: opts.profileThrows
+      ? jest.fn().mockRejectedValue(new Error('profile unavailable'))
+      : jest.fn().mockResolvedValue(opts.profile ?? profileWithAllergies([])),
+  };
+  const tools = toolsReturning(opts.ids ?? (opts.pool ?? []).map((r) => r.id));
+  const svc = new GroundedReplyService(prisma, profiles, tools);
+  return { svc, prisma, profiles, tools };
+}
+
+describe('GroundedReplyService — grounded retrieval', () => {
+  it('returns real corpus recipes for a query when the user has no allergies', async () => {
+    const pool = [recipe('r1', { title: 'خورش سبزی' }), recipe('r2', { title: 'پلو ساده' })];
+    const { svc } = makeService({ profile: profileWithAllergies([]), pool });
+    const g = await svc.buildGrounding('u1', 'یه غذای گیاهی');
+    expect(g.groundingStatus).toBe('ok');
+    expect(g.safeRecipes.map((r) => r.id)).toEqual(['r1', 'r2']);
+    expect(g.safeRecipes.map((r) => r.title)).toEqual(['خورش سبزی', 'پلو ساده']);
+    expect(g.droppedForAllergy).toBe(0);
+  });
+});
+
+describe('GroundedReplyService — ALLERGY HARD GATE (leaks must be 0)', () => {
+  it('HARD-drops both declared-allergen and derived-allergen recipes; never surfaces them', async () => {
+    const pool = [
+      recipe('safe', { title: 'خورش کدو' }),
+      recipe('declared', { title: 'کره بادام‌زمینی', declared: ['peanut'] }), // recipe-level declared allergen
+      recipe('derived', { title: 'کلوچه مغزدار', derived: ['peanut'] }), // ingredient-dictionary derived allergen
+    ];
+    const { svc } = makeService({ profile: profileWithAllergies(['peanut']), pool, ids: ['safe', 'declared', 'derived'] });
+
+    const g = await svc.buildGrounding('allergic-user', 'یه دسر');
+
+    const surfacedIds = g.safeRecipes.map((r) => r.id);
+    const surfacedTitles = g.safeRecipes.map((r) => r.title);
+    // THE leak assertions — zero allergen recipes may appear, by id OR title:
+    expect(surfacedIds).toEqual(['safe']);
+    expect(surfacedIds).not.toContain('declared');
+    expect(surfacedIds).not.toContain('derived');
+    expect(surfacedTitles).not.toContain('کره بادام‌زمینی');
+    expect(surfacedTitles).not.toContain('کلوچه مغزدار');
+    // both unsafe recipes were counted + recorded for the live output gate
+    expect(g.droppedForAllergy).toBe(2);
+    expect(g.unsafeTitles.sort()).toEqual(['کره بادام‌زمینی', 'کلوچه مغزدار'].sort());
+    expect(g.groundingStatus).toBe('ok'); // a safe one remains
+  });
+
+  it('when EVERY candidate conflicts, surfaces NOTHING (empty) — never an unsafe fallback', async () => {
+    const pool = [recipe('only', { title: 'بادام‌زمینی بو داده', declared: ['peanut'] })];
+    const { svc } = makeService({ profile: profileWithAllergies(['peanut']), pool, ids: ['only'] });
+    const g = await svc.buildGrounding('allergic-user', 'چیزی با بادام‌زمینی');
+    expect(g.safeRecipes).toEqual([]);
+    expect(g.groundingStatus).toBe('empty');
+    expect(g.droppedForAllergy).toBe(1);
+  });
+});
+
+describe('GroundedReplyService — unsafe set unavailable (surface nothing)', () => {
+  it('returns unsafe_set_unavailable and never retrieves when the living profile cannot be loaded', async () => {
+    const { svc, prisma, tools } = makeService({ profileThrows: true });
+    const g = await svc.buildGrounding('u1', 'هر چیزی');
+    expect(g.groundingStatus).toBe('unsafe_set_unavailable');
+    expect(g.safeRecipes).toEqual([]);
+    // we bail BEFORE retrieval — never guess a safe set
+    expect(tools.getTool).not.toHaveBeenCalled();
+    expect(prisma.recipe.findMany).not.toHaveBeenCalled();
+  });
+
+  it('deterministic composer renders an honest no-personalization message for unsafe_set_unavailable', async () => {
+    const { svc } = makeService({ profileThrows: true });
+    const g = await svc.buildGrounding('u1', 'هر چیزی');
+    const reply = svc.composeDeterministicReply(g);
+    expect(reply).toContain('امن'); // honest "can't personalize safely" wording, no invented recipe
+    expect(reply).not.toContain('**'); // no recipe rendered
+  });
+});
+
+describe('GroundedReplyService — live OUTPUT allergy gate', () => {
+  const grounding = { safeRecipes: [], unsafeTitles: ['کره بادام‌زمینی'], groundingStatus: 'ok' as const, retrievedCount: 2, droppedForAllergy: 1 };
+
+  it('discards model text that mentions a declared allergen', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies(['peanut']) });
+    const verdict = await svc.screenLiveOutput('u1', 'این غذا با peanut خیلی خوبه', grounding);
+    expect(verdict.safe).toBe(false);
+    expect(verdict.reason).toBe('declared_allergen_in_output');
+  });
+
+  it('discards model text that names a HARD-dropped (unsafe) recipe', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies(['peanut']) });
+    const verdict = await svc.screenLiveOutput('u1', 'پیشنهاد من کره بادام‌زمینی است', grounding);
+    expect(verdict.safe).toBe(false);
+    expect(verdict.reason).toBe('unsafe_recipe_named');
+  });
+
+  it('allows benign model text with no allergen / no unsafe recipe', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies(['peanut']) });
+    const verdict = await svc.screenLiveOutput('u1', 'یک خورش سادهٔ سبزیجات پیشنهاد می‌کنم', grounding);
+    expect(verdict.safe).toBe(true);
+    expect(verdict.reason).toBeNull();
+  });
+
+  it('FAILS CLOSED: discards live output when the allergy set cannot be read', async () => {
+    const { svc } = makeService({ profileThrows: true });
+    const verdict = await svc.screenLiveOutput('u1', 'هر متنی', grounding);
+    expect(verdict.safe).toBe(false);
+    expect(verdict.reason).toBe('allergy_set_unavailable');
+  });
+});
+
+describe('GroundedReplyService — provider-agnostic (no model dependency)', () => {
+  it('builds grounding + composes a disclosed, hedged reply with NO model provider', async () => {
+    const pool = [recipe('r1', { title: 'آش رشته' })];
+    // constructed with ONLY (prisma, profiles, tools) — there is no model provider to inject.
+    const { svc } = makeService({ profile: profileWithAllergies([]), pool });
+    const g = await svc.buildGrounding('u1', 'آش');
+    const reply = svc.composeDeterministicReply(g);
+    expect(g.groundingStatus).toBe('ok');
+    expect(reply).toContain('آش رشته'); // grounded in the real corpus result
+    expect(reply).toContain('هوش مصنوعی'); // AI disclosure
+    expect(reply).toContain('اطلاعات عمومی، نه توصیهٔ پزشکی'); // non-medical hedge
+    // GroundedReplyService.length === 3 (prisma, profiles, tools): no model-provider constructor arg.
+    expect(GroundedReplyService.length).toBe(3);
+  });
+});

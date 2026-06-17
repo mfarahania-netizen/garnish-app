@@ -122,6 +122,15 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
     new BehavioralContextSnapshotService(prisma),
     new ChatMessageService(prisma),
     { handlePrompt: async () => DETERMINISTIC_REPLY } as any,
+    // Grounded-reply stub: this smoke exercises the LIVE adapter wiring (provider routing + guards), not
+    // the allergy gate (covered by grounded-reply.service.spec). buildGrounding returns an empty safe set,
+    // buildLivePrompt passes the prompt through, and the output gate allows the model text to surface.
+    {
+      buildGrounding: async () => ({ safeRecipes: [], unsafeTitles: [], groundingStatus: 'empty', retrievedCount: 0, droppedForAllergy: 0 }),
+      buildLivePrompt: (p: string) => p,
+      screenLiveOutput: async () => ({ safe: true, reason: null }),
+      composeDeterministicReply: () => DETERMINISTIC_REPLY,
+    } as any,
   );
 
   const failures: string[] = [];

@@ -3,15 +3,21 @@ import { AiController } from './ai.controller';
 import { AiService } from './ai.service';
 import { PersonalizationService } from './personalization.service';
 import { AiCoreModule } from './ai-core.module';
+import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
+import { GroundedReplyService } from './chat/grounded-reply.service';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
  * importing AiCoreModule (one-directional; AiCoreModule does not depend on AiModule).
+ *
+ * AI-GROUNDED-ASSISTANT: also imports ProfileModule so GroundedReplyService can read the SAME reconciled
+ * living profile (allergy set) the recommendation pipeline uses. No cycle: ProfileModule → AiCoreModule
+ * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule],
+  imports: [AiCoreModule, ProfileModule],
   controllers: [AiController],
-  providers: [AiService, PersonalizationService, ChatOrchestrationService],
+  providers: [AiService, PersonalizationService, ChatOrchestrationService, GroundedReplyService],
 })
 export class AiModule {}
