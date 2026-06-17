@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 13,
+    "routes": 14,
     "protectedRoutes": 0,
-    "frontendCallSites": 78,
+    "frontendCallSites": 81,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7559,6 +7559,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/notifications",
+      "component": "NotificationsPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/onboarding",
       "component": "OnboardingPage",
       "protected": false,
@@ -7816,6 +7823,13 @@
       "verb": "GET",
       "raw": "/notifications",
       "normalized": "/notifications",
+      "file": "apps/web/src/app/notifications/useNotifications.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/notifications",
+      "normalized": "/notifications",
       "file": "apps/web/src/hooks/useNotificationsQuery.js",
       "dynamic": false
     },
@@ -7824,6 +7838,20 @@
       "raw": "/notifications/${id}",
       "normalized": "/notifications/*",
       "file": "apps/web/src/hooks/useNotificationsQuery.js",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/notifications/${id}/read",
+      "normalized": "/notifications/*/read",
+      "file": "apps/web/src/app/notifications/useNotifications.js",
+      "dynamic": true
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/notifications/${id}/read",
+      "normalized": "/notifications/*/read",
+      "file": "apps/web/src/app/notifications/useNotifications.js",
       "dynamic": true
     },
     {

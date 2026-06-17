@@ -19,6 +19,7 @@ import ShoppingListPage from './app/shopping-list/page';
 import FavoritesPage from './app/favorites/page';
 import AssistantPage from './app/assistant/page';
 import SettingsPage from './app/settings/page';
+import NotificationsPage from './app/notifications/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -104,6 +105,7 @@ export default function App() {
                         <Route path="/favorites" element={<FavoritesPage />} />
                         <Route path="/assistant" element={<AssistantPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
+                        <Route path="/notifications" element={<NotificationsPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>
                     </Route>
