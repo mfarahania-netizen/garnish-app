@@ -48,8 +48,22 @@ function band(score: number): 'empty' | 'forming' | 'developing' | 'mature' {
   return 'mature';
 }
 
-function maturityFor(declaredCoverage: number, observedConfidence: number) {
-  const overallScore = Number((declaredCoverage * 0.6 + observedConfidence * 0.4).toFixed(3));
+/**
+ * Honest maturity (GARNISH-BE-MATURITY-FIX). Real knowledge of a user must come from OBSERVED behavior
+ * over time, not from a handful of self-declared onboarding answers. So:
+ *  - DECLARED answers are only a SMALL bounded PRIOR — capped at 0.20, which is inside the `forming`
+ *    band (<0.35). A fully-declared, zero-behavior profile therefore CANNOT exceed forming, no matter
+ *    how many onboarding questions were answered (this kills the old `declaredCoverage*0.6` inflation
+ *    that put a brand-new user at ~40–75%).
+ *  - OBSERVED confidence is the DOMINANT axis (weight 0.80): `developing`/`mature` are only reachable
+ *    as real cooks/searches/saves/ratings accumulate. A maxed observed profile reaches 1.0.
+ * Cold start (just onboarded, 0 behavior) → ~0.15–0.20, band = forming. Bands/trustGuidance unchanged.
+ * Exported for direct unit testing of the composition.
+ */
+export function maturityFor(declaredCoverage: number, observedConfidence: number) {
+  const declaredPrior = Math.min(0.2, Math.max(0, declaredCoverage) * 0.3); // declared-only ⇒ ≤0.20 (forming)
+  const observed = Math.min(1, Math.max(0, observedConfidence)); // the dominant driver of progression
+  const overallScore = Number(Math.min(1, declaredPrior + observed * 0.8).toFixed(3));
   const b = band(overallScore);
   const trustGuidance =
     b === 'empty' ? 'Not enough profile signal yet — treat suggestions as generic.'
