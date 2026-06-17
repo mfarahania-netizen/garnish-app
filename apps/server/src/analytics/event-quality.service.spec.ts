@@ -63,14 +63,19 @@ describe('EventQualityService — DELIBERATE signals are ALWAYS accepted (the fi
       const r = svc.assess({ userId: 'u-many', type, payload: { k: type } });
       expect(r.isValid).toBe(true);
       expect(r.reason).toBeUndefined();
+      // the bypass guarantee is PER-TYPE: every deliberate signal skips the bot/dup heuristic entirely
+      expect(r.evidence?.botProbability).toBe(0);
+      expect(r.evidence?.duplicateCheck).toBe(false);
     }
   });
 
-  it('deliberate signals carry a base confidence ≥ their map value (default 1.0 when unmapped)', () => {
+  it('deliberate signals carry their mapped base confidence (default 1.0 when unmapped)', () => {
     const svc = new EventQualityService();
     expect(svc.assess({ userId: 'u2', type: 'cook_complete', payload: {} }).confidence).toBe(1.0);
     expect(svc.assess({ userId: 'u2', type: 'mealplan_add', payload: { x: 1 } }).confidence).toBe(0.9); // from the map
+    expect(svc.assess({ userId: 'u2', type: 'recommendation_cook', payload: { x: 1 } }).confidence).toBe(0.6); // from the map
     expect(svc.assess({ userId: 'u2', type: 'onboarding_answered', payload: { x: 1 } }).confidence).toBe(1.0); // unmapped → 1.0
+    expect(svc.assess({ userId: 'u2', type: 'preference_update', payload: { x: 1 } }).confidence).toBe(1.0); // unmapped → 1.0
   });
 });
 

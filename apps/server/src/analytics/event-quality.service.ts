@@ -76,8 +76,8 @@ export class EventQualityService {
   assess(event: { userId: string; type: string; payload?: any }): QualityResult {
     // DELIBERATE SIGNALS FIRST: high-value, user-initiated events are ALWAYS accepted — the bot/duplicate
     // heuristic is bypassed entirely (a real cook must never be dropped because the user was scrolling
-    // first). The only guard kept is a very narrow ≤2s exact-duplicate check (same user+type+payload) to
-    // absorb an accidental double-click; it is independent of the high-frequency interaction counter.
+    // first). The only guard kept is a very narrow exact-duplicate check (same user+type+payload, strictly
+    // under 2s) to absorb an accidental double-click; it is independent of the high-frequency counter.
     if (DELIBERATE_SIGNALS.has(event.type)) {
       const baseConfidence = BASE_CONFIDENCE_MAP[event.type] ?? 1.0;
       if (this.isAccidentalDoubleFire(event)) {
@@ -154,9 +154,10 @@ export class EventQualityService {
 
   /**
    * Accidental double-fire guard for DELIBERATE signals only: true iff the SAME (userId, type, payload)
-   * was already seen within the last DELIBERATE_DEDUP_MS (≤2s). Uses a dedicated `ddup:` key so it never
-   * touches the bot:/dup: high-frequency counters — two DISTINCT deliberate actions (different payload,
-   * e.g. cooking two different recipes) are never collapsed, and the same action >2s apart is accepted.
+   * was seen strictly within the last DELIBERATE_DEDUP_MS (< 2000ms). Uses a dedicated `ddup:` key so it
+   * never touches the bot:/dup: high-frequency counters — two DISTINCT deliberate actions (different
+   * payload, e.g. cooking two different recipes) are never collapsed, and the same action ≥2s apart is
+   * accepted.
    */
   private isAccidentalDoubleFire(event: { userId: string; type: string; payload?: any }): boolean {
     const payloadKey = JSON.stringify(event.payload || {}).slice(0, 50);
