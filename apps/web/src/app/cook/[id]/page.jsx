@@ -145,7 +145,13 @@ export default function CookPage() {
     setToast({ message, Icon });
     toastTimer.current = setTimeout(() => setToast(null), 2000);
   }, []);
-  const exit = useCallback(() => navigate(`/recipe/${id}`), [navigate, id]);
+  // Exit by POPPING back to the recipe that pushed cook — NOT pushing a new /recipe entry (the old
+  // push made recipe.back() pop to cook, then cook.exit() pushed recipe again → infinite bounce). On a
+  // cold deep-link into cook (no prior entry) replace with the recipe so back doesn't loop either.
+  const exit = useCallback(() => {
+    if (window.history.state && window.history.state.idx > 0) navigate(-1);
+    else navigate(`/recipe/${id}`, { replace: true });
+  }, [navigate, id]);
 
   if (c.status === 'loading') return <CookLoading />;
   if (c.status === 'error' || c.status === 'empty' || !c.recipe) return <CookError onRetry={() => c.refetch()} onExit={exit} />;
