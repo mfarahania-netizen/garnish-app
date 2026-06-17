@@ -26,9 +26,9 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      // اگر در صفحهٔ admin نیستیم، به صفحهٔ auth هدایت شود
+      // redirect to the REAL auth/login entry (/onboarding); '/auth' is not a route (TRUTH-AND-SAFETY FIX 3).
       if (!window.location.pathname.startsWith('/admin')) {
-        window.location.href = '/auth';
+        window.location.href = '/onboarding';
       }
     }
     return Promise.reject(error);

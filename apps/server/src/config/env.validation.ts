@@ -30,16 +30,28 @@ interface EnvRule {
   minLength?: number;
 }
 
-const RULES: EnvRule[] = [
-  { key: 'DATABASE_URL', required: true },
-  { key: 'JWT_SECRET', required: true, minLength: 32 },
-  { key: 'GEMINI_API_KEY', required: true },
-  // Optional — have safe defaults in code:
-  { key: 'REDIS_HOST', required: false },
-  { key: 'REDIS_PORT', required: false },
-  { key: 'FRONTEND_URL', required: false },
-  { key: 'PORT', required: false },
-];
+/**
+ * GEMINI_API_KEY is required ONLY when LIVE Gemini is actually selected — i.e. AI_PROVIDER=gemini AND
+ * AI_LIVE_ENABLED=true (mirrors model-provider.factory's exact condition). The default stub/dev path boots
+ * cleanly WITHOUT a key (safe-default). (TRUTH-AND-SAFETY FIX 2.)
+ */
+function isLiveGeminiSelected(env: NodeJS.ProcessEnv): boolean {
+  return (env.AI_PROVIDER ?? '').trim().toLowerCase() === 'gemini'
+    && (env.AI_LIVE_ENABLED ?? '').trim().toLowerCase() === 'true';
+}
+
+function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
+  return [
+    { key: 'DATABASE_URL', required: true },
+    { key: 'JWT_SECRET', required: true, minLength: 32 },
+    { key: 'GEMINI_API_KEY', required: isLiveGeminiSelected(env) },
+    // Optional — have safe defaults in code:
+    { key: 'REDIS_HOST', required: false },
+    { key: 'REDIS_PORT', required: false },
+    { key: 'FRONTEND_URL', required: false },
+    { key: 'PORT', required: false },
+  ];
+}
 
 export interface ValidatedEnv {
   DATABASE_URL: string;
@@ -56,7 +68,7 @@ export function validateEnv(
 ): ValidatedEnv {
   const errors: string[] = [];
 
-  for (const rule of RULES) {
+  for (const rule of buildRules(env)) {
     const raw = env[rule.key];
     const value = typeof raw === 'string' ? raw.trim() : '';
 
@@ -87,7 +99,7 @@ export function validateEnv(
   return {
     DATABASE_URL: env.DATABASE_URL as string,
     JWT_SECRET: env.JWT_SECRET as string,
-    GEMINI_API_KEY: env.GEMINI_API_KEY as string,
+    GEMINI_API_KEY: env.GEMINI_API_KEY ?? '', // '' on the stub/dev path (no key required)
     REDIS_HOST: env.REDIS_HOST || 'localhost',
     REDIS_PORT: parseInt(env.REDIS_PORT || '6379', 10),
     FRONTEND_URL: env.FRONTEND_URL || 'http://localhost:5173',

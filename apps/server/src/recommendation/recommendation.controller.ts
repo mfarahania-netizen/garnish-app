@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  NotImplementedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -104,34 +105,37 @@ export class RecommendationController {
     };
   }
 
+  // ── Honest placeholders (TRUTH-AND-SAFETY FIX 4) ──
+  // These jobs/endpoints are NOT implemented. They previously returned a fabricated "success" message or
+  // placeholder data; they now return 501 Not Implemented so the API never claims work that did not happen.
+  // The web app calls NONE of these (it uses GET /recommendations + POST /recommendations/impression).
+  // Auth/admin guards are UNCHANGED — only the response honesty is fixed.
+
   @Post('build-snapshots')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
-  async buildSnapshots(@Req() req) {
-    // فراخوانی SnapshotBuilder – این قسمت ممکن است از قبل موجود باشد
-    return { message: 'Snapshots building started' };
+  async buildSnapshots() {
+    throw new NotImplementedException('build-snapshots is not implemented');
   }
 
   @Post('run-signal-detector')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
   async runSignalDetector() {
-    return { message: 'Signal detector executed' };
+    throw new NotImplementedException('run-signal-detector is not implemented');
   }
 
   @Post('build-identity')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
   async buildIdentity() {
-    return { message: 'Identity building started' };
+    throw new NotImplementedException('build-identity is not implemented');
   }
 
   @Get('lifestyle')
   @UseGuards(AuthGuard('jwt'))
-  async getLifestyle(@Req() req) {
-    const userId = req.user.userId;
-    // اینجا باید LifestyleGraphBuilder صدا زده شود، فعلاً برمی‌گردونیم placeholder
-    return { userId, message: 'Lifestyle data not yet available' };
+  async getLifestyle() {
+    throw new NotImplementedException('lifestyle data is not implemented');
   }
 
   @Get('compare')
@@ -193,17 +197,17 @@ export class RecommendationController {
   @Get('embedding/:recipeId')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
-  async getEmbedding(@Param('recipeId') recipeId: string) {
-    return { recipeId, embedding: 'embedding-placeholder' };
+  async getEmbedding() {
+    // never present 'embedding-placeholder' as a real embedding
+    throw new NotImplementedException('recipe embedding endpoint is not implemented');
   }
 
   @Get('debug-features')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles('admin')
-  async debugFeatures(@Req() req) {
-    const userId = req.user.userId;
-    // فرضاً FeatureStore را صدا می‌زنیم، ولی اینجا مستقیم Prisma نمی‌آوریم
-    return { userId, features: { dim_health_consciousness: 0.7, dim_consistency: 0.6 } };
+  async debugFeatures() {
+    // never present static sample numbers as real feature values
+    throw new NotImplementedException('debug-features is not implemented');
   }
 
   // 🆕 Route تست Exposure Penalty (برای تأیید نهایی)

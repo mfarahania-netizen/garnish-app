@@ -35,12 +35,10 @@ export function AuthProvider({ children }) {
     setToken(extractedToken);
     setUser(extractedUser || null);
 
-    // 🆕 شناسایی کاربر در PostHog
+    // PostHog: identify by the OPAQUE user id ONLY — never send PII (name/phone/email/allergy/health).
+    // A pseudonymous id is fine; personal traits are not (TRUTH-AND-SAFETY FIX 1).
     if (posthog?.__loaded && extractedUser?.id) {
-      posthog.identify(extractedUser.id, {
-        name: extractedUser.name || '',
-        phone: extractedUser.phone || '',
-      });
+      posthog.identify(extractedUser.id);
     }
   }, []);
 
