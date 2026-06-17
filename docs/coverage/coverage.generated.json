@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 14,
+    "routes": 15,
     "protectedRoutes": 0,
-    "frontendCallSites": 81,
+    "frontendCallSites": 82,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -7524,6 +7524,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/achievements",
+      "component": "AchievementsPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/assistant",
       "component": "AssistantPage",
       "protected": false,
@@ -7727,6 +7734,13 @@
       "normalized": "/favorites/*",
       "file": "apps/web/src/hooks/useFavoritesQuery.js",
       "dynamic": true
+    },
+    {
+      "verb": "GET",
+      "raw": "/gamification/me",
+      "normalized": "/gamification/me",
+      "file": "apps/web/src/app/achievements/useAchievements.js",
+      "dynamic": false
     },
     {
       "verb": "GET",
