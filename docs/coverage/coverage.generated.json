@@ -5229,6 +5229,7 @@
     "scope": "apps/web/src/app/recipe/[id]",
     "scannedFiles": [
       "apps/web/src/app/recipe/[id]/page.jsx",
+      "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
       "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
     ],
     "fields": [
@@ -5242,6 +5243,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5250,6 +5252,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5263,6 +5266,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5295,6 +5299,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5315,6 +5320,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5323,6 +5329,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5331,6 +5338,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5371,6 +5379,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5379,6 +5388,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -5387,6 +5397,7 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },

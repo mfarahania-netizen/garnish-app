@@ -1,0 +1,107 @@
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '../../../test/renderWithProviders';
+import RecipeDetailPage from './page';
+
+// jsdom in this config exposes no Storage (the shared setup stubs matchMedia/
+// observers but not localStorage), and AuthProvider reads localStorage.getItem
+// at mount. Provide a minimal in-memory Storage so the harness mounts
+// logged-out. Local to this test file — no shared file is touched.
+if (!('localStorage' in globalThis) || globalThis.localStorage == null) {
+  const makeStore = () => {
+    const map = new Map();
+    return {
+      getItem: (k) => (map.has(k) ? map.get(k) : null),
+      setItem: (k, v) => map.set(k, String(v)),
+      removeItem: (k) => map.delete(k),
+      clear: () => map.clear(),
+      key: (i) => [...map.keys()][i] ?? null,
+      get length() {
+        return map.size;
+      },
+    };
+  };
+  Object.defineProperty(globalThis, 'localStorage', { value: makeStore(), configurable: true });
+  Object.defineProperty(globalThis, 'sessionStorage', { value: makeStore(), configurable: true });
+}
+
+// Mock the data hook so no network happens; each test sets a realistic, complete
+// return shape for the state under test.
+vi.mock('./useRecipeDetail', () => ({ useRecipeDetail: vi.fn() }));
+import { useRecipeDetail } from './useRecipeDetail';
+
+const renderPage = () =>
+  renderWithProviders(<RecipeDetailPage />, { route: '/recipe/1', path: '/recipe/:id' });
+
+// A COMPLETE ready-state shape mirroring every field page.jsx dereferences.
+const readyValue = () => ({
+  status: 'ready',
+  recipe: {
+    id: '1',
+    title: 'خورش قورمه‌سبزی',
+    imageUrl: null,
+    categories: ['غذای اصلی', 'ایرانی'],
+    cookTimeText: '۹۰ دقیقه',
+    difficultyText: 'متوسط',
+    servingsText: '۴ نفر',
+    description: 'یک خورش سنتی و خوش‌عطر.',
+    author: 'سرآشپز رضا',
+    ingredients: [
+      { name: 'سبزی قورمه', amountText: '۳۰۰ گرم' },
+      { name: 'لوبیا قرمز', amountText: '۱ پیمانه' },
+    ],
+    steps: ['سبزی را تفت بده.', 'گوشت و لوبیا را اضافه کن.'],
+    tips: ['لیمو عمانی را سوراخ کن.'],
+    faq: [{ q: 'چقدر بپزد؟', a: 'حدود دو ساعت.' }],
+  },
+  nutrition: { calories: '۴۲۰', state: 'estimate' },
+  fit: {
+    recommendation: 'great_fit',
+    label: 'مناسبِ تو',
+    reasons: ['کم‌چرب', 'پروتئین بالا'],
+    allergens: [],
+  },
+  refetch: vi.fn(),
+});
+
+describe('RecipeDetailPage smoke', () => {
+  it('renders the loading state without throwing', () => {
+    useRecipeDetail.mockReturnValue({ status: 'loading', refetch: vi.fn() });
+    renderPage();
+    // The loading branch is skeleton-only: assert the terminal states are absent.
+    expect(screen.queryByText('دستور بارگذاری نشد')).not.toBeInTheDocument();
+    expect(screen.queryByText('بپز')).not.toBeInTheDocument();
+  });
+
+  it('renders the error state with a retry affordance', () => {
+    useRecipeDetail.mockReturnValue({ status: 'error', refetch: vi.fn() });
+    renderPage();
+    expect(
+      screen.getByRole('heading', { name: 'دستور بارگذاری نشد' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('تلاش دوباره')).toBeInTheDocument();
+  });
+
+  it('renders the empty state (same fallback) with the retry affordance', () => {
+    useRecipeDetail.mockReturnValue({ status: 'empty', refetch: vi.fn() });
+    renderPage();
+    expect(
+      screen.getByRole('heading', { name: 'دستور بارگذاری نشد' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('تلاش دوباره')).toBeInTheDocument();
+  });
+
+  it('renders the ready state with the recipe and the cook CTA', () => {
+    useRecipeDetail.mockReturnValue(readyValue());
+    renderPage();
+    expect(
+      screen.getByRole('heading', { name: 'خورش قورمه‌سبزی' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'مواد لازم' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'ارزش غذایی' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('بپز')).toBeInTheDocument();
+  });
+});
