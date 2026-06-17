@@ -306,7 +306,7 @@ function Auth({ o }) {
           <Field label="موبایل" icon={IconDeviceMobile} helper="مثل ۰۹۱۲۳۴۵۶۷۸۹">
             <input dir="ltr" type="tel" inputMode="numeric" autoComplete="tel" placeholder="۰۹..." value={o.phone} onChange={(e) => o.setPhone(e.target.value)} style={{ ...inputStyle, textAlign: 'start' }} />
           </Field>
-          <Field label="گذرواژه" icon={IconLock} helper="حداقل ۸ کاراکتر">
+          <Field label="گذرواژه" icon={IconLock} helper={o.isSignup ? 'حداقل ۸ کاراکتر' : 'گذرواژهٔ حسابت'}>
             <input type={o.showPass ? 'text' : 'password'} autoComplete={o.isSignup ? 'new-password' : 'current-password'} placeholder="••••••••" value={o.password} onChange={(e) => o.setPassword(e.target.value)} style={inputStyle} />
             <UnstyledButton type="button" onClick={o.toggleShowPass} aria-label={o.showPass ? 'پنهان کردن گذرواژه' : 'نمایش گذرواژه'} style={{ flexShrink: 0, color: 'var(--g-color-text-muted)', display: 'inline-flex' }}>
               {o.showPass ? <IconEyeOff size={18} stroke={1.8} /> : <IconEye size={18} stroke={1.8} />}
@@ -341,7 +341,7 @@ function Auth({ o }) {
       </Box>
 
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-        <UnstyledButton type="button" onClick={o.submit} disabled={!o.canSubmit} aria-disabled={!o.canSubmit} style={primaryBtn(!o.canSubmit)}>
+        <UnstyledButton type="button" onClick={o.submit} disabled={o.submitting} aria-disabled={o.submitting} style={primaryBtn(o.submitting)}>
           {o.submitting ? 'لطفاً صبر کن…' : o.isSignup ? 'ثبت‌نام و شروع' : 'ورود'}
         </UnstyledButton>
         <UnstyledButton type="button" onClick={o.toggleAuth} style={{ inlineSize: '100%', paddingBlock: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)', textAlign: 'center' }}>

@@ -20,6 +20,15 @@ import { deriveTraits } from './steps';
 const FA = '۰۱۲۳۴۵۶۷۸۹';
 const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => FA.indexOf(d));
 const PHONE_RE = /^09\d{9}$/;
+// Forgive common phone formatting so a valid number never silently fails validation:
+// strip spaces/dashes/parens and normalize +98 / 0098 / 98… to the local 09… form.
+const normalizePhone = (s) => {
+  let d = toLatin(s).replace(/[\s\-()]/g, '');
+  if (d.startsWith('+98')) d = '0' + d.slice(3);
+  else if (d.startsWith('0098')) d = '0' + d.slice(4);
+  else if (d.startsWith('98') && d.length === 12) d = '0' + d.slice(2);
+  return d;
+};
 
 const initialAnswers = {
   work: '', household: '', count: 2,
@@ -97,10 +106,13 @@ export function useOnboarding() {
   const revealValue = engaged / 8;
   const traits = useMemo(() => deriveTraits(answers), [answers]);
 
-  // auth validation
-  const phoneValid = PHONE_RE.test(toLatin(phone));
-  const passValid = password.length >= 8;
+  // auth validation. Signup needs a strong-enough password (helper says ≥۸); LOGIN must NOT enforce
+  // that (the server min is 6, so an existing 6–7 char password must still be allowed in) — only that
+  // a password was entered. canSubmit drives the button's visual state, but the button stays clickable
+  // (see submit) so the user always learns WHAT is missing instead of facing a silent dead button.
   const isSignup = authMode === 'signup';
+  const phoneValid = PHONE_RE.test(normalizePhone(phone));
+  const passValid = isSignup ? password.length >= 8 : password.length >= 1;
   const canSubmit = phoneValid && passValid && (!isSignup || consent) && !submitting;
 
   const goLogin = useCallback(() => { setAuthMode('login'); go(7); }, [go]);
@@ -134,10 +146,16 @@ export function useOnboarding() {
   }, [persist, navigate]);
 
   const submit = useCallback(async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
+    if (submitting) return;
     setError(null);
-    const ph = toLatin(phone);
+    const ph = normalizePhone(phone);
+    // Explicit, friendly validation — the button is always clickable, so clicking ALWAYS does
+    // something: either submit, or tell the user exactly what's missing (never a silent no-op).
+    if (!PHONE_RE.test(ph)) { setError('شمارهٔ موبایلت رو کامل و درست وارد کن — مثل ۰۹۱۲۳۴۵۶۷۸۹.'); return; }
+    if (isSignup && password.length < 8) { setError('برای امنیت، گذرواژه باید حداقل ۸ کاراکتر باشه.'); return; }
+    if (!isSignup && !password) { setError('گذرواژه‌ات رو وارد کن.'); return; }
+    if (isSignup && !consent) { setError('برای ساختن حساب، با شرایط و حریم خصوصی موافقت کن — تیکِ پایین رو بزن.'); return; }
+    setSubmitting(true);
     try {
       if (isSignup) await register(ph, password);
       else await login(ph, password);
@@ -149,7 +167,7 @@ export function useOnboarding() {
     if (isSignup) await persist(); // consent (personalization gates the profile) + supported preferences
     setSubmitting(false);
     navigate('/', { replace: true });
-  }, [canSubmit, isSignup, phone, password, register, login, authMode, persist, navigate]);
+  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, navigate]);
 
   return {
     step, go, next, back, skip,
@@ -164,7 +182,7 @@ export function useOnboarding() {
     phone, setPhone, phoneValid,
     password, setPassword, passValid,
     showPass, toggleShowPass: () => setShowPass((s) => !s),
-    consent, toggleConsent: () => setConsent((c) => !c),
+    consent, toggleConsent: () => { setError(null); setConsent((c) => !c); },
     canSubmit, submitting, error,
     submit,
     authed, finish,
