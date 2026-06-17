@@ -19,9 +19,9 @@
     "endpoints": 113,
     "internalEndpoints": 9,
     "controllers": 22,
-    "routes": 8,
+    "routes": 9,
     "protectedRoutes": 0,
-    "frontendCallSites": 59,
+    "frontendCallSites": 63,
     "backendEvents": 117,
     "frontendEvents": 116
   },
@@ -6545,7 +6545,7 @@
       "public": false,
       "auth": "jwt",
       "isInternal": false,
-      "calledByFrontend": false
+      "calledByFrontend": true
     },
     {
       "id": "POST /meal-plans/slots",
@@ -7552,6 +7552,13 @@
       "layoutOnly": false
     },
     {
+      "path": "/plan",
+      "component": "PlanPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
       "path": "/profile",
       "component": "ProfilePage",
       "protected": false,
@@ -7683,6 +7690,13 @@
       "verb": "GET",
       "raw": "/meal-plans",
       "normalized": "/meal-plans",
+      "file": "apps/web/src/app/plan/useMealPlan.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/meal-plans",
+      "normalized": "/meal-plans",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
       "dynamic": false
     },
@@ -7705,6 +7719,27 @@
       "raw": "/meal-plans/generate",
       "normalized": "/meal-plans/generate",
       "file": "apps/web/src/hooks/useMealPlannerQuery.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans/propose",
+      "normalized": "/meal-plans/propose",
+      "file": "apps/web/src/app/plan/useMealPlan.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans/slots",
+      "normalized": "/meal-plans/slots",
+      "file": "apps/web/src/app/plan/useMealPlan.js",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/meal-plans/slots",
+      "normalized": "/meal-plans/slots",
+      "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": false
     },
     {

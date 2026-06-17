@@ -496,8 +496,8 @@
       "reason": "Weekly meal-plan surface."
     },
     "POST /meal-plans/propose": {
-      "status": "deferred:E-fe-reset-a",
-      "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:plan/PlanPage when rebuilt. PLANNER-L4-09 intelligent weekly plan PROPOSAL (allergy hard-exclude, variety, pantry reuse, WHY); rendered by the plan-page ProposePlanPanel. Proposes, never auto-applies."
+      "status": "frontend:plan/PlanPage",
+      "reason": "FE-MEALPLAN: PLANNER-L4-09 weekly plan PROPOSAL (allergy hard-exclude) shown as suggested slots; useMealPlan.propose. Proposes-not-auto — applied only via POST /meal-plans/slots on explicit accept."
     },
     "POST /meal-plans/slots": {
       "status": "frontend:plan/PlanPage",
