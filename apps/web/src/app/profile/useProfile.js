@@ -100,7 +100,7 @@ export function useProfile() {
         // only a REAL localized dietary pattern — never shoehorn a behaviour trait into a diet claim
         dietLabel,
         // every declared allergen (localized) — a safety flag, none silently hidden
-        allergens,
+        allergens: allergies,
       },
     };
   }, [me.data, me.isLoading, me.isError, profile.data, profile.isLoading, profile.isError, gamification.data, gamification.isLoading, gamification.isError, prefs.data, me, profile, gamification, prefs]);
