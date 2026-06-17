@@ -37,7 +37,7 @@ export default function AssistantPage() {
   const submit = () => { const t = draft.trim(); if (!t) return; a.send(t); setDraft(''); };
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', blockSize: 'calc(100dvh - 124px)' }}>
+    <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minBlockSize: 0 }}>
       {/* disclosure header */}
       <Box style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <AiGlyph />
@@ -112,7 +112,7 @@ export default function AssistantPage() {
       {/* composer */}
       <Box style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-2)', paddingBlockEnd: 'calc(var(--g-space-2) + env(safe-area-inset-bottom))', background: 'var(--g-color-bg-surface-raised)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
         <Box component="input" type="text" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} placeholder="هرچی خواستی بپرس…" aria-label="پیام به دستیار" style={{ flex: 1, minInlineSize: 0, blockSize: 46, paddingInline: 'var(--g-space-4)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-chip)', outline: 'none', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
-        <UnstyledButton type="button" onClick={submit} aria-label="بفرست" disabled={a.thinking || !draft.trim()} style={{ inlineSize: 46, blockSize: 46, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: '50%', background: draft.trim() ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)', color: 'var(--g-color-text-inverse)' }}><IconArrowUp size={20} stroke={2} /></UnstyledButton>
+        <UnstyledButton type="button" onClick={submit} aria-label="بفرست" disabled={a.thinking || !draft.trim()} style={{ inlineSize: 46, blockSize: 46, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: '50%', background: draft.trim() ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)', color: draft.trim() ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-muted)' }}><IconArrowUp size={20} stroke={2} /></UnstyledButton>
       </Box>
     </Box>
   );
