@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
-  IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck, IconX,
+  IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
   IconPlus, IconCalendarPlus, IconCloudOff, IconRefresh, IconClock,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
@@ -48,7 +48,7 @@ function SlotCard({ slot, onOpen, onAccept, onAddManual, accepted }) {
             <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, paddingInline: 6, paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: c.bg, color: c.fg, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><Box aria-hidden="true" style={{ inlineSize: 5, blockSize: 5, borderRadius: '50%', background: c.fg }} />{c.label}</Box>
           </Box>
         </UnstyledButton>
-        <UnstyledButton type="button" onClick={onAccept} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 36, marginBlockStart: 'var(--g-space-2)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconCheck size={13} stroke={2} aria-hidden="true" />بپذیر</UnstyledButton>
+        <UnstyledButton type="button" onClick={onAccept} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 44, marginBlockStart: 'var(--g-space-2)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconCheck size={13} stroke={2} aria-hidden="true" />بپذیر</UnstyledButton>
       </Box>
     );
   }
@@ -86,6 +86,17 @@ function PlanError({ onRetry }) {
   );
 }
 
+function EmptyWeek({ onPropose, proposing }) {
+  return (
+    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-2)' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-2)' }}><IconCalendarPlus size={28} stroke={1.6} /></Box>
+      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>بیا هفته‌ات رو با هم بچینیم</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 0 }}>با یک پیشنهادِ هماهنگ با ذائقه‌ات شروع کن.</Text>
+      <UnstyledButton type="button" onClick={onPropose} disabled={proposing} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{proposing ? 'در حال چیدن…' : 'پیشنهاد بده'}</UnstyledButton>
+    </Box>
+  );
+}
+
 export default function PlanPage() {
   const navigate = useNavigate();
   const m = useMealPlan();
@@ -95,15 +106,16 @@ export default function PlanPage() {
   const showToast = useCallback((message, Icon) => { clearTimeout(toastTimer.current); setToast({ message, Icon }); toastTimer.current = setTimeout(() => setToast(null), 2200); }, []);
   const openRecipe = (id) => { if (id) navigate(`/recipe/${id}`); };
 
-  const onPropose = async () => { await m.propose(); if (m.proposeError) showToast('الان نشد — دوباره امتحان کن', IconCloudOff); else showToast('پیشنهاد آماده‌ست — بازبینی کن', IconWand); };
-  const onAcceptAll = async () => { await m.acceptAll(); showToast('برنامهٔ هفته ذخیره شد', IconCheck); };
+  const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
+  const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
+  const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
 
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
       {/* header */}
-      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)' }}>
+      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <Box>
           <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برنامهٔ هفته</Text>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
@@ -111,7 +123,7 @@ export default function PlanPage() {
         <UnstyledButton type="button" onClick={() => showToast('دستیارِ برنامه به‌زودی', IconSparkles)} aria-label="دستیار" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-brand-600)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconSparkles size={20} stroke={1.8} /></UnstyledButton>
       </Box>
 
-      {m.status === 'loading' ? <PlanLoading /> : (
+      {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} /> : (
         <>
           {/* week columns (RTL: first day at the inline-start/right) */}
           <Box className="g-norail" style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-2)', alignItems: 'flex-start' }}>
@@ -139,7 +151,7 @@ export default function PlanPage() {
                           slot={slot}
                           accepted={isAccepted && !filled}
                           onOpen={() => openRecipe((filled || sugg)?.recipeId)}
-                          onAccept={() => m.acceptSlot(sugg)}
+                          onAccept={() => onAcceptSlot(sugg)}
                           onAddManual={() => showToast('افزودن وعده به‌زودی', IconPlus)}
                         />
                       </Box>
@@ -151,8 +163,8 @@ export default function PlanPage() {
           </Box>
 
           {/* invite / to-shopping */}
-          <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-2)', paddingBlockEnd: 'var(--g-space-6)' }}>
-            {!m.proposalActive && !m.hasPlan ? (
+          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-2)', paddingBlockEnd: 'var(--g-space-6)' }}>
+            {!m.proposalActive ? (
               <Box style={{ background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
                 <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}><Box aria-hidden="true" style={{ inlineSize: 22, blockSize: 22, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}><IconSparkles size={12} stroke={1.8} /></Box><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text></Box>
                 <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', margin: 'var(--g-space-2) 0 0', color: 'var(--g-color-text-primary)' }}>بقیهٔ هفته رو برات پیشنهاد بدم؟</Text>

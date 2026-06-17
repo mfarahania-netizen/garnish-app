@@ -59,20 +59,24 @@ export function useMealPlan() {
     for (const s of proposal || []) {
       const key = `${s.dayOfWeek}:${s.mealType}`;
       if (filled[key]) continue; // never overlay an already-saved slot
-      map[key] = { recipeId: s.recipeId, title: s.title || 'پیشنهاد', conf: confFromFit(typeof s.fitScore === 'number' ? s.fitScore : 0), dayOfWeek: s.dayOfWeek, mealType: s.mealType };
+      if (!s.recipeId || !s.title) continue; // never present a placeholder as a real dish name
+      map[key] = { recipeId: s.recipeId, title: s.title, conf: confFromFit(typeof s.fitScore === 'number' ? s.fitScore : 0), dayOfWeek: s.dayOfWeek, mealType: s.mealType };
     }
     return map;
   }, [proposal, filled]);
 
   const hasPlan = Object.keys(filled).length > 0;
 
+  // returns true on success / false on failure so the caller never claims a proposal that didn't arrive
   const propose = useCallback(async () => {
     setProposing(true); setProposeError(false);
     try {
       const data = await apiClient.post('/meal-plans/propose', { days: 7, meals: ['lunch', 'dinner'] }).then((r) => r.data);
       setProposal(Array.isArray(data?.slots) ? data.slots : []);
+      return true;
     } catch {
       setProposeError(true);
+      return false;
     } finally {
       setProposing(false);
     }
@@ -87,24 +91,30 @@ export function useMealPlan() {
       await apiClient.post('/meal-plans/slots', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
       setAccepted((a) => ({ ...a, [key]: true }));
       await plan.refetch();
+      return true;
+    } catch {
+      return false;
     } finally {
       setApplying(false);
     }
   }, [plan]);
 
+  // each slot via the real apply path; one failure never aborts the rest, and the result is reported honestly
   const acceptAll = useCallback(async () => {
     const items = Object.values(suggested).filter((s) => !accepted[`${s.dayOfWeek}:${s.mealType}`]);
     setApplying(true);
-    try {
-      for (const s of items) {
-        // sequential — each via the real apply path; never a bulk auto-write
+    let failed = 0;
+    for (const s of items) {
+      try {
         await apiClient.post('/meal-plans/slots', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
+      } catch {
+        failed += 1;
       }
-      await plan.refetch();
-      setProposal(null); setAccepted({});
-    } finally {
-      setApplying(false);
     }
+    await plan.refetch(); // sync filled/accepted with what actually wrote
+    setApplying(false);
+    if (failed === 0) { setProposal(null); setAccepted({}); }
+    return { ok: failed === 0, failed, total: items.length };
   }, [suggested, accepted, plan]);
 
   let status = 'ready';
