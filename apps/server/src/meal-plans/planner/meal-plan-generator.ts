@@ -10,6 +10,7 @@
  *
  * PROPOSES ONLY — it returns a proposal and writes nothing. The user accepts via the existing slot CRUD.
  */
+import { isMainMealSlot } from './course';
 
 export interface PlanCandidate {
   recipeId: string;
@@ -21,6 +22,11 @@ export interface PlanCandidate {
   cookingTime: number | null;
   fitScore: number; // 0..1 from assessRecipeFit (allergen-conflicting candidates are NOT passed in)
   fitReasons: string[];
+  /** S5 course gate: may this recipe fill a breakfast/lunch/dinner MAIN slot? (undefined = unknown → allowed,
+   *  for back-compat with callers that don't derive course). A sauce/dessert/drink/side is false. */
+  mainMealEligible?: boolean;
+  /** S5: short course label for explainability ('main' | 'sauce' | 'dessert' | …). */
+  course?: string;
 }
 
 export interface PlanConstraints {
@@ -69,8 +75,12 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
       requested += 1;
       const weekend = isWeekend(day);
 
+      const mainSlot = isMainMealSlot(meal);
       const scored = candidates
-        .filter((c) => c.mealTypes.includes(meal) && !usedRecipeIds.has(c.recipeId))
+        // S5 COURSE GATE: a main meal slot (breakfast/lunch/dinner) only accepts a main-eligible recipe —
+        // a sauce/condiment/side/dessert/drink can NEVER be placed AS a main. (undefined → allowed, so
+        // callers that don't derive course are unaffected.) Applied DOWNSTREAM of the allergy HARD-filter.
+        .filter((c) => c.mealTypes.includes(meal) && !usedRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false))
         .map((c) => {
           let score = c.fitScore;
           const reasons: string[] = [];

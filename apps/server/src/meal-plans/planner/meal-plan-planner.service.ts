@@ -13,6 +13,7 @@ import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integr
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { toStringArray, norm } from '../../ai/tools/grounding-utils';
 import { generateMealPlan, PlanCandidate, PlanProposal } from './meal-plan-generator';
+import { deriveCourse } from './course';
 
 const CORPUS_CAP = 400;
 const COOKS_FOR_TO_SIZE: Record<string, number> = { '1': 1, '2': 2, '3_4': 3, '5_plus': 5 };
@@ -46,7 +47,7 @@ export class MealPlanPlannerService {
     const recipes = await this.prisma.recipe.findMany({
       where: { isPublic: true },
       take: CORPUS_CAP,
-      select: { id: true, title: true, diet: true, mealType: true, region: true, categories: true, difficulty: true, cookingTime: true, allergens: true, ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } } },
+      select: { id: true, title: true, diet: true, mealType: true, region: true, category: true, categories: true, difficulty: true, cookingTime: true, allergens: true, ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } } },
     });
 
     const candidates: PlanCandidate[] = [];
@@ -58,6 +59,9 @@ export class MealPlanPlannerService {
         excludedForAllergy += 1; // HARD EXCLUDE — a declared allergy is never planned
         continue;
       }
+      // S5 course gate: derive main-meal-eligibility from the EXISTING category + mealType (read-time, no
+      // migration). Applied to candidates that have ALREADY passed the allergy HARD-filter above.
+      const { course, mainMealEligible } = deriveCourse({ category: (r as any).category, categories: r.categories, mealTypeTokens: r.mealType });
       candidates.push({
         recipeId: r.id,
         title: r.title,
@@ -68,6 +72,8 @@ export class MealPlanPlannerService {
         cookingTime: typeof r.cookingTime === 'number' ? r.cookingTime : null,
         fitScore: fit.fitScore,
         fitReasons: fit.reasons,
+        course,
+        mainMealEligible,
       });
     }
 
