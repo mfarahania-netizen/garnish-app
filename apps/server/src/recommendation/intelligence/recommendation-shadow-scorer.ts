@@ -20,6 +20,7 @@ import {
 import { buildExposureAttribution } from './recommendation-exposure-attribution';
 import { buildOutcomeAttribution } from './recommendation-outcome-attribution';
 import { generateRecommendationWhy, isSafeWhy } from './recommendation-why-engine';
+import { cuisineAffinityMatch } from './taste-affinity';
 
 const round4 = (x: number): number => Math.round(x * 10000) / 10000;
 const clamp01 = (x: number): number => (Number.isFinite(x) ? (x < 0 ? 0 : x > 1 ? 1 : x) : 0);
@@ -88,7 +89,13 @@ function scoreOne(
   const repetition01 = to01(d.taste.repetitionPreference);
   const isNovel = !!(c.noveltyTags && c.noveltyTags.length);
   const tasteAlign = isNovel ? exploration01 : repetition01;
-  const tasteFit = clamp01(0.3 + 0.4 * tasteAlign + 0.3 * d.taste.confidence);
+  const tasteBase = clamp01(0.3 + 0.4 * tasteAlign + 0.3 * d.taste.confidence);
+  // cuisine/flavor affinity (ENGINE-PROOF, ADDITIVE + data-gated): when the user has computed cuisine
+  // affinities (the additive A4-join overlay) AND the candidate carries cuisineTags, blend a bounded
+  // affinity match into tasteFit so a user who keeps cooking Persian sees Persian rank higher. Returns
+  // null → byte-identical to before when no affinities are populated (every existing/shadow path).
+  const affFit = cuisineAffinityMatch((d.taste as any).cuisineAffinities, (d.taste as any).cuisineWeights, c.cuisineTags);
+  const tasteFit = affFit == null ? tasteBase : clamp01(0.7 * tasteBase + 0.3 * affFit);
 
   // effort (context-sensitive)
   usedDims.add('effort');
