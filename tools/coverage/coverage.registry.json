@@ -459,13 +459,17 @@
       "status": "frontend:home/HomePage",
       "reason": "Living taste-profile read — Home Food DNA maturity ring (FE-HOME: useHomeData on HomePage)."
     },
+    "GET /profile/dna": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2 Food DNA activation: PII-free DNA projection (4 dimensions + safeExplanation + behavior-hydrated maturity) consumed by the Food DNA screen + Home card (useFoodDna)."
+    },
     "GET /profile/next-question": {
-      "status": "deferred:E-profile-ui",
-      "reason": "PROFILE-L4-05 onboarding question engine (next-question logic). Backend-first; onboarding UI is a later phase."
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2: onboarding question engine surfaced as the Food DNA screen's question entry (useFoodDna)."
     },
     "POST /profile/answer": {
-      "status": "deferred:E-profile-ui",
-      "reason": "PROFILE-L4-05 declared-answer submit (consent-gated, banded). Backend-first; onboarding UI is a later phase."
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2: declared-answer submit (consent-gated, banded) wired to the Food DNA screen's question entry (useFoodDna)."
     },
     "POST /analytics/event": {
       "status": "frontend:_global/useAnalytics",
