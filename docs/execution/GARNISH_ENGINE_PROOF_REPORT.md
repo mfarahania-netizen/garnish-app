@@ -296,22 +296,23 @@ independently, so **no engine change is needed**: the §10 run injects decoupled
 behaviour) into the SAME `scoreUserAt` / SAME real `scoreRecommendationCandidates`; the user's graph is built
 from decoupled behaviour so the cuisine-affinity join and `feedbackFit` match the decoupled candidates.
 `relevanceESD` uses the SAME satisfaction weights as §8 (0.40 base + 0.35 effort + 0.25 skill) — only the
-parsing is decoupled, so it is not a metric tuned to make skill positive.
+parsing is decoupled, so it is not a metric tuned to make skill positive. The on-taste behaviour jitter uses
+the **same** split for skill and effort (0.6/0.2/0.2) — symmetric, so neither axis is given cleaner signal.
 
-**Result (real scorer; 50 users @ day40; 76 candidates; curve monotonic `0.197→0.581→0.633→0.703`):**
+**Result (real scorer; 50 users @ day40; 76 candidates; curve monotonic `0.197→0.592→0.630→0.707`):**
 
 | Dimension | §8 marginal (COUPLED) | **§10 marginal (DECOUPLED)** | only-this | read |
 |---|---|---|---|---|
-| cuisine | +0.2007 | **+0.1655** | 0.5294 | strong driver |
-| feedback | +0.0510 | **+0.0921** | 0.4116 | strong driver |
-| effort | +0.0101 | **+0.0816** | 0.1989 | strong once it owns its own axis |
-| **skill** | **−0.0228** | **+0.0329** | 0.1970 | **FLIPPED POSITIVE — validated** |
+| cuisine | +0.2007 | **+0.1674** | 0.5294 | strong driver |
+| feedback | +0.0510 | **+0.0961** | 0.4160 | strong driver |
+| effort | +0.0101 | **+0.0850** | 0.1989 | strong once it owns its own axis |
+| **skill** | **−0.0228** | **+0.0362** | 0.1970 | **FLIPPED POSITIVE — validated** |
 
 **Verdict: skill is validated — the §8 negative WAS a corpus-coupling artifact.** Once skill varies
-independently of effort, the §9-fixed `skillFit` pulls genuine weight: removing it costs **+0.0329** nDCG
+independently of effort, the §9-fixed `skillFit` pulls genuine weight: removing it costs **+0.0362** nDCG
 (it was −0.0228 when coupled). **All four learned signals now contribute positively** on the decoupled corpus
-(cuisine +0.166, feedback +0.092, effort +0.082, skill +0.033) — a genuinely multi-signal engine. Effort is
-also stronger here (+0.082 vs +0.010) because on the decoupled corpus it no longer shares its axis with skill.
+(cuisine +0.167, feedback +0.096, effort +0.085, skill +0.036) — a genuinely multi-signal engine. Effort is
+also stronger here (+0.085 vs +0.010) because on the decoupled corpus it no longer shares its axis with skill.
 
 - **Honest nuance:** skill's *only-this* nDCG (0.197) still equals the cold baseline — skill **alone** can't
   recover the cuisine-gated target (nor should it). The validation is the **marginal**: skill now *refines* the
@@ -326,8 +327,8 @@ also stronger here (+0.082 vs +0.010) because on the decoupled corpus it no long
   report only).
 
 Asserted in `recommendation-skill-decoupled.spec.ts` (6 tests, green): §8 (coupled) + the baseline proof
-reproduce byte-for-byte (engine + coupled corpus untouched); decoupled `candidateCount 76`; cuisine `+0.1655`,
-feedback `+0.0921`, effort `+0.0816` pinned; **skill `+0.0329` pinned and asserted `> 0`** (the validation);
+reproduce byte-for-byte (engine + coupled corpus untouched); decoupled `candidateCount 76`; cuisine `+0.1674`,
+feedback `+0.0961`, effort `+0.0850` pinned; **skill `+0.0362` pinned and asserted `> 0`** (the validation);
 curve monotonic; 0 leaks; freeze false.
 
 ```
@@ -346,8 +347,8 @@ EFFORT/SKILL VALIDATION (§8, ablation under effort/skill-SENSITIVE relevanceES 
   └ verdict: effort/skill STILL WEAK even when the metric rewards them → caught pre-market. Cause: weekday effort-cap (scorer L108) + userSkill 0.4 floor (L115). Fix = §9. NOT tuned.
 ENGINE FIX (§9, scorer change — desiredEffort + userSkill only): §8 POST-fix cuisine +0.2007, feedback +0.0510, effort +0.0101 (was -0.0224 → FIXED), skill -0.0228 (was +0.0063)
   └ effort FIXED (flipped positive); skill formula proven correct on DECOUPLED candidates but §8-negative due to corpus coupling (skillLevel=SKILLS[effortIdx%3]) → validated in §10. fullNdcgES 0.708→0.742, collective +0.49→+0.52, diversity 2→3. allergy 0 / freeze false. NOT tuned.
-SKILL VALIDATION (§10, measurement-only, skill-DECOUPLED full-factorial corpus, real scorer, 50 users @day40): cuisine +0.1655, feedback +0.0921, effort +0.0816, skill +0.0329 (was -0.0228 coupled → FLIPPED POSITIVE)
-  └ verdict: skill VALIDATED — the §8 negative was a corpus-coupling artifact; all four signals (cuisine/feedback/effort/skill) now contribute positively. Engine + coupled corpus untouched (§1–9 byte-for-byte). allergy 0 / freeze false. NOT tuned/rigged.
+SKILL VALIDATION (§10, measurement-only, skill-DECOUPLED full-factorial corpus, real scorer, 50 users @day40): cuisine +0.1674, feedback +0.0961, effort +0.0850, skill +0.0362 (was -0.0228 coupled → FLIPPED POSITIVE)
+  └ verdict: skill VALIDATED — the §8 negative was a corpus-coupling artifact; all four signals (cuisine/feedback/effort/skill) now contribute positively. Engine + coupled corpus untouched (§1–9 byte-for-byte). allergy 0 / freeze false. NOT tuned/rigged (skill+effort behaviour jitter symmetric).
 ALLERGEN LEAKS UNDER FULL LOAD: 0
 LIVE FLIP frozen (productUseEnabled=false everywhere) + allergy + getLivingUserProfile + A4 builder untouched: Y (diff-proven)
 HONEST LABELLING (synthetic=mechanism proven; real-world=awaiting pilot): Y

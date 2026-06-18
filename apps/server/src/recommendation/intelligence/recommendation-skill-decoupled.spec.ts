@@ -37,10 +37,10 @@ describe('ENGINE-PROOF §10 — skill validation on a decoupled corpus', () => {
   });
 
   it('all four signals contribute positively on the decoupled corpus — pinned exactly as measured', () => {
-    expect(d.fullNdcgESD).toBe(0.7028);
-    expect(d.dimensions.cuisine.marginal).toBe(0.1655);
-    expect(d.dimensions.feedback.marginal).toBe(0.0921);
-    expect(d.dimensions.effort.marginal).toBe(0.0816);
+    expect(d.fullNdcgESD).toBe(0.7068);
+    expect(d.dimensions.cuisine.marginal).toBe(0.1674);
+    expect(d.dimensions.feedback.marginal).toBe(0.0961);
+    expect(d.dimensions.effort.marginal).toBe(0.085);
   });
 
   it('learning curve under relevanceESD is monotonic 10<20<40', () => {
@@ -51,8 +51,8 @@ describe('ENGINE-PROOF §10 — skill validation on a decoupled corpus', () => {
 
   // THE HEADLINE — skill's marginal FLIPS positive once decoupled from effort (was -0.0228 on the coupled
   // corpus, §8). This confirms the §8 negative was a corpus-coupling artifact, not a bad skillFit. Pinned as-is.
-  it('SKILL marginal FLIPS POSITIVE on the decoupled corpus (+0.0329, was -0.0228 coupled) — validated', () => {
-    expect(d.dimensions.skill.marginal).toBe(0.0329);
+  it('SKILL marginal FLIPS POSITIVE on the decoupled corpus (+0.0362, was -0.0228 coupled) — validated', () => {
+    expect(d.dimensions.skill.marginal).toBe(0.0362);
     expect(d.dimensions.skill.marginal).toBeGreaterThan(0); // the validation answer: skill contributes when decoupled
   });
 });

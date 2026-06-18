@@ -466,7 +466,7 @@ function engagementsForD(user: SyntheticUser, days: number): { recipeId: string;
         const j = hash01(user.id, 'jit', d, s);
         effIdx = clampI(user.prefEffortIdx + (j < 0.6 ? 0 : j < 0.8 ? -1 : 1), 0, EFFORTS.length - 1);
         const sj = hash01(user.id, 'sjit', d, s); // skill near the user's latent skill — INDEPENDENT of effort
-        skillIdx = clampI(user.skill + (sj < 0.7 ? 0 : sj < 0.85 ? -1 : 1), 0, SKILLS.length - 1);
+        skillIdx = clampI(user.skill + (sj < 0.6 ? 0 : sj < 0.8 ? -1 : 1), 0, SKILLS.length - 1); // SAME split as effort (symmetric, not tuned)
       } else {
         cz = CUISINES[Math.floor(hash01(user.id, 'cz', d, s) * CUISINES.length)];
         effIdx = Math.floor(hash01(user.id, 'ne', d, s) * EFFORTS.length);
