@@ -24,6 +24,8 @@ import SettingsPage from './app/settings/page';
 import NotificationsPage from './app/notifications/page';
 import AchievementsPage from './app/achievements/page';
 import AdminPage from './app/admin/page';
+import TermsPage from './app/terms/page';
+import PrivacyPage from './app/privacy/page';
 import NotFound from './shell/NotFound';
 
 // FE-RESET-A — clean app root.
@@ -110,6 +112,9 @@ export function AppRoutes() {
                   <Routes>
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
+                    {/* Public legal pages — opened (target=_blank) from the onboarding consent links */}
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/recipe/:id" element={<RecipeDetailPage />} />
                     <Route path="/admin" element={<AdminPage />} />
                     {/* Cook Mode wears the standard app shell (TopBar + BottomNav) but stays publicly
