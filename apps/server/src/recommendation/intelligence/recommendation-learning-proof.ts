@@ -130,6 +130,40 @@ export function ndcgAt(rankedRecipeIds: string[], user: SyntheticUser, allRecipe
   return idcg > 0 ? round4(dcg / idcg) : 0;
 }
 
+// SKILLS index of a synthetic recipe (the universe assigns skillLevel = SKILLS[effortIdx % 3], buildUniverse).
+const skillIdxOf = (recipeId: string): number => effIdxOf(recipeId) % SKILLS.length;
+
+/**
+ * EFFORT/SKILL-SENSITIVE relevance (§8) — a PRINCIPLED model of a satisfied home cook, NOT reverse-engineered
+ * from the scorer. Unlike the original `relevance()` (cuisine-dominant, effort a weak ±1 term, skill absent),
+ * this makes effort-fit AND skill-appropriateness genuinely drive satisfaction WITHIN the right cuisine:
+ *   - effort: dissatisfaction grows linearly with distance from the user's preferred effort — a tired cook is
+ *     genuinely unhappy with a 2-hour recipe; an ambitious cook is bored by something trivial (full
+ *     discrimination, not a ±1 tolerance).
+ *   - skill: a too-ADVANCED recipe frustrates/risks failure (heavy penalty); a too-EASY one only mildly bores
+ *     (light penalty). The asymmetry is a real-cooking property reasoned from satisfaction — NOT copied from
+ *     the scorer (my 0.5/0.2 on a 3-level index differ from the scorer's 1.3/0.6 on its 0..1 SKILL_LEVEL).
+ * Within-cuisine weights base 0.40 + effort 0.35 + skill 0.25: cuisine is still the gate (you crave a cuisine),
+ * but effort and skill both genuinely count. Weights chosen to reflect a real cook's satisfaction, NOT to
+ * flatter the scorer (the scorer's own ratios are tasteFit .22 / effortFit .16 / skillFit .12 — different).
+ */
+function relevanceES(user: SyntheticUser, recipeId: string): number {
+  if (recipeId === 'r_allergen') return 0;
+  if (cuisineOf(recipeId) !== user.prefCuisine) return 0; // wrong cuisine → unsatisfying (cuisine is the gate)
+  const effSat = 1 - Math.abs(effIdxOf(recipeId) - user.prefEffortIdx) / (EFFORTS.length - 1); // 0..1 full range
+  const sGap = skillIdxOf(recipeId) - user.skill;
+  const skillSat = sGap > 0 ? Math.max(0, 1 - 0.5 * sGap) : 1 - 0.2 * -sGap; // too-advanced frustrates > too-easy bores
+  return round4(0.4 + 0.35 * effSat + 0.25 * skillSat);
+}
+
+/** nDCG@k under the effort/skill-sensitive target (§8). Same math as ndcgAt, different relevance fn. */
+export function ndcgESAt(rankedRecipeIds: string[], user: SyntheticUser, allRecipeIds: string[], k = 10): number {
+  const dcg = rankedRecipeIds.slice(0, k).reduce((s, rid, i) => s + relevanceES(user, rid) / Math.log2(i + 2), 0);
+  const ideal = allRecipeIds.map((rid) => relevanceES(user, rid)).sort((a, b) => b - a).slice(0, k);
+  const idcg = ideal.reduce((s, r, i) => s + r / Math.log2(i + 2), 0);
+  return idcg > 0 ? round4(dcg / idcg) : 0;
+}
+
 export interface UserScore {
   surfacedRecipeIds: string[]; // non-blocked, ranked (blended if collective applied)
   allergenSurfaced: boolean;
@@ -331,4 +365,50 @@ export function runDimensionAblation(simDay = 40): DimensionAblationResult {
     dimensions[D] = { leaveOneOutNdcg, marginal: round4(fullNdcg - leaveOneOutNdcg), onlyThisNdcg };
   }
   return { population: users.length, simDay, fullNdcg, dimensions, allergenLeaks, freezeOk };
+}
+
+export interface DimensionAblationESResult {
+  population: number;
+  simDay: number;
+  fullNdcgES: number; // mean nDCG@10 under relevanceES with ALL dimensions intact
+  dimensions: Record<AblateDim, { leaveOneOutNdcg: number; marginal: number; onlyThisNdcg: number }>;
+  curveES: Record<number, number>; // learning curve under relevanceES at the checkpoints
+  allergenLeaks: number;
+  freezeOk: boolean;
+}
+
+/**
+ * §8 — EFFORT/SKILL VALIDATION. Identical ablation method to runDimensionAblation (INPUT-only neutralization,
+ * the REAL scorer called UNCHANGED, 50 users @ day40), but scored against the effort/skill-SENSITIVE target
+ * `relevanceES` instead of the cuisine-dominant `relevance`. This answers "do effortFit/skillFit pull weight
+ * once the success metric actually rewards them?" The engine is never touched — only the evaluation differs.
+ */
+export function runDimensionAblationES(simDay = 40): DimensionAblationESResult {
+  const universe = buildUniverse();
+  const users = buildUsers(POP);
+  const allIds = universe.candidates.map((c) => c.recipeId);
+  const ALL: AblateDim[] = ['effort', 'skill', 'feedback', 'cuisine'];
+  let allergenLeaks = 0;
+  let freezeOk = true;
+
+  const meanNdcgESWith = (ablate: AblateDim[], day = simDay): number => {
+    const xs = users.map((u) => {
+      const r = scoreUserAt(u, day, universe, undefined, ablate);
+      if (r.allergenSurfaced) allergenLeaks++;
+      if (r.productUseEnabled) freezeOk = false;
+      return ndcgESAt(r.surfacedRecipeIds, u, allIds);
+    });
+    return round4(mean(xs));
+  };
+
+  const fullNdcgES = meanNdcgESWith([]);
+  const dimensions = {} as DimensionAblationESResult['dimensions'];
+  for (const D of ALL) {
+    const leaveOneOutNdcg = meanNdcgESWith([D]); // ONLY D neutralized
+    const onlyThisNdcg = meanNdcgESWith(ALL.filter((x) => x !== D)); // all-but-D neutralized
+    dimensions[D] = { leaveOneOutNdcg, marginal: round4(fullNdcgES - leaveOneOutNdcg), onlyThisNdcg };
+  }
+  const curveES: Record<number, number> = {};
+  for (const day of CHECKPOINTS) curveES[day] = meanNdcgESWith([], day);
+  return { population: users.length, simDay, fullNdcgES, dimensions, curveES, allergenLeaks, freezeOk };
 }

@@ -151,6 +151,74 @@ Asserted in `recommendation-ablation.spec.ts` (5 tests, green): baseline reprodu
 `full = 0.7311`; cuisine & feedback marginals `> 0.05`; effort & skill marginals `|·| < 0.05` (reported
 as-is, **not** gated to be positive); 0 leaks; freeze false.
 
+## 8. Effort/skill validation — do `effortFit`/`skillFit` work? (measurement-only)
+§7 left a fair objection: effort/skill ≈0 could be a **metric artifact** — the original `relevance()` is
+cuisine-dominant, makes effort a weak ±1 term, and **omits skill entirely** (so skill-only nDCG ≡ the cold
+baseline; the test structurally can't see skill). The scorer *does* compute + weight them (`SCORING_WEIGHTS`
+`effortFit 0.16`, `skillFit 0.12`; real math at scorer lines ~100–121). So this pass **changes the test's
+definition of a satisfied user**, not the engine, and re-measures: if effort/skill now pull weight →
+validated; if they stay ≈0 even when rewarded → exposed as weak **now, before market**.
+
+**`relevanceES` — a principled satisfaction model (NOT scorer-fitted).** Cuisine is still the gate, but within
+the right cuisine: **effort** dissatisfaction grows linearly with distance from the user's preferred effort
+(full discrimination, not ±1); **skill** is in the target — a too-advanced recipe frustrates (heavy penalty
+`1−0.5·gap`), a too-easy one only mildly bores (`1−0.2·gap`). Within-cuisine weights `0.40 + 0.35·effort +
+0.25·skill`. These reflect a real cook's satisfaction; they are **not** the scorer's coefficients (scorer:
+tasteFit .22 / effortFit .16 / skillFit .12; the skill asymmetry is reasoned from cooking, my `0.5/0.2` on a
+3-level index ≠ the scorer's `1.3/0.6` on its 0..1 scale).
+
+Re-ran the **same** leave-one-out ablation, **same real scorer**, 50 users @ day40, scored under `relevanceES`
+(`full = 0.7082`; learning curve under it is monotonic `0.298 → 0.681 → 0.694 → 0.708`):
+
+| Dimension | LOO nDCG (relevanceES) | **marginal** | only-this | §7 marginal (old metric) | read |
+|---|---|---|---|---|---|
+| **cuisine** | 0.5023 | **+0.2059** | 0.5345 | +0.2080 | real driver |
+| **feedback** | 0.5843 | **+0.1239** | 0.4999 | +0.1472 | real driver |
+| effort | 0.7306 | **−0.0224** | 0.2949 | −0.0163 | **still weak — still negative** |
+| skill | 0.7019 | **+0.0063** | 0.2976 | −0.0002 | **still weak — near-noise** |
+
+**Verdict: STILL WEAK → caught now, before market.** Even under a metric that genuinely rewards effort-match
+and skill-appropriateness, neutralizing effort *improves* nDCG (`−0.022`) and skill barely moves (`+0.006`,
+within rounding noise); the `only-this` column shows effort-alone and skill-alone sit at the **cold baseline**
+(`0.295`/`0.298`) — i.e. each, on its own, differentiates **nothing**. Cuisine + feedback still carry the
+engine. This was **not tuned** — the marginals are pinned in the spec exactly as measured.
+
+**Precise root causes (verified in Phase 0, NOT speculation):**
+- **Effort — the weekday effort-cap.** The proof's `CTX` is a weekday (`weekday: 3`), and the scorer
+  deliberately caps weekday `desiredEffort = 0.25 + 0.25·(1−quick01) ∈ [0.25, 0.5]` (scorer line 108, comment:
+  *"a 'dislikes quick' attitude can't push a 90-min recipe onto a Tuesday"*). With the proof's learned signal
+  this is `desiredEffort = 0.25 + 0.0625·avgEffortIdx`, so the **entire** user effort range collapses into
+  `[0.25, 0.5]` and `EFFORT_LEVEL` `high (0.75)`/`very_high (0.9)` are **unreachable on a weekday**. The ~40%
+  of users who prefer high/very-high effort are therefore steered to `medium` — *away* from their true
+  preference — while `feedbackFit` (uncapped, it boosts the high-effort recipes they actually cooked) serves
+  them better. So removing effort *helps*. This is a deliberate product rule suppressing effort
+  personalization on weekdays, **not** broken arithmetic.
+- **Skill — the `userSkill` floor + a coupled corpus.** `userSkill = 0.4 + 0.5·skillConf + 0.1·challenge`
+  (scorer line 115) lands at **≈0.56 for a beginner** in-sim (arithmetic floor 0.4), never near the
+  `SKILL_LEVEL` beginner value 0.2 — so the scorer never treats anyone as a true beginner and can't serve
+  beginner-appropriate recipes (which `relevanceES` rewards). Compounded by the
+  synthetic universe coupling `skillLevel = SKILLS[effortIdx % 3]` (only 3 skill levels, tied to effort).
+  The scorer's asymmetric `skillFit` helps a hair (advanced users do get advanced recipes), but not enough to
+  clear noise.
+
+**Why I did not "fix" it here:** the fixes are **engine changes** — relax/contextualize the weekday effort
+band (or learn `complex_recipe_readiness` so a non-capped path carries the signal); lower/parameterize the
+`userSkill` floor — and this pass is **frozen-engine, measurement-only**. They are scoped as a **future engine
+sprint**, with the empirical confirmation being a re-run of this §8 after the change. What this pass delivers
+is the thing we must not learn late: **effortFit/skillFit do not personalize in the current configuration —
+known now, with the exact cause and the exact fix, not after a real-user embarrassment.**
+
+**Honest limits (still synthetic):** this proves the *mechanism* question (does the scorer recover effort/
+skill when they matter — no, not as configured), not real-world taste. The weekend path
+(`complex_recipe_readiness`) is **not** exercised here (the proof only learns the weekday `quick_meal_
+preference`), so the weekday cap is the *measured* cause; a weekend/real-data probe is the recommended
+follow-up. `relevanceES`'s weights are a reasoned satisfaction model, not measured human behaviour.
+
+Asserted in `recommendation-es-validation.spec.ts` (8 tests, green): the original proof **and** §7 reproduce
+byte-for-byte (engine untouched); `fullES = 0.7082`; curve monotonic; cuisine `+0.2059` & feedback `+0.1239`
+pinned; effort `−0.0224` & skill `+0.0063` pinned **as-is** (not gated positive); effort/skill `only-this` <
+cold baseline; 0 leaks; freeze false.
+
 ```
 VERDICT BLOCK
 =============
@@ -163,6 +231,8 @@ COLLECTIVE LIFT (cold-start): 0.258 → 0.749 = +0.49
 CUISINE recovery: top-1 0→100% by day10 (saturates, §3.2); dominance share 0.59→0.63→0.73 (gradual)
 PER-DIMENSION MARGINAL nDCG@10 (ablation §7, leave-one-out @day40): cuisine +0.208, feedback +0.147, effort -0.016 (≈0), skill -0.0002 (≈0)
   └ correction: §2's earlier "effort is the 10→40 driver" was WRONG — ablation shows cuisine-dominance + feedback drive it (§7)
+EFFORT/SKILL VALIDATION (§8, ablation under effort/skill-SENSITIVE relevanceES @day40): cuisine +0.206, feedback +0.124, effort -0.022, skill +0.006
+  └ verdict: effort/skill STILL WEAK even when the metric rewards them → caught pre-market. Cause: weekday effort-cap (scorer L108) + userSkill 0.4 floor (L115). Fix = future engine sprint. NOT tuned.
 ALLERGEN LEAKS UNDER FULL LOAD: 0
 LIVE FLIP frozen (productUseEnabled=false everywhere) + allergy + getLivingUserProfile + A4 builder untouched: Y (diff-proven)
 HONEST LABELLING (synthetic=mechanism proven; real-world=awaiting pilot): Y
