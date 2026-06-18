@@ -36,16 +36,18 @@ cuisine-affinity match), `effortFit`, `skillFit`, `routineFit`, `feedbackFit`, n
 - **Cuisine / flavor — YES.** Top-1 cuisine recovered to 100% by day 10; cuisine *dominance share* keeps
   strengthening `0.59 → 0.63 → 0.73` (10→20→40), which is what lifts preferred-cuisine items further over
   time. Mechanism: real engagements → `computeTasteAffinities` (additive A4 join) → scorer `tasteFit`.
-- **Effort — YES (it is the 10→40 driver).** Because cuisine top-1 is already saturated at day 10, the
-  remaining nDCG@10 rise `0.705 → 0.731` can only come from the *other* relevance component — effort
-  precision (relevance is `1.0` only when cuisine **and** effort match, `0.6` for cuisine alone). So the
-  monotonic 10→40 gain **is** measured effort recovery (the effort estimate converges as behaviour
-  accumulates and confidence rises).
-- **Feedback — wired + contributing, NOT isolated.** Cooked recipes flow into the scorer's outcome history
-  (`feedbackFit`) and push those items up; but the proof's relevance target is cuisine+effort, so feedback's
-  *marginal* contribution is not separately quantified here (see §3.3).
-- **Skill — modeled + fed (per-user latent skill → `skill.technique_confidence`), contributes to `skillFit`;
-  not isolated as its own curve (same caveat as feedback).**
+- **Feedback — YES, a real contributor (`+0.147` marginal, measured by ablation §7).** Cooked recipes flow
+  into the scorer's outcome history (`feedbackFit`) and push on-taste items up; removing them costs `0.147`
+  nDCG@10. This is the **second-strongest** dimension after cuisine.
+- **Effort — ≈0 here (`−0.016` marginal, §7) — correction.** *An earlier draft of this report claimed effort
+  was "the 10→40 driver." The ablation §7 disproves that:* neutralizing the learned effort input does **not**
+  reduce nDCG@10 (it nudges it up `+0.016`). The 10→40 rise is driven by **cuisine dominance + feedback
+  accumulation**, not effort. Honest interpretation: the synthetic effort estimate is noisy enough that it
+  doesn't net-help against the cuisine+effort relevance target — flagged for real-data validation (§7).
+- **Skill — ≈0 here (`−0.0002` marginal, §7).** Modeled + fed (per-user latent skill → `skill.technique_
+  confidence` → `skillFit`), but its marginal is essentially zero in this population/metric. Honest
+  interpretation: the relevance target is cuisine+effort, so skill-fit is not rewarded here — needs a
+  skill-aware ground truth / real users to prove out (§7).
 
 ## 3. Weak / under-satisfactory spots — what I tried, and the honest reason
 **3.1 Per-checkpoint individual gain after day 10 is small (+0.027 over 10→40).**
@@ -65,14 +67,14 @@ cuisine-affinity match), `effortFit`, `skillFit`, `routineFit`, `feedbackFit`, n
   day 10 already make the favourite unambiguous. The gradual part of cuisine learning is *how strongly* it
   dominates, captured by the share metric — not the top-1 flag.
 
-**3.3 effort/skill/feedback are not isolated per-dimension (no ablation).**
-- *Status: NOT done in this sprint.* The proof measures the **combined** recovery (cuisine+effort via nDCG;
-  cuisine separately). I did not run per-dimension ablations (score with only-effort, only-feedback, …) to
-  quantify each dimension's marginal lift.
-- *Reason / follow-up:* an honest ablation is a clean additive extension (toggle one signal at a time and
-  re-measure nDCG). It is **recommended as the next step** if you want a per-dimension bar chart; it was out
-  of scope for landing the core proof and I did not want to fabricate per-dimension numbers I had not
-  isolated.
+**3.3 Per-dimension ablation — DONE (§7), and it corrected a claim.**
+- *Status: now done* (leave-one-out, INPUT-only neutralization, real scorer, 50 users @ day40 — see §7 for
+  the table + method). The result revised §2: the real positive contributors are **cuisine (`+0.208`)** and
+  **feedback (`+0.147`)**; **effort (`−0.016`)** and **skill (`−0.0002`)** are ≈0 in this synthetic
+  population. The earlier "effort drives 10→40" hypothesis was **wrong** and is corrected above + in §7.
+- *Honest reason effort/skill are ≈0:* the proof's relevance ground truth is cuisine+effort, and the effort
+  estimate is noisy (so it doesn't net-help); skill isn't in the relevance target at all. This is a real
+  signal about where the engine needs **pilot data** to prove out — not papered over.
 
 **3.4 The result is SYNTHETIC.** It proves the **mechanism** (the real engine recovers a controlled latent
 taste; the collective signal lifts cold-start). It does **not** claim real-world taste quality — real users
@@ -108,7 +110,46 @@ modeling choice, stated so it isn't mistaken for measured human behaviour.
 - **Wiring the hydrated observed graph into the live allergy/recsys runtime (S26):** not here — the affinity
   overlay is exercised in the proof; the live path still uses `getLivingUserProfile` (cold-start observed)
   byte-identically.
-- **Per-dimension ablation (§3.3):** recommended next.
+- **Per-dimension ablation:** DONE — see §7.
+
+## 7. Per-dimension ablation (measurement-only — engine untouched)
+**Method.** Leave-one-out over the **same** 50-user population, the **same** real `scoreRecommendationCandidates`,
+at the **learned state (day 40)**. Each dimension enters the scorer purely through an INPUT; I neutralize that
+input to its zero-strength "no preference" value (`[]`/`{}`/`0` — never a hand-picked value) and re-score.
+`marginal = nDCG@10(full) − nDCG@10(full − D)`. The scorer itself is **never** modified — proven by the
+baseline (`runEngineLearningProof`) reproducing **byte-for-byte** (curve `0.294/0.7046/0.7232/0.7311`, gain
+`0.4371`, collective lift `0.4915`) in the same test run. Ablation points: cuisine → empty
+`taste.cuisineAffinities`/`cuisineWeights`; feedback → empty `history.outcomes`; skill → flatten
+`dimensions.skill`; effort → flatten `dimensions.effort`. `full` = `0.7311` (= the day-40 baseline).
+
+| Dimension | leave-one-out nDCG@10 | **marginal** (full − LOO) | only-this-active | read |
+|---|---|---|---|---|
+| **cuisine** | 0.5231 | **+0.2080** | 0.5402 | strongest contributor |
+| **feedback** | 0.5839 | **+0.1472** | 0.5200 | strong — cooked items reinforce on-taste picks |
+| effort | 0.7474 | **−0.0163** | 0.2890 | ≈0 / slightly negative (noisy estimate) |
+| skill | 0.7313 | **−0.0002** | 0.2940 | ≈0 (not in the relevance target) |
+
+**Honest interpretation (not tuned):**
+- **Cuisine + feedback carry the engine.** Together they account for essentially all the learned ranking
+  quality at day 40. Both are in the engine **and** rewarded by the relevance target.
+- **Effort ≈0 (slightly negative).** Neutralizing the learned effort input doesn't hurt nDCG — it nudges it
+  up `0.016`. The learned effort estimate is noisy enough (explore→settle behaviour) that it doesn't net-help
+  against a cuisine+effort relevance target. **This corrects §2's earlier "effort is the 10→40 driver"
+  claim** — the 10→40 rise is cuisine-dominance + feedback, not effort.
+- **Skill ≈0.** Expected: the relevance ground truth is cuisine+effort, so skill-fit has nothing to be
+  rewarded against here. The `only-this-active` column confirms it — skill-only nDCG `0.294` is exactly the
+  cold baseline, i.e. skill alone differentiates nothing in this metric.
+- **Why this is honest, not a defect of the engine:** the ≈0 results are a property of the **synthetic
+  population + metric** (interpretation (a) from the brief: the behaviour model / relevance doesn't exercise
+  effort-precision or skill), not proof the engine ignores them. The scorer *does* compute `effortFit`/
+  `skillFit`; whether they help real users is a **pilot** question. The `only-this-active` column also shows
+  cuisine-only (`0.540`) and feedback-only (`0.520`) each recover most of the quality alone, while
+  effort-only/skill-only sit at the cold baseline.
+- **Guardrails held in every ablation run:** `allergenLeaks = 0`, `productUseEnabled = false` everywhere.
+
+Asserted in `recommendation-ablation.spec.ts` (5 tests, green): baseline reproduces byte-for-byte;
+`full = 0.7311`; cuisine & feedback marginals `> 0.05`; effort & skill marginals `|·| < 0.05` (reported
+as-is, **not** gated to be positive); 0 leaks; freeze false.
 
 ```
 VERDICT BLOCK
@@ -120,7 +161,8 @@ INDIVIDUAL LEARNING CURVE (nDCG@10): cold 0.294 → 0.705(10d) → 0.723(20d) �
   └ honest note: per-checkpoint 10→40 gain is modest (+0.027) — engine learns fast (by day 10) then refines (§3.1)
 COLLECTIVE LIFT (cold-start): 0.258 → 0.749 = +0.49
 CUISINE recovery: top-1 0→100% by day10 (saturates, §3.2); dominance share 0.59→0.63→0.73 (gradual)
-EFFORT: recovered (the 10→40 nDCG gain); SKILL/FEEDBACK: wired + contributing, NOT isolated (§3.3)
+PER-DIMENSION MARGINAL nDCG@10 (ablation §7, leave-one-out @day40): cuisine +0.208, feedback +0.147, effort -0.016 (≈0), skill -0.0002 (≈0)
+  └ correction: §2's earlier "effort is the 10→40 driver" was WRONG — ablation shows cuisine-dominance + feedback drive it (§7)
 ALLERGEN LEAKS UNDER FULL LOAD: 0
 LIVE FLIP frozen (productUseEnabled=false everywhere) + allergy + getLivingUserProfile + A4 builder untouched: Y (diff-proven)
 HONEST LABELLING (synthetic=mechanism proven; real-world=awaiting pilot): Y

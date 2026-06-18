@@ -123,7 +123,7 @@ function relevance(user: SyntheticUser, recipeId: string): number {
   return 0;
 }
 
-function ndcgAt(rankedRecipeIds: string[], user: SyntheticUser, allRecipeIds: string[], k = 10): number {
+export function ndcgAt(rankedRecipeIds: string[], user: SyntheticUser, allRecipeIds: string[], k = 10): number {
   const dcg = rankedRecipeIds.slice(0, k).reduce((s, rid, i) => s + relevance(user, rid) / Math.log2(i + 2), 0);
   const ideal = allRecipeIds.map((rid) => relevance(user, rid)).sort((a, b) => b - a).slice(0, k);
   const idcg = ideal.reduce((s, r, i) => s + r / Math.log2(i + 2), 0);
@@ -142,15 +142,30 @@ export interface UserScore {
 const CTX: DecisionContext = { surface: 'home', dayPart: 'evening', weekday: 3, mealSlot: 'dinner' };
 
 /** Score one user at `days` of accumulated behaviour via the REAL scorer (+ optional collective blend). */
+/** Ranking dimensions that can be ablated by neutralizing their INPUT (the scorer is never changed). */
+export type AblateDim = 'effort' | 'skill' | 'feedback' | 'cuisine';
+
 export function scoreUserAt(
   user: SyntheticUser,
   days: number,
   universe: { candidates: RecommendationCandidate[]; meta: Map<string, RecipeTasteMeta> },
   collective?: { model: ReturnType<typeof buildCollectiveModel>; lambda: number },
+  ablate: AblateDim[] = [], // default [] → byte-identical baseline (no neutralization)
 ): UserScore {
   const engagements = engagementsFor(user, days);
   const built = buildUserFoodIdentityGraph(observationsFor(user, engagements), { userId: user.id, now: NOW, mode: 'offline_eval' });
   const graph = built.graph!;
+  // ── ABLATION: INPUT-only neutralization (the REAL scorer is called UNCHANGED). A neutralized dimension
+  //    is set to its zero-strength "no preference" value (0), NOT a hand-picked value, so the marginal
+  //    measures the LEARNED signal vs no signal. Default ablate=[] → none of this fires → byte-identical. ──
+  if (ablate.includes('effort')) {
+    const e = graph.dimensions.effort as any;
+    e.quickMealPreference = 0; e.lowPrepTolerance = 0; e.complexRecipeReadiness = 0; e.weekdayEffortBias = 0; e.weekendEffortBias = 0;
+  }
+  if (ablate.includes('skill')) {
+    const s = graph.dimensions.skill as any;
+    s.techniqueConfidence = 0; s.nextSkillChallengeReadiness = 0; s.cookCompletionGrowth = 0; s.stepDropoffRisk = 0;
+  }
   // additive cuisine-affinity overlay (the A4-affinity join) — recovered from real engagements
   const aff = computeTasteAffinities(engagements.map((e) => ({ recipeId: e.recipeId, type: e.type })), universe.meta);
   // DOMINANCE-SHARE weights (not normalized-to-max): the top cuisine's share grows as more on-taste
@@ -161,10 +176,12 @@ export function scoreUserAt(
   const czTotal = Object.values(czCounts).reduce((a, b) => a + b, 0) || 1;
   const shareWeights: Record<string, number> = {};
   for (const [k, v] of Object.entries(czCounts)) shareWeights[k] = round4(v / czTotal);
-  (graph.dimensions.taste as any).cuisineAffinities = aff.cuisineAffinities;
-  (graph.dimensions.taste as any).cuisineWeights = shareWeights;
+  // cuisine ablation → empty affinities (the scorer already documented-no-ops to tasteBase); else overlay.
+  (graph.dimensions.taste as any).cuisineAffinities = ablate.includes('cuisine') ? [] : aff.cuisineAffinities;
+  (graph.dimensions.taste as any).cuisineWeights = ablate.includes('cuisine') ? {} : shareWeights;
 
-  const outcomes: OutcomeEvent[] = engagements
+  // feedback ablation → empty outcomes (neutralizes feedbackFit's per-recipe history).
+  const outcomes: OutcomeEvent[] = ablate.includes('feedback') ? [] : engagements
     .filter((e) => e.type === 'cook_complete')
     .map((e, i) => ({ outcomeId: `${user.id}-o${i}`, userId: user.id, recipeId: e.recipeId, type: 'cook_complete', occurredAt: NOW.toISOString() }));
   const history: DecisionHistory = { exposures: [], outcomes };
@@ -271,4 +288,47 @@ export function runEngineLearningProof(): EngineProofResult {
     freezeOk,
     diversityMinTop5: diversityMinTop5 === Infinity ? 0 : diversityMinTop5,
   };
+}
+
+export interface DimensionAblationResult {
+  population: number;
+  simDay: number;
+  fullNdcg: number; // mean nDCG@10 with ALL dimensions intact (must equal the day-40 baseline)
+  dimensions: Record<AblateDim, { leaveOneOutNdcg: number; marginal: number; onlyThisNdcg: number }>;
+  allergenLeaks: number;
+  freezeOk: boolean;
+}
+
+/**
+ * Per-dimension leave-one-out ablation (MEASUREMENT ONLY): same population, same REAL scorer, at the learned
+ * state (day 40). For each dimension D: re-score with ONLY D's input neutralized and report
+ * marginal = nDCG(full) − nDCG(full − D); plus an "only D active" view (all others neutralized). The engine
+ * is never touched — every difference comes purely from a neutralized INPUT.
+ */
+export function runDimensionAblation(simDay = 40): DimensionAblationResult {
+  const universe = buildUniverse();
+  const users = buildUsers(POP);
+  const allIds = universe.candidates.map((c) => c.recipeId);
+  const ALL: AblateDim[] = ['effort', 'skill', 'feedback', 'cuisine'];
+  let allergenLeaks = 0;
+  let freezeOk = true;
+
+  const meanNdcgWith = (ablate: AblateDim[]): number => {
+    const xs = users.map((u) => {
+      const r = scoreUserAt(u, simDay, universe, undefined, ablate);
+      if (r.allergenSurfaced) allergenLeaks++;
+      if (r.productUseEnabled) freezeOk = false;
+      return ndcgAt(r.surfacedRecipeIds, u, allIds);
+    });
+    return round4(mean(xs));
+  };
+
+  const fullNdcg = meanNdcgWith([]);
+  const dimensions = {} as DimensionAblationResult['dimensions'];
+  for (const D of ALL) {
+    const leaveOneOutNdcg = meanNdcgWith([D]); // ONLY D neutralized
+    const onlyThisNdcg = meanNdcgWith(ALL.filter((x) => x !== D)); // all-but-D neutralized
+    dimensions[D] = { leaveOneOutNdcg, marginal: round4(fullNdcg - leaveOneOutNdcg), onlyThisNdcg };
+  }
+  return { population: users.length, simDay, fullNdcg, dimensions, allergenLeaks, freezeOk };
 }
