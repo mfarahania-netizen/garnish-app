@@ -5,7 +5,7 @@ import {
   IconChevronRight, IconChevronDown, IconBookmark, IconBookmarkFilled, IconShare2,
   IconClock, IconChartBar, IconUsers, IconHeartCheck, IconAlertTriangle, IconSparkles,
   IconChevronLeft, IconListNumbers, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
-  IconInfoCircle, IconCloudOff, IconRefresh,
+  IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
@@ -163,7 +163,7 @@ function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { status, recipe, nutrition, fit, refetch } = useRecipeDetail(id);
+  const { status, recipe, nutrition, fit, substitutions, integrity, refetch } = useRecipeDetail(id);
   const { token } = useAuth();
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesQuery();
   const { trackEvent } = useAnalytics();
@@ -254,10 +254,13 @@ export default function RecipeDetailPage() {
 
           {/* TITLE + category chips */}
           <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', textWrap: 'balance', color: 'var(--g-color-text-primary)', margin: 'var(--g-space-4) 0 0' }}>{recipe.title}</Text>
-          {recipe.categories.length ? (
+          {recipe.categories.length || recipe.mealTypes.length ? (
             <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-2)' }}>
               {recipe.categories.map((c) => (
                 <Box key={c} style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 4, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{c}</Box>
+              ))}
+              {recipe.mealTypes.map((m) => (
+                <Box key={m} style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 4, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{m}</Box>
               ))}
             </Box>
           ) : null}
@@ -313,6 +316,54 @@ export default function RecipeDetailPage() {
                     <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
                     <UnstyledButton type="button" onClick={() => showToast('سرِ پخت، جایگزین پیشنهاد می‌دم', IconSparkles)} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
                     {ing.amountText ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{ing.amountText}</Text> : null}
+                  </Box>
+                ))}
+              </Box>
+            </>
+          ) : null}
+
+          {/* Ingredient-resolution coverage (from the integrity report; honest, non-technical) */}
+          {integrity ? (
+            <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)' }}>
+              <IconCircleCheck size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+              <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>
+                {toFaDigits(integrity.resolved)} از {toFaDigits(integrity.total)} ماده در پایگاه شناخته‌شده
+              </Text>
+            </Box>
+          ) : null}
+
+          {/* Grounded substitutions — allergen/dislike swaps the /full read computes (was dropped by the UI) */}
+          {substitutions?.length ? (
+            <>
+              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>جایگزین‌های پیشنهادی</Text>
+              <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
+                {substitutions.map((s, i) => (
+                  <Box key={`${s.ingredient}-${i}`} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+                    <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+                      <IconArrowsExchange size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+                      <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }}>
+                        به‌جای <b>{s.ingredient}</b> {s.reason === 'allergen' ? '(به‌خاطر حساسیت)' : '(به‌خاطر ذائقه)'}
+                      </Text>
+                    </Box>
+                    <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-brand-700)', margin: 'var(--g-space-1) 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>{s.options.join('، ')}</Text>
+                  </Box>
+                ))}
+                <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
+                  <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
+                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>جای‌گزین‌های هم‌نقش از پایگاه مواد — راهنمایی آشپزی، نه توصیهٔ پزشکی.</Text>
+                </Box>
+              </Box>
+            </>
+          ) : null}
+
+          {/* Tools — persisted + returned by the API but never rendered before */}
+          {recipe.tools.length ? (
+            <>
+              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>ابزار لازم</Text>
+              <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                {recipe.tools.map((t, i) => (
+                  <Box key={`${t}-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-secondary)' }}>
+                    <IconToolsKitchen2 size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />{t}
                   </Box>
                 ))}
               </Box>

@@ -6,8 +6,11 @@ import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/fo
 import { FIT_LABEL, recipeFitReasons, faAllergen, faCategory } from '../../home/lib/reasons';
 
 const asText = (s) => (typeof s === 'string' ? s : s?.text || s?.instruction || s?.description || s?.step || s?.body || '');
+const toolText = (s) => (typeof s === 'string' ? s : s?.name || s?.title || s?.label || s?.tool || '');
 const faqItem = (f) => ({ q: asText(f?.question || f?.q || f?.title) || asText(f), a: asText(f?.answer || f?.a || f?.body) });
 const asList = (v) => (Array.isArray(v) ? v : []);
+// localized meal types — never a raw enum key like "dinner"
+const FA_MEAL = { breakfast: 'صبحانه', brunch: 'میان‌وعده', lunch: 'ناهار', dinner: 'شام', supper: 'شام', snack: 'میان‌وعده', dessert: 'دسر', appetizer: 'پیش‌غذا', side: 'مخلفات', drink: 'نوشیدنی', beverage: 'نوشیدنی' };
 const calorieOf = (n) =>
   n && typeof n === 'object'
     ? n.calories ?? n.kcal ?? n.energy ?? n.perServing?.calories ?? n.perServing?.kcal ?? null
@@ -68,13 +71,33 @@ export function useRecipeDetail(id) {
       steps: asList(r.steps).map(asText).filter(Boolean),
       tips: asList(r.tips).map(asText).filter(Boolean),
       faq: asList(r.faq).map(faqItem).filter((f) => f.q),
+      // tools + mealType: persisted + returned by the API but the UI previously never rendered them
+      tools: asList(r.tools).map(toolText).filter(Boolean),
+      mealTypes: [...new Set((Array.isArray(r.mealType) ? r.mealType : r.mealType ? [r.mealType] : []).map((m) => FA_MEAL[String(m).toLowerCase().trim()]).filter(Boolean))],
     };
+
+    // grounded substitutions the /full read ALREADY computes (allergen/dislike swaps) — UI previously dropped
+    // them. Only entries with at least one real option are shown (graceful omission; never blank/fabricated).
+    const substitutions = asList(rich.substitutions)
+      .map((s) => ({
+        ingredient: asText(s?.ingredient),
+        reason: s?.reason === 'allergen' ? 'allergen' : 'dislike',
+        options: asList(s?.result?.substitutions).map((o) => toolText(o)).filter(Boolean).slice(0, 3),
+      }))
+      .filter((s) => s.ingredient && s.options.length);
+
+    // ingredient-resolution coverage from the integrity report (also previously dropped). Honest, non-medical,
+    // non-technical: only the resolved/total signal — never the raw English warnings.
+    const ir = rich.integrity?.ingredientResolution;
+    const integrity = ir && ir.total > 0 ? { total: ir.total, resolved: ir.resolved } : null;
 
     return {
       status,
       recipe,
       nutrition,
       fit: recommendation ? { recommendation, label: FIT_LABEL[recommendation] || null, reasons: recipeFitReasons(fit, 3), allergens } : null,
+      substitutions,
+      integrity,
       refetch: () => (token ? full.refetch() : basic.refetch()),
     };
   }, [id, token, full.data, full.isLoading, full.isError, basic.data, basic.isLoading, basic.isError, full, basic]);

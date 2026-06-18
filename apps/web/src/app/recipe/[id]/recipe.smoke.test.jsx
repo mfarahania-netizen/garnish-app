@@ -52,6 +52,8 @@ const readyValue = () => ({
     steps: ['سبزی را تفت بده.', 'گوشت و لوبیا را اضافه کن.'],
     tips: ['لیمو عمانی را سوراخ کن.'],
     faq: [{ q: 'چقدر بپزد؟', a: 'حدود دو ساعت.' }],
+    tools: [],
+    mealTypes: [],
   },
   nutrition: { calories: '۴۲۰', state: 'estimate' },
   fit: {
@@ -60,6 +62,8 @@ const readyValue = () => ({
     reasons: ['کم‌چرب', 'پروتئین بالا'],
     allergens: [],
   },
+  substitutions: [],
+  integrity: null,
   refetch: vi.fn(),
 });
 
@@ -103,5 +107,30 @@ describe('RecipeDetailPage smoke', () => {
       screen.getByRole('heading', { name: 'ارزش غذایی' }),
     ).toBeInTheDocument();
     expect(screen.getByText('بپز')).toBeInTheDocument();
+  });
+
+  it('omits richness sections gracefully when empty (no swaps/tools headings, no fabricated content)', () => {
+    useRecipeDetail.mockReturnValue(readyValue());
+    renderPage();
+    expect(screen.queryByRole('heading', { name: 'جایگزین‌های پیشنهادی' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'ابزار لازم' })).not.toBeInTheDocument();
+  });
+
+  it('surfaces the computed richness the UI used to drop: substitutions, tools, mealType, integrity coverage', () => {
+    const v = readyValue();
+    v.recipe.tools = ['قابلمه', 'هاون'];
+    v.recipe.mealTypes = ['شام'];
+    v.substitutions = [{ ingredient: 'لوبیا قرمز', reason: 'allergen', options: ['لوبیا چیتی', 'نخود'] }];
+    v.integrity = { total: 2, resolved: 2 };
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+    // grounded swap (was computed by /full but dropped by the UI before)
+    expect(screen.getByRole('heading', { name: 'جایگزین‌های پیشنهادی' })).toBeInTheDocument();
+    expect(screen.getByText('لوبیا چیتی، نخود')).toBeInTheDocument();
+    // tools + mealType chip + integrity coverage line
+    expect(screen.getByRole('heading', { name: 'ابزار لازم' })).toBeInTheDocument();
+    expect(screen.getByText('قابلمه')).toBeInTheDocument();
+    expect(screen.getByText('شام')).toBeInTheDocument();
+    expect(screen.getByText('۲ از ۲ ماده در پایگاه شناخته‌شده')).toBeInTheDocument();
   });
 });
