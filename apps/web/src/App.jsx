@@ -15,6 +15,7 @@ import OnboardingPage from './app/onboarding/page';
 import DiscoveryPage from './app/discover/page';
 import RecipesPage from './app/recipes/page';
 import ProfilePage from './app/profile/page';
+import FoodDnaPage from './app/food-dna/page';
 import PlanPage from './app/plan/page';
 import ShoppingListPage from './app/shopping-list/page';
 import FavoritesPage from './app/favorites/page';
@@ -125,7 +126,8 @@ export function AppRoutes() {
                             («پروفایل من» = profile, «شناسهٔ ذائقه» = the Food-DNA breakdown), so the two
                             drawer links never collapse to the same screen */}
                         <Route path="/profile" element={<ProfilePage key="profile" />} />
-                        <Route path="/food-dna" element={<ProfilePage key="dna" initialView="dna" />} />
+                        {/* S2: dedicated Food DNA activation screen (was ProfilePage initialView="dna") */}
+                        <Route path="/food-dna" element={<FoodDnaPage />} />
                         <Route path="/plan" element={<PlanPage />} />
                         <Route path="/shopping-list" element={<ShoppingListPage />} />
                         <Route path="/favorites" element={<FavoritesPage />} />

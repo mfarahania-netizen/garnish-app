@@ -9,6 +9,7 @@ import {
   IconBookmark, IconCalendarHeart,
 } from '@tabler/icons-react';
 import { useHomeData } from './lib/useHomeData';
+import { useFoodDnaProjection } from '../food-dna/useFoodDna';
 import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useImpressionObserver } from '../../hooks/useImpressionObserver';
@@ -183,6 +184,13 @@ function HomeLoading() {
 export default function HomePage() {
   const navigate = useNavigate();
   const { status, greeting, dna, gam, whisper, picks, rails, resume, refetch } = useHomeData();
+  // S2: show the REAL (behavior-hydrated) maturity from GET /profile/dna when available; fall back to the
+  // /profile maturity otherwise (keeps the card honest + consistent with the Food DNA screen it links to).
+  const dnaProjection = useFoodDnaProjection();
+  const dnaMaturity = dnaProjection.data?.maturity;
+  const cardDna = dnaMaturity
+    ? { ...dna, score: dnaMaturity.score, tone: dnaMaturity.band === 'developing' || dnaMaturity.band === 'mature' ? 'mature' : 'forming' }
+    : dna;
   const [whisperDismissed, setWhisperDismissed] = useState(false);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
@@ -244,7 +252,7 @@ export default function HomePage() {
 
         {status === 'ready' ? (
           <>
-            <FoodDnaCard dna={dna} onOpen={() => navigate('/food-dna')} />
+            <FoodDnaCard dna={cardDna} onOpen={() => navigate('/food-dna')} />
 
             {gam.show ? <GamificationStrip headline={gam.headline} progressLabel={gam.progressLabel} progress={gam.progress} /> : null}
 
