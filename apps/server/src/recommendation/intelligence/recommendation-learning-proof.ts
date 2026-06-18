@@ -99,9 +99,9 @@ function engagementsFor(user: SyntheticUser, days: number): { recipeId: string; 
 }
 
 /** Build the user's graph observations from accumulated behaviour (confidence rises with evidence). */
-function observationsFor(user: SyntheticUser, engagements: { recipeId: string }[]) {
+function observationsFor(user: SyntheticUser, engagements: { recipeId: string }[], effOf: (id: string) => number = effIdxOf) {
   const n = Math.max(1, engagements.length);
-  const avgEff = mean(engagements.map((e) => effIdxOf(e.recipeId))) || 2;
+  const avgEff = mean(engagements.map((e) => effOf(e.recipeId))) || 2;
   const quickPref01 = 1 - avgEff / (EFFORTS.length - 1); // low avg effort → high quick-meal preference
   const conf = Math.min(0.9, 0.28 + 0.012 * n); // more behaviour → higher confidence (honest)
   const skillStrength = user.skill === 0 ? -0.5 : user.skill === 1 ? 0 : 0.6;
@@ -179,15 +179,27 @@ const CTX: DecisionContext = { surface: 'home', dayPart: 'evening', weekday: 3, 
 /** Ranking dimensions that can be ablated by neutralizing their INPUT (the scorer is never changed). */
 export type AblateDim = 'effort' | 'skill' | 'feedback' | 'cuisine';
 
+/**
+ * Corpus id-parsing/behaviour ops. Default = the COUPLED corpus (engagementsFor/effIdxOf/cuisineOf above) so
+ * every existing call is byte-identical; §10 injects the DECOUPLED corpus ops (skill ⟂ effort).
+ */
+export interface CorpusOps {
+  engagementsFor: (user: SyntheticUser, days: number) => { recipeId: string; type: string }[];
+  effIdxOf: (recipeId: string) => number;
+  cuisineOf: (recipeId: string) => string;
+}
+const COUPLED_OPS: CorpusOps = { engagementsFor, effIdxOf, cuisineOf };
+
 export function scoreUserAt(
   user: SyntheticUser,
   days: number,
   universe: { candidates: RecommendationCandidate[]; meta: Map<string, RecipeTasteMeta> },
   collective?: { model: ReturnType<typeof buildCollectiveModel>; lambda: number },
   ablate: AblateDim[] = [], // default [] → byte-identical baseline (no neutralization)
+  ops: CorpusOps = COUPLED_OPS, // default = coupled corpus → byte-identical; §10 injects decoupled ops
 ): UserScore {
-  const engagements = engagementsFor(user, days);
-  const built = buildUserFoodIdentityGraph(observationsFor(user, engagements), { userId: user.id, now: NOW, mode: 'offline_eval' });
+  const engagements = ops.engagementsFor(user, days);
+  const built = buildUserFoodIdentityGraph(observationsFor(user, engagements, ops.effIdxOf), { userId: user.id, now: NOW, mode: 'offline_eval' });
   const graph = built.graph!;
   // ── ABLATION: INPUT-only neutralization (the REAL scorer is called UNCHANGED). A neutralized dimension
   //    is set to its zero-strength "no preference" value (0), NOT a hand-picked value, so the marginal
@@ -206,7 +218,7 @@ export function scoreUserAt(
   // behaviour accumulates (e.g. 0.55 at day 10 → ~0.8 at day 40), so the cuisine signal genuinely
   // STRENGTHENS with evidence rather than saturating immediately. Honest: more behaviour → clearer taste.
   const czCounts: Record<string, number> = {};
-  for (const e of engagements) { const cz = cuisineOf(e.recipeId); if (cz) czCounts[cz] = (czCounts[cz] || 0) + 1; }
+  for (const e of engagements) { const cz = ops.cuisineOf(e.recipeId); if (cz) czCounts[cz] = (czCounts[cz] || 0) + 1; }
   const czTotal = Object.values(czCounts).reduce((a, b) => a + b, 0) || 1;
   const shareWeights: Record<string, number> = {};
   for (const [k, v] of Object.entries(czCounts)) shareWeights[k] = round4(v / czTotal);
@@ -240,7 +252,7 @@ export function scoreUserAt(
     productUseEnabled: (trace as any).productUseEnabled === true, // cast: type guarantees false; verify at runtime
     cuisineTop1: aff.cuisineAffinities[0] ?? null,
     prefCuisineShare: shareWeights[user.prefCuisine] ?? 0,
-    distinctCuisinesTop5: new Set(surfacedRecipeIds.slice(0, 8).map(cuisineOf)).size,
+    distinctCuisinesTop5: new Set(surfacedRecipeIds.slice(0, 8).map(ops.cuisineOf)).size,
   };
 }
 
@@ -411,4 +423,124 @@ export function runDimensionAblationES(simDay = 40): DimensionAblationESResult {
   const curveES: Record<number, number> = {};
   for (const day of CHECKPOINTS) curveES[day] = meanNdcgESWith([], day);
   return { population: users.length, simDay, fullNdcgES, dimensions, curveES, allergenLeaks, freezeOk };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+// §10 — SKILL VALIDATION on a skill-DECOUPLED corpus (measurement-only; the engine + the coupled corpus above
+// are untouched). The coupled buildUniverse ties skillLevel = SKILLS[effortIdx%3], so skill and effort ride
+// the SAME recipe axis and a working skillFit can only fight the (higher-weighted) effort signal (§8/§9). Here
+// skill varies INDEPENDENTLY of effort — a full factorial CUISINES × EFFORTS × SKILLS, which is also more
+// realistic (a technically hard dish isn't necessarily high-effort). Re-runs the §8 ablation under it.
+// ─────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+/** Decoupled id scheme `r_{cuisine}_e{effortIdx}_s{skillIdx}` — effort and skill parsed INDEPENDENTLY. */
+const effIdxOfD = (recipeId: string): number => { const m = recipeId.match(/_e(\d+)_/); return m ? Math.max(0, parseInt(m[1], 10)) : 2; };
+const skillIdxOfD = (recipeId: string): number => { const m = recipeId.match(/_s(\d+)$/); return m ? Math.max(0, parseInt(m[1], 10)) : 0; };
+const cuisineOfD = (recipeId: string): string => recipeId.split('_')[1] ?? '';
+
+/** Full factorial CUISINES × EFFORTS × SKILLS — skillLevel set from the skill loop, NOT from the effort index. */
+export function buildUniverseDecoupled(): { candidates: RecommendationCandidate[]; meta: Map<string, RecipeTasteMeta> } {
+  const candidates: RecommendationCandidate[] = [];
+  for (const cz of CUISINES) {
+    for (let e = 0; e < EFFORTS.length; e++) {
+      for (let s = 0; s < SKILLS.length; s++) {
+        const rid = `r_${cz}_e${e}_s${s}`;
+        candidates.push({ candidateId: rid, recipeId: rid, source: 'manual_fixture', cuisineTags: [cz], estimatedEffort: EFFORTS[e], skillLevel: SKILLS[s], mealSlot: 'dinner', noveltyTags: [] });
+      }
+    }
+  }
+  candidates.push({ candidateId: 'r_allergen', recipeId: 'r_allergen', source: 'manual_fixture', cuisineTags: ['persian'], estimatedEffort: 'low', skillLevel: 'beginner', mealSlot: 'dinner', safetyFlags: ['allergen_conflict'] });
+  const meta = new Map<string, RecipeTasteMeta>(candidates.map((c) => [c.recipeId, { cuisine: c.cuisineTags?.[0] ?? null, ingredients: [] }]));
+  return { candidates, meta };
+}
+
+/** Decoupled behaviour: the user cooks recipes near their cuisine + effort AND (independently) their skill. */
+function engagementsForD(user: SyntheticUser, days: number): { recipeId: string; type: string }[] {
+  const evs: { recipeId: string; type: string }[] = [];
+  for (let d = 0; d < days; d++) {
+    const onTasteP = Math.min(0.92, ON_TASTE_P + 0.5 * (d / 40));
+    for (let s = 0; s < EVENTS_PER_DAY; s++) {
+      let cz: string; let effIdx: number; let skillIdx: number;
+      if (hash01(user.id, 'pick', d, s) < onTasteP) {
+        cz = user.prefCuisine;
+        const j = hash01(user.id, 'jit', d, s);
+        effIdx = clampI(user.prefEffortIdx + (j < 0.6 ? 0 : j < 0.8 ? -1 : 1), 0, EFFORTS.length - 1);
+        const sj = hash01(user.id, 'sjit', d, s); // skill near the user's latent skill — INDEPENDENT of effort
+        skillIdx = clampI(user.skill + (sj < 0.7 ? 0 : sj < 0.85 ? -1 : 1), 0, SKILLS.length - 1);
+      } else {
+        cz = CUISINES[Math.floor(hash01(user.id, 'cz', d, s) * CUISINES.length)];
+        effIdx = Math.floor(hash01(user.id, 'ne', d, s) * EFFORTS.length);
+        skillIdx = Math.floor(hash01(user.id, 'ns', d, s) * SKILLS.length);
+      }
+      const type = hash01(user.id, 'typ', d, s) < 0.55 ? 'cook_complete' : 'favorite_add';
+      evs.push({ recipeId: `r_${cz}_e${effIdx}_s${skillIdx}`, type });
+    }
+  }
+  return evs;
+}
+
+const DECOUPLED_OPS: CorpusOps = { engagementsFor: engagementsForD, effIdxOf: effIdxOfD, cuisineOf: cuisineOfD };
+
+/** Same satisfaction model as relevanceES, parsed on the DECOUPLED corpus so skill is an INDEPENDENT axis. */
+function relevanceESD(user: SyntheticUser, recipeId: string): number {
+  if (recipeId === 'r_allergen') return 0;
+  if (cuisineOfD(recipeId) !== user.prefCuisine) return 0;
+  const effSat = 1 - Math.abs(effIdxOfD(recipeId) - user.prefEffortIdx) / (EFFORTS.length - 1);
+  const sGap = skillIdxOfD(recipeId) - user.skill;
+  const skillSat = sGap > 0 ? Math.max(0, 1 - 0.5 * sGap) : 1 - 0.2 * -sGap;
+  return round4(0.4 + 0.35 * effSat + 0.25 * skillSat);
+}
+
+function ndcgESDAt(rankedRecipeIds: string[], user: SyntheticUser, allRecipeIds: string[], k = 10): number {
+  const dcg = rankedRecipeIds.slice(0, k).reduce((s, rid, i) => s + relevanceESD(user, rid) / Math.log2(i + 2), 0);
+  const ideal = allRecipeIds.map((rid) => relevanceESD(user, rid)).sort((a, b) => b - a).slice(0, k);
+  const idcg = ideal.reduce((s, r, i) => s + r / Math.log2(i + 2), 0);
+  return idcg > 0 ? round4(dcg / idcg) : 0;
+}
+
+export interface DimensionAblationDecoupledResult {
+  population: number;
+  simDay: number;
+  candidateCount: number;
+  fullNdcgESD: number;
+  dimensions: Record<AblateDim, { leaveOneOutNdcg: number; marginal: number; onlyThisNdcg: number }>;
+  curveESD: Record<number, number>;
+  allergenLeaks: number;
+  freezeOk: boolean;
+}
+
+/**
+ * §10 — re-run the §8 leave-one-out ablation on the skill-DECOUPLED corpus, through the SAME REAL scorer (via
+ * the injected DECOUPLED_OPS — no engine change). The user's graph is built from decoupled behaviour (so the
+ * cuisine-affinity join + feedbackFit match the decoupled candidates) and scored against the decoupled
+ * candidates with `relevanceESD`. Headline: does skill contribute once it no longer competes with effort?
+ */
+export function runDimensionAblationDecoupled(simDay = 40): DimensionAblationDecoupledResult {
+  const universe = buildUniverseDecoupled();
+  const users = buildUsers(POP);
+  const allIds = universe.candidates.map((c) => c.recipeId);
+  const ALL: AblateDim[] = ['effort', 'skill', 'feedback', 'cuisine'];
+  let allergenLeaks = 0;
+  let freezeOk = true;
+
+  const meanNdcgWith = (ablate: AblateDim[], day = simDay): number => {
+    const xs = users.map((u) => {
+      const r = scoreUserAt(u, day, universe, undefined, ablate, DECOUPLED_OPS);
+      if (r.allergenSurfaced) allergenLeaks++;
+      if (r.productUseEnabled) freezeOk = false;
+      return ndcgESDAt(r.surfacedRecipeIds, u, allIds);
+    });
+    return round4(mean(xs));
+  };
+
+  const fullNdcgESD = meanNdcgWith([]);
+  const dimensions = {} as DimensionAblationDecoupledResult['dimensions'];
+  for (const D of ALL) {
+    const leaveOneOutNdcg = meanNdcgWith([D]); // ONLY D neutralized
+    const onlyThisNdcg = meanNdcgWith(ALL.filter((x) => x !== D)); // all-but-D neutralized
+    dimensions[D] = { leaveOneOutNdcg, marginal: round4(fullNdcgESD - leaveOneOutNdcg), onlyThisNdcg };
+  }
+  const curveESD: Record<number, number> = {};
+  for (const day of CHECKPOINTS) curveESD[day] = meanNdcgWith([], day);
+  return { population: users.length, simDay, candidateCount: universe.candidates.length, fullNdcgESD, dimensions, curveESD, allergenLeaks, freezeOk };
 }
