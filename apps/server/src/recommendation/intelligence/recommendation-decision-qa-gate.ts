@@ -141,13 +141,16 @@ export function runRecommendationDecisionQaGate() {
     const t = sc(graphs.find((g) => g.id === 'sim-cautious-beginner')!.graph);
     return t.candidates[0]?.candidateId !== 'cand_complex';
   });
-  run('context_sensitivity', 'weekday caps effort low even for a quick-meal disliker (time > attitude)', () => {
+  run('context_sensitivity', 'weekday is a LEAN not a cap: a quick-meal disliker is still served a higher-effort recipe on a weekday', () => {
     const g = buildUserFoodIdentityGraph(
       [makeObs('u-dislikes-quick', { key: 'effort.quick_meal_preference', strength: -0.9, confidence: 0.6, evidenceCount: 6 }, NOW)],
       { userId: 'u-dislikes-quick', now: NOW, mode: 'offline_eval' },
     ).graph!;
     const t = sc(g, WEEKDAY_CTX);
-    return (cand('cand_quick', t)?.scoreBreakdown.effortFit ?? 0) > (cand('cand_complex', t)?.scoreBreakdown.effortFit ?? 1);
+    // The user genuinely dislikes quick meals -> their real effort preference is served even on a weekday:
+    // the complex (very_high) candidate now out-fits the quick (very_low) one. The weekday is a MILD downward
+    // lean, NOT the old [0.25,0.5] hard cap that always favoured quick regardless of the user's preference.
+    return (cand('cand_complex', t)?.scoreBreakdown.effortFit ?? 0) > (cand('cand_quick', t)?.scoreBreakdown.effortFit ?? 1);
   });
 
   /* multi_user_distinct_ranking */

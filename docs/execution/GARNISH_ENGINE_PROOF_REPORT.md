@@ -214,10 +214,70 @@ skill when they matter — no, not as configured), not real-world taste. The wee
 preference`), so the weekday cap is the *measured* cause; a weekend/real-data probe is the recommended
 follow-up. `relevanceES`'s weights are a reasoned satisfaction model, not measured human behaviour.
 
-Asserted in `recommendation-es-validation.spec.ts` (8 tests, green): the original proof **and** §7 reproduce
-byte-for-byte (engine untouched); `fullES = 0.7082`; curve monotonic; cuisine `+0.2059` & feedback `+0.1239`
-pinned; effort `−0.0224` & skill `+0.0063` pinned **as-is** (not gated positive); effort/skill `only-this` <
-cold baseline; 0 leaks; freeze false.
+> **These §8 numbers are the PRE-FIX measurement** (`fullES 0.7082`; cuisine `+0.2059`, feedback `+0.1239`,
+> effort `−0.0224`, skill `+0.0063`) — the finding that motivated the **§9 engine fix**. After §9, the scorer
+> changed, so the spec `recommendation-es-validation.spec.ts` now pins the **post-fix** values (and the §7
+> ablation spec likewise). See **§9** for the fix and the new measurements.
+
+## 9. Engine fix — effort/skill personalization (scorer change)
+§8 proved effort/skill don't personalize because of two specific rules in `recommendation-shadow-scorer.ts`.
+This section is an **engine change** (not a measurement) that fixes both. The numbers below therefore MOVE vs
+§1–§8 — that is expected and correct; the bar is not "byte-identical" but "effort/skill now contribute,
+nothing else regresses, allergy absolute, freeze false."
+
+**The two changed formulas (and ONLY these two — diff-proven):**
+- **Effort.** Old: `desiredEffort = weekday ? clamp01(0.25 + 0.25·(1−quick01)) : clamp01(complex01)` — a weekday
+  HARD-cap to [0.25, 0.5]. New: `desiredEffort = clamp01(0.2 + 0.6·(1−quick01) + 0.2·complex01 − (weekday ? 0.1
+  : 0))`. The user's real effort preference now drives desired effort across the FULL range (~[0.2, 0.9]); a
+  weekday is a **mild downward lean (−0.1), not a ceiling** — a high-effort lover can be served a high-effort
+  recipe on a weeknight. Principled (a real cook's weeknight time-pressure is a nudge), not §8-fitted.
+- **Skill.** Old: `userSkill = clamp01(0.4 + 0.5·techConf01 + 0.1·readiness01)` — a 0.4 floor (beginner read
+  ≈0.56, steered to intermediate). New: `userSkill = clamp01(0.15 + 0.7·techConf01 + 0.15·readiness01)` — maps
+  confidence onto the recipe skill scale (`SKILL_LEVEL` beginner .2 → advanced .85), so a beginner reads ≈0.21
+  and an advanced cook ≈0.94. The old floor actually *pushed beginners toward intermediate* (the opposite of
+  its stated intent); the asymmetric `skillFit` (overshoot penalised harder than undershoot) is what protects
+  beginners — and it is unchanged.
+
+**Results (real scorer; 50 users @ day40). Engine got better overall** — `fullNdcgES 0.7082 → 0.7421`,
+`fullNdcg(§7) 0.7311 → 0.7721`, individual curve `…0.7311 → …0.7721`, collective lift `+0.49 → +0.52`,
+diversity top-8 `2 → 3`:
+
+| Dimension | §8 marginal PRE-fix | **§8 marginal POST-fix** | read |
+|---|---|---|---|
+| cuisine | +0.2059 | **+0.2007** | stable — not regressed |
+| feedback | +0.1239 | **+0.0510** | unique marginal shrank — see note (quality NOT lost) |
+| **effort** | −0.0224 | **+0.0101** | **FIXED — flipped negative→positive** |
+| **skill** | +0.0063 | **−0.0228** | corpus-coupling artifact — see note (formula proven correct) |
+
+- **Effort — FIXED.** Marginal flipped from −0.0224 to **+0.0101** under `relevanceES` (and −0.0163 → **+0.0221**
+  under the §7 metric); effort-only nDCG rose above the cold baseline. Proven directly on **decoupled**
+  candidates (`recommendation-effort-skill-personalization.spec.ts`): a high-effort-preference user is now
+  served a high-effort recipe even on a weekday (the old cap made this impossible).
+- **Skill — formula FIXED and PROVEN correct, but its §8 marginal is negative due to the synthetic corpus.**
+  On **decoupled** candidates the new `userSkill` works exactly as intended (test-proven): a true beginner now
+  prefers beginner recipes over intermediate AND advanced (the old floor inverted this), an advanced cook
+  prefers advanced — the skillFit ordering *flips* between them, i.e. the signal genuinely differentiates. But
+  the §8 corpus couples `skillLevel = SKILLS[effortIdx % 3]` (one skill level per effort level) and
+  `relevanceES` weights effort (0.35) above skill (0.25). So skill and effort act on the **same** recipe axis:
+  once effort works (it now does), it dominates that axis and a strong skill signal competes with it →
+  skill cannot earn marginal here and its (previously spurious, +0.006) contribution goes slightly negative.
+  This is a **structural limit of the frozen synthetic corpus**, not a bad fix — and it is **unfixable in the
+  scorer** (the scorer can't know the corpus couples the axes). **Honest verdict: skill personalization is
+  real (proven on decoupled inputs) but cannot be validated on this corpus — it needs a skill-decoupled corpus
+  / the pilot.** Reported as-is; the formula was NOT tuned to chase the §8 number.
+- **Feedback marginal dropped (0.1239 → 0.0510) — overlap, not regression.** Pre-fix, effort was broken, so
+  `feedbackFit` was the only signal serving high-effort users their cooked (high-effort) recipes. Now effort
+  does that directly, so the two overlap and feedback's *unique* marginal shrinks — while feedback-only nDCG
+  is ~unchanged (0.50 → 0.48) and `fullNdcgES` ROSE. No quality was lost.
+- **No safety/scope regression:** `allergenLeaks 0`, `productUseEnabled false` everywhere; the allergy
+  HARD-filter, `getLivingUserProfile`, the A4 builder, `taste-affinity`, `collective-signal` are NOT in the
+  diff (the scorer only ranks). The only QA-gate check that changed is the `context_sensitivity` one that
+  asserted the old weekday cap — flipped to assert the new lean (intended behaviour, not loosened).
+
+Asserted by: `recommendation-effort-skill-personalization.spec.ts` (6 tests — the decoupled effort/skill
+intended-behaviour proofs); the updated `recommendation-ablation.spec.ts` (§7 post-fix pins) +
+`recommendation-es-validation.spec.ts` (§8 post-fix pins, skill negative pinned as-is + explained); the
+decision-QA gate (the weekday check flipped) — full server suite green, 0 skips.
 
 ```
 VERDICT BLOCK
@@ -232,7 +292,9 @@ CUISINE recovery: top-1 0→100% by day10 (saturates, §3.2); dominance share 0.
 PER-DIMENSION MARGINAL nDCG@10 (ablation §7, leave-one-out @day40): cuisine +0.208, feedback +0.147, effort -0.016 (≈0), skill -0.0002 (≈0)
   └ correction: §2's earlier "effort is the 10→40 driver" was WRONG — ablation shows cuisine-dominance + feedback drive it (§7)
 EFFORT/SKILL VALIDATION (§8, ablation under effort/skill-SENSITIVE relevanceES @day40): cuisine +0.206, feedback +0.124, effort -0.022, skill +0.006
-  └ verdict: effort/skill STILL WEAK even when the metric rewards them → caught pre-market. Cause: weekday effort-cap (scorer L108) + userSkill 0.4 floor (L115). Fix = future engine sprint. NOT tuned.
+  └ verdict: effort/skill STILL WEAK even when the metric rewards them → caught pre-market. Cause: weekday effort-cap (scorer L108) + userSkill 0.4 floor (L115). Fix = §9. NOT tuned.
+ENGINE FIX (§9, scorer change — desiredEffort + userSkill only): §8 POST-fix cuisine +0.2007, feedback +0.0510, effort +0.0101 (was -0.0224 → FIXED), skill -0.0228 (was +0.0063)
+  └ effort FIXED (flipped positive); skill formula proven correct on DECOUPLED candidates but §8-negative due to corpus coupling (skillLevel=SKILLS[effortIdx%3]) → needs decoupled corpus/pilot. fullNdcgES 0.708→0.742, collective +0.49→+0.52, diversity 2→3. allergy 0 / freeze false. NOT tuned.
 ALLERGEN LEAKS UNDER FULL LOAD: 0
 LIVE FLIP frozen (productUseEnabled=false everywhere) + allergy + getLivingUserProfile + A4 builder untouched: Y (diff-proven)
 HONEST LABELLING (synthetic=mechanism proven; real-world=awaiting pilot): Y

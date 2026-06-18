@@ -102,17 +102,22 @@ function scoreOne(
   const weekday = isWeekday(ctx);
   const quick01 = to01(d.effort.quickMealPreference);
   const complex01 = to01(d.effort.complexRecipeReadiness);
-  // Weekday = time-constrained: cap desired effort low-to-moderate (TIME availability dominates); the
-  // quick-meal *preference* only modulates WITHIN that band (so a "dislikes quick" attitude can't push
-  // a 90-min recipe onto a Tuesday). Weekends use complex-recipe readiness directly.
-  const desiredEffort = weekday ? clamp01(0.25 + 0.25 * (1 - quick01)) : clamp01(complex01);
+  // The user's real effort preference drives desiredEffort across the FULL range: how much effort they want
+  // (inverse of quick-meal preference) plus their readiness for complex recipes. A weekday applies a MILD
+  // downward lean (time pressure) — a nudge, NOT a hard ceiling — so a user who genuinely loves elaborate
+  // cooking can still be served a high-effort recipe on a weeknight (the old weekday [0.25,0.5] cap could not).
+  const desiredEffort = clamp01(0.2 + 0.6 * (1 - quick01) + 0.2 * complex01 - (weekday ? 0.1 : 0));
   let effortFit: number;
   if (c.estimatedEffort) effortFit = clamp01(1 - Math.abs(EFFORT_LEVEL[c.estimatedEffort] - desiredEffort));
   else { effortFit = 0.5; warnings.push('missing estimatedEffort'); }
 
-  // skill (don't push beginners too hard)
+  // skill — map the user's confidence onto the recipe skill scale (SKILL_LEVEL: beginner .2 → advanced .85)
+  // across the FULL range, so a low-confidence cook reads as a true beginner and a high-confidence cook as
+  // advanced. (The old 0.4 floor compressed everyone to ≥0.4 — which actually pushed beginners toward
+  // intermediate recipes, the opposite of "don't push beginners too hard". The asymmetric skillFit below —
+  // overshoot penalized harder than undershoot — is what protects beginners, not a floor.)
   usedDims.add('skill');
-  const userSkill = clamp01(0.4 + 0.5 * to01(d.skill.techniqueConfidence) + 0.1 * to01(d.skill.nextSkillChallengeReadiness));
+  const userSkill = clamp01(0.15 + 0.7 * to01(d.skill.techniqueConfidence) + 0.15 * to01(d.skill.nextSkillChallengeReadiness));
   let skillFit: number;
   if (c.skillLevel) {
     const gap = SKILL_LEVEL[c.skillLevel] - userSkill;
