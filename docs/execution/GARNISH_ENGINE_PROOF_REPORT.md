@@ -261,10 +261,13 @@ diversity top-8 `2 → 3`:
   `relevanceES` weights effort (0.35) above skill (0.25). So skill and effort act on the **same** recipe axis:
   once effort works (it now does), it dominates that axis and a strong skill signal competes with it →
   skill cannot earn marginal here and its (previously spurious, +0.006) contribution goes slightly negative.
-  This is a **structural limit of the frozen synthetic corpus**, not a bad fix — and it is **unfixable in the
-  scorer** (the scorer can't know the corpus couples the axes). **Honest verdict: skill personalization is
-  real (proven on decoupled inputs) but cannot be validated on this corpus — it needs a skill-decoupled corpus
-  / the pilot.** Reported as-is; the formula was NOT tuned to chase the §8 number.
+  This is a **structural limit of the frozen synthetic corpus**, not a bad fix. It **cannot be made §8-positive
+  by any scorer change without degrading overall ranking quality** (empirically swept: only bumping the
+  `skillFit` weight to ~0.30 flips skill to `+0.004`, and that drops `fullNdcgES` 0.742 → 0.677 — the small
+  negative is the honest *cost* of correctly prioritising the higher-weighted, coupled effort axis, not a
+  fixable defect). **Honest verdict: skill personalization is real (proven on decoupled inputs) but cannot be
+  validated on this corpus — it needs a skill-decoupled corpus / the pilot.** Reported as-is; the formula was
+  NOT tuned to chase the §8 number.
 - **Feedback marginal dropped (0.1239 → 0.0510) — overlap, not regression.** Pre-fix, effort was broken, so
   `feedbackFit` was the only signal serving high-effort users their cooked (high-effort) recipes. Now effort
   does that directly, so the two overlap and feedback's *unique* marginal shrinks — while feedback-only nDCG
