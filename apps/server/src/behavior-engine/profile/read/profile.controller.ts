@@ -20,6 +20,16 @@ export class ProfileController {
     return this.profile.getLivingUserProfile(req.user.userId);
   }
 
+  /**
+   * S2 — owner-only PII-free Food DNA projection for the activation screen: the four dimensions
+   * (taste/effort/skill/routine) with the engine's safeExplanation + maturity, hydrated from the user's
+   * real persisted behavior. Additive read; getLivingUserProfile (above) is unchanged.
+   */
+  @Get('dna')
+  async getFoodDna(@Req() req: any) {
+    return this.profile.getFoodDnaProjection(req.user.userId);
+  }
+
   /** Onboarding question engine: which question to ask next, and why (consent + gap driven). */
   @Get('next-question')
   async nextQuestion(@Req() req: any) {

@@ -21,6 +21,8 @@ import { QuestionSelectionService } from '../onboarding/question-selection.servi
 import { composeLivingUserProfile, LivingUserProfile } from './living-profile';
 import { buildUserFoodIdentityGraph } from '../user-food-identity-graph.builder';
 import { UserFoodIdentityGraph } from '../user-food-identity-graph.types';
+import { projectFoodDna, FoodDnaProjection } from './food-dna-projection';
+import { createPrismaShadowProfileFeedPort } from '../../../recommendation/runtime-shadow/recommendation-shadow-a8-adapters';
 
 const FACT_PREFIX = 'declared.';
 const VALID_PURPOSES = new Set<DeclaredConsentPurpose>(['core', 'analytics', 'personalization']);
@@ -118,6 +120,37 @@ export class ProfileReadService {
   /** Back-compat alias → the canonical unified profile. */
   async getLivingProfile(userId: string, now: Date = new Date()): Promise<LivingUserProfile> {
     return this.getLivingUserProfile(userId, now);
+  }
+
+  /**
+   * S2 — FOOD DNA ACTIVATION: owner-scoped, PII-free Food DNA projection for the activation screen.
+   *
+   * ADDITIVE read path — does NOT touch getLivingUserProfile (which feeds the audited allergy filter +
+   * recsys/AI/gamification). Unlike getLivingUserProfile, this read HYDRATES the observed graph from the
+   * user's REAL persisted SignalObservations (the rows the signal-processors already write on cook/save/
+   * plan/shopping events), via the EXISTING loader pattern (createPrismaShadowProfileFeedPort →
+   * loadObservations 'rebuild') + the EXISTING builder (buildUserFoodIdentityGraph) — both UNCHANGED. The
+   * declared profile supplies the ≤0.20 maturity prior; maturityFor + the projection reuse already-PII-free
+   * fields only. No persisted observations → honest cold-start (never fabricated).
+   */
+  async getFoodDnaProjection(userId: string, now: Date = new Date()): Promise<FoodDnaProjection> {
+    const consent = await this.getConsentState(userId);
+    const answers = await this.getDeclaredAnswers(userId);
+    const declared = buildDeclaredProfile(userId, answers, consent, { now });
+
+    let graph: UserFoodIdentityGraph | null = null;
+    try {
+      const port = createPrismaShadowProfileFeedPort(this.prisma as any, () => now);
+      const loaded = await port.loadObservations(userId, 'rebuild');
+      if (loaded && Array.isArray(loaded.observations) && loaded.observations.length > 0) {
+        graph = buildUserFoodIdentityGraph(loaded.observations, { userId, now, mode: 'offline_eval' }).graph ?? null;
+      }
+    } catch (err) {
+      this.logger.warn(`food-dna observed graph unavailable; cold-start: ${err instanceof Error ? err.name : 'error'}`);
+      graph = null;
+    }
+
+    return projectFoodDna(graph, declared.coverage.coverageScore, now, userId);
   }
 
   async getNextQuestion(userId: string, now: Date = new Date()) {
