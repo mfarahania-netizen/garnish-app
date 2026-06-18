@@ -5,6 +5,7 @@ const READY = {
   id: '1', title: 'قورمه سبزی', imageUrl: null, categories: [], cookTimeText: '۹۰ دقیقه',
   difficultyText: 'متوسط', servingsText: '۴ نفر', description: '', author: '',
   ingredients: [], steps: [], tips: [], faq: [], tools: [], mealTypes: [],
+  chefTips: [], commonMistakes: [], servingSuggestions: [], authoredSwaps: [],
 };
 vi.mock('./useRecipeDetail', () => ({
   useRecipeDetail: () => ({ status: 'ready', recipe: READY, nutrition: { calories: null, state: 'unavailable' }, fit: null, substitutions: [], integrity: null, refetch: vi.fn() }),

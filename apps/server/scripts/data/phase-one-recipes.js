@@ -95,7 +95,14 @@ function mapRecipe(recipe) {
     prepTime: timing.prepMinutes != null ? String(timing.prepMinutes) : null,
     totalTime: timing.totalMinutes != null ? String(timing.totalMinutes) : null,
     tools: compactJson(recipe.tools),
-    tips: compactJson(tips),
+    tips: compactJson(tips), // kept for back-compat (Option-1 merged accordion); distinct fields below
+    // S3 Option-2 — structured richness (additive; the four arrays that were flattened into `tips`, now
+    // persisted separately) + authored dishType. Display-only; does NOT touch any safety-relevant mapping.
+    chefTips: compactJson(recipe.chefTips),
+    commonMistakes: compactJson(recipe.commonMistakes),
+    servingSuggestions: compactJson(recipe.servingSuggestions),
+    substitutions: compactJson(recipe.substitutions),
+    dishType: compactJson(asArray(recipe.dishType)),
     faq: compactJson(recipe.faq),
     mealType: compactJson(recipe.mealType),
     diet: recipeDiet(recipe),

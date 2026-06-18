@@ -70,6 +70,12 @@ export function useRecipeDetail(id) {
       })).filter((i) => i.name),
       steps: asList(r.steps).map(asText).filter(Boolean),
       tips: asList(r.tips).map(asText).filter(Boolean),
+      // S3 Option-2 — the four authored arrays, now persisted separately (were merged into `tips`). Rendered
+      // as distinct sections when present; the merged `tips` accordion is the back-compat fallback.
+      chefTips: asList(r.chefTips).map(asText).filter(Boolean),
+      commonMistakes: asList(r.commonMistakes).map(asText).filter(Boolean),
+      servingSuggestions: asList(r.servingSuggestions).map(asText).filter(Boolean),
+      authoredSwaps: asList(r.substitutions).map(asText).filter(Boolean),
       faq: asList(r.faq).map(faqItem).filter((f) => f.q),
       // tools + mealType: persisted + returned by the API but the UI previously never rendered them
       tools: asList(r.tools).map(toolText).filter(Boolean),

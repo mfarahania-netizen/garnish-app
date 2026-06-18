@@ -167,6 +167,16 @@ model Recipe {
   occasion   String? @default("[]")
   cost       String?
 
+  // S3 Option-2 — structured richness (additive; display-only). The importer previously flattened these
+  // four authored arrays into one `tips` blob; now persisted separately so the UI can render distinct
+  // premium sections. `dishType` is the authored classification (display-only — the S5 course gate still
+  // derives course from category+mealType and is NOT repointed here). None is safety-relevant.
+  chefTips           String? @default("[]")
+  commonMistakes     String? @default("[]")
+  servingSuggestions String? @default("[]")
+  substitutions      String? @default("[]")
+  dishType           String? @default("[]")
+
   ingredients                     RecipeIngredient[]
   steps                           RecipeStep[]
   nutrition                       Nutrition?

@@ -54,6 +54,10 @@ const readyValue = () => ({
     faq: [{ q: 'چقدر بپزد؟', a: 'حدود دو ساعت.' }],
     tools: [],
     mealTypes: [],
+    chefTips: [],
+    commonMistakes: [],
+    servingSuggestions: [],
+    authoredSwaps: [],
   },
   nutrition: { calories: '۴۲۰', state: 'estimate' },
   fit: {
@@ -124,13 +128,37 @@ describe('RecipeDetailPage smoke', () => {
     v.integrity = { total: 2, resolved: 2 };
     useRecipeDetail.mockReturnValue(v);
     renderPage();
-    // grounded swap (was computed by /full but dropped by the UI before)
-    expect(screen.getByRole('heading', { name: 'جایگزین‌های پیشنهادی' })).toBeInTheDocument();
+    // grounded personalized swap (was computed by /full but dropped by the UI before)
+    expect(screen.getByRole('heading', { name: 'جایگزین برای حساسیت‌های تو' })).toBeInTheDocument();
     expect(screen.getByText('لوبیا چیتی، نخود')).toBeInTheDocument();
     // tools + mealType chip + integrity coverage line
     expect(screen.getByRole('heading', { name: 'ابزار لازم' })).toBeInTheDocument();
     expect(screen.getByText('قابلمه')).toBeInTheDocument();
     expect(screen.getByText('شام')).toBeInTheDocument();
     expect(screen.getByText('۲ از ۲ ماده در پایگاه شناخته‌شده')).toBeInTheDocument();
+  });
+
+  it('S3 Option-2: renders DISTINCT premium sections when authored fields are present (not the merged tips blob)', () => {
+    const v = readyValue();
+    v.recipe.chefTips = ['کره را آب کن'];
+    v.recipe.commonMistakes = ['زیاد هم نزن'];
+    v.recipe.servingSuggestions = ['با نان سرو کن'];
+    v.recipe.authoredSwaps = ['به‌جای زعفران، زردچوبه'];
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+    expect(screen.getByRole('button', { name: /نکات سرآشپز/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /اشتباهات رایج/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /پیشنهاد سرو/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /جایگزین‌ها/ })).toBeInTheDocument();
+    // the merged generic tips accordion is NOT shown when distinct sections exist
+    expect(screen.queryByRole('button', { name: /^نکته‌ها$/ })).not.toBeInTheDocument();
+  });
+
+  it('S3 Option-2: falls back to the merged tips accordion when no distinct fields (back-compat)', () => {
+    const v = readyValue(); // chefTips/etc. empty, tips populated
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+    expect(screen.getByRole('button', { name: /نکته‌ها/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /نکات سرآشپز/ })).not.toBeInTheDocument();
   });
 });

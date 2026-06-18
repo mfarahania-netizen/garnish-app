@@ -192,6 +192,12 @@ export class RecipesService {
         : recipe.steps,
       tools: this.parseJsonField(recipe.tools, []),
       tips: this.parseJsonField(recipe.tips, []),
+      // S3 Option-2 — structured richness (additive; parsed only when the column exists, else default [])
+      chefTips: this.parseJsonField(recipe.chefTips, []),
+      commonMistakes: this.parseJsonField(recipe.commonMistakes, []),
+      servingSuggestions: this.parseJsonField(recipe.servingSuggestions, []),
+      substitutions: this.parseJsonField(recipe.substitutions, []),
+      dishType: this.parseJsonField(recipe.dishType, []),
       faq: this.parseJsonField(recipe.faq, []),
       categories: this.parseJsonField(recipe.categories, []),
       allergens: this.parseJsonField(recipe.allergens, []),

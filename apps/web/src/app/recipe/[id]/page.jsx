@@ -5,7 +5,7 @@ import {
   IconChevronRight, IconChevronDown, IconBookmark, IconBookmarkFilled, IconShare2,
   IconClock, IconChartBar, IconUsers, IconHeartCheck, IconAlertTriangle, IconSparkles,
   IconChevronLeft, IconListNumbers, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
-  IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck,
+  IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck, IconChefHat,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
@@ -73,6 +73,15 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
 }
 
 const stepText = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' };
+
+// a plain bullet-free list of richness lines (chef tips / mistakes / serving / swaps)
+function RichList({ items }) {
+  return (
+    <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+      {items.map((t, i) => <Text key={i} component="p" style={{ ...stepText, margin: 0 }}>{t}</Text>)}
+    </Box>
+  );
+}
 
 function RecipeError({ onRetry }) {
   return (
@@ -335,7 +344,7 @@ export default function RecipeDetailPage() {
           {/* Grounded substitutions — allergen/dislike swaps the /full read computes (was dropped by the UI) */}
           {substitutions?.length ? (
             <>
-              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>جایگزین‌های پیشنهادی</Text>
+              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>جایگزین برای حساسیت‌های تو</Text>
               <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
                 {substitutions.map((s, i) => (
                   <Box key={`${s.ingredient}-${i}`} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
@@ -390,8 +399,8 @@ export default function RecipeDetailPage() {
             </Box>
           </Box>
 
-          {/* Method / tips / faq */}
-          {(recipe.steps.length || recipe.tips.length || recipe.faq.length) ? (
+          {/* Method / richness sections / faq */}
+          {(recipe.steps.length || recipe.tips.length || recipe.faq.length || recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
             <>
               <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>روش پخت</Text>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
@@ -407,12 +416,16 @@ export default function RecipeDetailPage() {
                     </Box>
                   </Accordion>
                 ) : null}
-                {recipe.tips.length ? (
-                  <Accordion icon={IconBulb} title="نکته‌ها">
-                    <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
-                      {recipe.tips.map((t, i) => <Text key={i} component="p" style={{ ...stepText, margin: 0 }}>{t}</Text>)}
-                    </Box>
-                  </Accordion>
+                {/* S3 Option-2: distinct premium sections when authored fields exist; else the merged tips fallback */}
+                {(recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
+                  <>
+                    {recipe.chefTips.length ? <Accordion icon={IconChefHat} title="نکات سرآشپز"><RichList items={recipe.chefTips} /></Accordion> : null}
+                    {recipe.commonMistakes.length ? <Accordion icon={IconAlertTriangle} title="اشتباهات رایج"><RichList items={recipe.commonMistakes} /></Accordion> : null}
+                    {recipe.servingSuggestions.length ? <Accordion icon={IconToolsKitchen2} title="پیشنهاد سرو"><RichList items={recipe.servingSuggestions} /></Accordion> : null}
+                    {recipe.authoredSwaps.length ? <Accordion icon={IconArrowsExchange} title="جایگزین‌ها"><RichList items={recipe.authoredSwaps} /></Accordion> : null}
+                  </>
+                ) : recipe.tips.length ? (
+                  <Accordion icon={IconBulb} title="نکته‌ها"><RichList items={recipe.tips} /></Accordion>
                 ) : null}
                 {recipe.faq.length ? (
                   <Accordion icon={IconHelpCircle} title="سؤال‌های پرتکرار">
