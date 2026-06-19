@@ -2,8 +2,9 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconChevronRight, IconLeaf, IconSparkles, IconCloudOff, IconRefresh, IconCheck, IconFlame,
+  IconThumbUp, IconThumbDown, IconMinus,
 } from '@tabler/icons-react';
-import { useFoodDna } from './useFoodDna';
+import { useFoodDna, useTaste } from './useFoodDna';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
@@ -135,6 +136,73 @@ function QuestionCard({ question, remaining, onAnswer, submitting }) {
   );
 }
 
+const STANCES = [
+  { id: 'like', label: 'دوستش دارم', Icon: IconThumbUp },
+  { id: 'dislike', label: 'دوست ندارم', Icon: IconThumbDown },
+  { id: 'neutral', label: 'بی‌تفاوت', Icon: IconMinus },
+];
+
+function TasteRow({ pref, onCorrect, busy, first }) {
+  const phrase = pref.source === 'you'
+    ? (pref.stance === 'like' ? 'گفتی دوستش داری' : 'گفتی دوست نداری')
+    : (pref.stance === 'like' ? 'به‌نظر دوستش داری' : 'به‌نظر دوست نداری');
+  return (
+    <Box style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)' }}>
+      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
+        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{pref.name}</Text>
+        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: pref.source === 'you' ? 'var(--g-color-brand-700)' : 'var(--g-color-text-muted)' }}>
+          {pref.source === 'you' ? '✓ تأیید تو' : phrase}
+        </Text>
+      </Box>
+      <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-2)' }}>
+        {STANCES.map((s) => {
+          const active = s.id === pref.stance; // 'neutral' is never a stored stance, so it never shows active
+          const Icon = s.Icon;
+          return (
+            <UnstyledButton
+              key={s.id}
+              type="button"
+              disabled={busy}
+              aria-pressed={active}
+              onClick={() => onCorrect(pref.ingredientId, s.id)}
+              style={{
+                flex: 1, minBlockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                borderRadius: 'var(--g-radius-chip)',
+                border: `1px solid ${active ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`,
+                background: active ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)',
+                color: active ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)',
+                fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, opacity: busy ? 0.6 : 1,
+              }}
+            >
+              <Icon size={15} stroke={1.8} aria-hidden="true" />{s.label}
+            </UnstyledButton>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function TasteSection({ showToast }) {
+  const { items, loading, correct, correcting } = useTaste();
+  if (loading || !items.length) return null; // honest: nothing until the engine has inferred a taste
+  const onCorrect = async (ingredientId, stance) => {
+    try { await correct(ingredientId, stance); showToast('ذائقه‌ات به‌روز شد', IconCheck); }
+    catch { showToast('ثبت نشد، دوباره تلاش کن', IconCloudOff); }
+  };
+  return (
+    <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
+      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-1)' }}>ذائقهٔ مواد</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '0 0 var(--g-space-3)' }}>
+        این‌ها را از رفتارت حدس زده‌ام. اگر اشتباه است، خودت اصلاحش کن — روی پیشنهادها اثر می‌گذارد، ولی هیچ‌وقت غذایی را حذف نمی‌کند.
+      </Text>
+      <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', boxShadow: 'var(--g-shadow-1)' }}>
+        {items.map((p, i) => <TasteRow key={p.ingredientId} pref={p} onCorrect={onCorrect} busy={correcting} first={i === 0} />)}
+      </Box>
+    </Box>
+  );
+}
+
 export default function FoodDnaPage() {
   const navigate = useNavigate();
   const m = useFoodDna();
@@ -178,6 +246,9 @@ export default function FoodDnaPage() {
         <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
           {(dna?.dimensions || []).map((d) => <DimensionCard key={d.key} dim={d} />)}
         </Box>
+
+        {/* FI-4.1 — user-correctable inferred ingredient taste (hidden until the engine has inferred any) */}
+        <TasteSection showToast={showToast} />
 
         {/* real onboarding question engine entry */}
         <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>

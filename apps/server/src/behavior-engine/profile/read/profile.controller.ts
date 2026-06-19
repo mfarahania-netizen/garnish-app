@@ -8,11 +8,15 @@
 import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ProfileReadService } from './profile-read.service';
+import { TasteCorrectionService, TasteStance } from '../../signals/taste-correction.service';
 
 @Controller('profile')
 @UseGuards(AuthGuard('jwt'))
 export class ProfileController {
-  constructor(private readonly profile: ProfileReadService) {}
+  constructor(
+    private readonly profile: ProfileReadService,
+    private readonly taste: TasteCorrectionService,
+  ) {}
 
   /** Owner-only UNIFIED living profile: observed + declared + reconciled + maturity (canonical entry point). */
   @Get()
@@ -40,5 +44,20 @@ export class ProfileController {
   @Post('answer')
   async answer(@Req() req: any, @Body() body: { key: string; value: unknown }) {
     return this.profile.submitAnswer(req.user.userId, body?.key, body?.value);
+  }
+
+  /**
+   * FI-4.1 — owner read: the soft per-ingredient taste the engine inferred (+ any the user corrected),
+   * resolved to Persian names. Soft taste only; never the declared-allergy hard filter.
+   */
+  @Get('taste')
+  async listTaste(@Req() req: any) {
+    return this.taste.listTastePreferences(req.user.userId);
+  }
+
+  /** FI-4.1 — owner write: correct one inferred ingredient ('like' | 'dislike' | 'neutral'). Reversible. */
+  @Post('taste/correct')
+  async correctTaste(@Req() req: any, @Body() body: { ingredientId: string; stance: TasteStance }) {
+    return this.taste.correctTastePreference(req.user.userId, body?.ingredientId, body?.stance);
   }
 }

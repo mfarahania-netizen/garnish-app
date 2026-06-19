@@ -10,11 +10,12 @@ import { AiCoreModule } from '../../ai/ai-core.module';
 import { QuestionSelectionService } from './onboarding/question-selection.service';
 import { ProfileReadService } from './read/profile-read.service';
 import { ProfileController } from './read/profile.controller';
+import { TasteCorrectionService } from '../signals/taste-correction.service';
 
 @Module({
   imports: [PrismaModule, AiCoreModule],
   controllers: [ProfileController],
-  providers: [QuestionSelectionService, ProfileReadService],
+  providers: [QuestionSelectionService, ProfileReadService, TasteCorrectionService],
   exports: [ProfileReadService, QuestionSelectionService],
 })
 export class ProfileModule {}

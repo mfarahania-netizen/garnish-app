@@ -182,6 +182,8 @@ export class SignalCalculatorService {
     const existing = await this.prisma.userBehaviorSignal.findUnique({
       where: { userId_signalName: { userId, signalName } },
     });
+    // FI-PHASE-4.1: an explicit user correction outranks inferred behavior — never silently overwrite it.
+    if (existing?.signalType === 'ingredient_correction') return;
     const value = clampIngredientSignal((existing?.value ?? 0) + delta);
     const confidence = Math.min(1, (existing?.confidence ?? ING_CONF_FLOOR) + ING_CONF_STEP);
     await this.prisma.userBehaviorSignal.upsert({

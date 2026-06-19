@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,6 +20,36 @@ export function useFoodDnaProjection() {
     queryFn: () => apiClient.get('/profile/dna').then((r) => r.data),
     enabled: !!token,
   });
+}
+
+/**
+ * useTaste — FI-4.1 user-correctable soft taste. Lists the per-ingredient taste the engine inferred (+ any
+ * the user already corrected) from GET /profile/taste, and writes corrections via POST /profile/taste/correct
+ * ('like' | 'dislike' | 'neutral'). Reversible; soft taste only (never the declared-allergy hard filter).
+ * On success it refreshes both the taste list and the DNA projection (a correction can nudge the picture).
+ */
+export function useTaste() {
+  const { token } = useAuth();
+  const qc = useQueryClient();
+  const list = useQuery({
+    queryKey: ['profile', 'taste'],
+    queryFn: () => apiClient.get('/profile/taste').then((r) => r.data),
+    enabled: !!token,
+  });
+  const correctMutation = useMutation({
+    mutationFn: ({ ingredientId, stance }) =>
+      apiClient.post('/profile/taste/correct', { ingredientId, stance }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['profile', 'taste'] });
+      qc.invalidateQueries({ queryKey: ['profile', 'dna'] });
+    },
+  });
+  return {
+    items: Array.isArray(list.data) ? list.data : [],
+    loading: list.isLoading,
+    correct: (ingredientId, stance) => correctMutation.mutateAsync({ ingredientId, stance }),
+    correcting: correctMutation.isPending,
+  };
 }
 
 export function useFoodDna() {
