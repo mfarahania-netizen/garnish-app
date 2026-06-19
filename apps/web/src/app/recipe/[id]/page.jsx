@@ -11,9 +11,11 @@ import { useRecipeDetail } from './useRecipeDetail';
 import GrisRecipe from './GrisRecipe';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
+import { usePersonalization } from '../../../hooks/usePersonalization';
 import { useAuth } from '../../../context/AuthContext';
 import apiClient from '../../../lib/apiClient';
 import { toFaDigits } from '../../../components/ges/format';
+import { extractBaseServings, scaleAmountText, parseQuantity } from '../../../components/ges/scaling';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
 import NutritionBadge from '../../../components/ges/NutritionBadge';
@@ -81,6 +83,18 @@ function RichList({ items }) {
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
       {items.map((t, i) => <Text key={i} component="p" style={{ ...stepText, margin: 0 }}>{t}</Text>)}
     </Box>
+  );
+}
+
+// the recipe amount, rescaled for the chosen serving count. Non-numeric amounts («به‌مزه») can't be
+// scaled honestly — they show unchanged with a quiet «(ثابت)» note only while a non-1 scale is active.
+function ScaledAmount({ amountText, factor }) {
+  const display = scaleAmountText(amountText, factor);
+  const fixed = factor !== 1 && !parseQuantity(amountText).scalable;
+  return (
+    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>
+      {display}{fixed ? <Text component="span" style={{ marginInlineStart: 4, opacity: 0.75 }}>(ثابت)</Text> : null}
+    </Text>
   );
 }
 
@@ -221,7 +235,10 @@ export default function RecipeDetailPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
   const [planBusy, setPlanBusy] = useState(false);
-  const [servedFor, setServedFor] = useState(null); // locally-applied serving target from the AI sheet
+  // shared session personalization {servedFor, swaps, removed} — also read by Cook Mode (Phase 0 layer)
+  const baseServings = extractBaseServings(recipe?.servingsText, 4);
+  const perso = usePersonalization(id, baseServings);
+  const { servedFor, scaleFactor } = perso;
   const [sub, setSub] = useState(null); // { ingredient, loading, items } — grounded substitution sheet
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
@@ -290,10 +307,7 @@ export default function RecipeDetailPage() {
 
   const isAllergen = fit?.recommendation === 'avoid_allergen';
   const isGreat = fit?.recommendation === 'great_fit';
-  const baseServings = (() => {
-    const m = String(recipe.servingsText || '').replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).match(/\d+/);
-    return m ? Number(m[0]) : 4;
-  })();
+  const scaled = scaleFactor !== 1;
 
   return (
     <Column>
@@ -374,19 +388,22 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
-          {gris ? <GrisRecipe gris={gris} /> : null}
+          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} /> : null}
           {!gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (
             <>
-              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>مواد لازم</Text>
+              <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>
+                <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>مواد لازم</Text>
+                {scaled ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>تنظیم‌شده برای {toFaDigits(servedFor)} نفر</Text> : null}
+              </Box>
               <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
                 {recipe.ingredients.map((ing, i) => (
                   <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
                     <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-brand-300)', flexShrink: 0 }} />
                     <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
                     <UnstyledButton type="button" onClick={() => askSub(ing.name)} aria-label={`جایگزین برای ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
-                    {ing.amountText ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{ing.amountText}</Text> : null}
+                    {ing.amountText ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
                   </Box>
                 ))}
               </Box>
@@ -524,7 +541,7 @@ export default function RecipeDetailPage() {
         recipeTitle={recipe.title}
         baseServings={servedFor ?? baseServings}
         ingredients={recipe.ingredients}
-        onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
+        onApplyServings={(n) => { perso.setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها هم تنظیم شدند`, IconUsers); }}
       />
       <PlanPickerSheet opened={planOpen} onClose={() => setPlanOpen(false)} busy={planBusy} onConfirm={addToPlan} />
       <SubSheet sub={sub} onClose={() => setSub(null)} />

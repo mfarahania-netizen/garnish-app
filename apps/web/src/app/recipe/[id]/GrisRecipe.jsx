@@ -6,6 +6,7 @@ import {
   IconBook, IconFlask, IconSchool, IconInfoCircle, IconHelpCircle, IconArchive, IconSparkles,
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
+import { scaleWeightG, scaleAmountText } from '../../../components/ges/scaling';
 
 /**
  * GrisRecipe — renders the full Garnish Recipe Intelligence Standard (GRIS v2) object as a premium,
@@ -50,9 +51,10 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
   );
 }
 
-export default function GrisRecipe({ gris }) {
+export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null }) {
   if (!gris) return null;
   const g = gris;
+  const scaled = scaleFactor !== 1;
   const ing = list(g.ingredients);
   // group ingredients by component
   const groups = {};
@@ -96,7 +98,7 @@ export default function GrisRecipe({ gris }) {
             {typeof g.glance.handsOffMin === 'number' ? <Chip>🤲 بی‌دخالت: {fa(g.glance.handsOffMin)} دقیقه</Chip> : null}
             {g.glance.difficulty ? <Chip>📊 {g.glance.difficulty}</Chip> : null}
             {g.glance.costBand ? <Chip>💰 {g.glance.costBand}</Chip> : null}
-            {typeof g.glance.servings === 'number' ? <Chip>🍽️ {fa(g.glance.servings)} نفر</Chip> : null}
+            {typeof g.glance.servings === 'number' || servedFor ? <Chip tone={scaled ? 'brand' : undefined}>🍽️ {fa(servedFor || g.glance.servings)} نفر{scaled ? ' (تنظیم‌شده)' : ''}</Chip> : null}
           </Box>
           {list(g.glance.keyEquipment).length ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-2) 0 0' }}>🔧 ابزار: {g.glance.keyEquipment.join(' · ')}</Text> : null}
           {list(g.glance.goodFor).length ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-1) 0 0' }}>👌 مناسبِ: {g.glance.goodFor.join(' · ')}</Text> : null}
@@ -117,21 +119,26 @@ export default function GrisRecipe({ gris }) {
       {ing.length ? (
         <>
           <H2 icon={IconToolsKitchen2}>مواد لازم</H2>
+          {scaled && servedFor ? <Text component="p" style={{ ...muted, margin: '0 0 var(--g-space-2)', color: 'var(--g-color-brand-700)', fontWeight: 600 }}>↕️ تنظیم‌شده برای {fa(servedFor)} نفر</Text> : null}
           {Object.entries(groups).map(([comp, items]) => (
             <Box key={comp || 'main'} style={{ marginBlockEnd: 'var(--g-space-3)' }}>
               {comp ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-brand-700)', margin: '0 0 var(--g-space-2)' }}>برای {comp}</Text> : null}
               <Box style={card}>
-                {items.map((it, i) => (
+                {items.map((it, i) => {
+                  const sw = scaleWeightG(it.weightG, scaleFactor);
+                  const amount = [sw != null ? `${fa(sw)}g` : null, it.volume ? scaleAmountText(it.volume, scaleFactor) : null].filter(Boolean).join(' · ');
+                  return (
                   <Box key={i} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
                     <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
                       <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{it.name}{it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
-                      <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{[typeof it.weightG === 'number' ? `${fa(it.weightG)}g` : null, it.volume].filter(Boolean).join(' · ')}</Text>
+                      <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{amount}</Text>
                     </Box>
                     {it.role ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
                     {it.buyTip ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🛒 {it.buyTip}</Text> : null}
                     {it.swap ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {it.swap}</Text> : null}
                   </Box>
-                ))}
+                  );
+                })}
               </Box>
             </Box>
           ))}
