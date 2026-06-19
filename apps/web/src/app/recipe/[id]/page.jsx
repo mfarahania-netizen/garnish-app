@@ -169,6 +169,47 @@ function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
   );
 }
 
+// grounded substitution results for one ingredient (real POST /ai/substitutions). Honest: shows the
+// same-role swaps from the corpus, an empty state when none, and the non-medical + allergy-safe note.
+function SubSheet({ sub, onClose }) {
+  return (
+    <Drawer
+      opened={!!sub}
+      onClose={onClose}
+      position="bottom"
+      zIndex={400}
+      withCloseButton
+      closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }}
+      title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>جایگزین برای {sub?.ingredient}</Text>}
+      overlayProps={{ backgroundOpacity: 0.42, blur: 1 }}
+      transitionProps={{ transition: 'slide-up', duration: 240 }}
+      styles={bottomSheetStyles({ content: { height: 'auto', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } })}
+    >
+      {sub?.loading ? (
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', paddingBlock: 'var(--g-space-2)' }}>
+          <SkeletonLine w="80%" h={18} /><SkeletonLine w="60%" h={18} />
+        </Box>
+      ) : sub?.items?.length ? (
+        <>
+          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
+            {sub.items.map((it, i) => (
+              <Box key={`${it}-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>
+                <IconArrowsExchange size={15} stroke={1.8} aria-hidden="true" />{it}
+              </Box>
+            ))}
+          </Box>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
+            <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>جای‌گزین‌های هم‌نقش از پایگاه مواد — راهنمایی آشپزی، نه توصیهٔ پزشکی. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
+          </Box>
+        </>
+      ) : (
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', paddingBlock: 'var(--g-space-2)', margin: 0 }}>برای این ماده جایگزینِ هم‌نقشی در پایگاه پیدا نشد.</Text>
+      )}
+    </Drawer>
+  );
+}
+
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -180,6 +221,7 @@ export default function RecipeDetailPage() {
   const [planOpen, setPlanOpen] = useState(false);
   const [planBusy, setPlanBusy] = useState(false);
   const [servedFor, setServedFor] = useState(null); // locally-applied serving target from the AI sheet
+  const [sub, setSub] = useState(null); // { ingredient, loading, items } — grounded substitution sheet
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   const viewedRef = useRef(false); // fire recipe_view at most once per recipe (StrictMode-safe)
@@ -223,6 +265,22 @@ export default function RecipeDetailPage() {
       setPlanBusy(false);
     }
   }, [id, showToast, trackEvent]);
+
+  // real grounded substitution for one ingredient → POST /ai/substitutions (deterministic, no live LLM).
+  // declared allergies stay a hard filter server-side; this only proposes same-role swaps from the corpus.
+  const askSub = useCallback(async (name) => {
+    if (!name) return;
+    setSub({ ingredient: name, loading: true, items: null });
+    try {
+      const { data } = await apiClient.post('/ai/substitutions', { ingredient: name, limit: 5 });
+      const items = Array.isArray(data?.substitutions)
+        ? data.substitutions.map((s) => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
+        : [];
+      setSub({ ingredient: name, loading: false, items });
+    } catch {
+      setSub({ ingredient: name, loading: false, items: [] });
+    }
+  }, []);
 
   const saved = isFavorite(id);
 
@@ -323,7 +381,7 @@ export default function RecipeDetailPage() {
                   <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
                     <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-brand-300)', flexShrink: 0 }} />
                     <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
-                    <UnstyledButton type="button" onClick={() => showToast('سرِ پخت، جایگزین پیشنهاد می‌دم', IconSparkles)} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
+                    <UnstyledButton type="button" onClick={() => askSub(ing.name)} aria-label={`جایگزین برای ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>جایگزین؟</UnstyledButton>
                     {ing.amountText ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{ing.amountText}</Text> : null}
                   </Box>
                 ))}
@@ -463,6 +521,7 @@ export default function RecipeDetailPage() {
         onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
       />
       <PlanPickerSheet opened={planOpen} onClose={() => setPlanOpen(false)} busy={planBusy} onConfirm={addToPlan} />
+      <SubSheet sub={sub} onClose={() => setSub(null)} />
       <Toast toast={toast} />
     </Column>
   );
