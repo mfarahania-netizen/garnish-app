@@ -12,7 +12,12 @@ if (!globalThis.localStorage) {
 }
 
 // Mock the data hook; each test sets the state under test (mirrors the plan/home smoke pattern).
-vi.mock('./useFoodDna', () => ({ useFoodDna: vi.fn(), useFoodDnaProjection: vi.fn() }));
+// useTaste (FI-4.1) is stubbed empty so the page's «ذائقهٔ مواد» section stays hidden in these smokes.
+vi.mock('./useFoodDna', () => ({
+  useFoodDna: vi.fn(),
+  useFoodDnaProjection: vi.fn(),
+  useTaste: vi.fn(() => ({ items: [], loading: false, correct: vi.fn(), correcting: false })),
+}));
 import { useFoodDna } from './useFoodDna';
 
 const DIMS = [

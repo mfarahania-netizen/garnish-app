@@ -518,6 +518,7 @@ export default function RecipeDetailPage() {
         onClose={() => setSheetOpen(false)}
         recipeTitle={recipe.title}
         baseServings={servedFor ?? baseServings}
+        ingredients={recipe.ingredients}
         onApplyServings={(n) => { setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها رو متناسب کن`, IconUsers); }}
       />
       <PlanPickerSheet opened={planOpen} onClose={() => setPlanOpen(false)} busy={planBusy} onConfirm={addToPlan} />
