@@ -54,6 +54,7 @@ export class SuggestSubstitutionsTool implements AiTool {
       allergens: true,
       dietFlags: true,
       substitutionOptions: true,
+      nutritionConfidence: true,
     } as const;
 
     let source: any = null;
@@ -71,7 +72,15 @@ export class SuggestSubstitutionsTool implements AiTool {
         select,
       });
       source = matches[0] ?? null;
-      if (source?.category) {
+      // CURATED-AUTHORITATIVE (FI data-quality): if the ingredient has curated substitutionOptions OR its
+      // nutrition is source-locked/verified, its curated list IS the truth — do NOT pad with coarse
+      // same-category peers (that padding surfaced irrelevant swaps like سیب‌زمینی→گوجه). Same-category is a
+      // fallback ONLY for ingredients that have no curated data yet (pre-enrichment long tail).
+      const curatedCount = toStringArray(source?.substitutionOptions).length;
+      const sourceLocked =
+        typeof source?.nutritionConfidence === 'string' && source.nutritionConfidence.startsWith('source_locked');
+      const useCuratedOnly = curatedCount > 0 || sourceLocked;
+      if (source?.category && !useCuratedOnly) {
         categoryPeers = await this.prisma.ingredient.findMany({
           where: { category: source.category, NOT: { id: source.id } },
           take: 24,

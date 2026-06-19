@@ -1,0 +1,580 @@
+[
+  {
+    "ingredientId": "ing_salt_table",
+    "nameFa": "نمک خوراکی",
+    "nameEn": "table salt",
+    "finalNutrition": {
+      "calories": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 38758
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "173468",
+      "foodDescription": "Salt, table",
+      "url": "https://fdc.nal.usda.gov/food-details/173468/nutrients"
+    },
+    "substitutions": [],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "none_proposed",
+    "verdictNotes": "Sodium 38758 mg/100g confirmed against USDA SR Legacy 173468 within ~0.02%; all macros 0. Empty substitutions are correct: dictionary has exactly one 'salt' entry. The pre-existing current_subs (salt -> black pepper) is invalid and must be removed (pepper provides no salinity).",
+    "flags": [
+      "REMOVE existing current_subs: salt -> ing_black_pepper_ground is not a real same-role swap.",
+      "Iodization (iodized vs non-iodized) and trace minerals are out of scope for the 7-macro schema (acceptable)."
+    ]
+  },
+  {
+    "ingredientId": "ing_black_pepper_ground",
+    "nameFa": "فلفل سیاه آسیاب‌شده",
+    "nameEn": "ground black pepper",
+    "finalNutrition": {
+      "calories": 251,
+      "protein": 10.39,
+      "fat": 3.26,
+      "carbs": 63.95,
+      "fiber": 25.3,
+      "sugar": 0.64,
+      "sodium": 20
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "170931",
+      "foodDescription": "Spices, pepper, black",
+      "url": "https://fdc.nal.usda.gov/food-details/170931/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "فلفل سفید آسیاب‌شده",
+        "reason": "هم‌خانواده فلفل با تندی و عطر مشابه؛ در همان نقش چاشنی‌دهی به‌کار می‌رود (در غذاهای روشن از نظر رنگ ترجیح داده می‌شود).",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "All 7 values confirmed against USDA SR Legacy 170931 within rounding. White pepper exists in dictionary (line 846) and is a genuine same-role swap. Enrichment correctly rejected paprika (file's prior sub) as not a pungency swap.",
+    "flags": [
+      "Upgrade current_confidence from estimated_source_id_pending to source-locked with fdcId 170931.",
+      "REPLACE existing current_subs (paprika) with white pepper.",
+      "Commercial ground pepper may need a 'may contain' note (shared lines with gluten/mustard/celery)."
+    ]
+  },
+  {
+    "ingredientId": "ing_onion_raw",
+    "nameFa": "پیاز خام",
+    "nameEn": "onion, raw",
+    "finalNutrition": {
+      "calories": 40,
+      "protein": 1.1,
+      "fat": 0.1,
+      "carbs": 9.34,
+      "fiber": 1.7,
+      "sugar": 4.24,
+      "sodium": 4
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "170000",
+      "foodDescription": "Onions, raw",
+      "url": "https://fdc.nal.usda.gov/food-details/170000"
+    },
+    "substitutions": [
+      {
+        "name": "پیاز قرمز خام",
+        "reason": "همان پیاز سرخ‌شدنی؛ تقریباً در تمام کاربردها قابل تعویض، فقط کمی تندتر/شیرین‌تر.",
+        "inDictionary": true
+      },
+      {
+        "name": "شالوت خام",
+        "reason": "از خانواده پیاز با طعم ملایم‌تر؛ جایگزین خوب پیاز در سرخ‌کردن و سس.",
+        "inDictionary": true
+      },
+      {
+        "name": "تره‌فرنگی خام",
+        "reason": "آلیوم با طعم ملایم؛ جایگزین مناسب پیاز پخته در سوپ و خوراک.",
+        "inDictionary": true
+      },
+      {
+        "name": "پیازچه خام",
+        "reason": "آلیوم ملایم؛ در صورت نبود پیاز برای طعم پایه قابل استفاده، مخصوصاً خام/تزئین.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Source-locked to RAW USDA 170000 (not cooked/dehydrated); all values match independent lookup. All 4 subs exist verbatim in dictionary and are role-appropriate alliums. Garlic and fennel bulb correctly excluded.",
+    "flags": [
+      "keto_friendly flag and empty mayContain are advisory only.",
+      "USDA entry is generic 'Onions, raw' (variety unspecified) — acceptable."
+    ]
+  },
+  {
+    "ingredientId": "ing_sunflower_oil",
+    "nameFa": "روغن آفتابگردان",
+    "nameEn": "sunflower oil",
+    "finalNutrition": {
+      "calories": 884,
+      "protein": 0,
+      "fat": 100,
+      "carbs": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 0
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "171025",
+      "foodDescription": "Oil, sunflower, linoleic, (approx. 65%)",
+      "url": "https://fdc.nal.usda.gov/food-details/171025/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "روغن کانولا",
+        "reason": "روغن گیاهی خنثی با نقطه دود بالا؛ برای سرخ‌کردن و پخت‌وپز عمومی جایگزین مستقیم است.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن هسته انگور",
+        "reason": "روغن بی‌طعم با نقطه دود بالا؛ در تفت‌دادن و سرخ‌کردن همان نقش را ایفا می‌کند.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن سبوس برنج",
+        "reason": "روغن خنثی و مقاوم در برابر حرارت؛ مناسب سرخ‌کردن و پخت عمومی.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن آووکادوی تصفیه‌شده",
+        "reason": "روغن تصفیه‌شده با طعم ملایم و نقطه دود بالا؛ جایگزین مناسب برای پخت با حرارت بالا.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Nutrition exact match (0% deviation) to USDA 171025. Two independent enrichment+verdict passes both PASS; merged substitution set (canola, grapeseed, rice bran, refined avocado; one pass also offered peanut oil — flagged as a peanut allergen, see flags). All neutral high-smoke-point oils; olive/sesame/coconut correctly excluded.",
+    "flags": [
+      "Upgrade current_confidence to source-locked with fdcId 171025.",
+      "Macros identical across linoleic/high-oleic/mid-oleic varieties; only fatty-acid profile differs (no impact on 7 macros).",
+      "OPTIONAL 5th sub from second pass: روغن بادام‌زمینی (peanut oil) — valid same-role swap but carries the PEANUT allergen; include only with an explicit allergen warning."
+    ]
+  },
+  {
+    "ingredientId": "ing_garlic_raw",
+    "nameFa": "سیر خام",
+    "nameEn": "garlic, raw",
+    "finalNutrition": {
+      "calories": 149,
+      "protein": 6.36,
+      "fat": 0.5,
+      "carbs": 33.06,
+      "fiber": 2.1,
+      "sugar": 1,
+      "sodium": 17
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "169230",
+      "foodDescription": "Garlic, raw",
+      "url": "https://fdc.nal.usda.gov/food-details/169230/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "خمیر سیر",
+        "reason": "همان طعم سیر، جایگزین تقریباً ۱:۱ در پایه معطر و سس‌ها (۱ حبه ≈ نصف قاشق چای‌خوری خمیر).",
+        "inDictionary": true
+      },
+      {
+        "name": "سیر کبابی",
+        "reason": "همان سیر اما ملایم‌تر و شیرین‌تر؛ در غذاهای پخته/سس‌ها به‌جای سیر خام کار می‌کند (تندی خام را ندارد).",
+        "inDictionary": true
+      },
+      {
+        "name": "شالوت خام",
+        "reason": "جایگزین کلاسیک پایه معطر؛ ترکیب طعم سیر و پیاز را می‌دهد و در سوته و سس مناسب است.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Two independent enrichment+verdict passes, both PASS, both with identical subs (garlic paste, roasted garlic, shallot). Nutrition matches USDA 169230 byte-for-byte (net-carb math 30.96 = 33.06 - 2.1 cross-validates). Enrichment correctly dropped the file's weak onion sub.",
+    "flags": [
+      "Record fdcId 169230 explicitly; confidence can stay/upgrade to source-locked.",
+      "REPLACE existing current_subs (raw onion) with garlic paste / roasted garlic.",
+      "Allium/FODMAP sensitivity could be noted in allergens.other (non-Big-9)."
+    ]
+  },
+  {
+    "ingredientId": "ing_butter_unsalted",
+    "nameFa": "کره بدون نمک",
+    "nameEn": "unsalted butter",
+    "finalNutrition": {
+      "calories": 717,
+      "protein": 0.85,
+      "fat": 81.11,
+      "carbs": 0.06,
+      "fiber": 0,
+      "sugar": 0.06,
+      "sodium": 11
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "173430",
+      "foodDescription": "Butter, without salt",
+      "url": "https://fdc.nal.usda.gov/food-details/173430/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "کره شور",
+        "reason": "کره شور هم‌نقش کامل کره بدون نمک است؛ فقط باید نمک رسپی را کاهش داد.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن حیوانی/گی",
+        "reason": "گی (کره صاف‌شده) در تفت‌دادن و طعم کره‌ای جایگزین مناسبی است؛ آب و پروتئین شیر ندارد.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Source-locked to UNSALTED entry 173430 (sodium 11 mg), correctly NOT the salted entry 173410 (643 mg). Values restore USDA precision vs the file's rounded numbers. Salted butter and ghee are genuine same-role swaps; the file's whole-milk sub correctly dropped.",
+    "flags": [
+      "DATA-SAFETY: existing dietFlags wrongly include 'vegan' and 'dairy_free' on a dairy butter that lists milk allergen — contradiction must be fixed.",
+      "REPLACE existing current_subs (whole milk) with salted butter / ghee."
+    ]
+  },
+  {
+    "ingredientId": "ing_whole_egg_raw",
+    "nameFa": "تخم‌مرغ کامل خام",
+    "nameEn": "whole egg, raw",
+    "finalNutrition": {
+      "calories": 143,
+      "protein": 12.56,
+      "fat": 9.51,
+      "carbs": 0.72,
+      "fiber": 0,
+      "sugar": 0.37,
+      "sodium": 142
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "748967",
+      "foodDescription": "Egg, whole, raw, fresh (SR Legacy / NDB 01123)",
+      "url": "https://fdc.nal.usda.gov/food-details/748967/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "تخم اردک خام",
+        "reason": "تخم پرنده با همان نقش آشپزی (بایندر و ساختار)؛ کمی درشت‌تر و چرب‌تر، تقریباً ۱:۱.",
+        "inDictionary": true
+      },
+      {
+        "name": "تخم بلدرچین خام",
+        "reason": "همان نقش تخم‌مرغ؛ ریزتر است، حدود ۳ تا ۴ عدد به‌جای یک تخم‌مرغ کامل.",
+        "inDictionary": true
+      },
+      {
+        "name": "تخم غاز خام",
+        "reason": "تخم پرنده هم‌نقش برای بایندری/ساختار؛ بزرگ‌تر، مقدار را وزنی تنظیم کنید.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "All 7 values match USDA 'Egg, whole, raw, fresh' (NDB 01123) within ~1%. All 3 bird-egg subs exist in dictionary and are genuine whole-egg swaps (with quantity notes). Egg yolk/white correctly excluded as components. No plant-based whole-egg sub exists in the dictionary, so the file's tofu sub is unconfirmable.",
+    "flags": [
+      "Cited deep-link URL (748967) is stale/404 but the values are correct and corroborated across mirrors.",
+      "Existing record's current_subs (firm tofu) cannot be confirmed in dictionary — do not carry it forward.",
+      "Consider adding 'vegetarian' to dietFlags (whole egg is lacto-ovo vegetarian)."
+    ]
+  },
+  {
+    "ingredientId": "ing_olive_oil",
+    "nameFa": "روغن زیتون",
+    "nameEn": "olive oil",
+    "finalNutrition": {
+      "calories": 884,
+      "protein": 0,
+      "fat": 100,
+      "carbs": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 2
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "171413",
+      "foodDescription": "Oil, olive, salad or cooking",
+      "url": "https://fdc.nal.usda.gov/food-details/171413/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "روغن کانولا",
+        "reason": "روغن گیاهی خنثی با نقطه دود بالا؛ برای سرخ‌کردن، تفت‌دادن و پخت عمومی جایگزین مناسبی است.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن آفتابگردان",
+        "reason": "روغن گیاهی خنثی و مایع؛ در پخت و سرخ‌کردن عمومی هم‌نقش روغن زیتون عمل می‌کند.",
+        "inDictionary": true
+      },
+      {
+        "name": "روغن آووکادو",
+        "reason": "روغن گیاهی مایع با نقطه دود بالا و طعم ملایم؛ برای پخت و سس‌سازی جایگزین قابل‌قبولی است.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Nutrition matches USDA 171413 byte-for-byte across three independent mirrors. All 3 subs exist in dictionary and are role-equivalent neutral culinary oils.",
+    "flags": [
+      "EVOO vs generic 'salad or cooking' oil ambiguity — a separate EVOO row may be needed if recipes require it.",
+      "REPLACE/EXPAND existing current_subs (only canola) with the full set above.",
+      "Empty mayContain — confirm intentional."
+    ]
+  },
+  {
+    "ingredientId": "ing_caster_sugar",
+    "nameFa": "شکر دانه‌ریز",
+    "nameEn": "caster sugar",
+    "finalNutrition": {
+      "calories": 387,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 99.98,
+      "fiber": 0,
+      "sugar": 99.8,
+      "sodium": 1
+    },
+    "nutritionCorrected": true,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "169655",
+      "foodDescription": "Sugars, granulated",
+      "url": "https://fdc.nal.usda.gov/food-details/169655/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "پودر قند",
+        "reason": "همان ساکارز خالص با ذرات ریزتر؛ در بیشتر کاربردهای شیرین‌کردن خشک تقریباً ۱:۱ جایگزین می‌شود.",
+        "inDictionary": true
+      },
+      {
+        "name": "شکر قهوه‌ای روشن",
+        "reason": "شکر گرانوله به‌علاوه‌ی کمی ملاس؛ تقریباً ۱:۱ به‌عنوان شکر خشک کار می‌کند، با کمی رطوبت و طعم بیشتر.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "IMPORTANT CORRECTION: the file's existing numbers (sugar 74.9, carbs 83.5, calories 310) were UNDER-ESTIMATES for pure sucrose. Corrected to USDA 'Sugars, granulated' 169655: 387 kcal / 99.98 carbs / 99.8 sugar / 1 mg sodium. Caster sugar = finely granulated pure sucrose. Powdered sugar and light brown sugar are sound dry-sugar swaps; golden syrup (wet) correctly excluded.",
+    "flags": [
+      "NUTRITION CHANGED vs existing record (this is a real correction, not a re-statement).",
+      "Normalize allergens field: currently [] (empty array) instead of the {us9,eu14,other,mayContain} object used elsewhere.",
+      "Upgrade current_confidence to source-locked; REPLACE existing current_subs (golden syrup)."
+    ]
+  },
+  {
+    "ingredientId": "ing_saffron",
+    "nameFa": "زعفران",
+    "nameEn": "saffron",
+    "finalNutrition": {
+      "calories": 310,
+      "protein": 11.43,
+      "fat": 5.85,
+      "carbs": 65.37,
+      "fiber": 3.9,
+      "sugar": 0,
+      "sodium": 148
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "170934",
+      "foodDescription": "Spices, saffron (NDB 02037)",
+      "url": "https://fdc.nal.usda.gov/food-details/170934/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "زردچوبه آسیاب‌شده",
+        "reason": "جایگزین فقط برای نقش رنگ‌دهی (زردِ طلایی در پلو و خورش) وقتی زعفران در دسترس نیست؛ عطر گل‌مانند زعفران را بازتولید نمی‌کند.",
+        "inDictionary": true,
+        "colorRoleOnly": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Two independent enrichment+verdict passes, both PASS on nutrition. SUBSTITUTION DIVERGENCE between the two passes: pass A proposed an EMPTY list (saffron is near-irreplaceable); pass B proposed ground turmeric for the COLOR role only. Chosen: include ground turmeric flagged colorRoleOnly=true (honest, dictionary-confirmed, color-only) rather than silently empty. fdcId METADATA FIX: SR Legacy 'Spices, saffron' is fdcId 170934, not the 170935 cited by enrichment (NDB 02037 and all numbers are correct).",
+    "flags": [
+      "fdcId CORRECTED 170935 -> 170934 (metadata only; numbers unchanged).",
+      "REMOVE existing current_subs: saffron -> ing_salt_table is nonsensical (a substitution-logic red flag).",
+      "Per-100g macros are nutritionally near-irrelevant since saffron is dosed in pinches.",
+      "Substitution is COLOR-ONLY (does not reproduce aroma) — must be surfaced to the user."
+    ]
+  },
+  {
+    "ingredientId": "ing_tomato_paste",
+    "nameFa": "رب گوجه‌فرنگی",
+    "nameEn": "tomato paste",
+    "finalNutrition": {
+      "calories": 82,
+      "protein": 4.32,
+      "fat": 0.47,
+      "carbs": 18.9,
+      "fiber": 4.1,
+      "sugar": 12.2,
+      "sodium": 59
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "170459",
+      "foodDescription": "Tomato products, canned, paste, without salt added",
+      "url": "https://fdc.nal.usda.gov/food-details/170459/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "پاساتای گوجه‌فرنگی",
+        "reason": "همان پایهٔ گوجهٔ پخته است؛ رقیق‌تر از رب، پس برای غلظت برابر باید مقدار بیشتری استفاده شود.",
+        "inDictionary": true
+      },
+      {
+        "name": "پوره گوجه‌فرنگی",
+        "reason": "پوره گوجه نقش پایهٔ گوجهٔ غلیظ را ایفا می‌کند؛ کمی رقیق‌تر و کم‌اسیدتر از رب.",
+        "inDictionary": true
+      },
+      {
+        "name": "پوره گوجه کنسروی",
+        "reason": "جایگزین کنسروی هم‌نقش برای پایهٔ گوجه در خورش و سس؛ غلظت کمتر از رب دارد.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "Matched to the 'without salt added' USDA entry 170459 (the salted variant ~224 mg sodium correctly rejected). All 7 values confirmed across two mirrors. All 3 cooked-tomato-base subs exist in dictionary; pomegranate molasses (shares the word 'رب') correctly excluded as a sour condiment.",
+    "flags": [
+      "Upgrade current_confidence to source-locked; persist fdcId 170459.",
+      "If the typical Iranian retail product is salted, sodium 59 mg may under-state real-world sodium (salted version ~200+ mg).",
+      "Commercial brands may need a sulfite/additive 'may contain' note."
+    ]
+  },
+  {
+    "ingredientId": "ing_potato_raw",
+    "nameFa": "سیب‌زمینی خام",
+    "nameEn": "potato, raw",
+    "finalNutrition": {
+      "calories": 77,
+      "protein": 2.05,
+      "fat": 0.09,
+      "carbs": 17.49,
+      "fiber": 2.1,
+      "sugar": 0.82,
+      "sodium": 6
+    },
+    "nutritionCorrected": false,
+    "nutritionSource": {
+      "db": "USDA FoodData Central (SR Legacy)",
+      "fdcId": "170026",
+      "foodDescription": "Potatoes, flesh and skin, raw",
+      "url": "https://fdc.nal.usda.gov/food-details/170026/nutrients"
+    },
+    "substitutions": [
+      {
+        "name": "سیب‌زمینی شیرین خام",
+        "reason": "غده نشاسته‌ای هم‌نقش؛ برای پخت، له‌کردن و کبابی جایگزین مناسبی است (طعم شیرین‌تر).",
+        "inDictionary": true
+      },
+      {
+        "name": "کاساوا خام",
+        "reason": "ریشه نشاسته‌ای؛ در آب‌پز و سرخ‌کردن نقش مشابه سیب‌زمینی دارد.",
+        "inDictionary": true
+      },
+      {
+        "name": "یام خام",
+        "reason": "غده نشاسته‌ای؛ جایگزین واقعی سیب‌زمینی در آب‌پز و له‌کردن.",
+        "inDictionary": true
+      },
+      {
+        "name": "تارو خام",
+        "reason": "ریشه نشاسته‌ای؛ در خورش و آب‌پز مانند سیب‌زمینی استفاده می‌شود.",
+        "inDictionary": true
+      }
+    ],
+    "verdict": "pass",
+    "nutritionVerdict": "confirmed",
+    "substitutionVerdict": "ok",
+    "verdictNotes": "All 7 values match USDA 170026 (flesh and skin, raw) within rounding. RAW form correctly selected. All 4 starchy tuber/root subs exist in dictionary; sweet potato and cassava strongest, yam/taro valid but regional. File's prior tomato sub correctly replaced.",
+    "flags": [
+      "REPLACE existing current_subs: potato -> ing_tomato_raw is not a same-role swap for a starchy tuber.",
+      "Upgrade current_confidence to source-locked (fdcId 170026 corroborated).",
+      "Nightshade/solanine is informational only, not a Big-9 allergen."
+    ]
+  },
+  {
+    "ingredientId": "ing_turmeric_ground",
+    "nameFa": "زردچوبه آسیاب‌شده",
+    "nameEn": "ground turmeric",
+    "finalNutrition": null,
+    "nutritionSource": null,
+    "substitutions": [],
+    "verdict": "not_processed",
+    "nutritionVerdict": "not_run",
+    "substitutionVerdict": "not_run",
+    "verdictNotes": "NOT INCLUDED in this verification batch. The 15 supplied enrichment+verdict records covered only 11 unique ingredients (sunflower oil, garlic, and saffron were each processed twice). Turmeric received neither an enrichment nor a verdict, so there is nothing verified to apply. Do not apply existing unverified numbers.",
+    "flags": [
+      "Must be re-run through the enrichment + independent-verdict pipeline before scaling."
+    ]
+  },
+  {
+    "ingredientId": "ing_all_purpose_flour",
+    "nameFa": "آرد گندم سفید",
+    "nameEn": "all-purpose wheat flour",
+    "finalNutrition": null,
+    "nutritionSource": null,
+    "substitutions": [],
+    "verdict": "not_processed",
+    "nutritionVerdict": "not_run",
+    "substitutionVerdict": "not_run",
+    "verdictNotes": "NOT INCLUDED in this verification batch (see turmeric note). No verified data to apply. Caution: the existing record's sub (flour -> seitan) carries gluten and must be reviewed for allergen safety before any use.",
+    "flags": [
+      "Must be re-run through the pipeline.",
+      "ALLERGEN: existing sub seitan is gluten-containing — unsafe for gluten-sensitive users without an explicit warning."
+    ]
+  },
+  {
+    "ingredientId": "ing_tomato_raw",
+    "nameFa": "گوجه‌فرنگی خام",
+    "nameEn": "tomato, raw",
+    "finalNutrition": null,
+    "nutritionSource": null,
+    "substitutions": [],
+    "verdict": "not_processed",
+    "nutritionVerdict": "not_run",
+    "substitutionVerdict": "not_run",
+    "verdictNotes": "NOT INCLUDED in this verification batch (see turmeric note). No verified data to apply.",
+    "flags": [
+      "Must be re-run through the pipeline."
+    ]
+  }
+]

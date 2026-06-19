@@ -36,20 +36,35 @@ const OLIVE_OIL = { id: 'ing_olive', nameFa: 'روغن زیتون', nameEn: 'oli
 const PEANUT_OIL = { id: 'ing_peanut', nameFa: 'روغن بادام‌زمینی', nameEn: 'peanut oil', code: 'PEANUT', category: 'چربی', allergens: ['بادام‌زمینی'] };
 
 describe('SuggestSubstitutionsTool (E47-L4)', () => {
-  it('returns grounded substitutions from explicit options + same-category peers', async () => {
+  it('curated-authoritative: when the ingredient has curated options, returns ONLY them (no same-category padding)', async () => {
     const tool = new SuggestSubstitutionsTool(makePrisma(BUTTER, [OLIVE_OIL, PEANUT_OIL]));
     const out: any = await tool.handler({ ingredient: 'کره' }, ctx);
     expect(out.resultStatus).toBe('ok');
     expect(out.resolved).toMatchObject({ id: 'ing_butter', category: 'چربی' });
     const names = out.substitutions.map((s: any) => s.name);
-    // explicit options come from the source's substitutionOptions; peers from same category
-    expect(names).toEqual(expect.arrayContaining(['روغن زیتون', 'مارگارین', 'روغن بادام‌زمینی']));
-    expect(out.substitutions.some((s: any) => s.basis === 'explicit_option')).toBe(true);
+    expect(names).toEqual(expect.arrayContaining(['روغن زیتون', 'مارگارین']));
+    expect(names).not.toContain('روغن بادام‌زمینی'); // same-category peer is NOT padded in when curated exists
+    expect(out.substitutions.every((s: any) => s.basis === 'explicit_option')).toBe(true);
+  });
+
+  it('falls back to same-category peers ONLY for an un-curated, non-source-locked ingredient', async () => {
+    const uncurated = { ...BUTTER, substitutionOptions: [] };
+    const tool = new SuggestSubstitutionsTool(makePrisma(uncurated, [OLIVE_OIL, PEANUT_OIL]));
+    const out: any = await tool.handler({ ingredient: 'کره' }, ctx);
+    expect(out.resultStatus).toBe('ok');
     expect(out.substitutions.some((s: any) => s.basis === 'same_category')).toBe(true);
   });
 
-  it('is allergen-aware: drops a peer whose allergens hit avoidAllergens', async () => {
-    const tool = new SuggestSubstitutionsTool(makePrisma(BUTTER, [OLIVE_OIL, PEANUT_OIL]));
+  it('source-locked + empty curated = authoritative "none" (never junk peers)', async () => {
+    const locked = { ...BUTTER, substitutionOptions: [], nutritionConfidence: 'source_locked_verified_for_general_use' };
+    const tool = new SuggestSubstitutionsTool(makePrisma(locked, [OLIVE_OIL, PEANUT_OIL]));
+    const out: any = await tool.handler({ ingredient: 'کره' }, ctx);
+    expect(out.resultStatus).toBe('no_substitution_data');
+  });
+
+  it('is allergen-aware: drops an un-curated peer whose allergens hit avoidAllergens', async () => {
+    const uncurated = { ...BUTTER, substitutionOptions: [] };
+    const tool = new SuggestSubstitutionsTool(makePrisma(uncurated, [OLIVE_OIL, PEANUT_OIL]));
     const out: any = await tool.handler({ ingredient: 'کره', avoidAllergens: ['بادام‌زمینی'] }, ctx);
     expect(out.resultStatus).toBe('ok');
     const names = out.substitutions.map((s: any) => s.name);
@@ -60,7 +75,7 @@ describe('SuggestSubstitutionsTool (E47-L4)', () => {
   it('never fabricates: every suggestion name comes from the dictionary fixtures', async () => {
     const tool = new SuggestSubstitutionsTool(makePrisma(BUTTER, [OLIVE_OIL, PEANUT_OIL]));
     const out: any = await tool.handler({ ingredient: 'کره' }, ctx);
-    const allowed = new Set(['روغن زیتون', 'مارگارین', 'روغن بادام‌زمینی']);
+    const allowed = new Set(['روغن زیتون', 'مارگارین']); // curated-only now
     for (const s of out.substitutions) expect(allowed.has(s.name)).toBe(true);
   });
 
