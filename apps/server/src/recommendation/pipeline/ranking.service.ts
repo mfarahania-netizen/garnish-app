@@ -653,7 +653,42 @@ export class RankingService {
       matchedSignals.push('ingredient_diet_compatible');
     }
 
+    // FI-PHASE-2.3: SOFT per-ingredient taste — a learned aversion (e.g. "dislikes lentils") gently lowers a
+    // recipe carrying that ingredient; a learned affinity gently raises it. Bounded; never excludes.
+    score += this.ingredientPreferenceNudge(ingredients, features, matchedSignals);
+
     return this.clamp(score);
+  }
+
+  /**
+   * FI-PHASE-2.3 — reads the SIGNED per-ingredient signal (signal_ing_<id> = value×confidence, where value can
+   * be negative for an aversion) for each of the recipe's linked ingredients and returns a BOUNDED nudge to the
+   * ingredient-intelligence score. Read RAW (not via feature(), which clamps ≥0 and would erase aversions).
+   * Asymmetric bounds: aversion can pull harder than affinity. Surfaces an honest tag only when the nudge is real.
+   */
+  private ingredientPreferenceNudge(
+    ingredients: RecipeForRanking['ingredients'],
+    features: FeatureMap,
+    matchedSignals: string[],
+  ): number {
+    const NUDGE_SCALE = 2.5;
+    const NUDGE_MAX = 0.2; // affinity (up)
+    const NUDGE_MIN = -0.35; // aversion (down) — pulls harder, but still soft (one component, small weight)
+    const SURFACE = 0.05;
+
+    let sum = 0;
+    for (const item of ingredients || []) {
+      const id = item.ingredientId || item.ingredient?.id;
+      if (!id) continue;
+      const raw = Number((features as Record<string, number>)[`signal_${id}`]);
+      if (Number.isFinite(raw) && raw !== 0) sum += raw;
+    }
+    if (sum === 0) return 0;
+
+    const nudge = Math.max(NUDGE_MIN, Math.min(NUDGE_MAX, sum * NUDGE_SCALE));
+    if (nudge <= -SURFACE) matchedSignals.push('ingredient_aversion');
+    else if (nudge >= SURFACE) matchedSignals.push('ingredient_affinity');
+    return nudge;
   }
 
   private stableRecipeSignature(recipe: RecipeForRanking) {
