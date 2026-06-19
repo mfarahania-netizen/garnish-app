@@ -4,6 +4,7 @@ import {
   IconChevronDown, IconFlame, IconClock, IconThermometer, IconEye, IconBulb, IconLifebuoy,
   IconCircleCheck, IconChefHat, IconAlertTriangle, IconToolsKitchen2, IconArrowsExchange,
   IconBook, IconFlask, IconSchool, IconInfoCircle, IconHelpCircle, IconArchive, IconSparkles,
+  IconTrash, IconArrowBackUp,
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
 import { scaleWeightG, scaleAmountText } from '../../../components/ges/scaling';
@@ -51,7 +52,7 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
   );
 }
 
-export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null }) {
+export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null, removed = [], onToggleRemove = null }) {
   if (!gris) return null;
   const g = gris;
   const scaled = scaleFactor !== 1;
@@ -128,21 +129,24 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
                   const sw = scaleWeightG(it.weightG, scaleFactor);
                   const amount = [sw != null ? `${fa(sw)}g` : null, it.volume ? scaleAmountText(it.volume, scaleFactor) : null].filter(Boolean).join(' · ');
                   const applied = swaps[it.name] || null; // session swap applied to this ingredient
+                  const gone = removed.includes(it.name);
                   return (
-                  <Box key={i} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+                  <Box key={i} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', opacity: gone ? 0.6 : 1 }}>
                     <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
                       <Box style={{ flex: 1, minInlineSize: 0 }}>
-                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied ? 700 : 600, color: applied ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{applied ? applied.to : it.name}{!applied && it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
-                        {applied ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>به‌جای {it.name}</Text> : null}
+                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied && !gone ? 700 : 600, color: applied && !gone ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{applied && !gone ? applied.to : it.name}{!applied && !gone && it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
+                        {applied && !gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>به‌جای {it.name}</Text> : null}
+                        {gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>حذف شد</Text> : null}
                       </Box>
-                      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', flexShrink: 0 }}>
-                        {amount ? <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{amount}</Text> : null}
-                        {onAskSwap ? <UnstyledButton type="button" onClick={() => onAskSwap(it.name)} aria-label={`جایگزین برای ${it.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 32, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: applied ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600 }}>{applied ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
+                      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', flexShrink: 0 }}>
+                        {amount && !gone ? <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{amount}</Text> : null}
+                        {onAskSwap && !gone ? <UnstyledButton type="button" onClick={() => onAskSwap(it.name)} aria-label={`جایگزین برای ${it.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 32, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: applied ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600 }}>{applied ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
+                        {onToggleRemove ? <UnstyledButton type="button" onClick={() => onToggleRemove(it.name, it.role)} aria-label={gone ? `برگرداندن ${it.name}` : `حذف ${it.name}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 30, minBlockSize: 32, color: gone ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{gone ? <IconArrowBackUp size={16} stroke={1.8} /> : <IconTrash size={15} stroke={1.8} />}</UnstyledButton> : null}
                       </Box>
                     </Box>
-                    {it.role ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
-                    {it.buyTip ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🛒 {it.buyTip}</Text> : null}
-                    {it.swap && !applied ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {it.swap}</Text> : null}
+                    {it.role && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
+                    {it.buyTip && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🛒 {it.buyTip}</Text> : null}
+                    {it.swap && !applied && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {it.swap}</Text> : null}
                   </Box>
                   );
                 })}

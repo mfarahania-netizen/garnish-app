@@ -43,4 +43,12 @@ describe('Recipe Detail — apply substitution (Phase 2)', () => {
     expect(await screen.findByText('جایگزین شد: کره ← روغن زیتون')).toBeInTheDocument();
     expect(screen.getByText('به‌جای کره')).toBeInTheDocument();
   });
+
+  it('removing an ingredient marks it «حذف شد» and offers an undo', async () => {
+    renderPage();
+    fireEvent.click(screen.getByRole('button', { name: 'حذف پیاز' }));
+    expect(await screen.findByText('حذف شد')).toBeInTheDocument();
+    // the action flips to a restore affordance
+    expect(screen.getByRole('button', { name: 'برگرداندن پیاز' })).toBeInTheDocument();
+  });
 });

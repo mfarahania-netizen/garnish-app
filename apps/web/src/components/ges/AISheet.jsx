@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
-import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck, IconRefresh } from '@tabler/icons-react';
+import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck, IconRefresh, IconTrash, IconArrowBackUp, IconAlertTriangle } from '@tabler/icons-react';
 import { toFaDigits } from './format';
 import { bottomSheetStyles } from './sheet';
 import { fetchSubstitutions, qualityOf } from './substitution';
+import { isStructural } from './ingredientRoles';
 
 /**
  * AISheet — "برای من تنظیمش کن": a disclosed, hedged, IN-CONTEXT bottom sheet to tune the recipe.
@@ -17,6 +18,7 @@ import { fetchSubstitutions, qualityOf } from './substitution';
 const OPTIONS = [
   { key: 'servings', label: 'تنظیم تعداد نفرات', Icon: IconUsers },
   { key: 'swap', label: 'جایگزینِ مواد', Icon: IconReplace },
+  { key: 'remove', label: 'حذف یا اختیاری‌کردنِ ماده', Icon: IconTrash },
   { key: 'time', label: 'تنظیم زمان', Icon: IconClock },
 ];
 
@@ -29,7 +31,7 @@ const Disclosure = () => (
   </Box>
 );
 
-export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [], swaps = {}, onApplySwap }) {
+export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [], swaps = {}, onApplySwap, removed = [], onToggleRemove }) {
   const [mode, setMode] = useState(null); // null = menu · 'servings' | 'swap' | 'time' = proposal
   const [servings, setServings] = useState(baseServings);
   const [swap, setSwap] = useState({ ingredient: null, loading: false, items: null, error: false });
@@ -196,6 +198,42 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
           <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
             <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>بی‌خیال</UnstyledButton>
             <UnstyledButton type="button" onClick={applySwap} disabled={!picked} aria-disabled={!picked} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-1)', minBlockSize: 48, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, opacity: picked ? 1 : 0.5 }}><IconCheck size={16} stroke={2} aria-hidden="true" />اعمالِ این جایگزین</UnstyledButton>
+          </Box>
+          <Disclosure />
+        </Box>
+      ) : null}
+
+      {/* ── remove: drop or make optional an ingredient (session-scoped); structural ones warn ── */}
+      {mode === 'remove' ? (
+        <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
+          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', margin: 0 }}>کدام ماده را حذف کنم؟</Text>
+          {ingNames.length ? (
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)' }}>
+              {ingNames.map((n, i) => {
+                const gone = removed.includes(n);
+                const structural = isStructural(n);
+                return (
+                  <UnstyledButton key={`${n}-${i}`} type="button" aria-pressed={gone} onClick={() => onToggleRemove?.(n)} style={{ textAlign: 'start', padding: 'var(--g-space-2) var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${gone ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: gone ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}>
+                    <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+                      {gone ? <IconArrowBackUp size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconTrash size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />}
+                      <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{n}</Text>
+                      {gone ? <Text component="span" style={{ flexShrink: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>حذف شد</Text> : null}
+                    </Box>
+                    {structural && !gone ? (
+                      <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: '4px 0 0', paddingInlineStart: 'calc(15px + var(--g-space-2))' }}>
+                        <IconAlertTriangle size={12} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-allergen-fg)', flexShrink: 0, marginBlockStart: 2 }} />
+                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>نقشِ ساختاری دارد؛ حذفش ممکن است نتیجه را خراب کند — شاید جایگزین بهتر باشد.</Text>
+                      </Box>
+                    ) : null}
+                  </UnstyledButton>
+                );
+              })}
+            </Box>
+          ) : (
+            <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' }}>موادی برای حذف پیدا نشد.</Text>
+          )}
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
+            <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>باشه</UnstyledButton>
           </Box>
           <Disclosure />
         </Box>

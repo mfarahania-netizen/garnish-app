@@ -6,6 +6,7 @@ import {
   IconClock, IconChartBar, IconUsers, IconHeartCheck, IconAlertTriangle, IconSparkles,
   IconChevronLeft, IconListNumbers, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
   IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck, IconChefHat,
+  IconTrash, IconArrowBackUp,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
 import GrisRecipe from './GrisRecipe';
@@ -17,6 +18,7 @@ import apiClient from '../../../lib/apiClient';
 import { toFaDigits } from '../../../components/ges/format';
 import { extractBaseServings, scaleAmountText, parseQuantity } from '../../../components/ges/scaling';
 import { fetchSubstitutions, qualityOf as subQualityOf } from '../../../components/ges/substitution';
+import { isStructural } from '../../../components/ges/ingredientRoles';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
 import NutritionBadge from '../../../components/ges/NutritionBadge';
@@ -341,6 +343,15 @@ export default function RecipeDetailPage() {
     showToast('جایگزین برداشته شد', IconArrowsExchange);
   }, [perso, showToast]);
 
+  // remove / restore an ingredient (session-scoped). Removing a structural ingredient warns instead of
+  // silently dropping it (H10/M6) — the user can still proceed, but is nudged toward a swap.
+  const toggleRemove = useCallback((name, role = '') => {
+    if (perso.isRemoved(name)) { perso.toggleRemoved(name); showToast(`${name} برگشت`, IconArrowBackUp); return; }
+    perso.toggleRemoved(name);
+    if (isStructural(name, role)) showToast(`${name} حذف شد — نقشِ ساختاری دارد؛ شاید جایگزین بهتر باشد`, IconAlertTriangle);
+    else showToast(`${name} حذف شد`, IconTrash);
+  }, [perso, showToast]);
+
   const saved = isFavorite(id);
 
   if (status === 'loading') return <RecipeLoading />;
@@ -429,7 +440,7 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
-          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} /> : null}
+          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} /> : null}
           {!gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (
@@ -441,15 +452,18 @@ export default function RecipeDetailPage() {
               <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
                 {recipe.ingredients.map((ing, i) => {
                   const sw = perso.swapFor(ing.name);
+                  const removed = perso.isRemoved(ing.name);
                   return (
-                  <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
-                    <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: sw ? 'var(--g-color-brand-500)' : 'var(--g-color-brand-300)', flexShrink: 0 }} />
+                  <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', opacity: removed ? 0.6 : 1 }}>
+                    <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: removed ? 'var(--g-color-text-muted)' : sw ? 'var(--g-color-brand-500)' : 'var(--g-color-brand-300)', flexShrink: 0 }} />
                     <Box style={{ flex: 1, minInlineSize: 0 }}>
-                      <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: sw ? 700 : 500, color: sw ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{sw ? sw.to : ing.name}</Text>
-                      {sw ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>به‌جای {ing.name}</Text> : null}
+                      <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: sw && !removed ? 700 : 500, color: sw && !removed ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: removed ? 'line-through' : 'none' }}>{sw ? sw.to : ing.name}</Text>
+                      {sw && !removed ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>به‌جای {ing.name}</Text> : null}
+                      {removed ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>حذف شد</Text> : null}
                     </Box>
-                    <UnstyledButton type="button" onClick={() => askSub(ing.name)} aria-label={`جایگزین برای ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${sw ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: sw ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{sw ? 'تغییر' : 'جایگزین؟'}</UnstyledButton>
-                    {ing.amountText ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
+                    {!removed ? <UnstyledButton type="button" onClick={() => askSub(ing.name)} aria-label={`جایگزین برای ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${sw ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: sw ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{sw ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
+                    {ing.amountText && !removed ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
+                    <UnstyledButton type="button" onClick={() => toggleRemove(ing.name)} aria-label={removed ? `برگرداندن ${ing.name}` : `حذف ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 36, minBlockSize: 44, flexShrink: 0, color: removed ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{removed ? <IconArrowBackUp size={17} stroke={1.8} /> : <IconTrash size={16} stroke={1.8} />}</UnstyledButton>
                   </Box>
                   );
                 })}
@@ -589,8 +603,10 @@ export default function RecipeDetailPage() {
         baseServings={servedFor ?? baseServings}
         ingredients={recipe.ingredients}
         swaps={perso.swaps}
+        removed={perso.removed}
         onApplyServings={(n) => { perso.setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها هم تنظیم شدند`, IconUsers); }}
         onApplySwap={applySwap}
+        onToggleRemove={toggleRemove}
       />
       <PlanPickerSheet opened={planOpen} onClose={() => setPlanOpen(false)} busy={planBusy} onConfirm={addToPlan} />
       <SubSheet
