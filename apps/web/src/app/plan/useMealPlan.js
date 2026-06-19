@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { faDuration } from '../../components/ges/format';
@@ -31,8 +31,6 @@ function buildWeek() {
   return { days, range };
 }
 
-const confFromFit = (s) => (s >= 0.6 ? 'high' : s >= 0.4 ? 'med' : 'low');
-
 export function useMealPlan() {
   const queryClient = useQueryClient();
   const plan = useQuery({ queryKey: ['plan', 'current'], queryFn: () => apiClient.get('/meal-plans').then((r) => r.data) });
@@ -40,7 +38,8 @@ export function useMealPlan() {
   const [proposing, setProposing] = useState(false);
   const [proposeError, setProposeError] = useState(false);
   const [applying, setApplying] = useState(false);
-  const [accepted, setAccepted] = useState({}); // key → true (per-slot accepted this session)
+  // FI-STEP-1.3: per-slot recipeIds already shown (so repeated «یکی دیگه» cycles, never re-offers one)
+  const shownBySlot = useRef({});
 
   const week = useMemo(() => buildWeek(), []);
 
@@ -61,7 +60,7 @@ export function useMealPlan() {
       const key = `${s.dayOfWeek}:${s.mealType}`;
       if (filled[key]) continue; // never overlay an already-saved slot
       if (!s.recipeId || !s.title) continue; // never present a placeholder as a real dish name
-      map[key] = { recipeId: s.recipeId, title: s.title, conf: confFromFit(typeof s.fitScore === 'number' ? s.fitScore : 0), dayOfWeek: s.dayOfWeek, mealType: s.mealType };
+      map[key] = { recipeId: s.recipeId, title: s.title, dayOfWeek: s.dayOfWeek, mealType: s.mealType };
     }
     return map;
   }, [proposal, filled]);
@@ -83,7 +82,29 @@ export function useMealPlan() {
     }
   }, []);
 
-  const clearProposal = useCallback(() => { setProposal(null); setAccepted({}); }, []);
+  const clearProposal = useCallback(() => { setProposal(null); shownBySlot.current = {}; }, []);
+
+  /**
+   * FI-STEP-1.3 — per-slot «یکی دیگه». Fetches the next-best safe, course-valid candidate for THIS slot
+   * (POST /meal-plans/slots/swap), excluding the current dish + everything already shown for this slot.
+   * Replaces only that slot in the local proposal. Returns { ok, swappedOut } so the page can record the
+   * swapped-out recipe as declined (recommendation_dismiss). Never regenerates the week.
+   */
+  const swapSlot = useCallback(async (s) => {
+    const key = `${s.dayOfWeek}:${s.mealType}`;
+    const shown = shownBySlot.current[key] || [];
+    const excludeRecipeIds = [...new Set([...shown, s.recipeId])];
+    try {
+      const data = await apiClient.post('/meal-plans/slots/swap', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, excludeRecipeIds }).then((r) => r.data);
+      const next = data?.slot;
+      if (!next?.recipeId) return { ok: false, swappedOut: s.recipeId }; // nothing else qualifies (honest)
+      shownBySlot.current[key] = [...excludeRecipeIds, next.recipeId];
+      setProposal((prev) => (prev || []).map((p) => (p.dayOfWeek === s.dayOfWeek && p.mealType === s.mealType ? { ...p, recipeId: next.recipeId, title: next.title, fitScore: next.fitScore } : p)));
+      return { ok: true, swappedOut: s.recipeId };
+    } catch {
+      return { ok: false, error: true, swappedOut: s.recipeId };
+    }
+  }, []);
 
   // delete a real, already-saved slot via DELETE /meal-plans/slots/:dayOfWeek/:mealType.
   // Optimistic: drop it from the cached plan immediately; on failure, revert the cache + return false
@@ -104,12 +125,13 @@ export function useMealPlan() {
     }
   }, [plan, queryClient]);
 
+  // accept one suggested slot via the real apply path. On success it refetches → the slot moves from
+  // `suggested` to `filled` (a real dish with a working remove). No persistent 'accepted' state — the
+  // success is a transient toast (page), not a state that hides the remove (FI-STEP-1.3 FIX 4).
   const acceptSlot = useCallback(async (s) => {
-    const key = `${s.dayOfWeek}:${s.mealType}`;
     setApplying(true);
     try {
       await apiClient.post('/meal-plans/slots', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
-      setAccepted((a) => ({ ...a, [key]: true }));
       await plan.refetch();
       return true;
     } catch {
@@ -119,9 +141,10 @@ export function useMealPlan() {
     }
   }, [plan]);
 
-  // each slot via the real apply path; one failure never aborts the rest, and the result is reported honestly
+  // each slot via the real apply path; one failure never aborts the rest, and the result is reported honestly.
+  // `suggested` already excludes any key that is now `filled` (line: skip filled), so no separate accepted set.
   const acceptAll = useCallback(async () => {
-    const items = Object.values(suggested).filter((s) => !accepted[`${s.dayOfWeek}:${s.mealType}`]);
+    const items = Object.values(suggested);
     setApplying(true);
     let failed = 0;
     for (const s of items) {
@@ -131,11 +154,11 @@ export function useMealPlan() {
         failed += 1;
       }
     }
-    await plan.refetch(); // sync filled/accepted with what actually wrote
+    await plan.refetch(); // sync filled with what actually wrote
     setApplying(false);
-    if (failed === 0) { setProposal(null); setAccepted({}); }
+    if (failed === 0) { setProposal(null); shownBySlot.current = {}; }
     return { ok: failed === 0, failed, total: items.length };
-  }, [suggested, accepted, plan]);
+  }, [suggested, plan]);
 
   let status = 'ready';
   if (plan.isLoading) status = 'loading';
@@ -145,10 +168,10 @@ export function useMealPlan() {
     status,
     refetch: () => plan.refetch(),
     week, meals: MEALS,
-    filled, suggested, accepted,
+    filled, suggested,
     hasPlan,
     proposalActive: !!proposal,
     proposing, proposeError, applying,
-    propose, clearProposal, acceptSlot, acceptAll, removeSlot,
+    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot,
   };
 }

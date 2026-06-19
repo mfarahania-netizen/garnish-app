@@ -48,7 +48,7 @@ describe('Planner + Shopping QA gate (PLANNER-L4-09)', () => {
       { id: 'safe', title: 'Lentil', diet: 'omnivore', mealType: 'lunch', region: 'persian', categories: '[]', difficulty: 'easy', cookingTime: 20, allergens: '[]', ingredients: [{ name: 'lentil', ingredient: null }] },
       { id: 'peanut', title: 'Peanut', diet: 'omnivore', mealType: 'lunch', region: 'asian', categories: '[]', difficulty: 'easy', cookingTime: 20, allergens: '["peanut"]', ingredients: [{ name: 'peanut', ingredient: { allergens: { eu14: ['peanut'], us9: ['peanut'], other: [], mayContain: [] } } }] },
     ];
-    const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(corpus) } };
+    const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(corpus) }, userEvent: { findMany: jest.fn().mockResolvedValue([]) } };
     const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
     declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: ['peanut'], confidence: 0.9, recencyScore: 1 } as any;
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };

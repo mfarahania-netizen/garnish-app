@@ -65,6 +65,7 @@ const makeHook = (overrides = {}) => ({
   acceptSlot: vi.fn().mockResolvedValue(true),
   acceptAll: vi.fn().mockResolvedValue({ ok: true, failed: 0, total: 0 }),
   removeSlot: vi.fn().mockResolvedValue(true),
+  swapSlot: vi.fn().mockResolvedValue({ ok: true, swappedOut: 'r2' }),
   ...overrides,
 });
 
@@ -150,6 +151,24 @@ describe('PlanPage smoke', () => {
     fireEvent.click(screen.getByRole('button', { name: 'حذف از برنامه' }));
     expect(await screen.findByText('حذف نشد، دوباره تلاش کن')).toBeInTheDocument();
     expect(screen.queryByText('از برنامه حذف شد')).not.toBeInTheDocument();
+  });
+
+  // FI-STEP-1.3: a suggested slot offers «بپذیر» + «یکی دیگه», and NO always-"اطمینان بالا" chip.
+  it('suggested slot: shows «بپذیر» + «یکی دیگه» and NO always-high confidence chip', () => {
+    useMealPlan.mockReturnValue(makeHook({ proposalActive: true, suggested: { '0:lunch': { recipeId: 'r2', title: 'عدس‌پلو', dayOfWeek: 0, mealType: 'lunch' } } }));
+    renderWithProviders(<PlanPage />);
+    expect(screen.getByRole('button', { name: /یکی دیگه/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /بپذیر/ })).toBeInTheDocument();
+    expect(screen.queryByText('اطمینان بالا')).not.toBeInTheDocument(); // chip removed
+  });
+
+  // FI-STEP-1.3: tapping «یکی دیگه» calls swapSlot for that slot (per-slot swap, not a week regenerate).
+  it('swap: tapping «یکی دیگه» calls swapSlot', async () => {
+    const swapSlot = vi.fn().mockResolvedValue({ ok: true, swappedOut: 'r2' });
+    useMealPlan.mockReturnValue(makeHook({ proposalActive: true, suggested: { '0:lunch': { recipeId: 'r2', title: 'عدس‌پلو', dayOfWeek: 0, mealType: 'lunch' } }, swapSlot }));
+    renderWithProviders(<PlanPage />);
+    fireEvent.click(screen.getByRole('button', { name: /یکی دیگه/ }));
+    expect(swapSlot).toHaveBeenCalledWith(expect.objectContaining({ recipeId: 'r2', dayOfWeek: 0, mealType: 'lunch' }));
   });
 
   // FIX 2: the grid renders a breakfast (صبحانه) row when the hook provides the breakfast meal.

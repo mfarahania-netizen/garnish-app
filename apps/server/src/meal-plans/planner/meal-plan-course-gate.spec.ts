@@ -48,7 +48,7 @@ function loadCorpus() {
 const CORPUS = loadCorpus();
 const noAllergyProfile = { reconciled: { dimensions: {} }, declared: { dimensions: {} } };
 function makeSvc(rows: any[], profile: any = noAllergyProfile) {
-  const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(rows) } };
+  const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(rows) }, userEvent: { findMany: jest.fn().mockResolvedValue([]) } };
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(profile) };
   return new MealPlanPlannerService(prisma, profiles);
 }

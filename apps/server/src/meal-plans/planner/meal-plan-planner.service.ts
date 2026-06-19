@@ -12,11 +12,13 @@ import { ProfileReadService } from '../../behavior-engine/profile/read/profile-r
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { toStringArray, norm } from '../../ai/tools/grounding-utils';
-import { generateMealPlan, PlanCandidate, PlanProposal } from './meal-plan-generator';
+import { generateMealPlan, proposeSwapForSlot, PlanCandidate, PlanProposal, ProposedSlot } from './meal-plan-generator';
 import { deriveCourse } from './course';
 
 const CORPUS_CAP = 400;
 const COOKS_FOR_TO_SIZE: Record<string, number> = { '1': 1, '2': 2, '3_4': 3, '5_plus': 5 };
+const DECLINE_EVENTS = ['recommendation_dismiss', 'not_interested', 'recipe_skip', 'mealplan_remove']; // FI-STEP-1/1.3
+const RECENTLY_DECLINED_WINDOW_DAYS = 30;
 
 function parseMealTypes(mealType: unknown): string[] {
   const tokens = toStringArray(mealType).map(norm).concat(norm(mealType));
@@ -44,6 +46,32 @@ export class MealPlanPlannerService {
 
   async proposePlan(userId: string, opts: { meals?: string[]; days?: number } = {}): Promise<PlanProposal & { personalized: boolean; excludedForAllergy: number }> {
     const profile = await this.profiles.getLivingUserProfile(userId);
+    const { candidates, excludedForAllergy } = await this.buildSafeCandidates(profile);
+    // FI-STEP-1.3: exclude recipes the user recently declined/removed (additive; downstream of allergy)
+    const excludeRecipeIds = await this.recentlyDeclinedIds(userId);
+    const proposal = generateMealPlan(candidates, { meals: opts.meals, days: opts.days, householdSize: householdFromProfile(profile), excludeRecipeIds });
+    return { ...proposal, personalized: true, excludedForAllergy };
+  }
+
+  /**
+   * FI-STEP-1.3 — per-slot «یکی دیگه». Returns the next-best safe, course-valid recipe for ONE slot only,
+   * excluding the current dish + recently-declined + anything already shown for this slot. No week regenerate.
+   */
+  async swapSlot(
+    userId: string,
+    input: { dayOfWeek: number; mealType: string; excludeRecipeIds?: string[] },
+  ): Promise<{ slot: ProposedSlot | null; personalized: boolean }> {
+    const profile = await this.profiles.getLivingUserProfile(userId);
+    const { candidates } = await this.buildSafeCandidates(profile);
+    const recentlyDeclined = await this.recentlyDeclinedIds(userId);
+    const exclude = new Set<string>([...recentlyDeclined, ...(input.excludeRecipeIds ?? [])]);
+    const slot = proposeSwapForSlot(candidates, { dayOfWeek: input.dayOfWeek, meal: input.mealType, excludeRecipeIds: exclude });
+    return { slot, personalized: true };
+  }
+
+  /** Allergy-safe, fit-scored, course-derived candidates (shared by proposePlan + swapSlot). Allergen-
+   *  conflicting recipes are HARD-EXCLUDED here — unchanged from the original proposePlan loop. */
+  private async buildSafeCandidates(profile: any): Promise<{ candidates: PlanCandidate[]; excludedForAllergy: number }> {
     const recipes = await this.prisma.recipe.findMany({
       where: { isPublic: true },
       take: CORPUS_CAP,
@@ -76,8 +104,27 @@ export class MealPlanPlannerService {
         mainMealEligible,
       });
     }
+    return { candidates, excludedForAllergy };
+  }
 
-    const proposal = generateMealPlan(candidates, { meals: opts.meals, days: opts.days, householdSize: householdFromProfile(profile) });
-    return { ...proposal, personalized: true, excludedForAllergy };
+  /** Recipe ids the user declined/removed within the recency window — from the EXISTING UserEvent stream
+   *  (the decline events FI-STEP-1 already writes). Read-only; touches no allergy/recsys/global-flip path. */
+  private async recentlyDeclinedIds(userId: string): Promise<Set<string>> {
+    const cutoff = new Date(Date.now() - RECENTLY_DECLINED_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+    const events = await this.prisma.userEvent.findMany({
+      where: { userId, type: { in: DECLINE_EVENTS }, timestamp: { gte: cutoff } },
+      select: { payload: true },
+      orderBy: { timestamp: 'desc' },
+      take: 500,
+    });
+    const ids = new Set<string>();
+    for (const e of events) {
+      try {
+        const p = JSON.parse((e as any).payload || '{}');
+        if (p?.recipeId) ids.add(String(p.recipeId));
+        if (Array.isArray(p?.recipeIds)) for (const id of p.recipeIds) ids.add(String(id));
+      } catch { /* ignore malformed payloads */ }
+    }
+    return ids;
   }
 }

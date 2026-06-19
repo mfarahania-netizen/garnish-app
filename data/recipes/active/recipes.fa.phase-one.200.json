@@ -62135,8 +62135,7 @@
     },
     "mealType": [
       "lunch",
-      "dinner",
-      "breakfast"
+      "dinner"
     ],
     "dishType": [
       "main_course",

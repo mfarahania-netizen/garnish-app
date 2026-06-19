@@ -34,6 +34,9 @@ export interface PlanConstraints {
   meals?: string[]; // default ['lunch','dinner']
   weekdayQuickMaxMin?: number; // weekday prefers cookingTime <= this (default 30)
   householdSize?: number;
+  /** FI-STEP-1.3: recipeIds the user recently declined/removed — excluded from the proposal (additive;
+   *  default empty → byte-identical to before). DOWNSTREAM of the allergy HARD-filter (candidates are safe). */
+  excludeRecipeIds?: Set<string>;
 }
 
 export interface ProposedSlot {
@@ -62,6 +65,7 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
   const meals = constraints.meals ?? ['lunch', 'dinner'];
   const weekdayQuickMax = constraints.weekdayQuickMaxMin ?? 30;
   const householdSize = constraints.householdSize ?? 1;
+  const excludeRecipeIds = constraints.excludeRecipeIds ?? new Set<string>(); // recently-declined (additive)
 
   const slots: ProposedSlot[] = [];
   const usedRecipeIds = new Set<string>();
@@ -80,7 +84,7 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
         // S5 COURSE GATE: a main meal slot (breakfast/lunch/dinner) only accepts a main-eligible recipe —
         // a sauce/condiment/side/dessert/drink can NEVER be placed AS a main. (undefined → allowed, so
         // callers that don't derive course are unaffected.) Applied DOWNSTREAM of the allergy HARD-filter.
-        .filter((c) => c.mealTypes.includes(meal) && !usedRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false))
+        .filter((c) => c.mealTypes.includes(meal) && !usedRecipeIds.has(c.recipeId) && !excludeRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false))
         .map((c) => {
           let score = c.fitScore;
           const reasons: string[] = [];
@@ -129,4 +133,42 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
     notApplied: true,
     limitations,
   };
+}
+
+export interface SwapRequest {
+  dayOfWeek: number;
+  meal: string;
+  excludeRecipeIds: Set<string>; // current slot recipe + recently-declined + anything already shown for this slot
+  weekdayQuickMaxMin?: number;
+}
+
+/**
+ * FI-STEP-1.3 — per-slot «یکی دیگه». Returns the next-best SAFE, course-valid candidate for ONE slot only
+ * (no week regenerate), reusing the SAME course gate + effort-fit scoring as generateMealPlan. `candidates`
+ * are already allergy-filtered by the service. Returns null if nothing else qualifies (honest — no repeat).
+ */
+export function proposeSwapForSlot(candidates: PlanCandidate[], req: SwapRequest): ProposedSlot | null {
+  const weekend = isWeekend(req.dayOfWeek);
+  const weekdayQuickMax = req.weekdayQuickMaxMin ?? 30;
+  const mainSlot = isMainMealSlot(req.meal);
+
+  const scored = candidates
+    // identical course gate + slot eligibility as generateMealPlan (sauce/dessert never a main; downstream of allergy)
+    .filter((c) => c.mealTypes.includes(req.meal) && !req.excludeRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false))
+    .map((c) => {
+      let score = c.fitScore;
+      const reasons: string[] = [];
+      if (c.cookingTime != null) {
+        if (!weekend && c.cookingTime <= weekdayQuickMax) { score += 0.15; reasons.push('quick for a workday'); }
+        else if (!weekend && c.cookingTime > weekdayQuickMax) { score -= 0.1; }
+        else if (weekend && c.cookingTime > weekdayQuickMax) { score += 0.05; reasons.push('a more involved weekend cook'); }
+      }
+      return { c, score, reasons };
+    })
+    .sort((a, b) => b.score - a.score || a.c.recipeId.localeCompare(b.c.recipeId));
+
+  if (scored.length === 0) return null;
+  const pick = scored[0];
+  const why = [...pick.c.fitReasons.slice(0, 2), ...pick.reasons].filter(Boolean).join('; ') || 'best available fit';
+  return { dayOfWeek: req.dayOfWeek, mealType: req.meal, recipeId: pick.c.recipeId, title: pick.c.title, fitScore: Number(pick.score.toFixed(3)), why };
 }

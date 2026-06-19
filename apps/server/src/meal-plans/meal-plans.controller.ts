@@ -52,4 +52,14 @@ export class MealPlansController {
   proposePlan(@Req() req, @Body() body: { meals?: string[]; days?: number }) {
     return this.planner.proposePlan(req.user.userId, { meals: body?.meals, days: body?.days });
   }
+
+  /**
+   * FI-STEP-1.3: per-slot «یکی دیگه» — returns the next-best safe, course-valid candidate for ONE slot,
+   * excluding the current dish + anything already shown for it (+ the user's recently-declined). PROPOSES
+   * ONLY (writes nothing); the user accepts the swap via the existing POST /meal-plans/slots path.
+   */
+  @Post('slots/swap')
+  swapSlot(@Req() req, @Body() body: { dayOfWeek: number; mealType: string; excludeRecipeIds?: string[] }) {
+    return this.planner.swapSlot(req.user.userId, { dayOfWeek: body.dayOfWeek, mealType: body.mealType, excludeRecipeIds: body?.excludeRecipeIds });
+  }
 }

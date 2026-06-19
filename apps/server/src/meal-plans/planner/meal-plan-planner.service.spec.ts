@@ -12,7 +12,7 @@ const CORPUS = [
 ];
 
 function makeService(allergies?: string[]) {
-  const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(CORPUS) } };
+  const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(CORPUS) }, userEvent: { findMany: jest.fn().mockResolvedValue([]) } };
   const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }, { key: 'context.cooks_for_count', value: '3_4', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
   if (allergies) declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: allergies, confidence: 0.9, recencyScore: 1 } as any;
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };

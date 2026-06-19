@@ -3,7 +3,7 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
-  IconPlus, IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash,
+  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -11,7 +11,6 @@ import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
 
 const seed = (id) => { const s = String(id ?? ''); let h = 0; for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
-const CONF = { high: { label: 'اطمینان بالا', fg: 'var(--g-color-state-success-fg)', bg: 'var(--g-color-state-success-bg)' }, med: { label: 'اطمینان متوسط', fg: 'var(--g-color-state-warning-fg)', bg: 'var(--g-color-state-warning-bg)' }, low: { label: 'در حال یادگیری', fg: 'var(--g-color-text-muted)', bg: 'var(--g-color-bg-canvas)' } };
 
 function Tile({ title }) {
   return (
@@ -21,32 +20,30 @@ function Tile({ title }) {
   );
 }
 
-function SlotCard({ slot, onOpen, onAccept, onAddManual, onRemove, accepted }) {
-  if (slot?.kind === 'filled' || accepted) {
-    const canRemove = slot?.kind === 'filled' && !!onRemove;
+function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove }) {
+  // FILLED — a real, saved dish. One clean state: show the dish + a working remove (no dead "اضافه شد" state).
+  if (slot?.kind === 'filled') {
     return (
       <Box style={{ position: 'relative' }}>
         <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)' }}>
           <Tile title={slot.title} />
           <Box style={{ padding: 'var(--g-space-2)' }}>
             <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{slot.title}</Text>
-            {accepted ? (
-              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)' }}><IconCheck size={11} stroke={2.4} aria-hidden="true" />اضافه شد</Box>
-            ) : slot.cookTimeText ? (
+            {slot.cookTimeText ? (
               <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box>
             ) : null}
           </Box>
         </UnstyledButton>
-        {canRemove ? (
-          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-state-danger-fg)', boxShadow: 'var(--g-shadow-1)' }}>
-            <IconTrash size={16} stroke={1.8} />
+        {onRemove ? (
+          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--g-color-bg-surface) 88%, transparent)', color: 'var(--g-color-text-muted)' }}>
+            <IconTrash size={14} stroke={1.6} />
           </UnstyledButton>
         ) : null}
       </Box>
     );
   }
+  // SUGGESTED — AI proposal. Accept (primary) or «یکی دیگه» (swap for the next-best). No always-"high" chip.
   if (slot?.kind === 'suggested') {
-    const c = CONF[slot.conf] || CONF.low;
     return (
       <Box style={{ background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}>
         <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — پیشنهاد، مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start' }}>
@@ -54,17 +51,18 @@ function SlotCard({ slot, onOpen, onAccept, onAddManual, onRemove, accepted }) {
           <Box style={{ paddingInline: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
             <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><IconSparkles size={11} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--g-color-brand-700)' }}>پیشنهادِ AI</Text></Box>
             <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBlockStart: 3 }}>{slot.title}</Text>
-            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, paddingInline: 6, paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: c.bg, color: c.fg, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><Box aria-hidden="true" style={{ inlineSize: 5, blockSize: 5, borderRadius: '50%', background: c.fg }} />{c.label}</Box>
           </Box>
         </UnstyledButton>
-        <UnstyledButton type="button" onClick={onAccept} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 44, marginBlockStart: 'var(--g-space-2)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconCheck size={13} stroke={2} aria-hidden="true" />بپذیر</UnstyledButton>
+        <Box style={{ display: 'flex', gap: 1, marginBlockStart: 'var(--g-space-2)' }}>
+          <UnstyledButton type="button" onClick={onSwap} aria-label={`یکی دیگه به‌جای «${slot.title}»`} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 3, minBlockSize: 44, paddingInline: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconRefresh size={13} stroke={1.8} aria-hidden="true" />یکی دیگه</UnstyledButton>
+          <UnstyledButton type="button" onClick={onAccept} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4, minBlockSize: 44, background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconCheck size={13} stroke={2} aria-hidden="true" />بپذیر</UnstyledButton>
+        </Box>
       </Box>
     );
   }
+  // EMPTY — non-interactive placeholder (manual-add removed; no stub button ships). Fill via «بچین» / accept.
   return (
-    <UnstyledButton type="button" onClick={onAddManual} aria-label="افزودن وعده" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 92, border: '1.5px dashed var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-muted)' }}>
-      <IconPlus size={20} stroke={1.8} aria-hidden="true" /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>افزودن</Text>
-    </UnstyledButton>
+    <Box aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 92, border: '1.5px dashed var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)' }}>—</Box>
   );
 }
 
@@ -119,6 +117,13 @@ export default function PlanPage() {
   const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
   const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
   const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
+  // FI-STEP-1.3: «یکی دیگه» — swap THIS slot for the next-best safe pick; record the swapped-out as declined
+  // (recommendation_dismiss) so it down-weights + won't return in the next propose.
+  const onSwapSlot = async (s) => {
+    const r = await m.swapSlot(s);
+    if (r.ok) { showToast('یکی دیگه پیشنهاد شد', IconRefresh); trackEvent('recommendation_dismiss', { recipeId: r.swappedOut }); }
+    else showToast(r.error ? 'نشد — دوباره امتحان کن' : 'گزینهٔ دیگه‌ای برای این وعده نمونده', r.error ? IconCloudOff : IconRefresh);
+  };
   // real delete: honest toast + the mealplan_remove signal fire ONLY on a successful DELETE
   const onRemoveSlot = async (dayOfWeek, mealType, recipeId) => {
     const ok = await m.removeSlot(dayOfWeek, mealType);
@@ -157,17 +162,15 @@ export default function PlanPage() {
                     const key = `${day.dayOfWeek}:${meal.key}`;
                     const filled = m.filled[key];
                     const sugg = m.suggested[key];
-                    const isAccepted = !!m.accepted[key];
                     const slot = filled ? { kind: 'filled', ...filled } : sugg ? { kind: 'suggested', ...sugg } : null;
                     return (
                       <Box key={meal.key}>
                         <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)', marginBlockEnd: 4 }}>{meal.label}</Text>
                         <SlotCard
                           slot={slot}
-                          accepted={isAccepted && !filled}
                           onOpen={() => openRecipe((filled || sugg)?.recipeId)}
                           onAccept={() => onAcceptSlot(sugg)}
-                          onAddManual={() => showToast('افزودن وعده به‌زودی', IconPlus)}
+                          onSwap={() => onSwapSlot(sugg)}
                           onRemove={filled ? () => onRemoveSlot(day.dayOfWeek, meal.key, filled.recipeId) : undefined}
                         />
                       </Box>
