@@ -131,8 +131,10 @@ describe('RankingService', () => {
     expect(fitnessRank[0].matchedSignals).toEqual(
       expect.arrayContaining(['likes_high_protein', 'meal_planner']),
     );
+    // FI-PHASE-2.2: the time-poor user's effort preference now surfaces via the dedicated effortFit
+    // ('effort_fit'), not behaviorFit's old 'time_poor' bit — effort is scored once.
     expect(budgetRank[0].matchedSignals).toEqual(
-      expect.arrayContaining(['time_poor', 'budget_sensitive']),
+      expect.arrayContaining(['effort_fit', 'budget_sensitive']),
     );
   });
 

@@ -7,6 +7,16 @@ import { ExposureTrackingService } from '../exposure/exposure-tracking.service';
 import { TasteAffinityBuilder } from '../taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
 import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
+import {
+  clamp01,
+  deriveEstimatedEffort,
+  deriveSkillLevel,
+  isIranWeekday,
+  computeDesiredEffort,
+  computeUserSkill,
+  effortFit as effortFitFn,
+  skillFit as skillFitFn,
+} from './ranking-effort-skill';
 
 type FeatureMap = Record<string, number>;
 
@@ -55,6 +65,8 @@ interface ScoreBreakdown {
   tasteAffinity: number;
   behaviorFit: number;
   outcomeFit: number;
+  effortFit: number;
+  skillFit: number;
   novelty: number;
   popularity: number;
   recency: number;
@@ -67,6 +79,8 @@ interface ContributionBreakdown {
   tasteAffinity: number;
   behaviorFit: number;
   outcomeFit: number;
+  effortFit: number;
+  skillFit: number;
   novelty: number;
   popularity: number;
   recency: number;
@@ -76,15 +90,20 @@ interface ContributionBreakdown {
 
 @Injectable()
 export class RankingService {
+  // FI-PHASE-2.2: effortFit/skillFit carved from behaviorFit (which lost its quick + novice bits) + a small
+  // share from ingredientIntelligence (lost its quick bit). taste stays dominant; recipeUnderstanding (a
+  // cold-start content anchor) is preserved. Sums to 1.00.
   private readonly defaultWeights = {
-    tasteAffinity: 0.27,
-    behaviorFit: 0.22,
-    outcomeFit: 0.17,
-    novelty: 0.09,
+    tasteAffinity: 0.25,
+    behaviorFit: 0.13,
+    outcomeFit: 0.16,
+    effortFit: 0.11,
+    skillFit: 0.06,
+    novelty: 0.08,
     popularity: 0.04,
     recency: 0.02,
     recipeUnderstanding: 0.1,
-    ingredientIntelligence: 0.09,
+    ingredientIntelligence: 0.05,
   };
 
   private readonly signalTokenMap: Record<string, string[]> = {
@@ -189,6 +208,9 @@ export class RankingService {
       },
     });
 
+    // FI-PHASE-2.2: weekday context for effortFit's mild weekday lean — one clock read per rank call.
+    const weekday = isIranWeekday(new Date());
+
     const scoredRecipes = await Promise.all(
       recipes.map(async (recipe: RecipeForRanking) => {
         const matchedSignals = this.getMatchedSignals(recipe, userFeatures);
@@ -200,6 +222,8 @@ export class RankingService {
           tasteAffinity: this.calculateTasteAffinity(recipe, userFeatures, matchedSignals, tasteAffinity.score),
           behaviorFit: this.calculateBehaviorFit(recipe, userFeatures, matchedSignals),
           outcomeFit: this.calculateOutcomeFit(recipe, userFeatures, matchedSignals),
+          effortFit: this.calculateEffortFit(recipe, userFeatures, matchedSignals, weekday),
+          skillFit: this.calculateSkillFit(recipe, userFeatures, matchedSignals),
           novelty: this.calculateNoveltyScore(recipe, userFeatures, matchedSignals),
           popularity: await this.calculatePopularityScore(recipe.id),
           recency: this.calculateRecencyScore(recipe),
@@ -272,7 +296,9 @@ export class RankingService {
     matchedSignals: string[],
   ): number {
     let score = 0.35;
-    const timePoor = this.feature(features, 'time_poor');
+    // FI-PHASE-2.2: quick-meal (effort) + novice (skill) bits moved to dedicated effortFit/skillFit components
+    // — counted ONCE there now, not here. behaviorFit keeps budget / planning / family / weekend / breakfast /
+    // comfort (non-effort, non-skill signals).
     const budgetSensitive = this.feature(features, 'budget_sensitive');
     const mealPlanner = Math.max(
       this.feature(features, 'meal_planner'),
@@ -280,20 +306,10 @@ export class RankingService {
     );
     const familyPlanner = this.feature(features, 'family_meal_planner');
     const weekendCook = this.feature(features, 'weekend_cook');
-    const novice = this.feature(features, 'cooking_novice');
-    const quickMealLover = Math.max(
-      this.feature(features, 'quick_meal_lover'),
-      this.feature(features, 'likes_quick_meals'),
-      this.feature(features, 'likes_fast_meals'),
-    );
     const familyCook = Math.max(this.feature(features, 'family_cook'), familyPlanner);
     const breakfastPerson = this.feature(features, 'breakfast_person');
     const comfortFoodLover = this.feature(features, 'comfort_food_lover');
 
-    if (Math.max(timePoor, quickMealLover) > 0 && recipe.cookingTime && recipe.cookingTime <= 30) {
-      score += 0.25 * Math.max(timePoor, quickMealLover);
-      matchedSignals.push('time_poor');
-    }
     if (budgetSensitive > 0 && this.hasAnyToken(recipe, ['budget', 'cheap', 'low_cost', 'economic', 'affordable', 'ارزان', 'اقتصادی', 'کم هزینه'])) {
       score += 0.25 * budgetSensitive;
       matchedSignals.push('budget_sensitive');
@@ -313,11 +329,6 @@ export class RankingService {
       score += 0.15 * weekendCook * weekendDepth;
       matchedSignals.push('weekend_cook');
     }
-    if (novice > 0 && this.hasAnyToken(recipe, ['easy', 'beginner', 'simple', 'آسان', 'ساده', 'فوری'])) {
-      score += 0.2 * novice;
-      matchedSignals.push('cooking_novice');
-    }
-
     if (recipe.mealType && mealPlanner > 0 && this.hasAnyToken(recipe, ['dinner', 'lunch', 'meal', 'ناهار', 'شام', 'غذا'])) {
       const mealTypes = this.parseListField(recipe.mealType);
       const multiMealFit = Math.min(1, mealTypes.length / 3);
@@ -335,6 +346,56 @@ export class RankingService {
     }
 
     return this.clamp(score);
+  }
+
+  /**
+   * FI-PHASE-2.2 — effortFit (grafted from the shadow scorer, sourced from the feature-vector). The user's
+   * quick-meal preference (quick01) drives a desiredEffort that leans quicker on weekdays; effortFit rewards
+   * candidates whose derived effort matches it. Absent quick signal → neutral 0.5 (cold-start safe, since the
+   * signal is positive-only: 0 = no evidence, not "wants elaborate"). complex-readiness has no live signal yet
+   * → neutral 0.5 (faithful to the shadow's missing → default).
+   */
+  private calculateEffortFit(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+    weekday: boolean,
+  ): number {
+    const quickRaw = Math.max(
+      this.feature(features, 'quick_meal_lover'),
+      this.feature(features, 'likes_quick_meals'),
+      this.feature(features, 'likes_fast_meals'),
+      this.feature(features, 'time_poor'),
+    );
+    const quick01 = quickRaw > 0 ? quickRaw : 0.5;
+    const complex01 = 0.5; // no live complex-recipe-readiness signal yet — neutral default
+    const desiredEffort = computeDesiredEffort(quick01, complex01, weekday);
+    const estimatedEffort = deriveEstimatedEffort(recipe.cookingTime);
+    const fit = effortFitFn(estimatedEffort, desiredEffort);
+    // surface only when there is a real preference and the fit is strong (keeps explanations honest)
+    if (quickRaw > 0 && fit > 0.6) matchedSignals.push('effort_fit');
+    return clamp01(fit);
+  }
+
+  /**
+   * FI-PHASE-2.2 — skillFit (grafted, asymmetric, beginner-protecting). userSkill from the learned skill
+   * signal (cooking_novice, inverted); overshoot (recipe harder than the user) penalized 1.3×, undershoot only
+   * 0.6×. Absent skill signal → neutral 0.5. (Declared onboarding skill keeps its own bonus elsewhere —
+   * different evidence; skillFit is learned-skill matching.)
+   */
+  private calculateSkillFit(
+    recipe: RecipeForRanking,
+    features: FeatureMap,
+    matchedSignals: string[],
+  ): number {
+    const novice = this.feature(features, 'cooking_novice');
+    const techConf = novice > 0 ? clamp01(1 - novice) : 0.5;
+    const nextChallenge = 0.5; // no live next-challenge-readiness signal yet — neutral default
+    const userSkill = computeUserSkill(techConf, nextChallenge);
+    const skillLevel = deriveSkillLevel(recipe.difficulty);
+    const fit = skillFitFn(skillLevel, userSkill);
+    if (novice > 0 && skillLevel === 'beginner' && fit > 0.6) matchedSignals.push('skill_fit');
+    return clamp01(fit);
   }
 
   private calculateOutcomeFit(
@@ -524,10 +585,7 @@ export class RankingService {
       matchedSignals.push('recipe_diet_match');
     }
 
-    if (this.feature(features, 'time_poor') > 0 && recipe.cookingTime && recipe.cookingTime <= 30) {
-      score += 0.06;
-      matchedSignals.push('recipe_time_fit');
-    }
+    // FI-PHASE-2.2: time-poor → quick-recipe bit removed here; effort is scored once via effortFit.
 
     if (this.feature(features, 'family_meal_planner') > 0 && recipe.servings && recipe.servings >= 4) {
       score += 0.06;
@@ -1004,12 +1062,8 @@ export class RankingService {
     ).toLowerCase();
     let score = 0.35;
 
-    const quickMeal = Math.max(this.feature(features, 'quick_meal_lover'), this.feature(features, 'time_poor'));
-    if (quickMeal > 0 && /easy|quick|pan|boiled|ready|fresh/.test(serialized)) {
-      score += 0.22 * quickMeal;
-      matchedSignals.push('ingredient_quick_cooking_fit');
-    }
-
+    // FI-PHASE-2.2: quick-meal → quick-ingredient bit removed; the user's quick-meal preference is scored
+    // once via effortFit. The weekend-cook (slow-method) bit stays — a distinct routine signal, not effort.
     const weekendCook = this.feature(features, 'weekend_cook');
     if (weekendCook > 0 && /slow|stew|baked|grilled|marinated/.test(serialized)) {
       score += 0.18 * weekendCook;
