@@ -1,0 +1,187 @@
+[
+  {
+    "recipeId": "garnish_recipe_intl_052_a57a621f",
+    "title": "پودینگ تافی خرما",
+    "steps": [
+      { "order": 1, "title": "آماده‌سازی اولیه", "instruction": "اول فر را روشن کنید و روی دمای ۱۸۰ درجهٔ سانتی‌گراد تنظیم کنید تا گرم شود (حدود ۱۰ دقیقه طول می‌کشد تا کاملاً گرم شود). همزمان ۲۰۰ گرم خرمای بدون هسته را روی تختهٔ آشپزی با چاقو به تکه‌های ریز خرد کنید؛ موقع کار با چاقو انگشتانتان را جمع کنید و سر انگشت‌ها را عقب نگه دارید تا بریده نشوید.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 2, "title": "خیساندن خرما", "instruction": "حدود ۱۸۰ میلی‌لیتر آب را در کتری یا قابلمه با شعلهٔ زیاد بجوشانید تا قلقل بزند و بخار از آن بلند شود (حدود ۴ تا ۵ دقیقه). شعله را خاموش کنید، خرمای خردشده و ۱ قاشق چای‌خوری جوش‌شیرین را در یک کاسهٔ نسوز بریزید و آب جوش را روی آن‌ها بریزید. مراقب باشید آب جوش روی دستتان نپاشد. سپس ۸ دقیقه همان‌طور بگذارید بماند.", "durationMin": 8, "flameLevel": "high" },
+      { "order": 3, "title": "له‌کردن خرما", "instruction": "بعد از ۸ دقیقه که خرما کاملاً نرم و پف‌کرده شد، با پشت چنگال یا گوشت‌کوب آن را له کنید تا به شکل خمیر یکدست و نرم درآید، طوری که دیگر تکهٔ درشتی در آن دیده نشود (حدود ۱ دقیقه). کنار بگذارید تا کمی خنک شود.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 4, "title": "کرم‌کردن کره و شکر", "instruction": "۹۰ گرم کرهٔ بدون نمک (که از قبل بیرون گذاشته‌اید تا نرم و اتاق‌دما شده باشد) را با ۷۵ گرم از شکر قهوه‌ای (یعنی نصف ۱۵۰ گرم) در یک کاسه با همزن برقی یا قاشق بزنید تا رنگش روشن و بافتش کرمی و پفکی شود (حدود ۳ دقیقه). نصف دیگر شکر را برای سس کنار نگه دارید.", "durationMin": 3, "flameLevel": "none" },
+      { "order": 5, "title": "افزودن تخم‌مرغ و وانیل", "instruction": "۲ عدد تخم‌مرغ کامل را یکی‌یکی به مخلوط کره اضافه کنید و بعد از هر تخم‌مرغ خوب هم بزنید، سپس ۱ قاشق چای‌خوری عصارهٔ وانیل را بریزید و دوباره بزنید تا کاملاً یکدست شود (حدود ۲ دقیقه). چون تخم‌مرغ خام است، بعد از کار دست‌ها و وسایل را با آب و مایع ظرف‌شویی بشویید و خمیر را خام نچشید.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 6, "title": "ترکیب آرد و خرما", "instruction": "۱۸۰ گرم آرد گندم سفید، ۱ قاشق چای‌خوری بکینگ‌پودر و ۰.۲۵ قاشق چای‌خوری نمک را روی مخلوط الک کنید یا آرام بریزید، سپس خمیر خرمای له‌شده را هم اضافه کنید. حالا با لیسک یا قاشق فقط تا جایی هم بزنید که دیگر آرد خشک دیده نشود؛ زیاد هم نزنید چون کیک سفت می‌شود (حدود ۱ تا ۲ دقیقه).", "durationMin": 2, "flameLevel": "none" },
+      { "order": 7, "title": "ریختن در قالب و پختن", "instruction": "ته و دیوارهٔ یک قالب را با کمی کره چرب کنید تا کیک نچسبد، خمیر را در آن بریزید و سطحش را صاف کنید. قالب را در طبقهٔ وسط فرِ از قبل گرم‌شده (۱۸۰ درجه) بگذارید و حدود ۳۰ دقیقه بپزید تا روی کیک قهوه‌ای طلایی و برگشت‌پذیر شود و وقتی یک خلال چوبی را وسط کیک فرو می‌برید، تمیز و بدون خمیر چسبیده بیرون بیاید. موقع برداشتن قالب داغ حتماً از دستکش فر استفاده کنید.", "durationMin": 30, "flameLevel": "none" },
+      { "order": 8, "title": "پختن سس تافی", "instruction": "نصف باقی‌ماندهٔ شکر قهوه‌ای (۷۵ گرم)، باقی‌ماندهٔ کره (اگر دارید، حدود مقدار کم) و ۱۵۰ میلی‌لیتر خامهٔ پرچرب را در یک قابلمهٔ کوچک بریزید و روی شعلهٔ متوسط بگذارید. مدام هم بزنید تا کره و شکر آب شوند، سپس بگذارید آرام بجوشد و حدود ۵ دقیقه قلقل بزند تا سس کمی غلیظ، براق و کاراملی‌رنگ شود. سس بسیار داغ می‌شود، پس مراقب باشید روی پوستتان نپاشد و آن را نچشید تا خنک شود.", "durationMin": 5, "flameLevel": "medium" },
+      { "order": 9, "title": "غرق‌کردن و سرو", "instruction": "وقتی کیک هنوز داغ است، با خلال چوبی یا چنگال چند سوراخ روی سطح آن بزنید تا سس نفوذ کند. حدود نصف سس تافیِ داغ را روی کیک بریزید و ۲ تا ۳ دقیقه صبر کنید تا جذب شود. سپس کیک را به ۸ تکه برش بزنید و موقع سرو، باقی سس داغ را روی هر تکه بریزید. چون سس داغ است، در سرو به دیگران (به‌خصوص بچه‌ها) دقت کنید.", "durationMin": 4, "flameLevel": "none" }
+    ],
+    "beginnerNotes": [
+      "کره را حدود ۳۰ تا ۶۰ دقیقه قبل از شروع از یخچال بیرون بگذارید تا اتاق‌دما و نرم شود؛ کرهٔ سرد خوب کرم نمی‌شود.",
+      "همهٔ مواد را قبل از شروع وزن و آماده کنید تا وسط کار دستپاچه نشوید.",
+      "آب جوش و سس تافی هر دو بسیار داغ‌اند؛ آرام و با احتیاط کار کنید و اجازه ندهید روی پوست بپاشد.",
+      "تخم‌مرغ خام است؛ خمیر خام را نچشید و بعد از تماس با تخم‌مرغ خام دست و وسایل را با آب گرم و مایع ظرف‌شویی بشویید.",
+      "موقع برداشتن قالب یا قابلمهٔ داغ حتماً دستکش فر یا دستمال ضخیم خشک به دست داشته باشید (دستمال خیس داغ را رد می‌کند و دستتان می‌سوزد).",
+      "هنگام خرد کردن خرما با چاقو، تخته را روی یک دستمال مرطوب بگذارید تا سُر نخورد و انگشتانتان را جمع نگه دارید."
+    ],
+    "verdict": {
+      "recipeId": "garnish_recipe_intl_052_a57a621f",
+      "verdict": "needs_fix",
+      "accurate": false,
+      "beginnerSafe": true,
+      "noVagueSteps": false,
+      "issues": [
+        "BUTTER MISALLOCATION (accuracy): The 90g unsalted butter is the only butter in the recipe and the original intends it to be split between the cake batter AND the toffee sauce. The rewrite puts ALL 90g into the cake (step 4), then step 8 tells the cook to use 'باقی‌ماندهٔ کره (اگر دارید، حدود مقدار کم)' = 'leftover butter (if you have any, a small amount)'. After step 4 there is NO butter left, so the toffee sauce ends up with effectively no butter. A toffee/caramel sauce of brown sugar + cream + butter will not set/emulsify properly without its butter. This breaks the dish.",
+        "VAGUE QUANTITY (noVagueSteps=false): Step 8's 'باقی‌ماندهٔ کره (اگر دارید، حدود مقدار کم)' is non-committal and uncertain — it gives no real amount and conditions it on 'if you have any', which a first-timer cannot act on. The original step 4 lists butter as a definite sauce ingredient. Fix: split the 90g explicitly (e.g. ~60g to the batter, ~30g to the sauce) and state both amounts.",
+        "Minor (faithful but worth noting): original step 2 creams 'بخشی از' (part of) the brown sugar with butter — rewrite interprets this as exactly half (75g), which is a reasonable concrete choice and keeps the 150g total consistent with the 75g reserved for the sauce. Acceptable.",
+        "Positive: ingredient list is fully faithful (all 10 original ingredients used, nothing invented); 180°C / 30 min bake, boiling-water 4-5 min, and 5-min medium-flame toffee sauce are all realistic; safety notes (boiling water, very hot caramel sauce, raw-egg handling, oven mitts, knife grip, damp cloth under board) are thorough and appropriate. No undercooked-meat or oil-fire hazard (it is a baked dessert)."
+      ]
+    }
+  },
+  {
+    "recipeId": "garnish_recipe_fa_131_abd5e2d6",
+    "title": "کال کباب",
+    "steps": [
+      { "order": 1, "title": "آماده‌سازی بادمجان", "instruction": "اول دور هر بادمجان را با یک چنگال چند جای سوراخ کنید (تا موقع حرارت نترکد). این کار با گاز خاموش انجام می‌شود و آتشی روشن نیست. حدود ۱ دقیقه.", "durationMin": 1, "flameLevel": "none" },
+      { "order": 2, "title": "کباب‌کردن بادمجان", "instruction": "شعلهٔ گاز را روی «متوسط» روشن کنید. بادمجان‌ها را مستقیم روی شعله بگذارید و هر ۲ تا ۳ دقیقه یک‌بار با انبر فلزی (نه دست لخت، چون آتش و بادمجان داغ‌اند) بچرخانید. حدود ۱۲ دقیقه، تا پوست از همه طرف کاملاً سیاه و سوخته شود و وقتی انگشت می‌زنید بادمجان کاملاً نرم و وارفته باشد.", "durationMin": 12, "flameLevel": "medium" },
+      { "order": 3, "title": "خنک‌شدن بادمجان", "instruction": "گاز را خاموش کنید. بادمجان‌های داغ را با انبر داخل یک کاسه بگذارید و حدود ۵ دقیقه صبر کنید تا کمی خنک شوند؛ داغ‌اند و اگر زود دست بزنید دستتان می‌سوزد. وقتی خنک شد که با دست راحت بشود گرفتشان، آماده است.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 4, "title": "پوست‌گیری و له‌کردن", "instruction": "با گاز خاموش، با انگشت یا یک قاشق پوست سیاهِ سوخته را جدا کنید و دور بریزید. مغز نرم بادمجان را داخل کاسه با چنگال له کنید تا تقریباً یک‌دست شود. حدود ۵ دقیقه.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 5, "title": "خردکردن سیر و گردو", "instruction": "با گاز خاموش، ۳ حبه سیر را پوست بگیرید و خیلی ریز خرد یا رنده کنید (هنگام کار با چاقو، انگشت‌هایتان را جمع و نوک چاقو را پایین نگه دارید). ۶۰ گرم گردو را هم با دست یا چاقو ریز خرد کنید. حدود ۳ دقیقه.", "durationMin": 3, "flameLevel": "none" },
+      { "order": 6, "title": "داغ‌کردن روغن", "instruction": "۳ قاشق غذاخوری روغن آفتابگردان را در یک تابه بریزید و شعله را روی «متوسط» روشن کنید. حدود ۲ دقیقه صبر کنید تا روغن داغ شود؛ نشانه‌اش این است که اگر یک تکه ریز سیر داخلش بیندازید، دور آن ریز جوش بزند. مراقب باشید روغن داغ نپاشد.", "durationMin": 2, "flameLevel": "medium" },
+      { "order": 7, "title": "تفت سیر و زردچوبه", "instruction": "شعله را روی «کم» بیاورید. سیر خردشده و ۰.۵ قاشق چای‌خوری زردچوبه را در روغن بریزید و مدام هم بزنید. حدود ۱ دقیقه، تا بوی خامیِ سیر برود و خوش‌بو شود؛ نگذارید سیر قهوه‌ای و تلخ شود.", "durationMin": 1, "flameLevel": "low" },
+      { "order": 8, "title": "افزودن گردو", "instruction": "همان شعلهٔ «کم»، گردوی خردشده را اضافه کنید و مدام هم بزنید. حدود ۱ دقیقه، فقط تا گردو کمی برشته و خوش‌بو شود؛ خیلی زود می‌سوزد پس هم زدن را قطع نکنید.", "durationMin": 1, "flameLevel": "low" },
+      { "order": 9, "title": "افزودن بادمجان و چاشنی", "instruction": "بادمجان له‌شده، ۱ قاشق غذاخوری رب انار، ۰.۷۵ قاشق چای‌خوری نمک و ۰.۵ قاشق چای‌خوری فلفل سیاه را به تابه اضافه کنید. شعله را روی «متوسط» بگذارید و هم بزنید. حدود ۵ دقیقه، تا آب اضافه‌اش بکشد و مخلوط کمی غلیظ و یک‌دست شود.", "durationMin": 5, "flameLevel": "medium" },
+      { "order": 10, "title": "بستن با تخم‌مرغ", "instruction": "شعله را روی «کم» بیاورید. ۳ تخم‌مرغ را اول داخل یک کاسهٔ جدا بشکنید و هم بزنید (تا اگر پوست افتاد بردارید)، بعد روی بادمجانِ داغ بریزید و فوری شروع به هم زدن کنید. حدود ۲ تا ۳ دقیقه، تا تخم‌مرغ تازه ببندد و دیگر مایع و شفاف نباشد ولی هنوز نرم و مرطوب بماند؛ زیاد هم نزنید که خشک نشود. تخم‌مرغ باید کاملاً بپزد، خام نماند.", "durationMin": 3, "flameLevel": "low" }
+    ],
+    "beginnerNotes": [
+      "همیشه قبل از کباب‌کردن، بادمجان را با چنگال چند جا سوراخ کنید؛ بادمجان دربسته روی شعله ممکن است بترکد و داغ بپاشد.",
+      "برای چرخاندن یا برداشتن بادمجانِ روی شعله از انبر فلزی استفاده کنید، نه دست لخت؛ هم آتش و هم خود بادمجان خیلی داغ‌اند.",
+      "موقع داغ‌کردن روغن کنارش بمانید و از آن فاصلهٔ کمی بگیرید؛ روغن داغ اگر آب یا غذای خیس داخلش بیفتد جِرّق می‌کند و می‌پاشد.",
+      "هنگام خردکردن سیر و گردو، انگشت‌هایی که غذا را نگه می‌دارند جمع کنید و نوک چاقو رو به پایین باشد تا دستتان نبرد.",
+      "تخم‌مرغ را اول در یک کاسهٔ جداگانه بشکنید نه مستقیم در تابه، تا اگر تکه‌ای پوست افتاد بتوانید درش بیاورید؛ و حتماً تا کامل بسته‌شدن بپزید، خام نماند.",
+      "اگر شعلهٔ گاز را تنظیم کردید و مطمئن نیستید، «کم» یعنی زبانه‌های آتش کوتاه و آرام، «متوسط» یعنی آتش تا لبهٔ کف تابه می‌رسد ولی از کناره بالا نمی‌زند."
+    ],
+    "verdict": {
+      "recipeId": "garnish_recipe_fa_131_abd5e2d6",
+      "verdict": "pass",
+      "accurate": true,
+      "beginnerSafe": true,
+      "noVagueSteps": true,
+      "issues": [
+        "No correctness, safety, or vagueness defects found; verdict is pass. The following are minor non-blocking observations only.",
+        "FIDELITY: All 9 original ingredients and their quantities are preserved exactly (garlic 3 cloves, walnut 60g, oil 3 tbsp, turmeric 0.5 tsp, pomegranate molasses 1 tbsp, salt 0.75 tsp, pepper 0.5 tsp, eggs 3). No invented ingredients.",
+        "SAFETY IMPROVEMENT (correct): Step 1 adds pricking the eggplant before flame-roasting to prevent bursting/hot-splatter — a genuine and important first-timer safety addition the original lacked.",
+        "SAFETY IMPROVEMENT (correct): Step 10 fixes a real hazard in the original. The original ('تازه ببندد و خشک نشود') risked leaving eggs undercooked; the rewrite explicitly requires the egg to fully set (no longer liquid/translucent) and states 'کاملاً بپزد، خام نماند' while still keeping it moist. Doneness cue is concrete, not vague.",
+        "SAFETY (correct): Oil-splatter caution (step 6 + note), tongs-not-bare-hands for flame-roasting (step 2 + note), and knife-grip guidance (step 5 + note) are all present and appropriate. No oil-fire / undercooked-protein risks remain.",
+        "TIMES/FLAME (realistic): 12 min medium-flame whole-eggplant roast, 2 min oil heat-up, low flame for the delicate garlic+turmeric / walnut / egg stages, and ~5 min medium reduce are all realistic and well-matched to the original (original steps were 12/5/5/6/5 min).",
+        "NO VAGUE STEPS: every step ends with an observable doneness cue (skin fully blackened and flesh collapses to finger pressure; garlic bubbling finely at the edges; walnut just toasted/fragrant; mixture thickened and uniform; egg set but soft). No 'تا آماده شود'-style instructions.",
+        "MINOR (not a defect): summed step times (~37 min) exceed the original cookingTime of 25 min, but this is because the rewrite honestly counts added prep/cooling steps for beginners rather than an error.",
+        "MINOR (not a defect): the egg step instructs 'low flame' plus pouring egg onto the hot eggplant and stirring immediately — technically sound; a first-timer should keep stirring continuously, which the instruction already states ('فوری شروع به هم زدن کنید')."
+      ]
+    }
+  },
+  {
+    "recipeId": "garnish_recipe_intl_003_5ed6583e",
+    "title": "نیوکی سیب‌زمینی با سس گوجه",
+    "steps": [
+      { "order": 1, "title": "آماده‌سازی سیر و ریحان", "instruction": "قبل از روشن کردن گاز، ۲ حبه سیر را پوست بکنید و روی تختهٔ آشپزی با چاقو به ورقه‌های نازک ببُرید؛ هنگام بریدن نوک انگشتانتان را جمع کنید و مفصل انگشت‌ها را سپرِ چاقو قرار دهید تا انگشت‌ها زخمی نشوند. سپس ۱۰ گرم برگ ریحان تازه را بشویید و کنار بگذارید. این کار وقت ندارد و باید قبل از پختن انجام شود چون بعداً فرصت نمی‌کنید.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 2, "title": "داغ کردن روغن", "instruction": "۲ قاشق غذاخوری روغن زیتون را در یک تابه بریزید و گاز را روی شعلهٔ کم روشن کنید. حدود ۱ تا ۲ دقیقه صبر کنید تا روغن گرم شود؛ نشانه‌اش این است که روغن کمی روان‌تر و براق‌تر می‌شود. روغن را خیلی داغ نکنید چون اگر دود کند می‌سوزد و سیر را تلخ می‌کند.", "durationMin": 2, "flameLevel": "low" },
+      { "order": 3, "title": "تفت دادن سیر", "instruction": "ورقه‌های سیر را در روغن بریزید و روی همان شعلهٔ کم حدود ۲ تا ۳ دقیقه با قاشق چوبی مدام هم بزنید تا سیر طلاییِ روشن و خوش‌بو شود. به‌محض اینکه بوی خوش سیر بلند شد و رنگش طلایی شد دست نگه دارید؛ نگذارید قهوه‌ای یا سوخته شود چون سیرِ سوخته طعم تلخ می‌دهد.", "durationMin": 3, "flameLevel": "low" },
+      { "order": 4, "title": "افزودن سس گوجه", "instruction": "۴۰۰ گرم پاساتای (پورهٔ) گوجه‌فرنگی را آرام در تابه بریزید؛ کمی احتیاط کنید چون ممکن است روغن داغ کمی به بیرون بپاشد. سپس ۱ قاشق چای‌خوری نمک و ۰.۲۵ قاشق چای‌خوری فلفل سیاه را اضافه کنید و یک‌بار خوب هم بزنید.", "durationMin": 1, "flameLevel": "low" },
+      { "order": 5, "title": "جا افتادن سس", "instruction": "شعله را روی متوسط بگذارید تا سس به جوش بیاید (نشانه‌اش حباب‌های آرام روی سطح سس است)، بعد شعله را کم کنید و حدود ۱۰ دقیقه بگذارید آرام بجوشد و هر ۲ تا ۳ دقیقه یک‌بار هم بزنید تا ته نگیرد. سس وقتی آماده است که کمی غلیظ‌تر و پررنگ‌تر شده باشد. اگر سس به بیرون پاشید، روی تابه نیمه‌درپوش بگذارید.", "durationMin": 10, "flameLevel": "low" },
+      { "order": 6, "title": "جوشاندن آب نیوکی", "instruction": "همزمان یک قابلمهٔ بزرگ را تا نیمه از آب پر کنید، کمی نمک به آن بزنید و روی شعلهٔ زیاد بگذارید. حدود ۵ تا ۸ دقیقه طول می‌کشد تا آب به جوشِ کامل برسد؛ نشانهٔ جوشِ کامل، حباب‌های درشت و پیوسته است که از ته قابلمه بالا می‌آیند. دستهٔ قابلمه را به سمت داخل اجاق بچرخانید تا با دستتان به آن نخورید.", "durationMin": 8, "flameLevel": "high" },
+      { "order": 7, "title": "پختن نیوکی", "instruction": "۵۰۰ گرم نیوکی را آرام و از فاصلهٔ کم داخل آبِ جوش بریزید تا آب داغ به دستتان نپاشد. روی همان شعلهٔ زیاد بمانید و منتظر بمانید؛ معمولاً بعد از حدود ۲ تا ۳ دقیقه نیوکی‌ها روی سطح آب می‌آیند. به‌محض اینکه بالا آمدند پخته‌اند و باید فوراً خارج شوند، چون اگر بمانند له و خمیری می‌شوند.", "durationMin": 3, "flameLevel": "high" },
+      { "order": 8, "title": "خارج کردن نیوکی", "instruction": "با کفگیرِ مشبک نیوکی‌های روآمده را از آب بردارید و آب اضافه‌اش را بگیرید، سپس مستقیم داخل تابهٔ سس بریزید. در این مرحله گازِ زیر قابلمهٔ آب را خاموش کنید. مراقب بخار داغی که از قابلمه بلند می‌شود باشید و صورتتان را نزدیک نبرید.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 9, "title": "ترکیب با سس", "instruction": "شعلهٔ زیر تابهٔ سس را روی کم بگذارید، برگ‌های ریحان تازه را اضافه کنید و خیلی آرام نیوکی‌ها را با سس بگردانید (تند هم نزنید تا نیوکی‌ها له نشوند). حدود ۱ دقیقه این کار را بکنید تا سس دور تک‌تک گلوله‌ها بنشیند و یکدست براق شوند، بعد گاز را خاموش کنید.", "durationMin": 1, "flameLevel": "low" },
+      { "order": 10, "title": "سرو با پارمزان", "instruction": "نیوکی را در ظرف سرو بکشید و ۴۰ گرم پنیر پارمزان را روی آن رنده یا خرد کنید. گرم سرو کنید؛ همین حالا آماده است.", "durationMin": 1, "flameLevel": "none" }
+    ],
+    "beginnerNotes": [
+      "همهٔ موادتان را قبل از روشن کردن گاز آماده و کنار دستتان بچینید؛ روی شعله فرصت خرد کردن نخواهید داشت.",
+      "هنگام بریدن سیر با چاقو، نوک انگشتانتان را جمع کنید و مفصل انگشت‌ها را جلوی تیغه قرار دهید تا بریده نشوید.",
+      "دستهٔ قابلمه و تابه را همیشه به سمت داخل اجاق بچرخانید تا با دستتان به آن‌ها برخورد نکنید و واژگون نشوند.",
+      "وقتی پورهٔ گوجه را در روغن داغ می‌ریزید کمی عقب بایستید، چون ممکن است روغن بپاشد و بسوزاند.",
+      "از بخار آبِ جوش و قابلمهٔ داغ فاصله بگیرید و دست لخت به لبهٔ داغ تابه نزنید؛ از دستگیره یا دستکش فر استفاده کنید.",
+      "قبل از ترک آشپزخانه مطمئن شوید هر دو شعلهٔ گاز کاملاً خاموش شده‌اند."
+    ],
+    "verdict": {
+      "recipeId": "garnish_recipe_intl_003_5ed6583e",
+      "verdict": "pass",
+      "accurate": true,
+      "beginnerSafe": true,
+      "noVagueSteps": true,
+      "issues": [
+        "Faithful to original: no invented ingredients. All 8 ingredients (gnocchi 500g, passata 400g, garlic 2 cloves, basil 10g, olive oil 2 tbsp, parmesan 40g, salt 1 tsp, pepper 0.25 tsp) carried over with correct amounts. Pepper placed at step 4 is legitimate (it is a listed ingredient).",
+        "Times realistic: oil heat 1-2 min on low, garlic 2-3 min to light golden, sauce simmer 10 min, water to boil 5-8 min on high, gnocchi float in 2-3 min. The gnocchi doneness cue (floats to surface, remove immediately) is the correct standard.",
+        "Strong beginner safety: knife claw grip, pot/pan handles turned inward, oil-spatter warning when adding passata to hot oil, steam warning, do-not-overheat-oil (smoke point / bitter garlic), and a final check that both burners are off. Oil-fire risk is mitigated. No raw-protein/undercooked-meat risk in this dish.",
+        "No vague endpoints: every step gives a concrete sensory cue (oil looks glossier; garlic smells fragrant and turns golden; gentle surface bubbles; sauce thicker and deeper-colored; large continuous bubbles; gnocchi rise to surface). No 'تا آماده شود'-style vagueness.",
+        "MINOR (non-blocking): step 5 flameLevel is tagged 'low' but its instruction starts on medium ('شعله را روی متوسط') to reach the boil, then drops to low — slight metadata/text mismatch, not a safety or accuracy error.",
+        "MINOR (non-blocking): total time grew to ~36 min vs the original's stated cookingTime of 20 min. The rewrite's timing is actually more realistic/honest, but it diverges from the original metadata field."
+      ]
+    }
+  },
+  {
+    "recipeId": "garnish_recipe_intl_004_e65ccfe3",
+    "title": "بروسکتا با گوجه و ریحان",
+    "steps": [
+      { "order": 1, "title": "خرد کردن گوجه", "instruction": "۴ عدد گوجه‌فرنگی را روی تختهٔ آشپزی بگذارید و با چاقو هرکدام را اول دو نیم و بعد به تکه‌های ریزِ نگینی (حدوداً به اندازهٔ یک نخود) خرد کنید. هنگام کار با چاقو، نوکِ انگشتانتان را جمع کنید و بندِ انگشت‌ها را سپرِ تیغهٔ چاقو قرار دهید تا انگشتتان نبُرد. این کار حدود ۴ دقیقه طول می‌کشد.", "durationMin": 4, "flameLevel": "none" },
+      { "order": 2, "title": "نمک‌زدن و آب‌گیری گوجه", "instruction": "گوجهٔ نگینی را داخل یک آبکش (صافی) بریزید، نیم قاشق چای‌خوری نمک رویش بپاشید و با قاشق آرام هم بزنید. آبکش را روی یک کاسه بگذارید و دقیقاً ۱۰ دقیقه صبر کنید تا آبِ اضافهٔ گوجه چکه کند و پایینِ کاسه جمع شود؛ وقتی گوجه دیگر شُل و آب‌دار نیست و کمی سفت‌تر شده، آماده است. هیچ شعله‌ای لازم نیست.", "durationMin": 10, "flameLevel": "none" },
+      { "order": 3, "title": "ریز کردن ریحان و سیر", "instruction": "۱۰ گرم ریحان تازه (حدود یک مشت کوچک برگ) را با چاقو ریز خرد کنید. دو حبه سیر را پوست بکنید؛ یک حبه را ریز خرد کنید و حبهٔ دیگر را درست و سالم کنار بگذارید (این یکی را بعداً روی نان می‌مالیم). این کار حدود ۳ دقیقه طول می‌کشد.", "durationMin": 3, "flameLevel": "none" },
+      { "order": 4, "title": "درست کردن چاشنی گوجه", "instruction": "گوجهٔ آب‌گرفته را در یک کاسه بریزید و ریحانِ خردشده، سیرِ ریزشده، نیمی از روغن زیتون (یعنی حدود ۱.۵ قاشق غذاخوری)، ۱ قاشق چای‌خوری سرکهٔ شراب قرمز و ۰.۲۵ قاشق چای‌خوری فلفل سیاه را اضافه کنید. با قاشق آرام و بدون له‌کردن هم بزنید تا همه‌چیز یک‌دست شود، حدود ۱ دقیقه. یک قاشق کوچک بچشید؛ اگر کم‌نمک بود کمی نمک اضافه کنید.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 5, "title": "برش زدن باگت", "instruction": "باگت را روی تخته بگذارید و با چاقو به‌صورتِ کمی مورب به برش‌هایی به ضخامت حدود ۱.۵ تا ۲ سانتی‌متر ببُرید (حدود ۸ تا ۱۰ برش). دستی که نان را نگه داشته از مسیرِ تیغه دور باشد. حدود ۲ دقیقه.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 6, "title": "برشته کردن نان روی گاز", "instruction": "یک تابهٔ گریل یا تابهٔ معمولیِ خشک (بدون روغن) را روی شعلهٔ گاز با حرارتِ متوسط بگذارید و حدود ۲ دقیقه صبر کنید تا تابه داغ شود؛ برای امتحان، یک قطره آب رویش بریزید؛ اگر فوراً جلز و ولز کرد و بخار شد، تابه آماده است. برش‌های باگت را کنار هم روی تابه بچینید و حدود ۲ تا ۳ دقیقه روی هر طرف نگه دارید تا سطحِ نان طلایی، تُرد و کمی نشان‌دار (خط‌خطی شده) شود. مراقب تابهٔ داغ باشید و نان‌ها را با انبر یا چنگال برگردانید، نه با دست.", "durationMin": 6, "flameLevel": "medium" },
+      { "order": 7, "title": "مالیدن سیر و روغن روی نان", "instruction": "تابه را از روی شعله بردارید و شعلهٔ گاز را خاموش کنید. تا نان هنوز گرم است، حبهٔ سیرِ سالمی که کنار گذاشته بودید را روی سطحِ زبر و برشتهٔ نان بمالید (مثل مدادپاک‌کن)؛ زبریِ نان سیر را می‌ساید و عطرش به نان می‌نشیند. بعد روی هر برش چند قطره از روغن زیتونِ باقی‌مانده (همان نیمِ دیگر) بریزید. حدود ۲ دقیقه.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 8, "title": "چیدن چاشنی و سرو فوری", "instruction": "درست لحظهٔ آخر و قبل از سرو، یک قاشق پُر از چاشنیِ گوجه را روی هر برش نان بگذارید و بلافاصله سرو کنید. اگر زود بچینید نان نَم می‌کشد و تُردی‌اش از بین می‌رود، پس این مرحله را تا وقتی همه سرِ میز نیستند انجام ندهید. حدود ۱ دقیقه.", "durationMin": 1, "flameLevel": "none" }
+    ],
+    "beginnerNotes": [
+      "کار با چاقو: همیشه روی تختهٔ آشپزی ببُرید، نه در دست. انگشتانِ دستِ نگه‌دارنده را جمع و قلاب‌مانند کنید تا بندِ انگشت جلوی تیغه را بگیرد و نوکِ انگشت بریده نشود.",
+      "تابهٔ داغ می‌سوزاند ولی دیده نمی‌شود. برای برگرداندنِ نان از انبر یا چنگال استفاده کنید و دستهٔ تابه را با دستکشِ فر یا پارچهٔ خشک بگیرید (پارچهٔ خیس حرارت را رد می‌کند و دست را می‌سوزاند).",
+      "این غذا روی گاز فقط یک مرحلهٔ کوتاه دارد (برشته‌کردنِ نان با شعلهٔ متوسط)؛ بقیهٔ مراحل بدون حرارت‌اند، پس استرس نداشته باشید.",
+      "سیرِ خام تند و تیز است. اگر طعمِ سیر را خیلی دوست ندارید، سیر را کمتر بمالید یا سیرِ خردشده در چاشنی را نصف کنید.",
+      "نمک را مرحله‌به‌مرحله اضافه و بچشید؛ همیشه می‌توان نمک بیشتر زد ولی نمی‌توان از غذا نمک کم کرد.",
+      "چاشنیِ گوجه را تا لحظهٔ سرو روی نان نگذارید تا نان تُرد بماند؛ این رازِ خوش‌مزه‌شدنِ بروسکتاست."
+    ],
+    "verdict": {
+      "recipeId": "garnish_recipe_intl_004_e65ccfe3",
+      "verdict": "pass",
+      "accurate": true,
+      "beginnerSafe": true,
+      "noVagueSteps": true,
+      "issues": [
+        "Faithfulness deviation (minor, not an invented ingredient): the original method only RUBS raw garlic on the bread (step 4) and keeps the tomato dressing garlic-free. The rewrite splits the 2 cloves — mincing one raw clove INTO the dressing (step 4) and rubbing the other on the bread (step 7). Total garlic and ingredient list are unchanged, but adding raw minced garlic to the dressing alters the original flavor/method. Acceptable, but worth noting.",
+        "Time vs metadata mismatch (inherited, not introduced by rewrite): step durations sum to ~30 min, far above the recipe's cookingTime of 6. The original's own steps already summed to ~21 min, so the 6-min figure was always wrong; the rewrite is actually more honest, but the cookingTime field remains inconsistent.",
+        "All other checks pass: no invented ingredients; flame levels correct (only step 6 toasting uses medium heat, everything else flameLevel=none); no undercooked-protein or oil-fire risk (dry pan, oil added off-heat after pan is removed and flame is off); strong, accurate beginner safety (claw knife grip, tongs not hands for the hot pan, dry cloth not wet for the handle, salt incrementally, taste-and-adjust); no vague 'تا آماده شود' steps — every step gives concrete doneness cues (water-droplet sizzle test for pan readiness, 'طلایی/تُرد/نشان‌دار' for toast, 'دیگر شُل و آب‌دار نیست' for draining)."
+      ]
+    }
+  },
+  {
+    "recipeId": "garnish_recipe_fa_2094_845c07e3",
+    "title": "پیتزا مرغ و پستو",
+    "steps": [
+      { "order": 1, "title": "آماده‌سازی و گرم کردن فر", "instruction": "اول فر را روشن کنید و روی دمای ۲۲۰ درجهٔ سانتی‌گراد بگذارید تا کاملاً داغ شود (حدود ۱۰ تا ۱۵ دقیقه طول می‌کشد). فر داغ باعث می‌شود خمیر پیتزا برشته شود و خمیر نماند. تا گرم شدن فر، بقیهٔ مواد را آماده می‌کنیم.", "durationMin": 12, "flameLevel": "none" },
+      { "order": 2, "title": "خرد کردن سبزیجات", "instruction": "روی یک تختهٔ تمیز، ۱۲۰ گرم قارچ را با چاقو به ورقه‌های نازک ببرید و ۸۰ گرم فلفل دلمه‌ای را به نوارهای باریک خرد کنید. هنگام کار با چاقو، نوک انگشتانتان را جمع کنید و مواد را با بند انگشت محکم نگه دارید تا چاقو به دستتان نخورد. آن‌ها را کنار بگذارید.", "durationMin": 6, "flameLevel": "none" },
+      { "order": 3, "title": "نواری کردن مرغ", "instruction": "۶۰۰ گرم سینهٔ مرغ خام را روی تختهٔ جداگانه (نه تختهٔ سبزیجات) به نوارهای حدود یک سانتی‌متری ببرید. مرغ خام را با دست لمس نکنید مگر لازم باشد و بعد از کار با مرغ خام، دست و تخته و چاقو را با آب و مایع ظرفشویی خوب بشویید، چون مرغ خام میکروب دارد.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 4, "title": "داغ کردن روغن در ماهیتابه", "instruction": "یک ماهیتابه را روی شعلهٔ متوسط بگذارید و ۲ قاشق غذاخوری روغن زیتون در آن بریزید. حدود ۲ دقیقه صبر کنید تا روغن داغ شود؛ وقتی روغن داغ است که سطحش کمی برق می‌افتد و روان می‌شود. احتیاط کنید روغن نسوزد و دود نکند.", "durationMin": 2, "flameLevel": "medium" },
+      { "order": 5, "title": "تفت دادن مرغ", "instruction": "نوارهای مرغ را داخل ماهیتابه بریزید و ۱ قاشق چای‌خوری نمک و نصف قاشق چای‌خوری فلفل سیاه روی آن بپاشید. روی شعلهٔ متوسط حدود ۷ تا ۸ دقیقه با قاشق هم بزنید تا رنگ مرغ از صورتی به سفیدِ مات تبدیل شود و دیگر هیچ بخش صورتی یا آبدارِ خام در وسط تکه‌ها دیده نشود. مرغ باید کاملاً مغزپخت باشد. سپس شعله را خاموش کنید و مرغ را کنار بگذارید تا کمی خنک شود.", "durationMin": 8, "flameLevel": "medium" },
+      { "order": 6, "title": "پهن کردن خمیر", "instruction": "خمیر پیتزا را روی یک سینی فر که زیرش کاغذ روغنی گذاشته‌اید پهن کنید. اگر خمیر کوچک است با دست یا وردنه آن را به‌آرامی باز کنید تا گرد و نسبتاً نازک شود. حدود دو سانتی‌متر از لبه‌ها را خالی بگذارید تا لبهٔ پیتزا باد کند و برشته شود.", "durationMin": 4, "flameLevel": "none" },
+      { "order": 7, "title": "مالیدن سس پستو", "instruction": "۳ قاشق غذاخوری سس پستو را با پشت قاشق روی خمیر پخش کنید، از وسط شروع کنید و به سمت بیرون بکشید تا یک لایهٔ نازک و یکدست بسازید. مراقب باشید روی همان دو سانتی‌مترِ لبه که خالی گذاشتید، سس نمالید.", "durationMin": 2, "flameLevel": "none" },
+      { "order": 8, "title": "چیدن مواد روی پیتزا", "instruction": "اول ۱۵۰ گرم پنیر موزارلا را روی سس پخش کنید، بعد مرغِ تفت‌داده‌شده، قارچ و فلفل دلمه‌ای را به‌طور یکنواخت روی پیتزا بچینید. سپس نیمی از پنیر پارمزان (حدود ۷۵ گرم) را روی همه بپاشید و در آخر کمی پونهٔ کوهی خشک بپاشید. اگر دوست دارید یک قاشق غذاخوری روغن زیتون هم نازک روی پیتزا بریزید.", "durationMin": 5, "flameLevel": "none" },
+      { "order": 9, "title": "پختن پیتزا در فر", "instruction": "سینی را با احتیاط و حتماً با دستکش فر (دستگیرهٔ پارچه‌ای) داخل فرِ از پیش داغ‌شده بگذارید، چون فر و سینی خیلی داغ هستند. در دمای ۲۲۰ درجه حدود ۱۰ تا ۱۲ دقیقه بپزید تا پنیر کاملاً ذوب و حباب‌دار شود و لبه‌های خمیر طلایی و برشته شوند.", "durationMin": 11, "flameLevel": "none" },
+      { "order": 10, "title": "درآوردن و سرو", "instruction": "پیتزا را با دستکش فر از فر بیرون بیاورید و روی یک سطح نسوز بگذارید. باقی‌ماندهٔ پنیر پارمزان را تازه روی پیتزای داغ بپاشید و چند برگ ریحان تازه روی آن بگذارید. حدود ۳ تا ۴ دقیقه صبر کنید تا کمی جا بیفتد، بعد با چاقوی پیتزا یا یک چاقوی بزرگ برش بزنید و سرو کنید.", "durationMin": 4, "flameLevel": "none" }
+    ],
+    "beginnerNotes": [
+      "برای مرغ خام یک تخته و چاقوی جدا استفاده کنید و بعد از کار با مرغ خام، دست‌ها، تخته و چاقو را با آب گرم و مایع ظرفشویی کاملاً بشویید؛ مرغ نیم‌پز نخورید و مطمئن شوید وسط تکه‌ها هیچ بخش صورتی نمانده باشد.",
+      "روغنِ داغ خطرناک است؛ آب روی روغن داغ نریزید چون پُف می‌کند و می‌سوزاند، و دستهٔ ماهیتابه را به سمت بیرون اجاق بچرخانید تا تصادفی به آن نخورید.",
+      "هرچیزی که از فر بیرون می‌آورید با دستکش یا دستگیرهٔ ضخیم بردارید؛ سینی و درِ فر برای چند دقیقه خیلی داغ می‌مانند.",
+      "هنگام خرد کردن با چاقو، نوک انگشتان دستِ نگه‌دارنده را به سمت داخل جمع کنید (حالت پنجه) تا تیغهٔ چاقو به انگشتانتان نرسد.",
+      "اگر شعله گاز بوی نشتی داد یا روشن نشد، گاز را ببندید، پنجره را باز کنید و دوباره با احتیاط امتحان کنید؛ هیچ‌وقت شعله را بدون نظارت رها نکنید."
+    ],
+    "verdict": {
+      "recipeId": "garnish_recipe_fa_2094_845c07e3",
+      "verdict": "pass",
+      "accurate": true,
+      "beginnerSafe": true,
+      "noVagueSteps": true,
+      "issues": [
+        "Minor (non-blocking): original lists 4 tbsp olive oil but rewrite only uses 3 (2 tbsp to fry chicken + 1 optional drizzle). Using less is fine and nothing is invented, so this is not an accuracy defect — just a note.",
+        "Minor wording (non-blocking): beginnerNote #5 references a gas-flame leak/smell scenario, but the cooking steps use an oven and a stovetop pan without specifying gas; the safety advice is still valid and harmless for gas users."
+      ]
+    }
+  }
+]
