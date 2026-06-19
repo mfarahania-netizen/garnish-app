@@ -40,10 +40,11 @@
     "recipes:import:international-150": "pnpm --dir apps/server recipes:import:international-150",
     "recipes:verify:international-150": "pnpm --dir apps/server recipes:verify:international-150"
   },
-  "devDependencies": { 
-    "turbo": "^1.13.3", 
-    "prettier": "^3.2.5" 
-  }, 
+  "devDependencies": {
+    "turbo": "^1.13.3",
+    "prettier": "^3.2.5",
+    "globals": "^17.0.0"
+  },
   "packageManager": "pnpm@9.1.0", 
   "engines": { 
     "node": ">=18" 

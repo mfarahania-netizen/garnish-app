@@ -39,4 +39,23 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: ['**/*.{test,spec}.{js,jsx}', '**/test/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        suite: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        vitest: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+  },
 ])

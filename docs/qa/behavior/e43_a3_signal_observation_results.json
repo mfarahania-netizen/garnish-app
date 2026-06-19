@@ -63,9 +63,9 @@
     }
   },
   "signalRegistrySummary": {
-    "total": 44,
+    "total": 55,
     "active_v1": 37,
-    "planned": 7,
+    "planned": 18,
     "families": 10,
     "uniqueKeys": true,
     "noForbidden": true,

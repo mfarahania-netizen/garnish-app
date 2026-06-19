@@ -1,0 +1,25 @@
+# Normalize line endings across all platforms.
+# Repo stores text as LF; this kills the Windows CRLF churn permanently.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF (they can misbehave with LF)
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binary assets — never apply line-ending conversion
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.svg   text eol=lf
+*.pdf   binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.mp4   binary
+*.webm  binary
