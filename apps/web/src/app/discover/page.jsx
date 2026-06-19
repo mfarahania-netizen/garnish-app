@@ -5,6 +5,7 @@ import { useDiscovery } from './useDiscovery';
 import { MEAL_CHIPS, FOOD_TILES, UNMET_SUGGESTIONS, QUICK_FILTERS } from './categories';
 import RecipeCard from '../../components/ges/RecipeCard';
 import RecipeRail from '../../components/ges/RecipeRail';
+import { useDismissRecommendation } from '../../hooks/useDismissRecommendation';
 import ErrorState from '../../components/ges/ErrorState';
 import { SkeletonCard, SkeletonLine } from '../../components/ges/LoadingSkeleton';
 
@@ -78,6 +79,7 @@ function Browse({ d, openRecipe }) {
 
 function Results({ d, openRecipe }) {
   const { safe, flagged, total } = d.results;
+  const { dismissed, dismiss } = useDismissRecommendation();
   return (
     <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
       {/* quick filters */}
@@ -98,8 +100,8 @@ function Results({ d, openRecipe }) {
       <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '0 2px var(--g-space-3)' }}>{toFa(total)} نتیجه</Text>
 
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-        {safe.map((r) => (
-          <RecipeCard key={r.id} title={r.title} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} reasons={r.reasons} onOpen={() => openRecipe(r.id)} />
+        {safe.filter((r) => !dismissed.has(r.id)).map((r) => (
+          <RecipeCard key={r.id} title={r.title} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} reasons={r.reasons} onOpen={() => openRecipe(r.id)} onDismiss={() => dismiss(r.id)} />
         ))}
       </Box>
 

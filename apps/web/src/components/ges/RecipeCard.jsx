@@ -1,7 +1,7 @@
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import {
   IconClock, IconChartBar, IconUsers, IconBookmark, IconBookmarkFilled, IconHeartCheck,
-  IconInfoCircle, IconClockExclamation, IconAlertTriangle,
+  IconInfoCircle, IconClockExclamation, IconAlertTriangle, IconX,
 } from '@tabler/icons-react';
 import PlatePlaceholder from './PlatePlaceholder';
 import WhyChip from './WhyChip';
@@ -45,6 +45,7 @@ export default function RecipeCard({
   saved = false,
   onSave,
   onOpen,
+  onDismiss = null, // recommendation surfaces only: "علاقه ندارم" — emits recommendation_dismiss + removes the card
   compact = false,
   // Short fixed media height: full-width picks = 140px; compact (rails/grids) = 110px. Callers can override.
   mediaHeight = compact ? 110 : 140,
@@ -115,6 +116,31 @@ export default function RecipeCard({
               }}
             >
               <SaveIcon size={18} stroke={1.8} />
+            </Box>
+          </UnstyledButton>
+        ) : null}
+
+        {/* "Not interested" — recommendation surfaces only. Free bottom-start media corner (away from the
+            save control top-end + fit badge top-start). stopPropagation so it never triggers the open overlay. */}
+        {onDismiss && !allergen ? (
+          <UnstyledButton
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onDismiss(); }}
+            aria-label={`علاقه ندارم — حذف «${title}» از پیشنهادها`}
+            style={{
+              position: 'absolute', insetBlockEnd: 6, insetInlineStart: 6, zIndex: 2,
+              display: 'grid', placeItems: 'center', inlineSize: 44, blockSize: 44, background: 'transparent',
+            }}
+          >
+            <Box
+              aria-hidden="true"
+              style={{
+                display: 'grid', placeItems: 'center', inlineSize: 30, blockSize: 30, borderRadius: '50%',
+                background: 'color-mix(in srgb, var(--g-color-text-inverse) 88%, transparent)',
+                color: 'var(--g-color-text-secondary)', boxShadow: 'var(--g-shadow-1)',
+              }}
+            >
+              <IconX size={16} stroke={1.8} />
             </Box>
           </UnstyledButton>
         ) : null}

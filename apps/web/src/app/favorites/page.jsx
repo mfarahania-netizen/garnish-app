@@ -5,6 +5,7 @@ import { IconBookmark, IconBookmarkOff, IconBookmarkPlus, IconCompass, IconCloud
 import { useFavorites } from './useFavorites';
 import { toFaDigits } from '../../components/ges/format';
 import RecipeCard from '../../components/ges/RecipeCard';
+import { useDismissRecommendation } from '../../hooks/useDismissRecommendation';
 import { SkeletonCard } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
@@ -30,6 +31,7 @@ function FavError({ onRetry }) {
 }
 
 function FavEmpty({ suggestions, onOpen, onSave, onDiscover }) {
+  const { dismissed, dismiss } = useDismissRecommendation();
   return (
     <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-6)' }}>
       <Box style={{ textAlign: 'center' }}>
@@ -39,8 +41,8 @@ function FavEmpty({ suggestions, onOpen, onSave, onDiscover }) {
       </Box>
       {suggestions.length ? (
         <Box style={{ ...grid2, marginBlockStart: 'var(--g-space-5)' }}>
-          {suggestions.map((r) => (
-            <RecipeCard key={r.recipeId} compact title={r.title} placeholderSeed={r.seed} saved={false} onSave={() => onSave(r.recipeId)} onOpen={() => onOpen(r.recipeId)} />
+          {suggestions.filter((r) => !dismissed.has(r.recipeId)).map((r) => (
+            <RecipeCard key={r.recipeId} compact title={r.title} placeholderSeed={r.seed} saved={false} onSave={() => onSave(r.recipeId)} onOpen={() => onOpen(r.recipeId)} onDismiss={() => dismiss(r.recipeId)} />
           ))}
         </Box>
       ) : null}

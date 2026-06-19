@@ -13,6 +13,7 @@ import { useFoodDnaProjection } from '../food-dna/useFoodDna';
 import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useImpressionObserver } from '../../hooks/useImpressionObserver';
+import { useDismissRecommendation } from '../../hooks/useDismissRecommendation';
 import { toFaDigits } from '../../components/ges/format';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import AIWhisper from '../../components/ges/AIWhisper';
@@ -198,6 +199,7 @@ export default function HomePage() {
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesQuery();
   const { trackEvent } = useAnalytics();
   const { observe } = useImpressionObserver({ enabled: true, source: 'home' });
+  const { dismissed, dismiss } = useDismissRecommendation();
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
@@ -266,12 +268,12 @@ export default function HomePage() {
             <Box component="section">
               <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginInline: 2, marginBlockEnd: 'var(--g-space-3)' }}>
                 <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برای تو، امشب</Text>
-                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{`${toFaDigits(picks.length)} پیشنهاد`}</Text>
+                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{`${toFaDigits(picks.filter((p) => !dismissed.has(p.recipeId)).length)} پیشنهاد`}</Text>
               </Box>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-                {picks.map((p, i) => (
+                {picks.filter((p) => !dismissed.has(p.recipeId)).map((p, i) => (
                   <Box key={p.recipeId} ref={observe(p.recipeId)} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
-                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} />
+                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} onDismiss={() => dismiss(p.recipeId)} />
                   </Box>
                 ))}
               </Box>

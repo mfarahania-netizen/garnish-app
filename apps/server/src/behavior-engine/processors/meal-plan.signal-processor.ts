@@ -20,15 +20,31 @@ export class MealPlanSignalProcessor {
         0.9,
         1,
       );
+      await this.prisma.signalObservation.create({
+        data: { userId, signalName: 'plans_meal', eventId: event.id, weight: 1.0 },
+      });
+      return;
     }
 
+    // FI-STEP-1 (learn from rejection): removing/clearing a planned dish is a SOFT rejection. Previously
+    // these events wrote a flat positive 'plans_meal' observation and NO negative signal. Now a removed dish
+    // (with a recipeId) flows through the SAME applyNegativeFeedback path as a recommendation dismiss — so it
+    // down-weights the user's taste signals and reaches the LIVE ranker. mealplan_clear has no single
+    // recipeId, so it records the negative observation only.
+    if (event.type === 'mealplan_remove' || event.type === 'mealplan_clear') {
+      const payload = JSON.parse(event.payload || '{}');
+      if (payload.recipeId) {
+        await this.signalCalculator.applyNegativeFeedback(userId, payload.recipeId, -0.2);
+      }
+      await this.prisma.signalObservation.create({
+        data: { userId, signalName: 'plan_abandonment', eventId: event.id, weight: 1.0 },
+      });
+      return;
+    }
+
+    // other meal-plan events (e.g. mealplan_generate) keep the neutral planning observation
     await this.prisma.signalObservation.create({
-      data: {
-        userId,
-        signalName: 'plans_meal',
-        eventId: event.id,
-        weight: 1.0,
-      },
+      data: { userId, signalName: 'plans_meal', eventId: event.id, weight: 1.0 },
     });
   }
 }
