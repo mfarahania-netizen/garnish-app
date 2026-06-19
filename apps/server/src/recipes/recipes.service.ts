@@ -70,7 +70,20 @@ export class RecipesService {
         author: { select: { id: true, name: true, avatar: true } },
       },
     });
-    return recipe ? this.presentRecipe(recipe) : null;
+    if (!recipe) return null;
+    // GRIS v2 (additive): read the new `gris`/`containsPork` columns via raw SQL so this works even when the
+    // generated Prisma client predates them. Purely additive — presentRecipe spreads them through; the allergy
+    // filter + getLivingUserProfile are unaffected (they never read gris).
+    try {
+      const rows: any = await this.prisma.$queryRawUnsafe('SELECT gris, "containsPork" FROM "Recipe" WHERE id = $1', id);
+      if (Array.isArray(rows) && rows[0]) {
+        (recipe as any).gris = rows[0].gris ?? null;
+        (recipe as any).containsPork = rows[0].containsPork ?? false;
+      }
+    } catch {
+      /* columns absent (older env) → gris stays undefined; UI falls back to flat fields */
+    }
+    return this.presentRecipe(recipe);
   }
 
   /** Load + present recipes for the given ids, preserving the order of `ids` (used by semantic search). */

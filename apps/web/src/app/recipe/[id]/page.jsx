@@ -8,6 +8,7 @@ import {
   IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck, IconChefHat,
 } from '@tabler/icons-react';
 import { useRecipeDetail } from './useRecipeDetail';
+import GrisRecipe from './GrisRecipe';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { useAuth } from '../../../context/AuthContext';
@@ -213,7 +214,7 @@ function SubSheet({ sub, onClose }) {
 export default function RecipeDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { status, recipe, nutrition, fit, substitutions, integrity, refetch } = useRecipeDetail(id);
+  const { status, recipe, nutrition, fit, substitutions, integrity, gris, refetch } = useRecipeDetail(id);
   const { token } = useAuth();
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesQuery();
   const { trackEvent } = useAnalytics();
@@ -372,6 +373,9 @@ export default function RecipeDetailPage() {
             </Box>
           ) : null}
 
+          {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
+          {gris ? <GrisRecipe gris={gris} /> : null}
+          {!gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (
             <>
@@ -500,6 +504,7 @@ export default function RecipeDetailPage() {
               </Box>
             </>
           ) : null}
+          </>) : null}
         </Box>
       </Box>
 

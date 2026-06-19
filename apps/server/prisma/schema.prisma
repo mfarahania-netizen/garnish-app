@@ -177,6 +177,13 @@ model Recipe {
   substitutions      String? @default("[]")
   dishType           String? @default("[]")
 
+  // GRIS v2 — the full Garnish Recipe Intelligence Standard object (story, whyItWorks, glance, skillsLearned,
+  // dietary, rich ingredients/steps, finish, troubleshooting, variations, keep, serveWith, nourishment, faq).
+  // Additive Json blob; the recipe page renders it when present, with graceful fallback to the flat fields.
+  gris         Json?
+  // GRIS dietary surface (queryable for the planner/preference filter; soft "no pork" avoidance).
+  containsPork Boolean @default(false)
+
   ingredients                     RecipeIngredient[]
   steps                           RecipeStep[]
   nutrition                       Nutrition?

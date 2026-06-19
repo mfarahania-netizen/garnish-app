@@ -99,6 +99,7 @@ export function useRecipeDetail(id) {
 
     return {
       status,
+      gris: r.gris ?? null, // GRIS v2 full object when present → premium page render
       recipe,
       nutrition,
       fit: recommendation ? { recommendation, label: FIT_LABEL[recommendation] || null, reasons: recipeFitReasons(fit, 3), allergens } : null,
