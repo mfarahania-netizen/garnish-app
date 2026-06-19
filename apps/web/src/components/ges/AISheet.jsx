@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
-import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck } from '@tabler/icons-react';
+import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck, IconRefresh } from '@tabler/icons-react';
 import { toFaDigits } from './format';
 import { bottomSheetStyles } from './sheet';
-import apiClient from '../../lib/apiClient';
+import { fetchSubstitutions, qualityOf } from './substitution';
 
 /**
  * AISheet — "برای من تنظیمش کن": a disclosed, hedged, IN-CONTEXT bottom sheet to tune the recipe.
@@ -29,34 +29,47 @@ const Disclosure = () => (
   </Box>
 );
 
-export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [] }) {
+export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [], swaps = {}, onApplySwap }) {
   const [mode, setMode] = useState(null); // null = menu · 'servings' | 'swap' | 'time' = proposal
   const [servings, setServings] = useState(baseServings);
-  const [swap, setSwap] = useState({ ingredient: null, loading: false, items: null });
+  const [swap, setSwap] = useState({ ingredient: null, loading: false, items: null, error: false });
+  const [picked, setPicked] = useState(null); // the chosen substitution option (apply is disabled until picked)
+  const abortRef = useRef();
 
   const ingNames = (Array.isArray(ingredients) ? ingredients : [])
     .map((i) => (typeof i === 'string' ? i : i?.name)).filter(Boolean);
 
   // Reopen always starts on the menu, seeded from the recipe's current servings.
   useEffect(() => {
-    if (opened) { setMode(null); setServings(baseServings > 0 ? baseServings : 4); setSwap({ ingredient: null, loading: false, items: null }); }
+    if (opened) { setMode(null); setServings(baseServings > 0 ? baseServings : 4); setSwap({ ingredient: null, loading: false, items: null, error: false }); setPicked(null); }
   }, [opened, baseServings]);
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   const applyServings = () => { onApplyServings?.(servings); onClose?.(); };
 
-  // real grounded substitution for the picked ingredient → POST /ai/substitutions (deterministic, no live LLM)
+  // real grounded substitution for the picked ingredient → POST /ai/substitutions (deterministic, no live
+  // LLM). AbortController drops a superseded lookup (M10); a distinct `error` flag separates a temporary
+  // failure from an honest empty result (M7). Picking an option arms the Apply button (H13).
   const askSwap = async (name) => {
     if (!name) return;
-    setSwap({ ingredient: name, loading: true, items: null });
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setPicked(null);
+    setSwap({ ingredient: name, loading: true, items: null, error: false });
     try {
-      const { data } = await apiClient.post('/ai/substitutions', { ingredient: name, limit: 5 });
-      const items = Array.isArray(data?.substitutions)
-        ? data.substitutions.map((s) => (typeof s === 'string' ? s : s?.name)).filter(Boolean)
-        : [];
-      setSwap({ ingredient: name, loading: false, items });
+      const { items } = await fetchSubstitutions(name, { limit: 6, signal: controller.signal });
+      setSwap({ ingredient: name, loading: false, items, error: false });
     } catch {
-      setSwap({ ingredient: name, loading: false, items: [] });
+      if (controller.signal.aborted) return;
+      setSwap({ ingredient: name, loading: false, items: null, error: true });
     }
+  };
+
+  const applySwap = () => {
+    if (!swap.ingredient || !picked) return;
+    onApplySwap?.(swap.ingredient, picked.name, { basis: picked.basis, reason: picked.reason });
+    onClose?.();
   };
 
   return (
@@ -127,7 +140,7 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
         </Box>
       ) : null}
 
-      {/* ── swap: REAL grounded substitutions (POST /ai/substitutions) — pick an ingredient, see same-role swaps ── */}
+      {/* ── swap: REAL grounded substitutions (POST /ai/substitutions) — pick an ingredient, pick an option, APPLY ── */}
       {mode === 'swap' ? (
         <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', margin: 0 }}>کدام ماده را جایگزین کنم؟</Text>
@@ -135,8 +148,9 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
             <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)' }}>
               {ingNames.map((n, i) => {
                 const active = swap.ingredient === n;
+                const isSwapped = !!swaps[n];
                 return (
-                  <UnstyledButton key={`${n}-${i}`} type="button" onClick={() => askSwap(n)} aria-pressed={active} style={{ minBlockSize: 40, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${active ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: active ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', color: active ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>{n}</UnstyledButton>
+                  <UnstyledButton key={`${n}-${i}`} type="button" onClick={() => askSwap(n)} aria-pressed={active} style={{ minBlockSize: 40, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', gap: 4, borderRadius: 'var(--g-radius-chip)', border: `1px solid ${active ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: active || isSwapped ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', color: active || isSwapped ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>{isSwapped ? <IconCheck size={13} stroke={2} aria-hidden="true" /> : null}{n}</UnstyledButton>
                 );
               })}
             </Box>
@@ -148,15 +162,29 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
             <Box style={{ marginBlockStart: 'var(--g-space-4)', padding: 'var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)' }}>
               {swap.loading ? (
                 <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 0 }}>در حال یافتنِ جایگزین برای «{swap.ingredient}»…</Text>
+              ) : swap.error ? (
+                <Box>
+                  <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 0 }}>الان نشد جایگزین‌ها را بیاورم. چیزی عوض نشده.</Text>
+                  <UnstyledButton type="button" onClick={() => askSwap(swap.ingredient)} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}><IconRefresh size={14} stroke={1.8} aria-hidden="true" />تلاش دوباره</UnstyledButton>
+                </Box>
               ) : swap.items?.length ? (
                 <>
-                  <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-2)' }}>به‌جای «{swap.ingredient}» می‌تونی استفاده کنی:</Text>
-                  <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-                    {swap.items.map((it, i) => (
-                      <Box key={`${it}-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>
-                        <IconReplace size={15} stroke={1.8} aria-hidden="true" />{it}
-                      </Box>
-                    ))}
+                  <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-2)' }}>به‌جای «{swap.ingredient}» یکی را انتخاب کن:</Text>
+                  <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+                    {swap.items.map((it, i) => {
+                      const sel = picked?.name === it.name;
+                      const q = qualityOf(it.basis);
+                      return (
+                        <UnstyledButton key={`${it.name}-${i}`} type="button" aria-pressed={sel} onClick={() => setPicked(it)} style={{ textAlign: 'start', padding: 'var(--g-space-2) var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${sel ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: sel ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}>
+                          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+                            {sel ? <IconCheck size={15} stroke={2} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconReplace size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />}
+                            <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: sel ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{it.name}</Text>
+                            <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{q.label}</Box>
+                          </Box>
+                          {it.reason ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '2px 0 0', paddingInlineStart: 'calc(15px + var(--g-space-2))' }}>{it.reason}</Text> : null}
+                        </UnstyledButton>
+                      );
+                    })}
                   </Box>
                 </>
               ) : (
@@ -166,7 +194,8 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
           ) : null}
 
           <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
-            <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>باشه</UnstyledButton>
+            <UnstyledButton type="button" onClick={() => setMode(null)} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>بی‌خیال</UnstyledButton>
+            <UnstyledButton type="button" onClick={applySwap} disabled={!picked} aria-disabled={!picked} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-1)', minBlockSize: 48, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, opacity: picked ? 1 : 0.5 }}><IconCheck size={16} stroke={2} aria-hidden="true" />اعمالِ این جایگزین</UnstyledButton>
           </Box>
           <Disclosure />
         </Box>
