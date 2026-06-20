@@ -9928,8 +9928,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -10289,8 +10293,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -10648,8 +10656,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -11006,8 +11018,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -11364,8 +11380,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -11727,8 +11747,12 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -36382,7 +36406,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.5,
@@ -69422,7 +69448,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7,
@@ -69767,7 +69795,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7.2,
@@ -70113,7 +70143,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7,
@@ -79039,7 +79071,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7.2,
@@ -79383,7 +79417,8 @@
       "dairy_free"
     ],
     "allergens": [
-      "dairy"
+      "dairy",
+      "gluten"
     ],
     "nutritionPer100g": {
       "calories": 217,
@@ -79728,7 +79763,8 @@
       "dairy_free"
     ],
     "allergens": [
-      "dairy"
+      "dairy",
+      "gluten"
     ],
     "nutritionPer100g": {
       "calories": 210,
@@ -80075,7 +80111,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 210,
       "protein": 6.8,
@@ -80420,7 +80458,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
@@ -80762,7 +80802,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7,
@@ -81457,7 +81499,9 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [],
+    "allergens": [
+      "gluten"
+    ],
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
