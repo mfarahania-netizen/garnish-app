@@ -105,3 +105,32 @@ not nagging.
   minority-loved dish survives for that minority.
 - A fish-leaning region's new users see more seafood by default, then personalize away from it.
 - The user can SEE why ("because you cooked X / you're in region Y / it's a cold autumn night") and tune it.
+
+## PILLAR: AI — two distinct systems (founder, 2026-06-20). «بهترین نوعِ خودش»
+The founder wants an **embedded, scoped latest-Claude** ("یه کلادِ آخرین نسخه اما محدود‌شده داخلِ اپ") that
+"watches everything", researched to **world-class depth with the newest techniques** — not a rules/filter
+model. When the founder says "AI" they mean TWO separate things; both are first-class:
+
+### L2a — Ambient, omnipresent USER assistant (not just a chat page)
+- Helps the user **anywhere in the app, on anything**: ingredient swaps, the recipe, raw materials,
+  cooking type & method, and **problems that arise DURING cooking** (real-time troubleshooting).
+- **On-the-second**, with **full awareness/context** (اشرافِ کامل). The user must **NEVER feel lost/confused
+  (گنگی) ANYWHERE** — the assistant is omnipresent, not confined to the chat screen.
+- The dedicated AI chat page is the SAME caliber: it must **know the ENTIRE database by heart**, answer
+  **precisely, LIVE, professionally** — a genuinely grounded LLM, **NOT rules/filters**.
+- (Builds on the existing grounded assistant — assessRecipeFit/analyzeRecipeIntegrity + the OFF live rails
+  — but far beyond it: omnipresent, contextual, real-time, full-corpus grounded.)
+
+### L2b — App-intelligence / admin-analytics AI (may merge with the personalization system)
+- Analyzes **ALL app data + ALL user data + everything** → a **calculated report to the ADMIN PANEL**:
+  what's trending now, which dish has problems, what's good/bad, **where the problem is**, every tiny detail.
+- Agents must derive this via **comprehensive research**. Concretely: measure/analyze **~200 parameters**,
+  **categorized**, delivered to the admin panel.
+- Then, **on the founder's command and under their supervision, the AI can make positive changes itself**
+  (supervised autonomy / human-in-the-loop ops).
+
+This is explicitly **"a small percent"** of the founder's full intent — the rest is delegated to me + my
+agents: **world-class sources, the newest research in the field.** Sequencing unchanged (honest): AI is
+**L2**, built AFTER L0 (live captured behavior + profile — DONE) and L1 (taste ranker), so it grounds on
+real data instead of nothing. DEEP AI RESEARCH starts NOW (background) so the L2 design is world-class when
+we reach it. Standard/roadmap → `AI_STANDARD.md` (to be written by the research workflow).
