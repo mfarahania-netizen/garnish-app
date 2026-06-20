@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   IconChevronRight, IconChevronDown, IconBookmark, IconBookmarkFilled, IconShare2,
   IconClock, IconChartBar, IconUsers, IconHeartCheck, IconAlertTriangle, IconSparkles,
-  IconChevronLeft, IconListNumbers, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
+  IconChevronLeft, IconBulb, IconHelpCircle, IconFlame, IconCalendarPlus,
   IconInfoCircle, IconCloudOff, IconRefresh, IconToolsKitchen2, IconArrowsExchange, IconCircleCheck, IconChefHat,
   IconTrash, IconArrowBackUp,
 } from '@tabler/icons-react';
@@ -20,10 +20,9 @@ import { toFaDigits } from '../../../components/ges/format';
 import { extractBaseServings, scaleAmountText, parseQuantity } from '../../../components/ges/scaling';
 import { fetchSubstitutions, qualityOf as subQualityOf } from '../../../components/ges/substitution';
 import { isStructural } from '../../../components/ges/ingredientRoles';
-import { personalizationSummary, patchStepText, swapsList } from '../../../components/ges/personalize';
+import { personalizationSummary } from '../../../components/ges/personalize';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
-import NutritionBadge from '../../../components/ges/NutritionBadge';
 import AISheet from '../../../components/ges/AISheet';
 import Toast from '../../../components/ges/Toast';
 import { SkeletonLine } from '../../../components/ges/LoadingSkeleton';
@@ -106,32 +105,43 @@ function PersonalizationBanner({ items }) {
   );
 }
 
-// recomputed, source-locked per-serving nutrition after personalization (Phase 4). Shows numbers ONLY
-// when coverage is good; «تخمینی» when partial; nothing when the recipe lacks gram-level data.
-function RecomputedNutrition({ cascade }) {
-  const n = cascade?.nutrition;
-  if (!n?.perServing) return null;
-  const m = n.perServing;
-  const cells = [['کالری', m.calories, ''], ['پروتئین', m.protein, 'g'], ['کربو', m.carbs, 'g'], ['چربی', m.fat, 'g'], ['فیبر', m.fiber, 'g']];
+// Unified, QUIET nutrition — one default-closed accordion holding the qualitative GRIS attributes + the
+// per-serving numbers (recomputed source-locked cascade when personalized, else the legacy single calorie
+// figure) + the non-medical disclaimer. Numbers render small (font-16 / weight-700, never 28/800) so calories
+// never dominate the page. Renders nothing when there is no nutrition data at all (graceful omission).
+function NutritionSection({ gris, cascade, nutrition }) {
+  const nour = gris?.nourishment || null;
+  const per = cascade?.nutrition?.perServing || null;
+  const attrs = Array.isArray(nour?.attributes) ? nour.attributes.filter(Boolean) : [];
+  const cells = per
+    ? [['کالری', per.calories, ''], ['پروتئین', per.protein, 'g'], ['کربو', per.carbs, 'g'], ['چربی', per.fat, 'g'], ['فیبر', per.fiber, 'g']].map(([l, v, u]) => [l, toFaDigits(Math.round(Number(v) || 0)), u])
+    : (nutrition?.calories ? [['کالری', nutrition.calories, '']] : []);
+  if (!attrs.length && !nour?.note && !cells.length) return null;
+  const partial = per && cascade?.nutrition?.coverage === 'partial';
+  const tinyMuted = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' };
   return (
-    <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-4)' }}>
-      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockEnd: 'var(--g-space-3)' }}>
-        <IconRefresh size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>ارزش غذاییِ دوباره‌محاسبه‌شده — هر وعده</Text>
-        {n.coverage === 'partial' ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>(تخمینی)</Text> : null}
-      </Box>
-      <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-        {cells.map(([label, val, unit]) => (
-          <Box key={label} style={{ flex: '1 1 80px', textAlign: 'center', padding: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-bg-canvas)' }}>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>{toFaDigits(Math.round(Number(val) || 0))}{unit}</Text>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>{label}</Text>
+    <Box style={{ marginBlockStart: 'var(--g-space-2)' }}>
+      <Accordion icon={IconInfoCircle} title="ارزشِ غذایی">
+        {attrs.length ? (
+          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockEnd: cells.length || nour?.note ? 'var(--g-space-3)' : 0 }}>
+            {attrs.map((a, i) => <Box key={i} style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{a}</Box>)}
           </Box>
-        ))}
-      </Box>
-      {(cascade.notes || []).map((note, i) => (
-        <Text key={i} component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' }}>⚠️ {note}</Text>
-      ))}
-      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' }}>از وزنِ موادِ قفل‌شده به منبع (USDA) — اطلاعات عمومی، نه توصیهٔ پزشکی.</Text>
+        ) : null}
+        {nour?.note ? <Text component="p" style={{ ...stepText, margin: cells.length ? '0 0 var(--g-space-3)' : 0 }}>{nour.note}</Text> : null}
+        {cells.length ? (
+          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+            {cells.map(([label, val, unit]) => (
+              <Box key={label} style={{ flex: '1 1 72px', textAlign: 'center', padding: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-bg-canvas)' }}>
+                <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{val}{unit}</Text>
+                <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, color: 'var(--g-color-text-muted)' }}>{label}</Text>
+              </Box>
+            ))}
+          </Box>
+        ) : null}
+        {partial ? <Text component="p" style={tinyMuted}>(تخمینی)</Text> : null}
+        {(cascade?.notes || []).map((note, i) => <Text key={i} component="p" style={tinyMuted}>⚠️ {note}</Text>)}
+        <Text component="p" style={tinyMuted}>{nour?.disclaimer || (per ? 'از وزنِ موادِ قفل‌شده به منبع (USDA) — اطلاعات عمومی، نه توصیهٔ پزشکی.' : 'اطلاعات عمومی، نه توصیهٔ پزشکی.')}</Text>
+      </Accordion>
     </Box>
   );
 }
@@ -432,6 +442,8 @@ export default function RecipeDetailPage() {
   const isAllergen = fit?.recommendation === 'avoid_allergen';
   const isGreat = fit?.recommendation === 'great_fit';
   const scaled = scaleFactor !== 1;
+  // steps now live in Cook Mode — surface the count on «بپز» so the move is discoverable
+  const stepCount = (Array.isArray(gris?.steps) ? gris.steps.length : 0) || (recipe.steps?.length || 0);
 
   return (
     <Column>
@@ -484,7 +496,10 @@ export default function RecipeDetailPage() {
             </Box>
           ) : null}
 
-          {recipe.description ? (
+          {/* LEDE — only on the flat (non-GRIS) path. For GRIS the recipe.description is a technique line, so it
+              is relocated into the «چرا این‌طوری؟» science accordion (passed as techniqueTip) and the «داستان»
+              section's origin becomes the narrative intro — the intro is never a technique tip. */}
+          {!gris && recipe.description ? (
             <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-4) 0 0' }}>{recipe.description}</Text>
           ) : null}
 
@@ -500,9 +515,8 @@ export default function RecipeDetailPage() {
             <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
           </UnstyledButton>
 
-          {/* Personalization summary + recomputed (grounded) nutrition — visible for both GRIS + flat */}
+          {/* Personalization summary (recomputed nutrition now lives in the unified «ارزشِ غذایی» accordion below) */}
           <PersonalizationBanner items={personalizationSummary(perso)} />
-          <RecomputedNutrition cascade={cascade} />
 
           {/* Byline */}
           {recipe.author ? (
@@ -516,7 +530,7 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
-          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} /> : null}
+          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} techniqueTip={recipe.description || null} /> : null}
           {!gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (
@@ -581,63 +595,26 @@ export default function RecipeDetailPage() {
             </>
           ) : null}
 
-          {/* Tools — persisted + returned by the API but never rendered before */}
+          {/* Tools — disclosed (was a loud always-on block) */}
           {recipe.tools.length ? (
-            <>
-              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>ابزار لازم</Text>
-              <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-                {recipe.tools.map((t, i) => (
-                  <Box key={`${t}-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-secondary)' }}>
-                    <IconToolsKitchen2 size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />{t}
-                  </Box>
-                ))}
-              </Box>
-            </>
+            <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
+              <Accordion icon={IconToolsKitchen2} title="ابزار لازم">
+                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                  {recipe.tools.map((t, i) => (
+                    <Box key={`${t}-${i}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-secondary)' }}>
+                      <IconToolsKitchen2 size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />{t}
+                    </Box>
+                  ))}
+                </Box>
+              </Accordion>
+            </Box>
           ) : null}
 
-          {/* Nutrition */}
-          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>ارزش غذایی</Text>
-          <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
-            <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)' }}>
-              {nutrition.calories ? (
-                <Box>
-                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-secondary)' }}>هر وعده</Text>
-                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-28)', fontWeight: 800, color: 'var(--g-color-text-primary)', marginBlockStart: 2 }}>{nutrition.calories} <Text component="span" style={{ fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-muted)' }}>کیلوکالری</Text></Text>
-                </Box>
-              ) : (
-                <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>عدد دقیقی موجود نیست</Text>
-              )}
-              <NutritionBadge state={nutrition.state} />
-            </Box>
-            <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)', paddingBlockStart: 'var(--g-space-3)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
-              <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
-              <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>اطلاعات عمومی، نه توصیهٔ پزشکی</Text>
-            </Box>
-          </Box>
-
-          {/* Method / richness sections / faq */}
-          {(recipe.steps.length || recipe.tips.length || recipe.faq.length || recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
+          {/* Method richness — steps now live in Cook Mode («بپز»); only the read-on-the-page extras remain, disclosed */}
+          {(recipe.tips.length || recipe.faq.length || recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
             <>
-              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>روش پخت</Text>
+              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>بیشتر دربارهٔ این دستور</Text>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
-                {recipe.steps.length ? (
-                  <Accordion icon={IconListNumbers} title="مراحل پخت" defaultOpen>
-                    <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-                      {recipe.steps.map((s, i) => {
-                        const patched = patchStepText(s, swapsList(perso.swaps), perso.removed);
-                        return (
-                        <Box key={i} style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
-                          <Box aria-hidden="true" style={{ flexShrink: 0, display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-12)' }}>{toFaDigits(i + 1)}</Box>
-                          <Box style={{ minInlineSize: 0 }}>
-                            <Text component="span" style={stepText}>{patched.text}</Text>
-                            {patched.caveats.length ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-brand-700)', marginBlockStart: 2 }}>↳ {patched.caveats.join(' · ')}</Text> : null}
-                          </Box>
-                        </Box>
-                        );
-                      })}
-                    </Box>
-                  </Accordion>
-                ) : null}
                 {/* S3 Option-2: distinct premium sections when authored fields exist; else the merged tips fallback */}
                 {(recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
                   <>
@@ -665,6 +642,9 @@ export default function RecipeDetailPage() {
             </>
           ) : null}
           </>) : null}
+
+          {/* NUTRITION — unified + quiet, last in the disclosure stack, for BOTH layouts (qualitative + numbers) */}
+          <NutritionSection gris={gris} cascade={cascade} nutrition={nutrition} />
         </Box>
       </Box>
 
@@ -673,8 +653,9 @@ export default function RecipeDetailPage() {
         <UnstyledButton type="button" aria-label="به برنامه" onClick={() => setPlanOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 46, blockSize: 46, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' }}>
           <IconCalendarPlus size={19} stroke={1.8} />
         </UnstyledButton>
-        <UnstyledButton type="button" onClick={() => navigate(`/cook/${id}`)} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
-          <IconFlame size={18} stroke={1.8} aria-hidden="true" />بپز
+        <UnstyledButton type="button" onClick={() => navigate(`/cook/${id}`)} style={{ flex: 1, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
+          <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}><IconFlame size={18} stroke={1.8} aria-hidden="true" />بپز</Box>
+          {stepCount ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, color: 'var(--g-color-text-inverse)', opacity: 0.85 }}>{toFaDigits(stepCount)} مرحله</Text> : null}
         </UnstyledButton>
       </Box>
 

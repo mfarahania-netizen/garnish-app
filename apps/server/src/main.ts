@@ -36,7 +36,9 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: env.FRONTEND_URL,
+    // accept a comma-separated list so multiple dev frontends (e.g. 5173 + a preview on 5176) work without
+    // reconfiguring; a single value still behaves exactly as before (split returns a 1-element array).
+    origin: String(env.FRONTEND_URL).split(',').map((o) => o.trim()).filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,

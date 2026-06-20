@@ -59,7 +59,9 @@ export function useRecipeDetail(id) {
       imageUrl: r.imageUrl || null,
       // localized to Persian — never a raw enum key like "main_course"
       categories: [...new Set((Array.isArray(r.categories) ? r.categories : []).map(faCategory).filter(Boolean))].slice(0, 3),
-      cookTimeText: faDuration(r.cookingTime || r.totalTime),
+      // time source-of-truth: GRIS glance is the authored, accurate time; the legacy cookingTime field is
+      // unreliable across the corpus (founder: wrong for every dish). Fall back to legacy only when no GRIS.
+      cookTimeText: faDuration(r.gris?.glance?.totalTimeMin ?? r.gris?.glance?.activeTimeMin ?? r.cookingTime ?? r.totalTime),
       difficultyText: faDifficulty(r.difficulty),
       servingsText: r.servings ? `${toFaDigits(r.servings)} نفر` : '',
       description: r.description || '',

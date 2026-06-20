@@ -1,24 +1,27 @@
 import { useState } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import {
-  IconChevronDown, IconFlame, IconClock, IconThermometer, IconEye, IconBulb, IconLifebuoy,
-  IconCircleCheck, IconChefHat, IconAlertTriangle, IconToolsKitchen2, IconArrowsExchange,
-  IconBook, IconFlask, IconSchool, IconInfoCircle, IconHelpCircle, IconArchive, IconSparkles,
+  IconChevronDown, IconClock, IconChefHat, IconAlertTriangle, IconToolsKitchen2, IconArrowsExchange,
+  IconBook, IconFlask, IconSchool, IconHelpCircle, IconArchive, IconSparkles,
   IconTrash, IconArrowBackUp,
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
 import { scaleWeightG, scaleAmountText } from '../../../components/ges/scaling';
-import { parseGrisName, patchStepText, swapsList, stripGrisIds } from '../../../components/ges/personalize';
+import { parseGrisName, stripGrisIds } from '../../../components/ges/personalize';
 
 /**
- * GrisRecipe — renders the full Garnish Recipe Intelligence Standard (GRIS v2) object as a premium,
- * "no-video-needed" recipe page: story, the food-science «why it works», at-a-glance, skills, ingredients
- * (weight + role + buy-tip + swap), ultra-granular steps (flame/temp/time/sees/recovery/doneness), the
- * chef-secret finish, troubleshooting, variations, storage, pairings, and honest nutrition. Pure presenter:
- * renders only what the gris object provides (graceful omission), no fabrication.
+ * GrisRecipe — renders the Garnish Recipe Intelligence Standard (GRIS v2) as a premium recipe page built on
+ * PROGRESSIVE DISCLOSURE: the minimal visible surface is story → at-a-glance → ingredients; everything deeper
+ * (the food-science «why it works», skills, the chef-secret finish, troubleshooting, variations, storage,
+ * pairings, FAQ) lives in a clean stack of expandables — present and understandable, never cluttering. The
+ * cooking STEPS live in Cook Mode («بپز» → /cook/:id), and nutrition is unified into one quiet accordion the
+ * parent renders. Pure presenter: renders only what the gris object provides (graceful omission), no fabrication.
+ *
+ * Content rules (the founder's feedback): the story OPENS as a story (origin/occasion, never a technique line);
+ * any technique insight (story.hook, or the recipe's technique-flavoured description passed as `techniqueTip`)
+ * is relocated into the «چرا این‌طوری؟» science section where technique belongs.
  */
 
-const FLAME = { none: 'بدون شعله', low: 'شعلهٔ کم', medium: 'شعلهٔ متوسط', 'medium-high': 'شعلهٔ متوسط‌رو‌به‌بالا', high: 'شعلهٔ زیاد' };
 const fa = (n) => (typeof n === 'number' ? toFaDigits(n) : n);
 const list = (v) => (Array.isArray(v) ? v.filter(Boolean) : []);
 
@@ -37,7 +40,8 @@ function Chip({ children, tone }) {
   );
 }
 
-function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
+// shared progressive-disclosure container (also exported so the parent can keep the nutrition accordion identical)
+export function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Box style={{ ...card, overflow: 'hidden', marginBlockEnd: 'var(--g-space-2)' }}>
@@ -53,7 +57,7 @@ function Accordion({ icon: Icon, title, defaultOpen = false, children }) {
   );
 }
 
-export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null, removed = [], onToggleRemove = null }) {
+export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null, removed = [], onToggleRemove = null, techniqueTip = null }) {
   if (!gris) return null;
   const g = gris;
   const scaled = scaleFactor !== 1;
@@ -62,41 +66,27 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
   const groups = {};
   for (const i of ing) { const k = i.component || ''; (groups[k] = groups[k] || []).push(i); }
 
+  // technique insights relocated OUT of the intro/story INTO the «why it works» science section
+  const techLines = [techniqueTip, g.story?.hook].map((t) => (typeof t === 'string' ? t.trim() : '')).filter(Boolean);
+  const why = list(g.whyItWorks);
+
   return (
     <Box>
-      {/* STORY */}
-      {g.story ? (
+      {/* STORY — opens as a story (origin → occasion); never a technique line */}
+      {g.story && (g.story.origin || g.story.occasion) ? (
         <>
           <H2 icon={IconBook}>داستان</H2>
-          {g.story.hook ? <Text component="p" style={{ ...body, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)', margin: 0 }}>{g.story.hook}</Text> : null}
-          {g.story.origin ? <Text component="p" style={{ ...body, margin: 'var(--g-space-2) 0 0' }}>{g.story.origin}</Text> : null}
+          {g.story.origin ? <Text component="p" style={{ ...body, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)', margin: 0 }}>{g.story.origin}</Text> : null}
           {g.story.occasion ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-2) 0 0' }}>🗓️ {g.story.occasion}</Text> : null}
         </>
       ) : null}
 
-      {/* WHY IT WORKS — the science (the wow) */}
-      {list(g.whyItWorks).length ? (
-        <>
-          <H2 icon={IconFlask}>چرا این دستور کار می‌کند</H2>
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
-            {list(g.whyItWorks).map((w, i) => (
-              <Box key={i} style={{ ...card, padding: 'var(--g-space-4)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)' }}>
-                <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{w.point}</Text>
-                <Text component="p" style={{ ...body, margin: 'var(--g-space-1) 0 0' }}>{w.explanation}</Text>
-              </Box>
-            ))}
-          </Box>
-        </>
-      ) : null}
-
-      {/* GLANCE */}
+      {/* GLANCE — at-a-glance facts. Time lives ONLY in the page header (no duplicate/contradictory chips here). */}
       {g.glance ? (
         <>
           <H2 icon={IconClock}>نگاهِ اول</H2>
           {g.glance.promise ? <Text component="p" style={{ ...body, margin: '0 0 var(--g-space-3)' }}>{g.glance.promise}</Text> : null}
           <Box style={{ ...card, padding: 'var(--g-space-4)', display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-            {typeof g.glance.activeTimeMin === 'number' ? <Chip tone="brand">⏱️ فعال: {fa(g.glance.activeTimeMin)} دقیقه</Chip> : null}
-            {typeof g.glance.totalTimeMin === 'number' ? <Chip tone="brand">⏳ کل: {fa(g.glance.totalTimeMin)} دقیقه</Chip> : null}
             {typeof g.glance.handsOffMin === 'number' ? <Chip>🤲 بی‌دخالت: {fa(g.glance.handsOffMin)} دقیقه</Chip> : null}
             {g.glance.difficulty ? <Chip>📊 {g.glance.difficulty}</Chip> : null}
             {g.glance.costBand ? <Chip>💰 {g.glance.costBand}</Chip> : null}
@@ -107,17 +97,7 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
         </>
       ) : null}
 
-      {/* SKILLS */}
-      {list(g.skillsLearned).length ? (
-        <>
-          <H2 icon={IconSchool}>مهارتی که یاد می‌گیری</H2>
-          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-            {list(g.skillsLearned).map((s, i) => <Chip key={i} tone="brand">🎓 {s}</Chip>)}
-          </Box>
-        </>
-      ) : null}
-
-      {/* INGREDIENTS — grouped, with weight + role + buy-tip + swap */}
+      {/* INGREDIENTS — grouped, with weight + role + buy-tip + swap. The one long block that stays fully visible. */}
       {ing.length ? (
         <>
           <H2 icon={IconToolsKitchen2}>مواد لازم</H2>
@@ -162,53 +142,48 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
         </>
       ) : null}
 
-      {/* STEPS — flame / temp / time / sees / recovery / doneness */}
-      {list(g.steps).length ? (
-        <>
-          <H2 icon={IconFlame}>روشِ پخت</H2>
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-            {list(g.steps).map((s, i) => {
-              const patched = patchStepText(s.instruction, swapsList(swaps), removed);
-              return (
-              <Box key={i} style={{ ...card, padding: 'var(--g-space-4)' }}>
-                <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
-                  <Box aria-hidden="true" style={{ flexShrink: 0, display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-12)' }}>{fa(s.order || i + 1)}</Box>
-                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{s.title}</Text>
-                </Box>
-                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-1)', margin: 'var(--g-space-2) 0' }}>
-                  {s.flame && s.flame !== 'none' ? <Chip><IconFlame size={13} stroke={1.8} aria-hidden="true" />{FLAME[s.flame] || s.flame}</Chip> : null}
-                  {typeof s.tempC === 'number' ? <Chip><IconThermometer size={13} stroke={1.8} aria-hidden="true" />{fa(s.tempC)}°</Chip> : null}
-                  {typeof s.durationMin === 'number' ? <Chip><IconClock size={13} stroke={1.8} aria-hidden="true" />{fa(s.durationMin)} دقیقه</Chip> : null}
-                </Box>
-                <Text component="p" style={{ ...body, margin: 0 }}>{patched.text}</Text>
-                {patched.caveats.length ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)', margin: '4px 0 0' }}>↳ {patched.caveats.join(' · ')}</Text> : null}
-                {s.sees ? <Line icon={IconEye}>{s.sees}</Line> : null}
-                {s.doneness ? <Line icon={IconCircleCheck} tone="success">{s.doneness}</Line> : null}
-                {s.tip ? <Line icon={IconBulb}>{s.tip}</Line> : null}
-                {s.recovery ? <Line icon={IconLifebuoy} tone="warn">اگر خراب شد: {s.recovery}</Line> : null}
-              </Box>
-              );
-            })}
-          </Box>
-        </>
-      ) : null}
-
-      {/* FINISH + chef secret */}
-      {g.finish ? (
-        <>
-          <H2 icon={IconChefHat}>پایان و رازِ سرآشپز</H2>
-          {g.finish.finalLook ? <Text component="p" style={{ ...body, margin: 0 }}>{g.finish.finalLook}</Text> : null}
-          {g.finish.plating ? <Text component="p" style={{ ...body, margin: 'var(--g-space-2) 0 0' }}>🍽️ {g.finish.plating}</Text> : null}
-          {g.finish.chefSecret ? (
-            <Box style={{ ...card, padding: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-3)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)' }}>
-              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-brand-700)', margin: 0 }}>🔑 رازِ سرآشپز: {g.finish.chefSecret}</Text>
-            </Box>
-          ) : null}
-        </>
-      ) : null}
-
-      {/* TROUBLESHOOTING / VARIATIONS / KEEP / FAQ — accordions */}
+      {/* ── DISCLOSURE STACK — depth on demand. Everything below the shopping list is one tap away. ── */}
       <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
+        {/* WHY IT WORKS — the science + any relocated technique insight (the «wow», kept fully, never inline-dumped) */}
+        {(techLines.length || why.length) ? (
+          <Accordion icon={IconFlask} title="چرا این‌طوری؟ — علمِ آشپزی">
+            {techLines.map((t, i) => <Text key={`t-${i}`} component="p" style={{ ...body, margin: i ? 'var(--g-space-2) 0 0' : '0' }}>{t}</Text>)}
+            {why.length ? (
+              <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: techLines.length ? 'var(--g-space-3)' : 0 }}>
+                {why.map((w, i) => (
+                  <Box key={i} style={{ ...card, padding: 'var(--g-space-4)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)' }}>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{w.point}</Text>
+                    <Text component="p" style={{ ...body, margin: 'var(--g-space-1) 0 0' }}>{w.explanation}</Text>
+                  </Box>
+                ))}
+              </Box>
+            ) : null}
+          </Accordion>
+        ) : null}
+
+        {/* SKILLS */}
+        {list(g.skillsLearned).length ? (
+          <Accordion icon={IconSchool} title="چی یاد می‌گیری">
+            <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+              {list(g.skillsLearned).map((s, i) => <Chip key={i} tone="brand">🎓 {s}</Chip>)}
+            </Box>
+          </Accordion>
+        ) : null}
+
+        {/* FINISH + chef secret */}
+        {g.finish && (g.finish.finalLook || g.finish.plating || g.finish.chefSecret) ? (
+          <Accordion icon={IconChefHat} title="پایان و رازِ سرآشپز">
+            {g.finish.finalLook ? <Text component="p" style={{ ...body, margin: 0 }}>{g.finish.finalLook}</Text> : null}
+            {g.finish.plating ? <Text component="p" style={{ ...body, margin: 'var(--g-space-2) 0 0' }}>🍽️ {g.finish.plating}</Text> : null}
+            {g.finish.chefSecret ? (
+              <Box style={{ ...card, padding: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-3)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)' }}>
+                <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-brand-700)', margin: 0 }}>🔑 رازِ سرآشپز: {g.finish.chefSecret}</Text>
+              </Box>
+            ) : null}
+          </Accordion>
+        ) : null}
+
+        {/* TROUBLESHOOTING */}
         {list(g.troubleshooting).length ? (
           <Accordion icon={IconAlertTriangle} title="رفعِ مشکل">
             {list(g.troubleshooting).map((t, i) => (
@@ -219,6 +194,8 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
             ))}
           </Accordion>
         ) : null}
+
+        {/* VARIATIONS */}
         {list(g.variations).length ? (
           <Accordion icon={IconArrowsExchange} title="تغییرات (مالِ خودت کن)">
             {list(g.variations).map((v, i) => (
@@ -229,7 +206,9 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
             ))}
           </Accordion>
         ) : null}
-        {g.keep ? (
+
+        {/* KEEP */}
+        {g.keep && (g.keep.makeAhead || g.keep.storage || g.keep.reheat || g.keep.freeze) ? (
           <Accordion icon={IconArchive} title="نگه‌داری و گرم‌کردن">
             {g.keep.makeAhead ? <Text component="p" style={{ ...body, margin: '0 0 var(--g-space-1)' }}>⏲️ آماده‌سازیِ زودهنگام: {g.keep.makeAhead}</Text> : null}
             {g.keep.storage ? <Text component="p" style={{ ...body, margin: '0 0 var(--g-space-1)' }}>🧊 یخچال: {g.keep.storage}</Text> : null}
@@ -237,6 +216,15 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
             {g.keep.freeze ? <Text component="p" style={{ ...body, margin: 0 }}>❄️ فریز: {g.keep.freeze}</Text> : null}
           </Accordion>
         ) : null}
+
+        {/* SERVE WITH */}
+        {list(g.serveWith).length ? (
+          <Accordion icon={IconSparkles} title="سرو با">
+            <Text component="p" style={{ ...body, margin: 0 }}>{list(g.serveWith).map(stripGrisIds).filter(Boolean).join(' · ')}</Text>
+          </Accordion>
+        ) : null}
+
+        {/* FAQ */}
         {list(g.faq).length ? (
           <Accordion icon={IconHelpCircle} title="سؤال‌های پرتکرار">
             {list(g.faq).map((f, i) => (
@@ -248,38 +236,6 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
           </Accordion>
         ) : null}
       </Box>
-
-      {/* SERVE WITH */}
-      {list(g.serveWith).length ? (
-        <>
-          <H2 icon={IconSparkles}>سرو با</H2>
-          <Text component="p" style={{ ...body, margin: 0 }}>{list(g.serveWith).map(stripGrisIds).filter(Boolean).join(' · ')}</Text>
-        </>
-      ) : null}
-
-      {/* NOURISHMENT — qualitative, non-medical */}
-      {g.nourishment ? (
-        <>
-          <H2 icon={IconInfoCircle}>تغذیه</H2>
-          {list(g.nourishment.attributes).length ? (
-            <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)' }}>
-              {g.nourishment.attributes.map((a, i) => <Chip key={i} tone="brand">{a}</Chip>)}
-            </Box>
-          ) : null}
-          {g.nourishment.note ? <Text component="p" style={{ ...body, margin: 0 }}>{g.nourishment.note}</Text> : null}
-          {g.nourishment.disclaimer ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-2) 0 0' }}>⚠️ {g.nourishment.disclaimer}</Text> : null}
-        </>
-      ) : null}
-    </Box>
-  );
-}
-
-function Line({ icon: Icon, tone, children }) {
-  const color = tone === 'success' ? 'var(--g-color-state-success-fg)' : tone === 'warn' ? 'var(--g-color-allergen-fg)' : 'var(--g-color-text-muted)';
-  return (
-    <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-2)' }}>
-      <Icon size={14} stroke={1.8} aria-hidden="true" style={{ color, flexShrink: 0, marginBlockStart: 2 }} />
-      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>{children}</Text>
     </Box>
   );
 }

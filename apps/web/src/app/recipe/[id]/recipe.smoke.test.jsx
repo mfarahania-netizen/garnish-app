@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../../test/renderWithProviders';
 import RecipeDetailPage from './page';
 
@@ -107,8 +107,9 @@ describe('RecipeDetailPage smoke', () => {
     expect(
       screen.getByRole('heading', { name: 'مواد لازم' }),
     ).toBeInTheDocument();
+    // nutrition is now a quiet, default-closed disclosure (was a big always-on block)
     expect(
-      screen.getByRole('heading', { name: 'ارزش غذایی' }),
+      screen.getByRole('button', { name: /غذایی/ }),
     ).toBeInTheDocument();
     expect(screen.getByText('بپز')).toBeInTheDocument();
   });
@@ -131,8 +132,10 @@ describe('RecipeDetailPage smoke', () => {
     // grounded personalized swap (was computed by /full but dropped by the UI before)
     expect(screen.getByRole('heading', { name: 'جایگزین برای حساسیت‌های تو' })).toBeInTheDocument();
     expect(screen.getByText('لوبیا چیتی، نخود')).toBeInTheDocument();
-    // tools + mealType chip + integrity coverage line
-    expect(screen.getByRole('heading', { name: 'ابزار لازم' })).toBeInTheDocument();
+    // tools now live in a disclosure accordion (was an always-on block); expand it to see the tool
+    const toolsBtn = screen.getByRole('button', { name: /ابزار لازم/ });
+    expect(toolsBtn).toBeInTheDocument();
+    fireEvent.click(toolsBtn);
     expect(screen.getByText('قابلمه')).toBeInTheDocument();
     expect(screen.getByText('شام')).toBeInTheDocument();
     expect(screen.getByText('۲ از ۲ ماده در پایگاه شناخته‌شده')).toBeInTheDocument();
