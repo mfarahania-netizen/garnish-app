@@ -26,6 +26,22 @@ describe('ges/personalize', () => {
       const r = patchStepText('پیاز را سرخ کن', [{ from: 'کره', to: 'روغن' }], []);
       expect(r).toEqual({ text: 'پیاز را سرخ کن', caveats: [], changed: false });
     });
+    it('matches the core word when the step uses a short form (remove cascade)', () => {
+      // step says «گوشت», removed ingredient is the full «گوشت گوسفند خام (خردشده/قیمه‌ای)»
+      const r = patchStepText('گوشت را تفت دهید تا رنگ بگیرد', [], ['گوشت گوسفند خام (خردشده/قیمه‌ای)']);
+      expect(r.caveats).toContain('بدون گوشت');
+      expect(r.changed).toBe(true);
+    });
+    it('swaps the core word in a step (swap cascade)', () => {
+      const r = patchStepText('گوشت را تفت دهید', [{ from: 'گوشت گوسفند خام (خردشده/قیمه‌ای)', to: 'گوشت گوساله' }], []);
+      expect(r.text).toBe('گوشت گوساله را تفت دهید');
+    });
+  });
+
+  describe('stripGrisIds — authoring-metadata scrub', () => {
+    it('removes a leaked «(اصلاح واحد منبع …)» note', () => {
+      expect(stripGrisIds('۱/۴ قاشق چای‌خوری ساییده (اصلاح واحد منبع از «۲ قاشق غذاخوری»)')).toBe('۱/۴ قاشق چای‌خوری ساییده');
+    });
   });
 
   describe('stripGrisIds', () => {

@@ -416,7 +416,7 @@ export default function RecipeDetailPage() {
 
   return (
     <Column>
-      <Box component="main" style={{ flex: 1, overflowY: 'auto' }}>
+      <Box component="main" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {/* HERO */}
         <Box style={{ position: 'relative', blockSize: 248 }}>
           <HeroMedia imageUrl={recipe.imageUrl} title={recipe.title} />

@@ -18,17 +18,35 @@ export function parseGrisName(rawName) {
 }
 
 /**
- * stripGrisIds — defensive display hygiene for free-text GRIS fields (serveWith, swap notes) that may
- * embed a raw dictionary id, e.g. «برنج سفید با ing_basmati_rice_raw» → «برنج سفید». Removes the «با
- * ing_xxx» phrase and any bare/suffix «ing_xxx» token, then tidies stray parens/spaces.
+ * stripGrisIds — defensive display hygiene for free-text GRIS fields (serveWith, swap notes, volume)
+ * that may carry authoring leftovers: a raw dictionary id («برنج سفید با ing_basmati_rice_raw» →
+ * «برنج سفید») or a source-correction note («… (اصلاح واحد منبع از «۲ قاشق»)» → «…»). Removes the «با
+ * ing_xxx» phrase, any bare/suffix «ing_xxx» token, «(اصلاح …)» notes, then tidies stray parens/spaces.
  */
 export function stripGrisIds(text) {
   return String(text ?? '')
     .replace(/\s*با\s+ing_[a-z0-9_]+/gi, '')
     .replace(/\s*[—–-]?\s*ing_[a-z0-9_]+/gi, '')
+    .replace(/\s*\(\s*اصلاح[^)]*\)/g, '')
     .replace(/\(\s*\)/g, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
+}
+
+// prep-state / qualifier words that aren't part of an ingredient's core identity (so removing
+// «گوشت گوسفند خام (خردشده)» still matches a step that just says «گوشت»).
+const PREP_WORDS = new Set(['خام', 'تازه', 'خشک', 'پخته', 'له‌شده', 'آسیاب‌شده', 'ساییده', 'خردشده', 'رنده‌شده', 'کامل', 'متوسط', 'بزرگ', 'کوچک', 'ریز', 'درشت', 'شسته‌شده', 'نیم‌پز']);
+
+/** core match terms for an ingredient name: full (parens stripped) + first-two-words + first word */
+function coreTerms(name) {
+  const base = String(name ?? '').replace(/\(.*?\)/g, '').replace(/\s*[—–-]\s*ing_[a-z0-9_]+/i, '').trim();
+  if (!base) return [];
+  const words = base.split(/\s+/).filter((w) => w.length >= 3 && !PREP_WORDS.has(w));
+  const terms = new Set();
+  if (base) terms.add(base);
+  if (words.length >= 2) terms.add(`${words[0]} ${words[1]}`);
+  if (words.length >= 1) terms.add(words[0]);
+  return [...terms].filter((t) => t.length >= 3).sort((a, b) => b.length - a.length); // longest first
 }
 
 /** turn the personalization swaps map ({from:{to,...}}) into a [{from,to}] list */
@@ -45,11 +63,21 @@ export function patchStepText(text, swaps = [], removed = []) {
   let out = String(text ?? '');
   const caveats = [];
   let changed = false;
+  // swaps: replace the longest matching core term of `from` (so a step that just says «گوشت» still
+  // updates when «گوشت گوسفند خام (…)» is swapped) with the target name.
   for (const { from, to } of swaps) {
-    if (from && to && out.includes(from)) { out = out.split(from).join(to); changed = true; }
+    if (!from || !to) continue;
+    for (const term of coreTerms(from)) {
+      if (out.includes(term)) { out = out.split(term).join(to); changed = true; break; }
+    }
   }
+  // removes: if any core term of the removed ingredient appears in the step, add a «بدون X» caveat
+  // (so «گوشت را تفت دهید» picks up «بدون گوشت» after the meat is removed).
   for (const name of removed) {
-    if (name && out.includes(name)) { caveats.push(`بدون ${name}`); changed = true; }
+    if (!name) continue;
+    for (const term of coreTerms(name)) {
+      if (out.includes(term)) { caveats.push(`بدون ${term}`); changed = true; break; }
+    }
   }
   return { text: out, caveats, changed };
 }

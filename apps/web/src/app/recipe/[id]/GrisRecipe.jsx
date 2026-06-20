@@ -129,23 +129,27 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
                 {items.map((it, i) => {
                   const { display } = parseGrisName(it.name); // strip the «— ing_xxx» grounding suffix for display + keys
                   const sw = scaleWeightG(it.weightG, scaleFactor);
-                  const amount = [sw != null ? `${fa(sw)}g` : null, it.volume ? scaleAmountText(it.volume, scaleFactor) : null].filter(Boolean).join(' · ');
+                  // suppress sub-1g «۰g» (rounds to nothing); scrub authoring notes from the volume string
+                  const weightPart = typeof sw === 'number' && sw >= 1 ? `${fa(sw)}g` : null;
+                  const volPart = it.volume ? scaleAmountText(stripGrisIds(it.volume), scaleFactor) : null;
+                  const amount = [weightPart, volPart].filter(Boolean).join(' · ');
                   const applied = swaps[display] || null; // session swap applied to this ingredient
                   const gone = removed.includes(display);
                   return (
                   <Box key={i} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', opacity: gone ? 0.6 : 1 }}>
-                    <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
+                    {/* name + controls on row 1; the amount stacks on its own wrapping line (no overlap/scroll) */}
+                    <Box style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
                       <Box style={{ flex: 1, minInlineSize: 0 }}>
-                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied && !gone ? 700 : 600, color: applied && !gone ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{applied && !gone ? applied.to : display}{!applied && !gone && it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
+                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied && !gone ? 700 : 600, color: applied && !gone ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{applied && !gone ? applied.to : display}{!applied && !gone && it.prepState ? <Text component="span" style={muted}> — {stripGrisIds(it.prepState)}</Text> : null}</Text>
                         {applied && !gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>به‌جای {display}</Text> : null}
                         {gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>حذف شد</Text> : null}
                       </Box>
                       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', flexShrink: 0 }}>
-                        {amount && !gone ? <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{amount}</Text> : null}
                         {onAskSwap && !gone ? <UnstyledButton type="button" onClick={() => onAskSwap(display)} aria-label={`جایگزین برای ${display}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 32, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: applied ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600 }}>{applied ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
                         {onToggleRemove ? <UnstyledButton type="button" onClick={() => onToggleRemove(display, it.role)} aria-label={gone ? `برگرداندن ${display}` : `حذف ${display}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 30, minBlockSize: 32, color: gone ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{gone ? <IconArrowBackUp size={16} stroke={1.8} /> : <IconTrash size={15} stroke={1.8} />}</UnstyledButton> : null}
                       </Box>
                     </Box>
+                    {amount && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0', overflowWrap: 'anywhere' }}>⚖️ {amount}</Text> : null}
                     {it.role && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
                     {it.buyTip && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🛒 {it.buyTip}</Text> : null}
                     {it.swap && !applied && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {stripGrisIds(it.swap)}</Text> : null}
