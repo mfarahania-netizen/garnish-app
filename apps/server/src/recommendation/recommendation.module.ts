@@ -34,9 +34,10 @@ import { RecommendationExperimentExecutionController } from './runtime-shadow/la
 import { RecommendationActivationReviewService } from './runtime-shadow/lab/activation-review/recommendation-activation-review-service';
 import { RecommendationActivationReviewController } from './runtime-shadow/lab/activation-review/recommendation-activation-review-controller';
 import { PrismaService } from '../prisma/prisma.service';
+import { ContextModule } from '../context/context.module';
 
 @Module({
-  imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule, ProfileModule, RecipesModule],
+  imports: [PrismaModule, BehaviorEngineModule, ExperimentationModule, AnalyticsModule, ProfileModule, RecipesModule, ContextModule],
   controllers: [RecommendationController, RecommendationDiagnosticsController, RecommendationShadowControlPlaneController, RecommendationLabController, RecommendationFounderReviewController, RecommendationExperimentExecutionController, RecommendationActivationReviewController],
   providers: [
     CandidateGeneratorService,

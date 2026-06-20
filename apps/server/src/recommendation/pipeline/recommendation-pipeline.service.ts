@@ -4,6 +4,7 @@ import { ExplainabilityService } from '../explainability/explainability.service'
 import { CandidateGeneratorService } from './candidate-generator';
 import { RankingService } from './ranking.service';
 import { RecommendationShadowA8Service } from '../runtime-shadow/recommendation-shadow-a8-service';
+import { ContextService } from '../../context/context.service';
 
 interface RecommendationRankItem {
   recipeId: string;
@@ -26,6 +27,8 @@ export class RecommendationPipelineService {
     // E18/E43-A6/A7/A8: optional shadow runtime hook (A8 consent-aware orchestrator). Default OFF; never
     // wired into the user response. @Optional() keeps existing construction/tests working when absent.
     @Optional() private readonly shadowRuntime?: RecommendationShadowA8Service,
+    // L0 → ranker: real-time context ("every second"). @Optional() keeps existing construction/tests working.
+    @Optional() private readonly context?: ContextService,
   ) {}
 
   async getRecommendations(userId: string, limit = 10) {
@@ -36,7 +39,10 @@ export class RecommendationPipelineService {
       this.featureStore.getDataMaturity(userId),
     ]);
 
-    const ranked = await this.rankingService.rank(userId, candidateIds);
+    // L0 real-time context — so 8am ≠ 8pm, summer ≠ winter, Yalda ≠ an ordinary day.
+    // TODO(europe): thread the user's timezone from their profile/location instead of the default.
+    const liveContext = this.context?.now(new Date());
+    const ranked = await this.rankingService.rank(userId, candidateIds, liveContext);
     const recommendations = ranked.slice(0, limit);
 
     const response = recommendations.map((item: RecommendationRankItem) => {

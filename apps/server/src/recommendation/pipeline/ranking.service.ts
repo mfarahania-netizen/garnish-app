@@ -6,6 +6,7 @@ import { ExperimentEngine } from '../../experimentation/experiment-engine.servic
 import { ExposureTrackingService } from '../exposure/exposure-tracking.service';
 import { TasteAffinityBuilder } from '../taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
+import { RealTimeContext } from '../../context/real-time-context';
 import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
 import {
   clamp01,
@@ -134,14 +135,14 @@ export class RankingService {
     private recipeEmbedding: RecipeEmbeddingService,
   ) {}
 
-  async rank(userId: string, candidateIds: string[]) {
+  async rank(userId: string, candidateIds: string[], context?: RealTimeContext) {
     if (candidateIds.length === 0) return [];
 
     const experimentalWeights = await this.experimentEngine.getWeights(userId);
     const weights = this.normalizeWeights(experimentalWeights || this.defaultWeights);
     const userFeatures = await this.featureStore.getFeatureVector(userId);
 
-    return this.rankWithFeatureVector(userId, candidateIds, userFeatures, weights);
+    return this.rankWithFeatureVector(userId, candidateIds, userFeatures, weights, context);
   }
 
   async rankWithFeatureVector(
@@ -149,6 +150,7 @@ export class RankingService {
     candidateIds: string[],
     userFeatures: FeatureMap,
     weights?: Record<string, number>,
+    context?: RealTimeContext,
   ) {
     if (candidateIds.length === 0) return [];
 
@@ -237,7 +239,7 @@ export class RankingService {
         if (exposurePenalty > 0) matchedSignals.push('exposure_fatigue');
         const cleanedMatchedSignals = this.cleanMatchedSignals(recipe, matchedSignals, scores);
 
-        const finalScore = Math.max(0, rawScore - exposurePenalty);
+        const finalScore = Math.max(0, rawScore - exposurePenalty) * this.contextBoost(recipe, context);
         const contributions = this.contributionCalculator.calculate(
           scores as unknown as Record<string, number>,
           resolvedWeights,
@@ -264,6 +266,34 @@ export class RankingService {
     const ranked = this.applyDiversity(scoredRecipes.sort((a, b) => b.finalScore - a.finalScore));
     await this.logFeatureContributions(userId, ranked.slice(0, 5));
     return ranked;
+  }
+
+  /**
+   * L0 → ranker bridge: re-score by the real-time context. NEUTRAL (1.0) when no context is passed, so
+   * existing callers/tests are byte-identical. With context, boosts a candidate that fits the current meal
+   * window, season, and cultural occasion — so the SAME dish ranks differently at 8am vs 8pm, summer vs
+   * winter, an ordinary day vs Yalda/Christmas. Bounded (≤1.25) so it nudges, never overpowers the learned
+   * taste signal. The weights here are hand-set (L0 bridge); L1 will LEARN them.
+   */
+  private contextBoost(recipe: RecipeForRanking, context?: RealTimeContext): number {
+    if (!context) return 1;
+    const cats = this.parseListField(recipe.categories).map((c) => String(c).toLowerCase());
+    const meals = this.parseListField(recipe.mealType).map((m) => String(m).toLowerCase());
+    const hay = [...cats, String(recipe.title || '').toLowerCase()];
+    const hits = (tokens: string[]) => meals.some((m) => tokens.includes(m)) || hay.some((h) => tokens.some((t) => h.includes(t)));
+    let boost = 1;
+    const MEAL: Record<string, string[]> = {
+      breakfast: ['breakfast', 'صبحانه'],
+      lunch: ['lunch', 'ناهار', 'main'],
+      snack: ['snack', 'dessert', 'میان‌وعده', 'دسر'],
+      dinner: ['dinner', 'شام', 'main'],
+      late_night: ['snack', 'dessert', 'میان‌وعده'],
+    };
+    if (hits(MEAL[context.mealWindow] || [])) boost += 0.1;
+    if (context.season.key === 'winter' && hits(['stew', 'soup', 'braise', 'آش', 'خورش', 'اش', 'حلیم', 'سوپ'])) boost += 0.1;
+    if (context.season.key === 'summer' && hits(['salad', 'cold', 'grill', 'سالاد', 'خنک', 'شربت', 'بستنی'])) boost += 0.1;
+    if (context.occasion.key !== 'none' && hits(['traditional', 'festive', 'سنتی', 'یلدا', 'نوروز', 'آجیل', 'مناسبت'])) boost += 0.12 * (context.occasion.confidence || 0.5);
+    return Math.min(1.25, boost);
   }
 
   private calculateTasteAffinity(

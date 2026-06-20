@@ -1,4 +1,5 @@
 import { RankingService } from './ranking.service';
+import { buildRealTimeContext } from '../../context/real-time-context';
 
 describe('RankingService', () => {
   let prisma: any;
@@ -136,6 +137,24 @@ describe('RankingService', () => {
     expect(budgetRank[0].matchedSignals).toEqual(
       expect.arrayContaining(['effort_fit', 'budget_sensitive']),
     );
+  });
+
+  // L0 EXIT GATE (clause 2): "recs differ by time-of-day/season". SAME candidate + SAME features —
+  // only the real-time context changes → the ranking must change, and no-context must stay neutral.
+  it('the same stew ranks higher on a winter dinner than a summer breakfast; no context is neutral', async () => {
+    featureStore.getFeatureVector.mockResolvedValue({}); // identical neutral taste → isolate the context effect
+    const ids = ['family-stew'];
+    const winterDinner = buildRealTimeContext(new Date('2026-01-15T20:00:00+03:30')); // دی، شام
+    const summerBreakfast = buildRealTimeContext(new Date('2026-07-15T08:00:00+03:30')); // تیر، صبحانه
+
+    const score = async (ctx?: any) => (await service.rank('u1', ids, ctx)).find((r: any) => r.recipeId === 'family-stew')!.finalScore;
+    const stewWinter = await score(winterDinner);
+    const stewSummer = await score(summerBreakfast);
+    const stewNoCtx = await score();
+
+    expect(stewWinter).toBeGreaterThan(stewSummer); // a winter dinner lifts the stew (the gate)
+    expect(stewWinter).toBeGreaterThan(stewNoCtx); // the boost is real
+    expect(stewNoCtx).toBe(stewSummer); // no context == neutral (summer breakfast earned no boost either)
   });
 
   it('re-ranks to avoid a mono-diet top list', async () => {

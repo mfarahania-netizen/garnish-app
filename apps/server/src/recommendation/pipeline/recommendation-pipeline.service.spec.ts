@@ -65,11 +65,11 @@ describe('RecommendationPipelineService', () => {
 
     expect(featureStore.buildFeatureVector).toHaveBeenCalledWith('user-1');
     expect(candidateGenerator.generate).toHaveBeenCalledWith('user-1', 10);
-    expect(rankingService.rank).toHaveBeenCalledWith('user-1', [
-      'recipe-1',
-      'recipe-2',
-      'recipe-3',
-    ]);
+    expect(rankingService.rank).toHaveBeenCalledWith(
+      'user-1',
+      ['recipe-1', 'recipe-2', 'recipe-3'],
+      undefined, // L0 context: undefined here (ContextService not injected in this unit test) → neutral
+    );
     expect(recommendations).toHaveLength(2);
     expect(recommendations[0]).toMatchObject({
       recipeId: 'recipe-1',
