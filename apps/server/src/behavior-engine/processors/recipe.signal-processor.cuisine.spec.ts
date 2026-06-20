@@ -9,7 +9,7 @@ function makeProcessor(region: string | null) {
     recipe: { findUnique: jest.fn().mockResolvedValue({ diet: 'omnivore', categories: '[]', region, ingredients: [{ name: 'گوشت' }] }) },
     signalObservation: { create: jest.fn(async ({ data }: any) => { created.push(data); return data; }) },
   };
-  const signalCalculator: any = { updateSignal: jest.fn() };
+  const signalCalculator: any = { updateSignal: jest.fn(), applyPositiveFeedback: jest.fn() };
   return { proc: new RecipeSignalProcessor(prisma, signalCalculator), created };
 }
 const ev = (type: string) => ({ id: 'e1', type, payload: JSON.stringify({ recipeId: 'r1' }) });

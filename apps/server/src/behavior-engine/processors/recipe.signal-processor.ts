@@ -74,5 +74,13 @@ export class RecipeSignalProcessor {
     await this.prisma.signalObservation.create({
       data: { userId, signalName, eventId: event.id, weight },
     });
+
+    // ۳. L0/C4 (EXIT-GATE clause 1): a cook/favorite ALSO writes dish-type + per-ingredient taste signals
+    // (likes_stew, likes_chicken, …) via the shared extractor → UserBehaviorSignal → feature store →
+    // the ranker's tasteAffinity. THIS is what makes «N خورش بپز → خورشی‌تر» real. A cook is stronger
+    // evidence than a favorite. (A plain view stays observation-only — too weak for a taste commitment.)
+    if (positive) {
+      await this.signalCalculator.applyPositiveFeedback(userId, recipeId, cooked ? 0.5 : 0.3);
+    }
   }
 }

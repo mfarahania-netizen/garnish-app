@@ -10,8 +10,12 @@ function makeProcessor() {
     recipe: { findUnique: jest.fn().mockResolvedValue({ diet: 'omnivore', categories: '[]', ingredients: [{ name: 'گوشت' }] }) },
     signalObservation: { create: jest.fn(async ({ data }: any) => { created.push(data); return data; }) },
   };
-  const signalCalculator: any = { updateSignal: jest.fn(async (...a: any[]) => { updated.push(a); }) };
-  return { proc: new RecipeSignalProcessor(prisma, signalCalculator), prisma, created, updated };
+  const feedback: any[] = [];
+  const signalCalculator: any = {
+    updateSignal: jest.fn(async (...a: any[]) => { updated.push(a); }),
+    applyPositiveFeedback: jest.fn(async (...a: any[]) => { feedback.push(a); }),
+  };
+  return { proc: new RecipeSignalProcessor(prisma, signalCalculator), prisma, created, updated, feedback };
 }
 
 const cookEvent = { id: 'e1', type: 'cook_complete', payload: JSON.stringify({ recipeId: 'r1' }) };
@@ -38,6 +42,22 @@ describe('RecipeSignalProcessor — cook loop (L0/C1)', () => {
     await proc.process({ id: 'e3', type: 'recipe_view', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1');
     const weights = created.map((c) => c.weight);
     expect(weights).toEqual([1.0, 0.5]); // favorite, view — both below the cook's 1.5
+  });
+
+  // EXIT-GATE clause 1: a cook must feed dish-type/ingredient taste signals (likes_stew, …) into the
+  // ranker's feature vector — via applyPositiveFeedback — so "cook N stews → stews rank up" becomes real.
+  it('a cook fires applyPositiveFeedback (dish-type taste signals) stronger than a favorite; a view does not', async () => {
+    const cook = makeProcessor();
+    await cook.proc.process(cookEvent, 'u1');
+    expect(cook.feedback).toEqual([['u1', 'r1', 0.5]]); // cook → factor 0.5
+
+    const fav = makeProcessor();
+    await fav.proc.process({ id: 'e2', type: 'favorite_add', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1');
+    expect(fav.feedback).toEqual([['u1', 'r1', 0.3]]); // favorite → weaker factor
+
+    const view = makeProcessor();
+    await view.proc.process({ id: 'e3', type: 'recipe_view', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1');
+    expect(view.feedback).toEqual([]); // a view is too weak for a taste commitment
   });
 
   it('the router registry now routes cook_complete (was silently dropped)', () => {
