@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { getStartOfWeek } from '../utils/date.utils';
 
 @Injectable()
 export class MealPlansService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly safety: RecipeSafetyFilterService,
+  ) {}
 
   async getCurrentPlan(userId: string) {
     const startOfWeek = getStartOfWeek();
@@ -47,15 +51,6 @@ export class MealPlansService {
       where: { userId },
     });
 
-    let userAllergies: string[] = [];
-    if (profile) {
-      const allergies = await this.prisma.userAllergy.findMany({
-        where: { userId },
-        include: { allergy: true },
-      });
-      userAllergies = allergies.map(ua => ua.allergy.name);
-    }
-
     const userDiet = profile?.diet || 'omnivore';
     const userSkill = profile?.skillLevel || 'beginner';
     const userBudget = profile?.budget || 'low';
@@ -80,12 +75,9 @@ export class MealPlansService {
       take: 200,
     });
 
-    if (userAllergies.length > 0) {
-      allRecipes = allRecipes.filter(r => {
-        const recipeAllergens = r.allergens ? JSON.parse(r.allergens) : [];
-        return !userAllergies.some(allergy => recipeAllergens.includes(allergy));
-      });
-    }
+    // HARD safety gate — the ONE reusable filter (derived allergens + looseMatch + pork/observance,
+    // fail-closed). Replaces a weaker declared-only exact-match filter that leaked (guardian H1/H2 rework).
+    allRecipes = await this.safety.filter(userId, allRecipes);
 
     const breakfastOptions = allRecipes.filter(r => r.mealType?.includes('breakfast'));
     const lunchOptions = allRecipes.filter(r => r.mealType?.includes('lunch'));

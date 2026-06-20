@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-06-20 — Entry 3 (post-fix REVIEW loop: 3 iterations on H1/H2 → SAFETY converged)
+The 2-reviewer post-fix loop ran 3 passes and caught real gaps my earlier fixes missed — exactly its job:
+- iter-1: H3 approved; H1/H2 reworked (the live fix covered /recommendations but NOT GET /recipes — Home/Discover still showed peanut/pork).
+- iter-2: reworked again — one reusable RecipeSafetyFilterService on ALL serving paths + optional-auth + fail-closed at source.
+- iter-3 (this): closed the remaining SAFETY-material gaps the reviewers found:
+  - ✅ pork tokens made comprehensive (salami/pepperoni/mortadella/sausage/gelatin/…) so the fallback catches pork in the ~700 un-authored recipes where `containsPork` defaults false.
+  - ✅ OptionalJwtGuard no longer fails OPEN on an expired/invalid token (token-present-but-bad → 401, not silent anonymous).
+  - ✅ killed a SECOND weaker leak: meal-plans.service.generateSmartPlan used a declared-only exact-match allergy filter → now routes through the shared gate.
+  - ✅ controller-wiring spec proves findAll/search/similar call the gate with the user id (anonymous → undefined).
+
+**SAFETY CONVERGED:** no allergen/pork leak remains on any user-facing serving path; the gate is fail-closed.
+**Accepted NON-safety follow-ups (tracked, do NOT block):** (1) GET /recipes pagination under-fills when an
+authed user's unsafe recipes are dropped after skip/take (over-fetch+recount); (2) the gate does a 2nd
+recipe.findMany (let it accept already-loaded rows); (3) full per-ingredient pork tagging of the 1008-item
+dictionary (data pass, like the allergen audit) so the flag — not just tokens — is authoritative; (4) route
+briefing-composer through the shared gate too (it already drops both, just not via the service — drift risk).
+
+---
+
 ## 2026-06-20 — Entry 2 (synthesis of 38 verifier-confirmed findings → de-duped to 18 issues, ranked)
 
 **Stance:** every finding below was independently confirmed by a second guardian against live source. The 38 raw

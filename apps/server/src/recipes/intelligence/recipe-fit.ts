@@ -15,7 +15,14 @@ const MEAT_TOKENS = ['chicken', 'beef', 'lamb', 'pork', 'meat', 'poultry', 'fish
 const VEG_RESTRICTIONS = new Set(['vegetarian', 'vegan']);
 // pork is forbidden under halal, kosher, and an explicit no_pork constraint — enforced via Recipe.containsPork
 // (authoritative, from gris.dietary) with an ingredient/title token fallback.
-const PORK_TOKENS = ['pork', 'ham', 'bacon', 'lard', 'prosciutto', 'pancetta', 'chorizo', 'خوک', 'ژامبون', 'بیکن'];
+// Comprehensive pork carriers for the general-European launch corpus — the token fallback must be reliable
+// because Recipe.containsPork is @default(false) and most recipes are not yet authored, so the flag alone
+// would miss pork in un-authored recipes (a halal/kosher HARD-invariant leak). Over-flagging is safe.
+const PORK_TOKENS = [
+  'pork', 'ham', 'bacon', 'lard', 'lardon', 'prosciutto', 'pancetta', 'chorizo', 'salami', 'pepperoni',
+  'mortadella', 'speck', 'guanciale', 'gammon', 'bratwurst', 'frankfurter', 'wurst', 'pork rind', 'pork sausage',
+  'gelatin', 'gelatine', 'خوک', 'ژامبون', 'بیکن', 'ژله خوکی',
+];
 const NO_PORK_CONSTRAINTS = new Set(['no_pork', 'halal', 'kosher']);
 
 export type FitRecommendation = 'great_fit' | 'ok' | 'caution' | 'avoid_allergen' | 'avoid_constraint';
