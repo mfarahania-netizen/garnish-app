@@ -20,7 +20,8 @@ export class ObservabilityService {
   async eventStream(userId: string, limit = 50) {
     const events = await this.prisma.userEvent.findMany({
       where: { userId }, orderBy: { timestamp: 'desc' }, take: Math.min(Math.max(limit, 1), 200),
-      select: { id: true, type: true, recipeId: true, page: true, timestamp: true },
+      select: { id: true, type: true, recipeId: true, page: true, consentPurpose: true, timestamp: true }, // consentPurpose = GDPR provenance per event
+
     });
     return { userId, count: events.length, events };
   }

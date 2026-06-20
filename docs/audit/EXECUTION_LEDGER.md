@@ -69,7 +69,8 @@
 - ✅ **مناسبت‌های اروپایی** (Christmas/Easter/NYE/King's Day + Persian) — `444d1243` (نگهبان H6).
 - ✅ **viewerِ مشاهده‌پذیریِ ادمین (R8)** — `/admin/observability` (events · observations · profile-trace [آلرژی ریدکت] · counters ترند/مشکل) — `e0b52923`.
 - ✅ **تستِ یکپارچهٔ e2e** (سطحِ سرویس: SignalCalculator واقعی + RankingService واقعی → پخت→سیگنال→رنکر + زمینه) — `49a48bae` (نگهبان H4). (boot-کاملِ اپ روی DBِ تست = قدمِ تکمیلیِ بعد.)
-- ⬜ counters به‌عنوان first-class (impression/position/propensity/reward) · ⬜ outboxِ بادوام · ⬜ حذفِ درختِ سایهٔ ۱۴۸-فایلی (نیازمندِ بیرون‌کشیدنِ loadObservations اول) · ⬜ consentPurpose روی هر رویداد.
+- ✅ **consentPurpose روی هر رویداد** (GDPR provenance؛ ستونِ افزایشی + ایندکس + مهر در trackEvent[off=analytics، gate-on+grant=personalization] و cron[core] + نمایش در R8) — `29311807`.
+- ⬜ counters به‌عنوان first-class (impression/position/propensity/reward) · ⬜ outboxِ بادوام · ⬜ حذفِ درختِ سایهٔ ۱۴۸-فایلی (نیازمندِ بیرون‌کشیدنِ loadObservations اول) · ⬜ boot-کاملِ e2e.
 
 ## ۵. الان در حال اجرا / وضعیتِ زنده
 - ✅ **دستهٔ ۵ تمام و اعمال شد** (۸۷ زنده). دستهٔ ۶ برای بودجه نگه‌داشته. هیچ ایجنتِ پس‌زمینه‌ای الان روشن نیست (نه رسپی، نه نگهبان).
