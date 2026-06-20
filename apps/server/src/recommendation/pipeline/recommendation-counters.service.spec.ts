@@ -36,10 +36,10 @@ describe('RecommendationCountersService — counters first-class', () => {
 
     it('writes one row per item with 0-based position, propensity, and serialized context', async () => {
       const { svc, created } = make();
-      const n = await svc.logSlate('u1', [{ recipeId: 'a', score: 2 }, { recipeId: 'b', score: 1 }], { surface: 'home', context: { season: 'winter' } });
+      const n = await svc.logSlate('u1', [{ recipeId: 'a', score: 2 }, { recipeId: 'b', score: 1 }], { surface: 'home', context: { season: 'winter' }, requestId: 'req-xyz' });
       expect(n).toBe(2);
-      expect(created[0]).toMatchObject({ userId: 'u1', recipeId: 'a', position: 0, surface: 'home' });
-      expect(created[1].position).toBe(1);
+      expect(created[0]).toMatchObject({ userId: 'u1', recipeId: 'a', position: 0, surface: 'home', requestId: 'req-xyz' });
+      expect(created[1]).toMatchObject({ position: 1, requestId: 'req-xyz' }); // same slate id on every served row → joinable to reward
       expect(created[0].propensity).toBeGreaterThan(created[1].propensity); // higher score served at higher propensity
       expect(created[0].contextJson).toContain('winter'); // context captured for counterfactual replay
     });

@@ -705,6 +705,7 @@ model RecommendationServedItem {
   position    Int // 0-based rank in the served slate
   score       Float // finalScore the ranker assigned
   propensity  Float // selection probability (softmax over the slate; a smoothed exposure weight for today's deterministic ranker, replaced by the true randomized propensity at L1's bandit)
+  requestId   String? // L1: groups one served slate; echoed back on the reward/attribution event so exposure→reward is JOINABLE at (recipe,position,propensity) grain for off-policy learning (unrecoverable if missed)
   surface     String? // home | discover | search
   contextJson String? // serialized real-time context (timeOfDay/season/occasion) for counterfactual replay
   sessionId   String?
@@ -712,6 +713,7 @@ model RecommendationServedItem {
 
   @@index([userId, servedAt])
   @@index([recipeId, servedAt])
+  @@index([requestId])
 }
 
 model RecommendationAttributionEvent {
@@ -723,10 +725,12 @@ model RecommendationAttributionEvent {
   eventType  String
   value      Float    @default(0.0)
   source     String   @default("recommendation")
+  requestId  String? // L1: the served-slate id this reward is attributed to (echoed from the recommendation) → joins exposure↔reward for off-policy learning
   occurredAt DateTime @default(now())
 
   @@index([userId, recipeId, occurredAt])
   @@index([eventType, value])
+  @@index([requestId])
 }
 
 model RecommendationMetrics {

@@ -28,6 +28,7 @@ export class RecommendationSignalProcessor {
           eventType: event.type,
           value: this.getEventWeight(event.type),
           source: 'recommendation',
+          requestId: payload.requestId ?? null, // L1: echoed from the served slate → joins exposure↔reward
         },
       });
 

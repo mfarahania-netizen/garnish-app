@@ -34,7 +34,7 @@ export class RecommendationCountersService {
   async logSlate(
     userId: string,
     items: ServedSlateItem[],
-    opts: { surface?: string; sessionId?: string; context?: any } = {},
+    opts: { surface?: string; sessionId?: string; context?: any; requestId?: string } = {},
   ): Promise<number> {
     try {
       if (!userId || !items?.length) return 0;
@@ -46,6 +46,7 @@ export class RecommendationCountersService {
         position: i, // 0-based rank in the served slate
         score: it.score ?? 0,
         propensity: props[i] ?? 0,
+        requestId: opts.requestId ?? null, // joins exposure↔reward when the client echoes it on the action event
         surface: opts.surface ?? null,
         sessionId: opts.sessionId ?? null,
         contextJson,

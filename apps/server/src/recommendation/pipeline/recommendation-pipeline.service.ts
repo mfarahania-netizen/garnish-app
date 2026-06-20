@@ -1,4 +1,5 @@
 import { Injectable, Optional } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { FeatureStoreService } from '../../behavior-engine/feature-store/feature-store.service';
 import { ExplainabilityService } from '../explainability/explainability.service';
 import { CandidateGeneratorService } from './candidate-generator';
@@ -48,13 +49,18 @@ export class RecommendationPipelineService {
     const ranked = await this.rankingService.rank(userId, candidateIds, liveContext);
     const recommendations = ranked.slice(0, limit);
 
+    // L1 join key — one id per served slate, stamped on every served-item row and returned on each response
+    // item so the client echoes it on the reward/action event → exposure↔reward becomes joinable at
+    // (recipe, position, propensity) grain for off-policy learning (unrecoverable if not captured at serve time).
+    const requestId = randomUUID();
+
     // L0/L1 "counters first-class" — log the served slate (rank + score + propensity + context) so off-policy
     // learning has unbiased exposure data from day one. Fire-and-forget: never awaited, never throws, so it
     // adds no latency and cannot affect the response. Reward is derived downstream by joining to events.
     this.counters?.logSlate(
       userId,
       recommendations.map((r: RecommendationRankItem) => ({ recipeId: r.recipeId, score: r.finalScore })),
-      { surface: 'recommendations', context: liveContext },
+      { surface: 'recommendations', context: liveContext, requestId },
     );
 
     const response = recommendations.map((item: RecommendationRankItem) => {
@@ -71,6 +77,7 @@ export class RecommendationPipelineService {
         ),
         reasonSignals: matchedSignals.slice(0, 6),
         dataMaturity,
+        requestId, // echo on the reward/action event to attribute it to this exact served slate
         trackingPolicy: {
           fetchCreatesImpression: false,
           realImpressionEvent: 'recommendation_impression',
