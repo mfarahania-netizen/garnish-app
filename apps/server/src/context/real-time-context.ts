@@ -14,7 +14,7 @@
  *
  * Intentionally STANDALONE (not in getLivingUserProfile, which stays byte-identical) — context is per-request.
  */
-import { toJalaliDate, jalaliSeason, persianOccasion, JalaliDate, SeasonKey, PersianSeason, OccasionKey } from './jalali';
+import { toJalaliDate, jalaliSeason, persianOccasion, gregorianOccasion, JalaliDate, SeasonKey, PersianSeason, OccasionKey, EuOccasionKey } from './jalali';
 
 export const IRAN_TZ = 'Asia/Tehran';
 const DAY_NAMES_FA = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه']; // index = day-of-week (0=Sun)
@@ -34,7 +34,8 @@ export interface RealTimeContext {
   isWeekend: boolean; // locale-aware: Iran=Thu+Fri, elsewhere Sat+Sun (override via opts.weekendDays)
   jalali: JalaliDate;
   season: { key: SeasonKey; fa: PersianSeason };
-  occasion: { key: OccasionKey; fa: string; confidence: number };
+  occasion: { key: OccasionKey; fa: string; confidence: number }; // Persian (cultural-discovery for everyone)
+  europeanOccasion: { key: EuOccasionKey; en: string; confidence: number }; // CORE for the general-public Europe launch
 }
 
 export interface ContextOpts {
@@ -76,5 +77,6 @@ export function buildRealTimeContext(now: Date, opts: ContextOpts = {}): RealTim
     jalali,
     season: jalaliSeason(jalali.jm),
     occasion: persianOccasion(jalali),
+    europeanOccasion: gregorianOccasion(year, month, day),
   };
 }

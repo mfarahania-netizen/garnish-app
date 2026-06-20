@@ -56,6 +56,22 @@ describe('buildRealTimeContext — Persian calendar awareness (L0 "every second"
     expect(at('2025-07-17T12:00:00+03:30').isWeekend).toBe(true); // Thursday
   });
 
+  it('European occasions (CORE for the general-public Europe launch) resolve from the Gregorian date', () => {
+    expect(at('2025-12-25T12:00:00+03:30').europeanOccasion.key).toBe('christmas');
+    expect(at('2025-12-31T12:00:00+03:30').europeanOccasion.key).toBe('new_year');
+    expect(at('2026-01-01T12:00:00+03:30').europeanOccasion.key).toBe('new_year');
+    expect(at('2026-02-14T12:00:00+03:30').europeanOccasion.key).toBe('valentines');
+    expect(at('2026-04-27T12:00:00+03:30').europeanOccasion.key).toBe('kings_day_nl');
+    expect(at('2026-04-05T12:00:00+03:30').europeanOccasion.key).toBe('easter'); // Western Easter 2026 = Apr 5
+    expect(at('2025-07-15T12:00:00+03:30').europeanOccasion.key).toBe('none'); // ordinary day
+  });
+
+  it('Persian and European occasions coexist (both computed; surface localizes)', () => {
+    const yalda = at('2024-12-20T20:00:00+03:30');
+    expect(yalda.occasion.key).toBe('yalda'); // Persian
+    expect(yalda.europeanOccasion.key).toBe('none'); // not a European feast that day
+  });
+
   it('computes in Tehran time, not UTC (23:00Z → 02:30 Tehran → night)', () => {
     const c = at('2025-07-15T23:00:00Z');
     expect(c.hour).toBe(2);

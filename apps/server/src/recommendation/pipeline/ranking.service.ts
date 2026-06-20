@@ -292,7 +292,12 @@ export class RankingService {
     if (hits(MEAL[context.mealWindow] || [])) boost += 0.1;
     if (context.season.key === 'winter' && hits(['stew', 'soup', 'braise', 'آش', 'خورش', 'اش', 'حلیم', 'سوپ'])) boost += 0.1;
     if (context.season.key === 'summer' && hits(['salad', 'cold', 'grill', 'سالاد', 'خنک', 'شربت', 'بستنی'])) boost += 0.1;
-    if (context.occasion.key !== 'none' && hits(['traditional', 'festive', 'سنتی', 'یلدا', 'نوروز', 'آجیل', 'مناسبت'])) boost += 0.12 * (context.occasion.confidence || 0.5);
+    // occasion fit — Persian (Yalda/Nowruz) AND European (Christmas/Easter/NYE), since the launch serves the
+    // general European public. Either active occasion lifts festive/traditional dishes.
+    const eu = (context as any).europeanOccasion;
+    const occActive = context.occasion.key !== 'none' || (eu && eu.key !== 'none');
+    const occConf = Math.max(context.occasion.confidence || 0, (eu && eu.confidence) || 0) || 0.5;
+    if (occActive && hits(['traditional', 'festive', 'holiday', 'christmas', 'easter', 'roast', 'سنتی', 'یلدا', 'نوروز', 'آجیل', 'مناسبت'])) boost += 0.12 * occConf;
     return Math.min(1.25, boost);
   }
 

@@ -16,6 +16,7 @@ export const JALALI_MONTHS = ['فروردین', 'اردیبهشت', 'خرداد'
 export type PersianSeason = 'بهار' | 'تابستان' | 'پاییز' | 'زمستان';
 export type SeasonKey = 'spring' | 'summer' | 'autumn' | 'winter';
 export type OccasionKey = 'nowruz' | 'sizdah_bedar' | 'chaharshanbe_suri' | 'yalda' | 'none';
+export type EuOccasionKey = 'christmas' | 'new_year' | 'easter' | 'valentines' | 'halloween' | 'kings_day_nl' | 'none';
 
 /** Standard, widely-used Gregorian→Jalali algorithm (gm is 1-12). Accurate for all modern dates. */
 export function gregorianToJalali(gy: number, gm: number, gd: number): [number, number, number] {
@@ -67,4 +68,35 @@ export function persianOccasion(j: JalaliDate): { key: OccasionKey; fa: string; 
   // چهارشنبه‌سوری / آستانهٔ نوروز — last ~week of اسفند
   if (jm === 12 && jd >= 24) return { key: 'chaharshanbe_suri', fa: 'آستانهٔ نوروز / چهارشنبه‌سوری', confidence: 0.6 };
   return { key: 'none', fa: '', confidence: 0 };
+}
+
+/** Gregorian (Western/Computus) Easter Sunday for a year → [month(3|4), day]. Anonymous Gregorian algorithm. */
+export function gregorianEaster(gy: number): [number, number] {
+  const a = gy % 19, b = div(gy, 100), c = gy % 100, d = div(b, 4), e = b % 4;
+  const f = div(b + 8, 25), g = div(b - f + 1, 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = div(c, 4), k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7, m = div(a + 11 * h + 22 * l, 451);
+  const month = div(h + l - 7 * m + 114, 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return [month, day];
+}
+
+/**
+ * Detect a EUROPEAN cultural FOOD occasion from a Gregorian date — CORE for the general-public Europe launch
+ * (NOT a deferred localization). Fixed feasts + the movable Easter window (Good Friday→Easter Monday).
+ * 'en' is the label; the surface localizes. (King's Day = NL-specific; broaden per market later.)
+ */
+export function gregorianOccasion(gy: number, gm: number, gd: number): { key: EuOccasionKey; en: string; confidence: number } {
+  if (gm === 12 && gd >= 24 && gd <= 26) return { key: 'christmas', en: 'Christmas', confidence: gd === 25 ? 1 : 0.8 };
+  if ((gm === 12 && gd === 31) || (gm === 1 && gd === 1)) return { key: 'new_year', en: 'New Year', confidence: 1 };
+  if (gm === 2 && gd === 14) return { key: 'valentines', en: "Valentine's Day", confidence: 1 };
+  if (gm === 10 && gd === 31) return { key: 'halloween', en: 'Halloween', confidence: 1 };
+  if (gm === 4 && gd === 27) return { key: 'kings_day_nl', en: "King's Day (NL)", confidence: 1 };
+  const [em, ed] = gregorianEaster(gy);
+  // Easter window: Good Friday (-2) → Easter Monday (+1)
+  const easter = new Date(Date.UTC(gy, em - 1, ed));
+  const today = new Date(Date.UTC(gy, gm - 1, gd));
+  const diffDays = Math.round((today.getTime() - easter.getTime()) / 86_400_000);
+  if (diffDays >= -2 && diffDays <= 1) return { key: 'easter', en: 'Easter', confidence: diffDays === 0 ? 1 : 0.8 };
+  return { key: 'none', en: '', confidence: 0 };
 }
