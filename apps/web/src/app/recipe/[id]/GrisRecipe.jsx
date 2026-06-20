@@ -8,6 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
 import { scaleWeightG, scaleAmountText } from '../../../components/ges/scaling';
+import { parseGrisName, patchStepText, swapsList } from '../../../components/ges/personalize';
 
 /**
  * GrisRecipe — renders the full Garnish Recipe Intelligence Standard (GRIS v2) object as a premium,
@@ -126,22 +127,23 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
               {comp ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-brand-700)', margin: '0 0 var(--g-space-2)' }}>برای {comp}</Text> : null}
               <Box style={card}>
                 {items.map((it, i) => {
+                  const { display } = parseGrisName(it.name); // strip the «— ing_xxx» grounding suffix for display + keys
                   const sw = scaleWeightG(it.weightG, scaleFactor);
                   const amount = [sw != null ? `${fa(sw)}g` : null, it.volume ? scaleAmountText(it.volume, scaleFactor) : null].filter(Boolean).join(' · ');
-                  const applied = swaps[it.name] || null; // session swap applied to this ingredient
-                  const gone = removed.includes(it.name);
+                  const applied = swaps[display] || null; // session swap applied to this ingredient
+                  const gone = removed.includes(display);
                   return (
                   <Box key={i} style={{ padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', opacity: gone ? 0.6 : 1 }}>
                     <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
                       <Box style={{ flex: 1, minInlineSize: 0 }}>
-                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied && !gone ? 700 : 600, color: applied && !gone ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{applied && !gone ? applied.to : it.name}{!applied && !gone && it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
-                        {applied && !gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>به‌جای {it.name}</Text> : null}
+                        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: applied && !gone ? 700 : 600, color: applied && !gone ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: gone ? 'line-through' : 'none' }}>{applied && !gone ? applied.to : display}{!applied && !gone && it.prepState ? <Text component="span" style={muted}> — {it.prepState}</Text> : null}</Text>
+                        {applied && !gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>به‌جای {display}</Text> : null}
                         {gone ? <Text component="span" style={{ ...muted, marginInlineStart: 4 }}>حذف شد</Text> : null}
                       </Box>
                       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', flexShrink: 0 }}>
                         {amount && !gone ? <Text component="span" style={{ ...muted, whiteSpace: 'nowrap' }}>{amount}</Text> : null}
-                        {onAskSwap && !gone ? <UnstyledButton type="button" onClick={() => onAskSwap(it.name)} aria-label={`جایگزین برای ${it.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 32, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: applied ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600 }}>{applied ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
-                        {onToggleRemove ? <UnstyledButton type="button" onClick={() => onToggleRemove(it.name, it.role)} aria-label={gone ? `برگرداندن ${it.name}` : `حذف ${it.name}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 30, minBlockSize: 32, color: gone ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{gone ? <IconArrowBackUp size={16} stroke={1.8} /> : <IconTrash size={15} stroke={1.8} />}</UnstyledButton> : null}
+                        {onAskSwap && !gone ? <UnstyledButton type="button" onClick={() => onAskSwap(display)} aria-label={`جایگزین برای ${display}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 32, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: applied ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600 }}>{applied ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
+                        {onToggleRemove ? <UnstyledButton type="button" onClick={() => onToggleRemove(display, it.role)} aria-label={gone ? `برگرداندن ${display}` : `حذف ${display}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 30, minBlockSize: 32, color: gone ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{gone ? <IconArrowBackUp size={16} stroke={1.8} /> : <IconTrash size={15} stroke={1.8} />}</UnstyledButton> : null}
                       </Box>
                     </Box>
                     {it.role && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
@@ -161,7 +163,9 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
         <>
           <H2 icon={IconFlame}>روشِ پخت</H2>
           <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-            {list(g.steps).map((s, i) => (
+            {list(g.steps).map((s, i) => {
+              const patched = patchStepText(s.instruction, swapsList(swaps), removed);
+              return (
               <Box key={i} style={{ ...card, padding: 'var(--g-space-4)' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
                   <Box aria-hidden="true" style={{ flexShrink: 0, display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-12)' }}>{fa(s.order || i + 1)}</Box>
@@ -172,13 +176,15 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
                   {typeof s.tempC === 'number' ? <Chip><IconThermometer size={13} stroke={1.8} aria-hidden="true" />{fa(s.tempC)}°</Chip> : null}
                   {typeof s.durationMin === 'number' ? <Chip><IconClock size={13} stroke={1.8} aria-hidden="true" />{fa(s.durationMin)} دقیقه</Chip> : null}
                 </Box>
-                <Text component="p" style={{ ...body, margin: 0 }}>{s.instruction}</Text>
+                <Text component="p" style={{ ...body, margin: 0 }}>{patched.text}</Text>
+                {patched.caveats.length ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)', margin: '4px 0 0' }}>↳ {patched.caveats.join(' · ')}</Text> : null}
                 {s.sees ? <Line icon={IconEye}>{s.sees}</Line> : null}
                 {s.doneness ? <Line icon={IconCircleCheck} tone="success">{s.doneness}</Line> : null}
                 {s.tip ? <Line icon={IconBulb}>{s.tip}</Line> : null}
                 {s.recovery ? <Line icon={IconLifebuoy} tone="warn">اگر خراب شد: {s.recovery}</Line> : null}
               </Box>
-            ))}
+              );
+            })}
           </Box>
         </>
       ) : null}

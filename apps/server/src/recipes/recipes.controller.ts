@@ -73,6 +73,21 @@ export class RecipesController {
     return this.richness.getRichRecipe(id, req.user.userId);
   }
 
+  /**
+   * Phase-4 cascade — recompute the personalized recipe for the session {servings, swaps, removed}:
+   * grounded nutrition (source-locked) + swap allergen re-gate. Read-only; never mutates the recipe,
+   * the profile, or the allergy filter. Returns null-safe coverage instead of fabricated numbers.
+   */
+  @Post(':id/personalize')
+  @UseGuards(AuthGuard('jwt'))
+  personalize(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() body: { servings?: number; swaps?: { from: string; to: string }[]; removed?: string[] },
+  ) {
+    return this.richness.personalize(id, req.user.userId, body ?? {});
+  }
+
   @Post()
   @UseGuards(AuthGuard('jwt'))
   create(@Req() req, @Body() createRecipeDto: CreateRecipeDto) {

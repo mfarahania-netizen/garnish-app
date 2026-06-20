@@ -17,6 +17,7 @@ vi.mock('../../../components/ges/substitution', () => ({
   fetchSubstitutions: vi.fn(async () => ({ items: [{ name: 'روغن زیتون', basis: 'explicit_option', reason: 'جایگزین ثبت‌شده برای کره' }], resolvedId: 'ing_olive_oil', resultStatus: 'ok' })),
   qualityOf: () => ({ label: 'جایگزین مطمئن', rank: 1 }),
 }));
+vi.mock('../../../lib/apiClient', () => ({ default: { post: vi.fn(async () => ({ data: { nutrition: { perServing: null, coverage: 'none' }, notes: [] } })), get: vi.fn(async () => ({ data: {} })) } }));
 vi.mock('../../../hooks/useAnalytics', () => ({ useAnalytics: () => ({ trackEvent: vi.fn() }) }));
 vi.mock('../../../hooks/useFavoritesQuery', () => ({ useFavoritesQuery: () => ({ isFavorite: () => false, addFavorite: vi.fn(), removeFavorite: vi.fn() }) }));
 vi.mock('../../../context/AuthContext', () => ({

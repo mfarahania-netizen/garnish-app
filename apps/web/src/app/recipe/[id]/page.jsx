@@ -13,12 +13,14 @@ import GrisRecipe from './GrisRecipe';
 import { useFavoritesQuery } from '../../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { usePersonalization } from '../../../hooks/usePersonalization';
+import { usePersonalizedCascade } from '../../../hooks/usePersonalizedCascade';
 import { useAuth } from '../../../context/AuthContext';
 import apiClient from '../../../lib/apiClient';
 import { toFaDigits } from '../../../components/ges/format';
 import { extractBaseServings, scaleAmountText, parseQuantity } from '../../../components/ges/scaling';
 import { fetchSubstitutions, qualityOf as subQualityOf } from '../../../components/ges/substitution';
 import { isStructural } from '../../../components/ges/ingredientRoles';
+import { personalizationSummary, patchStepText, swapsList } from '../../../components/ges/personalize';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
 import NutritionBadge from '../../../components/ges/NutritionBadge';
@@ -85,6 +87,51 @@ function RichList({ items }) {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
       {items.map((t, i) => <Text key={i} component="p" style={{ ...stepText, margin: 0 }}>{t}</Text>)}
+    </Box>
+  );
+}
+
+// a single honest line summarizing everything the user personalized (servings · swaps · removes),
+// shown above the recipe body so the changes are never silent.
+function PersonalizationBanner({ items }) {
+  if (!items.length) return null;
+  return (
+    <Box style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)' }}>
+      <IconSparkles size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 1 }} />
+      <Box style={{ minInlineSize: 0 }}>
+        <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>این نسخه برای تو تنظیم شده</Text>
+        <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-secondary)', marginBlockStart: 2 }}>{items.join(' · ')}</Text>
+      </Box>
+    </Box>
+  );
+}
+
+// recomputed, source-locked per-serving nutrition after personalization (Phase 4). Shows numbers ONLY
+// when coverage is good; «تخمینی» when partial; nothing when the recipe lacks gram-level data.
+function RecomputedNutrition({ cascade }) {
+  const n = cascade?.nutrition;
+  if (!n?.perServing) return null;
+  const m = n.perServing;
+  const cells = [['کالری', m.calories, ''], ['پروتئین', m.protein, 'g'], ['کربو', m.carbs, 'g'], ['چربی', m.fat, 'g'], ['فیبر', m.fiber, 'g']];
+  return (
+    <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-4)' }}>
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockEnd: 'var(--g-space-3)' }}>
+        <IconRefresh size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
+        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>ارزش غذاییِ دوباره‌محاسبه‌شده — هر وعده</Text>
+        {n.coverage === 'partial' ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>(تخمینی)</Text> : null}
+      </Box>
+      <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+        {cells.map(([label, val, unit]) => (
+          <Box key={label} style={{ flex: '1 1 80px', textAlign: 'center', padding: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-bg-canvas)' }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>{toFaDigits(Math.round(Number(val) || 0))}{unit}</Text>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>{label}</Text>
+          </Box>
+        ))}
+      </Box>
+      {(cascade.notes || []).map((note, i) => (
+        <Text key={i} component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' }}>⚠️ {note}</Text>
+      ))}
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 0 0' }}>از وزنِ موادِ قفل‌شده به منبع (USDA) — اطلاعات عمومی، نه توصیهٔ پزشکی.</Text>
     </Box>
   );
 }
@@ -265,6 +312,8 @@ export default function RecipeDetailPage() {
   const baseServings = extractBaseServings(recipe?.servingsText, 4);
   const perso = usePersonalization(id, baseServings);
   const { servedFor, scaleFactor } = perso;
+  // Phase-4 server cascade: grounded nutrition recompute + swap allergen re-gate (only when personalized)
+  const cascade = usePersonalizedCascade(id, perso, !!token);
   const [sub, setSub] = useState(null); // { ingredient, loading, items } — grounded substitution sheet
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
@@ -428,6 +477,10 @@ export default function RecipeDetailPage() {
             <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
           </UnstyledButton>
 
+          {/* Personalization summary + recomputed (grounded) nutrition — visible for both GRIS + flat */}
+          <PersonalizationBanner items={personalizationSummary(perso)} />
+          <RecomputedNutrition cascade={cascade} />
+
           {/* Byline */}
           {recipe.author ? (
             <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-5)' }}>
@@ -547,12 +600,18 @@ export default function RecipeDetailPage() {
                 {recipe.steps.length ? (
                   <Accordion icon={IconListNumbers} title="مراحل پخت" defaultOpen>
                     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-                      {recipe.steps.map((s, i) => (
+                      {recipe.steps.map((s, i) => {
+                        const patched = patchStepText(s, swapsList(perso.swaps), perso.removed);
+                        return (
                         <Box key={i} style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
                           <Box aria-hidden="true" style={{ flexShrink: 0, display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-12)' }}>{toFaDigits(i + 1)}</Box>
-                          <Text component="span" style={stepText}>{s}</Text>
+                          <Box style={{ minInlineSize: 0 }}>
+                            <Text component="span" style={stepText}>{patched.text}</Text>
+                            {patched.caveats.length ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-brand-700)', marginBlockStart: 2 }}>↳ {patched.caveats.join(' · ')}</Text> : null}
+                          </Box>
                         </Box>
-                      ))}
+                        );
+                      })}
                     </Box>
                   </Accordion>
                 ) : null}
