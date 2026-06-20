@@ -8,16 +8,32 @@ export const meta = {
   ],
 }
 
-const BATCH = (args && args.batch) || 'batch-01'
+const BATCH = (args && args.batch) || 'batch-02'
 const recipes = (args && Array.isArray(args.recipes) && args.recipes.length) ? args.recipes : [
-  { recipeId: 'garnish_recipe_intl_127_65e78281', title: 'مقلوبه' },
-  { recipeId: 'garnish_recipe_fa_230_332dd922', title: 'دیزی (آبگوشت)' },
-  { recipeId: 'garnish_recipe_fa_870_d37ad654', title: 'آلبالو پلو با مرغ یا گوشت' },
-  { recipeId: 'garnish_recipe_fa_1324_2b0dbfd9', title: 'سالاد الویه' },
-  { recipeId: 'garnish_recipe_fa_1342_ce4a8da3', title: 'خوراک مرغ زعفرانی' },
-  { recipeId: 'garnish_recipe_fa_1353_5d0ac837', title: 'کباب ترکی' },
-  { recipeId: 'garnish_recipe_fa_1820_41034bbe', title: 'شاورما' },
-  { recipeId: 'garnish_recipe_fa_2086_c02ef228', title: 'فلافل آبادانی' },
+  { recipeId: 'garnish_recipe_fa_1341_6b4ba753', title: 'همبرگر (چیز‌برگر)' },
+  { recipeId: 'garnish_recipe_fa_1816_dec0afbb', title: 'سوپ شیر' },
+  { recipeId: 'garnish_recipe_fa_1279_e3e99c0f', title: 'میگو پلو' },
+  { recipeId: 'garnish_recipe_fa_1323_cf6bcb5c', title: 'لازانیا' },
+  { recipeId: 'garnish_recipe_fa_1333_db68905d', title: 'مرغ سوخاری' },
+  { recipeId: 'garnish_recipe_fa_1334_8963bd85', title: 'اشترودل گوشت' },
+  { recipeId: 'garnish_recipe_fa_1343_5bf8151c', title: 'خوراک مرغ و قارچ' },
+  { recipeId: 'garnish_recipe_fa_2071_5391bddf', title: 'سالاد سزار' },
+  { recipeId: 'garnish_recipe_fa_2075_3d9b2098', title: 'سمبوسه آبادانی' },
+  { recipeId: 'garnish_recipe_fa_2079_5543499b', title: 'سمبوسه در فر' },
+  { recipeId: 'garnish_recipe_fa_862_dbf3d4d5', title: 'باقالی پلو با گوشت' },
+  { recipeId: 'garnish_recipe_fa_883_4b80bbcf', title: 'رولت گوشت' },
+  { recipeId: 'garnish_recipe_fa_1252_3d200c70', title: 'کلم‌پلو شیرازی' },
+  { recipeId: 'garnish_recipe_fa_1276_cdef73d2', title: 'تاس‌کباب' },
+  { recipeId: 'garnish_recipe_fa_2090_ea20119c', title: 'نودل سبزیجات' },
+  { recipeId: 'garnish_recipe_fa_2103_d26d79d5', title: 'پاستا آلفردو' },
+  { recipeId: 'garnish_recipe_fa_110_847e93ad', title: 'خورشت سیب' },
+  { recipeId: 'garnish_recipe_fa_216_1bfdfe55', title: 'جوجه کباب زعفرانی' },
+  { recipeId: 'garnish_recipe_fa_1051_68dd60e0', title: 'خورشت کرفس' },
+  { recipeId: 'garnish_recipe_fa_1251_3f83f105', title: 'خورشت بادمجان' },
+  { recipeId: 'garnish_recipe_fa_1280_13a22528', title: 'رشته‌پلو شیرازی' },
+  { recipeId: 'garnish_recipe_fa_1315_c324442d', title: 'دال عدس' },
+  { recipeId: 'garnish_recipe_fa_139_012333bd', title: 'کوفته برنجی' },
+  { recipeId: 'garnish_recipe_fa_154_cdfcadf7', title: 'شله مشهدی' },
 ]
 const DIR = `docs/data-pilot/_authored/${BATCH}`
 const REFS = 'Read docs/data-pilot/GRIS_V2_1_CONTRACT.md (exact shape + hard rules) and docs/data-pilot/AUTHORING_REFERENCE.md (substitution §1 · food-safety §2 HARD · food-science+myths §3). Ground ids by grepping docs/data-pilot/_grounding/ingredients.json (match the Persian name in the "fa" field). NEVER invent an id.'
@@ -52,7 +68,7 @@ TASK: rewrite ONE existing recipe into the GRIS v2.1 standard.
 RECIPE: «${r.title}» — recipeId ${r.recipeId}.
 
 ${REFS}
-Your source recipe is the object with recipeId "${r.recipeId}" inside docs/data-pilot/_grounding/batch-01.json (it carries the real ingredientIds + the existing flat steps). Use those ids for the recipe's own ingredients.
+Your source recipe is the object with recipeId "${r.recipeId}" inside docs/data-pilot/_grounding/${BATCH}.json (it carries the real ingredientIds + the existing flat steps). Use those ids for the recipe's own ingredients.
 
 PRODUCE EXACTLY the GRIS v2.1 object shape from the contract, honoring every hard rule:
 - Structured, DISH-AWARE, grounded swaps per ingredient (Reference §1) — e.g. lamb→[veal, beef, turkey, mushroom]; potato in a stew→eggplant (قیمه/خورش بادمجانی tradition); saffron→[] (honest, no fake color). Each swap a REAL id you verified by grepping ingredients.json. Also output ingredientSubsEnrichment to upgrade the dictionary's substitutionOptions for the live swap button.

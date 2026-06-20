@@ -1,0 +1,542 @@
+{
+  "recipeId": "garnish_recipe_fa_2090_ea20119c",
+  "gris": {
+    "schemaVersion": "2.1",
+    "story": {
+      "hook": "یک تابه پر از سبزیجات رنگی و نودلِ براق که در کمتر از بیست دقیقه آماده می‌شود؛ رازش حرارتِ بالا و ترتیبِ درستِ ورودِ سبزیجات است، نه دستورِ پیچیده.",
+      "origin": "تفت‌دادنِ تند روی حرارتِ بالا (سبکِ استایر-فرای) ریشه در آشپزی شرق آسیا دارد و امروز به شکلِ خانگی در سراسر جهان پخته می‌شود؛ این نسخه یک نودلِ سبزیجاتیِ ساده و بی‌گوشت است.",
+      "occasion": "شامِ سریعِ وسطِ هفته، یا وقتی می‌خواهید یک بشقابِ گرمِ سیرکننده با هرچه سبزی در یخچال دارید بسازید.",
+      "lineage": "سنتِ مستندِ آشپزیِ تابه‌ایِ شرق آسیا؛ بدون ادعای منشأِ منطقه‌ایِ خاص."
+    },
+    "whyItWorks": [
+      {
+        "point": "حرارتِ بالا سبزیجات را برشته می‌کند، نه آب‌پز",
+        "explanation": "وقتی سطحِ تابه داغ (حدود ۲۰۰ درجه سانتی‌گراد به بالا) باشد، رطوبتِ سطحِ سبزی سریع بخار می‌شود و واکنشِ میلارد و کاراملی‌شدنِ خفیف، طعمِ شیرین و دودی می‌سازد؛ روی حرارتِ کم، سبزی آبِ خود را پس می‌دهد و می‌جوشد و لِه می‌شود.",
+        "testedBecause": "McGee / López-Alt — مرز رطوبت تعیین‌کنندهٔ برشته‌شدن در برابر بخارپزشدن است"
+      },
+      {
+        "point": "ترتیبِ ورودِ سبزیجات بافتِ یکدست می‌سازد",
+        "explanation": "هویج و کلمِ سفت دیرتر نرم می‌شوند، پس اول می‌روند؛ قارچ، فلفل دلمه‌ای و کدو که آب‌دارتر و نرم‌ترند بعد اضافه می‌شوند تا همه با هم به نقطهٔ «نرم اما کمی ترد» برسند.",
+        "testedBecause": "ATK — مدیریتِ زمان‌پختِ متفاوتِ سبزیجات در یک تابه"
+      },
+      {
+        "point": "روغنِ کنجد چربی‌محورِ عطر را آزاد می‌کند",
+        "explanation": "ترکیباتِ معطرِ سیر، زنجبیل و کنجد چربی‌دوست‌اند؛ وقتی در روغنِ داغ آزاد می‌شوند طعم در کلِ غذا پخش می‌شود. روغنِ کنجدِ بوداده را آخرِ کار اضافه می‌کنیم چون نقطهٔ دودِ پایینی دارد و حرارتِ زیاد عطرش را می‌سوزاند.",
+        "testedBecause": "McGee — حلالیتِ چربیِ ترکیباتِ معطر"
+      },
+      {
+        "point": "زیرورو کردنِ کوتاهِ نودل از خمیرشدن جلوگیری می‌کند",
+        "explanation": "نودل از قبل پخته شده و نشاسته‌اش ژلاتینه شده است؛ ماندنِ طولانی در سس و حرارت، رشته‌ها را بیش از حد نرم و چسبنده می‌کند. فقط یکی‌دو دقیقه زیرورو کافی است تا سس به رشته بنشیند و بافت سالم بماند.",
+        "testedBecause": "ژلاتینه‌شدنِ نشاسته در ۶۰ تا ۸۰ درجه — پختِ بیشتر فقط نرم‌ترش می‌کند"
+      },
+      {
+        "point": "سس سویا هم‌زمان نمک و عمقِ اومامی می‌دهد",
+        "explanation": "سس سویا تخمیری سرشار از گلوتاماتِ آزاد است که حسِ اومامی می‌سازد و چون شور است، بخشی از نمکِ غذا را تأمین می‌کند؛ به همین خاطر نمکِ اضافه را با احتیاط و در پایان بسنجید.",
+        "testedBecause": "گلوتاماتِ آزادِ محصولاتِ تخمیری منبعِ اومامی است"
+      }
+    ],
+    "glance": {
+      "promise": "نودلِ براق و معطر با سبزیجاتِ رنگیِ نرم‌اما‌ترد، در یک تابه و کمتر از بیست دقیقه.",
+      "activeTimeMin": 18,
+      "totalTimeMin": 25,
+      "handsOffMin": 0,
+      "difficulty": "متوسط",
+      "costBand": "کم",
+      "servings": 4,
+      "keyEquipment": ["ووک یا تابهٔ بزرگ", "انبر آشپزخانه", "آبکش", "چاقوی تیز و تختهٔ خردکن"],
+      "equipmentIdeal": ["ووک یا تابهٔ پهن و سنگین — حرارتِ بالا و یکنواخت برای برشته‌شدن به‌جای بخارپز‌شدن", "انبر — برای زیرورو کردنِ سریع و یکدستِ نودل بدون پاره‌کردن"],
+      "goodFor": ["شامِ سریعِ وسطِ هفته", "گیاه‌خواری", "استفاده از سبزیجاتِ باقی‌ماندهٔ یخچال"]
+    },
+    "skillsLearned": [
+      "خلالی‌کردنِ یکدستِ سبزیجات برای پختِ همزمان",
+      "مدیریتِ ترتیبِ ورودِ سبزیجات بر اساس زمان‌پخت",
+      "تفت‌دادن روی حرارتِ بالا بدون آب‌انداختنِ تابه",
+      "اضافه‌کردنِ به‌موقعِ چربی‌های معطر کم‌دما مثل روغنِ کنجد"
+    ],
+    "ingredients": [
+      {
+        "ingredientId": "ing_egg_noodles_dry",
+        "name": "نودل تخم‌مرغی خشک",
+        "component": "پایه",
+        "role": "نشاسته/پایه",
+        "weightG": 250,
+        "volume": "حدود ۲ کلاف",
+        "prepState": "طبق زمانِ روی بسته پخته یا خیسانده و آبکش‌شده",
+        "buyTip": "نودلِ متوسط‌قطر بهتر سس را نگه می‌دارد؛ اگر می‌خواهید بدونِ تخم‌مرغ یا بدونِ گلوتن باشد، به جایگزین‌ها نگاه کنید.",
+        "swaps": [
+          { "ingredientId": "ing_rice_noodles_dry", "name": "نودل برنج", "note": "بدونِ گلوتن و بدونِ تخم‌مرغ؛ زمانِ خیساندن کوتاه‌تر است", "ratio": "۱:۱" },
+          { "ingredientId": "ing_udon_noodles", "name": "نودل اودون", "note": "ضخیم‌تر و نرم‌تر؛ سسِ بیشتری می‌گیرد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_spaghetti_dry", "name": "اسپاگتی", "note": "در دسترس‌ترین جایگزین؛ کمی محکم‌تر بپزید (آل‌دنته)", "ratio": "۱:۱" }
+        ],
+        "swap": "نودل برنج (بدونِ گلوتن) یا اودون یا اسپاگتی",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_carrot_raw",
+        "name": "هویج خام",
+        "component": "سبزیجاتِ سفت",
+        "role": "سبزیِ بافت‌دار/شیرینی",
+        "weightG": 300,
+        "volume": "حدود ۳ عدد متوسط",
+        "prepState": "خلالیِ نازک و هم‌اندازه",
+        "buyTip": "هویجِ سفت و صاف انتخاب کنید؛ خلالِ نازک یکدست‌تر و سریع‌تر می‌پزد.",
+        "swaps": [
+          { "ingredientId": "ing_broccoli_raw", "name": "بروکلی", "note": "هم‌نقشِ سبزیِ سفت؛ به گل‌های کوچک تقسیم کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_bell_pepper_raw", "name": "فلفل دلمه‌ای", "note": "سریع‌تر می‌پزد، کمی دیرتر اضافه کنید", "ratio": "۱:۱" }
+        ],
+        "swap": "بروکلی یا فلفل دلمه‌ای (سبزیِ بافت‌دار)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_cabbage_raw",
+        "name": "کلم سفید خام",
+        "component": "سبزیجاتِ سفت",
+        "role": "سبزیِ حجم‌دهنده",
+        "weightG": 300,
+        "volume": "حدود ۴ پیمانه خلال‌شده",
+        "prepState": "خلالیِ نازک",
+        "buyTip": "کلمِ سنگین و سفت تازه‌تر است؛ خلالِ نازک سریع‌تر نرم می‌شود.",
+        "swaps": [
+          { "ingredientId": "ing_napa_cabbage_raw", "name": "کلم چینی", "note": "نرم‌تر و آب‌دارتر؛ کمی دیرتر اضافه کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_red_cabbage_raw", "name": "کلم قرمز", "note": "هم‌نقش؛ رنگ به غذا می‌دهد", "ratio": "۱:۱" }
+        ],
+        "swap": "کلم چینی یا کلم قرمز (سبزیِ حجم‌دهنده)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_button_mushroom_raw",
+        "name": "قارچ دکمه‌ای خام",
+        "component": "سبزیجاتِ نرم",
+        "role": "سبزیِ اومامی‌دار",
+        "weightG": 300,
+        "volume": "حدود ۴ پیمانه ورقه‌شده",
+        "prepState": "تمیز و ورقه‌ایِ ضخیم",
+        "buyTip": "قارچ را نشویید؛ با دستمالِ مرطوب پاک کنید تا آب نکشد و بهتر برشته شود.",
+        "swaps": [
+          { "ingredientId": "ing_shiitake_mushroom_raw", "name": "قارچ شیتاکه", "note": "عطر و اومامیِ قوی‌تر؛ بافتِ محکم‌تر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_oyster_mushroom_raw", "name": "قارچ صدفی", "note": "نرم‌تر؛ سریع‌تر می‌پزد", "ratio": "۱:۱" }
+        ],
+        "swap": "قارچ شیتاکه یا قارچ صدفی (سبزیِ اومامی‌دار)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_bell_pepper_raw",
+        "name": "فلفل دلمه‌ای خام",
+        "component": "سبزیجاتِ نرم",
+        "role": "سبزیِ ترد/رنگ",
+        "weightG": 300,
+        "volume": "حدود ۲ عدد بزرگ",
+        "prepState": "خلالیِ نازک",
+        "buyTip": "فلفلِ رنگی (قرمز یا زرد) شیرین‌تر است و رنگِ غذا را بازتر می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_zucchini_raw", "name": "کدو سبز", "note": "هم‌نقشِ سبزیِ نرم و آب‌دار؛ آخر اضافه کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_broccoli_raw", "name": "بروکلی", "note": "تردتر؛ کمی زودتر اضافه کنید", "ratio": "۱:۱" }
+        ],
+        "swap": "کدو سبز یا بروکلی (سبزیِ ترد)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_zucchini_raw",
+        "name": "کدو سبز خام",
+        "component": "سبزیجاتِ نرم",
+        "role": "سبزیِ نرم/آب‌دار",
+        "weightG": 200,
+        "volume": "حدود ۱ عدد متوسط",
+        "prepState": "نیم‌ماه یا خلالیِ درشت",
+        "buyTip": "کدوی کوچک‌تر و سفت‌تر دانه‌اش کمتر و بافتش بهتر است.",
+        "swaps": [
+          { "ingredientId": "ing_eggplant_raw", "name": "بادمجان", "note": "هم‌نقشِ سبزیِ نرم؛ روغنِ بیشتری می‌گیرد، کمی زودتر اضافه کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_button_mushroom_raw", "name": "قارچ دکمه‌ای", "note": "اومامیِ بیشتر؛ هم‌نقشِ نرم", "ratio": "۱:۱" }
+        ],
+        "swap": "بادمجان یا قارچ دکمه‌ای (سبزیِ نرم)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_scallion_raw",
+        "name": "پیازچه خام",
+        "component": "معطرکننده",
+        "role": "معطرِ پایه/تزیین",
+        "weightG": 30,
+        "volume": "۱ عدد متوسط",
+        "prepState": "حلقه‌شده؛ قسمتِ سفید و سبز جدا",
+        "buyTip": "سفیدِ پیازچه را اول با سبزیجات بپزید و سبزِ آن را آخر برای تزیین نگه دارید.",
+        "swaps": [
+          { "ingredientId": "ing_leek_raw", "name": "تره‌فرنگی", "note": "ملایم‌تر؛ فقط قسمتِ سفید و سبزِ روشن", "ratio": "۱:۱" },
+          { "ingredientId": "ing_onion_raw", "name": "پیاز", "note": "تندتر؛ نازک خلال کنید و بپزید", "ratio": "۱:۱" }
+        ],
+        "swap": "تره‌فرنگی یا پیاز (معطرِ پایه)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_garlic_raw",
+        "name": "سیر خام",
+        "component": "معطرکننده",
+        "role": "معطرِ پایه",
+        "weightG": 12,
+        "volume": "۳ حبه",
+        "prepState": "ریز‌خردشده یا رنده‌شده",
+        "buyTip": "سیر را تازه خرد کنید؛ سیرِ آماده عطر کمتری دارد.",
+        "swaps": [
+          { "ingredientId": "ing_garlic_paste", "name": "خمیر سیر", "note": "راحت‌تر؛ هر ۱ حبه ≈ نصف قاشق چای‌خوری خمیر", "ratio": "۳ حبه ≈ ۱.۵ ق‌چ" }
+        ],
+        "swap": "خمیر سیر (معطرِ پایه)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_ginger_root_raw",
+        "name": "زنجبیل تازه",
+        "component": "معطرکننده",
+        "role": "معطرِ پایه",
+        "weightG": 10,
+        "volume": "حدود ۱ تکهٔ یک‌بندانگشتی",
+        "prepState": "رنده‌شده یا ریز‌خردشده",
+        "buyTip": "زنجبیلِ تازه و سفت با پوستِ نازک عطرِ بیشتری دارد؛ پوستش را با لبهٔ قاشق بتراشید.",
+        "swaps": [
+          { "ingredientId": "ing_ginger_paste", "name": "خمیر زنجبیل", "note": "راحت‌تر؛ هر یک تکه ≈ ۱ قاشق چای‌خوری خمیر", "ratio": "۱ تکه ≈ ۱ ق‌چ" }
+        ],
+        "swap": "خمیر زنجبیل (معطرِ پایه)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_soy_sauce",
+        "name": "سس سویا",
+        "component": "سس",
+        "role": "نمک/اومامی",
+        "weightG": 45,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "",
+        "buyTip": "نوعِ کم‌نمک کنترلِ شوریِ غذا را راحت‌تر می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_low_sodium_soy_sauce", "name": "سس سویای کم‌نمک", "note": "کنترلِ شوریِ راحت‌تر؛ هم‌نقشِ کامل", "ratio": "۱:۱" },
+          { "ingredientId": "ing_oyster_sauce", "name": "سس صدف", "note": "غلیظ‌تر و کمی شیرین؛ غیرِگیاهیِ کامل (صدف)", "ratio": "۱:۱" }
+        ],
+        "swap": "سس سویای کم‌نمک یا سس صدف",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_sunflower_oil",
+        "name": "روغن آفتابگردان",
+        "component": "سس",
+        "role": "چربیِ پخت",
+        "weightG": 50,
+        "volume": "۴ قاشق غذاخوری",
+        "prepState": "",
+        "buyTip": "روغنِ خنثی با نقطهٔ دودِ بالا برای حرارتِ زیادِ تابه مناسب است.",
+        "swaps": [
+          { "ingredientId": "ing_canola_oil", "name": "روغن کانولا", "note": "خنثی با نقطهٔ دودِ بالا؛ هم‌نقش", "ratio": "۱:۱" },
+          { "ingredientId": "ing_grapeseed_oil", "name": "روغن هسته انگور", "note": "خنثی، مناسبِ حرارتِ بالا", "ratio": "۱:۱" }
+        ],
+        "swap": "روغن کانولا یا روغن هسته انگور (چربیِ پخت)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_sesame_oil",
+        "name": "روغن کنجد",
+        "component": "سس",
+        "role": "چربیِ معطرِ نهایی",
+        "weightG": 8,
+        "volume": "۲ قاشق چای‌خوری",
+        "prepState": "",
+        "buyTip": "روغنِ کنجدِ بوداده عطرِ بیشتری دارد؛ همیشه آخرِ کار اضافه شود.",
+        "swaps": [
+          { "ingredientId": "ing_toasted_sesame_oil", "name": "روغن کنجد بوداده", "note": "معطرتر؛ کمی کمتر استفاده کنید", "ratio": "۱:۱ یا کمی کمتر" }
+        ],
+        "swap": "روغن کنجد بوداده (چربیِ معطرِ نهایی)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_roasted_sesame_seeds",
+        "name": "کنجد بوداده",
+        "component": "تزیین",
+        "role": "تزیین/عطر",
+        "weightG": 10,
+        "volume": "۱ قاشق غذاخوری",
+        "prepState": "",
+        "buyTip": "اگر فقط کنجدِ خام دارید، چند دقیقه در تابهٔ خشک تفت دهید تا طلایی و معطر شود.",
+        "swaps": [
+          { "ingredientId": "ing_white_sesame_seeds", "name": "کنجد سفید", "note": "خام؛ خودتان تفت دهید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_black_sesame_seeds", "name": "کنجد سیاه", "note": "ظاهرِ زیباتر؛ هم‌نقشِ تزیین", "ratio": "۱:۱" }
+        ],
+        "swap": "کنجد سفید یا کنجد سیاه (تزیین)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_salt_table",
+        "name": "نمک خوراکی",
+        "component": "سس",
+        "role": "چاشنی",
+        "weightG": null,
+        "volume": "به‌مزه (حدود ۱ قاشق چای‌خوری)",
+        "prepState": "",
+        "buyTip": "چون سس سویا شور است، نمک را آخرِ کار و کم‌کم بسنجید.",
+        "swaps": [],
+        "swap": "",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_black_pepper_ground",
+        "name": "فلفل سیاه آسیاب‌شده",
+        "component": "سس",
+        "role": "چاشنی",
+        "weightG": null,
+        "volume": "نصف قاشق چای‌خوری",
+        "prepState": "",
+        "buyTip": "فلفلِ تازه‌آسیاب عطرِ بیشتری دارد.",
+        "swaps": [
+          { "ingredientId": "ing_white_pepper_ground", "name": "فلفل سفید", "note": "تندیِ ملایم‌تر و رنگِ روشن‌تر؛ رایج در غذای آسیایی", "ratio": "۱:۱" }
+        ],
+        "swap": "فلفل سفید (چاشنی)",
+        "optional": true,
+        "criticalRole": false
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "خرد کردنِ یکدستِ سبزیجات",
+        "instruction": "هویج خام، فلفل دلمه‌ای خام، کدو سبز خام، قارچ دکمه‌ای خام و کلم سفید خام را همگی به خلالِ نازک و هم‌اندازه (حدود نیم سانتی‌متر) خرد کنید. سیر خام و زنجبیل تازه را ریز خرد یا رنده کنید. پیازچه خام را حلقه کنید و سفید و سبزِ آن را جدا نگه دارید. اندازهٔ یکسان باعث می‌شود همه با هم بپزند.",
+        "usesIngredientIds": ["ing_carrot_raw", "ing_bell_pepper_raw", "ing_zucchini_raw", "ing_button_mushroom_raw", "ing_cabbage_raw", "ing_garlic_raw", "ing_ginger_root_raw", "ing_scallion_raw"],
+        "flame": "none",
+        "durationMin": 8,
+        "sees": "همهٔ خلال‌ها تقریباً هم‌قطر و هم‌اندازه‌اند",
+        "doneness": "وقتی همهٔ سبزیجات خرد و کنارِ تابه آماده‌اند",
+        "tip": "همهٔ سبزیجات را قبل از روشن‌کردنِ گاز آماده کنید؛ تفت‌دادن سریع است و وقتِ خردکردن نمی‌ماند.",
+        "recovery": "اگر چند تکه بزرگ‌تر شد، آن‌ها را زودتر در تابه بیندازید."
+      },
+      {
+        "order": 2,
+        "title": "پختنِ نودل",
+        "instruction": "نودل تخم‌مرغی خشک را طبقِ زمانِ روی بسته در آبِ جوش بپزید (یا اگر از نوعِ خیساندنی است، در آبِ داغ بخیسانید)، سپس آبکش کنید. یک قاشق روغن آفتابگردان به آن بزنید و هم بزنید تا رشته‌ها به هم نچسبند. کنار بگذارید.",
+        "usesIngredientIds": ["ing_egg_noodles_dry", "ing_sunflower_oil"],
+        "flame": "high",
+        "durationMin": 5,
+        "sees": "رشته‌ها نرم اما هنوز کمی محکم (آل‌دنته) و از هم جدا",
+        "doneness": "نودل نرم شده ولی وسطش لِه و خمیر نیست",
+        "tip": "نودل را کمی محکم‌تر از حدِ کامل بپزید، چون آخرِ کار باز هم با سس گرم می‌شود.",
+        "recovery": "اگر به هم چسبید، زیرِ آبِ ولرم بگیرید و کمی روغن بزنید."
+      },
+      {
+        "order": 3,
+        "title": "داغ کردنِ تابه و سبزیجاتِ سفت",
+        "instruction": "ووک یا تابهٔ بزرگ را روی حرارتِ بالا خوب داغ کنید، باقیِ روغن آفتابگردان را بریزید. اول هویج خام و کلم سفید خام را اضافه کنید و مدام هم بزنید. این‌ها دیرتر نرم می‌شوند پس باید جلوتر بروند.",
+        "usesIngredientIds": ["ing_sunflower_oil", "ing_carrot_raw", "ing_cabbage_raw"],
+        "flame": "high",
+        "durationMin": 3,
+        "sees": "روغن می‌درخشد و کمی موج می‌زند؛ سبزیجات با صدای جلز‌و‌ولز و بخار وارد می‌شوند",
+        "doneness": "هویج لبه‌هایش کمی برشته و نیمه‌نرم شده",
+        "tip": "تابه باید واقعاً داغ باشد؛ روی حرارتِ کم سبزی آب می‌اندازد و می‌جوشد به‌جای برشته‌شدن.",
+        "recovery": "اگر آب افتاد، حرارت را بالا ببرید و هم نزنید تا آب بخار شود."
+      },
+      {
+        "order": 4,
+        "title": "افزودنِ سبزیجاتِ نرم",
+        "instruction": "حالا قارچ دکمه‌ای خام، فلفل دلمه‌ای خام، کدو سبز خام و سفیدِ پیازچه خام را اضافه کنید و تند هم بزنید. این‌ها آب‌دارتر و نرم‌ترند و سریع‌تر می‌پزند.",
+        "usesIngredientIds": ["ing_button_mushroom_raw", "ing_bell_pepper_raw", "ing_zucchini_raw", "ing_scallion_raw"],
+        "flame": "high",
+        "durationMin": 3,
+        "sees": "قارچ کمی جمع و طلایی می‌شود، فلفل براق و کدو نرم اما هنوز ترد",
+        "doneness": "همهٔ سبزیجات نرمِ‌ترد شده‌اند، نه لِه",
+        "tip": "اگر دوست دارید بافت تردتر بماند، این مرحله را کوتاه‌تر کنید.",
+        "recovery": "اگر تابه شلوغ و خنک شد، سبزیجات را دو دسته تفت دهید."
+      },
+      {
+        "order": 5,
+        "title": "افزودنِ معطرها و سس",
+        "instruction": "سیر خام و زنجبیل تازه را اضافه کنید و فقط حدود نیم‌دقیقه تفت دهید تا عطرشان بلند شود (نسوزانید). سپس سس سویا و فلفل سیاه آسیاب‌شده را بریزید و سریع هم بزنید تا کفِ تابه شسته و طعم یکدست شود.",
+        "usesIngredientIds": ["ing_garlic_raw", "ing_ginger_root_raw", "ing_soy_sauce", "ing_black_pepper_ground"],
+        "flame": "medium-high",
+        "durationMin": 1,
+        "sees": "بوی تندِ سیر و زنجبیل بلند می‌شود و سس روی سبزیجات براق می‌نشیند",
+        "doneness": "سیر معطر است ولی هنوز قهوه‌ای‌نسوخته",
+        "tip": "سیر و زنجبیل خیلی زود می‌سوزند و تلخ می‌شوند؛ بعد از سبزیجات و درست قبل از سس اضافه شوند.",
+        "recovery": "اگر سیر سوخت و تلخ شد، متأسفانه باید معطرها را دور بریزید و دوباره اضافه کنید."
+      },
+      {
+        "order": 6,
+        "title": "زیرورو کردنِ نودل با سس",
+        "instruction": "نودلِ آبکش‌شده را به تابه اضافه کنید و با انبر فقط ۱ تا ۲ دقیقه زیرورو کنید تا سس به همهٔ رشته‌ها برسد و نودل داغِ یکدست شود. خمیرش نکنید.",
+        "usesIngredientIds": ["ing_egg_noodles_dry"],
+        "flame": "medium-high",
+        "tempC": 74,
+        "durationMin": 2,
+        "sees": "رشته‌ها رنگِ یکدستِ سس گرفته‌اند و براق‌اند و بخار بلند می‌شود",
+        "doneness": "نودل کاملاً داغ (بخارِ پیوسته) و سس همه‌جا پخش شده؛ برای غذای داغ، مرکزِ غذا به ۷۴ درجه برسد",
+        "tip": "با انبر سبک زیرورو کنید تا رشته‌ها پاره نشوند.",
+        "recovery": "اگر خشک شد، یک قاشق آبِ داغ یا کمی سس سویا اضافه کنید.",
+        "mediaHint": "عکسِ تعیین‌کننده: رشته‌های براق و یک‌دستِ سس‌خورده"
+      },
+      {
+        "order": 7,
+        "title": "طعم‌دهیِ نهایی و سرو",
+        "instruction": "گاز را خاموش کنید، روغن کنجد را بریزید و یک بار هم بزنید (روی حرارتِ خاموش تا نسوزد). نمک خوراکی را به‌مزه بسنجید و اگر لازم بود کم اضافه کنید. در ظرفِ سرو بکشید و کنجد بوداده و سبزِ پیازچه را روی غذا بپاشید.",
+        "usesIngredientIds": ["ing_sesame_oil", "ing_salt_table", "ing_roasted_sesame_seeds", "ing_scallion_raw"],
+        "flame": "none",
+        "durationMin": 1,
+        "sees": "بوی کنجد بلند می‌شود و سطحِ غذا با کنجد و پیازچه تزیین شده",
+        "doneness": "وقتی شوری متعادل است و عطرِ کنجد در غذا پیچیده",
+        "tip": "روغن کنجد و نمک را آخر اضافه کنید تا عطر و شوری دقیق و تازه بماند.",
+        "recovery": "اگر شور شد، کمی نودل یا سبزیِ بیشتر اضافه کنید یا چند قطره آبِ لیمو بزنید."
+      }
+    ],
+    "finish": {
+      "finalLook": "تابه‌ای پر از رشته‌های براقِ سس‌خورده که لابه‌لایشان هویجِ نارنجی، فلفلِ رنگی، قارچِ طلایی و کلم دیده می‌شود؛ روی غذا کنجدِ بوداده و حلقه‌های سبزِ پیازچه و بخارِ معطرِ کنجد.",
+      "plating": "در کاسه یا بشقابِ گود بکشید، کمی بلندی بدهید و کنجد و پیازچه را تازه روی آن بپاشید تا رنگ و عطر برجسته شود.",
+      "chefSecret": "دو حرکتِ کلیدی: تابه را واقعاً داغ نگه دارید تا سبزیجات برشته شوند نه آب‌پز، و نودل را فقط یکی‌دو دقیقه با سس زیرورو کنید تا براق بماند و خمیر نشود."
+    },
+    "troubleshooting": [
+      { "problem": "سبزیجات آب انداختند و جوشیدند", "fix": "حرارت را بالا ببرید، هم نزنید تا آب بخار شود، و دفعهٔ بعد سبزی را دو دسته تفت دهید تا تابه شلوغ و خنک نشود.", "stepRef": 3 },
+      { "problem": "نودل خمیر و چسبنده شد", "fix": "نودل را کمی محکم‌تر بپزید و زمانِ زیرورو با سس را کوتاه نگه دارید (۱ تا ۲ دقیقه).", "stepRef": 6 },
+      { "problem": "سیر تلخ و سوخته شد", "fix": "سیر و زنجبیل را بعد از سبزیجات و فقط نیم‌دقیقه قبل از سس اضافه کنید، نه اولِ کار.", "stepRef": 5 },
+      { "problem": "غذا شور شد", "fix": "نمک را آخر و کم‌کم بسنجید چون سس سویا خودش شور است؛ اگر شور شد سبزی یا نودلِ بیشتر اضافه کنید یا چند قطره آبِ لیمو بزنید.", "stepRef": 7 }
+    ],
+    "variations": [
+      { "name": "نودلِ سبزیجاتِ پروتئین‌دار", "how": "همراهِ سبزیجات کمی توفوی سفت یا مرغِ پخته اضافه کنید تا غذا سیرکننده‌تر شود.", "swapsIngredientIds": [] },
+      { "name": "نودلِ بدونِ گلوتن", "how": "نودل تخم‌مرغی را با نودل برنج جایگزین کنید و به‌جای سس سویای معمولی از سسِ سویای بدونِ گلوتن (تاماری) استفاده کنید، چون سس سویای معمولی گندم دارد.", "swapsIngredientIds": ["ing_egg_noodles_dry→ing_rice_noodles_dry"] },
+      { "name": "نودلِ تندتر", "how": "همراهِ سیر و زنجبیل کمی فلفلِ قرمزِ تند یا سسِ تند اضافه کنید.", "swapsIngredientIds": [] }
+    ],
+    "keep": {
+      "makeAhead": "سبزیجات را می‌توانید از قبل خرد کرده و در یخچال نگه دارید؛ تفت‌دادن را لحظهٔ سرو انجام دهید.",
+      "storage": "در ظرفِ دربسته در یخچال ۳ تا ۴ روز (یخچال زیرِ ۴ درجه).",
+      "reheat": "در تابهٔ داغ با کمی روغن یا چند قطره آب دوباره گرم کنید تا کاملاً داغ شود (مرکزِ غذا ۷۴ درجه)؛ فقط یک‌بار گرم کنید.",
+      "freeze": "مناسبِ فریز نیست؛ نودل و سبزیجات بعد از یخ‌زدایی نرم و آبکی می‌شوند."
+    },
+    "serveWith": ["سالادِ کلمِ تازه", "ادامامه", "سسِ تندِ کناری"],
+    "nourishment": {
+      "attributes": ["گیاهی", "سرشار از سبزیجات", "کم‌چرب در صورتِ کم‌کردنِ روغن"],
+      "note": "غذایی پر از سبزیجاتِ رنگی است؛ برای پروتئینِ بیشتر توفو یا مرغ اضافه کنید و برای کم‌نمک‌تر شدن از سس سویای کم‌نمک استفاده کنید.",
+      "disclaimer": "این اطلاعات عمومی و آشپزی است، نه توصیهٔ پزشکی."
+    },
+    "faq": [
+      { "q": "اگر ووک ندارم چه کنم؟", "a": "بزرگ‌ترین و سنگین‌ترین تابهٔ تختی که دارید را خوب داغ کنید؛ مهم حرارتِ بالا و فضای کافی است، نه شکلِ ظرف." },
+      { "q": "چطور نودل خمیر نشود؟", "a": "نودل را کمی آل‌دنته بپزید، روغن بزنید تا نچسبد، و در پایان فقط ۱ تا ۲ دقیقه با سس زیرورو کنید." },
+      { "q": "می‌توانم سبزیجات دیگری استفاده کنم؟", "a": "بله؛ هر سبزیِ سفت (مثل بروکلی) را اول و هر سبزیِ نرم (مثل بادمجان یا کدو) را بعد اضافه کنید." },
+      { "q": "چطور بدونِ گلوتن یا بدونِ تخم‌مرغ درستش کنم؟", "a": "نودل برنج به‌جای نودل تخم‌مرغی و تاماری به‌جای سس سویا؛ هر دو بدونِ گلوتن‌اند." }
+    ],
+    "dietary": {
+      "vegetarian": true,
+      "vegan": false,
+      "glutenFree": false,
+      "dairyFree": true,
+      "containsPork": false,
+      "freezable": false
+    },
+    "allergens": ["egg", "wheat", "gluten_cereals", "soybeans", "sesame"]
+  },
+  "coverage": {
+    "locked": 15,
+    "total": 15,
+    "missingIds": []
+  },
+  "ingredientSubsEnrichment": [
+    {
+      "ingredientId": "ing_egg_noodles_dry",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_rice_noodles_dry", "name": "نودل برنج", "reason": "dietary", "note": "بدونِ گلوتن و بدونِ تخم‌مرغ؛ نسبت ۱:۱، زمانِ خیساندن کوتاه‌تر" },
+        { "replaceWithIngredientId": "ing_udon_noodles", "name": "نودل اودون", "reason": "taste", "note": "ضخیم‌تر و نرم‌تر؛ سسِ بیشتری می‌گیرد" },
+        { "replaceWithIngredientId": "ing_spaghetti_dry", "name": "اسپاگتی", "reason": "availability", "note": "در دسترس‌ترین جایگزین؛ کمی محکم‌تر (آل‌دنته) بپزید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_carrot_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_broccoli_raw", "name": "بروکلی", "reason": "taste", "note": "هم‌نقشِ سبزیِ سفت؛ به گل‌های کوچک تقسیم کنید" },
+        { "replaceWithIngredientId": "ing_bell_pepper_raw", "name": "فلفل دلمه‌ای", "reason": "availability", "note": "سریع‌تر می‌پزد، کمی دیرتر اضافه کنید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_cabbage_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_napa_cabbage_raw", "name": "کلم چینی", "reason": "taste", "note": "نرم‌تر و آب‌دارتر؛ کمی دیرتر اضافه کنید" },
+        { "replaceWithIngredientId": "ing_red_cabbage_raw", "name": "کلم قرمز", "reason": "availability", "note": "هم‌نقش؛ رنگ به غذا می‌دهد" }
+      ]
+    },
+    {
+      "ingredientId": "ing_button_mushroom_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_shiitake_mushroom_raw", "name": "قارچ شیتاکه", "reason": "taste", "note": "اومامیِ قوی‌تر؛ بافتِ محکم‌تر" },
+        { "replaceWithIngredientId": "ing_oyster_mushroom_raw", "name": "قارچ صدفی", "reason": "availability", "note": "نرم‌تر؛ سریع‌تر می‌پزد" }
+      ]
+    },
+    {
+      "ingredientId": "ing_bell_pepper_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_zucchini_raw", "name": "کدو سبز", "reason": "availability", "note": "هم‌نقشِ سبزیِ نرم؛ آخر اضافه کنید" },
+        { "replaceWithIngredientId": "ing_broccoli_raw", "name": "بروکلی", "reason": "taste", "note": "تردتر؛ کمی زودتر اضافه کنید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_zucchini_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_eggplant_raw", "name": "بادمجان", "reason": "taste", "note": "روغنِ بیشتری می‌گیرد؛ کمی زودتر اضافه کنید" },
+        { "replaceWithIngredientId": "ing_button_mushroom_raw", "name": "قارچ دکمه‌ای", "reason": "availability", "note": "اومامیِ بیشتر؛ هم‌نقشِ نرم" }
+      ]
+    },
+    {
+      "ingredientId": "ing_scallion_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_leek_raw", "name": "تره‌فرنگی", "reason": "availability", "note": "ملایم‌تر؛ فقط سفید و سبزِ روشن" },
+        { "replaceWithIngredientId": "ing_onion_raw", "name": "پیاز", "reason": "availability", "note": "تندتر؛ نازک خلال کنید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_soy_sauce",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_low_sodium_soy_sauce", "name": "سس سویای کم‌نمک", "reason": "dietary", "note": "کنترلِ شوریِ راحت‌تر؛ هم‌نقشِ کامل ۱:۱" },
+        { "replaceWithIngredientId": "ing_oyster_sauce", "name": "سس صدف", "reason": "taste", "note": "غلیظ‌تر و کمی شیرین؛ غیرِگیاهی (صدف)" }
+      ]
+    },
+    {
+      "ingredientId": "ing_sunflower_oil",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_canola_oil", "name": "روغن کانولا", "reason": "availability", "note": "خنثی با نقطهٔ دودِ بالا؛ هم‌نقش" },
+        { "replaceWithIngredientId": "ing_grapeseed_oil", "name": "روغن هسته انگور", "reason": "availability", "note": "خنثی، مناسبِ حرارتِ بالا" }
+      ]
+    },
+    {
+      "ingredientId": "ing_sesame_oil",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_toasted_sesame_oil", "name": "روغن کنجد بوداده", "reason": "taste", "note": "معطرتر؛ کمی کمتر استفاده کنید، آخرِ کار اضافه شود" }
+      ]
+    },
+    {
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_white_sesame_seeds", "name": "کنجد سفید", "reason": "availability", "note": "خام؛ خودتان در تابهٔ خشک تفت دهید" },
+        { "replaceWithIngredientId": "ing_black_sesame_seeds", "name": "کنجد سیاه", "reason": "taste", "note": "ظاهرِ زیباتر؛ هم‌نقشِ تزیین" }
+      ]
+    },
+    {
+      "ingredientId": "ing_garlic_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_garlic_paste", "name": "خمیر سیر", "reason": "availability", "note": "راحت‌تر؛ هر حبه ≈ نصف قاشق چای‌خوری خمیر" }
+      ]
+    },
+    {
+      "ingredientId": "ing_ginger_root_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_ginger_paste", "name": "خمیر زنجبیل", "reason": "availability", "note": "راحت‌تر؛ هر تکهٔ یک‌بندانگشتی ≈ ۱ قاشق چای‌خوری خمیر" }
+      ]
+    },
+    {
+      "ingredientId": "ing_black_pepper_ground",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_white_pepper_ground", "name": "فلفل سفید", "reason": "taste", "note": "تندیِ ملایم‌تر و رنگِ روشن‌تر؛ رایج در غذای آسیایی" }
+      ]
+    }
+  ],
+  "selfScore": 92
+}

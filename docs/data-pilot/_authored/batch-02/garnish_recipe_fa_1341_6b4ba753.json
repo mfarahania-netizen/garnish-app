@@ -1,0 +1,605 @@
+{
+  "recipeId": "garnish_recipe_fa_1341_6b4ba753",
+  "gris": {
+    "schemaVersion": "2.1",
+    "story": {
+      "hook": "رازِ یک چیزبرگرِ آبدارِ خانگی در دو جملهٔ ساده است: گوشت را کم ورز بده و پوستهٔ قهوه‌ای را با حرارتِ بالا و عدم جابه‌جایی بساز.",
+      "origin": "همبرگر در شکل امروزی‌اش (پَتیِ گوشتِ گریل‌شده داخلِ نان) در اواخر قرن نوزدهم و اوایل قرن بیستم در ایالات متحده شکل گرفت؛ چیزبرگر نسخه‌ای است که در آن یک ورقه پنیر در دقیقهٔ آخر روی پَتی ذوب می‌شود.",
+      "occasion": "غذای سریعِ ناهار و شام، دورهمیِ خانوادگی، و شب‌هایی که هوسِ یک ساندویچِ گرم و دلچسب می‌کنی.",
+      "lineage": "سنتِ مستندِ آشپزیِ آمریکایی-غربی؛ ادعای دقیقِ «شهرِ مخترع» مورد مناقشه است و این‌جا از آن پرهیز می‌کنیم."
+    },
+    "whyItWorks": [
+      {
+        "point": "کم ورز دادنِ گوشت = پَتیِ نرم",
+        "explanation": "هر بار فشار و ورزِ اضافه، پروتئین‌های محلولِ گوشت (به‌ویژه میوزین) را به هم پیوند می‌دهد و بافتی فشرده و لاستیکی می‌سازد؛ مثلِ ورزِ خمیر که گلوتن می‌سازد. فقط تا حدِ یکدست‌شدنِ نمک و فلفل مخلوط کن و بیشتر دست نزن.",
+        "testedBecause": "McGee / Serious Eats"
+      },
+      {
+        "point": "گود کردنِ وسطِ پَتی جلوی قُلنبه‌شدن را می‌گیرد",
+        "explanation": "هنگام پخت، پروتئین‌های سطح منقبض می‌شوند و وسطِ پَتی باد می‌کند؛ یک گودیِ کم‌عمق در مرکز این انقباض را جبران می‌کند و پَتی صاف و یکنواخت می‌ماند.",
+        "testedBecause": "López-Alt / Serious Eats"
+      },
+      {
+        "point": "پوستهٔ قهوه‌ای از واکنشِ مِیار است، نه «بستنِ آب»",
+        "explanation": "وقتی سطحِ خشکِ گوشت روی تابهٔ داغ (حدود ۱۴۰ تا ۱۶۵+ درجهٔ سانتی‌گراد) قرار می‌گیرد، قند و پروتئینِ سطح در واکنشِ مِیار صدها ترکیبِ طعمی و عطریِ قهوه‌ای می‌سازند. این پوسته طعم می‌دهد و آب را «داخل حبس نمی‌کند»؛ آبدار ماندن به دمای نهاییِ مغز و نمک بستگی دارد.",
+        "testedBecause": "McGee / ATK"
+      },
+      {
+        "point": "ذوبِ پنیر در حرارتِ مرطوب و بسته",
+        "explanation": "پنیرِ موزارلا حدود ۵۵ تا ۶۵ درجهٔ سانتی‌گراد نرم و کِش‌دار می‌شود. بستنِ درِ تابه برای ۳۰ تا ۶۰ ثانیه بخار را نگه می‌دارد و پنیر را یکنواخت ذوب می‌کند، بدونِ آن‌که پَتی بیش از حد بپزد.",
+        "testedBecause": "ATK"
+      },
+      {
+        "point": "تستِ کوتاهِ نان = سدِ رطوبت",
+        "explanation": "تستِ سبکِ سطحِ بُرشِ نان یک لایهٔ خشک و کمی برشته می‌سازد که جلوی نفوذِ سریعِ سس و آبِ گوجه را می‌گیرد، پس نان وا نمی‌رود و ساندویچ از هم نمی‌پاشد.",
+        "testedBecause": "Serious Eats"
+      }
+    ],
+    "glance": {
+      "promise": "یک چیزبرگرِ خانگی با پوستهٔ قهوه‌ایِ معطر، مغزِ آبدار و پنیرِ کِش‌دار، لای نانِ گرمِ تست‌شده.",
+      "activeTimeMin": 25,
+      "totalTimeMin": 40,
+      "handsOffMin": 15,
+      "difficulty": "متوسط",
+      "costBand": "متوسط",
+      "servings": 4,
+      "keyEquipment": ["تابهٔ چدنی یا گریل", "کاسهٔ مخلوط‌کردن", "کفگیرِ پهن", "دماسنجِ غذا"],
+      "equipmentIdeal": ["تابهٔ چدنی — حرارتِ یکنواخت و ماندگار برای پوستهٔ مِیارِ خوب", "دماسنجِ مغزخوان — تنها راهِ مطمئنِ رسیدن به ۷۱ درجهٔ ایمنِ گوشتِ چرخ‌کرده"],
+      "goodFor": ["شامِ سریعِ خانوادگی", "مهمانیِ بی‌تکلف", "علاقه‌مندانِ فست‌فودِ خانگی و سالم‌تر"]
+    },
+    "skillsLearned": [
+      "شکل‌دادنِ پَتیِ یکدست بدونِ بیش‌ورز‌کردنِ گوشت",
+      "ساختنِ پوستهٔ قهوه‌ای (واکنشِ مِیار) با حرارتِ بالا",
+      "اندازه‌گیریِ دمای مغزِ گوشتِ چرخ‌کرده برای ایمنی",
+      "ذوبِ یکنواختِ پنیر با حرارتِ مرطوب",
+      "چیدنِ منطقیِ لایه‌های ساندویچ تا وا نرود"
+    ],
+    "ingredients": [
+      {
+        "ingredientId": "ing_ground_beef_raw",
+        "name": "گوشت چرخ‌کردهٔ گاو",
+        "component": "پَتی",
+        "role": "پروتئین اصلی",
+        "weightG": 350,
+        "volume": "حدود ۴ چانهٔ ۸۵ گرمی",
+        "prepState": "سرد از یخچال، ترجیحاً با کمی چربی (حدود ۲۰٪)",
+        "buyTip": "چرخ‌کردهٔ کمی پرچرب‌تر (چاک/سردست) آبدارتر و خوش‌طعم‌تر است؛ گوشتِ خیلی کم‌چرب خشک می‌شود.",
+        "swaps": [
+          { "ingredientId": "ing_ground_lamb_raw", "name": "گوشت چرخ‌کردهٔ گوسفند", "note": "هم‌نقش؛ چرب‌تر و خوش‌طعم‌تر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_ground_turkey_raw", "name": "گوشت چرخ‌کردهٔ بوقلمون", "note": "کم‌چرب‌تر و خشک‌تر؛ کمی روغن یا مایونز به مخلوط اضافه کن", "ratio": "۱:۱" },
+          { "ingredientId": "ing_ground_chicken_raw", "name": "گوشت چرخ‌کردهٔ مرغ", "note": "سبک‌تر؛ تا ۷۴ درجه (مرغ) بپزان، نه ۷۱", "ratio": "۱:۱" },
+          { "ingredientId": "ing_button_mushroom_raw", "name": "قارچ دکمه‌ای", "note": "نسخهٔ گیاهی؛ خردِ ریز و تفت‌داده با کمی سوخاری و تخم‌مرغ، اومامیِ گوشتی می‌دهد", "ratio": "حجمی بیشتر" }
+        ],
+        "swap": "گوشت چرخ‌کردهٔ گوسفند یا بوقلمون (هم‌نقشِ پروتئینی) — برای نسخهٔ گیاهی قارچ",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_whole_egg_raw",
+        "name": "تخم‌مرغ",
+        "component": "پَتی",
+        "role": "چسبانندهٔ (بایندر)",
+        "weightG": 50,
+        "volume": "۱ عدد",
+        "prepState": "هم‌زده",
+        "buyTip": "تخم‌مرغِ تازه و سالم؛ پوسته بی‌ترک باشد.",
+        "swaps": [
+          { "ingredientId": "ing_breadcrumbs", "name": "آرد سوخاری", "note": "اگر تخم‌مرغ نداری، سوخاریِ بیشتر + کمی شیر/آب همان نقشِ چسبانندگی را تا حدی بازی می‌کند", "ratio": "۲ ق.غ سوخاری + کمی مایع" }
+        ],
+        "swap": "آرد سوخاری بیشتر + کمی مایع (به‌جای چسبانندگیِ تخم‌مرغ)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_breadcrumbs",
+        "name": "آرد سوخاری",
+        "component": "پَتی",
+        "role": "چسباننده و جذب‌کنندهٔ رطوبت",
+        "weightG": 14,
+        "volume": "۲ قاشق غذاخوری",
+        "prepState": "خشک",
+        "buyTip": "سوخاریِ ساده و بی‌ادویه؛ پانکو هم بافتِ سبک‌تری می‌دهد.",
+        "swaps": [
+          { "ingredientId": "ing_breadcrumbs_panko", "name": "آرد سوخاری پانکو", "note": "درشت‌تر و سبک‌تر؛ بافتِ پَتی کمی لطیف‌تر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_rolled_oats_raw", "name": "جو دوسر پرک", "note": "بی‌گلوتن‌نیست اما جایگزینِ جذبِ رطوبت؛ کمی خردش کن", "ratio": "۱:۱" }
+        ],
+        "swap": "آرد سوخاری پانکو (هم‌نقش، بافتِ سبک‌تر)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_onion_raw",
+        "name": "پیاز",
+        "component": "پَتی",
+        "role": "آروماتیک و رطوبت",
+        "weightG": 110,
+        "volume": "۱ عددِ متوسط، رنده‌شده",
+        "prepState": "رنده‌شده و آبش کاملاً گرفته‌شده",
+        "buyTip": "پیازِ سفت و خشک؛ آب‌گرفتنِ پیاز ضروری است تا پَتی شُل نشود.",
+        "swaps": [
+          { "ingredientId": "ing_shallot_raw", "name": "شالوت", "note": "ملایم‌تر و کمی شیرین", "ratio": "۱:۱" },
+          { "ingredientId": "ing_scallion_raw", "name": "پیازچه", "note": "ملایم‌تر و تازه؛ رطوبتِ کمتر", "ratio": "۱:۱" }
+        ],
+        "swap": "شالوت یا پیازچه (هم‌نقشِ آروماتیک)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_garlic_raw",
+        "name": "سیر",
+        "component": "پَتی",
+        "role": "آروماتیک",
+        "weightG": 6,
+        "volume": "۲ حبه، ریز‌شده",
+        "prepState": "ریز‌خردشده یا رنده‌شده",
+        "buyTip": "سیرِ تازه و سفت؛ از سیرِ جوانه‌زده پرهیز کن.",
+        "swaps": [
+          { "ingredientId": "ing_garlic_paste", "name": "خمیر سیر", "note": "اگر سیرِ تازه نداری؛ هم‌نقشِ آروماتیک، کمی کمتر استفاده کن", "ratio": "حدود ۱/۲ ق.چ به‌جای هر حبه" }
+        ],
+        "swap": "خمیر سیر (هم‌نقشِ آروماتیک، مقدارِ کمتر)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_salt_table",
+        "name": "نمک خوراکی",
+        "component": "پَتی",
+        "role": "چاشنی",
+        "weightG": null,
+        "volume": "۱ قاشق چای‌خوری (یا به‌مزه)",
+        "prepState": "—",
+        "buyTip": "نمک را درست قبل از پخت اضافه کن؛ نمک‌زدنِ زودهنگام به مخلوط، پروتئین‌ها را حل و بافت را فشرده‌تر می‌کند.",
+        "swaps": [],
+        "swap": "",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_black_pepper_ground",
+        "name": "فلفل سیاهِ آسیاب‌شده",
+        "component": "پَتی",
+        "role": "چاشنی",
+        "weightG": null,
+        "volume": "۱/۲ قاشق چای‌خوری",
+        "prepState": "تازه‌آسیاب بهتر است",
+        "buyTip": "فلفلِ تازه‌آسیاب عطرِ بیشتری دارد.",
+        "swaps": [],
+        "swap": "",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_sunflower_oil",
+        "name": "روغن آفتابگردان",
+        "component": "پخت",
+        "role": "واسطهٔ حرارت",
+        "weightG": null,
+        "volume": "۴ قاشق غذاخوری",
+        "prepState": "—",
+        "buyTip": "روغنِ با نقطهٔ دودِ بالا برای حرارتِ زیاد لازم است؛ آفتابگردان و کانولا مناسب‌اند.",
+        "swaps": [
+          { "ingredientId": "ing_canola_oil", "name": "روغن کانولا", "note": "هم‌نقش، نقطهٔ دودِ بالا، طعمِ خنثی", "ratio": "۱:۱" },
+          { "ingredientId": "ing_grapeseed_oil", "name": "روغن هستهٔ انگور", "note": "خنثی و مناسبِ حرارتِ بالا", "ratio": "۱:۱" }
+        ],
+        "swap": "روغن کانولا یا هستهٔ انگور (هم‌نقش، نقطهٔ دودِ بالا)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_mozzarella_cheese",
+        "name": "پنیر موزارلا",
+        "component": "مونتاژ",
+        "role": "پنیرِ ذوب‌شونده",
+        "weightG": 150,
+        "volume": "۴ ورقه (حدود ۴۰ گرم برای هر برگر)",
+        "prepState": "ورقه‌ای یا رنده‌شده",
+        "buyTip": "موزارلایِ کم‌رطوبت (پیتزایی) بهتر ذوب می‌شود و کِش می‌آید.",
+        "swaps": [
+          { "ingredientId": "ing_cheddar_cheese", "name": "پنیر چدار", "note": "کلاسیکِ چیزبرگر؛ خوش‌ذوب و خوش‌طعم", "ratio": "۱:۱" },
+          { "ingredientId": "ing_processed_cheese_slices", "name": "پنیر ورقه‌ای فرآوری‌شده", "note": "یکنواخت‌ترین ذوب (سبکِ فست‌فودی)", "ratio": "۱:۱" },
+          { "ingredientId": "ing_gouda_cheese", "name": "پنیر گودا", "note": "ملایم و خوش‌ذوب", "ratio": "۱:۱" },
+          { "ingredientId": "ing_vegan_cheese_slices", "name": "پنیر ورقه‌ای گیاهی", "note": "نسخهٔ بدونِ لبنیات", "ratio": "۱:۱" }
+        ],
+        "swap": "پنیر چدار یا ورقه‌ایِ فرآوری‌شده (کلاسیکِ چیزبرگر، خوش‌ذوب)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_baguette",
+        "name": "باگت",
+        "component": "نان",
+        "role": "نانِ ساندویچ (ساختار)",
+        "weightG": 240,
+        "volume": "۴ عدد (هر کدام یک وعده)",
+        "prepState": "نصف‌شده و سطحِ بُرش کوتاه تست‌شده",
+        "buyTip": "نانِ تازه با مغزِ نرم و پوستهٔ نازک؛ نانِ خیلی سفت موقعِ گاز‌زدن پَتی را بیرون می‌زند.",
+        "swaps": [
+          { "ingredientId": "ing_brioche", "name": "نان بریوش", "note": "کلاسیکِ همبرگرِ نرم و کمی شیرین", "ratio": "۱:۱" },
+          { "ingredientId": "ing_bread_white", "name": "نان سفید (نانِ همبرگری)", "note": "نرم و استاندارد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_barbari_bread", "name": "نان بربری", "note": "گزینهٔ ایرانیِ در دسترس؛ تکه‌ای به اندازهٔ ساندویچ", "ratio": "تکه‌ای" }
+        ],
+        "swap": "نان بریوش یا نانِ همبرگری (هم‌نقشِ ساختاری، نرم‌تر)",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_lettuce_raw",
+        "name": "کاهو",
+        "component": "مونتاژ",
+        "role": "سبزی و بافتِ ترد",
+        "weightG": 60,
+        "volume": "۴ برگِ بزرگ",
+        "prepState": "شسته و کاملاً خشک‌شده",
+        "buyTip": "کاهو را خوب خشک کن تا نان خیس نشود.",
+        "swaps": [
+          { "ingredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "note": "تردتر و آب‌دارتر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_romaine_lettuce_raw", "name": "کاهوی رومی", "note": "سفت‌تر و ترد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_arugula_raw", "name": "روکولا", "note": "تندِ ملایم و معطر", "ratio": "۱:۱" }
+        ],
+        "swap": "کاهوی پیچ یا رومی (هم‌نقشِ بافتِ ترد)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_tomato_raw",
+        "name": "گوجه‌فرنگی",
+        "component": "مونتاژ",
+        "role": "سبزی و رطوبتِ تازه",
+        "weightG": 240,
+        "volume": "۲ عددِ متوسط، حلقه‌ای",
+        "prepState": "حلقه‌حلقهٔ نازک، با کمی نمک",
+        "buyTip": "گوجهٔ سفت و رسیده؛ نمکِ سبکِ گوجه طعم را تقویت می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_cherry_tomato_raw", "name": "گوجه گیلاسی", "note": "نصف‌شده؛ شیرین‌تر", "ratio": "حجمی برابر" }
+        ],
+        "swap": "گوجه گیلاسیِ نصف‌شده (هم‌نقشِ تازگی)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_red_onion_raw",
+        "name": "پیاز قرمز",
+        "component": "مونتاژ",
+        "role": "آروماتیکِ خام",
+        "weightG": 110,
+        "volume": "۱ عددِ متوسط، حلقه‌ای",
+        "prepState": "حلقه‌های نازک",
+        "buyTip": "پیاز قرمزِ خام تندیِ ملایم و رنگِ زیبا دارد؛ خیساندنِ چند دقیقه‌ای در آب تندی‌اش را کم می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_pickled_red_onions", "name": "پیاز قرمز ترشی", "note": "ترشِ ملایم؛ تندیِ خام را ندارد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_shallot_raw", "name": "شالوت", "note": "ملایم‌تر", "ratio": "۱:۱" }
+        ],
+        "swap": "پیاز قرمز ترشی یا شالوت (هم‌نقشِ آروماتیکِ خام)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_cucumber_pickled",
+        "name": "خیارشور",
+        "component": "مونتاژ",
+        "role": "اسید/ترشیِ متعادل‌کننده",
+        "weightG": 70,
+        "volume": "حدود ۲ عددِ کوچک، حلقه‌ای",
+        "prepState": "حلقه‌های نازک",
+        "buyTip": "خیارشورِ ترد؛ اسیدِ آن چربیِ پَتی را متعادل می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_mixed_pickles", "name": "ترشی مخلوط", "note": "هم‌نقشِ ترش و ترد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_pickled_jalapenos", "name": "هالاپینوی ترشی", "note": "اگر تندی می‌خواهی", "ratio": "به‌سلیقه" }
+        ],
+        "swap": "ترشی مخلوط یا هالاپینوی ترشی (هم‌نقشِ اسیدی)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_mayonnaise",
+        "name": "مایونز",
+        "component": "سس",
+        "role": "سسِ چربِ نرم‌کننده",
+        "weightG": 45,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "—",
+        "buyTip": "مایونزِ سرد؛ پایهٔ سسِ مخصوصِ همبرگر است.",
+        "swaps": [
+          { "ingredientId": "ing_light_mayonnaise", "name": "مایونز کم‌چرب", "note": "سبک‌تر؛ کالریِ کمتر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_ranch_dressing", "name": "سس رنچ", "note": "هم‌پایهٔ مایونز، طعم‌دارتر", "ratio": "۱:۱" }
+        ],
+        "swap": "مایونز کم‌چرب یا سس رنچ (هم‌نقشِ سسِ چرب)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_ketchup",
+        "name": "کچاپ",
+        "component": "سس",
+        "role": "سسِ شیرین-اسیدی",
+        "weightG": null,
+        "volume": "به مقدار لازم",
+        "prepState": "—",
+        "buyTip": "کچاپ شیرینی و اسیدِ ملایم می‌آورد و با مایونز سسِ صورتیِ مخصوص می‌سازد.",
+        "swaps": [
+          { "ingredientId": "ing_tomato_ketchup_no_sugar", "name": "کچاپ بدون شکر", "note": "هم‌نقش، شکرِ کمتر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_barbecue_sauce", "name": "سس باربیکیو", "note": "دودی و کمی شیرین‌تر", "ratio": "۱:۱" }
+        ],
+        "swap": "کچاپ بدون شکر یا سس باربیکیو (هم‌نقشِ شیرین-اسیدی)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_mustard_prepared",
+        "name": "سس خردل",
+        "component": "سس",
+        "role": "سسِ اسیدی-تند",
+        "weightG": null,
+        "volume": "به مقدار لازم",
+        "prepState": "—",
+        "buyTip": "خردل تندیِ ملایم و اسیدی می‌آورد که چربیِ پَتی را می‌شکند.",
+        "swaps": [
+          { "ingredientId": "ing_dijon_mustard", "name": "خردل دیژون", "note": "تیزتر و معطرتر", "ratio": "کمتر استفاده کن" },
+          { "ingredientId": "ing_yellow_mustard", "name": "خردل زرد", "note": "ملایم و کلاسیکِ آمریکایی", "ratio": "۱:۱" }
+        ],
+        "swap": "خردل دیژون یا خردل زرد (هم‌نقشِ اسیدی-تند)",
+        "optional": true,
+        "criticalRole": false
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "آماده‌سازیِ آروماتیک‌ها",
+        "instruction": "پیاز را رنده کن و با دست یا یک پارچهٔ تمیز آبش را کاملاً بگیر؛ این مرحله مهم است وگرنه پَتی شُل می‌شود و وا می‌رود. سیر را خیلی ریز خرد یا رنده کن. این دو را کنار بگذار.",
+        "usesIngredientIds": ["ing_onion_raw", "ing_garlic_raw"],
+        "flame": "none",
+        "durationMin": 5,
+        "sees": "پیازِ رنده‌شدهٔ آب‌گرفته که دیگر آبکی نیست و توده‌ای نسبتاً خشک است.",
+        "doneness": "وقتی فشردنِ پیاز در مشت دیگر آبی بیرون نمی‌زند.",
+        "tip": "پیاز را زیرِ آبِ سرد رنده کن تا کمتر چشمت بسوزد.",
+        "recovery": "اگر پیاز خیلی آبکی ماند، یک قاشق آرد سوخاریِ بیشتر اضافه کن تا رطوبت را جذب کند."
+      },
+      {
+        "order": 2,
+        "title": "مخلوطِ پَتی (کم ورز بده)",
+        "instruction": "گوشت چرخ‌کردهٔ سردِ گاو را در کاسه بریز. پیاز و سیرِ آماده، تخم‌مرغِ هم‌زده، آرد سوخاری، نمک و فلفل سیاه را اضافه کن. فقط تا جایی مخلوط کن که مواد یکدست شوند — حدود ۳۰ ثانیه با نوکِ انگشتان. هرچه کمتر ورز بدهی، برگر نرم‌تر می‌شود.",
+        "usesIngredientIds": ["ing_ground_beef_raw", "ing_onion_raw", "ing_garlic_raw", "ing_whole_egg_raw", "ing_breadcrumbs", "ing_salt_table", "ing_black_pepper_ground"],
+        "flame": "none",
+        "durationMin": 2,
+        "sees": "مخلوطی که نمک و فلفل و آروماتیک‌ها در آن پخش شده اما هنوز بافتِ تکه‌تکهٔ گوشت دیده می‌شود.",
+        "doneness": "وقتی مواد فقط به‌هم چسبیدند؛ خمیریِ یکدست و چسبنده نشانهٔ بیش‌ورز است.",
+        "tip": "گوشتِ سرد بهتر شکل می‌گیرد و چربی‌اش آب نمی‌شود.",
+        "recovery": "اگر اشتباهی زیاد ورز دادی، ۱۰ دقیقه در یخچال استراحتش بده تا کمی جبران شود."
+      },
+      {
+        "order": 3,
+        "title": "شکل‌دادن و گود‌کردنِ پَتی",
+        "instruction": "مخلوط را به ۴ قسمتِ مساوی تقسیم کن. هر قسمت را به دایره‌ای به ضخامتِ حدود ۱٫۵ سانتی‌متر و کمی بزرگ‌تر از نان پهن کن (موقعِ پخت جمع می‌شود). با شستِ دست وسطِ هر پَتی یک گودیِ کم‌عمق درست کن تا موقعِ پخت قُلنبه نشود. پَتی‌ها را ۱۵ دقیقه در یخچال بگذار تا سفت شوند.",
+        "usesIngredientIds": ["ing_ground_beef_raw"],
+        "flame": "none",
+        "durationMin": 15,
+        "sees": "چهار پَتیِ یکدست با یک فرورفتگیِ کم‌عمق در مرکز.",
+        "doneness": "وقتی پَتی‌ها سفت و سرد شدند و راحت در دست جا‌به‌جا می‌شوند.",
+        "tip": "دست‌ها را کمی مرطوب کن تا گوشت نچسبد.",
+        "recovery": "اگر پَتی ترک خورد، لبه‌ها را با انگشت به‌آرامی به‌هم فشار بده.",
+        "mediaHint": "عکسِ گودیِ وسطِ پَتی این‌جا کمک‌کننده است."
+      },
+      {
+        "order": 4,
+        "title": "داغ‌کردنِ تابه و ساختنِ پوسته",
+        "instruction": "روغن آفتابگردان را در تابهٔ چدنی بریز و روی حرارتِ زیاد خوب داغ کن تا روغن موج بردارد. پَتی‌ها را با فاصله بگذار و دستشان نزن؛ بگذار ۳ تا ۴ دقیقه روی یک طرف بپزند تا پوستهٔ قهوه‌ای و معطر تشکیل شود. این پوسته همان طعمِ همبرگر است.",
+        "usesIngredientIds": ["ing_ground_beef_raw", "ing_sunflower_oil"],
+        "flame": "high",
+        "tempC": 180,
+        "durationMin": 4,
+        "sees": "لبه‌های پَتی قهوه‌ای می‌شود و بویِ سرخ‌شدنِ گوشت بلند می‌شود.",
+        "doneness": "وقتی زیرِ پَتی پوستهٔ قهوه‌ایِ یکدست بست و به‌راحتی از تابه جدا می‌شود.",
+        "tip": "اگر پَتی به تابه چسبید یعنی پوسته هنوز کامل نبسته؛ کمی صبر کن، خودش جدا می‌شود.",
+        "recovery": "اگر دود زیاد شد، حرارت را کمی کم کن؛ تابه بیش از حد داغ بوده.",
+        "mediaHint": "عکسِ پوستهٔ قهوه‌ای لحظهٔ برگرداندن."
+      },
+      {
+        "order": 5,
+        "title": "برگرداندن و پختِ کاملِ مغز (نکتهٔ ایمنی)",
+        "instruction": "پَتی را یک بار برگردان و طرفِ دیگر را هم بپزان. گوشتِ چرخ‌کرده باید کاملاً بپزد: دمای مغزِ پَتی باید به ۷۱ درجهٔ سانتی‌گراد برسد. با دماسنجِ غذا از وسطِ کلفت‌ترین پَتی اندازه بگیر. در گوشتِ چرخ‌کرده «نیم‌پز» مجاز نیست چون باکتری در کلِ بافت پخش است.",
+        "usesIngredientIds": ["ing_ground_beef_raw"],
+        "flame": "medium-high",
+        "tempC": 71,
+        "durationMin": 4,
+        "sees": "آبِ خروجیِ پَتی شفاف است نه صورتی، و مغزِ آن دیگر قرمز نیست.",
+        "doneness": "دماسنجِ مغز ۷۱ درجهٔ سانتی‌گراد (۱۶۰ فارنهایت) را نشان دهد — معیارِ قطعیِ ایمنی، نه فقط رنگ.",
+        "tip": "اگر بوقلمون یا مرغ جایگزین کردی، دمای ایمن ۷۴ درجه است نه ۷۱.",
+        "recovery": "اگر بیرونش زود سوخت ولی مغز خام بود، حرارت را متوسط کن و درِ تابه را بگذار تا با بخار بپزد.",
+        "mediaHint": "عکسِ دماسنج در مغزِ پَتی — نقطهٔ تصمیمِ ایمنی."
+      },
+      {
+        "order": 6,
+        "title": "ذوبِ پنیر",
+        "instruction": "در دقیقهٔ آخر، یک ورقه پنیر موزارلا روی هر پَتی بگذار. درِ تابه را ۳۰ تا ۶۰ ثانیه ببند تا بخار جمع شود و پنیر یکنواخت ذوب و کِش‌دار شود. مراقب باش پَتی بیش از حد نپزد.",
+        "usesIngredientIds": ["ing_mozzarella_cheese", "ing_ground_beef_raw"],
+        "flame": "low",
+        "durationMin": 1,
+        "sees": "پنیر نرم و براق می‌شود و لبه‌هایش روی پَتی سرازیر می‌شود.",
+        "doneness": "وقتی پنیر کاملاً آب شد و کش آمد.",
+        "tip": "یک قاشق آبِ داغ کنارِ تابه (نه روی پنیر) بخار را بیشتر می‌کند.",
+        "recovery": "اگر پنیر دیر ذوب شد، چند ثانیهٔ دیگر درِ تابه را بسته نگه دار."
+      },
+      {
+        "order": 7,
+        "title": "تستِ نان و مالیدنِ سس",
+        "instruction": "باگت را نصف کن و سطحِ بُرشِ هر دو نیمه را کوتاه روی تابهٔ داغ یا توستر تست کن تا کمی برشته شود. مایونز، کچاپ و سس خردل را روی نیمهٔ پایین (و در صورتِ دلخواه نیمهٔ بالا) بمال.",
+        "usesIngredientIds": ["ing_baguette", "ing_mayonnaise", "ing_ketchup", "ing_mustard_prepared"],
+        "flame": "medium",
+        "durationMin": 2,
+        "sees": "سطحِ بُرشِ نان طلاییِ کم‌رنگ و کمی ترد می‌شود.",
+        "doneness": "وقتی سطحِ نان برشتهٔ سبک شد اما هنوز نرم و قابل‌گازگرفتن است.",
+        "tip": "تستِ سطحِ بُرش یک سدِ رطوبت می‌سازد تا نان از سس و آبِ گوجه خیس نشود.",
+        "recovery": "اگر نان زیاد برشته و سفت شد، چند ثانیه زیرِ دستمالِ مرطوب بگذار تا نرم شود."
+      },
+      {
+        "order": 8,
+        "title": "چیدنِ ساندویچ",
+        "instruction": "روی نیمهٔ پایینِ نان به‌ترتیب کاهو، حلقه‌های گوجه، پَتیِ پنیر‌دار، حلقه‌های پیاز قرمز و خیارشور را بچین و نیمهٔ بالا را بگذار. کاهو را پایین (نزدیکِ سس) بچین تا مثلِ سپر جلوی خیس‌شدنِ نان از آبِ گوجه را بگیرد.",
+        "usesIngredientIds": ["ing_baguette", "ing_lettuce_raw", "ing_tomato_raw", "ing_mozzarella_cheese", "ing_ground_beef_raw", "ing_red_onion_raw", "ing_cucumber_pickled"],
+        "flame": "none",
+        "durationMin": 2,
+        "sees": "ساندویچی منظم و چندلایه با پنیرِ کِش‌دارِ روی پَتی.",
+        "doneness": "وقتی همهٔ لایه‌ها چیده شد و ساندویچ بسته شد.",
+        "tip": "ساندویچ را گرم سرو کن تا پنیر هنوز نرم باشد.",
+        "recovery": "اگر ساندویچ خیلی بلند شد و وا می‌رود، با یک سیخِ چوبی وسطش را محکم کن."
+      }
+    ],
+    "finish": {
+      "finalLook": "یک چیزبرگرِ بلند و خوش‌رنگ: پوستهٔ قهوه‌ایِ پَتی از زیرِ پنیرِ کِش‌دارِ ذوب‌شده پیداست، گوجهٔ سرخ و کاهوی سبزِ ترد و حلقه‌های بنفشِ پیاز قرمز لای نانِ گرمِ کمی برشته.",
+      "plating": "ساندویچ را از وسط نصف کن تا لایه‌های رنگی و پنیرِ کِش‌دار دیده شود؛ کنارش سیب‌زمینیِ سرخ‌کرده و چند تکه خیارشور بگذار.",
+      "chefSecret": "دو حرکتِ تعیین‌کننده: کم ورز‌دادنِ گوشت (تا پَتی نرم بماند) و دست‌نزدن به پَتی در ۳ تا ۴ دقیقهٔ اول (تا پوستهٔ مِیار کامل ببندد)."
+    },
+    "troubleshooting": [
+      { "problem": "برگر سفت و لاستیکی شد", "fix": "دفعهٔ بعد گوشت را کمتر ورز بده و سردتر کار کن؛ بیش‌ورز پروتئین‌ها را فشرده می‌کند.", "stepRef": 2 },
+      { "problem": "پَتی وسطش قُلنبه و گرد شد", "fix": "وسطِ پَتی را قبل از پخت گود کن تا انقباضِ پخت جبران شود.", "stepRef": 3 },
+      { "problem": "پَتی موقعِ برگرداندن از هم پاشید", "fix": "زود برش گرداندی؛ بگذار اول پوستهٔ قهوه‌ای کامل ببندد تا خودش از تابه جدا شود.", "stepRef": 4 },
+      { "problem": "بیرونِ پَتی سوخت ولی مغزش خام ماند", "fix": "حرارت خیلی زیاد بود؛ بعد از پوسته‌بستن حرارت را متوسط کن و با درِ بسته تا ۷۱ درجه بپزان.", "stepRef": 5 },
+      { "problem": "نان خیس و وارفته شد", "fix": "سطحِ بُرشِ نان را تست کن و کاهو را پایین (نزدیکِ سس) بچین تا سدِ رطوبت شود.", "stepRef": 7 }
+    ],
+    "variations": [
+      { "name": "چیزبرگرِ چداری کلاسیک", "how": "به‌جای موزارلا از پنیر چدار استفاده کن؛ طعمِ تیزتر و کلاسیک‌ترِ فست‌فودی.", "swapsIngredientIds": ["ing_mozzarella_cheese→ing_cheddar_cheese"] },
+      { "name": "برگرِ گیاهیِ قارچ", "how": "گوشت را با قارچ دکمه‌ایِ ریزخرد و تفت‌داده + سوخاری و تخم‌مرغ جایگزین کن؛ اومامیِ گوشتی می‌دهد.", "swapsIngredientIds": ["ing_ground_beef_raw→ing_button_mushroom_raw"] },
+      { "name": "برگرِ بوقلمونِ سبک‌تر", "how": "از گوشت چرخ‌کردهٔ بوقلمون استفاده کن، کمی روغن اضافه کن و تا ۷۴ درجه بپزان.", "swapsIngredientIds": ["ing_ground_beef_raw→ing_ground_turkey_raw"] }
+    ],
+    "keep": {
+      "makeAhead": "پَتی‌های خام را می‌توانی شکل بدهی و تا ۱ روز در یخچال (با کاغذِ بینشان) نگه داری.",
+      "storage": "پَتیِ پختهٔ باقی‌مانده را در ظرفِ دربسته تا ۳ تا ۴ روز در یخچال (≤۴ درجه) نگه دار؛ ظرفِ ۲ ساعت بعد از پخت یخچالی‌اش کن.",
+      "reheat": "پَتی را در تابه یا فر تا داغ‌شدنِ کامل (مغز ۷۴ درجه) گرم کن؛ فقط یک‌بار گرم کن.",
+      "freeze": "پَتیِ خام یا پخته را می‌توان فریز کرد (کیفیت تا ۲ تا ۳ ماه)؛ نان و سبزیجاتِ تازه مناسبِ فریز نیست."
+    },
+    "serveWith": ["سیب‌زمینی سرخ‌کرده", "خیارشور", "سالاد کلم", "نوشیدنیِ خنک"],
+    "nourishment": {
+      "attributes": ["پُرپروتئین"],
+      "note": "منبعِ خوبِ پروتئینِ کامل از گوشت و پنیر؛ افزودنِ کاهو و گوجه فیبر و تازگی می‌آورد. برای سبک‌تر‌شدن از گوشتِ کم‌چرب‌تر یا بوقلمون و مایونزِ کم‌چرب استفاده کن.",
+      "disclaimer": "این اطلاعات عمومی و آشپزی است، نه توصیهٔ پزشکی."
+    },
+    "faq": [
+      { "q": "چرا نباید گوشت را زیاد ورز بدهم؟", "a": "ورزِ زیاد پروتئین‌های گوشت را به‌هم پیوند می‌دهد و بافت را فشرده و لاستیکی می‌کند؛ فقط تا یکدست‌شدن مخلوط کن." },
+      { "q": "از کجا بفهمم برگر کاملاً پخته؟", "a": "تنها معیارِ مطمئن دماسنجِ غذاست: مغزِ گوشتِ چرخ‌کردهٔ گاو باید به ۷۱ درجهٔ سانتی‌گراد برسد. رنگ به‌تنهایی قابل‌اعتماد نیست." },
+      { "q": "چرا وسطِ پَتی را گود می‌کنیم؟", "a": "چون موقعِ پخت سطحِ پَتی منقبض می‌شود و وسط باد می‌کند؛ گودیِ مرکز این را جبران و پَتی را صاف نگه می‌دارد." },
+      { "q": "اگر تخم‌مرغ نداشته باشم چه کنم؟", "a": "آرد سوخاریِ بیشتر همراهِ کمی شیر یا آب تا حدِ زیادی نقشِ چسبانندگی را بازی می‌کند؛ بافت کمی نرم‌تر می‌شود." },
+      { "q": "بهترین پنیر برای چیزبرگر چیست؟", "a": "موزارلا کِش‌دار و ملایم است؛ چدار طعمِ کلاسیک‌تر و تیزتر و پنیرِ ورقه‌ای فرآوری‌شده یکنواخت‌ترین ذوب را می‌دهد." }
+    ],
+    "dietary": {
+      "vegetarian": false,
+      "vegan": false,
+      "glutenFree": false,
+      "dairyFree": false,
+      "containsPork": false,
+      "freezable": true
+    },
+    "allergens": ["eggs", "wheat", "gluten_cereals", "milk", "mustard"]
+  },
+  "coverage": {
+    "locked": 17,
+    "total": 17,
+    "missingIds": []
+  },
+  "ingredientSubsEnrichment": [
+    {
+      "ingredientId": "ing_ground_beef_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_ground_lamb_raw", "name": "گوشت چرخ‌کردهٔ گوسفند", "reason": "taste", "note": "هم‌نقشِ پروتئینی؛ چرب‌تر و خوش‌طعم‌تر، نسبت ۱:۱." },
+        { "replaceWithIngredientId": "ing_ground_turkey_raw", "name": "گوشت چرخ‌کردهٔ بوقلمون", "reason": "dietary", "note": "کم‌چرب‌تر و خشک‌تر؛ کمی روغن اضافه کن، تا ۷۴ درجه بپزان." },
+        { "replaceWithIngredientId": "ing_ground_chicken_raw", "name": "گوشت چرخ‌کردهٔ مرغ", "reason": "dietary", "note": "سبک‌تر؛ دمای ایمنِ ۷۴ درجه لازم است." },
+        { "replaceWithIngredientId": "ing_button_mushroom_raw", "name": "قارچ دکمه‌ای", "reason": "dietary", "note": "نسخهٔ گیاهی؛ ریزخرد و تفت‌داده با سوخاری و تخم‌مرغ، اومامیِ گوشتی." }
+      ]
+    },
+    {
+      "ingredientId": "ing_mozzarella_cheese",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_cheddar_cheese", "name": "پنیر چدار", "reason": "taste", "note": "کلاسیکِ چیزبرگر؛ خوش‌ذوب و خوش‌طعم، نسبت ۱:۱." },
+        { "replaceWithIngredientId": "ing_processed_cheese_slices", "name": "پنیر ورقه‌ای فرآوری‌شده", "reason": "taste", "note": "یکنواخت‌ترین ذوبِ سبکِ فست‌فودی." },
+        { "replaceWithIngredientId": "ing_gouda_cheese", "name": "پنیر گودا", "reason": "taste", "note": "ملایم و خوش‌ذوب." },
+        { "replaceWithIngredientId": "ing_vegan_cheese_slices", "name": "پنیر ورقه‌ای گیاهی", "reason": "dietary", "note": "نسخهٔ بدونِ لبنیات." }
+      ]
+    },
+    {
+      "ingredientId": "ing_baguette",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_brioche", "name": "نان بریوش", "reason": "taste", "note": "کلاسیکِ همبرگرِ نرم و کمی شیرین." },
+        { "replaceWithIngredientId": "ing_bread_white", "name": "نان همبرگری سفید", "reason": "availability", "note": "نرم و استاندارد و در دسترس." },
+        { "replaceWithIngredientId": "ing_barbari_bread", "name": "نان بربری", "reason": "availability", "note": "گزینهٔ ایرانیِ در دسترس؛ تکه‌ای به اندازهٔ ساندویچ." }
+      ]
+    },
+    {
+      "ingredientId": "ing_lettuce_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "reason": "taste", "note": "تردتر و آب‌دارتر." },
+        { "replaceWithIngredientId": "ing_romaine_lettuce_raw", "name": "کاهوی رومی", "reason": "taste", "note": "سفت‌تر و ترد." },
+        { "replaceWithIngredientId": "ing_arugula_raw", "name": "روکولا", "reason": "taste", "note": "تندِ ملایم و معطر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_cucumber_pickled",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_mixed_pickles", "name": "ترشی مخلوط", "reason": "availability", "note": "هم‌نقشِ ترش و ترد." },
+        { "replaceWithIngredientId": "ing_pickled_jalapenos", "name": "هالاپینوی ترشی", "reason": "taste", "note": "برای تندیِ بیشتر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_mayonnaise",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_light_mayonnaise", "name": "مایونز کم‌چرب", "reason": "dietary", "note": "سبک‌تر و کم‌کالری‌تر، نسبت ۱:۱." },
+        { "replaceWithIngredientId": "ing_ranch_dressing", "name": "سس رنچ", "reason": "taste", "note": "هم‌پایهٔ مایونز، طعم‌دارتر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_ketchup",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_tomato_ketchup_no_sugar", "name": "کچاپ بدون شکر", "reason": "dietary", "note": "هم‌نقش با شکرِ کمتر." },
+        { "replaceWithIngredientId": "ing_barbecue_sauce", "name": "سس باربیکیو", "reason": "taste", "note": "دودی و کمی شیرین‌تر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_mustard_prepared",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_dijon_mustard", "name": "خردل دیژون", "reason": "taste", "note": "تیزتر و معطرتر؛ کمتر استفاده کن." },
+        { "replaceWithIngredientId": "ing_yellow_mustard", "name": "خردل زرد", "reason": "taste", "note": "ملایم و کلاسیکِ آمریکایی." }
+      ]
+    },
+    {
+      "ingredientId": "ing_red_onion_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_pickled_red_onions", "name": "پیاز قرمز ترشی", "reason": "taste", "note": "ترشِ ملایم بدونِ تندیِ خام." },
+        { "replaceWithIngredientId": "ing_shallot_raw", "name": "شالوت", "reason": "taste", "note": "ملایم‌تر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_onion_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_shallot_raw", "name": "شالوت", "reason": "taste", "note": "ملایم‌تر و کمی شیرین، هم‌نقشِ آروماتیک." },
+        { "replaceWithIngredientId": "ing_scallion_raw", "name": "پیازچه", "reason": "availability", "note": "ملایم‌تر و تازه؛ رطوبتِ کمتر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_garlic_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_garlic_paste", "name": "خمیر سیر", "reason": "availability", "note": "هم‌نقشِ آروماتیک؛ کمی کمتر استفاده کن." },
+        { "replaceWithIngredientId": "ing_roasted_garlic", "name": "سیر کبابی", "reason": "taste", "note": "ملایم‌تر و شیرین‌تر." }
+      ]
+    },
+    {
+      "ingredientId": "ing_breadcrumbs",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_breadcrumbs_panko", "name": "آرد سوخاری پانکو", "reason": "taste", "note": "درشت‌تر و سبک‌تر، نسبت ۱:۱." },
+        { "replaceWithIngredientId": "ing_rolled_oats_raw", "name": "جو دوسر پرک", "reason": "availability", "note": "خردشده؛ جایگزینِ جذبِ رطوبت." }
+      ]
+    },
+    {
+      "ingredientId": "ing_sunflower_oil",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_canola_oil", "name": "روغن کانولا", "reason": "availability", "note": "هم‌نقش، نقطهٔ دودِ بالا، طعمِ خنثی." },
+        { "replaceWithIngredientId": "ing_grapeseed_oil", "name": "روغن هستهٔ انگور", "reason": "availability", "note": "خنثی و مناسبِ حرارتِ بالا." }
+      ]
+    },
+    {
+      "ingredientId": "ing_tomato_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_cherry_tomato_raw", "name": "گوجه گیلاسی", "reason": "availability", "note": "نصف‌شده؛ شیرین‌تر." }
+      ]
+    }
+  ],
+  "selfScore": 93
+}

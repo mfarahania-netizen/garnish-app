@@ -1,0 +1,493 @@
+{
+  "recipeId": "garnish_recipe_fa_2071_5391bddf",
+  "gris": {
+    "schemaVersion": "2.1",
+    "story": {
+      "hook": "راز سالاد سزار خوب در «خشکی» است: کاهوی کاملاً خشک، کروتانِ ترد و مرغی که قبل از برش استراحت کرده — سه عاملی که نمی‌گذارند سس بلغزد و سالاد آبکی شود.",
+      "origin": "سالاد سزار از آشپزی ایتالیایی‌-آمریکایی می‌آید؛ نسخهٔ خانگی و در دسترسِ ایرانی آن با مرغ گریل‌شده، کروتانِ نان لواش و سسی بر پایهٔ مایونز و خردل ساخته می‌شود تا بدون نیاز به تخم‌مرغ خام، ایمن و کرمی بماند.",
+      "occasion": "ناهار یا شام سبک، پیش‌غذای مهمانی، یا یک وعدهٔ کامل و پُرپروتئین در روزهای گرم.",
+      "lineage": "نسخهٔ خانگیِ مرغ‌دار و رایج؛ خاستگاه دقیقِ سالاد سزار محل اختلاف است (به‌طور سنتی به سزار کاردینی در تیخوانا نسبت داده می‌شود) و ما این انتساب را قطعی نمی‌دانیم."
+    },
+    "whyItWorks": [
+      {
+        "point": "کاهوی خشک، سسِ چسبنده",
+        "explanation": "سس سزار یک امولسیون چرب است؛ قطرات آب روی برگ خیس بین سس و کاهو لایه می‌اندازند و سس سُر می‌خورد. خشک‌کردن کامل برگ‌ها باعث می‌شود سس مستقیم به سطح مومی برگ بچسبد.",
+        "testedBecause": "اصل آشپزی: چربی و آب از هم جدا می‌شوند"
+      },
+      {
+        "point": "استراحت مرغ، آبِ درون‌مانده",
+        "explanation": "حین پخت، رشته‌های پروتئینی مرغ منقبض می‌شوند و آب را به بیرون می‌رانند. چند دقیقه استراحت پس از پخت اجازه می‌دهد رشته‌ها کمی شل و آب دوباره در بافت پخش شود؛ برشِ بلافاصله این آب را در سالاد رها می‌کند.",
+        "testedBecause": "López-Alt / Serious Eats"
+      },
+      {
+        "point": "مرغ تا ۷۴ درجه، نه بیشتر",
+        "explanation": "سینهٔ مرغ باید به دمای داخلی ۷۴°C برسد تا ایمن باشد؛ اما پختِ بیش از حد، آب بیشتری از پروتئین‌های منعقدشده خارج می‌کند و گوشت را خشک می‌کند. هدف، رسیدن دقیق به همین دما و توقف است.",
+        "testedBecause": "USDA FSIS + McGee"
+      },
+      {
+        "point": "کروتانِ ترد با سطح خشک",
+        "explanation": "وقتی مکعب‌های نان با کمی روغن در حرارت برشته می‌شوند، رطوبت سطحی تبخیر و واکنش میلارد (حدود ۱۴۰–۱۶۵°C) آغاز می‌شود؛ همین خشکیِ سطح است که تردی و طعم برشته را می‌سازد، نه فقط رنگ.",
+        "testedBecause": "McGee — واکنش میلارد"
+      },
+      {
+        "point": "خردل، امولسیون را پایدار می‌کند",
+        "explanation": "خردل حاوی ترکیباتی است که مثل یک امولسیفایر عمل می‌کنند و قطرات روغن را در فاز آبی (آبلیمو/سرکه) پخش و معلق نگه می‌دارند، در نتیجه سس یکدست و کرمی می‌ماند و دو فاز نمی‌شود.",
+        "testedBecause": "ATK — نقش امولسیفایری خردل"
+      }
+    ],
+    "glance": {
+      "promise": "کاهوی ترد و خشک، پوشیده از سسِ کرمیِ پارمزانی، با تکه‌های مرغ گریل‌شدهٔ آبدار و کروتانِ برشته — یک سالادِ سیرکننده که آبکی نمی‌شود.",
+      "activeTimeMin": 25,
+      "totalTimeMin": 30,
+      "handsOffMin": 5,
+      "difficulty": "آسان",
+      "costBand": "متوسط",
+      "servings": 4,
+      "keyEquipment": ["تابه یا گریل‌پن", "دماسنج آشپزی", "کاسهٔ بزرگ سالاد", "آبکش/سالادچرخان یا حولهٔ تمیز", "رنده ریز"],
+      "equipmentIdeal": ["دماسنج فوری‌خوان — تنها راه مطمئن برای رسیدن دقیق مرغ به ۷۴°C بدون خشک‌شدن", "گریل‌پن چدنی — حرارت یکنواخت و خطوط برشته روی مرغ"],
+      "goodFor": ["وعدهٔ پُرپروتئین", "پیش‌غذای مهمانی", "غذای سبک تابستانی", "آماده‌سازی نیمه‌آماده برای چند روز"]
+    },
+    "skillsLearned": [
+      "پختِ سینهٔ مرغ تا دمای ایمن و دقیق بدون خشک‌شدن (با دماسنج)",
+      "خشک‌کردن صحیح کاهو تا سس بچسبد",
+      "ساختن سسِ امولسیونیِ کرمی و پایدار",
+      "برشته‌کردن کروتانِ خانگی با نان لواش"
+    ],
+    "ingredients": [
+      {
+        "ingredientId": "ing_chicken_breast_raw",
+        "name": "سینه مرغ",
+        "component": "پروتئین",
+        "role": "پروتئین اصلی",
+        "weightG": 600,
+        "volume": "حدود ۲ تکهٔ بزرگ",
+        "prepState": "خام، در صورت ضخامت زیاد از وسط باز یا کمی کوبیده تا یکدست بپزد",
+        "buyTip": "سینهٔ یک‌دست و هم‌ضخامت بخرید تا همه‌جا هم‌زمان پخته شود؛ تکهٔ خیلی قطور را پروانه‌ای ببُرید.",
+        "swaps": [
+          { "ingredientId": "ing_turkey_breast_raw", "name": "سینه بوقلمون", "note": "هم‌نقش؛ کمی خشک‌تر است، پخت را کوتاه‌تر بگیرید و باز هم تا ۷۴°C", "ratio": "۱:۱" },
+          { "ingredientId": "ing_shrimp_raw", "name": "میگو", "note": "نسخهٔ دریایی؛ سریع‌تر می‌پزد، تا کدر و سفت‌شدن (حدود ۶۳°C)", "ratio": "۱:۱" },
+          { "ingredientId": "ing_tofu_firm", "name": "توفوی سفت", "note": "نسخهٔ گیاهی؛ خوب فشرده و خشک کنید تا برشته شود", "ratio": "۱:۱" }
+        ],
+        "swap": "سینه بوقلمون یا میگو (هم‌نقش پروتئینی)؛ توفوی سفت برای نسخهٔ گیاهی",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lettuce_raw",
+        "name": "کاهو",
+        "component": "پایهٔ سالاد",
+        "role": "بدنه و حجم اصلی",
+        "weightG": 300,
+        "volume": "حدود ۱ بوتهٔ متوسط",
+        "prepState": "شسته، کاملاً خشک‌شده و درشت خردشده",
+        "buyTip": "برگ‌های سفت و تُرد را انتخاب کنید؛ کاهوی پلاسیده سس را نگه نمی‌دارد.",
+        "swaps": [
+          { "ingredientId": "ing_romaine_lettuce_raw", "name": "کاهوی رومی", "note": "کاهوی اصیلِ سالاد سزار؛ ترد و دارای رگبرگِ محکم، انتخاب اول", "ratio": "۱:۱" },
+          { "ingredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "note": "تردتر و آب‌دارتر؛ حتماً خوب خشک کنید", "ratio": "۱:۱" }
+        ],
+        "swap": "کاهوی رومی (انتخاب اصیل سزار) یا کاهوی پیچ",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_parmesan_cheese",
+        "name": "پنیر پارمزان",
+        "component": "سس و روکار",
+        "role": "نمک و عطر اومامی",
+        "weightG": 150,
+        "volume": "حدود ۱ و نیم پیمانه رنده‌ریز",
+        "prepState": "ریز رنده‌شده (نیمی در سس، نیمی روی سالاد)",
+        "buyTip": "تکهٔ کامل بخرید و تازه رنده کنید؛ عطر و شوریِ بهتری از پنیر از پیش رنده‌شده دارد.",
+        "swaps": [
+          { "ingredientId": "ing_pecorino_romano_cheese", "name": "پنیر پکورینو رومانو", "note": "نزدیک‌ترین جایگزین؛ سفت و رنده‌شدنی، شورتر است — کمی کمتر بزنید", "ratio": "کمی کمتر" },
+          { "ingredientId": "ing_vegan_cheese", "name": "پنیر وگان", "note": "نسخهٔ گیاهی؛ عطر و شوریِ پارمزان را کامل ندارد ولی همان نقش روکار را می‌دهد", "ratio": "۱:۱" }
+        ],
+        "swap": "پنیر پکورینو رومانو (شورتر) یا پنیر وگان (گیاهی)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_mayonnaise",
+        "name": "مایونز",
+        "component": "سس",
+        "role": "پایهٔ امولسیون کرمی",
+        "weightG": 42,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "آمادهٔ مصرف",
+        "buyTip": "مایونز جای تخم‌مرغ خام را می‌گیرد و سس را بدون نگرانیِ ایمنی، کرمی می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_greek_yogurt_plain", "name": "ماست یونانی ساده", "note": "سبک‌تر و کم‌چرب‌تر؛ سس کمی ترش‌تر و رقیق‌تر می‌شود، آبلیمو را کم کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_sour_cream", "name": "خامه ترش", "note": "کرمی و ملایم؛ نتیجهٔ نزدیک به مایونز", "ratio": "۱:۱" }
+        ],
+        "swap": "ماست یونانی (سبک‌تر) یا خامه ترش",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_mustard_prepared",
+        "name": "سس خردل",
+        "component": "سس",
+        "role": "امولسیفایر و چاشنی تند",
+        "weightG": 45,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "آمادهٔ مصرف",
+        "buyTip": "خردل علاوه بر طعم، سس را یکدست و پایدار نگه می‌دارد؛ حذفش نکنید.",
+        "swaps": [
+          { "ingredientId": "ing_dijon_mustard", "name": "خردل دیژون", "note": "انتخاب کلاسیک سس سزار؛ تندتر و قوی‌تر، کمی کمتر بزنید", "ratio": "کمی کمتر" },
+          { "ingredientId": "ing_yellow_mustard", "name": "خردل زرد", "note": "ملایم‌تر و کمی شیرین؛ همان نقش امولسیفایری", "ratio": "۱:۱" }
+        ],
+        "swap": "خردل دیژون (کلاسیک سزار) یا خردل زرد",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_olive_oil",
+        "name": "روغن زیتون",
+        "component": "سس و کروتان",
+        "role": "فاز چرب امولسیون",
+        "weightG": 54,
+        "volume": "۴ قاشق غذاخوری",
+        "prepState": "بخشی در سس، بخشی برای برشته‌کردن نان",
+        "buyTip": "روغن زیتونِ ملایم برای سس بهتر است؛ روغن خیلی تند طعم سس را غالب می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_canola_oil", "name": "روغن کانولا", "note": "خنثی و بی‌طعم؛ نقطهٔ دودِ بالاتر، برای برشته‌کردن کروتان عالی", "ratio": "۱:۱" },
+          { "ingredientId": "ing_sunflower_oil", "name": "روغن آفتابگردان", "note": "خنثی؛ همان نقشِ چربی بدون عطر زیتون", "ratio": "۱:۱" }
+        ],
+        "swap": "روغن کانولا یا آفتابگردان (خنثی)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lemon_juice_bottled",
+        "name": "آبلیموی بطری",
+        "component": "سس",
+        "role": "اسید و روشن‌کنندهٔ طعم",
+        "weightG": 30,
+        "volume": "۲ قاشق غذاخوری",
+        "prepState": "آمادهٔ مصرف",
+        "buyTip": "اسید سس را روشن می‌کند و چربی را می‌شکند؛ کم‌کم اضافه و بچشید.",
+        "swaps": [
+          { "ingredientId": "ing_lemon_raw", "name": "لیمو زرد", "note": "آبِ تازه‌فشرده؛ عطر روشن‌تر و خوش‌بوتر از نوع بطری", "ratio": "۱:۱" },
+          { "ingredientId": "ing_lime_raw", "name": "لیمو سبز", "note": "تیزتر و معطرتر؛ کمی کمتر بزنید", "ratio": "کمی کمتر" }
+        ],
+        "swap": "آب لیموی تازه (لیمو زرد) یا لیمو سبز",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_white_vinegar",
+        "name": "سرکه سفید",
+        "component": "سس",
+        "role": "اسید کمکی",
+        "weightG": 30,
+        "volume": "۲ قاشق غذاخوری",
+        "prepState": "آمادهٔ مصرف",
+        "buyTip": "سرکه تیزیِ پایدارتری نسبت به آبلیمو می‌دهد؛ کمی از آن سس را زنده می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_apple_cider_vinegar", "name": "سرکه سیب", "note": "ملایم‌تر و کمی میوه‌ای؛ همان نقش اسیدی", "ratio": "۱:۱" },
+          { "ingredientId": "ing_red_wine_vinegar", "name": "سرکه شراب قرمز", "note": "عمیق‌تر و معطرتر؛ کمی کمتر بزنید", "ratio": "کمی کمتر" }
+        ],
+        "swap": "سرکه سیب (ملایم‌تر) یا سرکه شراب قرمز",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_garlic_raw",
+        "name": "سیر",
+        "component": "سس و مزه‌دارکردن مرغ",
+        "role": "آروماتیک",
+        "weightG": 6,
+        "volume": "۲ حبه",
+        "prepState": "ریز رنده یا له‌شده",
+        "buyTip": "سیرِ تازه و سفت بخرید؛ سیرِ جوانه‌زده طعم تلخ می‌دهد.",
+        "swaps": [
+          { "ingredientId": "ing_roasted_garlic", "name": "سیر کبابی", "note": "ملایم و شیرین؛ تندیِ سیر خام را ندارد، برای طعم نرم‌تر", "ratio": "۱:۱ یا بیشتر" },
+          { "ingredientId": "ing_garlic_paste", "name": "خمیر سیر", "note": "راحت‌تر، بدون رنده‌کردن؛ کمی کمتر چون فشرده‌تر است", "ratio": "کمی کمتر" }
+        ],
+        "swap": "سیر کبابی (ملایم) یا خمیر سیر",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lavash_bread",
+        "name": "نان لواش",
+        "component": "کروتان",
+        "role": "بافت ترد",
+        "weightG": 120,
+        "volume": "۴ برگ",
+        "prepState": "مکعبی یا تکه‌تکه شده برای کروتان",
+        "buyTip": "نانِ کمی مانده و خشک، بهتر و یکنواخت‌تر برشته می‌شود.",
+        "swaps": [
+          { "ingredientId": "ing_baguette", "name": "باگت", "note": "نانِ کلاسیک کروتان؛ مغزِ ترد و یکدست، انتخاب اول", "ratio": "۱:۱" },
+          { "ingredientId": "ing_sourdough_bread", "name": "نان خمیرترش", "note": "طعم‌دارتر و خوش‌بافت؛ کروتان مرغوب می‌دهد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_bread_white", "name": "نان سفید", "note": "ساده و در دسترس؛ خوب برشته شود تا له نشود", "ratio": "۱:۱" }
+        ],
+        "swap": "باگت (کلاسیک)، نان خمیرترش یا نان سفید",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_tomato_raw",
+        "name": "گوجه‌فرنگی",
+        "component": "روکار",
+        "role": "تازگی و رنگ",
+        "weightG": 240,
+        "volume": "۲ عدد متوسط",
+        "prepState": "خردشده یا قاچ‌شده",
+        "buyTip": "گوجهٔ رسیده و سفت بهتر است؛ گوجهٔ خیلی آب‌دار سالاد را خیس می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_cherry_tomato_raw", "name": "گوجه گیلاسی", "note": "شیرین‌تر و کم‌آب‌تر؛ نصف‌شده روی سالاد قشنگ‌تر است", "ratio": "۱:۱" }
+        ],
+        "swap": "گوجه گیلاسی (کم‌آب‌تر)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_black_pepper_ground",
+        "name": "فلفل سیاه",
+        "component": "چاشنی",
+        "role": "تندی و عطر",
+        "weightG": 1,
+        "volume": "نصف قاشق چای‌خوری",
+        "prepState": "تازه آسیاب‌شده، درشت",
+        "buyTip": "فلفلِ تازه‌آسیاب عطر بسیار بیشتری از فلفلِ از پیش آسیاب‌شده دارد.",
+        "swaps": [],
+        "swap": "",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_salt_table",
+        "name": "نمک",
+        "component": "چاشنی",
+        "role": "تنظیم طعم",
+        "weightG": null,
+        "volume": "به‌مزه (حدود ۱ قاشق چای‌خوری)",
+        "prepState": "—",
+        "buyTip": "پنیر پارمزان و خردل خودشان شور هستند؛ آخر کار بچشید و بعد نمک بزنید.",
+        "swaps": [],
+        "swap": "",
+        "optional": false,
+        "criticalRole": false
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "مزه‌دار و آماده‌کردن مرغ",
+        "instruction": "سینه مرغ را اگر خیلی قطور است از وسط پروانه‌ای ببُرید یا کمی بکوبید تا هم‌ضخامت شود. دو طرف آن را با نمک، فلفل سیاه، نصف سیرِ رنده‌شده و کمی روغن زیتون چرب و مالش دهید تا یکدست پوشیده شود.",
+        "usesIngredientIds": ["ing_chicken_breast_raw", "ing_salt_table", "ing_black_pepper_ground", "ing_garlic_raw", "ing_olive_oil"],
+        "flame": "none",
+        "durationMin": 5,
+        "sees": "سطح مرغ براق و یکدست از چاشنی پوشیده شده",
+        "doneness": "همهٔ سطح مرغ آغشته و آمادهٔ تابه است",
+        "tip": "هم‌ضخامت‌کردن مرغ مهم‌ترین کار برای پختِ یکنواخت است.",
+        "recovery": "اگر مرغ خیلی نازک شد، اشکالی ندارد؛ فقط زمان پخت را کوتاه‌تر بگیرید."
+      },
+      {
+        "order": 2,
+        "title": "گریل‌کردن مرغ تا دمای ایمن",
+        "instruction": "تابه یا گریل‌پن را روی حرارت متوسط‌-زیاد خوب داغ کنید، کمی روغن بریزید و مرغ را بگذارید. هر طرف را حدود ۵–۶ دقیقه بپزید تا طلایی شود. با دماسنج، دمای داخلیِ ضخیم‌ترین نقطه را چک کنید؛ باید به ۷۴°C برسد.",
+        "usesIngredientIds": ["ing_chicken_breast_raw", "ing_olive_oil"],
+        "flame": "medium-high",
+        "tempC": 74,
+        "durationMin": 11,
+        "sees": "سطح طلایی با خطوط برشته؛ آبِ خارج‌شده زلال است نه صورتی",
+        "doneness": "دماسنج در مرکز ۷۴°C نشان می‌دهد (برای مرغ هیچ حالت «نیم‌پز» ایمن نیست)",
+        "tip": "رنگِ بیرون به‌تنهایی نشانهٔ پختِ ایمن نیست؛ فقط دماسنج مطمئن است.",
+        "recovery": "اگر بیرون سوخت ولی مرکز نرسید، حرارت را کم کنید و چند دقیقه با درِ تابه ادامه دهید تا به ۷۴°C برسد.",
+        "mediaHint": "عکس نقطهٔ دونِسِ بحرانی: دماسنج روی ۷۴°C"
+      },
+      {
+        "order": 3,
+        "title": "استراحت و برش مرغ",
+        "instruction": "مرغ پخته‌شده را روی تخته بگذارید و دست‌نخورده ۵ دقیقه استراحت دهید. سپس آن را خلاف جهت رشته‌ها به نوارهای نازک ببُرید.",
+        "usesIngredientIds": ["ing_chicken_breast_raw"],
+        "flame": "none",
+        "durationMin": 5,
+        "sees": "هنگام برش، آبِ کمی روی تخته جمع می‌شود نه اینکه فوران کند",
+        "doneness": "نوارها یکدست و کاملاً سفید و بدون رنگ صورتی در مرکز",
+        "tip": "بریدنِ بلافاصله، آبِ مرغ را در سالاد رها می‌کند و آن را آبکی می‌کند.",
+        "recovery": "اگر آب زیادی خارج شد، نوارها را روی دستمال بگذارید تا کمی آبشان گرفته شود."
+      },
+      {
+        "order": 4,
+        "title": "برشته‌کردن کروتان",
+        "instruction": "نان لواش را مکعبی یا تکه‌تکه کنید. در تابه با کمی روغن زیتون و باقیِ سیرِ رنده‌شده روی حرارت متوسط تفت دهید (یا در فر ۱۸۰°C) تا طلایی و ترد شود. مدام هم بزنید تا نسوزد.",
+        "usesIngredientIds": ["ing_lavash_bread", "ing_olive_oil", "ing_garlic_raw"],
+        "flame": "medium",
+        "durationMin": 6,
+        "sees": "تکه‌ها طلایی، خشک و ترد؛ بوی نان برشته بلند می‌شود",
+        "doneness": "کروتان موقع برداشتن صدای تردِ خشک می‌دهد و نرم نیست",
+        "tip": "نانِ کمی مانده بهتر و یکنواخت‌تر برشته می‌شود.",
+        "recovery": "اگر نرم ماند، چند دقیقهٔ دیگر روی حرارت کم بدهید تا رطوبتش کاملاً برود."
+      },
+      {
+        "order": 5,
+        "title": "ساختن سس کرمی",
+        "instruction": "در یک کاسه مایونز، باقیِ سیر، آبلیموی بطری، سرکه سفید، سس خردل، نیمی از پنیر پارمزانِ رنده‌شده و کمی روغن زیتون را با هم بزنید تا کاملاً یکدست و کرمی شود. بچشید و با نمک و فلفل سیاه تنظیم کنید.",
+        "usesIngredientIds": ["ing_mayonnaise", "ing_garlic_raw", "ing_lemon_juice_bottled", "ing_white_vinegar", "ing_mustard_prepared", "ing_parmesan_cheese", "ing_olive_oil", "ing_salt_table", "ing_black_pepper_ground"],
+        "flame": "none",
+        "durationMin": 4,
+        "sees": "سسی یکدست، براق و کرمی بدون جداشدن روغن",
+        "doneness": "سس به‌قدری غلیظ است که پشت قاشق می‌ماند",
+        "tip": "آبلیمو و نمک را کم‌کم اضافه کنید؛ پارمزان و خردل خودشان شور هستند.",
+        "recovery": "اگر سس بُرید یا دوفاز شد، یک قاشق مایونز اضافه و دوباره محکم هم بزنید تا دوباره امولسیون شود."
+      },
+      {
+        "order": 6,
+        "title": "شستن و خشک‌کردن کاهو",
+        "instruction": "کاهو را بشویید و با سالادچرخان یا حولهٔ تمیز کاملاً خشک کنید، سپس درشت خرد کنید. این مرحله را نادیده نگیرید — برگِ خیس، سس را پس می‌زند.",
+        "usesIngredientIds": ["ing_lettuce_raw"],
+        "flame": "none",
+        "durationMin": 4,
+        "sees": "برگ‌ها خشک و تُردند و هیچ قطرهٔ آبی روی آن‌ها نیست",
+        "doneness": "وقتی برگی را تکان می‌دهید، آبی نمی‌چکد",
+        "tip": "هرچه کاهو خشک‌تر باشد، سس بهتر می‌چسبد.",
+        "recovery": "اگر سالادچرخان ندارید، برگ‌ها را لای حولهٔ تمیز بپیچید و آرام فشار دهید."
+      },
+      {
+        "order": 7,
+        "title": "مخلوط‌کردن و چیدن نهایی",
+        "instruction": "کاهوی خشک را در کاسهٔ بزرگ بریزید و سس را کم‌کم اضافه کنید و آرام مخلوط کنید تا فقط یک لایهٔ نازک سس روی برگ‌ها بنشیند. نوارهای مرغ، کروتان، گوجه‌فرنگیِ خردشده و باقیِ پارمزان را روی سالاد بچینید و بلافاصله سرو کنید.",
+        "usesIngredientIds": ["ing_lettuce_raw", "ing_chicken_breast_raw", "ing_lavash_bread", "ing_tomato_raw", "ing_parmesan_cheese"],
+        "flame": "none",
+        "durationMin": 3,
+        "sees": "برگ‌ها براق از یک لایهٔ نازک سس‌اند، نه غرق در سس",
+        "doneness": "هر برگ کمی سس دارد و کف کاسه سسِ اضافه جمع نشده",
+        "tip": "سس را کم‌کم بزنید؛ همیشه می‌توان بیشتر اضافه کرد ولی نمی‌توان کم کرد.",
+        "recovery": "اگر زیادی سس زدید، کمی کاهوی خشکِ تازه اضافه کنید تا تعادل برگردد."
+      }
+    ],
+    "finish": {
+      "finalLook": "کاسه‌ای پُر از برگ‌های تُردِ سبز که هرکدام با لایه‌ای نازک از سسِ کرمیِ کِرِم‌رنگ پوشیده شده‌اند؛ نوارهای مرغِ طلایی، مکعب‌های کروتانِ برشته، تکه‌های گوجهٔ سرخ و بارانی از پنیر پارمزانِ رنده‌شده روی آن.",
+      "plating": "سالاد را کپه‌ای و بلند در ظرف بریزید؛ مرغ و کروتان را روی سطح بچینید تا تردی‌شان دیده شود و کمی فلفلِ تازه‌آسیاب روی آن بپاشید.",
+      "chefSecret": "دو حرکتِ تعیین‌کننده: کاهوی کاملاً خشک تا سس بچسبد، و استراحتِ ۵ دقیقه‌ایِ مرغ پیش از برش تا آبش در سالاد رها نشود."
+    },
+    "troubleshooting": [
+      { "problem": "سالاد بعد از چند دقیقه آبکی شد", "fix": "کاهو خوب خشک نشده یا مرغ بدون استراحت بریده شده؛ دفعهٔ بعد برگ‌ها را کاملاً خشک و مرغ را ۵ دقیقه استراحت دهید.", "stepRef": 6 },
+      { "problem": "سس بُرید و روغن جدا شد", "fix": "یک قاشق مایونز اضافه و محکم هم بزنید تا دوباره امولسیون شود.", "stepRef": 5 },
+      { "problem": "مرغ خشک شد", "fix": "بیش از حد پخته شده؛ به‌محض رسیدن دماسنج به ۷۴°C از حرارت بردارید و استراحت دهید.", "stepRef": 2 },
+      { "problem": "کروتان نرم ماند", "fix": "رطوبت نان کامل نرفته؛ چند دقیقهٔ دیگر روی حرارت کم تفت دهید تا ترد شود.", "stepRef": 4 },
+      { "problem": "سس خیلی شور شد", "fix": "پارمزان و خردل شورند؛ کمی آبلیمو یا ماست اضافه و نمک را آخر کار بزنید.", "stepRef": 5 }
+    ],
+    "variations": [
+      { "name": "سزار گیاهی", "how": "مرغ را با توفوی سفتِ برشته جایگزین کنید و مایونز را با ماست یونانی یا نسخهٔ گیاهی عوض کنید.", "swapsIngredientIds": ["ing_chicken_breast_raw→ing_tofu_firm"] },
+      { "name": "سزار با میگو", "how": "به‌جای مرغ، میگو را سریع تا کدر و سفت‌شدن تفت دهید و روی سالاد بچینید.", "swapsIngredientIds": ["ing_chicken_breast_raw→ing_shrimp_raw"] },
+      { "name": "سزار سبک با ماست", "how": "پایهٔ سس را به‌جای مایونز با ماست یونانی بسازید تا سبک‌تر و کم‌چرب‌تر شود.", "swapsIngredientIds": ["ing_mayonnaise→ing_greek_yogurt_plain"] }
+    ],
+    "keep": {
+      "makeAhead": "سس و کروتان و مرغ را می‌توانید جدا از قبل آماده کنید؛ کاهو را تازه و خشک نگه دارید و سالاد را فقط لحظهٔ سرو مخلوط کنید.",
+      "storage": "مرغ پختهٔ باقی‌مانده در یخچال (≤۴°C) تا ۳–۴ روز؛ سس در ظرف دربسته تا ۳ روز؛ سالادِ مخلوط‌شده با سس می‌ماند پلاسیده می‌شود و خوب نمی‌ماند.",
+      "reheat": "مرغ را در صورت تمایل کوتاه گرم کنید؛ سالاد سرد سرو می‌شود.",
+      "freeze": "مناسب فریز نیست (کاهو و سس پس از انجماد آبکی و خراب می‌شوند)."
+    },
+    "serveWith": ["نان گرم", "سوپ سبک", "آب‌لیمو و نوشیدنی خنک"],
+    "nourishment": {
+      "attributes": ["پُرپروتئین"],
+      "note": "مرغ و پنیر پارمزان پروتئین خوبی می‌رسانند؛ برای نسخهٔ سبک‌تر، مایونز را با ماست یونانی جایگزین کنید.",
+      "disclaimer": "این اطلاعات عمومی و آشپزی است، نه توصیهٔ پزشکی."
+    },
+    "faq": [
+      { "q": "آیا سس سزار تخم‌مرغ خام دارد؟", "a": "در این نسخه نه؛ به‌جای زردهٔ خام از مایونز استفاده شده تا سس کرمی و در عین حال از نظر ایمنی بی‌خطر بماند." },
+      { "q": "از کجا بفهمم مرغ پخته است؟", "a": "تنها راه مطمئن دماسنج است؛ مرکز مرغ باید به ۷۴°C برسد و آبِ خارج‌شده زلال باشد." },
+      { "q": "چرا سالادم آبکی می‌شود؟", "a": "معمولاً به دلیل کاهوی خیس یا بریدنِ بلافاصلهٔ مرغ؛ کاهو را کاملاً خشک کنید و مرغ را ۵ دقیقه استراحت دهید." },
+      { "q": "می‌توانم به‌جای نان لواش از باگت استفاده کنم؟", "a": "بله، باگت نانِ کلاسیک کروتان است و مغزِ تردتری می‌دهد." }
+    ],
+    "dietary": {
+      "vegetarian": false,
+      "vegan": false,
+      "glutenFree": false,
+      "dairyFree": false,
+      "containsPork": false,
+      "freezable": false
+    },
+    "allergens": ["milk", "gluten", "mustard"]
+  },
+  "coverage": {
+    "locked": 13,
+    "total": 13,
+    "missingIds": []
+  },
+  "ingredientSubsEnrichment": [
+    {
+      "ingredientId": "ing_chicken_breast_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_turkey_breast_raw", "name": "سینه بوقلمون", "reason": "taste", "note": "هم‌نقش پروتئینی؛ کمی خشک‌تر، پخت کوتاه‌تر و باز هم تا ۷۴°C." },
+        { "replaceWithIngredientId": "ing_shrimp_raw", "name": "میگو", "reason": "taste", "note": "نسخهٔ دریایی؛ سریع‌تر می‌پزد، تا کدر و سفت‌شدن." },
+        { "replaceWithIngredientId": "ing_tofu_firm", "name": "توفوی سفت", "reason": "dietary", "note": "نسخهٔ گیاهی؛ خوب فشرده و خشک کنید تا برشته شود." }
+      ]
+    },
+    {
+      "ingredientId": "ing_lettuce_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_romaine_lettuce_raw", "name": "کاهوی رومی", "reason": "taste", "note": "کاهوی اصیل سالاد سزار؛ ترد و با رگبرگ محکم." },
+        { "replaceWithIngredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "reason": "availability", "note": "تردتر و آب‌دارتر؛ حتماً خوب خشک کنید." }
+      ]
+    },
+    {
+      "ingredientId": "ing_parmesan_cheese",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_pecorino_romano_cheese", "name": "پنیر پکورینو رومانو", "reason": "taste", "note": "نزدیک‌ترین جایگزین؛ سفت و رنده‌شدنی، شورتر است." },
+        { "replaceWithIngredientId": "ing_vegan_cheese", "name": "پنیر وگان", "reason": "dietary", "note": "نسخهٔ گیاهی؛ عطر پارمزان را کامل ندارد ولی همان نقش روکار را می‌دهد." }
+      ]
+    },
+    {
+      "ingredientId": "ing_mayonnaise",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_greek_yogurt_plain", "name": "ماست یونانی ساده", "reason": "dietary", "note": "سبک‌تر و کم‌چرب‌تر؛ سس کمی ترش‌تر، آبلیمو را کم کنید." },
+        { "replaceWithIngredientId": "ing_sour_cream", "name": "خامه ترش", "reason": "taste", "note": "کرمی و ملایم؛ نتیجهٔ نزدیک به مایونز." }
+      ]
+    },
+    {
+      "ingredientId": "ing_mustard_prepared",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_dijon_mustard", "name": "خردل دیژون", "reason": "taste", "note": "انتخاب کلاسیک سس سزار؛ تندتر، کمی کمتر بزنید." },
+        { "replaceWithIngredientId": "ing_yellow_mustard", "name": "خردل زرد", "reason": "availability", "note": "ملایم‌تر و کمی شیرین؛ همان نقش امولسیفایری." }
+      ]
+    },
+    {
+      "ingredientId": "ing_olive_oil",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_canola_oil", "name": "روغن کانولا", "reason": "availability", "note": "خنثی و بی‌طعم؛ نقطهٔ دود بالاتر، برای کروتان عالی." },
+        { "replaceWithIngredientId": "ing_sunflower_oil", "name": "روغن آفتابگردان", "reason": "availability", "note": "خنثی؛ همان نقش چربی بدون عطر زیتون." }
+      ]
+    },
+    {
+      "ingredientId": "ing_lemon_juice_bottled",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_lemon_raw", "name": "لیمو زرد", "reason": "taste", "note": "آب تازه‌فشرده؛ عطر روشن‌تر از نوع بطری." },
+        { "replaceWithIngredientId": "ing_lime_raw", "name": "لیمو سبز", "reason": "taste", "note": "تیزتر و معطرتر؛ کمی کمتر بزنید." }
+      ]
+    },
+    {
+      "ingredientId": "ing_white_vinegar",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_apple_cider_vinegar", "name": "سرکه سیب", "reason": "taste", "note": "ملایم‌تر و کمی میوه‌ای؛ همان نقش اسیدی." },
+        { "replaceWithIngredientId": "ing_red_wine_vinegar", "name": "سرکه شراب قرمز", "reason": "taste", "note": "عمیق‌تر و معطرتر؛ کمی کمتر بزنید." }
+      ]
+    },
+    {
+      "ingredientId": "ing_garlic_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_roasted_garlic", "name": "سیر کبابی", "reason": "taste", "note": "ملایم و شیرین؛ تندی سیر خام را ندارد." },
+        { "replaceWithIngredientId": "ing_garlic_paste", "name": "خمیر سیر", "reason": "availability", "note": "راحت‌تر بدون رنده‌کردن؛ کمی کمتر چون فشرده‌تر است." }
+      ]
+    },
+    {
+      "ingredientId": "ing_lavash_bread",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_baguette", "name": "باگت", "reason": "taste", "note": "نان کلاسیک کروتان؛ مغز ترد و یکدست." },
+        { "replaceWithIngredientId": "ing_sourdough_bread", "name": "نان خمیرترش", "reason": "taste", "note": "طعم‌دارتر و خوش‌بافت؛ کروتان مرغوب می‌دهد." },
+        { "replaceWithIngredientId": "ing_bread_white", "name": "نان سفید", "reason": "availability", "note": "ساده و در دسترس؛ خوب برشته شود تا له نشود." }
+      ]
+    },
+    {
+      "ingredientId": "ing_tomato_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_cherry_tomato_raw", "name": "گوجه گیلاسی", "reason": "taste", "note": "شیرین‌تر و کم‌آب‌تر؛ نصف‌شده روی سالاد قشنگ‌تر است." }
+      ]
+    }
+  ],
+  "selfScore": 92
+}

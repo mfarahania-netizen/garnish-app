@@ -68,6 +68,13 @@
   "allergens": ["..."]                             // DERIVED from ingredient ids (constraint الف) — never hand-typed
 }
 ```
+> ALLERGENS — use the dictionary's CANONICAL tokens, derived as the union of each ingredient id's
+> allergen arrays (`us9 ∪ eu14 ∪ other` in ingredients.json). A wheat-bearing ingredient yields BOTH
+> «wheat» (us9) and «gluten_cereals» (eu14) — list every token the ids carry; do NOT collapse them to a
+> single «gluten» or omit «wheat». (This was the only thing that failed 2/24 in batch-02.)
+```jsonc
+// (end of object)
+```
 
 ## Hard authoring rules (the verification gate checks every one)
 1. **Clean display fields.** `name`, `volume`, `prepState`, `serveWith`, `swap`, `finish.*`, `variations.*` contain ZERO: `ing_xxx` tokens · «اصلاح…منبع…» notes · raw English ids · the gram weight restated as volume.
