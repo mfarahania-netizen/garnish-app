@@ -257245,9 +257245,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 560,
       "protein": 18.6,
@@ -257597,9 +257604,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 580,
       "protein": 19.3,
@@ -287459,9 +287473,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 599,
       "protein": 17.4,
@@ -287812,9 +287833,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 560,
       "protein": 17.4,
@@ -290951,9 +290979,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 580,
       "protein": 17.4,
@@ -330925,9 +330960,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 540,
       "protein": 18,
@@ -355497,9 +355539,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 540,
       "protein": 17.4,
@@ -355852,9 +355901,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 560,
       "protein": 18.6,
@@ -356205,9 +356261,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 560,
       "protein": 18,
@@ -356552,9 +356615,16 @@
       "gluten_free",
       "dairy_free"
     ],
-    "allergens": [
-      "nuts"
-    ],
+    "allergens": {
+      "eu14": [
+        "tree_nuts"
+      ],
+      "us9": [
+        "tree_nuts"
+      ],
+      "other": [],
+      "mayContain": []
+    },
     "nutritionPer100g": {
       "calories": 580,
       "protein": 19.3,
