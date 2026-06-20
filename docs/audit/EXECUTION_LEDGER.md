@@ -70,7 +70,10 @@
 - ✅ **viewerِ مشاهده‌پذیریِ ادمین (R8)** — `/admin/observability` (events · observations · profile-trace [آلرژی ریدکت] · counters ترند/مشکل) — `e0b52923`.
 - ✅ **تستِ یکپارچهٔ e2e** (سطحِ سرویس: SignalCalculator واقعی + RankingService واقعی → پخت→سیگنال→رنکر + زمینه) — `49a48bae` (نگهبان H4). (boot-کاملِ اپ روی DBِ تست = قدمِ تکمیلیِ بعد.)
 - ✅ **consentPurpose روی هر رویداد** (GDPR provenance؛ ستونِ افزایشی + ایندکس + مهر در trackEvent[off=analytics، gate-on+grant=personalization] و cron[core] + نمایش در R8) — `29311807`.
-- ⬜ counters به‌عنوان first-class (impression/position/propensity/reward) · ⬜ outboxِ بادوام · ⬜ حذفِ درختِ سایهٔ ۱۴۸-فایلی (نیازمندِ بیرون‌کشیدنِ loadObservations اول) · ⬜ boot-کاملِ e2e.
+- ✅ **counters به‌عنوان first-class** (`RecommendationServedItem` + `logSlate`: position + propensity softmax سرِ سرو، fire-and-forget، هرگز throw؛ پایهٔ off-policyِ L1) — `0d456346`.
+- ⬜ **outboxِ بادوام** (مسیریابیِ رویداد الان fire-and-forget درون‌پراسس است → کرشِ بینِ write و route = سیگنالِ گم‌شده). آیتمِ گیتِ بعدیِ من.
+- ⬜ **boot-کاملِ e2e** (نسخهٔ عمیق‌ترِ تستِ یکپارچه: bootِ Nest روی DBِ تست).
+- ⚠️ **«حذفِ درختِ سایه» از گیت خارج شد** — یافته: درخت مرده نیست؛ `recommendation.module` کاملش را سیم می‌کند (سرویس/پورت/کنترلرهای lab·control-plane·founder-review = API surface زنده، رفتار default-off) و `profile-read` برای هیدریتِ L0 به `createPrismaShadowProfileFeedPort` (=`loadObservations`) وابسته است. حذفش ماژولِ rec + هیدریتِ L0 را می‌شکند → حلقه را نمی‌بندد، پس بلاکرِ گیت نیست. **تصمیمِ جدا با بنیان‌گذار:** نگه‌داشتن (decouple فقط آداپتر) / استخراجِ loadObservations سپس حذفِ بقیه / رهاکردن.
 
 ## ۵. الان در حال اجرا / وضعیتِ زنده
 - ✅ **دستهٔ ۵ تمام و اعمال شد** (۸۷ زنده). دستهٔ ۶ برای بودجه نگه‌داشته. هیچ ایجنتِ پس‌زمینه‌ای الان روشن نیست (نه رسپی، نه نگهبان).
