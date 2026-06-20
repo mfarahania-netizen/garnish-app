@@ -38,7 +38,10 @@ describe('shadow runtime integration safety', () => {
     process.env = { ...ENV, RECOMMENDATION_SHADOW_RUNTIME_MODE: 'shadow', RECOMMENDATION_SHADOW_RUNTIME_SAMPLE_RATE: '1' };
     const withShadow = await build(makeMocks(), new RecommendationShadowRuntimeService()).getRecommendations('user-1', 2);
 
-    expect(withShadow).toEqual(noShadow);
+    // requestId is a per-call random slate id (L1 join key) — intentionally unique per request, so exclude it
+    // from the equality; the invariant under test is that the SHADOW runtime never alters the response.
+    const stripReqId = (arr: any[]) => arr.map(({ requestId, ...rest }) => rest);
+    expect(stripReqId(withShadow)).toEqual(stripReqId(noShadow));
   });
 
   it('response contains no shadow / divergence / decisionTrace keys', async () => {
