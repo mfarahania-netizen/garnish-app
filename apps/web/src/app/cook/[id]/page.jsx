@@ -257,7 +257,12 @@ export default function CookPage() {
               </Text>
             </>
           ) : (
-            <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>الان نتونستم کمکِ روشنی بیارم — یه لحظه دیگه دوباره امتحان کن. پاسخِ AI ممکن است اشتباه کند.</Text>
+            <Box>
+              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>الان نتونستم کمکِ روشنی بیارم — یه لحظه دیگه دوباره امتحان کن. پاسخِ AI ممکن است اشتباه کند.</Text>
+              <UnstyledButton type="button" onClick={c.openHelp} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>
+                <IconRefresh size={16} stroke={1.8} aria-hidden="true" />تلاش دوباره
+              </UnstyledButton>
+            </Box>
           )}
         </Box>
       </Drawer>

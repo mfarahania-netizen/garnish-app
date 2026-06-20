@@ -401,6 +401,10 @@ export default function RecipeDetailPage() {
     else showToast(`${name} حذف شد`, IconTrash);
   }, [perso, showToast]);
 
+  // stable handlers so the memoized AISheet doesn't re-render on unrelated page state (P1)
+  const applyServings = useCallback((n) => { perso.setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها هم تنظیم شدند`, IconUsers); }, [perso, showToast]);
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
+
   const saved = isFavorite(id);
 
   if (status === 'loading') return <RecipeLoading />;
@@ -657,13 +661,13 @@ export default function RecipeDetailPage() {
 
       <AISheet
         opened={sheetOpen}
-        onClose={() => setSheetOpen(false)}
+        onClose={closeSheet}
         recipeTitle={recipe.title}
         baseServings={servedFor ?? baseServings}
         ingredients={recipe.ingredients}
         swaps={perso.swaps}
         removed={perso.removed}
-        onApplyServings={(n) => { perso.setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها هم تنظیم شدند`, IconUsers); }}
+        onApplyServings={applyServings}
         onApplySwap={applySwap}
         onToggleRemove={toggleRemove}
       />

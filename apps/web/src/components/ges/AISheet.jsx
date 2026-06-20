@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
 import { IconSparkles, IconUsers, IconReplace, IconClock, IconInfoCircle, IconChevronLeft, IconMinus, IconPlus, IconCheck, IconRefresh, IconTrash, IconArrowBackUp, IconAlertTriangle } from '@tabler/icons-react';
 import { toFaDigits } from './format';
@@ -22,6 +22,15 @@ const OPTIONS = [
   { key: 'time', label: 'تنظیم زمان', Icon: IconClock },
 ];
 
+// static Drawer config — hoisted so these object literals aren't recreated on every parent render (L2)
+const OVERLAY_PROPS = { backgroundOpacity: 0.42, blur: 1 };
+const TRANSITION_PROPS = { transition: 'slide-up', duration: 240 };
+const SHEET_STYLES = bottomSheetStyles({
+  content: { height: 'auto', maxHeight: '85vh', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' },
+  header: { background: 'var(--g-color-bg-surface)' },
+  body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' },
+});
+
 const Disclosure = () => (
   <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-4)' }}>
     <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 2 }} />
@@ -31,15 +40,17 @@ const Disclosure = () => (
   </Box>
 );
 
-export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [], swaps = {}, onApplySwap, removed = [], onToggleRemove }) {
+function AISheet({ opened, onClose, recipeTitle, baseServings = 4, onApplyServings, ingredients = [], swaps = {}, onApplySwap, removed = [], onToggleRemove }) {
   const [mode, setMode] = useState(null); // null = menu · 'servings' | 'swap' | 'time' = proposal
   const [servings, setServings] = useState(baseServings);
   const [swap, setSwap] = useState({ ingredient: null, loading: false, items: null, error: false });
   const [picked, setPicked] = useState(null); // the chosen substitution option (apply is disabled until picked)
   const abortRef = useRef();
 
-  const ingNames = (Array.isArray(ingredients) ? ingredients : [])
-    .map((i) => (typeof i === 'string' ? i : i?.name)).filter(Boolean);
+  const ingNames = useMemo(
+    () => (Array.isArray(ingredients) ? ingredients : []).map((i) => (typeof i === 'string' ? i : i?.name)).filter(Boolean),
+    [ingredients],
+  );
 
   // Reopen always starts on the menu, seeded from the recipe's current servings.
   useEffect(() => {
@@ -82,8 +93,8 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
       zIndex={400}
       withCloseButton
       closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }}
-      overlayProps={{ backgroundOpacity: 0.42, blur: 1 }}
-      transitionProps={{ transition: 'slide-up', duration: 240 }}
+      overlayProps={OVERLAY_PROPS}
+      transitionProps={TRANSITION_PROPS}
       title={
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
           <Box aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 24, blockSize: 24, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}>
@@ -92,11 +103,7 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text>
         </Box>
       }
-      styles={bottomSheetStyles({
-        content: { height: 'auto', maxHeight: '85vh', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' },
-        header: { background: 'var(--g-color-bg-surface)' },
-        body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' },
-      })}
+      styles={SHEET_STYLES}
     >
       {recipeTitle ? (
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
@@ -257,3 +264,8 @@ export default function AISheet({ opened, onClose, recipeTitle, baseServings = 4
     </Drawer>
   );
 }
+
+// memoized: with stable props from the page (useCallback handlers + memoized swaps/removed/ingredients)
+// the sheet no longer re-renders on unrelated page state (toast timers, the sub sheet, plan picker) — the
+// "laggy" feel the founder reported. Mantine unmounts the body while closed, so this stays cheap.
+export default memo(AISheet);
