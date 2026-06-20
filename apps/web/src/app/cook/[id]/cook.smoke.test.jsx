@@ -32,17 +32,18 @@ import { useCook } from './useCook';
 const renderPage = () =>
   renderWithProviders(<CookPage />, { route: '/cook/1', path: '/cook/:id' });
 
-// A COMPLETE ready-state shape mirroring every field page.jsx dereferences.
-// currentStep is intentionally free of any «دقیقه/ساعت» token so stepMinutes()
-// returns 0 and the optional StepTimer (a setInterval owner) never mounts —
-// keeping the smoke test deterministic.
+// A COMPLETE ready-state shape mirroring every field page.jsx dereferences. currentStep is now the
+// structured cook-step object; durationMin is 0 so the optional StepTimer (a setInterval owner) never
+// mounts — keeping the smoke test deterministic.
 const readyValue = (over = {}) => ({
   status: 'ready',
   recipe: { id: '1', title: 'خورش قورمه‌سبزی' },
   refetch: vi.fn(),
   step: 0,
   total: 3,
-  currentStep: 'سبزی را با کمی روغن تفت بده تا خوش‌رنگ شود.',
+  currentStep: { order: 1, title: null, instruction: 'سبزی را با کمی روغن تفت بده تا خوش‌رنگ شود.', caveats: [], flame: null, tempC: null, durationMin: 0, sees: null, recovery: null, doneness: null, tip: null },
+  isGris: false,
+  personalization: { servedFor: null, swaps: {}, removed: [], isPersonalized: false },
   finished: false,
   next: vi.fn(),
   prev: vi.fn(),
@@ -107,6 +108,8 @@ describe('CookPage smoke', () => {
     renderPage();
     expect(screen.getByText('کمک برای این مرحله')).toBeInTheDocument();
     expect(screen.getByText('بعدی')).toBeInTheDocument();
+    // the structured step instruction renders
+    expect(screen.getByText('سبزی را با کمی روغن تفت بده تا خوش‌رنگ شود.')).toBeInTheDocument();
     // Cook now renders inside the app shell (TopBar provides back); the in-cook sub-header shows the
     // recipe title + step counter instead of its own X close.
     expect(screen.getByText('خورش قورمه‌سبزی')).toBeInTheDocument();

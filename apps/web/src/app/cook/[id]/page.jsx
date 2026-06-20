@@ -5,33 +5,39 @@ import { motion } from 'framer-motion';
 import {
   IconChevronRight, IconChevronLeft, IconClockPlay, IconPlayerPause, IconRefresh,
   IconSparkles, IconTag, IconInfoCircle, IconCheck, IconHeart, IconCloudOff, IconFlame,
+  IconThermometer, IconClock, IconEye, IconCircleCheck, IconBulb, IconLifebuoy,
 } from '@tabler/icons-react';
 import { useCook } from './useCook';
 import { toFaDigits } from '../../../components/ges/format';
+import { personalizationSummary } from '../../../components/ges/personalize';
 import { bottomSheetStyles } from '../../../components/ges/sheet';
 import { prefersReducedMotion } from '../../../lib/motion';
 import { SkeletonLine } from '../../../components/ges/LoadingSkeleton';
 import Toast from '../../../components/ges/Toast';
 
-const FA = '۰۱۲۳۴۵۶۷۸۹';
-const toLatinNum = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => FA.indexOf(d));
+const FLAME = { none: 'بدون شعله', low: 'شعلهٔ کم', medium: 'شعلهٔ متوسط', 'medium-high': 'شعلهٔ متوسط‌رو‌به‌بالا', high: 'شعلهٔ زیاد' };
 const mmss = (sec) => {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return `${toFaDigits(String(m).padStart(2, '0'))}:${toFaDigits(String(s).padStart(2, '0'))}`;
 };
 
-// honest per-step duration parsed from the REAL step text (e.g. «۶ تا ۷ دقیقه» → 7m, «۲ ساعت» → 120m)
-function stepMinutes(text) {
-  const t = toLatinNum(text);
-  let mins = 0;
-  const h = t.match(/(\d+)\s*ساعت/);
-  if (h) mins += parseInt(h[1], 10) * 60;
-  const range = t.match(/(\d+)\s*(?:تا|الی|-)\s*(\d+)\s*دقیقه/);
-  const m = t.match(/(\d+)\s*دقیقه/);
-  if (range) mins += parseInt(range[2], 10);
-  else if (m) mins += parseInt(m[1], 10);
-  return mins > 0 && mins <= 600 ? mins : 0;
+// GRIS step affordances — a metadata chip (flame/temp/time) and a sensory hint line (sees/doneness/tip/recovery)
+function StepChip({ icon: Icon, children }) {
+  return (
+    <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>
+      {Icon ? <Icon size={15} stroke={1.8} aria-hidden="true" /> : null}{children}
+    </Box>
+  );
+}
+function StepHint({ icon: Icon, tone, children }) {
+  const color = tone === 'success' ? 'var(--g-color-state-success-fg)' : tone === 'warn' ? 'var(--g-color-allergen-fg)' : 'var(--g-color-text-muted)';
+  return (
+    <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
+      <Icon size={17} stroke={1.8} aria-hidden="true" style={{ color, flexShrink: 0, marginBlockStart: 2 }} />
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>{children}</Text>
+    </Box>
+  );
 }
 
 // Cook content fills the AppShell <main> (which already provides the centred 480 column + the app
@@ -160,7 +166,9 @@ export default function CookPage() {
   if (c.finished) return <Finish c={c} onDone={() => navigate('/')} onRate={() => showToast('ممنون! نظرت ثبت شد', IconHeart)} />;
 
   const last = c.step === c.total - 1;
-  const mins = stepMinutes(c.currentStep);
+  const s = c.currentStep || {};
+  const mins = s.durationMin || 0;
+  const persoItems = personalizationSummary(c.personalization);
 
   return (
     <Column>
@@ -176,11 +184,32 @@ export default function CookPage() {
         </Box>
       </Box>
 
-      {/* big step */}
+      {/* big step — GRIS-aware: flame/temp/duration chips + the instruction + sensory hints */}
       <Box component="main" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-3)' }}>
+        {persoItems.length ? (
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockEnd: 'var(--g-space-2)', paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', alignSelf: 'flex-start' }}>
+            <IconSparkles size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>{persoItems.join(' · ')}</Text>
+          </Box>
+        ) : null}
         <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Box aria-hidden="true" style={{ inlineSize: 64, blockSize: 64, borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', display: 'grid', placeItems: 'center', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-28)', boxShadow: 'var(--g-shadow-2)' }}>{toFaDigits(c.step + 1)}</Box>
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', textWrap: 'pretty', color: 'var(--g-color-text-primary)', margin: 'var(--g-space-5) 0 0' }}>{c.currentStep}</Text>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)' }}>
+            <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 64, blockSize: 64, borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', display: 'grid', placeItems: 'center', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-28)', boxShadow: 'var(--g-shadow-2)' }}>{toFaDigits(c.step + 1)}</Box>
+            {s.title ? <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', color: 'var(--g-color-text-primary)', margin: 0 }}>{s.title}</Text> : null}
+          </Box>
+          {(s.flame && s.flame !== 'none') || typeof s.tempC === 'number' || s.durationMin ? (
+            <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)' }}>
+              {s.flame && s.flame !== 'none' ? <StepChip icon={IconFlame}>{FLAME[s.flame] || s.flame}</StepChip> : null}
+              {typeof s.tempC === 'number' ? <StepChip icon={IconThermometer}>{toFaDigits(s.tempC)}°</StepChip> : null}
+              {s.durationMin ? <StepChip icon={IconClock}>{toFaDigits(s.durationMin)} دقیقه</StepChip> : null}
+            </Box>
+          ) : null}
+          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', textWrap: 'pretty', color: 'var(--g-color-text-primary)', margin: 'var(--g-space-5) 0 0' }}>{s.instruction}</Text>
+          {s.caveats?.length ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-brand-700)', margin: 'var(--g-space-2) 0 0' }}>↳ {s.caveats.join(' · ')}</Text> : null}
+          {s.sees ? <StepHint icon={IconEye}>{s.sees}</StepHint> : null}
+          {s.doneness ? <StepHint icon={IconCircleCheck} tone="success">{s.doneness}</StepHint> : null}
+          {s.tip ? <StepHint icon={IconBulb}>{s.tip}</StepHint> : null}
+          {s.recovery ? <StepHint icon={IconLifebuoy} tone="warn">اگر خراب شد: {s.recovery}</StepHint> : null}
           {mins > 0 ? <StepTimer key={c.step} minutes={mins} onDone={() => showToast('تایمر تمام شد', IconClockPlay)} /> : null}
         </Box>
       </Box>

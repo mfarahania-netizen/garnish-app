@@ -1,18 +1,36 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { useRecipeDetail } from '../../recipe/[id]/useRecipeDetail';
+import { usePersonalization } from '../../../hooks/usePersonalization';
+import { extractBaseServings } from '../../../components/ges/scaling';
+import { patchStepText, swapsList } from '../../../components/ges/personalize';
 
 /**
- * useCook — immersive step-by-step cook flow over the recipe's REAL steps (GET /recipes/:id/full
- * via useRecipeDetail). Step AI help is grounded on the real GET /ai/recipes/:id/technique?step=
- * endpoint, disclosed + hedged, with a Persian-only defensive render (never raw English/[object Object])
- * and an honest fallback. Finish records a REAL `cook_complete` event (logged-in, POST /analytics/event →
- * UserEvent) — the canonical type the gamification engine counts, so a completed cook genuinely moves the
- * streak/level. Honest: a real completed cook = a real +1; we never fabricate an increment.
+ * useCook — immersive step-by-step cook flow. GRIS-aware: when the recipe has a GRIS object it cooks
+ * from gris.steps (flame · tempC · durationMin · sees · recovery · doneness) instead of the flat text
+ * steps, and reflects the SAME session personalization (swaps/removes) the recipe page set — so what you
+ * tuned is what you cook. Step AI help is grounded on GET /ai/recipes/:id/technique?step=, disclosed +
+ * hedged. Finish records a REAL `cook_complete` event the gamification engine counts (never fabricated).
  */
+
+// honest per-step duration parsed from free Persian text (e.g. «۶ تا ۷ دقیقه» → 7m, «۲ ساعت» → 120m);
+// GRIS steps carry a structured durationMin and skip this entirely (H3).
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+const toLatinNum = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => FA.indexOf(d));
+function stepMinutesFromText(text) {
+  const t = toLatinNum(text);
+  let mins = 0;
+  const h = t.match(/(\d+)\s*ساعت/);
+  if (h) mins += parseInt(h[1], 10) * 60;
+  const range = t.match(/(\d+)\s*(?:تا|الی|-)\s*(\d+)\s*دقیقه/);
+  const m = t.match(/(\d+)\s*دقیقه/);
+  if (range) mins += parseInt(range[2], 10);
+  else if (m) mins += parseInt(m[1], 10);
+  return mins > 0 && mins <= 600 ? mins : 0;
+}
 
 // pull the longest Persian string from an unknown grounded-tool response (no English / no [object Object])
 function extractFa(data) {
@@ -35,6 +53,8 @@ export function useCook(id) {
   const { token } = useAuth();
   const { trackEvent } = useAnalytics();
   const detail = useRecipeDetail(id);
+  const baseServings = extractBaseServings(detail.recipe?.servingsText, 4);
+  const perso = usePersonalization(id, baseServings);
   const gam = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled: !!token });
 
   const [step, setStep] = useState(0);
@@ -42,17 +62,42 @@ export function useCook(id) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [help, setHelp] = useState({ loading: false, text: null, error: false });
 
-  const steps = detail.recipe?.steps || [];
+  // Build the cook step list: prefer GRIS (rich, structured), else the flat text steps. Both reflect the
+  // session swaps/removes via patchStepText so Cook Mode matches the personalized recipe page (C9/M4).
+  const steps = useMemo(() => {
+    const gris = detail.gris;
+    const sList = swapsList(perso.swaps);
+    const removed = perso.removed;
+    const fromGris = Array.isArray(gris?.steps) && gris.steps.length;
+    const raw = fromGris ? gris.steps : (detail.recipe?.steps || []);
+    return raw.map((s, i) => {
+      const isObj = s && typeof s === 'object';
+      const rawText = isObj ? (s.instruction || '') : String(s || '');
+      const patched = patchStepText(rawText, sList, removed);
+      return {
+        order: isObj && s.order ? s.order : i + 1,
+        title: isObj ? (s.title || null) : null,
+        instruction: patched.text,
+        caveats: patched.caveats,
+        flame: isObj ? (s.flame || null) : null,
+        tempC: isObj && typeof s.tempC === 'number' ? s.tempC : null,
+        // GRIS structured duration (H3); flat steps fall back to honest text parsing
+        durationMin: isObj && typeof s.durationMin === 'number' ? s.durationMin : stepMinutesFromText(rawText),
+        sees: isObj ? (s.sees || null) : null,
+        recovery: isObj ? (s.recovery || null) : null,
+        doneness: isObj ? (s.doneness || null) : null,
+        tip: isObj ? (s.tip || null) : null,
+      };
+    });
+  }, [detail.gris, detail.recipe, perso.swaps, perso.removed]);
+
   const total = steps.length;
 
-  // side effects at the top level (never inside a setState updater → no StrictMode double-fire)
   const next = useCallback(() => {
     if (step >= total - 1) {
       if (!finished) {
         setFinished(true);
-        // Emit the CANONICAL completion event the gamification engine actually counts
-        // (UserEvent type 'cook_complete' → streak/mastery). The old 'recipe_cooked' was never
-        // counted (gamification reads type IN ['cook_complete']) so the streak never moved.
+        // CANONICAL completion event the gamification engine counts (UserEvent type 'cook_complete').
         if (token) trackEvent('cook_complete', { recipeId: id });
       }
       return;
@@ -66,7 +111,6 @@ export function useCook(id) {
     setSheetOpen(true);
     setHelp({ loading: true, text: null, error: false });
     try {
-      // backend step is 1-based; honor the honest-degradation contract (only render an 'ok' result)
       const data = await apiClient.get(`/ai/recipes/${id}/technique`, { params: { step: step + 1 } }).then((r) => r.data);
       if (data?.resultStatus && data.resultStatus !== 'ok') { setHelp({ loading: false, text: null, error: true }); return; }
       const text = extractFa(data);
@@ -83,7 +127,9 @@ export function useCook(id) {
     recipe: detail.recipe,
     refetch: detail.refetch,
     step, total,
-    currentStep: steps[step] || '',
+    currentStep: steps[step] || null,
+    isGris: Array.isArray(detail.gris?.steps) && detail.gris.steps.length > 0,
+    personalization: { servedFor: perso.servedFor, swaps: perso.swaps, removed: perso.removed, isPersonalized: perso.isPersonalized },
     finished,
     next, prev,
     loggedIn: !!token,
