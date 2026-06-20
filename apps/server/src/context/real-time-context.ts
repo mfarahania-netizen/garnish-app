@@ -4,9 +4,13 @@
  *
  * LOCALE-AWARE (Iran AND Europe): time-of-day / meal-window / weekend are computed in the USER's local
  * time via the IANA tz database (DST-correct for Amsterdam, no-DST for Tehran). Weekend differs by region
- * (Iran = پنجشنبه+جمعه, most of Europe = Sat+Sun). The Jalali date + Persian food-occasions are ALWAYS
- * computed (the audience is Persian-first incl. diaspora abroad — an Iranian in Amsterdam still wants Yalda),
- * with a clean seam to add regional (e.g. European) occasion providers when we localize for non-Persian users.
+ * (Iran = پنجشنبه+جمعه, most of Europe = Sat+Sun).
+ *
+ * TARGET MARKET: the Europe/Holland launch is for the GENERAL population (everyone), NOT the diaspora — so
+ * European occasions (Christmas/Easter/King's Day, Gregorian calendar) are CORE for that market and a
+ * European occasion provider must be added here (a clean seam is left). Persian occasions (Yalda/Nowruz)
+ * are computed always as CULTURAL-DISCOVERY moments offered to everyone ("experience a Persian Yalda"),
+ * not a diaspora feature. The Jalali date is computed regardless (cheap + powers Persian discovery).
  *
  * Intentionally STANDALONE (not in getLivingUserProfile, which stays byte-identical) — context is per-request.
  */

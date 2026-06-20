@@ -4,6 +4,14 @@
 > the standard — the system must demonstrably deliver each. The founder grades hard and named
 > TikTok / Instagram / Spotify as the reference bar (not generic "personalization").
 
+## TARGET MARKET (founder, 2026-06-20 — emphatic, reshapes every decision)
+The Europe/Holland launch targets the **GENERAL population — everyone**, NOT the Iranian diaspora. Garnish =
+**Persian CUISINE for everyone** (the way Italian/Japanese food apps target everyone, not expats). The
+diaspora is ONE subset of users, never the focus. Implication: onboarding, language, the AI assistant,
+recipe presentation, and occasions/calendar must work for a Dutch/European person with ZERO Persian
+background; European occasions + the Gregorian calendar are CORE to the launch (not a deferred
+localization); Persian occasions (Yalda/Nowruz) are cultural-discovery moments offered to everyone.
+
 ## The vision, in the founder's words
 - "هر کاربر متفاوت" — one user loves regional/local dishes, another world cuisines, another southern,
   another seafood, another hates all of these. With **1,000,000 users the app must differ for each**.

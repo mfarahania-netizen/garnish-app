@@ -126,19 +126,20 @@ A **generic/standalone calendar = NO** (scope creep; we don't compete with Googl
 SCOPED calendar surfaces ARE worth it:
 - ✅ **Meal-plan calendar view** (👤): a week/month view of the meal plan with shopping tied to it —
   standard, expected, useful. Already implied by the meal-plan layer (L3).
-- ✅ **Cultural FOOD-occasion calendar** (👤🏰, idea #16): a Jalali-aware calendar that surfaces «۳ روز تا
-  شبِ یلدا — منوی پیشنهادی» / Nowruz / Ramadan, auto-localized to the user's timezone. For the Persian-first
-  audience — **especially diaspora in Europe who lose track of Persian dates abroad** — this is a
-  genuinely on-brand, differentiated discovery + retention surface (seasonal novelty = an antidote to the
-  utility-paradox). It REUSES the real-time context engine just built. → L3, after the engine.
+- ✅ **Cultural FOOD-occasion calendar** (👤🏰, idea #16): a calendar that surfaces «۳ روز تا کریسمس / شبِ
+  یلدا — منوی پیشنهادی», auto-localized to the user's timezone. For the GENERAL European audience this is a
+  two-way discovery surface: their OWN occasions (Christmas/Easter/King's Day) AND Persian occasions
+  (Yalda/Nowruz) framed as "experience a Persian feast" — a differentiated discovery + retention surface
+  (seasonal novelty = an antidote to the utility-paradox). REUSES the real-time context engine. → L3.
 
-### 16. 🏰👤 Locale-adaptive context (Iran AND Europe) — DONE as a decision, here's the seam
+### 16. 🏰👤 Locale-adaptive context (Iran AND Europe) — engine DONE; European occasions are CORE (not deferred)
 The real-time context engine is now **timezone/locale-aware** (a user in Tehran and one in Amsterdam get
-different time-of-day, meal window, weekend — Iran پنجشنبه/جمعه vs NL Sat/Sun; DST handled). Persian food
-occasions (Yalda/Nowruz) are **always** computed because the audience is Persian-first incl. diaspora — an
-Iranian in Amsterdam still wants Yalda. **Deliberately NOT built yet (no-rework):** a European/Dutch occasion
-provider (Christmas/Easter/King's Day) — add it only when we localize for NON-Persian European users. The
-seam is in place; the timezone is driven by the user's profile/location.
+different time-of-day, meal window, weekend — Iran پنجشنبه/جمعه vs NL Sat/Sun; DST handled). **TARGET MARKET
+correction (founder 2026-06-20):** the Europe launch is for the GENERAL population, NOT the diaspora. So a
+**European/Dutch occasion provider (Christmas/Easter/King's Day, Gregorian) is CORE to the launch market** —
+it must be added (the seam exists); it is NOT a deferred "localize-later" item. Persian occasions
+(Yalda/Nowruz) are computed always as **cultural-discovery offered to everyone**, not a diaspora feature.
+Timezone is driven by the user's profile/location.
 
 ## How this document stays alive
 - Every research workflow (AI SOTA, recsys, retention, …) MUST end with an "ideas + gaps vs world-class"

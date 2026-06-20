@@ -87,7 +87,7 @@ describe('buildRealTimeContext — locale awareness (Iran vs Europe)', () => {
     expect(tz(satNoonUtc, 'Asia/Tehran').isWeekend).toBe(false); // شنبه = workday in Iran
   });
 
-  it('Persian occasions still resolve for the diaspora abroad (Yalda for an Amsterdam user)', () => {
+  it('Persian occasions resolve in any timezone (Yalda offered to everyone, e.g. an Amsterdam user)', () => {
     expect(tz('2024-12-20T19:00:00Z', 'Europe/Amsterdam').occasion.key).toBe('yalda');
   });
 });
