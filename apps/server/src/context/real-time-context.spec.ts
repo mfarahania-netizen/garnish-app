@@ -62,3 +62,32 @@ describe('buildRealTimeContext — Persian calendar awareness (L0 "every second"
     expect(at('2025-12-21T20:00:00+03:30')).toEqual(at('2025-12-21T20:00:00+03:30'));
   });
 });
+
+describe('buildRealTimeContext — locale awareness (Iran vs Europe)', () => {
+  const tz = (iso: string, timeZone: string) => buildRealTimeContext(new Date(iso), { timeZone });
+
+  it('the SAME instant is a different local time in Tehran vs Amsterdam', () => {
+    const inst = '2025-07-15T18:00:00Z';
+    const tehran = tz(inst, 'Asia/Tehran'); // UTC+3:30 → 21:30
+    const ams = tz(inst, 'Europe/Amsterdam'); // CEST UTC+2 → 20:00
+    expect(tehran.hour).toBe(21);
+    expect(tehran.timeOfDay).toBe('night');
+    expect(ams.hour).toBe(20);
+    expect(ams.timeOfDay).toBe('evening');
+  });
+
+  it('handles European DST (Amsterdam CET+1 in winter, CEST+2 in summer)', () => {
+    expect(tz('2025-01-15T12:00:00Z', 'Europe/Amsterdam').hour).toBe(13); // CET
+    expect(tz('2025-07-15T12:00:00Z', 'Europe/Amsterdam').hour).toBe(14); // CEST
+  });
+
+  it('weekend is locale-aware: Saturday is weekend in NL but a workday in Iran', () => {
+    const satNoonUtc = '2025-07-19T09:00:00Z'; // a Saturday, ~noon-ish both zones
+    expect(tz(satNoonUtc, 'Europe/Amsterdam').isWeekend).toBe(true); // Sat = weekend in NL
+    expect(tz(satNoonUtc, 'Asia/Tehran').isWeekend).toBe(false); // شنبه = workday in Iran
+  });
+
+  it('Persian occasions still resolve for the diaspora abroad (Yalda for an Amsterdam user)', () => {
+    expect(tz('2024-12-20T19:00:00Z', 'Europe/Amsterdam').occasion.key).toBe('yalda');
+  });
+});

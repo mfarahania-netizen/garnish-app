@@ -121,6 +121,25 @@ with diffs/blast-radius → policy-as-code floor (allergy fields read-only FOREV
 The no-rework AI path starts with observability + cost truth, and **every live-AI flip is gated by a
 Persian golden eval set** — English benchmarks do NOT transfer for a Persian-first product. → L2 phase 0.
 
+## In-app calendar — the honest verdict (founder asked 2026-06-20: "useful or not? if no, say no")
+A **generic/standalone calendar = NO** (scope creep; we don't compete with Google Calendar). But two
+SCOPED calendar surfaces ARE worth it:
+- ✅ **Meal-plan calendar view** (👤): a week/month view of the meal plan with shopping tied to it —
+  standard, expected, useful. Already implied by the meal-plan layer (L3).
+- ✅ **Cultural FOOD-occasion calendar** (👤🏰, idea #16): a Jalali-aware calendar that surfaces «۳ روز تا
+  شبِ یلدا — منوی پیشنهادی» / Nowruz / Ramadan, auto-localized to the user's timezone. For the Persian-first
+  audience — **especially diaspora in Europe who lose track of Persian dates abroad** — this is a
+  genuinely on-brand, differentiated discovery + retention surface (seasonal novelty = an antidote to the
+  utility-paradox). It REUSES the real-time context engine just built. → L3, after the engine.
+
+### 16. 🏰👤 Locale-adaptive context (Iran AND Europe) — DONE as a decision, here's the seam
+The real-time context engine is now **timezone/locale-aware** (a user in Tehran and one in Amsterdam get
+different time-of-day, meal window, weekend — Iran پنجشنبه/جمعه vs NL Sat/Sun; DST handled). Persian food
+occasions (Yalda/Nowruz) are **always** computed because the audience is Persian-first incl. diaspora — an
+Iranian in Amsterdam still wants Yalda. **Deliberately NOT built yet (no-rework):** a European/Dutch occasion
+provider (Christmas/Easter/King's Day) — add it only when we localize for NON-Persian European users. The
+seam is in place; the timezone is driven by the user's profile/location.
+
 ## How this document stays alive
 - Every research workflow (AI SOTA, recsys, retention, …) MUST end with an "ideas + gaps vs world-class"
   contribution appended here — not just a standard doc.
