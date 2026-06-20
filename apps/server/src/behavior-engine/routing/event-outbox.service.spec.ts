@@ -101,4 +101,16 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     expect(router.route).toHaveBeenCalledTimes(1); // revived → pending → re-routed in the same drain
     expect(rows.get(id!).status).toBe('done');
   });
+
+  // guardian non-blocking note → covered: a stuck 'processing' row that has exhausted its attempts is
+  // dead-lettered by the reaper (not revived forever)
+  it('drain dead-letters a stuck processing row that has exhausted maxAttempts (no infinite revival)', async () => {
+    const { svc, router, rows } = make();
+    const id = await svc.enqueue('ev1');
+    Object.assign(rows.get(id!), { status: 'processing', claimedAt: ago(600_000), createdAt: ago(600_000), attempts: 9 });
+    const res = await svc.drain({ staleProcessingMs: 300_000, maxAttempts: 10 });
+    expect(res.revived).toBe(1);
+    expect(rows.get(id!).status).toBe('dead'); // reaper exhaustion path → dead, not re-routed
+    expect(router.route).not.toHaveBeenCalled();
+  });
 });
