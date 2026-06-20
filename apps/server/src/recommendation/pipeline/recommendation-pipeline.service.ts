@@ -5,6 +5,7 @@ import { CandidateGeneratorService } from './candidate-generator';
 import { RankingService } from './ranking.service';
 import { RecommendationShadowA8Service } from '../runtime-shadow/recommendation-shadow-a8-service';
 import { ContextService } from '../../context/context.service';
+import { RecommendationCountersService } from './recommendation-counters.service';
 
 interface RecommendationRankItem {
   recipeId: string;
@@ -29,6 +30,8 @@ export class RecommendationPipelineService {
     @Optional() private readonly shadowRuntime?: RecommendationShadowA8Service,
     // L0 → ranker: real-time context ("every second"). @Optional() keeps existing construction/tests working.
     @Optional() private readonly context?: ContextService,
+    // L0/L1 "counters first-class": served-slate log (position + propensity). @Optional() + fire-and-forget.
+    @Optional() private readonly counters?: RecommendationCountersService,
   ) {}
 
   async getRecommendations(userId: string, limit = 10) {
@@ -44,6 +47,15 @@ export class RecommendationPipelineService {
     const liveContext = this.context?.now(new Date());
     const ranked = await this.rankingService.rank(userId, candidateIds, liveContext);
     const recommendations = ranked.slice(0, limit);
+
+    // L0/L1 "counters first-class" — log the served slate (rank + score + propensity + context) so off-policy
+    // learning has unbiased exposure data from day one. Fire-and-forget: never awaited, never throws, so it
+    // adds no latency and cannot affect the response. Reward is derived downstream by joining to events.
+    this.counters?.logSlate(
+      userId,
+      recommendations.map((r: RecommendationRankItem) => ({ recipeId: r.recipeId, score: r.finalScore })),
+      { surface: 'recommendations', context: liveContext },
+    );
 
     const response = recommendations.map((item: RecommendationRankItem) => {
       const matchedSignals = Array.isArray(item.matchedSignals) ? item.matchedSignals : [];

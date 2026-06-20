@@ -6,6 +6,7 @@ import { RecommendationDiagnosticsController } from './diagnostics.controller';
 import { CandidateGeneratorService } from './pipeline/candidate-generator';
 import { RankingService } from './pipeline/ranking.service';
 import { RecommendationPipelineService } from './pipeline/recommendation-pipeline.service';
+import { RecommendationCountersService } from './pipeline/recommendation-counters.service';
 import { ContributionCalculatorService } from './ranking-model/contribution-calculator';
 import { ExplainabilityService } from './explainability/explainability.service';
 import { ExperimentationModule } from '../experimentation/experimentation.module';
@@ -43,6 +44,7 @@ import { ContextModule } from '../context/context.module';
     CandidateGeneratorService,
     RankingService,
     RecommendationPipelineService,
+    RecommendationCountersService, // L0/L1 "counters first-class": served-slate (position+propensity) log
     ContributionCalculatorService,
     ExplainabilityService,
     ExposureTrackingService,

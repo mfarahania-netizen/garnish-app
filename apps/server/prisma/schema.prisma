@@ -672,6 +672,29 @@ model FeatureContributionLog {
   @@index([featureKey, contribution])
 }
 
+// L0/L1 foundation — the served-slate log ("counters first-class"). For every recommendation actually
+// returned we capture rank (position) + the score it was served at + a propensity (selection probability).
+// This is exactly what off-policy / counterfactual learning (IPS) needs from day one; without position +
+// propensity the exposure→reward signal can never be debiased, and it is unrecoverable after the fact.
+// Reward is DERIVED by joining to RecommendationAttributionEvent / UserEvent (cook/view after servedAt).
+// Written fire-and-forget at serve time; default-safe (a write fault never affects the user response).
+// No FK (mirrors RecommendationShadowTrace) to keep the hot path lean.
+model RecommendationServedItem {
+  id          String   @id @default(uuid())
+  userId      String
+  recipeId    String
+  position    Int // 0-based rank in the served slate
+  score       Float // finalScore the ranker assigned
+  propensity  Float // selection probability (softmax over the slate; a smoothed exposure weight for today's deterministic ranker, replaced by the true randomized propensity at L1's bandit)
+  surface     String? // home | discover | search
+  contextJson String? // serialized real-time context (timeOfDay/season/occasion) for counterfactual replay
+  sessionId   String?
+  servedAt    DateTime @default(now())
+
+  @@index([userId, servedAt])
+  @@index([recipeId, servedAt])
+}
+
 model RecommendationAttributionEvent {
   id         String   @id @default(uuid())
   userId     String
