@@ -61,6 +61,44 @@ collaborative + deeper models turn on automatically as interaction data accumula
 it is the correct order, and the reason we can "learn" while competitors wait for data. This is a
 multi-phase CORE rebuild of the heuristic ranker, not a patch.
 
+## PILLAR: Lifecycle & Retention Intelligence — never abandon the user (founder, 2026-06-20)
+The founder's deepest requirement: **LTV/retention, not acquisition.** The user must feel — every moment,
+including year 2 and year 3 — "what a great feeling that I bought this subscription." We must detect and
+pre-empt EVERY cause of churn, resentment, or quiet departure.
+
+### The "WHY" inference engine (behavioral diagnosis)
+It is not enough to log what the user did; we must infer WHY. The founder's canonical example: a user
+cooked a dish 3× from our recipe, then it was in their weekly plan the 4th time but they did NOT cook it.
+The system must diagnose the latent cause and respond:
+- **Mastered it** (knows the recipe now → it became routine) → graduate them: offer a variation, a harder
+  dish, or stop re-teaching and start assuming competence.
+- **Bored / changed their mind / tired of the dish** → diversify; pull back that dish/cuisine.
+- **External** (busy week, skipped cooking entirely) → gentle, low-pressure nudge, not a guilt trip.
+- **Dissatisfied** (a bad result) → recovery + troubleshooting, ask what went wrong.
+Each diagnosis → a DIFFERENT intervention. Wrong diagnosis = annoyance = churn. Start heuristic on the
+signal stream (L0), evolve to a learned diagnosis/survival model.
+
+### The recipe-app UTILITY PARADOX (the founder's "learned it and left" problem)
+If we only "teach a recipe," then teaching it well = the user no longer needs us = churn. The world-class
+answer is **value EVOLUTION**: the app's job must shift over time from "teach you this dish" → "your
+evolving culinary partner that knows you better every year." The value must COMPOUND, not deplete:
+mastery ladder (harder dishes, technique progression) · variations of mastered dishes · adjacent
+discovery tuned to the taste-DNA · planning/shopping/pantry convenience · seasonal novelty · the taste
+model that is sharper in year 2 than year 1 (the data moat). The subscription is worth keeping because
+the app is the only one that has learned THIS user.
+
+### Lifecycle states + countermeasures (must exist for every section, not just recsys)
+A lifecycle engine over L0: state machine (onboarding → activated → habitual → mastering → at-risk →
+dormant → churned/win-back), churn LEAD-indicators (declining cook rate, plan-but-skip, session
+shortening, dwell drop), and a per-state intervention playbook delivered via the proactive layer (L3).
+Ethical guardrail (founder intent: the user must feel GOOD, never nagged): no dark patterns, no
+notification fatigue — interventions earn their place by being genuinely useful, frequency-capped, and
+killable. "Never abandon the user in any section" = every surface has a re-engagement/recovery path.
+
+Acceptance: we can answer "why didn't user X cook the planned dish?" and "which users will churn next
+month, and what's the right intervention for each?" — and the intervention demonstrably feels like care,
+not nagging.
+
 ## Acceptance test (how we'll know it works)
 - Cook 10 Persian stews → tomorrow's feed is verifiably more stew-like (individual loop closes).
 - A dish skipped by ~everyone drifts down the catalog for everyone (collective loop closes) — but a
