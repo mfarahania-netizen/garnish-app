@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Param, Body, Req, UseGuards, Patch, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { OptionalJwtGuard } from '../auth/optional-jwt.guard';
 import { RecipesService } from './recipes.service';
 import { RecipeRichnessService } from './intelligence/recipe-richness.service';
 import { RecipeSearchService } from './search/recipe-search.service';
+import { RecipeSafetyFilterService } from './intelligence/recipe-safety-filter.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
@@ -13,10 +15,15 @@ export class RecipesController {
     private readonly recipesService: RecipesService,
     private readonly richness: RecipeRichnessService,
     private readonly searchService: RecipeSearchService,
+    private readonly safety: RecipeSafetyFilterService,
   ) {}
 
+  // OptionalJwtGuard: anonymous allowed, but a logged-in user's declared allergies/observance HARD-filter
+  // the popular/fresh rails (Home/Discover read this) — guardian H1 rework. Anonymous → unfiltered (no profile).
   @Get()
-  findAll(
+  @UseGuards(OptionalJwtGuard)
+  async findAll(
+    @Req() req,
     @Query('page') page = '1',
     @Query('limit') limit = '20',
     @Query('category') category?: string,
@@ -24,7 +31,9 @@ export class RecipesController {
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 20;
     const skip = (pageNum - 1) * limitNum;
-    return this.recipesService.findAll(skip, limitNum, category);
+    const result = await this.recipesService.findAll(skip, limitNum, category);
+    const data = await this.safety.filter(req.user?.userId, result.data);
+    return { ...result, data };
   }
 
   /**
@@ -33,22 +42,28 @@ export class RecipesController {
    * falls back to the legacy contains-search if the corpus index is empty. Honest empty (no fabrication).
    */
   @Get('search')
-  async search(@Query() query: SearchRecipesDto) {
+  @UseGuards(OptionalJwtGuard)
+  async search(@Req() req, @Query() query: SearchRecipesDto) {
     const limitNum = parseInt(query.limit, 10) || 10;
+    const userId = req.user?.userId;
     const ranked = await this.searchService.search(query.q, { limit: limitNum });
     if (ranked.resultStatus !== 'ok') {
       // legacy fallback keeps behavior for empty_query and lets contains catch anything the index missed
-      return this.recipesService.search(query.q, limitNum);
+      return this.safety.filter(userId, await this.recipesService.search(query.q, limitNum));
     }
     const ordered = await this.recipesService.findByIdsOrdered(ranked.results.map((r) => r.recipeId));
     const whyById = new Map(ranked.results.map((r) => [r.recipeId, { score: r.score, matchedTerms: r.why.matchedTerms }]));
-    return ordered.map((recipe: any) => ({ ...recipe, _search: whyById.get(recipe.id) ?? null }));
+    const mapped = ordered.map((recipe: any) => ({ ...recipe, _search: whyById.get(recipe.id) ?? null }));
+    return this.safety.filter(userId, mapped); // HARD safety filter for a logged-in user (anonymous → unfiltered)
   }
 
-  /** SEARCH-L4-08: "similar recipes" / more-like-this — deterministic nearest neighbors + WHY. Public. */
+  /** SEARCH-L4-08: "similar recipes" / more-like-this — deterministic nearest neighbors + WHY. Optional auth. */
   @Get(':id/similar')
-  similar(@Param('id') id: string, @Query('limit') limit?: string) {
-    return this.searchService.similar(id, { limit: limit ? parseInt(limit, 10) : undefined });
+  @UseGuards(OptionalJwtGuard)
+  async similar(@Req() req, @Param('id') id: string, @Query('limit') limit?: string) {
+    const res = await this.searchService.similar(id, { limit: limit ? parseInt(limit, 10) : undefined });
+    const results = await this.safety.filter(req.user?.userId, res.results, 'recipeId'); // allergy-safe for a logged-in user
+    return { ...res, results };
   }
 
   @Get('my')

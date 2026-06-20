@@ -4,6 +4,7 @@ import { RecipesController } from './recipes.controller';
 import { RecipeRichnessService } from './intelligence/recipe-richness.service';
 import { RecipeSearchService } from './search/recipe-search.service';
 import { RecipeContentFeatureStore } from './search/recipe-content-feature-store.service';
+import { RecipeSafetyFilterService } from './intelligence/recipe-safety-filter.service';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { AiCoreModule } from '../ai/ai-core.module';
 
@@ -14,8 +15,8 @@ import { AiCoreModule } from '../ai/ai-core.module';
  */
 @Module({
   imports: [ProfileModule, AiCoreModule],
-  providers: [RecipesService, RecipeRichnessService, RecipeSearchService, RecipeContentFeatureStore],
+  providers: [RecipesService, RecipeRichnessService, RecipeSearchService, RecipeContentFeatureStore, RecipeSafetyFilterService],
   controllers: [RecipesController],
-  exports: [RecipesService, RecipeSearchService, RecipeContentFeatureStore],
+  exports: [RecipesService, RecipeSearchService, RecipeContentFeatureStore, RecipeSafetyFilterService],
 })
 export class RecipesModule {}

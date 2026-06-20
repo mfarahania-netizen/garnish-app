@@ -5,6 +5,7 @@ import { FeatureStoreService } from '../../behavior-engine/feature-store/feature
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
 import { ProfileReadService } from '../../behavior-engine/profile/read/profile-read.service';
 import { RecipeContentFeatureStore } from '../../recipes/search/recipe-content-feature-store.service';
+import { RecipeSafetyFilterService } from '../../recipes/intelligence/recipe-safety-filter.service';
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 
@@ -23,6 +24,7 @@ export class CandidateGeneratorService {
     private embeddingService: RecipeEmbeddingService,
     private profiles: ProfileReadService,
     private content: RecipeContentFeatureStore,
+    private safety: RecipeSafetyFilterService,
   ) {}
 
   async generate(userId: string, limit = 50): Promise<string[]> {
@@ -89,22 +91,9 @@ export class CandidateGeneratorService {
    * something unsafe. Preserves bucket order. generate() over-generates (limit×5) so the loss is absorbed.
    */
   private async filterSafe(userId: string, candidateIds: string[]): Promise<string[]> {
-    if (candidateIds.length === 0) return [];
-    let profile: any;
-    try {
-      profile = await this.profiles.getLivingUserProfile(userId);
-    } catch {
-      return []; // cannot establish the safe allergy set → nothing rather than something unsafe
-    }
-    if (!profile) return [];
-    const recipes = await this.prisma.recipe.findMany({ where: { id: { in: candidateIds } }, select: FIT_SELECT });
-    const safe = new Set<string>();
-    for (const r of recipes) {
-      const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;
-      const rec = assessRecipeFit(r, profile, derived).recommendation;
-      if (rec !== 'avoid_allergen' && rec !== 'avoid_constraint') safe.add(r.id);
-    }
-    return candidateIds.filter((id) => safe.has(id)); // preserve bucket order; unsafe dropped
+    // Delegates to the ONE reusable gate (RecipeSafetyFilterService) shared with the /recipes serving paths,
+    // so the allergy/observance invariant is defined in exactly one place. Fail-closed for an authed user.
+    return this.safety.safeIds(userId, candidateIds);
   }
 
   private async getSimilarRecipes(userId: string): Promise<string[]> {

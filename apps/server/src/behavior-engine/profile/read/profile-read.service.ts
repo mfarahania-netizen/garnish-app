@@ -93,13 +93,13 @@ export class ProfileReadService {
     } catch (err) {
       this.logger.warn(`preference read unavailable: ${err instanceof Error ? err.name : 'error'}`);
     }
-    try {
-      const allergies = await this.prisma.userAllergy.findMany({ where: { userId }, include: { allergy: true } });
-      if (allergies.length) {
-        answers.push({ key: 'dietary.allergies_intolerances', value: allergies.map((a) => a.allergy?.name).filter(Boolean), declaredAt: new Date().toISOString() });
-      }
-    } catch (err) {
-      this.logger.warn(`allergy read unavailable: ${err instanceof Error ? err.name : 'error'}`);
+    // SAFETY: the allergy read is the one sub-read that must FAIL CLOSED. Unlike facts/preferences (a
+    // non-safety enrichment we can skip), a swallowed allergy-table failure would yield a profile with an
+    // EMPTY allergy set → the hard filter would pass allergen-conflicting recipes. So we RE-THROW: callers
+    // that gate safety (RecipeSafetyFilterService) surface nothing; best-effort callers keep their own catch.
+    const allergies = await this.prisma.userAllergy.findMany({ where: { userId }, include: { allergy: true } });
+    if (allergies.length) {
+      answers.push({ key: 'dietary.allergies_intolerances', value: allergies.map((a) => a.allergy?.name).filter(Boolean), declaredAt: new Date().toISOString() });
     }
     return answers;
   }

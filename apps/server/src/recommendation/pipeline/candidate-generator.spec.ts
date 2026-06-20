@@ -1,4 +1,5 @@
 import { CandidateGeneratorService } from './candidate-generator';
+import { RecipeSafetyFilterService } from '../../recipes/intelligence/recipe-safety-filter.service';
 import { composeLivingUserProfile } from '../../behavior-engine/profile/read/living-profile';
 import { buildDeclaredProfile } from '../../behavior-engine/profile/declared/declared-profile.builder';
 
@@ -53,7 +54,9 @@ describe('CandidateGeneratorService', () => {
     };
     profiles = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergy([])) };
     content = { neighbors: jest.fn().mockResolvedValue({ neighbors: [], status: 'no_similar' }) };
-    service = new CandidateGeneratorService(prisma, featureStore, embeddingService, profiles, content);
+    // real shared safety gate (same prisma + profiles mocks) — the safety tests exercise the ONE reusable filter
+    const safety = new RecipeSafetyFilterService(prisma, profiles);
+    service = new CandidateGeneratorService(prisma, featureStore, embeddingService, profiles, content, safety);
   });
 
   // GUARDIAN H1/H2: the allergy HARD filter + no-pork must hold on the LIVE feed for an ACTIVE user
@@ -143,7 +146,7 @@ describe('CandidateGeneratorService — COLDSTART-L4-14 (profile-grounded, aller
     };
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(opts.profile) };
     const content: any = { neighbors: jest.fn().mockResolvedValue({ neighbors: opts.neighbors ?? [], status: 'ok' }) };
-    return { svc: new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content), prisma, profiles, content };
+    return { svc: new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content, {} as any), prisma, profiles, content };
   }
 
   it('reads getLivingUserProfile (NOT raw user.preferences)', async () => {
@@ -168,7 +171,7 @@ describe('CandidateGeneratorService — COLDSTART-L4-14 (profile-grounded, aller
     };
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergy(['peanut'])) };
     const content: any = { neighbors: jest.fn().mockResolvedValue({ neighbors: [{ recipeId: 'peanut' }], status: 'ok' }) };
-    const svc = new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content);
+    const svc = new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content, {} as any);
     const candidates = await svc.coldStartCandidates('u1');
     expect(candidates.map((c) => c.recipeId)).not.toContain('peanut');
     expect(candidates.map((c) => c.recipeId)).toContain('safe');
