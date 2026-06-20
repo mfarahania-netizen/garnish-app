@@ -91,6 +91,36 @@ context (next L0 step) is the first brick. "Own Persian food, then port the mode
 
 ---
 
+## AI (L2) — elevated from the SOTA research (full detail in `AI_STANDARD.md`)
+
+### 11. 🏰👤 The assistant's "apply" tap IS the missing observability — closes the ZERO-events gap
+**Biggest find.** Today swaps/scales emit ZERO events (a known hole — the L1 ranker is starved of its best
+signal). The research showed the right L2a design — the assistant ACTS via a closed tool allow-list that
+renders native swap/scale **cards (Generative UI)** — and the user's **"apply" tap emits exactly the swap/
+scale events we're currently losing.** So building the assistant correctly ALSO instruments the app and
+feeds L1 its missing training data. One build closes two gaps. → L2a + L0 observability.
+
+### 12. 🏰 Ground by IN-CONTEXT cached corpus + tool-calling, NOT vector RAG (decision)
+At ~1,008 structured records, putting the corpus in-context (with prompt caching) beats vector RAG on
+precision, latency, debuggability, and kills retrieval-miss hallucination. A real architectural decision,
+not a default. → L2a.
+
+### 13. 👤🏰 Allergy/safety stays DETERMINISTIC and OUTSIDE the LLM (non-negotiable)
+Pre-injection + post-generation gate, fails closed; declared allergens never enter a prompt; **the LLM
+explains, never enforces.** Consistent with the hard filter we've protected all along — the AI must never
+become the safety authority. → L2a guardrail.
+
+### 14. 💰🏰 L2b "which dish has a problem & WHY" = metric-tree + behavior×GRIS join (the edge)
+L2b grounds on a **deterministic semantic layer (never raw text-to-SQL)**; ~200 params = an (insight-type ×
+metric-family × entity) taxonomy, each a deterministic query the LLM only NARRATES. The unique edge: join
+behavior to **GRIS food-science**, so "why is this dish failing" reaches recipe-content depth (e.g. "beginners
+overcook step 4") no generic analytics tool can match. Supervised autonomy = propose-only → review queue
+with diffs/blast-radius → policy-as-code floor (allergy fields read-only FOREVER) → canary. → L2b.
+
+### 15. 🏰 Phase 0 = observability + cost honesty + a PERSIAN golden eval set (gates everything)
+The no-rework AI path starts with observability + cost truth, and **every live-AI flip is gated by a
+Persian golden eval set** — English benchmarks do NOT transfer for a Persian-first product. → L2 phase 0.
+
 ## How this document stays alive
 - Every research workflow (AI SOTA, recsys, retention, …) MUST end with an "ideas + gaps vs world-class"
   contribution appended here — not just a standard doc.
