@@ -6,10 +6,11 @@ function make(consentAllowed = true) {
   const created: any[] = [];
   const prisma: any = { userEvent: { create: jest.fn(async ({ data }: any) => { created.push(data); return { id: 'ev1', ...data }; }) } };
   const enrichment: any = { enrichEvent: jest.fn() };
-  const router: any = { route: jest.fn(async () => undefined) };
+  // routing now goes through the durable outbox (enqueue → processNow); a mock records the calls
+  const outbox: any = { enqueue: jest.fn(async () => 'ob1'), processNow: jest.fn(async () => undefined) };
   const quality: any = { assess: jest.fn(() => ({ isValid: true })) };
   const consent: any = { hasPurpose: jest.fn(async () => consentAllowed) };
-  return { svc: new AnalyticsService(prisma, enrichment, router, quality, consent), created, router, consent };
+  return { svc: new AnalyticsService(prisma, enrichment, outbox, quality, consent), created, outbox, consent };
 }
 const cook = { userId: 'u1', type: 'cook_complete', payload: { recipeId: 'r1' } };
 
@@ -26,26 +27,27 @@ describe('AnalyticsService.trackEvent — L0/B ingest', () => {
 
   it('gate OFF (default) → always routes into the signal engine (byte-identical), never checks consent', async () => {
     delete process.env.EVENT_CONSENT_GATE_MODE;
-    const { svc, router, consent } = make(false);
+    const { svc, outbox, consent } = make(false);
     await svc.trackEvent(cook);
-    expect(router.route).toHaveBeenCalled();
+    expect(outbox.enqueue).toHaveBeenCalled();
+    expect(outbox.processNow).toHaveBeenCalled();
     expect(consent.hasPurpose).not.toHaveBeenCalled();
   });
 
   it('gate ENFORCE + no personalization consent → event stored but NOT routed into personalization', async () => {
     process.env.EVENT_CONSENT_GATE_MODE = 'enforce';
-    const { svc, created, router } = make(false);
+    const { svc, created, outbox } = make(false);
     const ev = await svc.trackEvent(cook);
     expect(created.length).toBe(1); // raw event still stored (ops / legitimate interest)
     expect(ev).toBeTruthy();
-    expect(router.route).not.toHaveBeenCalled(); // …but no personalization profile built
+    expect(outbox.enqueue).not.toHaveBeenCalled(); // …but never enqueued for routing → no profile built
   });
 
-  it('gate ENFORCE + consent granted → routes normally', async () => {
+  it('gate ENFORCE + consent granted → routes normally (durably enqueued)', async () => {
     process.env.EVENT_CONSENT_GATE_MODE = 'enforce';
-    const { svc, router } = make(true);
+    const { svc, outbox } = make(true);
     await svc.trackEvent(cook);
-    expect(router.route).toHaveBeenCalled();
+    expect(outbox.enqueue).toHaveBeenCalled();
   });
 
   // L0 gate — GDPR provenance: every event records the consent purpose it was collected under.

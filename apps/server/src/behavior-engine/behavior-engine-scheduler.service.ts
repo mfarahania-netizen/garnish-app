@@ -1,14 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { BehaviorEngineService } from './behavior-engine.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { EventOutboxService } from './routing/event-outbox.service';
 
 @Injectable()
 export class BehaviorEngineScheduler {
   constructor(
     private readonly behaviorEngineService: BehaviorEngineService,
     private readonly prisma: PrismaService,
+    private readonly outbox: EventOutboxService,
   ) {}
+
+  // L0 — outbox safety net: re-route any event whose in-process fast-path routing didn't complete (e.g. a
+  // crash between the write and routing). Frequent + cheap (only scans pending rows past the grace period).
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async drainOutbox() {
+    try {
+      await this.outbox.drain();
+    } catch (err) {
+      console.error('❌ outbox drain failed:', err);
+    }
+  }
 
   @Cron('0 * * * *')
   async handleCron() {

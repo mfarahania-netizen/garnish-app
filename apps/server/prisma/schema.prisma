@@ -409,6 +409,22 @@ model UserEvent {
   @@index([userId, recipeId, timestamp])
 }
 
+// L0 — durable transactional-outbox for event routing ("capture every second" / no lost signals). Every
+// routable UserEvent gets one row (eventId unique → idempotent enqueue). The fast path routes in-process and
+// marks it done; a scheduled drain re-routes anything still pending after a grace period (e.g. a process crash
+// between the event write and routing) → at-least-once delivery into the signal engine.
+model EventOutbox {
+  id          String    @id @default(uuid())
+  eventId     String    @unique
+  status      String    @default("pending") // pending | processing | done
+  attempts    Int       @default(0)
+  error       String?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([status, createdAt])
+}
+
 model UserBehaviorProfile {
   id     String @id @default(uuid())
   userId String @unique

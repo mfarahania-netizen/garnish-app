@@ -2,7 +2,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventEnrichmentService } from './event-enrichment.service';
-import { EventRouterService } from '../behavior-engine/routing/event-router.service';
+import { EventOutboxService } from '../behavior-engine/routing/event-outbox.service';
 import { EventQualityService } from './event-quality.service'; // 👈 جدید
 import { guardEventForRuntime, resolveRuntimeGuardMode } from './event-envelope-runtime-guard';
 import { ConsentService } from '../consent/consent.service';
@@ -14,7 +14,7 @@ export class AnalyticsService {
   constructor(
     private prisma: PrismaService,
     private enrichmentService: EventEnrichmentService,
-    private eventRouter: EventRouterService,
+    private outbox: EventOutboxService,
     private eventQuality: EventQualityService, // 👈 جدید
     private readonly consent: ConsentService,
   ) {}
@@ -119,10 +119,15 @@ export class AnalyticsService {
       this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);
     }
 
-    // 🆕 ارسال رویداد به موتور سیگنال‌ها (بدون منتظر ماندن)
-    this.eventRouter.route(event, data.userId).catch(err =>
-      console.error(`Event routing failed for event ${event.id}:`, err)
-    );
+    // L0 — durable routing via the outbox: persist a routing record, then route immediately (fast path). If
+    // this process crashes before routing completes, the scheduled drain re-routes the pending row — the signal
+    // is never lost ("capture every second"). enqueue is idempotent (unique eventId).
+    const outboxId = await this.outbox.enqueue(event.id);
+    if (outboxId) {
+      this.outbox.processNow(outboxId, event, data.userId).catch((err) =>
+        console.error(`Event routing failed for event ${event.id}:`, err),
+      );
+    }
 
     return event;
   }

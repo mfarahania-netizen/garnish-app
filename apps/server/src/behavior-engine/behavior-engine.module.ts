@@ -12,6 +12,7 @@ import { SignalRegistryService } from './signals/signal.registry';
 import { IdentityDimensionBuilder } from './identity/identity-dimension.builder';
 import { BehaviorTimelineBuilder } from './identity/behavior-timeline.builder';
 import { EventRouterService } from './routing/event-router.service';
+import { EventOutboxService } from './routing/event-outbox.service';
 import { ProcessorRegistry } from './routing/processor.registry';
 import { RecipeSignalProcessor } from './processors/recipe.signal-processor';
 import { MealPlanSignalProcessor } from './processors/meal-plan.signal-processor';
@@ -33,6 +34,7 @@ import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
     IdentityDimensionBuilder,
     BehaviorTimelineBuilder,
     EventRouterService,
+    EventOutboxService,
     ProcessorRegistry,
     RecipeSignalProcessor,
     MealPlanSignalProcessor,
@@ -51,6 +53,7 @@ import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
     IdentityDimensionBuilder,
     BehaviorTimelineBuilder,
     EventRouterService,
+    EventOutboxService,
     LifestyleGraphBuilder,
     RecipeEmbeddingService,
   ],
