@@ -40,7 +40,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Post('consent')
   async grantConsent(@Req() req, @Body() body: { type: string; granted: boolean }) {
-    return this.usersService.grantConsent(req.user.userId, body.type, body.granted);
+    return this.usersService.grantConsent(req.user.userId, body.type, body.granted, req.ip);
   }
 
   // 🆕 GDPR Art. 20: data portability — export the CURRENT user's own data only.

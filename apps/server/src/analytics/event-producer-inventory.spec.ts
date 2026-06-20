@@ -36,8 +36,9 @@ function makeService() {
   const enrichment: any = { enrichEvent: jest.fn() };
   const router: any = { route: jest.fn(async () => undefined) };
   const quality: any = { assess: jest.fn(() => ({ isValid: true })) };
-  const svc = new AnalyticsService(prisma, enrichment, router, quality);
-  return { svc, prisma, enrichment, router, quality, created };
+  const consent: any = { hasPurpose: jest.fn(async () => true) }; // L0/B — gate is OFF by default; not exercised here
+  const svc = new AnalyticsService(prisma, enrichment, router, quality, consent);
+  return { svc, prisma, enrichment, router, quality, consent, created };
 }
 
 /* ───────────────────────── Artifact builder ───────────────────────── */

@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { ErasureService } from './erasure/erasure.service';
 import { UserExportService } from './export/user-export.service';
+import { ConsentService, CONSENT_PURPOSES } from '../consent/consent.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class UsersService {
     private prisma: PrismaService,
     private readonly erasureService: ErasureService,
     private readonly userExportService: UserExportService,
+    private readonly consent: ConsentService,
   ) {}
 
   async createUser(phone: string, password: string, name?: string) {
@@ -150,12 +152,20 @@ export class UsersService {
     });
   }
 
-  async grantConsent(userId: string, type: string, granted: boolean) {
-    return this.prisma.consentLog.upsert({
+  async grantConsent(userId: string, type: string, granted: boolean, ip?: string) {
+    const log = await this.prisma.consentLog.upsert({
       where: { userId_type: { userId, type } },
       create: { userId, type, granted },
       update: { granted, updatedAt: new Date() },
     });
+    // L0/B — mirror a purpose decision into the opt-in UserConsent ledger so the personalization loop
+    // (getConsentState → getLivingUserProfile hydration) actually activates on consent. ConsentLog above
+    // is unchanged (byte-identical); this is a purely additive second write for recognized purposes.
+    if ((CONSENT_PURPOSES as readonly string[]).includes(type)) {
+      if (granted) await this.consent.grantPurpose(userId, type, { source: 'settings', ip });
+      else await this.consent.withdrawPurpose(userId, type, { source: 'settings', ip });
+    }
+    return log;
   }
 
   // 🆕 GDPR: Right to be Forgotten — delegated to the transactional ErasureService (E39-1C).

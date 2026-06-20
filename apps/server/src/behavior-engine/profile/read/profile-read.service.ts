@@ -57,6 +57,16 @@ export class ProfileReadService {
     } catch (err) {
       this.logger.warn(`consent read unavailable; defaulting to core only: ${err instanceof Error ? err.name : 'error'}`);
     }
+    // L0/B — ALSO honor the opt-in UserConsent ledger (ConsentService's store; latest decision per purpose).
+    // Additive: cold-start has no rows → still core-only, so the byte-identical cold-start contract holds.
+    try {
+      const rows = await this.prisma.userConsent.findMany({ where: { userId }, orderBy: { createdAt: 'asc' }, select: { purpose: true, status: true } });
+      const latest = new Map<string, string>();
+      for (const r of rows) latest.set(r.purpose, r.status);
+      for (const [p, status] of latest) if (status === 'granted' && VALID_PURPOSES.has(p as DeclaredConsentPurpose)) granted.add(p as DeclaredConsentPurpose);
+    } catch (err) {
+      this.logger.warn(`user-consent read unavailable: ${err instanceof Error ? err.name : 'error'}`);
+    }
     return { granted: [...granted] };
   }
 

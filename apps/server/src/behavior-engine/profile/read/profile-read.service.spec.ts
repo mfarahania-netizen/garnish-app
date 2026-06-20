@@ -9,12 +9,14 @@ function makeDeps(opts: {
   pref?: any;
   allergies?: any[];
   observations?: any[];
+  userConsentRows?: any[];
 } = {}) {
   const prisma: any = {
     consentLog: { findMany: jest.fn().mockResolvedValue(opts.consentRows ?? []) },
     userPreference: { findUnique: jest.fn().mockResolvedValue(opts.pref ?? null), upsert: jest.fn().mockResolvedValue({}) },
     userAllergy: { findMany: jest.fn().mockResolvedValue(opts.allergies ?? []) },
     signalObservation: { findMany: jest.fn().mockResolvedValue(opts.observations ?? []) },
+    userConsent: { findMany: jest.fn().mockResolvedValue(opts.userConsentRows ?? []) },
   };
   const userFacts: any = {
     listByUser: jest.fn().mockResolvedValue(opts.facts ?? []),
@@ -34,6 +36,15 @@ describe('ProfileReadService — consent state', () => {
     const bad = makeDeps();
     bad.prisma.consentLog.findMany.mockRejectedValueOnce(new Error('db'));
     expect((await bad.svc.getConsentState('u1')).granted).toEqual(['core']);
+  });
+
+  it('honors the opt-in UserConsent ledger (latest decision per purpose) — this is what flips hydration on', async () => {
+    const { svc } = makeDeps({ userConsentRows: [
+      { purpose: 'personalization', status: 'granted' },
+      { purpose: 'analytics', status: 'granted' },
+      { purpose: 'analytics', status: 'withdrawn' }, // newer → analytics excluded
+    ] });
+    expect((await svc.getConsentState('u1')).granted.sort()).toEqual(['core', 'personalization']);
   });
 });
 

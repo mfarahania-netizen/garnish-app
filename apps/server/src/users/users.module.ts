@@ -6,9 +6,10 @@ import { UploadController } from './upload.controller';
 import { ErasureAuditService } from './erasure/erasure-audit.service';
 import { ErasureService } from './erasure/erasure.service';
 import { UserExportService } from './export/user-export.service';
+import { ConsentModule } from '../consent/consent.module';
 
 @Module({
-  imports: [MulterModule.register({ dest: './uploads' })],
+  imports: [MulterModule.register({ dest: './uploads' }), ConsentModule],
   providers: [UsersService, ErasureAuditService, ErasureService, UserExportService],
   controllers: [UsersController, UploadController],
   exports: [UsersService, ErasureAuditService, ErasureService, UserExportService],

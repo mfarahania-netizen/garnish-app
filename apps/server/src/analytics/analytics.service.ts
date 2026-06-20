@@ -5,6 +5,7 @@ import { EventEnrichmentService } from './event-enrichment.service';
 import { EventRouterService } from '../behavior-engine/routing/event-router.service';
 import { EventQualityService } from './event-quality.service'; // 👈 جدید
 import { guardEventForRuntime, resolveRuntimeGuardMode } from './event-envelope-runtime-guard';
+import { ConsentService } from '../consent/consent.service';
 
 @Injectable()
 export class AnalyticsService {
@@ -15,6 +16,7 @@ export class AnalyticsService {
     private enrichmentService: EventEnrichmentService,
     private eventRouter: EventRouterService,
     private eventQuality: EventQualityService, // 👈 جدید
+    private readonly consent: ConsentService,
   ) {}
 
   /**
@@ -84,11 +86,30 @@ export class AnalyticsService {
     if (data.duration) eventData.duration = data.duration;
     if (data.sessionId) eventData.sessionId = data.sessionId;
     if (data.payload) eventData.payload = JSON.stringify(data.payload);
+    // L0/B — denormalize recipeId from the payload onto the row for fast recipe-level signal queries
+    // (it previously lived only inside the opaque payload string). Processors still read payload.recipeId
+    // unchanged; this is a purely additive column write.
+    const rid = data.payload?.recipeId;
+    if (typeof rid === 'string' && rid) eventData.recipeId = rid;
 
     const event = await this.prisma.userEvent.create({ data: eventData });
 
     // غنی‌سازی را در پس‌زمینه اجرا کن
     this.enrichmentService.enrichEvent(event.id);
+
+    // L0/B — consent-at-ingest gate (default OFF → byte-identical). The raw event is ALWAYS stored
+    // (ops / legitimate interest); but BUILDING a personalization profile from it — routing into the
+    // signal engine — requires the 'personalization' purpose when enforced. Routing already no-ops for
+    // non-personalization event types, so this scopes the gate exactly to personalization signals.
+    // EVENT_CONSENT_GATE_MODE = off (default) | log (observe only) | enforce (skip routing without consent).
+    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || 'off').toLowerCase();
+    if (gateMode !== 'off') {
+      const allowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => true);
+      if (!allowed) {
+        if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization
+        this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);
+      }
+    }
 
     // 🆕 ارسال رویداد به موتور سیگنال‌ها (بدون منتظر ماندن)
     this.eventRouter.route(event, data.userId).catch(err =>

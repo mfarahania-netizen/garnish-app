@@ -7,9 +7,10 @@ import { AnalyticsIntelligenceService } from './intelligence/analytics-intellige
 import { OpsIntelligenceService } from './intelligence/ops-intelligence.service';
 import { BehaviorEngineModule } from '../behavior-engine/behavior-engine.module';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
+import { ConsentModule } from '../consent/consent.module';
 
 @Module({
-  imports: [BehaviorEngineModule, ProfileModule], // ANALYTICS-L4-16: Food DNA band distribution via getLivingUserProfile
+  imports: [BehaviorEngineModule, ProfileModule, ConsentModule], // +L0/B consent-at-ingest gate
   providers: [
     AnalyticsService,
     EventEnrichmentService,
