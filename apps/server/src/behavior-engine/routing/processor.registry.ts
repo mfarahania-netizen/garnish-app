@@ -23,6 +23,10 @@ export class ProcessorRegistry {
     this.map.set('recipe_view', recipeProcessor);
     this.map.set('favorite_add', recipeProcessor);
     this.map.set('favorite_remove', recipeProcessor);
+    // L0/C1: cooking is the strongest taste signal — route it (the web emits `cook_complete` at
+    // useCook.js; it was silently dropped here, so the loop never closed).
+    this.map.set('cook_complete', recipeProcessor);
+    this.map.set('recipe_cooked', recipeProcessor); // legacy alias, same handler
 
     // Meal Plan events
     this.map.set('mealplan_add', mealPlanProcessor);
