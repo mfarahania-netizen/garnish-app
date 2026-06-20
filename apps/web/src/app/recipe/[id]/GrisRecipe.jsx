@@ -8,7 +8,7 @@ import {
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
 import { scaleWeightG, scaleAmountText } from '../../../components/ges/scaling';
-import { parseGrisName, patchStepText, swapsList } from '../../../components/ges/personalize';
+import { parseGrisName, patchStepText, swapsList, stripGrisIds } from '../../../components/ges/personalize';
 
 /**
  * GrisRecipe — renders the full Garnish Recipe Intelligence Standard (GRIS v2) object as a premium,
@@ -148,7 +148,7 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
                     </Box>
                     {it.role && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🧩 {it.role}</Text> : null}
                     {it.buyTip && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>🛒 {it.buyTip}</Text> : null}
-                    {it.swap && !applied && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {it.swap}</Text> : null}
+                    {it.swap && !applied && !gone ? <Text component="p" style={{ ...muted, margin: '2px 0 0', color: 'var(--g-color-brand-700)' }}>🔄 {stripGrisIds(it.swap)}</Text> : null}
                   </Box>
                   );
                 })}
@@ -249,7 +249,7 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
       {list(g.serveWith).length ? (
         <>
           <H2 icon={IconSparkles}>سرو با</H2>
-          <Text component="p" style={{ ...body, margin: 0 }}>{g.serveWith.join(' · ')}</Text>
+          <Text component="p" style={{ ...body, margin: 0 }}>{list(g.serveWith).map(stripGrisIds).filter(Boolean).join(' · ')}</Text>
         </>
       ) : null}
 

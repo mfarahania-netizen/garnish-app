@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseGrisName, swapsList, patchStepText, personalizationSummary } from './personalize';
+import { parseGrisName, swapsList, patchStepText, personalizationSummary, stripGrisIds } from './personalize';
 
 describe('ges/personalize', () => {
   describe('parseGrisName', () => {
@@ -28,9 +28,19 @@ describe('ges/personalize', () => {
     });
   });
 
+  describe('stripGrisIds', () => {
+    it('removes an embedded «با ing_xxx» phrase from free GRIS text', () => {
+      expect(stripGrisIds('چلو یا کتهٔ ایرانی (برنج سفید با ing_basmati_rice_raw) · سبزی')).toBe('چلو یا کتهٔ ایرانی (برنج سفید) · سبزی');
+    });
+    it('removes a bare/suffix id token and leaves clean text', () => {
+      expect(stripGrisIds('گوشت گوساله — ing_veal_meat_raw')).toBe('گوشت گوساله');
+      expect(stripGrisIds('سبزی خوردن و ترشی')).toBe('سبزی خوردن و ترشی');
+    });
+  });
+
   it('personalizationSummary lists every active change', () => {
     expect(personalizationSummary({ servedFor: 8, swaps: { کره: { to: 'روغن زیتون' } }, removed: ['قارچ'] }))
-      .toEqual(['8 نفر', 'کره ← روغن زیتون', 'بدون قارچ']);
+      .toEqual(['۸ نفر', 'کره ← روغن زیتون', 'بدون قارچ']);
     expect(personalizationSummary({})).toEqual([]);
   });
 });
