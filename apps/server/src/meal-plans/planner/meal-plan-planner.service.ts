@@ -83,8 +83,8 @@ export class MealPlanPlannerService {
     for (const r of recipes) {
       const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;
       const fit = assessRecipeFit(r, profile, derived);
-      if (fit.safety.allergenConflict || fit.recommendation === 'avoid_allergen') {
-        excludedForAllergy += 1; // HARD EXCLUDE — a declared allergy is never planned
+      if (fit.safety.allergenConflict || fit.recommendation === 'avoid_allergen' || fit.safety.culturalConflict || fit.recommendation === 'avoid_constraint') {
+        excludedForAllergy += 1; // HARD EXCLUDE — a declared allergy OR observance (pork/halal) is never planned
         continue;
       }
       // S5 course gate: derive main-meal-eligibility from the EXISTING category + mealType (read-time, no

@@ -28,7 +28,7 @@ export function selectFitRankedSafe(recipes: any[], profile: any, limit = 10): S
       const fit = assessRecipeFit(r, profile, derived);
       return { recipeId: r.id, fitScore: fit.fitScore, recommendation: fit.recommendation, recipe: r };
     })
-    .filter((x) => x.recommendation !== 'avoid_allergen')
+    .filter((x) => x.recommendation !== 'avoid_allergen' && x.recommendation !== 'avoid_constraint')
     .sort((a, b) => b.fitScore - a.fitScore || a.recipeId.localeCompare(b.recipeId))
     .slice(0, limit);
 }

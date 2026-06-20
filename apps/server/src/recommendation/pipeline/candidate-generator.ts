@@ -11,6 +11,7 @@ import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integr
 // COLDSTART-L4-14: full recipe shape needed for assessRecipeFit + analyzeRecipeIntegrity (allergy-safe fit).
 const FIT_SELECT = {
   id: true, title: true, diet: true, difficulty: true, cookingTime: true, allergens: true, categories: true, region: true,
+  containsPork: true, // authoritative no-pork/halal flag (avoid_constraint)
   ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } },
 } as const;
 
@@ -61,7 +62,7 @@ export class CandidateGeneratorService {
         if (seen.has(recipeId)) continue;
         seen.add(recipeId);
         candidates.push(recipeId);
-        if (candidates.length >= target) return candidates;
+        if (candidates.length >= target) return this.filterSafe(userId, candidates);
       }
     }
 
@@ -71,12 +72,39 @@ export class CandidateGeneratorService {
           if (seen.has(recipeId)) continue;
           seen.add(recipeId);
           candidates.push(recipeId);
-          if (candidates.length >= target) return candidates;
+          if (candidates.length >= target) return this.filterSafe(userId, candidates);
         }
       }
     }
 
-    return candidates;
+    return this.filterSafe(userId, candidates);
+  }
+
+  /**
+   * HARD SAFETY GATE on the FULL merged candidate set (ALL users, ALL buckets) — the founder's
+   * non-negotiable invariant. Previously only the cold-start bucket was allergy-filtered; once a user had
+   * >5 events that bucket emptied and the other 7 buckets + the ranker applied NO allergen filter (guardian
+   * H1). Reuses the living profile + assessRecipeFit; drops 'avoid_allergen' AND 'avoid_constraint'
+   * (pork/halal/kosher — guardian H2). FAIL-CLOSED: if the profile can't load, surface NOTHING rather than
+   * something unsafe. Preserves bucket order. generate() over-generates (limit×5) so the loss is absorbed.
+   */
+  private async filterSafe(userId: string, candidateIds: string[]): Promise<string[]> {
+    if (candidateIds.length === 0) return [];
+    let profile: any;
+    try {
+      profile = await this.profiles.getLivingUserProfile(userId);
+    } catch {
+      return []; // cannot establish the safe allergy set → nothing rather than something unsafe
+    }
+    if (!profile) return [];
+    const recipes = await this.prisma.recipe.findMany({ where: { id: { in: candidateIds } }, select: FIT_SELECT });
+    const safe = new Set<string>();
+    for (const r of recipes) {
+      const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;
+      const rec = assessRecipeFit(r, profile, derived).recommendation;
+      if (rec !== 'avoid_allergen' && rec !== 'avoid_constraint') safe.add(r.id);
+    }
+    return candidateIds.filter((id) => safe.has(id)); // preserve bucket order; unsafe dropped
   }
 
   private async getSimilarRecipes(userId: string): Promise<string[]> {
@@ -320,7 +348,7 @@ export class CandidateGeneratorService {
         const fit = assessRecipeFit(r, profile, derived);
         return { recipeId: r.id, fitScore: fit.fitScore, recommendation: fit.recommendation, reasons: (fit.reasons ?? []).slice(0, 3) };
       })
-      .filter((x) => x.recommendation !== 'avoid_allergen'); // declared allergies are never surfaced in cold-start
+      .filter((x) => x.recommendation !== 'avoid_allergen' && x.recommendation !== 'avoid_constraint'); // declared allergies + observance (pork) never surfaced
   }
 
   /** Best-effort soft pool filter from the declared/reconciled profile (NOT the allergy set — that's the hard fit filter). */

@@ -33,14 +33,15 @@ describe('CandidateGeneratorService', () => {
       userHealthGoal: { findMany: jest.fn().mockResolvedValue([]) },
       favoriteRecipe: { findMany: jest.fn().mockResolvedValue([]) },
       recipe: {
-        findMany: jest.fn().mockResolvedValue([
-          { id: 'trend-1' },
-          { id: 'trend-2' },
-          { id: 'health-1' },
-          { id: 'season-1' },
-          { id: 'inventory-1' },
-          { id: 'cold-1' },
-        ]),
+        // The hard safety gate (filterSafe) re-fetches candidates by id.in → echo them (no allergens → safe);
+        // bucket queries (no id.in) return the default pool.
+        findMany: jest.fn().mockImplementation((args: any) => {
+          const ids = args?.where?.id?.in;
+          if (Array.isArray(ids)) return Promise.resolve(ids.map((id: string) => ({ id })));
+          return Promise.resolve([
+            { id: 'trend-1' }, { id: 'trend-2' }, { id: 'health-1' }, { id: 'season-1' }, { id: 'inventory-1' }, { id: 'cold-1' },
+          ]);
+        }),
       },
       shoppingItem: { findMany: jest.fn().mockResolvedValue([]) },
       recipeIngredient: { findMany: jest.fn().mockResolvedValue([]) },
@@ -53,6 +54,40 @@ describe('CandidateGeneratorService', () => {
     profiles = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergy([])) };
     content = { neighbors: jest.fn().mockResolvedValue({ neighbors: [], status: 'no_similar' }) };
     service = new CandidateGeneratorService(prisma, featureStore, embeddingService, profiles, content);
+  });
+
+  // GUARDIAN H1/H2: the allergy HARD filter + no-pork must hold on the LIVE feed for an ACTIVE user
+  // (not just cold-start). Active = >5 events → cold-start bucket empty → the other buckets feed the ranker.
+  it('the live feed drops allergen AND pork conflicts for an active user, keeps the safe one', async () => {
+    prisma.userEvent.count.mockResolvedValue(99); // active → cold-start empty
+    const profile = profileWithAllergy(['peanut']);
+    (profile.declared.dimensions as any)['dietary.cultural_constraints'] = { status: 'declared', value: ['halal'], confidence: 0.9 };
+    profiles.getLivingUserProfile.mockResolvedValue(profile);
+    // a (similar) bucket yields a peanut dish, a pork dish, and a safe dish
+    prisma.userEvent.findMany.mockResolvedValue([{ payload: '{"recipeId":"seed"}' }]);
+    prisma.searchTerm.findMany
+      .mockResolvedValueOnce([{ term: 't' }])
+      .mockResolvedValueOnce([{ recipeId: 'peanut-dish' }, { recipeId: 'pork-dish' }, { recipeId: 'safe-dish' }]);
+    prisma.recipe.findMany.mockImplementation((args: any) => {
+      const ids = args?.where?.id?.in;
+      const all = [
+        { id: 'peanut-dish', title: 'Peanut Stew', allergens: [], containsPork: false, ingredients: [{ name: 'peanut', ingredient: { allergens: { us9: ['peanut'], eu14: ['peanut'], other: [], mayContain: [] } } }] },
+        { id: 'pork-dish', title: 'Pork Belly', allergens: [], containsPork: true, ingredients: [{ name: 'pork', ingredient: { allergens: null } }] },
+        { id: 'safe-dish', title: 'Steamed Rice', allergens: [], containsPork: false, ingredients: [{ name: 'rice', ingredient: { allergens: null } }] },
+      ];
+      return Promise.resolve(Array.isArray(ids) ? all.filter((r) => ids.includes(r.id)) : []);
+    });
+    const result = await service.generate('u1', 10);
+    expect(result).not.toContain('peanut-dish'); // declared allergy → never surfaced (H1)
+    expect(result).not.toContain('pork-dish'); // halal observance → never surfaced (H2)
+    expect(result).toContain('safe-dish');
+  });
+
+  it('the live feed FAILS CLOSED — if the profile cannot load, it returns nothing rather than something unsafe', async () => {
+    prisma.userEvent.findMany.mockResolvedValue([{ payload: '{"recipeId":"seed"}' }]);
+    prisma.searchTerm.findMany.mockResolvedValueOnce([{ term: 't' }]).mockResolvedValueOnce([{ recipeId: 'x' }]);
+    profiles.getLivingUserProfile.mockRejectedValue(new Error('db down'));
+    expect(await service.generate('u1', 10)).toEqual([]);
   });
 
   it('mixes candidate sources instead of overfilling from one bucket', async () => {

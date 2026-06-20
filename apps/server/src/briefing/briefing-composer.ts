@@ -87,7 +87,7 @@ export function composeBriefing(args: {
   // SAFE picks only (allergen-conflicting recipes are never surfaced), best-fit first, then a stable
   // day-rotated choice among the top window so the daily pick varies honestly without randomness.
   const safe = picks
-    .filter((p) => p.safe && p.recommendation !== 'avoid_allergen')
+    .filter((p) => p.safe && p.recommendation !== 'avoid_allergen' && p.recommendation !== 'avoid_constraint')
     .sort((a, b) => (b.fitScore - a.fitScore) || a.recipeId.localeCompare(b.recipeId));
   let pick: Briefing['pick'] = null;
   if (safe.length > 0) {
