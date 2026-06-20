@@ -28,7 +28,8 @@ describe('Recipe Intelligence QA gate (RECIPE-L4-07)', () => {
   // integrity
   const integ = analyzeRecipeIntegrity({ id: 'r', diet: 'vegan', mealType: 'lunch', allergens: ['milk'], prepTime: '5', cookingTime: 10, totalTime: '15', servings: 2, ingredients: [{ name: 'oat', ingredient: { allergens: { eu14: ['gluten'], us9: [], other: [], mayContain: [] } } }, { name: 'mystery-x' }] });
   check('integrity_resolves_and_flags', 'integrity', integ.ingredientResolution.resolved === 1 && integ.ingredientResolution.unresolved === 1);
-  check('integrity_derives_allergens_informational', 'integrity', integ.derivedAllergens.allergens.includes('gluten') && integ.derivedAllergens.informationalOnly === true);
+  // «gluten» is canonicalized to the wheat-family tokens by the hardened extractor (gluten_cereals + wheat).
+  check('integrity_derives_allergens_informational', 'integrity', integ.derivedAllergens.allergens.includes('gluten_cereals') && integ.derivedAllergens.allergens.includes('wheat') && integ.derivedAllergens.informationalOnly === true);
   check('integrity_timing_ok', 'integrity', integ.timing.consistent === true);
 
   // ALLERGY HARD FILTER — never softened even with otherwise-perfect fit

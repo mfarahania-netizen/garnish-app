@@ -109,7 +109,25 @@ export class ProfileReadService {
     // are hydrated yet). We pass NO declared/sensitive data into it — the observed contract is untouched.
     let observedGraph: UserFoodIdentityGraph | null = null;
     try {
-      const built = buildUserFoodIdentityGraph([], { userId, mode: 'shadow', now });
+      // L0/C3 — ADDITIVE consent-gated hydration (mirrors getFoodDnaProjection's proven pattern). When the
+      // user granted 'personalization' AND has real persisted observations, build the observed graph from
+      // them; on ANY failure or when there are none, fall through to the EXACT prior cold-start input
+      // (empty array + 'shadow' mode) so cold-start and non-consenting users stay byte-identical. The
+      // allergy invariant is unaffected regardless: reconciled.allergies.reconciledValue is ALWAYS the
+      // declared set (profile-reconciliation.ts), never altered by the observed graph.
+      let observations: any[] = [];
+      try {
+        if (consent.granted.includes('personalization')) {
+          const port = createPrismaShadowProfileFeedPort(this.prisma as any, () => now);
+          const loaded = await port.loadObservations(userId, 'rebuild');
+          if (loaded && Array.isArray(loaded.observations)) observations = loaded.observations;
+        }
+      } catch {
+        observations = []; // best-effort; never let hydration alter the cold-start contract
+      }
+      const built = observations.length > 0
+        ? buildUserFoodIdentityGraph(observations, { userId, mode: 'offline_eval', now })
+        : buildUserFoodIdentityGraph([], { userId, mode: 'shadow', now });
       observedGraph = built.blocked ? null : built.graph;
     } catch (err) {
       this.logger.warn(`observed graph unavailable; composing declared-only: ${err instanceof Error ? err.name : 'error'}`);

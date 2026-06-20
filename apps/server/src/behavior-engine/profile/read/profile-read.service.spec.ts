@@ -8,11 +8,13 @@ function makeDeps(opts: {
   facts?: any[];
   pref?: any;
   allergies?: any[];
+  observations?: any[];
 } = {}) {
   const prisma: any = {
     consentLog: { findMany: jest.fn().mockResolvedValue(opts.consentRows ?? []) },
     userPreference: { findUnique: jest.fn().mockResolvedValue(opts.pref ?? null), upsert: jest.fn().mockResolvedValue({}) },
     userAllergy: { findMany: jest.fn().mockResolvedValue(opts.allergies ?? []) },
+    signalObservation: { findMany: jest.fn().mockResolvedValue(opts.observations ?? []) },
   };
   const userFacts: any = {
     listByUser: jest.fn().mockResolvedValue(opts.facts ?? []),
@@ -51,6 +53,45 @@ describe('ProfileReadService — living profile (owner-only, merged)', () => {
     expect(profile.maturity.overallScore).toBeGreaterThan(0);
     expect(['empty', 'forming', 'developing', 'mature']).toContain(profile.maturity.band);
     expect(profile.privacy.ownerOnly).toBe(true);
+  });
+});
+
+// L0/C3 — the additive consent-gated observed-hydration must NOT alter the two hard invariants:
+// (1) the allergy reconciled set is ALWAYS the declared set; (2) cold-start output stays byte-identical.
+describe('ProfileReadService — L0 hydration invariants', () => {
+  const allergyRow = [{ allergy: { name: 'peanut' } }];
+  const cuisineObs = [
+    { signalName: 'taste.cuisine_affinity', weight: 1, observedAt: NOW },
+    { signalName: 'taste.cuisine_affinity', weight: 1, observedAt: NOW },
+    { signalName: 'taste.cuisine_affinity', weight: 0.8, observedAt: NOW },
+  ];
+
+  it('cold-start (no consent, no data) stays byte-identical and NEVER hydrates', async () => {
+    const { svc, prisma } = makeDeps(); // core-only consent, empty everything
+    const p = await svc.getLivingUserProfile('u1', NOW);
+    expect(p.observed.status).toBe('cold_start');
+    expect(p.reconciled.dimensions.allergies.reconciledValue).toEqual([]);
+    expect(p.maturity.band).toBe('empty');
+    // without 'personalization' consent the hydration path must never even query observations
+    expect(prisma.signalObservation.findMany).not.toHaveBeenCalled();
+  });
+
+  it('declared allergy + personalization consent but ZERO observations → allergy set = declared, still cold-start', async () => {
+    const { svc, prisma } = makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: [] });
+    const p = await svc.getLivingUserProfile('u1', NOW);
+    expect(prisma.signalObservation.findMany).toHaveBeenCalled(); // consent → path runs
+    expect(p.reconciled.dimensions.allergies.reconciledValue).toEqual(['peanut']); // declared, untouched
+    expect(p.observed.status).toBe('cold_start'); // no observations → exact cold-start
+  });
+
+  it('WITH observations + consent → observed axis hydrates, but the allergy set is STILL the declared set', async () => {
+    const cold = await makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: [] }).svc.getLivingUserProfile('u1', NOW);
+    const hot = await makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: cuisineObs }).svc.getLivingUserProfile('u1', NOW);
+    // the observed axis is genuinely different once real signals flow in (the L0 unlock)
+    expect(JSON.stringify(hot.observed)).not.toEqual(JSON.stringify(cold.observed));
+    // …yet the safety-critical allergy set is byte-identical to the declared one in BOTH
+    expect(hot.reconciled.dimensions.allergies.reconciledValue).toEqual(['peanut']);
+    expect(cold.reconciled.dimensions.allergies.reconciledValue).toEqual(['peanut']);
   });
 });
 

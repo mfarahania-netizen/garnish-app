@@ -102,14 +102,17 @@ describe('ProfileReadService.getFoodDnaProjection — hydrates from real persist
   });
 });
 
-describe('getLivingUserProfile is UNCHANGED by S2 (still builds observed from [] — frozen safety path)', () => {
-  it('source still passes [] to the builder (no hydration leaked into the audited path)', () => {
-    // guards the byte-identical promise: the allergy/recsys/AI path must NOT hydrate observed.
-    // (full proof = the scope diff; this is the fast in-suite tripwire.)
+// L0/C3 SUPERSEDES the S2-era "never hydrate" promise (the planned S26 step): getLivingUserProfile now
+// hydrates the observed graph from real SignalObservations — but ONLY gated on 'personalization' consent
+// AND observations existing, and it ALWAYS falls through to the EXACT prior cold-start input otherwise.
+// The byte-identical cold-start + allergy-set invariants are now proven BEHAVIORALLY in
+// profile-read.service.spec.ts → "ProfileReadService — L0 hydration invariants". This is the fast tripwire.
+describe('getLivingUserProfile observed hydration (L0/C3) is consent-gated + cold-start-preserving', () => {
+  it('keeps the exact cold-start fallback and gates hydration on personalization consent', () => {
     const fs = require('node:fs');
     const src = fs.readFileSync(require('node:path').join(__dirname, 'profile-read.service.ts'), 'utf8');
     const fn = src.slice(src.indexOf('async getLivingUserProfile'), src.indexOf('async getLivingProfile'));
-    expect(fn).toContain('buildUserFoodIdentityGraph([],');
-    expect(fn).not.toContain('loadObservations'); // hydration lives ONLY in getFoodDnaProjection
+    expect(fn).toContain("buildUserFoodIdentityGraph([], { userId, mode: 'shadow', now })"); // exact cold-start fallback
+    expect(fn).toContain("consent.granted.includes('personalization')"); // hydration is consent-gated
   });
 });
