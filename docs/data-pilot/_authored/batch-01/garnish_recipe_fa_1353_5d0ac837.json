@@ -1,0 +1,569 @@
+{
+  "recipeId": "garnish_recipe_fa_1353_5d0ac837",
+  "gris": {
+    "schemaVersion": "2.1",
+    "story": {
+      "hook": "رازِ دونرِ خوب در خانه، تابه نیست؛ نازکیِ برش و داغ‌بودنِ تابه است. وقتی برش‌های نازکِ گوشت در روغنِ کم و حرارتِ بالا فقط چند ثانیه روی هر رو می‌مانند، لبه‌ها برشته و عطردار می‌شوند بی‌آنکه گوشت خشک شود.",
+      "origin": "کباب ترکی همان «دونر» (döner، به‌معنای «چرخان») است؛ سبکی از کباب که در آن گوشتِ ورقه‌ورقه روی سیخِ عمودی می‌چرخد و لایه‌لایه تراشیده می‌شود. این نسخهٔ خانگی همان طعم را با تابهٔ داغ بازسازی می‌کند.",
+      "occasion": "نهار یا شام سریع، ساندویچِ سرِ پا، دورهمیِ بی‌تشریفات.",
+      "lineage": "ریشهٔ سیخِ عمودیِ امروزی معمولاً به آناتولیِ سدهٔ نوزدهم نسبت داده می‌شود؛ منشأ دقیقِ منطقه‌ایِ آن محلِ بحث است، پس آن را به‌عنوان سنتی مستند و نه ادعای قطعی می‌آوریم. این نسخه اقتباسِ خانگیِ تابه‌ای است."
+    },
+    "whyItWorks": [
+      {
+        "point": "تابهٔ داغ + برشِ نازک = لبهٔ برشته بدون خشک‌شدن",
+        "explanation": "روی سطح خشک و داغِ بالای ۱۴۰ تا ۱۶۵ درجهٔ سانتی‌گراد، واکنش میلارد بین قند و پروتئینِ گوشت رخ می‌دهد و رنگ و عطرِ کبابی می‌سازد. چون برش نازک است، سطح سریع برشته می‌شود و مرکز پیش از خشک‌شدن می‌پزد.",
+        "testedBecause": "McGee / López-Alt — Maillard"
+      },
+      {
+        "point": "سطحِ خشک پیش‌نیازِ برشته‌شدن است",
+        "explanation": "آبِ روی گوشت باید اول تبخیر شود تا دما بتواند بالای نقطهٔ میلارد برود؛ تا وقتی سطح خیس است دما حدود ۱۰۰ درجه گیر می‌کند و گوشت آب‌پز می‌شود نه کبابی. به همین دلیل ماستِ مرینیتِ چسبیده را می‌تکانیم و تابه را شلوغ نمی‌کنیم.",
+        "testedBecause": "ATK — surface drying enables browning"
+      },
+      {
+        "point": "ماست در مرینیت، سطح را نرم و کمی برشته‌پذیرتر می‌کند",
+        "explanation": "اسیدِ ملایم و آنزیم‌های ماست فقط چند میلی‌مترِ سطحِ گوشت را سست می‌کنند (نفوذِ مرینیت سطحی است، نه تا مغز)؛ قندِ شیریِ ماست هم به برشته‌شدنِ سطح کمک می‌کند. پس ماست برای طعم و سطح است، نه برای نرم‌کردنِ کلِ تکه.",
+        "testedBecause": "López-Alt — marination is shallow"
+      },
+      {
+        "point": "ادویه را در روغن باز کنید تا عطرش آزاد شود",
+        "explanation": "رنگ‌دانه و عطرِ پاپریکا و زیره چربی‌دوست‌اند؛ روغنِ زیتونِ مرینیت این ترکیبات را در خود حل می‌کند و هنگام داغ‌شدنِ تابه، عطر را روی گوشت پخش می‌کند. در آب این اتفاق به‌خوبی نمی‌افتد.",
+        "testedBecause": "Modernist — fat as flavor carrier"
+      },
+      {
+        "point": "نان را گرم بپیچید تا نشکند",
+        "explanation": "گرما، نشاستهٔ نان را کمی نرم و انعطاف‌پذیر می‌کند؛ نانِ سردِ خشک هنگام تاکردن ترک می‌خورد. گرم‌کردنِ کوتاه کافی است؛ زیاد گرم‌کردن نان را خشک و شکننده می‌کند.",
+        "testedBecause": "King Arthur — starch flexibility with heat"
+      }
+    ],
+    "glance": {
+      "promise": "برش‌های گوشتِ لبه‌برشته با عطرِ پاپریکا و زیره، پیچیده در لواشِ گرم با کاهو، گوجه، خیارشور و سسِ ارده.",
+      "activeTimeMin": 35,
+      "totalTimeMin": 155,
+      "handsOffMin": 120,
+      "difficulty": "متوسط",
+      "costBand": "متوسط",
+      "servings": 4,
+      "keyEquipment": ["تابهٔ چدنی یا تابهٔ ته‌ضخیم", "چاقوی تیز", "کاسهٔ مرینیت", "انبر یا کفگیر"],
+      "equipmentIdeal": ["تابهٔ چدنی — حرارت را یکنواخت نگه می‌دارد و با افزودن گوشت کمتر سرد می‌شود، پس لبه‌ها بهتر برشته می‌شوند"],
+      "goodFor": ["شام سریع", "ساندویچ", "دورهمی بی‌تشریفات"]
+    },
+    "skillsLearned": [
+      "برشِ نازکِ گوشت در خلافِ جهتِ رشتهٔ گوشت",
+      "مرینیتِ ماستی برای طعم و سطح",
+      "سرخ‌کردن در چند نوبت بدون شلوغ‌کردنِ تابه",
+      "تشخیصِ پختِ ایمنِ گوشتِ تکه‌ای",
+      "پیچیدنِ رولِ فشرده در نانِ لواش"
+    ],
+    "ingredients": [
+      {
+        "ingredientId": "ing_beef_steak_raw",
+        "name": "استیک گاو",
+        "component": "گوشت و مرینیت",
+        "role": "پروتئین اصلی",
+        "weightG": 600,
+        "volume": "حدود ۲ تکهٔ بزرگ",
+        "prepState": "برش‌های بسیار نازک، در خلافِ رشتهٔ گوشت",
+        "buyTip": "تکه‌ای کم‌چربیِ نسبتاً نرم مثل راسته یا سردست بگیرید؛ نیم‌ساعت در فریزر بماند تا برشِ نازک آسان شود.",
+        "swaps": [
+          { "ingredientId": "ing_lamb_meat_raw", "name": "گوشت گوسفند", "note": "هم‌نقش؛ چرب‌تر و خوش‌عطرتر، همان روش", "ratio": "۱:۱" },
+          { "ingredientId": "ing_veal_meat_raw", "name": "گوشت گوساله", "note": "هم‌نقش؛ کمی لطیف‌تر، زمان پخت کمی کمتر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_chicken_thigh_raw", "name": "ران مرغ", "note": "دونرِ مرغ؛ آب‌دارتر از سینه. تا مغزِ ۷۴ درجه بپزید، نه کمتر", "ratio": "۱:۱" }
+        ],
+        "swap": "گوشت گوسفند یا گوساله؛ یا ران مرغ برای دونرِ مرغ",
+        "optional": false,
+        "criticalRole": true
+      },
+      {
+        "ingredientId": "ing_plain_yogurt",
+        "name": "ماست ساده",
+        "component": "گوشت و مرینیت",
+        "role": "مرینیت (اسید/طعم/سطح)",
+        "weightG": 120,
+        "volume": "نصف پیمانه",
+        "prepState": "هم‌زده تا یکدست",
+        "buyTip": "ماستِ ترشِ کم‌آب بهتر می‌چسبد؛ ماست یونانی غلیظ‌تر و خوب است.",
+        "swaps": [
+          { "ingredientId": "ing_greek_yogurt_plain", "name": "ماست یونانی", "note": "غلیظ‌تر، بهتر می‌چسبد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_sour_cream", "name": "خامه ترش", "note": "چرب‌تر و ملایم‌تر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_labneh", "name": "لبنه", "note": "بسیار غلیظ؛ کمی شل کنید", "ratio": "۱:۱" },
+          { "ingredientId": "ing_coconut_yogurt_plain", "name": "ماست نارگیلی", "note": "بدونِ لبنیات؛ کمی آب می‌اندازد", "ratio": "۱:۱" }
+        ],
+        "swap": "ماست یونانی، خامه ترش یا لبنه (همگی هم‌نقش)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_onion_raw",
+        "name": "پیاز خام",
+        "component": "گوشت و مرینیت",
+        "role": "عطر/طعم پایه",
+        "weightG": 110,
+        "volume": "۱ عددِ متوسط",
+        "prepState": "نیمی رنده برای مرینیت، نیمی خلالی برای داخل رول",
+        "buyTip": "آبِ پیازِ رنده‌شده عطر و آنزیمِ سطحی‌نرم‌کننده دارد؛ کمی فشار دهید تا آبش وارد مرینیت شود.",
+        "swaps": [
+          { "ingredientId": "ing_shallot_raw", "name": "شالوت", "note": "ملایم‌تر و کمی شیرین", "ratio": "۱:۱" },
+          { "ingredientId": "ing_red_onion_raw", "name": "پیاز قرمز", "note": "برای داخلِ رول؛ خام و خوش‌رنگ", "ratio": "۱:۱" }
+        ],
+        "swap": "شالوت یا پیاز قرمز (هم‌نقش عطری)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_garlic_raw",
+        "name": "سیر خام",
+        "component": "گوشت و مرینیت",
+        "role": "عطر/طعم پایه",
+        "weightG": 6,
+        "volume": "۲ حبه",
+        "prepState": "رنده یا له‌شده",
+        "buyTip": "سیرِ تازه و سفت بگیرید؛ سیرِ جوانه‌زده تلخ می‌شود.",
+        "swaps": [
+          { "ingredientId": "ing_garlic_paste", "name": "خمیر سیر", "note": "هم‌نقش؛ معادلِ هر حبه حدود نصف قاشق چای‌خوری", "ratio": "۲ حبه ≈ ۱ ق‌چ" },
+          { "ingredientId": "ing_roasted_garlic", "name": "سیر کبابی", "note": "ملایم‌تر و شیرین‌تر، بدونِ تندیِ خام", "ratio": "۱:۱" }
+        ],
+        "swap": "خمیر سیر یا سیر کبابی (هم‌نقش عطری)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_olive_oil",
+        "name": "روغن زیتون",
+        "component": "گوشت و مرینیت",
+        "role": "چربی/حاملِ عطرِ ادویه",
+        "weightG": 40,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "—",
+        "buyTip": "روغنِ زیتونِ معمولی کافی است؛ برای تابهٔ بسیار داغ، روغنِ با نقطهٔ دودِ بالاتر هم خوب است.",
+        "swaps": [
+          { "ingredientId": "ing_sunflower_oil", "name": "روغن آفتابگردان", "note": "خنثی، نقطهٔ دودِ بالاتر برای تابهٔ داغ", "ratio": "۱:۱" },
+          { "ingredientId": "ing_canola_oil", "name": "روغن کانولا", "note": "خنثی، هم‌نقش", "ratio": "۱:۱" },
+          { "ingredientId": "ing_ghee", "name": "روغن حیوانی/گی", "note": "عطرِ کره‌ای و برشتگیِ خوب", "ratio": "۱:۱" }
+        ],
+        "swap": "روغن آفتابگردان یا کانولا؛ یا گی برای عطرِ بیشتر",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_paprika_ground",
+        "name": "پاپریکا آسیاب‌شده",
+        "component": "گوشت و مرینیت",
+        "role": "ادویه/رنگ",
+        "weightG": 5,
+        "volume": "۱ قاشق چای‌خوری",
+        "prepState": "—",
+        "buyTip": "پاپریکای دودی عطرِ کبابیِ بیشتری می‌دهد؛ تازه و خوش‌رنگ باشد.",
+        "swaps": [
+          { "ingredientId": "ing_red_pepper_paste", "name": "رب فلفل قرمز", "note": "هم‌نقش برای رنگ و عمق؛ مقدار کمتر و آبِ مرینیت را کم کنید", "ratio": "نصف مقدار" }
+        ],
+        "swap": "رب فلفل قرمز (هم‌نقشِ رنگ/طعم، با تنظیمِ مایع)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_cumin_ground",
+        "name": "زیره سبز آسیاب‌شده",
+        "component": "گوشت و مرینیت",
+        "role": "ادویه/عطر",
+        "weightG": 2,
+        "volume": "سه‌چهارم قاشق چای‌خوری",
+        "prepState": "—",
+        "buyTip": "زیرهٔ تازه‌آسیاب عطرِ بیشتری دارد.",
+        "swaps": [
+          { "ingredientId": "ing_coriander_seed_ground", "name": "تخم گشنیز آسیاب‌شده", "note": "ملایم‌تر و کمی مرکباتی؛ هم‌خانواده", "ratio": "۱:۱" }
+        ],
+        "swap": "تخم گشنیز آسیاب‌شده (هم‌خانوادهٔ عطری، ملایم‌تر)",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lemon_juice_bottled",
+        "name": "آبلیموی بطری",
+        "component": "گوشت و مرینیت",
+        "role": "اسید/طعم",
+        "weightG": 30,
+        "volume": "۲ قاشق غذاخوری",
+        "prepState": "—",
+        "buyTip": "آبلیموی تازه عطرِ روشن‌تری دارد اگر در دسترس باشد.",
+        "swaps": [
+          { "ingredientId": "ing_lemon_raw", "name": "لیمو زرد", "note": "آبِ تازه؛ عطرِ روشن‌تر", "ratio": "۲ ق‌غ ≈ آبِ نصف لیمو" },
+          { "ingredientId": "ing_lime_raw", "name": "لیمو سبز", "note": "تیزتر و معطرتر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_white_vinegar", "name": "سرکه سفید", "note": "فقط اسید بدونِ عطرِ مرکبات؛ کمتر بزنید", "ratio": "نصف مقدار" }
+        ],
+        "swap": "آبِ لیموی تازه، لیمو سبز یا کمی سرکهٔ سفید",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_salt_table",
+        "name": "نمک خوراکی",
+        "component": "گوشت و مرینیت",
+        "role": "چاشنی",
+        "weightG": null,
+        "volume": "۱ قاشق چای‌خوری (به‌مزه)",
+        "prepState": "—",
+        "buyTip": "نمک را در مرینیت بزنید تا چند میلی‌مترِ سطحِ گوشت را نرم و چاشنی‌دار کند.",
+        "swaps": [],
+        "swap": "",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_black_pepper_ground",
+        "name": "فلفل سیاه آسیاب‌شده",
+        "component": "گوشت و مرینیت",
+        "role": "چاشنی/عطر",
+        "weightG": 1,
+        "volume": "نصف قاشق چای‌خوری",
+        "prepState": "—",
+        "buyTip": "فلفلِ تازه‌آسیاب عطرِ بیشتری دارد.",
+        "swaps": [
+          { "ingredientId": "ing_white_pepper_ground", "name": "فلفل سفید", "note": "ملایم‌تر، بدونِ نقطه‌های سیاه", "ratio": "۱:۱" }
+        ],
+        "swap": "فلفل سفید (ملایم‌تر، هم‌نقش)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lavash_bread",
+        "name": "نان لواش",
+        "component": "نان و پیچیدن",
+        "role": "نان/پوشش",
+        "weightG": null,
+        "volume": "۴ عدد",
+        "prepState": "کوتاه گرم‌شده تا نرم و انعطاف‌پذیر",
+        "buyTip": "لواشِ تازه و نرم بهتر می‌پیچد؛ نانِ خشک را زیر دستمالِ نمدار کمی نرم کنید.",
+        "swaps": [
+          { "ingredientId": "ing_taftoon_bread", "name": "نان تافتون", "note": "نازک و انعطاف‌پذیر، خوب می‌پیچد", "ratio": "۱:۱" },
+          { "ingredientId": "ing_pita_bread", "name": "نان پیتا", "note": "جیب‌دار؛ به‌جای رول، پُر می‌شود", "ratio": "۱:۱" },
+          { "ingredientId": "ing_wheat_tortilla", "name": "تورتیلای گندم", "note": "نرم و انعطاف‌پذیر، رولِ تمیز", "ratio": "۱:۱" }
+        ],
+        "swap": "نان تافتون، نان پیتا یا تورتیلای گندم",
+        "optional": false,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_lettuce_raw",
+        "name": "کاهو خام",
+        "component": "سبزیجاتِ داخل رول",
+        "role": "بافت/تازگی",
+        "weightG": 120,
+        "volume": "حدود ۲ پیمانه خلال‌شده",
+        "prepState": "خلالی و کاملاً خشک",
+        "buyTip": "کاهو را خوب خشک کنید؛ کاهوی خیس رول را شل و آبکی می‌کند.",
+        "swaps": [
+          { "ingredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "note": "ترد‌تر، همان نقش", "ratio": "۱:۱" },
+          { "ingredientId": "ing_romaine_lettuce_raw", "name": "کاهوی رومی", "note": "سفت‌تر، تردیِ خوب", "ratio": "۱:۱" },
+          { "ingredientId": "ing_red_cabbage_raw", "name": "کلم قرمز", "note": "تردتر و خوش‌رنگ؛ سبکِ دونرِ ترکی", "ratio": "۱:۱" }
+        ],
+        "swap": "کاهوی پیچ، کاهوی رومی یا کلم قرمزِ خلالی",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_tomato_raw",
+        "name": "گوجه‌فرنگی خام",
+        "component": "سبزیجاتِ داخل رول",
+        "role": "تازگی/اسیدِ ملایم",
+        "weightG": 240,
+        "volume": "۲ عددِ متوسط",
+        "prepState": "خلالی، دانه‌گرفته تا کمتر آب بیندازد",
+        "buyTip": "گوجهٔ سفت و رسیده بگیرید؛ مرکزِ آبدار را جدا کنید تا رول خیس نشود.",
+        "swaps": [
+          { "ingredientId": "ing_sun_dried_tomatoes_oil_packed", "name": "گوجه خشک در روغن", "note": "متمرکزتر و بدونِ آب؛ مقدار کمتر", "ratio": "یک‌سوم" }
+        ],
+        "swap": "گوجهٔ خشک در روغن (متمرکز، بدونِ آب)",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_cucumber_pickled",
+        "name": "خیارشور",
+        "component": "سبزیجاتِ داخل رول",
+        "role": "اسید/طعمِ ترش",
+        "weightG": 100,
+        "volume": "حدود ۲ عددِ متوسط، خلالی",
+        "prepState": "خلالی و خشک‌شده",
+        "buyTip": "خیارشورِ ترد و کم‌نمک بهتر است؛ آبش را بگیرید تا رول خیس نشود.",
+        "swaps": [
+          { "ingredientId": "ing_cucumber_raw", "name": "خیار خام", "note": "تازه و ترد، بدونِ ترشی", "ratio": "۱:۱" },
+          { "ingredientId": "ing_mixed_pickles", "name": "ترشی مخلوط", "note": "ترش‌تر و متنوع‌تر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_pickled_red_onions", "name": "پیاز قرمز ترشی", "note": "ترش و خوش‌رنگ، سبکِ دونر", "ratio": "۱:۱" }
+        ],
+        "swap": "خیار خام، ترشی مخلوط یا پیاز قرمز ترشی",
+        "optional": true,
+        "criticalRole": false
+      },
+      {
+        "ingredientId": "ing_tahini_sauce",
+        "name": "سس ارده",
+        "component": "سس",
+        "role": "سس/چربیِ خامه‌ای",
+        "weightG": 45,
+        "volume": "۳ قاشق غذاخوری",
+        "prepState": "در صورت غلظت، با کمی آب یا آبلیمو رقیق",
+        "buyTip": "سسِ ارده با کمی آب و آبلیمو غلیظ‌تر و سفیدتر می‌شود؛ به غلظتِ دلخواه برسانید.",
+        "swaps": [
+          { "ingredientId": "ing_tahini", "name": "ارده", "note": "هم‌نقش؛ اردهٔ خالص را با کمی آب و آبلیمو به سسِ روان برسانید", "ratio": "۱:۱ پس از رقیق‌کردن" },
+          { "ingredientId": "ing_tzatziki", "name": "تزاتزیکی", "note": "سسِ خامه‌ایِ سفیدِ ماستی؛ خنک و هم‌نقش، کلاسیکِ دونر", "ratio": "۱:۱" },
+          { "ingredientId": "ing_hummus_plain", "name": "حمص ساده", "note": "خامه‌ای‌تر و پُرتر؛ کنجدی هم‌خانواده", "ratio": "۱:۱" }
+        ],
+        "swap": "اردهٔ خالصِ رقیق‌شده، سسِ تزاتزیکی یا حمص ساده (همگی سسِ خامه‌ایِ هم‌نقش)",
+        "optional": true,
+        "criticalRole": false
+      }
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "title": "برشِ نازکِ گوشت",
+        "instruction": "استیک گاو را نیم‌ساعت در فریزر بگذارید تا کمی سفت شود؛ بعد با چاقوی تیز در خلافِ رشتهٔ گوشت (خطوطِ روی گوشت) به برش‌های بسیار نازک، حدودِ نیم سانتی‌متر، ببرید. برشِ نازک رازِ دونرِ خوب است.",
+        "usesIngredientIds": ["ing_beef_steak_raw"],
+        "flame": "none",
+        "durationMin": 10,
+        "sees": "برش‌های نازک و یکدست که نور از لبه‌شان عبور می‌کند",
+        "doneness": "همهٔ برش‌ها زیرِ نیم سانتی‌متر و در خلافِ رشته",
+        "tip": "سفت‌شدنِ سطحی در فریزر، برشِ نازک را بسیار آسان‌تر می‌کند.",
+        "recovery": "اگر گوشت لِه و کشیده می‌شود یعنی چاقو کند یا گوشت گرم است؛ چاقو را تیز کنید و گوشت را دوباره ده دقیقه در فریزر بگذارید."
+      },
+      {
+        "order": 2,
+        "title": "آماده‌کردنِ مرینیت",
+        "instruction": "نصفِ پیاز خام را رنده کنید و آبش را بگیرید. در کاسه‌ای ماست ساده، آبِ پیاز، سیر خام (رنده)، روغن زیتون، آبلیموی بطری، پاپریکا آسیاب‌شده، زیره سبز آسیاب‌شده، نمک خوراکی و فلفل سیاه آسیاب‌شده را هم بزنید تا یکدست شود. مرینیت باید مثلِ ماستِ غلیظ باشد، نه آبکی.",
+        "usesIngredientIds": ["ing_plain_yogurt", "ing_onion_raw", "ing_garlic_raw", "ing_olive_oil", "ing_lemon_juice_bottled", "ing_paprika_ground", "ing_cumin_ground", "ing_salt_table", "ing_black_pepper_ground"],
+        "flame": "none",
+        "durationMin": 8,
+        "sees": "مرینیتِ یکدستِ نارنجی‌رنگ که عطرِ زیره و سیر می‌دهد",
+        "doneness": "همهٔ ادویه پخش‌شده و رنگِ مرینیت یکدست",
+        "tip": "روغنِ زیتون عطرِ پاپریکا و زیره را در خود حل می‌کند و روی گوشت پخش می‌کند.",
+        "recovery": "اگر مرینیت خیلی آبکی شد یک قاشق ماستِ بیشتر بزنید؛ مرینیتِ آبکی نمی‌چسبد."
+      },
+      {
+        "order": 3,
+        "title": "خواباندنِ گوشت در مرینیت",
+        "instruction": "برش‌های گوشت را در مرینیت بغلتانید تا فقط آغشته شوند، نه شناور در مایع. درِ کاسه را بپوشانید و دستِ‌کم ۲ ساعت (یا تا یک شب) در یخچال بگذارید. در دمای اتاق نگذارید.",
+        "usesIngredientIds": ["ing_beef_steak_raw", "ing_plain_yogurt"],
+        "flame": "none",
+        "durationMin": 120,
+        "sees": "هر برش با لایه‌ای نازک از مرینیتِ نارنجی پوشیده",
+        "doneness": "همهٔ برش‌ها آغشته و کاسه در یخچالِ زیرِ ۴ درجه",
+        "tip": "نفوذِ مرینیت فقط چند میلی‌مترِ سطح است؛ پس بیش از یک شب فایدهٔ چندانی ندارد و سطح را لِه می‌کند.",
+        "recovery": "اگر یادتان رفت زود مرینیت کنید، حداقل ۳۰ دقیقه هم بهتر از هیچ است؛ فقط هرگز گوشتِ خام را ساعت‌ها بیرونِ یخچال رها نکنید."
+      },
+      {
+        "order": 4,
+        "title": "آماده‌سازیِ سبزیجات و نان",
+        "instruction": "نیمهٔ دیگرِ پیاز خام را خلالی کنید. کاهو خام، گوجه‌فرنگی خام (دانه‌گرفته) و خیارشور را خلالی و کاملاً خشک کنید. سس ارده را در صورت غلظت با کمی آب یا آبلیمو به غلظتِ روان برسانید. نان لواش را کنار بگذارید تا موقعِ پیچیدن گرم شود.",
+        "usesIngredientIds": ["ing_onion_raw", "ing_lettuce_raw", "ing_tomato_raw", "ing_cucumber_pickled", "ing_tahini_sauce", "ing_lavash_bread"],
+        "flame": "none",
+        "durationMin": 10,
+        "sees": "سبزیجاتِ خلالیِ خشک و سسِ ردهٔ روان",
+        "doneness": "همهٔ سبزیجات خشک و آماده، سس به غلظتِ دلخواه",
+        "tip": "سبزیجاتِ خیس رول را شل و آبکی می‌کنند؛ خشک‌کردن مهم است.",
+        "recovery": "اگر گوجه خیلی آب انداخت، مرکزِ دانه‌دارش را جدا کنید و فقط دیوارهٔ سفتش را خلال کنید."
+      },
+      {
+        "order": 5,
+        "title": "داغ‌کردنِ تابه و تکاندنِ مرینیتِ اضافه",
+        "instruction": "تابهٔ چدنی را روی حرارتِ بالا کاملاً داغ کنید تا یک قطره آب رویش بلافاصله بجهد. برش‌های گوشت را از یخچال بیرون بیاورید و مرینیتِ ماستیِ چسبیده را از رویشان بتکانید؛ ماستِ اضافه روی تابه می‌سوزد و مانعِ برشته‌شدن می‌شود.",
+        "usesIngredientIds": ["ing_beef_steak_raw"],
+        "flame": "high",
+        "durationMin": 4,
+        "sees": "تابهٔ داغ که قطرهٔ آب رویش می‌رقصد؛ برش‌های گوشتِ نسبتاً خشک",
+        "doneness": "تابه به‌قدری داغ که گوشت با گذاشتن بلافاصله جلز کند",
+        "tip": "سطحِ گوشت باید نسبتاً خشک باشد تا به‌جای آب‌پز‌شدن، برشته شود.",
+        "recovery": "اگر تابه دود کرد یعنی خیلی داغ است؛ یک لحظه شعله را کم کنید، نسوزانید."
+      },
+      {
+        "order": 6,
+        "title": "سرخ‌کردنِ گوشت در چند نوبت",
+        "instruction": "برش‌های گوشت را در یک لایه و در چند نوبت بچینید؛ تابه را شلوغ نکنید. هر نوبت را ۲ تا ۳ دقیقه تفت دهید تا لبه‌ها برشته و قهوه‌ای شوند، یک بار زیرورو کنید. چون گوشتِ تکه‌ایِ گاو است، تا حدِ مغزِ ۶۳ درجهٔ سانتی‌گراد بپزید و چند دقیقه استراحت بدهید. اگر مرغ جایگزین کردید، حتماً تا مغزِ ۷۴ درجه بپزید.",
+        "usesIngredientIds": ["ing_beef_steak_raw"],
+        "flame": "high",
+        "tempC": 63,
+        "durationMin": 6,
+        "sees": "لبه‌های برشتهٔ قهوه‌ای و سطحِ بدونِ صورتیِ آبکی",
+        "doneness": "گوشتِ گاو با مغزِ دستِ‌کم ۶۳ درجه و سپس استراحتِ کوتاه؛ مرغ، در صورت جایگزینی، مغزِ ۷۴ درجه",
+        "tip": "شلوغ‌کردنِ تابه دما را می‌اندازد و گوشت آب می‌اندازد به‌جای برشته‌شدن.",
+        "recovery": "اگر تابه پر شد و گوشت آب انداخت، آبش را تخلیه کنید، تابه را دوباره داغ کنید و در نوبت‌های کوچک‌تر ادامه دهید.",
+        "mediaHint": "نمای لبه‌های برشته در لحظهٔ آماده‌شدن"
+      },
+      {
+        "order": 7,
+        "title": "گرم‌کردنِ کوتاهِ نان",
+        "instruction": "نان لواش را روی همان تابهٔ داغ یا شعلهٔ ملایم چند ثانیه گرم کنید تا نرم و انعطاف‌پذیر شود، نه خشک و برشته. نانِ گرم موقعِ پیچیدن ترک نمی‌خورد.",
+        "usesIngredientIds": ["ing_lavash_bread"],
+        "flame": "low",
+        "durationMin": 1,
+        "sees": "نانِ نرمِ گرم که به‌راحتی تا می‌خورد",
+        "doneness": "نان نرم و انعطاف‌پذیر، بدونِ تردیِ شکننده",
+        "tip": "گرما نشاستهٔ نان را انعطاف‌پذیر می‌کند؛ زیاد گرم‌کردن آن را خشک و شکننده می‌کند.",
+        "recovery": "اگر نان خشک و ترک‌خورده شد، زیرِ دستمالِ نمدارِ چند ثانیه‌ای دوباره نرم می‌شود."
+      },
+      {
+        "order": 8,
+        "title": "پیچیدنِ رول",
+        "instruction": "روی نانِ گرم کمی سس ارده بمالید، گوشتِ داغ را در یک نوار بچینید، سپس پیاز خلالی، کاهو خام، گوجه‌فرنگی خام و خیارشور را رویش بریزید. لبه‌ها را تا بزنید و محکم و فشرده رول کنید. برای پوستهٔ بهتر، هر رول را ۱ دقیقه از سمتِ درز روی تابهٔ گرم بگذارید تا بچسبد و کمی برشته شود.",
+        "usesIngredientIds": ["ing_lavash_bread", "ing_tahini_sauce", "ing_beef_steak_raw", "ing_onion_raw", "ing_lettuce_raw", "ing_tomato_raw", "ing_cucumber_pickled"],
+        "flame": "low",
+        "durationMin": 3,
+        "sees": "رولِ فشردهٔ بسته با درزِ برشتهٔ چسبیده",
+        "doneness": "رول محکم و یکپارچه، باز نمی‌شود",
+        "tip": "مواد را وسط بچینید و دو سرِ نان را تا بزنید تا داخلش نریزد.",
+        "recovery": "اگر رول باز شد، با یک تکه نان یا کاغذِ روغنی دورش را ببندید و درزش را روی تابه بچسبانید."
+      }
+    ],
+    "finish": {
+      "finalLook": "رولِ لواشِ کشیده با درزِ کمی برشته؛ از داخل، برش‌های گوشتِ لبه‌قهوه‌ایِ معطر کنارِ کاهوی ترد، گوجهٔ قرمز، خیارشورِ ترش و خطی از سسِ سفیدِ ارده دیده می‌شود.",
+      "plating": "رول را به‌صورتِ مورب نصف کنید تا لایه‌های داخل پیدا شود؛ کنارش کمی سسِ ارده و چند پر پیاز بگذارید.",
+      "chefSecret": "دو حرکتِ کلیدی: برشِ نازکِ گوشت و تابهٔ کاملاً داغ با مقدار کم در هر نوبت. این دو، لبهٔ برشته را بدونِ خشک‌شدنِ گوشت می‌سازند (واکنشِ میلارد روی سطحِ خشک)."
+    },
+    "troubleshooting": [
+      { "problem": "گوشت آب می‌اندازد و کبابی نمی‌شود", "fix": "تابه شلوغ یا کم‌داغ است؛ گوشت را در نوبت‌های کوچک‌تر و روی تابهٔ داغ‌تر بپزید و مرینیتِ چسبیده را اول بتکانید.", "stepRef": 6 },
+      { "problem": "رولِ نهایی خیس و بی‌فرم می‌شود", "fix": "سبزیجات را کاملاً خشک کنید، گوجه را دانه بگیرید و نان را گرم بپیچید.", "stepRef": 4 },
+      { "problem": "نان موقعِ پیچیدن ترک می‌خورد", "fix": "نانِ سرد و خشک شکننده است؛ چند ثانیه گرمش کنید یا زیرِ دستمالِ نمدار نرمش کنید.", "stepRef": 7 },
+      { "problem": "گوشت سفت و خشک شد", "fix": "بیش از حد پخته یا برشِ ضخیم بوده؛ نازک‌تر ببرید و فقط تا لبه‌برشته‌شدن و مغزِ ایمن بپزید، نه بیشتر.", "stepRef": 6 }
+    ],
+    "variations": [
+      { "name": "دونرِ مرغ", "how": "به‌جای استیک گاو از ران مرغِ نازک‌برش‌خورده استفاده کنید و حتماً تا مغزِ ۷۴ درجه بپزید.", "swapsIngredientIds": ["ing_beef_steak_raw→ing_chicken_thigh_raw"] },
+      { "name": "دونرِ گوسفندی", "how": "گوشت گوسفند جایگزینِ گاو شود؛ چرب‌تر و خوش‌عطرتر، همان روش.", "swapsIngredientIds": ["ing_beef_steak_raw→ing_lamb_meat_raw"] },
+      { "name": "سبکِ کلمی (ترکی‌تر)", "how": "به‌جای کاهو از کلم قرمزِ خلالی و پیاز قرمزِ ترشی استفاده کنید.", "swapsIngredientIds": ["ing_lettuce_raw→ing_red_cabbage_raw", "ing_cucumber_pickled→ing_pickled_red_onions"] }
+    ],
+    "keep": {
+      "makeAhead": "گوشت را می‌توانید یک شب قبل مرینیت و سبزیجات را خلال و خشک‌شده آماده کنید.",
+      "storage": "گوشتِ پخته در یخچالِ زیرِ ۴ درجه، ۳ تا ۴ روز در ظرفِ دربسته. سبزیجاتِ خلالی جدا نگه دارید.",
+      "reheat": "گوشت را روی تابهٔ داغ کوتاه گرم کنید تا دوباره لبه‌اش جان بگیرد و مغزش به ۷۴ درجه برسد؛ مایکروفر بافتش را پنبه‌ای می‌کند.",
+      "freeze": "گوشتِ مرینیت‌شدهٔ خام مناسبِ فریز است؛ رولِ پیچیده با سبزیجات مناسبِ فریز نیست."
+    },
+    "serveWith": ["سیب‌زمینی سرخ‌کرده", "سس ارده", "پیاز و سماق", "نوشیدنیِ خنک مثل دوغ"],
+    "nourishment": {
+      "attributes": ["پُرپروتئین"],
+      "note": "گوشتِ گاو پروتئینِ بالایی دارد؛ سسِ ارده چربیِ کنجدی می‌افزاید. برای سبک‌تر‌شدن، سس را کم و سبزیجات را بیشتر کنید.",
+      "disclaimer": "این اطلاعات عمومی و آشپزی است، نه توصیهٔ پزشکی."
+    },
+    "faq": [
+      { "q": "حتماً باید تابهٔ چدنی باشد؟", "a": "نه، اما تابهٔ ته‌ضخیم که داغ بماند مهم است؛ تابهٔ نازک با افزودنِ گوشت سرد می‌شود و گوشت آب می‌اندازد." },
+      { "q": "چرا ماست در مرینیت؟", "a": "اسید و آنزیمِ ماست فقط سطحِ گوشت را کمی نرم و معطر می‌کند و قندِ شیریِ آن به برشته‌شدن کمک می‌کند؛ نقشِ نرم‌کردنِ کلِ تکه را ندارد." },
+      { "q": "می‌توانم بدونِ مرینیتِ ۲ ساعته درست کنم؟", "a": "بله، ۳۰ دقیقه هم اثر می‌گذارد چون نفوذِ مرینیت سطحی است؛ فقط گوشتِ خام را بیرونِ یخچال رها نکنید." },
+      { "q": "گوشت را چقدر بپزم؟", "a": "گوشتِ تکه‌ایِ گاو تا مغزِ ۶۳ درجه و سپس کمی استراحت کافی است؛ اگر مرغ جایگزین کردید، حتماً تا ۷۴ درجه." }
+    ],
+    "dietary": {
+      "vegetarian": false,
+      "vegan": false,
+      "glutenFree": false,
+      "dairyFree": false,
+      "containsPork": false,
+      "freezable": true
+    },
+    "allergens": ["milk", "gluten", "sesame"]
+  },
+  "coverage": {
+    "locked": 15,
+    "total": 15,
+    "missingIds": []
+  },
+  "ingredientSubsEnrichment": [
+    {
+      "ingredientId": "ing_beef_steak_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_lamb_meat_raw", "name": "گوشت گوسفند", "reason": "taste", "note": "هم‌نقشِ پروتئینی؛ چرب‌تر و خوش‌عطرتر، همان روش" },
+        { "replaceWithIngredientId": "ing_veal_meat_raw", "name": "گوشت گوساله", "reason": "taste", "note": "لطیف‌تر؛ زمان پخت کمی کمتر" },
+        { "replaceWithIngredientId": "ing_chicken_thigh_raw", "name": "ران مرغ", "reason": "availability", "note": "دونرِ مرغ؛ تا مغزِ ۷۴ درجه بپزید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_plain_yogurt",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_greek_yogurt_plain", "name": "ماست یونانی", "reason": "taste", "note": "غلیظ‌تر، بهتر به گوشت می‌چسبد" },
+        { "replaceWithIngredientId": "ing_sour_cream", "name": "خامه ترش", "reason": "taste", "note": "چرب‌تر و ملایم‌تر" },
+        { "replaceWithIngredientId": "ing_coconut_yogurt_plain", "name": "ماست نارگیلی", "reason": "dietary", "note": "بدونِ لبنیات" }
+      ]
+    },
+    {
+      "ingredientId": "ing_lavash_bread",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_taftoon_bread", "name": "نان تافتون", "reason": "availability", "note": "نازک و انعطاف‌پذیر، خوب می‌پیچد" },
+        { "replaceWithIngredientId": "ing_wheat_tortilla", "name": "تورتیلای گندم", "reason": "availability", "note": "رولِ تمیز و نرم" },
+        { "replaceWithIngredientId": "ing_pita_bread", "name": "نان پیتا", "reason": "availability", "note": "جیب‌دار؛ به‌جای رول پُر می‌شود" }
+      ]
+    },
+    {
+      "ingredientId": "ing_tahini_sauce",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_tahini", "name": "ارده", "reason": "taste", "note": "هم‌نقش؛ اردهٔ خالص را با آب و آبلیمو به سسِ روان برسانید" },
+        { "replaceWithIngredientId": "ing_tzatziki", "name": "تزاتزیکی", "reason": "taste", "note": "سسِ خامه‌ایِ سفیدِ ماستی، کلاسیکِ دونر" },
+        { "replaceWithIngredientId": "ing_hummus_plain", "name": "حمص ساده", "reason": "taste", "note": "خامه‌ای‌تر؛ کنجدیِ هم‌خانواده" }
+      ]
+    },
+    {
+      "ingredientId": "ing_cucumber_pickled",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_cucumber_raw", "name": "خیار خام", "reason": "taste", "note": "تازه و ترد، بدونِ ترشی" },
+        { "replaceWithIngredientId": "ing_pickled_red_onions", "name": "پیاز قرمز ترشی", "reason": "taste", "note": "ترش و خوش‌رنگ، سبکِ دونر" },
+        { "replaceWithIngredientId": "ing_mixed_pickles", "name": "ترشی مخلوط", "reason": "availability", "note": "ترش‌تر و متنوع‌تر" }
+      ]
+    },
+    {
+      "ingredientId": "ing_lettuce_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_iceberg_lettuce_raw", "name": "کاهوی پیچ", "reason": "taste", "note": "تردتر" },
+        { "replaceWithIngredientId": "ing_red_cabbage_raw", "name": "کلم قرمز", "reason": "taste", "note": "تردتر و خوش‌رنگ؛ سبکِ دونرِ ترکی" }
+      ]
+    },
+    {
+      "ingredientId": "ing_lemon_juice_bottled",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_lemon_raw", "name": "لیمو زرد", "reason": "taste", "note": "آبِ تازه؛ عطرِ روشن‌تر" },
+        { "replaceWithIngredientId": "ing_lime_raw", "name": "لیمو سبز", "reason": "taste", "note": "تیزتر و معطرتر" },
+        { "replaceWithIngredientId": "ing_white_vinegar", "name": "سرکه سفید", "reason": "availability", "note": "فقط اسید؛ کمتر بزنید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_olive_oil",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_sunflower_oil", "name": "روغن آفتابگردان", "reason": "availability", "note": "خنثی، نقطهٔ دودِ بالاتر برای تابهٔ داغ" },
+        { "replaceWithIngredientId": "ing_canola_oil", "name": "روغن کانولا", "reason": "availability", "note": "خنثی، هم‌نقش" },
+        { "replaceWithIngredientId": "ing_ghee", "name": "روغن حیوانی/گی", "reason": "taste", "note": "عطرِ کره‌ای و برشتگیِ خوب" }
+      ]
+    },
+    {
+      "ingredientId": "ing_paprika_ground",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_red_pepper_paste", "name": "رب فلفل قرمز", "reason": "taste", "note": "هم‌نقش برای رنگ و عمق؛ نصفِ مقدار و مایع را کم کنید" }
+      ]
+    },
+    {
+      "ingredientId": "ing_cumin_ground",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_coriander_seed_ground", "name": "تخم گشنیز آسیاب‌شده", "reason": "availability", "note": "ملایم‌تر و کمی مرکباتی؛ هم‌خانواده" }
+      ]
+    },
+    {
+      "ingredientId": "ing_onion_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_shallot_raw", "name": "شالوت", "reason": "taste", "note": "ملایم‌تر و کمی شیرین" },
+        { "replaceWithIngredientId": "ing_red_onion_raw", "name": "پیاز قرمز", "reason": "taste", "note": "برای داخلِ رول؛ خام و خوش‌رنگ" }
+      ]
+    },
+    {
+      "ingredientId": "ing_garlic_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_garlic_paste", "name": "خمیر سیر", "reason": "availability", "note": "هر حبه حدود نصف قاشق چای‌خوری" },
+        { "replaceWithIngredientId": "ing_roasted_garlic", "name": "سیر کبابی", "reason": "taste", "note": "ملایم‌تر و شیرین‌تر" }
+      ]
+    },
+    {
+      "ingredientId": "ing_black_pepper_ground",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_white_pepper_ground", "name": "فلفل سفید", "reason": "taste", "note": "ملایم‌تر، بدونِ نقطه‌های سیاه" }
+      ]
+    },
+    {
+      "ingredientId": "ing_tomato_raw",
+      "substitutionOptions": [
+        { "replaceWithIngredientId": "ing_sun_dried_tomatoes_oil_packed", "name": "گوجه خشک در روغن", "reason": "taste", "note": "متمرکزتر و بدونِ آب؛ یک‌سومِ مقدار" }
+      ]
+    }
+  ],
+  "selfScore": 93
+}

@@ -142,14 +142,17 @@ export class RecipeRichnessService {
     const grisIngs: any[] = Array.isArray(gris?.ingredients) ? gris.ingredients : [];
     const idsNeeded = new Set<string>();
     for (const gi of grisIngs) {
-      const { ingredientId } = parseGrisName(gi?.name);
+      // v2.1 carries an explicit ingredientId; v2.0 embedded it in the «— ing_xxx» name suffix
+      const ingredientId = gi?.ingredientId || parseGrisName(gi?.name).ingredientId;
       if (ingredientId) idsNeeded.add(ingredientId);
     }
     const dictById = await this.lookupIngredientsByIds([...idsNeeded]);
 
     const items: NutritionItem[] = [];
     for (const gi of grisIngs) {
-      const { display, ingredientId } = parseGrisName(gi?.name);
+      const parsed = parseGrisName(gi?.name);
+      const display = parsed.display;
+      const ingredientId = gi?.ingredientId || parsed.ingredientId;
       if (removedNorm.has(norm(display))) continue; // removed → no contribution
       const swapped = targetByFrom.get(norm(display));
       const per100g = swapped && !swapped.allergenWarning && swapped.per100g
