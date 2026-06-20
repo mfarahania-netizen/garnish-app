@@ -69,6 +69,10 @@ model User {
   gamificationAchievements UserAchievement[]
   gamificationProgress     UserProgress[]
   gamificationEvents       GamificationEvent[]
+
+  // L0 — living-intelligence core (additive; Cascade → erasure-safe)
+  userConsents UserConsent[]
+  pantryItems  PantryItem[]
 }
 
 model UserPreference {
@@ -227,6 +231,7 @@ model Ingredient {
   updatedAt           DateTime @updatedAt
 
   recipeIngredients RecipeIngredient[]
+  pantryItems       PantryItem[] // L0 (SetNull on delete → pantry rows survive a dictionary edit)
 
   @@index([category])
   @@index([code])
@@ -394,11 +399,13 @@ model UserEvent {
   duration           Int?
   payload            String?
   enrichment         String?
+  recipeId           String? // L0: denormalized from payload at write-time for fast recipe-level signal queries (nullable → existing rows + reader unchanged)
   signalObservations SignalObservation[] // 👈 اضافه شد
 
   @@index([userId, type, timestamp])
   @@index([timestamp])
   @@index([type])
+  @@index([userId, recipeId, timestamp])
 }
 
 model UserBehaviorProfile {
@@ -581,7 +588,59 @@ model SignalObservation {
   weight     Float    @default(0.0)
   observedAt DateTime @default(now())
 
+  // L0: full typed-signal contract (all nullable/defaulted → existing writer at
+  // recipe.signal-processor.ts and reader at recommendation-shadow-a8-adapters.ts stay byte-identical).
+  recipeId   String? // which recipe drove this signal (was unrecoverable; lived only in UserEvent.payload)
+  dimension  String? // e.g. "taste" / "nutrition" — maps a row into a Food-DNA dimension
+  value      String? // e.g. cuisine token "persian" — the typed value carried by the signal
+  confidence Float? // per-observation evidence strength (cook=1 > favorite=0.8 > view=0.5)
+  source     String?  @default("legacy_event") // event type / extractor that produced it
+
   event UserEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([userId, signalName, observedAt])
+  @@index([userId, recipeId])
+}
+
+// L0 — consent-at-ingest (opt-IN, versioned, point-in-time, with lawful basis). Deliberately SEPARATE
+// from ConsentLog (which is opt-OUT latest-state, audit_long, read by erasure/export/retention) so those
+// consumers stay byte-identical. Purpose strings are constrained in app code to ConsentPurposeEnum
+// (core | analytics | personalization | b2b_aggregate | community | notifications). Operational gating
+// record → Cascade (the legal proof survives via ConsentLog + ErasureEvent).
+model UserConsent {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose       String
+  status        String    @default("granted") // granted | withdrawn
+  lawfulBasis   String    @default("consent") // consent | legitimate_interest | contract
+  policyVersion String?
+  source        String? // onboarding | settings | api | ingest
+  ip            String?
+  grantedAt     DateTime  @default(now())
+  withdrawnAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId, purpose])
+}
+
+// L0 — user pantry / on-hand inventory (feeds pantry-aware personalization + shopping de-dup). Mirrors
+// the ShoppingItem shape. ingredientId is a soft link (SetNull) so a dictionary edit never drops a pantry row.
+model PantryItem {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredientId String?
+  ingredient   Ingredient? @relation(fields: [ingredientId], references: [id], onDelete: SetNull)
+  name         String
+  amount       String?
+  unit         String?
+  addedAt      DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([ingredientId])
 }
 
 model RecommendationExposure {
