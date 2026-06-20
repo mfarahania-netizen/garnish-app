@@ -65,7 +65,8 @@
 
 ## ۴.۵ ماندهٔ گیتِ L0 (برای باز شدنِ L1) — صف
 - ✅ **مناسبت‌های اروپایی** (Christmas/Easter/NYE/King's Day + Persian) — `444d1243` (نگهبان H6).
-- ⬜ تستِ e2e واقعی · ⬜ counters (impression/position/propensity/reward) · ⬜ outboxِ بادوام · ⬜ **viewerِ مشاهده‌پذیریِ ادمین (R8)** · ⬜ حذفِ درختِ سایهٔ ۱۴۸-فایلی · ⬜ consentPurpose روی هر رویداد.
+- ✅ **viewerِ مشاهده‌پذیریِ ادمین (R8)** — `/admin/observability` (events · observations · profile-trace [آلرژی ریدکت] · counters ترند/مشکل) — `e0b52923`.
+- ⬜ تستِ e2e واقعی · ⬜ counters به‌عنوان first-class (impression/position/propensity/reward) · ⬜ outboxِ بادوام · ⬜ حذفِ درختِ سایهٔ ۱۴۸-فایلی · ⬜ consentPurpose روی هر رویداد.
 
 ## ۵. الان در حال اجرا (موازی)
 - 🔄 **دستهٔ ۴ رسپی** (۴۰، پس‌زمینه) — `wckduy2ev`. وقتی تمام شد: گیتِ قطعی + اعمال (۷۴→۱۱۴).
