@@ -20,6 +20,7 @@ import { SupportModule } from './support/support.module';
 import { AdminModule } from './admin/admin.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { BehaviorEngineModule } from './behavior-engine/behavior-engine.module';
+import { ContextModule } from './context/context.module';
 import { ProfileModule } from './behavior-engine/profile/profile.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { OutcomesModule } from './outcomes/outcomes.module';
@@ -56,6 +57,7 @@ import { BriefingModule } from './briefing/briefing.module';
     AdminModule,
     AnalyticsModule,
     BehaviorEngineModule,
+    ContextModule, // L0 real-time context engine (available for the ranker/assistant to inject)
     ProfileModule,
     RecommendationModule,
     OutcomesModule,

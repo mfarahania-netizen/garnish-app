@@ -57,9 +57,10 @@ export function jalaliSeason(jm: number): { key: SeasonKey; fa: PersianSeason } 
  */
 export function persianOccasion(j: JalaliDate): { key: OccasionKey; fa: string; confidence: number } {
   const { jm, jd } = j;
-  // نوروز — Farvardin 1–13 (peak 1–4)
-  if (jm === 1 && jd <= 13) return { key: 'nowruz', fa: jd === 13 ? 'سیزده‌بدر' : 'نوروز', confidence: jd <= 4 ? 1 : 0.7 };
+  // سیزده‌بدر — Farvardin 13 (checked BEFORE the Nowruz range so it isn't shadowed)
   if (jm === 1 && jd === 13) return { key: 'sizdah_bedar', fa: 'سیزده‌بدر', confidence: 1 };
+  // نوروز — Farvardin 1–12 (peak 1–4)
+  if (jm === 1 && jd <= 12) return { key: 'nowruz', fa: 'نوروز', confidence: jd <= 4 ? 1 : 0.7 };
   // شبِ یلدا — the longest night, on the autumn→winter threshold: eve = آذر ۲۹/۳۰, spilling into دی ۱
   if (jm === 9 && jd >= 29) return { key: 'yalda', fa: 'شبِ یلدا', confidence: jd === 30 ? 1 : 0.8 };
   if (jm === 10 && jd === 1) return { key: 'yalda', fa: 'شبِ یلدا', confidence: 0.9 };

@@ -33,6 +33,10 @@ describe('buildRealTimeContext — Persian calendar awareness (L0 "every second"
     expect(c.timeOfDay).toBe('midday');
   });
 
+  it('سیزده‌بدر (Farvardin 13) resolves to sizdah_bedar, not nowruz (guardian fix — was shadowed)', () => {
+    expect(at('2026-04-02T12:00:00+03:30').occasion.key).toBe('sizdah_bedar'); // Farvardin 13, 1405
+  });
+
   it('an ordinary summer evening → summer + dinner + evening, not weekend', () => {
     const c = at('2025-07-15T20:00:00+03:30'); // a Tuesday
     expect(c.season.key).toBe('summer');

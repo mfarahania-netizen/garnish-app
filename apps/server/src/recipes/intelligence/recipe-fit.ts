@@ -13,14 +13,21 @@ import { looseMatch, norm, toStringArray } from '../../ai/tools/grounding-utils'
 
 const MEAT_TOKENS = ['chicken', 'beef', 'lamb', 'pork', 'meat', 'poultry', 'fish', 'seafood', 'shrimp', 'مرغ', 'گوشت', 'ماهی', 'میگو', 'گوسفند'];
 const VEG_RESTRICTIONS = new Set(['vegetarian', 'vegan']);
+// pork is forbidden under halal, kosher, and an explicit no_pork constraint — enforced via Recipe.containsPork
+// (authoritative, from gris.dietary) with an ingredient/title token fallback.
+const PORK_TOKENS = ['pork', 'ham', 'bacon', 'lard', 'prosciutto', 'pancetta', 'chorizo', 'خوک', 'ژامبون', 'بیکن'];
+const NO_PORK_CONSTRAINTS = new Set(['no_pork', 'halal', 'kosher']);
 
-export type FitRecommendation = 'great_fit' | 'ok' | 'caution' | 'avoid_allergen';
+export type FitRecommendation = 'great_fit' | 'ok' | 'caution' | 'avoid_allergen' | 'avoid_constraint';
 
 export interface RecipeSafetyCheck {
   allergenConflict: boolean;
   conflictingAllergens: string[];
   dietaryRestrictionConflict: boolean;
   dietaryRestriction: string | null;
+  /** observance/cultural constraint (e.g. no-pork for halal/kosher) violated by this recipe. */
+  culturalConflict: boolean;
+  culturalConstraint: string | null;
   safe: boolean;
   /** safe, non-medical wording; informational. */
   wording: string;
@@ -55,6 +62,22 @@ function recipeHasMeat(recipe: any, allergens: string[]): boolean {
   return hay.some((h) => MEAT_TOKENS.some((m) => h.includes(m.toLowerCase())));
 }
 
+function recipeContainsPork(recipe: any): boolean {
+  if (recipe?.containsPork === true) return true; // authoritative flag (from gris.dietary)
+  const ingNames = Array.isArray(recipe?.ingredients) ? recipe.ingredients.map((i: any) => String(i?.name ?? '')) : [];
+  const hay = [...ingNames, String(recipe?.title ?? '')].map(norm);
+  return hay.some((h) => PORK_TOKENS.some((m) => h.includes(m.toLowerCase())));
+}
+
+/** The user's no-pork constraint, if any — from the declared cultural_constraints OR a halal/kosher pattern. */
+function userNoPorkConstraint(profile: any): string | null {
+  const cultural = toStringArray(profileDim(profile, 'declared', 'dietary.cultural_constraints')?.value).map((c) => c.toLowerCase());
+  const hit = cultural.find((c) => NO_PORK_CONSTRAINTS.has(c));
+  if (hit) return hit;
+  const pattern = profileDim(profile, 'reconciled', 'dietary_pattern')?.reconciledValue;
+  return typeof pattern === 'string' && NO_PORK_CONSTRAINTS.has(pattern) ? pattern : null;
+}
+
 /** HARD safety check — declared allergies are never softened. */
 export function recipeSafetyCheck(recipe: any, profile: any, derivedAllergens: string[] = []): RecipeSafetyCheck {
   const allergSet = recipeAllergenSet(recipe, derivedAllergens);
@@ -68,15 +91,21 @@ export function recipeSafetyCheck(recipe: any, profile: any, derivedAllergens: s
   })();
   const dietaryRestrictionConflict = Boolean(dietaryRestriction && VEG_RESTRICTIONS.has(dietaryRestriction) && recipeHasMeat(recipe, allergSet));
 
+  // observance constraint (no-pork for halal/kosher/no_pork) — a HARD values constraint; pork is never served.
+  const culturalConstraint = userNoPorkConstraint(profile);
+  const culturalConflict = Boolean(culturalConstraint && recipeContainsPork(recipe));
+
   const allergenConflict = conflicting.length > 0;
-  const safe = !allergenConflict; // dietary mismatch is a preference conflict, not an unsafe flag
+  const safe = !allergenConflict; // dietary/observance mismatch is a preference/values conflict, not an unsafe flag
   const wording = allergenConflict
     ? `Contains ingredients linked to your declared allergy/intolerance (${conflicting.join(', ')}). This is flagged for your safety and is informational, not a guarantee — always check the full ingredient list.`
-    : dietaryRestrictionConflict
-      ? `This recipe appears to include items outside your declared "${dietaryRestriction}" pattern.`
-      : 'No declared allergy conflict detected (informational only — always verify ingredients).';
+    : culturalConflict
+      ? `Appears to contain pork, which is outside your declared "${culturalConstraint}" requirement.`
+      : dietaryRestrictionConflict
+        ? `This recipe appears to include items outside your declared "${dietaryRestriction}" pattern.`
+        : 'No declared allergy conflict detected (informational only — always verify ingredients).';
 
-  return { allergenConflict, conflictingAllergens: conflicting, dietaryRestrictionConflict, dietaryRestriction, safe, wording };
+  return { allergenConflict, conflictingAllergens: conflicting, dietaryRestrictionConflict, dietaryRestriction, culturalConflict, culturalConstraint, safe, wording };
 }
 
 export function assessRecipeFit(recipe: any, profile: any, derivedAllergens: string[] = []): RecipeFitAssessment {
@@ -124,6 +153,10 @@ export function assessRecipeFit(recipe: any, profile: any, derivedAllergens: str
     recommendation = 'avoid_allergen';
     fitScore = 0;
     reasons.unshift('declared allergy conflict (safety — not overridden)');
+  } else if (safety.culturalConflict) {
+    recommendation = 'avoid_constraint';
+    fitScore = 0;
+    reasons.unshift(`contains pork — outside your declared "${safety.culturalConstraint}" requirement`);
   } else {
     let score = 0.6;
     if (dietaryMatch === 'match') score += 0.2;

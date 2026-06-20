@@ -104,7 +104,9 @@ export class AnalyticsService {
     // EVENT_CONSENT_GATE_MODE = off (default) | log (observe only) | enforce (skip routing without consent).
     const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || 'off').toLowerCase();
     if (gateMode !== 'off') {
-      const allowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => true);
+      // FAIL-CLOSED: if the consent check errors, DENY (don't route personal data into personalization).
+      // A permissive default would route under enforce mode on a DB hiccup — wrong for a GDPR launch.
+      const allowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => false);
       if (!allowed) {
         if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization
         this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);

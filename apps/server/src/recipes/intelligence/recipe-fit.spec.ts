@@ -37,6 +37,45 @@ describe('assessRecipeFit — allergen HARD filter (the safety rule)', () => {
   });
 });
 
+// GUARDIAN fix 2026-06-20: halal/kosher/no_pork were declared but filtered NOTHING. Pork is now excluded.
+describe('assessRecipeFit — no-pork observance constraint (halal/kosher/no_pork)', () => {
+  const porkRecipe = { id: 'rp', allergens: [], containsPork: true, ingredients: [{ name: 'pork shoulder' }, { name: 'onion' }] };
+
+  it('a halal user is NOT served pork (avoid_constraint, fitScore 0)', () => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: 'halal', declaredAt: recent() }]);
+    const fit = assessRecipeFit(porkRecipe, profile, []);
+    expect(fit.safety.culturalConflict).toBe(true);
+    expect(fit.safety.culturalConstraint).toBe('halal');
+    expect(fit.recommendation).toBe('avoid_constraint');
+    expect(fit.fitScore).toBe(0);
+  });
+
+  it('a no_pork cultural constraint (multi-select) excludes pork too', () => {
+    const profile = profileWith([]);
+    (profile.declared.dimensions as any)['dietary.cultural_constraints'] = { status: 'declared', value: ['no_pork'], confidence: 0.9 };
+    const fit = assessRecipeFit({ id: 'r', allergens: [], ingredients: [{ name: 'bacon' }] }, profile, []); // token fallback
+    expect(fit.recommendation).toBe('avoid_constraint');
+  });
+
+  it('halal + a pork-free recipe is fine (no false constraint flag)', () => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: 'halal', declaredAt: recent() }]);
+    const fit = assessRecipeFit({ id: 'r', allergens: [], ingredients: [{ name: 'chicken' }, { name: 'rice' }] }, profile, []);
+    expect(fit.safety.culturalConflict).toBe(false);
+    expect(fit.recommendation).not.toBe('avoid_constraint');
+  });
+
+  it('an omnivore with no constraint is unaffected by pork', () => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }]);
+    expect(assessRecipeFit(porkRecipe, profile, []).safety.culturalConflict).toBe(false);
+  });
+
+  it('a declared ALLERGY still dominates a cultural conflict (safety first)', () => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: 'halal', declaredAt: recent() }], ['peanut']);
+    const fit = assessRecipeFit({ ...porkRecipe, ingredients: [{ name: 'pork' }, { name: 'peanut' }] }, profile, ['peanut']);
+    expect(fit.recommendation).toBe('avoid_allergen'); // allergen wins over avoid_constraint
+  });
+});
+
 describe('assessRecipeFit — dietary / disliked / fit', () => {
   it('flags a dietary mismatch (vegetarian profile + meat recipe) as caution, not unsafe', () => {
     const profile = profileWith([{ key: 'dietary.pattern', value: 'vegetarian', declaredAt: recent() }]);
