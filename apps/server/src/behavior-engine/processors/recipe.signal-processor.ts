@@ -25,7 +25,7 @@ export class RecipeSignalProcessor {
     if (event.type === 'recipe_view' || positive) {
       const recipe = await this.prisma.recipe.findUnique({
         where: { id: recipeId },
-        select: { diet: true, categories: true, ingredients: { select: { name: true } } },
+        select: { diet: true, categories: true, region: true, ingredients: { select: { name: true } } },
       });
 
       if (recipe) {
@@ -43,6 +43,27 @@ export class RecipeSignalProcessor {
         // آیا غذا vegetarian است؟
         if (recipe.diet === 'vegetarian' || recipe.diet === 'vegan') {
           await this.signalCalculator.updateSignal(userId, 'prefers_vegetarian', 'health', 'raw', 0.8, confidence);
+        }
+
+        // L0/C2 — سیگنالِ ساختاریافتهٔ تمایلِ آشپزی (cuisine). یک ردیفِ نقطه‌دار «taste.cuisine_affinity»
+        // می‌نویسیم تا پلِ بازسازی (که family را از signalName.split('.')[0] می‌گیرد) آن را به بُعدِ taste
+        // برساند — اسم‌های بدونِ‌نقطه مثل cooked_recipe در همان پل دور انداخته می‌شوند. افزایشی بر ردیفِ
+        // درشتِ بخشِ ۲؛ همان نردبانِ اطمینان (پخت ۱ > پسند ۰٫۸ > دیدن ۰٫۵) را برای وزن به‌کار می‌برد.
+        const cuisine = typeof recipe.region === 'string' ? recipe.region.trim().toLowerCase() : '';
+        if (cuisine) {
+          await this.prisma.signalObservation.create({
+            data: {
+              userId,
+              signalName: 'taste.cuisine_affinity',
+              eventId: event.id,
+              weight: confidence,
+              recipeId,
+              dimension: 'taste',
+              value: cuisine,
+              confidence,
+              source: event.type,
+            },
+          });
         }
       }
     }
