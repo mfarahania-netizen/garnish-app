@@ -36,7 +36,11 @@ const ALLERGEN_ALIASES: Record<string, string[]> = {
   peanuts: ['peanut'], groundnut: ['peanut'], groundnuts: ['peanut'],
   dairy: ['milk'], lactose: ['milk'],
   gluten: ['gluten_cereals', 'wheat'], wheat: ['wheat', 'gluten_cereals'], 'gluten_cereal': ['gluten_cereals'],
-  seafood: ['fish', 'shellfish'], shellfish: ['shellfish'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'],
+  // SAFETY umbrella: someone who declares "shellfish" (or "seafood") is medically at risk from BOTH crustaceans
+  // AND molluscs, so the umbrella expands to the specific EU-14 tokens (over-warn — the safe direction). Without
+  // this, an oyster-sauce (molluscs) dish would not be filtered for a "shellfish"-allergic user even though the
+  // ingredient now correctly carries the molluscs token.
+  seafood: ['fish', 'shellfish', 'crustaceans', 'molluscs'], shellfish: ['shellfish', 'crustaceans', 'molluscs'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'],
   soya: ['soy'], soybean: ['soy'], soybeans: ['soy'],
   egg: ['eggs'],
 };

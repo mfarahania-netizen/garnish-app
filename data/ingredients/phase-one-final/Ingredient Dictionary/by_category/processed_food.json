@@ -786,9 +786,9 @@
     },
     "nutritionPer100g": {
       "calories": 370,
-      "protein": 75.0,
+      "protein": 75,
       "fat": 1.9,
-      "carbs": 14.0,
+      "carbs": 14,
       "fiber": 1.2,
       "sugar": 0,
       "sodium": 29
@@ -1118,11 +1118,11 @@
     },
     "nutritionPer100g": {
       "calories": 265,
-      "protein": 9.0,
+      "protein": 9,
       "fat": 3.2,
-      "carbs": 49.0,
+      "carbs": 49,
       "fiber": 2.7,
-      "sugar": 5.0,
+      "sugar": 5,
       "sodium": 491
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -1458,10 +1458,10 @@
     },
     "nutritionPer100g": {
       "calories": 247,
-      "protein": 13.0,
+      "protein": 13,
       "fat": 4.2,
-      "carbs": 41.0,
-      "fiber": 6.0,
+      "carbs": 41,
+      "fiber": 6,
       "sugar": 5.6,
       "sodium": 400
     },
@@ -1799,7 +1799,7 @@
       "calories": 395,
       "protein": 13.4,
       "fat": 5.3,
-      "carbs": 72.0,
+      "carbs": 72,
       "fiber": 4.5,
       "sugar": 6.2,
       "sodium": 732
@@ -2135,7 +2135,7 @@
       "calories": 312,
       "protein": 8.2,
       "fat": 8.3,
-      "carbs": 51.0,
+      "carbs": 51,
       "fiber": 3.5,
       "sugar": 2.4,
       "sodium": 746
@@ -2805,7 +2805,7 @@
       "calories": 310,
       "protein": 9.6,
       "fat": 7.6,
-      "carbs": 52.0,
+      "carbs": 52,
       "fiber": 2.2,
       "sugar": 3.5,
       "sodium": 440
@@ -3142,7 +3142,7 @@
       "calories": 82,
       "protein": 4.3,
       "fat": 0.5,
-      "carbs": 19.0,
+      "carbs": 19,
       "fiber": 4.1,
       "sugar": 12.2,
       "sodium": 59
@@ -3486,7 +3486,7 @@
     },
     "nutritionPer100g": {
       "calories": 595,
-      "protein": 17.0,
+      "protein": 17,
       "fat": 53.8,
       "carbs": 21.2,
       "fiber": 9.3,
@@ -3829,8 +3829,8 @@
       "calories": 588,
       "protein": 25.1,
       "fat": 50.4,
-      "carbs": 20.0,
-      "fiber": 6.0,
+      "carbs": 20,
+      "fiber": 6,
       "sugar": 9.2,
       "sodium": 459
     },
@@ -4167,7 +4167,7 @@
     },
     "nutritionPer100g": {
       "calories": 197,
-      "protein": 2.0,
+      "protein": 2,
       "fat": 21.3,
       "carbs": 2.8,
       "fiber": 0,
@@ -4844,7 +4844,7 @@
       "calories": 18,
       "protein": 0,
       "fat": 0,
-      "carbs": 0.0,
+      "carbs": 0,
       "fiber": 0,
       "sugar": 0,
       "sodium": 2
@@ -5566,7 +5566,7 @@
       "fat": 24.5,
       "carbs": 1.9,
       "fiber": 0,
-      "sugar": 1.0,
+      "sugar": 1,
       "sodium": 945
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -5935,7 +5935,7 @@
       "fat": 25.5,
       "carbs": 1.9,
       "fiber": 0,
-      "sugar": 1.0,
+      "sugar": 1,
       "sodium": 855
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -6312,7 +6312,7 @@
       "fat": 26.5,
       "carbs": 2.1,
       "fiber": 0,
-      "sugar": 1.0,
+      "sugar": 1,
       "sodium": 954
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -6678,9 +6678,9 @@
       "calories": 303,
       "protein": 16.3,
       "fat": 25.8,
-      "carbs": 2.0,
+      "carbs": 2,
       "fiber": 0,
-      "sugar": 1.0,
+      "sugar": 1,
       "sodium": 909
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -7037,7 +7037,7 @@
       "fat": 24.8,
       "carbs": 2.1,
       "fiber": 0,
-      "sugar": 1.0,
+      "sugar": 1,
       "sodium": 855
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -7750,8 +7750,8 @@
     "nutritionPer100g": {
       "calories": 40.8,
       "protein": 1.4,
-      "fat": 2.0,
-      "carbs": 4.0,
+      "fat": 2,
+      "carbs": 4,
       "fiber": 0.5,
       "sugar": 1.9,
       "sodium": 49.5
@@ -8123,10 +8123,10 @@
     "nutritionPer100g": {
       "calories": 38.8,
       "protein": 1.5,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 3.8,
       "fiber": 0.5,
-      "sugar": 2.0,
+      "sugar": 2,
       "sodium": 46.5
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -8490,7 +8490,7 @@
       "protein": 8.3,
       "fat": 10.2,
       "carbs": 29.8,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 582
     },
@@ -9213,7 +9213,7 @@
       "protein": 8.4,
       "fat": 10.7,
       "carbs": 30.7,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 600
     },
@@ -9576,7 +9576,7 @@
       "protein": 7.8,
       "fat": 9.7,
       "carbs": 33.9,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.8,
       "sodium": 564
     },
@@ -9937,8 +9937,8 @@
       "calories": 260,
       "protein": 8.6,
       "fat": 9.7,
-      "carbs": 31.0,
-      "fiber": 2.0,
+      "carbs": 31,
+      "fiber": 2,
       "sugar": 3.7,
       "sodium": 612
     },
@@ -10298,9 +10298,9 @@
       "calories": 265,
       "protein": 8.5,
       "fat": 9.5,
-      "carbs": 32.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 32,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 600
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -10658,7 +10658,7 @@
       "protein": 8.2,
       "fat": 9.3,
       "carbs": 33.9,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 4.2,
       "sodium": 636
     },
@@ -11016,7 +11016,7 @@
       "protein": 8.3,
       "fat": 10.3,
       "carbs": 34.2,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 552
     },
@@ -11373,8 +11373,8 @@
       "calories": 230,
       "protein": 8.1,
       "fat": 9.3,
-      "carbs": 31.0,
-      "fiber": 2.0,
+      "carbs": 31,
+      "fiber": 2,
       "sugar": 4.2,
       "sodium": 576
     },
@@ -12107,7 +12107,7 @@
       "protein": 8.1,
       "fat": 10.7,
       "carbs": 32.6,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.8,
       "sodium": 588
     },
@@ -12479,8 +12479,8 @@
       "protein": 7.6,
       "fat": 9.8,
       "carbs": 32.3,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 570
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -12841,7 +12841,7 @@
       "protein": 7.9,
       "fat": 10.3,
       "carbs": 30.1,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.8,
       "sodium": 612
     },
@@ -13199,7 +13199,7 @@
       "protein": 3.9,
       "fat": 1.9,
       "carbs": 9.8,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 612
     },
@@ -13556,7 +13556,7 @@
     "nutritionPer100g": {
       "calories": 75.2,
       "protein": 3.9,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 10.1,
       "fiber": 2.1,
       "sugar": 4.2,
@@ -13914,7 +13914,7 @@
       "protein": 3.7,
       "fat": 1.8,
       "carbs": 10.5,
-      "fiber": 2.0,
+      "fiber": 2,
       "sugar": 4.2,
       "sodium": 594
     },
@@ -14643,13 +14643,13 @@
       "mayContain": []
     },
     "nutritionPer100g": {
-      "calories": 34.0,
+      "calories": 34,
       "protein": 2.1,
       "fat": 0.3,
       "carbs": 7.4,
       "fiber": 2.5,
       "sugar": 2.9,
-      "sodium": 26.0
+      "sodium": 26
     },
     "nutritionConfidence": "estimated_source_id_pending",
     "sourceBackedNutrition": {
@@ -15009,7 +15009,7 @@
     },
     "nutritionPer100g": {
       "calories": 97,
-      "protein": 3.0,
+      "protein": 3,
       "fat": 1.8,
       "carbs": 13.8,
       "fiber": 0.9,
@@ -15381,7 +15381,7 @@
       "protein": 3.2,
       "fat": 2.1,
       "carbs": 14.4,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 8.5,
       "sodium": 658
     },
@@ -15741,7 +15741,7 @@
     "nutritionPer100g": {
       "calories": 92,
       "protein": 3.1,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 14.1,
       "fiber": 0.9,
       "sugar": 7.4,
@@ -16460,7 +16460,7 @@
       "fat": 10.2,
       "carbs": 32.3,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 618
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -17179,7 +17179,7 @@
     },
     "nutritionPer100g": {
       "calories": 96,
-      "protein": 3.0,
+      "protein": 3,
       "fat": 1.9,
       "carbs": 14.7,
       "fiber": 1.1,
@@ -17542,7 +17542,7 @@
     },
     "nutritionPer100g": {
       "calories": 83.2,
-      "protein": 4.0,
+      "protein": 4,
       "fat": 1.9,
       "carbs": 9.7,
       "fiber": 2.1,
@@ -17893,14 +17893,18 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "fish"
+      ],
+      "us9": [
+        "fish"
+      ],
       "other": [],
       "mayContain": []
     },
     "nutritionPer100g": {
       "calories": 98,
-      "protein": 3.0,
+      "protein": 3,
       "fat": 2.1,
       "carbs": 15.9,
       "fiber": 1.1,
@@ -18250,15 +18254,19 @@
       "vegetarian"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "molluscs"
+      ],
+      "us9": [
+        "molluscs"
+      ],
       "other": [],
       "mayContain": []
     },
     "nutritionPer100g": {
       "calories": 98,
       "protein": 3.2,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 14.8,
       "fiber": 1.1,
       "sugar": 7.7,
@@ -18621,7 +18629,7 @@
       "protein": 2.9,
       "fat": 1.9,
       "carbs": 14.6,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 7.9,
       "sodium": 742
     },
@@ -18976,8 +18984,8 @@
       "protein": 4.2,
       "fat": 1.9,
       "carbs": 10.1,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 630
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -19687,7 +19695,7 @@
       "protein": 3.2,
       "fat": 1.9,
       "carbs": 15.8,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 7.6,
       "sodium": 728
     },
@@ -20039,7 +20047,7 @@
     },
     "nutritionPer100g": {
       "calories": 103,
-      "protein": 3.0,
+      "protein": 3,
       "fat": 1.9,
       "carbs": 14.8,
       "fiber": 1.1,
@@ -21472,9 +21480,9 @@
     "nutritionPer100g": {
       "calories": 106,
       "protein": 2.8,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 14.4,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 7.4,
       "sodium": 658
     },
@@ -22197,7 +22205,7 @@
       "protein": 3.2,
       "fat": 2.1,
       "carbs": 15.3,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 7.4,
       "sodium": 700
     },
@@ -22564,7 +22572,7 @@
     "nutritionPer100g": {
       "calories": 101,
       "protein": 3.2,
-      "fat": 2.0,
+      "fat": 2,
       "carbs": 14.4,
       "fiber": 0.9,
       "sugar": 8.2,
@@ -22930,8 +22938,8 @@
       "protein": 2.9,
       "fat": 1.9,
       "carbs": 15.3,
-      "fiber": 1.0,
-      "sugar": 8.0,
+      "fiber": 1,
+      "sugar": 8,
       "sodium": 721
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -23288,7 +23296,7 @@
       "protein": 3.2,
       "fat": 1.9,
       "carbs": 16.1,
-      "fiber": 1.0,
+      "fiber": 1,
       "sugar": 7.5,
       "sodium": 644
     },
@@ -23646,9 +23654,9 @@
     "nutritionPer100g": {
       "calories": 92,
       "protein": 3.2,
-      "fat": 2.0,
-      "carbs": 14.0,
-      "fiber": 1.0,
+      "fat": 2,
+      "carbs": 14,
+      "fiber": 1,
       "sugar": 8.5,
       "sodium": 672
     },
@@ -30141,8 +30149,12 @@
       "gluten_free"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "fish"
+      ],
+      "us9": [
+        "fish"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -32541,8 +32553,12 @@
       "high_protein"
     ],
     "allergens": {
-      "eu14": [],
-      "us9": [],
+      "eu14": [
+        "fish"
+      ],
+      "us9": [
+        "fish"
+      ],
       "other": [],
       "mayContain": []
     },
@@ -33923,8 +33939,8 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 466
     },
@@ -34273,9 +34289,9 @@
     ],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -34627,7 +34643,7 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -34977,9 +34993,9 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 450
     },
@@ -35326,8 +35342,8 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 482
     },
@@ -35674,7 +35690,7 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 450
@@ -36023,7 +36039,7 @@
       "calories": 225,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 482
@@ -36371,7 +36387,7 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 466
@@ -36719,7 +36735,7 @@
       "calories": 225,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -37062,11 +37078,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -37408,7 +37424,7 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -37753,9 +37769,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -38103,9 +38119,9 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 28.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 28,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -38452,7 +38468,7 @@
       "calories": 203,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 434
@@ -38798,9 +38814,9 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -39152,9 +39168,9 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -39511,10 +39527,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 482
     },
@@ -39867,9 +39883,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -40223,7 +40239,7 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 450
@@ -40570,8 +40586,8 @@
     "nutritionPer100g": {
       "calories": 225,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 466
@@ -40913,9 +40929,9 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -41261,11 +41277,11 @@
     ],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 30,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -41610,8 +41626,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 482
@@ -41955,8 +41971,8 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 434
     },
@@ -42299,8 +42315,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 482
@@ -42639,9 +42655,9 @@
     ],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 450
@@ -42981,11 +42997,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 29.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 29,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -43324,9 +43340,9 @@
       "calories": 203,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -43666,7 +43682,7 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 466
@@ -44008,9 +44024,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -44353,9 +44369,9 @@
     ],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 466
@@ -44696,9 +44712,9 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -45041,9 +45057,9 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 29.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 29,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -45385,7 +45401,7 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 466
@@ -45726,10 +45742,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 434
     },
@@ -46065,11 +46081,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -46409,9 +46425,9 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 30.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 30,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -46752,9 +46768,9 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 30.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 30,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -47096,10 +47112,10 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -47441,9 +47457,9 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -47784,7 +47800,7 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 434
@@ -48125,11 +48141,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 27.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 27,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -48469,9 +48485,9 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -48809,8 +48825,8 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -49149,11 +49165,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -49492,7 +49508,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 450
@@ -49834,7 +49850,7 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 466
@@ -50180,7 +50196,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -50524,9 +50540,9 @@
     ],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 482
@@ -50871,7 +50887,7 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -51212,9 +51228,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -51556,7 +51572,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -51903,7 +51919,7 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -52258,9 +52274,9 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 30.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 30,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -52607,7 +52623,7 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -52951,7 +52967,7 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -53294,9 +53310,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 450
@@ -53643,11 +53659,11 @@
     ],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -53991,10 +54007,10 @@
     "nutritionPer100g": {
       "calories": 225,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 28.0,
+      "fat": 8,
+      "carbs": 28,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -54337,7 +54353,7 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 450
@@ -54681,7 +54697,7 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 450
@@ -55022,11 +55038,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -55362,9 +55378,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -55704,7 +55720,7 @@
       "calories": 203,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -56043,9 +56059,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 466
@@ -56386,8 +56402,8 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -56729,7 +56745,7 @@
       "calories": 217,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -57076,7 +57092,7 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 450
@@ -57422,8 +57438,8 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 466
     },
@@ -57763,10 +57779,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -58109,8 +58125,8 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 482
     },
@@ -58455,8 +58471,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 466
@@ -58800,11 +58816,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -59146,9 +59162,9 @@
     ],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -59489,11 +59505,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -59832,11 +59848,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -60177,9 +60193,9 @@
       "calories": 203,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -60519,9 +60535,9 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 434
     },
@@ -60863,8 +60879,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -61206,11 +61222,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -61552,10 +61568,10 @@
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -61897,7 +61913,7 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -62235,9 +62251,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 466
@@ -62578,8 +62594,8 @@
       "calories": 210,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 482
     },
@@ -62919,7 +62935,7 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 434
@@ -63258,10 +63274,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -63599,7 +63615,7 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 434
@@ -63940,9 +63956,9 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -64282,9 +64298,9 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 27.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 27,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -64624,9 +64640,9 @@
       "calories": 210,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -64964,7 +64980,7 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -65305,8 +65321,8 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 434
     },
@@ -65649,9 +65665,9 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -65992,7 +66008,7 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 434
@@ -66332,9 +66348,9 @@
     "nutritionPer100g": {
       "calories": 210,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 29.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 29,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 434
     },
@@ -66673,9 +66689,9 @@
       "calories": 225,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -67011,7 +67027,7 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -67350,9 +67366,9 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -67688,11 +67704,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 28.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "carbs": 28,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -68031,9 +68047,9 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -68375,8 +68391,8 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -68718,8 +68734,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 482
@@ -69064,9 +69080,9 @@
     ],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 466
@@ -69409,9 +69425,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -69756,9 +69772,9 @@
       "calories": 225,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -70100,11 +70116,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -70448,7 +70464,7 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 482
@@ -70793,7 +70809,7 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -71137,11 +71153,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 482
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -71481,8 +71497,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 466
@@ -71823,8 +71839,8 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 434
     },
@@ -72166,7 +72182,7 @@
       "calories": 225,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -72505,9 +72521,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 28.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -72846,9 +72862,9 @@
       "calories": 217,
       "protein": 7.2,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -73189,7 +73205,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 434
@@ -73533,9 +73549,9 @@
     "nutritionPer100g": {
       "calories": 225,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 29.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 29,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 466
     },
@@ -73873,9 +73889,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 450
@@ -74218,7 +74234,7 @@
       "calories": 210,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 466
@@ -74563,10 +74579,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 7.7,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 466
     },
@@ -74909,9 +74925,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 482
@@ -75253,7 +75269,7 @@
       "calories": 217,
       "protein": 7.5,
       "fat": 8.6,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -75591,10 +75607,10 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 450
     },
@@ -75927,11 +75943,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 28.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 28,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 466
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -76270,7 +76286,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 482
@@ -76616,11 +76632,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -76965,9 +76981,9 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 482
     },
@@ -77311,9 +77327,9 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.3,
       "sodium": 434
     },
@@ -77655,9 +77671,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -78000,8 +78016,8 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 450
@@ -78342,11 +78358,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -78685,10 +78701,10 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -79027,10 +79043,10 @@
     "nutritionPer100g": {
       "calories": 225,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 29.0,
-      "fiber": 2.0,
-      "sugar": 4.0,
+      "fat": 8,
+      "carbs": 29,
+      "fiber": 2,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -79372,9 +79388,9 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "fat": 8,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 450
     },
@@ -79718,8 +79734,8 @@
       "calories": 210,
       "protein": 7.5,
       "fat": 7.7,
-      "carbs": 27.0,
-      "fiber": 2.0,
+      "carbs": 27,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 466
     },
@@ -80064,7 +80080,7 @@
       "calories": 210,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 434
@@ -80408,8 +80424,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 28.0,
+      "fat": 8,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 434
@@ -80749,9 +80765,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 434
@@ -81096,7 +81112,7 @@
       "calories": 203,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 450
@@ -81446,9 +81462,9 @@
       "calories": 217,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 434
     },
     "nutritionConfidence": "estimated_source_id_pending",
@@ -81795,7 +81811,7 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 7.7,
-      "carbs": 28.0,
+      "carbs": 28,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 466
@@ -82136,9 +82152,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 3.9,
       "sodium": 466
@@ -82485,9 +82501,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 217,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 466
@@ -82833,8 +82849,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 3.9,
       "sodium": 450
@@ -83174,8 +83190,8 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 8.6,
-      "carbs": 28.0,
-      "fiber": 2.0,
+      "carbs": 28,
+      "fiber": 2,
       "sugar": 3.9,
       "sodium": 466
     },
@@ -83519,8 +83535,8 @@
     "nutritionPer100g": {
       "calories": 217,
       "protein": 7.2,
-      "fat": 8.0,
-      "carbs": 27.0,
+      "fat": 8,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 482
@@ -83868,8 +83884,8 @@
       "calories": 203,
       "protein": 6.8,
       "fat": 8.6,
-      "carbs": 30.0,
-      "fiber": 2.0,
+      "carbs": 30,
+      "fiber": 2,
       "sugar": 4.1,
       "sodium": 466
     },
@@ -84210,9 +84226,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 203,
-      "protein": 7.0,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "protein": 7,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -84560,8 +84576,8 @@
     "nutritionPer100g": {
       "calories": 210,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 30.0,
+      "fat": 8,
+      "carbs": 30,
       "fiber": 1.9,
       "sugar": 4.1,
       "sodium": 434
@@ -84907,8 +84923,8 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 7.5,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.1,
       "sodium": 482
@@ -85252,7 +85268,7 @@
       "calories": 210,
       "protein": 7.2,
       "fat": 7.7,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 466
@@ -85593,8 +85609,8 @@
     "nutritionPer100g": {
       "calories": 203,
       "protein": 6.8,
-      "fat": 8.0,
-      "carbs": 29.0,
+      "fat": 8,
+      "carbs": 29,
       "fiber": 1.9,
       "sugar": 4.3,
       "sodium": 466
@@ -85933,9 +85949,9 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 225,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.6,
-      "carbs": 27.0,
+      "carbs": 27,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 434
@@ -86283,7 +86299,7 @@
       "calories": 225,
       "protein": 6.8,
       "fat": 8.3,
-      "carbs": 29.0,
+      "carbs": 29,
       "fiber": 2.1,
       "sugar": 4.3,
       "sodium": 482
@@ -86630,11 +86646,11 @@
     "allergens": [],
     "nutritionPer100g": {
       "calories": 210,
-      "protein": 7.0,
+      "protein": 7,
       "fat": 8.3,
-      "carbs": 30.0,
+      "carbs": 30,
       "fiber": 1.9,
-      "sugar": 4.0,
+      "sugar": 4,
       "sodium": 450
     },
     "nutritionConfidence": "estimated_source_id_pending",

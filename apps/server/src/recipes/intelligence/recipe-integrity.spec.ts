@@ -40,8 +40,14 @@ describe('analyzeRecipeIntegrity (RECIPE-L4-07)', () => {
   it('reads the legacy bare-array allergen shape + canonicalizes tokens (was a hard-filter hole)', () => {
     expect(extractDictionaryAllergens(['nuts'])).toEqual(['tree_nuts']);
     expect(extractDictionaryAllergens(['dairy'])).toEqual(['milk']);
-    expect(extractDictionaryAllergens(['seafood'])).toEqual(['fish', 'shellfish']);
+    // umbrella seafood/shellfish expands to the specific EU-14 tokens (crustaceans + molluscs) — over-warn, safe (sorted output)
+    expect(extractDictionaryAllergens(['seafood'])).toEqual(['crustaceans', 'fish', 'molluscs', 'shellfish']);
     expect(extractDictionaryAllergens(['gluten'])).toEqual(['gluten_cereals', 'wheat']);
+    // SAFETY: a "shellfish"-declared user must be matched to both crustacean AND mollusc dishes
+    expect(extractDictionaryAllergens(['shellfish'])).toEqual(['crustaceans', 'molluscs', 'shellfish']);
+    // an oyster-sauce / dashi style ingredient now carries its token and is caught
+    expect(extractDictionaryAllergens({ eu14: ['molluscs'], us9: ['molluscs'], other: [], mayContain: [] })).toEqual(['molluscs']);
+    expect(extractDictionaryAllergens({ eu14: ['fish'], us9: ['fish'], other: [], mayContain: [] })).toEqual(['fish']);
     // object form still works + is canonicalized («tree nuts» space → tree_nuts)
     expect(extractDictionaryAllergens({ us9: ['tree nuts'], eu14: [], other: [], mayContain: [] })).toEqual(['tree_nuts']);
     // empty / malformed → empty, never throws
