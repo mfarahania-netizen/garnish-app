@@ -47,4 +47,28 @@ describe('AnalyticsService.trackEvent — L0/B ingest', () => {
     await svc.trackEvent(cook);
     expect(router.route).toHaveBeenCalled();
   });
+
+  // L0 gate — GDPR provenance: every event records the consent purpose it was collected under.
+  it('gate OFF → stamps consentPurpose=analytics (legitimate-interest baseline), no consent read', async () => {
+    delete process.env.EVENT_CONSENT_GATE_MODE;
+    const { svc, created, consent } = make(false);
+    await svc.trackEvent(cook);
+    expect(created[0].consentPurpose).toBe('analytics');
+    expect(consent.hasPurpose).not.toHaveBeenCalled(); // baseline needs no query → byte-identical when off
+  });
+
+  it('gate ENFORCE + consent granted → stamps consentPurpose=personalization (reuses the gate read)', async () => {
+    process.env.EVENT_CONSENT_GATE_MODE = 'enforce';
+    const { svc, created, consent } = make(true);
+    await svc.trackEvent(cook);
+    expect(created[0].consentPurpose).toBe('personalization');
+    expect(consent.hasPurpose).toHaveBeenCalledTimes(1); // one read, reused for stamp + gate
+  });
+
+  it('gate ENFORCE + consent denied → stamps consentPurpose=analytics (downgraded, still recorded)', async () => {
+    process.env.EVENT_CONSENT_GATE_MODE = 'enforce';
+    const { svc, created } = make(false);
+    await svc.trackEvent(cook);
+    expect(created[0].consentPurpose).toBe('analytics');
+  });
 });

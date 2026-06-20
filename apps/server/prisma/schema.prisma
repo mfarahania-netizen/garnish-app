@@ -400,6 +400,7 @@ model UserEvent {
   payload            String?
   enrichment         String?
   recipeId           String? // L0: denormalized from payload at write-time for fast recipe-level signal queries (nullable → existing rows + reader unchanged)
+  consentPurpose     String? // L0: GDPR provenance — the consent purpose this event was collected under ('analytics' baseline = legitimate-interest; 'personalization' when granted under the gate). Mirrors the canonical envelope consentPurpose enum.
   signalObservations SignalObservation[] // 👈 اضافه شد
 
   @@index([userId, type, timestamp])

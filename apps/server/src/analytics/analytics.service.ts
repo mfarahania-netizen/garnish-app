@@ -92,25 +92,31 @@ export class AnalyticsService {
     const rid = data.payload?.recipeId;
     if (typeof rid === 'string' && rid) eventData.recipeId = rid;
 
+    // L0 — consent-at-ingest gate (default OFF → no extra read, byte-identical behavior). The raw event is
+    // ALWAYS stored (ops / legitimate interest); but BUILDING a personalization profile from it — routing
+    // into the signal engine — requires the 'personalization' purpose when enforced. Routing already no-ops
+    // for non-personalization event types, so this scopes the gate exactly to personalization signals.
+    // EVENT_CONSENT_GATE_MODE = off (default) | log (observe only) | enforce (skip routing without consent).
+    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || 'off').toLowerCase();
+    // L0 — GDPR provenance: stamp the consent purpose this event is collected under. Baseline 'analytics'
+    // (legitimate interest — always lawful for raw product analytics); when the gate is on we reuse its
+    // consent read (no second query) to upgrade to 'personalization' for users who granted it.
+    let personalizationAllowed = false;
+    if (gateMode !== 'off') {
+      // FAIL-CLOSED: if the consent check errors, DENY (don't route personal data into personalization).
+      // A permissive default would route under enforce mode on a DB hiccup — wrong for a GDPR launch.
+      personalizationAllowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => false);
+    }
+    eventData.consentPurpose = personalizationAllowed ? 'personalization' : 'analytics';
+
     const event = await this.prisma.userEvent.create({ data: eventData });
 
     // غنی‌سازی را در پس‌زمینه اجرا کن
     this.enrichmentService.enrichEvent(event.id);
 
-    // L0/B — consent-at-ingest gate (default OFF → byte-identical). The raw event is ALWAYS stored
-    // (ops / legitimate interest); but BUILDING a personalization profile from it — routing into the
-    // signal engine — requires the 'personalization' purpose when enforced. Routing already no-ops for
-    // non-personalization event types, so this scopes the gate exactly to personalization signals.
-    // EVENT_CONSENT_GATE_MODE = off (default) | log (observe only) | enforce (skip routing without consent).
-    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || 'off').toLowerCase();
-    if (gateMode !== 'off') {
-      // FAIL-CLOSED: if the consent check errors, DENY (don't route personal data into personalization).
-      // A permissive default would route under enforce mode on a DB hiccup — wrong for a GDPR launch.
-      const allowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => false);
-      if (!allowed) {
-        if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization
-        this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);
-      }
+    if (gateMode !== 'off' && !personalizationAllowed) {
+      if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization
+      this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);
     }
 
     // 🆕 ارسال رویداد به موتور سیگنال‌ها (بدون منتظر ماندن)

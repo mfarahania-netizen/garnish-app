@@ -81,6 +81,7 @@ export class BehaviorEngineScheduler {
           data: {
             userId: user.id,
             type: 'cron_behavior_engine_run',
+            consentPurpose: 'core', // L0: operational/system telemetry (essential), not personal-data collection
             payload: JSON.stringify({
               activeUsers: userIds.length,
               succeeded,
