@@ -407,6 +407,7 @@ model UserEvent {
   @@index([timestamp])
   @@index([type])
   @@index([userId, recipeId, timestamp])
+  @@index([consentPurpose]) // mirrors the migration's index (DSAR/observability provenance audits)
 }
 
 // L0 — durable transactional-outbox for event routing ("capture every second" / no lost signals). Every
@@ -416,13 +417,15 @@ model UserEvent {
 model EventOutbox {
   id          String    @id @default(uuid())
   eventId     String    @unique
-  status      String    @default("pending") // pending | processing | done
+  status      String    @default("pending") // pending | processing | done | dead (exhausted retries → dead-letter)
   attempts    Int       @default(0)
   error       String?
   createdAt   DateTime  @default(now())
+  claimedAt   DateTime? // when a drain claimed it (pending→processing); a reaper revives rows stuck past a TTL
   processedAt DateTime?
 
   @@index([status, createdAt])
+  @@index([status, claimedAt])
 }
 
 model UserBehaviorProfile {
