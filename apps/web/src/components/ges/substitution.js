@@ -6,8 +6,9 @@
 // and confidence basis so the UI can rank/label it instead of dropping the grounding.
 import apiClient from '../../lib/apiClient';
 
-// confidence label per the tool's `basis` (curated explicit option > same-role peer)
+// confidence label per the tool's `basis` (dish-authored > curated explicit option > same-role peer)
 export const qualityOf = (basis) => {
+  if (basis === 'authored') return { label: 'پیشنهادِ این دستور', rank: 0 };
   if (basis === 'explicit_option') return { label: 'جایگزین مطمئن', rank: 1 };
   if (basis === 'same_category') return { label: 'هم‌نقش', rank: 2 };
   return { label: 'پیشنهاد', rank: 3 };

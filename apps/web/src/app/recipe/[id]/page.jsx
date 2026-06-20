@@ -234,10 +234,30 @@ function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
   );
 }
 
-// grounded substitution picker for one ingredient (real POST /ai/substitutions). Tapping an option
-// APPLIES it to the recipe (name + amount + steps flow from the shared personalization layer); tapping
-// the applied one again removes it. Honest: same-role swaps from the corpus, a quality label + WHY per
-// option, a distinct temporary-error state with retry, and the non-medical + allergy-safe note.
+// one tappable substitution option (dish-authored or corpus). Tap to apply; tap the applied one to remove.
+function SubOptionRow({ it, applied, ingredient, onApply, onRemove }) {
+  const q = subQualityOf(it.basis);
+  return (
+    <UnstyledButton
+      type="button"
+      aria-pressed={applied}
+      onClick={() => (applied ? onRemove(ingredient) : onApply(ingredient, it.name, { basis: it.basis, reason: it.reason }))}
+      style={{ textAlign: 'start', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: applied ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}
+    >
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+        {applied ? <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconArrowsExchange size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />}
+        <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: applied ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{it.name}</Text>
+        <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: it.basis === 'authored' ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', border: `1px solid ${it.basis === 'authored' ? 'var(--g-color-brand-200)' : 'var(--g-color-border-strong)'}`, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: it.basis === 'authored' ? 'var(--g-color-brand-700)' : 'var(--g-color-text-muted)' }}>{q.label}</Box>
+      </Box>
+      {it.reason ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>{it.reason}</Text> : null}
+      {applied ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-brand-700)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>اعمال شد — برای برداشتن دوباره بزن</Text> : null}
+    </UnstyledButton>
+  );
+}
+
+// substitution picker for one ingredient. The recipe's own DISH-AWARE swaps (GRIS v2.1) show first
+// («پیشنهادِ این دستور» — e.g. potato in قیمه → بادمجان), then grounded same-role swaps from the corpus
+// (POST /ai/substitutions). Tapping applies; declared allergies always stay filtered server-side.
 function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
   return (
     <Drawer
@@ -252,48 +272,41 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
       transitionProps={{ transition: 'slide-up', duration: 240 }}
       styles={bottomSheetStyles({ content: { height: 'auto', maxHeight: '85vh', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } })}
     >
+      {/* dish-aware authored swaps first (always, no fetch needed) */}
+      {sub?.authored?.length ? (
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
+          {sub.authored.map((it, i) => (
+            <SubOptionRow key={`a-${it.name}-${i}`} it={it} applied={appliedTo === it.name} ingredient={sub.ingredient} onApply={onApply} onRemove={onRemoveSwap} />
+          ))}
+        </Box>
+      ) : null}
+
+      {/* corpus same-role swaps: loading / error / list / empty */}
       {sub?.loading ? (
         <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', paddingBlock: 'var(--g-space-2)' }}>
           <SkeletonLine w="80%" h={18} /><SkeletonLine w="60%" h={18} />
         </Box>
-      ) : sub?.error ? (
+      ) : sub?.error && !sub?.authored?.length ? (
         <Box style={{ paddingBlock: 'var(--g-space-2)' }}>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>الان نشد جایگزین‌ها را بیاورم — اتصال کوتاه قطع شد. چیزی عوض نشده.</Text>
           <UnstyledButton type="button" onClick={onRetry} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconRefresh size={16} stroke={1.8} aria-hidden="true" />تلاش دوباره</UnstyledButton>
         </Box>
       ) : sub?.items?.length ? (
-        <>
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
-            {sub.items.map((it, i) => {
-              const applied = appliedTo === it.name;
-              const q = subQualityOf(it.basis);
-              return (
-                <UnstyledButton
-                  key={`${it.name}-${i}`}
-                  type="button"
-                  aria-pressed={applied}
-                  onClick={() => (applied ? onRemoveSwap(sub.ingredient) : onApply(sub.ingredient, it.name, { basis: it.basis, reason: it.reason }))}
-                  style={{ textAlign: 'start', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: applied ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}
-                >
-                  <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
-                    {applied ? <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconArrowsExchange size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />}
-                    <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: applied ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{it.name}</Text>
-                    <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{q.label}</Box>
-                  </Box>
-                  {it.reason ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>{it.reason}</Text> : null}
-                  {applied ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-brand-700)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>اعمال شد — برای برداشتن دوباره بزن</Text> : null}
-                </UnstyledButton>
-              );
-            })}
-          </Box>
-          <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
-            <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>جای‌گزین‌های هم‌نقش از پایگاه مواد — راهنمایی آشپزی، نه توصیهٔ پزشکی. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
-          </Box>
-        </>
-      ) : (
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: sub?.authored?.length ? 'var(--g-space-2)' : 0, paddingBlockStart: 'var(--g-space-2)' }}>
+          {sub.items.map((it, i) => (
+            <SubOptionRow key={`${it.name}-${i}`} it={it} applied={appliedTo === it.name} ingredient={sub.ingredient} onApply={onApply} onRemove={onRemoveSwap} />
+          ))}
+        </Box>
+      ) : !sub?.authored?.length ? (
         <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', paddingBlock: 'var(--g-space-2)', margin: 0 }}>برای این ماده جایگزینِ هم‌نقشی در پایگاه پیدا نشد.</Text>
-      )}
+      ) : null}
+
+      {(sub?.authored?.length || sub?.items?.length) ? (
+        <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
+          <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>جای‌گزین‌های هم‌نقش از پایگاه مواد — راهنمایی آشپزی، نه توصیهٔ پزشکی. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
+        </Box>
+      ) : null}
     </Drawer>
   );
 }
@@ -364,18 +377,24 @@ export default function RecipeDetailPage() {
   // AbortController cancels an in-flight lookup when the user taps another ingredient quickly (M10), and a
   // distinct `error` flag separates a temporary failure from an honest empty result (M7).
   const subAbort = useRef();
-  const askSub = useCallback(async (name) => {
+  // `authored` = the recipe's own dish-aware structured swaps (GRIS v2.1) — shown FIRST (e.g. potato in
+  // قیمه → بادمجان), with the grounded same-role corpus swaps appended. Fixes the irrelevant-swap complaint.
+  const askSub = useCallback(async (name, authored) => {
     if (!name) return;
     subAbort.current?.abort();
     const controller = new AbortController();
     subAbort.current = controller;
-    setSub({ ingredient: name, loading: true, items: null, error: false });
+    const authoredItems = (Array.isArray(authored) ? authored : [])
+      .filter((a) => a && a.name)
+      .map((a) => ({ name: a.name, basis: 'authored', reason: a.note || 'پیشنهادِ این دستور', ingredientId: a.ingredientId || null }));
+    const names = new Set(authoredItems.map((a) => a.name));
+    setSub({ ingredient: name, loading: true, items: null, error: false, authored: authoredItems });
     try {
       const { items } = await fetchSubstitutions(name, { limit: 6, signal: controller.signal });
-      setSub({ ingredient: name, loading: false, items, error: false });
+      setSub({ ingredient: name, loading: false, items: items.filter((it) => !names.has(it.name)), error: false, authored: authoredItems });
     } catch {
       if (controller.signal.aborted) return; // superseded by a newer lookup
-      setSub({ ingredient: name, loading: false, items: null, error: true });
+      setSub({ ingredient: name, loading: false, items: null, error: authoredItems.length === 0, authored: authoredItems });
     }
   }, []);
   useEffect(() => () => subAbort.current?.abort(), []);

@@ -1,0 +1,4 @@
+# Regenerable grounding exports (ingredient dictionary + recipe index) — large, rebuilt on demand.
+_grounding/
+# Authored batch output + DB rollback snapshots — committed explicitly (git add -f) only after review.
+_authored/batch-*/
