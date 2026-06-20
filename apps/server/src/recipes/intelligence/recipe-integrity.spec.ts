@@ -29,10 +29,24 @@ describe('analyzeRecipeIntegrity (RECIPE-L4-07)', () => {
     expect(r.ingredientResolution.unresolvedNames).toEqual(['mystery-spice-xyz']);
   });
 
-  it('derives allergens from resolved dictionary entries (informational only)', () => {
-    expect(r.derivedAllergens.allergens).toEqual(expect.arrayContaining(['milk', 'gluten']));
+  it('derives allergens from resolved dictionary entries (informational only), canonicalized', () => {
+    // «gluten» is normalized to the canonical wheat-family tokens; milk stays milk.
+    expect(r.derivedAllergens.allergens).toEqual(expect.arrayContaining(['milk', 'gluten_cereals', 'wheat']));
     expect(r.derivedAllergens.informationalOnly).toBe(true);
     expect(r.derivedAllergens.source).toBe('resolved_ingredient_dictionary');
+  });
+
+  // SAFETY regression guard: the legacy bare-array allergen shape must NOT be silently dropped.
+  it('reads the legacy bare-array allergen shape + canonicalizes tokens (was a hard-filter hole)', () => {
+    expect(extractDictionaryAllergens(['nuts'])).toEqual(['tree_nuts']);
+    expect(extractDictionaryAllergens(['dairy'])).toEqual(['milk']);
+    expect(extractDictionaryAllergens(['seafood'])).toEqual(['fish', 'shellfish']);
+    expect(extractDictionaryAllergens(['gluten'])).toEqual(['gluten_cereals', 'wheat']);
+    // object form still works + is canonicalized («tree nuts» space → tree_nuts)
+    expect(extractDictionaryAllergens({ us9: ['tree nuts'], eu14: [], other: [], mayContain: [] })).toEqual(['tree_nuts']);
+    // empty / malformed → empty, never throws
+    expect(extractDictionaryAllergens([])).toEqual([]);
+    expect(extractDictionaryAllergens(null)).toEqual([]);
   });
 
   it('normalizes vocab and flags non-canonical values', () => {

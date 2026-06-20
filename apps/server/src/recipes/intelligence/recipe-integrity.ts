@@ -27,15 +27,51 @@ export interface IntegrityReport {
 interface VocabCheck { value: string | null; normalized: string | null; canonical: boolean }
 interface CategoryCheck { values: string[]; nonCanonical: string[] }
 
-/** Dictionary allergen Json shape is {eu14:[],us9:[],other:[],mayContain:[]}; flatten to a clean set. */
-export function extractDictionaryAllergens(allergensJson: unknown): string[] {
-  if (!allergensJson || typeof allergensJson !== 'object') return [];
+// SAFETY: alias → canonical allergen token(s). The dictionary historically mixed a malformed bare-array
+// shape (e.g. ["nuts"], ["dairy"], ["gluten"]) with the object shape, and used inconsistent tokens; both
+// were a hard-filter hole. We over-map ambiguous tokens (seafood → fish+shellfish, gluten → both wheat
+// forms) because over-flagging an allergen is SAFE and under-flagging is dangerous.
+const ALLERGEN_ALIASES: Record<string, string[]> = {
+  nuts: ['tree_nuts'], nut: ['tree_nuts'], treenuts: ['tree_nuts'], 'tree nuts': ['tree_nuts'], 'tree-nuts': ['tree_nuts'],
+  peanuts: ['peanut'], groundnut: ['peanut'], groundnuts: ['peanut'],
+  dairy: ['milk'], lactose: ['milk'],
+  gluten: ['gluten_cereals', 'wheat'], wheat: ['wheat', 'gluten_cereals'], 'gluten_cereal': ['gluten_cereals'],
+  seafood: ['fish', 'shellfish'], shellfish: ['shellfish'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'],
+  soya: ['soy'], soybean: ['soy'], soybeans: ['soy'],
+  egg: ['eggs'],
+};
+
+/** map any allergen token to its canonical form(s), preserving unknown tokens as-is (lowercased). */
+function canonicalizeAllergens(tokens: Iterable<unknown>): string[] {
   const out = new Set<string>();
-  for (const key of ['eu14', 'us9', 'other', 'mayContain']) {
-    const arr = (allergensJson as Record<string, unknown>)[key];
-    for (const a of Array.isArray(arr) ? arr : []) if (typeof a === 'string' && a.trim()) out.add(a.trim().toLowerCase());
+  for (const raw of tokens) {
+    if (typeof raw !== 'string') continue;
+    const t = raw.trim().toLowerCase();
+    if (!t) continue;
+    const mapped = ALLERGEN_ALIASES[t];
+    if (mapped) mapped.forEach((m) => out.add(m));
+    else out.add(t);
   }
   return [...out].sort();
+}
+
+/**
+ * Flatten a dictionary ingredient's allergens (the canonical shape is {eu14,us9,other,mayContain})
+ * into a clean, canonical token set for the HARD allergy filter. HARDENED: also reads the legacy bare-array
+ * shape (["nuts"], ["dairy"]…) — previously these passed the `typeof object` guard but exposed none of the
+ * keys, so the allergen was SILENTLY DROPPED (a real safety hole across ~300 records); and normalizes
+ * non-canonical tokens (nuts→tree_nuts, dairy→milk, gluten→wheat+gluten_cereals, seafood→fish+shellfish).
+ */
+export function extractDictionaryAllergens(allergensJson: unknown): string[] {
+  if (!allergensJson) return [];
+  if (Array.isArray(allergensJson)) return canonicalizeAllergens(allergensJson); // legacy bare-array form
+  if (typeof allergensJson !== 'object') return [];
+  const collected: unknown[] = [];
+  for (const key of ['eu14', 'us9', 'other', 'mayContain']) {
+    const arr = (allergensJson as Record<string, unknown>)[key];
+    if (Array.isArray(arr)) collected.push(...arr);
+  }
+  return canonicalizeAllergens(collected);
 }
 
 function parseMinutes(value: unknown): number | null {
