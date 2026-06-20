@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional, Inject } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FeatureStoreService } from '../../behavior-engine/feature-store/feature-store.service';
 import { ContributionCalculatorService } from '../ranking-model/contribution-calculator';
@@ -8,6 +8,7 @@ import { TasteAffinityBuilder } from '../taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
 import { RealTimeContext } from '../../context/real-time-context';
 import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
+import { L1_WEIGHT_SOURCE, type WeightSource } from './weight-source';
 import {
   clamp01,
   deriveEstimatedEffort,
@@ -133,16 +134,32 @@ export class RankingService {
     private exposureTracking: ExposureTrackingService,
     private tasteAffinityBuilder: TasteAffinityBuilder,
     private recipeEmbedding: RecipeEmbeddingService,
+    // L1 seam — pluggable learned/cohort weight source. @Optional + absent today → byte-identical behaviour.
+    @Optional() @Inject(L1_WEIGHT_SOURCE) private readonly weightSource?: WeightSource,
   ) {}
 
   async rank(userId: string, candidateIds: string[], context?: RealTimeContext) {
     if (candidateIds.length === 0) return [];
 
-    const experimentalWeights = await this.experimentEngine.getWeights(userId);
-    const weights = this.normalizeWeights(experimentalWeights || this.defaultWeights);
+    const weights = this.normalizeWeights(await this.resolveBaseWeights(userId, context));
     const userFeatures = await this.featureStore.getFeatureVector(userId);
 
     return this.rankWithFeatureVector(userId, candidateIds, userFeatures, weights, context);
+  }
+
+  /**
+   * L1 priors→learnable seam. Resolve the base component-weight vector: a registered learned/cohort
+   * WeightSource wins when it returns one (fail-safe: any error → ignored), else the experiment override,
+   * else the static defaults. With no source registered (today) this equals the prior inline behaviour
+   * exactly — `experimentEngine.getWeights(userId) || defaultWeights` — so the ranker is byte-identical.
+   */
+  private async resolveBaseWeights(userId: string, context?: RealTimeContext): Promise<Record<string, number>> {
+    if (this.weightSource) {
+      const learned = await this.weightSource.resolve(userId, context).catch(() => null);
+      if (learned) return learned;
+    }
+    const experimentalWeights = await this.experimentEngine.getWeights(userId);
+    return experimentalWeights || this.defaultWeights;
   }
 
   async rankWithFeatureVector(
