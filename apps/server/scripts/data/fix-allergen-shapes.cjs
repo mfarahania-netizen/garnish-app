@@ -14,13 +14,22 @@
 const { PrismaClient } = require('@prisma/client');
 
 const isLocal = (h) => ['localhost', '127.0.0.1', '::1'].includes(h);
+// ⚠ MIRROR of the runtime SOURCE OF TRUTH: src/recipes/intelligence/recipe-integrity.ts ALLERGEN_ALIASES.
+// Keep in sync. (Build constraints — no dist asset-copy — keep the authoritative map inline in the .ts gate
+// rather than a shared import; a narrower map HERE would re-introduce the crustacean-variant under-match into the
+// dictionary data on the next run.)
 const ALIASES = {
   nuts: ['tree_nuts'], nut: ['tree_nuts'], treenuts: ['tree_nuts'], 'tree nuts': ['tree_nuts'], 'tree-nuts': ['tree_nuts'],
   peanuts: ['peanut'], groundnut: ['peanut'], groundnuts: ['peanut'],
   dairy: ['milk'], lactose: ['milk'],
   gluten: ['gluten_cereals', 'wheat'], wheat: ['wheat', 'gluten_cereals'], gluten_cereal: ['gluten_cereals'],
-  seafood: ['fish', 'shellfish'], shellfish: ['shellfish'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'],
+  seafood: ['fish', 'shellfish', 'crustaceans', 'molluscs'], shellfish: ['shellfish', 'crustaceans', 'molluscs'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'], mollusc: ['molluscs'], mollusk: ['molluscs'],
+  'crustacean shellfish': ['crustaceans'], crustacean_shellfish: ['crustaceans'], 'crustacean-shellfish': ['crustaceans'],
   soya: ['soy'], soybean: ['soy'], soybeans: ['soy'], egg: ['eggs'],
+  celeriac: ['celery'], lupine: ['lupin'], lupins: ['lupin'],
+  'mustard seed': ['mustard'], 'mustard seeds': ['mustard'], finfish: ['fish'],
+  sulphite: ['sulphites'], sulfite: ['sulphites'], sulfites: ['sulphites'],
+  'sulphur dioxide': ['sulphites'], sulphur_dioxide: ['sulphites'], 'sulfur dioxide': ['sulphites'], sulfur_dioxide: ['sulphites'], so2: ['sulphites'],
 };
 const canon = (tokens) => {
   const out = new Set();

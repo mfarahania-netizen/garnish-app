@@ -20,8 +20,21 @@ const ROOT = path.resolve(__dirname, '../../../..');
 const REQUIRED = ['schemaVersion', 'story', 'whyItWorks', 'glance', 'ingredients', 'steps', 'finish', 'troubleshooting', 'nourishment', 'dietary'];
 const SELF_SCORE_BAR = 90;
 
-// canonical allergen derivation — mirrors recipe-integrity.ts extractDictionaryAllergens (hardened).
-const ALIASES = { nuts: ['tree_nuts'], nut: ['tree_nuts'], 'tree nuts': ['tree_nuts'], dairy: ['milk'], lactose: ['milk'], gluten: ['gluten_cereals', 'wheat'], wheat: ['wheat', 'gluten_cereals'], seafood: ['fish', 'shellfish'], soya: ['soy'], soybean: ['soy'], soybeans: ['soy'], egg: ['eggs'], peanuts: ['peanut'] };
+// ⚠ MIRROR of the runtime SOURCE OF TRUTH: recipe-integrity.ts ALLERGEN_ALIASES — keep in sync (a narrower map
+// here would mis-pass/mis-reject a batch vs the authoritative gate, esp. the shellfish umbrella + crustacean variants).
+const ALIASES = {
+  nuts: ['tree_nuts'], nut: ['tree_nuts'], treenuts: ['tree_nuts'], 'tree nuts': ['tree_nuts'], 'tree-nuts': ['tree_nuts'],
+  peanuts: ['peanut'], groundnut: ['peanut'], groundnuts: ['peanut'],
+  dairy: ['milk'], lactose: ['milk'],
+  gluten: ['gluten_cereals', 'wheat'], wheat: ['wheat', 'gluten_cereals'], gluten_cereal: ['gluten_cereals'],
+  seafood: ['fish', 'shellfish', 'crustaceans', 'molluscs'], shellfish: ['shellfish', 'crustaceans', 'molluscs'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'], mollusc: ['molluscs'], mollusk: ['molluscs'],
+  'crustacean shellfish': ['crustaceans'], crustacean_shellfish: ['crustaceans'], 'crustacean-shellfish': ['crustaceans'],
+  soya: ['soy'], soybean: ['soy'], soybeans: ['soy'], egg: ['eggs'],
+  celeriac: ['celery'], lupine: ['lupin'], lupins: ['lupin'],
+  'mustard seed': ['mustard'], 'mustard seeds': ['mustard'], finfish: ['fish'],
+  sulphite: ['sulphites'], sulfite: ['sulphites'], sulfites: ['sulphites'],
+  'sulphur dioxide': ['sulphites'], sulphur_dioxide: ['sulphites'], 'sulfur dioxide': ['sulphites'], sulfur_dioxide: ['sulphites'], so2: ['sulphites'],
+};
 const canon = (ts) => { const o = new Set(); for (const x of ts || []) { if (typeof x !== 'string') continue; const t = x.trim().toLowerCase(); if (!t) continue; (ALIASES[t] || [t]).forEach((m) => o.add(m)); } return [...o].sort(); };
 const extract = (a) => { if (!a) return []; if (Array.isArray(a)) return canon(a); if (typeof a !== 'object') return []; const c = []; for (const k of ['eu14', 'us9', 'other', 'mayContain']) if (Array.isArray(a[k])) c.push(...a[k]); return canon(c); };
 
