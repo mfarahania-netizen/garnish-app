@@ -17,6 +17,11 @@ model User {
   password  String?
   locale    String? // L1: BCP-47 locale (e.g. nl-NL) — the cohort/region join key for cold-start priors
   country   String? // L1: ISO-3166 country (e.g. NL) — regional-prior scope for the Europe-general launch
+  // Onboarding v1 — device-keyed passwordless GUEST spine: a silent real User+JWT so server-side safeIds runs
+  // for every visitor (anonymous = allergy filter OFF was the bug). deviceKey (a high-entropy client UUID) lets a
+  // returning guest on the same device resume the SAME user (keeps declared allergies). Claimed → registered later.
+  isGuest   Boolean  @default(false)
+  deviceKey String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -27,6 +27,23 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { phone } });
   }
 
+  /**
+   * Onboarding v1 — device-keyed passwordless GUEST. With a deviceKey, upsert by it so a returning guest on the
+   * same device RESUMES the same User (keeps declared allergies) and a concurrent first-call race can't duplicate.
+   * Without a deviceKey, mint an ephemeral guest (no cross-session resume). The minted row is a real User, so the
+   * normal JWT (sub) + jwt.strategy + the server-side safeIds allergy gate all apply — fixing anonymous=filter-OFF.
+   */
+  async findOrCreateGuest(deviceKey?: string) {
+    if (deviceKey) {
+      return this.prisma.user.upsert({
+        where: { deviceKey },
+        update: {}, // resume — never overwrite an existing guest's profile
+        create: { isGuest: true, deviceKey },
+      });
+    }
+    return this.prisma.user.create({ data: { isGuest: true } });
+  }
+
   async findById(id: string) {
     return this.prisma.user.findUnique({
       where: { id },

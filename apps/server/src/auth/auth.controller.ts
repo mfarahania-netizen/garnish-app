@@ -2,6 +2,7 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { GuestDto } from './dto/guest.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler'; // ← ThrottlerGuard اضافه شد
 
 @Controller('auth')
@@ -19,5 +20,12 @@ export class AuthController {
   @Post('login')
   login(@Body() body: LoginDto) {
     return this.authService.login(body.phone, body.password);
+  }
+
+  // Onboarding v1 — silent passwordless guest session (rate-limited; resumes by deviceKey). No PII.
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('guest')
+  guest(@Body() body: GuestDto) {
+    return this.authService.guestSession(body.deviceKey);
   }
 }

@@ -24,6 +24,18 @@ export class AuthService {
     return { token, user: sanitizeUser(user) };
   }
 
+  /**
+   * Onboarding v1 — silent GUEST session. Mints (or resumes by deviceKey) a real guest User and returns a normal
+   * JWT (sub only), so every visitor carries a userId and hits the server-side safeIds allergy gate. No phone, no
+   * password, no PII. Rate-limited by the controller's ThrottlerGuard. The guest is later CLAIMED into a real
+   * account (additive + allergy-preserving) — a separate step.
+   */
+  async guestSession(deviceKey?: string) {
+    const user = await this.usersService.findOrCreateGuest(deviceKey);
+    const token = this.jwtService.sign({ sub: user.id });
+    return { token, user: sanitizeUser(user) };
+  }
+
   async login(phone: string, password: string) {
     const user = await this.usersService.findByPhone(phone);
     if (!user || !user.password) {
