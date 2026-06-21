@@ -77,9 +77,6 @@ export class AdminController {
   @Get('analytics/stats')
   getAnalyticsStats() { return this.adminService.getAnalyticsStats(); }
 
-  @Get('analytics/search-queries')
-  getTopSearchQueries() { return this.adminService.getTopSearchQueries(); }
-
   @Get('analytics/meal-planning')
   getMealPlanningStats() { return this.adminService.getMealPlanningStats(); }
 

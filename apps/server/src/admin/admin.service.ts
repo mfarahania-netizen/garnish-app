@@ -197,17 +197,6 @@ export class AdminService {
     return { totalEvents, todayEvents };
   }
 
-  async getTopSearchQueries(limit = 10) {
-    const result: any[] = await this.prisma.$queryRaw`
-      SELECT payload::json->>'query' as query, COUNT(*)::int as count
-      FROM "UserEvent"
-      WHERE type = 'search_query' AND payload IS NOT NULL
-      GROUP BY query
-      ORDER BY count DESC
-      LIMIT ${limit}
-    `;
-    return result.map((r: any) => ({ query: r.query, count: r.count }));
-  }
 
   async getMealPlanningStats() {
     const [addEvents, generateCount] = await Promise.all([
