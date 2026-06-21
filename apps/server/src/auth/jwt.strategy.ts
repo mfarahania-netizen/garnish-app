@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       userId: user.id,
       phone: user.phone,
       isAdmin: user.isAdmin,
+      isGuest: (user as any).isGuest ?? false,
     };
   }
 }

@@ -92,3 +92,22 @@ confirms wording/scope). Sources cited in chat.
 Onboarding swipe-free; the first slate + famous-first use the founder's 40 owned photos/videos (premium, zero
 legal risk). Catalog long-tail = branded placeholder now → Wikimedia CC-BY + UGC progressively. No stock-as-the-
 dish, no AI-as-real-photo, no scraping. (See chat research for the EU licensing rationale.)
+
+## Build log — Piece 1: guest spine (BACKEND ONLY — honest scope)
+Commits 15559c53 (spine) + the guardian-hardening follow-up. What is TRUE today:
+- BACKEND only. POST /auth/guest mints/resumes a real guest User + JWT; users.service.findOrCreateGuest;
+  User.isGuest + deviceKey; reaper; jwt.strategy carries isGuest.
+- NOT yet wired in the FE. AuthContext still has only login/register; RequireAuth still redirects a token-less
+  visitor to /onboarding, so a real anonymous visitor never reaches the gated list pages (discover/home). The
+  original commit message overclaimed "every visitor now silently gets a guest, so safeIds runs for them" — that
+  is the DESIGN, not the current behavior. End-to-end anonymous safety + browse-before-register land WITH the
+  onboarding FE redesign (a guest is minted on first load, deviceKey persisted in localStorage), NOT bolted onto
+  the about-to-be-replaced register-wall flow.
+- Guardian-hardened: deviceKey is SERVER-issued (CSPRNG 256-bit), never a client-chosen value → closes weak-key
+  resume-hijack + the upsert concurrent-create race; guest JWT is 24h (vs registered 7d); a @Cron reaper deletes
+  EMPTY abandoned guests (>48h, zero allergies/activity/preferences — any trace protects the row).
+- DEPLOY REQUIREMENT (do not skip): the guest/login/register throttle is keyed by client IP. In production behind
+  a proxy/CDN, set Express `trust proxy` to the exact known hop count and verify the throttler derives the IP from
+  the trusted forwarded header — otherwise the bucket either collapses to one global limit (self-DoS) or becomes
+  X-Forwarded-For-spoofable (throttle bypass). The throttle is the primary guest-abuse control; the reaper is only
+  cleanup.

@@ -25,15 +25,17 @@ export class AuthService {
   }
 
   /**
-   * Onboarding v1 — silent GUEST session. Mints (or resumes by deviceKey) a real guest User and returns a normal
-   * JWT (sub only), so every visitor carries a userId and hits the server-side safeIds allergy gate. No phone, no
-   * password, no PII. Rate-limited by the controller's ThrottlerGuard. The guest is later CLAIMED into a real
-   * account (additive + allergy-preserving) — a separate step.
+   * Onboarding v1 — silent GUEST session. Mints (or resumes by a server-issued deviceKey) a real guest User and
+   * returns a JWT (sub only, no PII). The deviceKey is returned at the TOP LEVEL (sanitizeUser deliberately strips
+   * it from `user`) so ONLY the owning client receives its own resume secret to persist. The guest token is short-
+   * lived (24h vs the registered 7d) — a smaller blast radius for a credential minted for every visitor; the client
+   * refreshes it by resuming with the deviceKey. Rate-limited by the controller's ThrottlerGuard. Claimed into a
+   * real account (additive + allergy-preserving) — a separate step.
    */
   async guestSession(deviceKey?: string) {
     const user = await this.usersService.findOrCreateGuest(deviceKey);
-    const token = this.jwtService.sign({ sub: user.id });
-    return { token, user: sanitizeUser(user) };
+    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '24h' });
+    return { token, user: sanitizeUser(user), deviceKey: (user as any).deviceKey as string };
   }
 
   async login(phone: string, password: string) {

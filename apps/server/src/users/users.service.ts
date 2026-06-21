@@ -6,6 +6,7 @@ import { ErasureService } from './erasure/erasure.service';
 import { UserExportService } from './export/user-export.service';
 import { ConsentService, CONSENT_PURPOSES } from '../consent/consent.service';
 import * as bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -27,21 +28,37 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { phone } });
   }
 
+  // A guest deviceKey is a bearer credential, so it must be a SERVER-issued secret — never a client-chosen value
+  // (a client could otherwise pick a low-entropy/guessable key and let anyone resume that guest). 256 bits, url-safe.
+  private newDeviceKey(): string {
+    return randomBytes(32).toString('base64url');
+  }
+
   /**
-   * Onboarding v1 — device-keyed passwordless GUEST. With a deviceKey, upsert by it so a returning guest on the
-   * same device RESUMES the same User (keeps declared allergies) and a concurrent first-call race can't duplicate.
-   * Without a deviceKey, mint an ephemeral guest (no cross-session resume). The minted row is a real User, so the
-   * normal JWT (sub) + jwt.strategy + the server-side safeIds allergy gate all apply — fixing anonymous=filter-OFF.
+   * Onboarding v1 — passwordless GUEST. The deviceKey is the resume secret and is ALWAYS server-issued:
+   *  - a supplied deviceKey only RESUMES an existing guest we previously issued it to (else it is ignored);
+   *  - otherwise we mint a fresh guest with a CSPRNG key and return it (caller exposes it so the client can store
+   *    it and resume later — keeping declared allergies). The minted row is a real User, so the normal JWT (sub) +
+   *    jwt.strategy + the server-side safeIds allergy gate all apply.
+   * No client-chosen key is ever written, which closes the weak-key-hijack + the upsert concurrent-create race.
    */
   async findOrCreateGuest(deviceKey?: string) {
     if (deviceKey) {
-      return this.prisma.user.upsert({
-        where: { deviceKey },
-        update: {}, // resume — never overwrite an existing guest's profile
-        create: { isGuest: true, deviceKey },
-      });
+      const existing = await this.prisma.user.findUnique({ where: { deviceKey } });
+      if (existing?.isGuest) return existing; // resume only a guest we issued this key to
+      // a key we never issued (or one pointing at a non-guest) is NOT honored — fall through to a fresh server key
     }
-    return this.prisma.user.create({ data: { isGuest: true } });
+    return this.createGuestWithFreshKey();
+  }
+
+  private async createGuestWithFreshKey(retries = 1): Promise<any> {
+    try {
+      return await this.prisma.user.create({ data: { isGuest: true, deviceKey: this.newDeviceKey() } });
+    } catch (e: any) {
+      // astronomically-unlikely 256-bit key collision → regenerate once
+      if (e?.code === 'P2002' && retries > 0) return this.createGuestWithFreshKey(retries - 1);
+      throw e;
+    }
   }
 
   async findById(id: string) {
@@ -54,6 +71,7 @@ export class UsersService {
         email: true,
         avatar: true,
         isAdmin: true,
+        isGuest: true,
       },
     });
   }
