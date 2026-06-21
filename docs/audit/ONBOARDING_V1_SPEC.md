@@ -116,3 +116,22 @@ Commits 15559c53 (spine) + the guardian-hardening follow-up. What is TRUE today:
   the trusted forwarded header — otherwise the bucket either collapses to one global limit (self-DoS) or becomes
   X-Forwarded-For-spoofable (throttle bypass). The throttle is the primary guest-abuse control; the reaper is only
   cleanup.
+
+## Build log — Piece 2: EU-14 allergen engine (BACKEND — done, guardian-clean)
+Commits a33a7cd4 + f2f39981. Extended ALLERGEN_ALIASES to the full EU-14 (celeriac→celery, lupine→lupin,
+mustard-seed→mustard, finfish→fish, all sulphite/so2 spellings→sulphites, mollusc/mollusk→molluscs). Grounding vs
+the live 1008-ingredient dictionary surfaced + fixed a LIVE under-match: variant crustacean tokens ('crustacean
+shellfish' x3, 'crustacean_shellfish' x3) were passing through verbatim, so the shellfish umbrella never matched
+them. Guardian (exhaustive sweep of all 21 live tokens): ZERO under-matches, no entanglement, de-entanglement
+(fish≠shellfish) holds. celery/lupin/fish/mustard chips are LIVE in data today; sulphites is correct-but-inert
+(no sulphite ingredient tagged — a data-layer follow-up). Drift fix: aligned the 2 standalone data scripts
+(fix-allergen-shapes.cjs, validate-gris-batch.cjs) to mirror the runtime source of truth.
+Open follow-ups: (a) tag sulphite ingredients (data layer); (b) the discover client matcher (useDiscovery
+ALLERGEN_TERMS) lacks the new chips — a redundant belt (server gate is authoritative), best fixed by driving the
+discover hide off the server safety verdict (lands with the FE redesign).
+
+## NEXT: Piece 3 = FE onboarding redesign (design-first)
+The FE pieces (guest-on-load wiring + EU-14 allergy screen + effort lever + first-slate familiarity + consent
+un-bundle + NL/EN i18n) are interdependent and should ship as ONE coherent redesign, NOT bolted onto the current
+register-wall flow. DESIGN (forge) the 5-question flow + screens before building, then build screen-by-screen with
+the guardian/screenshot gate.
