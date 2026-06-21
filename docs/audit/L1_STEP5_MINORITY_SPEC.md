@@ -23,11 +23,19 @@ Three minority-protection layers (per the plan): (1) **asymmetric bound** `liftC
 recipe with a positive personal signal (`tasteAffinity > TASTE_NEUTRAL=0.35`); (3) **cohort granularity** —
 inherited from step 4's hierarchical `recipePrior` value.
 
-## Why LIFT-ONLY default — the invariant is UNCONDITIONAL
+## Why LIFT-ONLY default — the invariant is UNCONDITIONAL (and survives diversity)
 With `penMult=0` the penalty branch is always 0, so `term ≥ 0` for EVERY recipe and ANY `tasteAffinity`. Since
-`finalScore = max(0, rawScore + term - E) * C` is non-decreasing in `term≥0` (and round + diversity preserve it
-pointwise), **finalScore_step5 ≥ finalScore_no-prior** for every candidate — strictly stronger than the founder's
-"positive personal signal ⇒ score never drops". This also sidesteps the fact that `tasteAffinity` is *declared*
+`finalScore = max(0, rawScore + term - E) * C` is non-decreasing in `term≥0` and `round` is monotone,
+**finalScore_step5 ≥ finalScore_no-prior** PRE-diversity for every candidate — strictly stronger than the
+founder's "positive personal signal ⇒ score never drops".
+
+**Diversity fix (guardian-caught):** `applyDiversity` applies an ORDER-DEPENDENT same-(mealType,diet) penalty, so
+naively letting the lift change the sort order could reorder a peer above an un-lifted recipe and demote it into a
+larger penalty — dropping its score below baseline. Fixed by ranking the diversity pass on a NO-PRIOR
+`diversityScore` (= `max(0, rawScore - exposurePenalty) * contextBoost`, computed alongside finalScore, stripped
+from output). Each recipe's diversity penalty is then baseline-deterministic, so `finalScore_step5 = baseline +
+liftEffect ≥ baseline` END-TO-END through diversity. At default (term 0) `diversityScore === finalScore` →
+byte-identical. (Property: a same-group peer lift never drops the un-lifted recipe — locked by a regression test.) This also sidesteps the fact that `tasteAffinity` is *declared*
 preference (not per-recipe reward): with lift-only the gate is never the safety guarantor. Re-enabling the
 two-sided down-signal post-launch is a config flip (`penMult=1`) — the centered (negative-capable) means keep
 living in `RecipePrior`; no backfill. The hard floor then secures the invariant independent of the gate shape.

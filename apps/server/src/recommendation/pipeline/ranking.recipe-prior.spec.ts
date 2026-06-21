@@ -84,5 +84,27 @@ describe('RankingService — recipePrior seam (L1 step 4)', () => {
         expect(byId(activated, id).finalScore).toBeGreaterThanOrEqual(byId(baseline, id).finalScore - 1e-9); // invariant: score never drops
       }
     });
+
+    // guardian: the invariant must survive applyDiversity's order-dependent penalty. Two recipes sharing
+    // mealType+diet; lifting the lower one reorders it above the other — the other must NOT drop below baseline.
+    it('survives diversity reorder: lifting a same-group peer never drops the other below its baseline', async () => {
+      const sameGroup = () => {
+        const m = mocks();
+        const r = (id: string) => ({ id, title: id, cookingTime: 30, difficulty: 'easy', cost: 'low', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-06-01'), ingredients: [{ name: 'x' }], searchTerms: [] });
+        m.prisma.recipe.findMany = jest.fn().mockResolvedValue([r('A'), r('B')]);
+        return m;
+      };
+      const fs = (s: any[], id: string) => s.find((x) => x.recipeId === id)!.finalScore;
+
+      const baseline = await build(sameGroup()).rank('u1', ['A', 'B']);
+      process.env.L1_PRIOR_STEP5_WEIGHT = '0.3';
+      const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['A', 0.5], ['B', 1.0]])) }; // A neutral (no lift), B lifted
+      const activated = await build(sameGroup(), prior).rank('u1', ['A', 'B']);
+
+      // INVARIANT: A got NO lift; without the diversity-baseline fix the lift on B would reorder B above A and
+      // demote A into the same-group penalty (A would drop ~0.52 → ~0.47). With the fix A keeps its baseline.
+      expect(fs(activated, 'A')).toBeGreaterThanOrEqual(fs(baseline, 'A') - 1e-9);
+      expect(fs(activated, 'B')).toBeGreaterThan(fs(baseline, 'B') + 1e-9); // B was lifted toward/level with A
+    });
   });
 });

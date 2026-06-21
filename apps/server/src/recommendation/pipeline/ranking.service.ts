@@ -313,7 +313,12 @@ export class RankingService {
         // L1 step 5 — bounded, lift-only-by-default minority-protected prior term (0 when default-OFF → byte-
         // identical). Added INSIDE Math.max(0,…) so it can never drop finalScore below the existing 0 floor.
         const priorTerm = this.recipePriorSlateTerm(scores.recipePrior, scores.tasteAffinity);
-        const finalScore = Math.max(0, rawScore + priorTerm - exposurePenalty) * this.contextBoost(recipe, context);
+        const cb = this.contextBoost(recipe, context);
+        const finalScore = Math.max(0, rawScore + priorTerm - exposurePenalty) * cb;
+        // L1 step 5 — diversity must RANK by the no-prior baseline so the prior lift can never reorder peers into
+        // a larger diversity penalty and drop a (possibly personally-liked) recipe BELOW its no-prior baseline.
+        // At default (priorTerm 0) diversityScore === finalScore → byte-identical ordering + output.
+        const diversityScore = Math.max(0, rawScore - exposurePenalty) * cb;
         const contributions = this.contributionCalculator.calculate(
           scores as unknown as Record<string, number>,
           resolvedWeights,
@@ -326,6 +331,7 @@ export class RankingService {
           mealType: this.parseListField(recipe.mealType),
           finalScore: this.round(finalScore),
           rawScore: this.round(rawScore),
+          diversityScore: this.round(diversityScore), // L1 step 5 — internal: baseline order for diversity; stripped in applyDiversity
           scores: {
             ...this.roundScores(scores),
             exposurePenalty: -this.round(exposurePenalty),
@@ -337,7 +343,8 @@ export class RankingService {
       }),
     );
 
-    const ranked = this.applyDiversity(scoredRecipes.sort((a, b) => b.finalScore - a.finalScore));
+    const ranked = this.applyDiversity(scoredRecipes.sort((a, b) => b.diversityScore - a.diversityScore));
+    ranked.forEach((r) => { delete (r as { diversityScore?: number }).diversityScore; }); // strip the internal ordering field
     await this.logFeatureContributions(userId, ranked.slice(0, 5));
     return ranked;
   }
