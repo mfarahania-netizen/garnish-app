@@ -4,6 +4,22 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytics-intelligence.service';
 import { OpsIntelligenceService } from '../analytics/intelligence/ops-intelligence.service';
 
+// SECURITY/GDPR (advisor audit): admin list/browse views MINIMIZE PII — phone/email masked by default (a
+// support action uses the in-app ticket flow, not the raw number). Pure + null-safe.
+export function maskPhone(phone?: string | null): string | null {
+  if (!phone) return phone ?? null;
+  const p = String(phone);
+  if (p.length <= 6) return '*'.repeat(p.length);
+  return p.slice(0, 4) + '*'.repeat(p.length - 6) + p.slice(-2);
+}
+export function maskEmail(email?: string | null): string | null {
+  if (!email) return email ?? null;
+  const [local, ...rest] = String(email).split('@');
+  const domain = rest.join('@');
+  if (!domain) return '***';
+  return (local?.[0] ?? '') + '***@' + domain;
+}
+
 @Injectable()
 export class AdminService {
   constructor(
@@ -11,6 +27,16 @@ export class AdminService {
     private analyticsIntelligence: AnalyticsIntelligenceService, // ANALYTICS-L4-16
     private opsIntelligence: OpsIntelligenceService, // OPS-L4-18
   ) {}
+
+  // GDPR Art.30 accountability (advisor audit): record an admin PII-access / action. PII-FREE (only the admin's
+  // id, an action token getSystemHealth already counts, and a small non-PII meta). Fire-and-forget — never
+  // blocks or breaks the admin request.
+  recordAudit(adminUserId: string | undefined, action: string, meta: Record<string, any> = {}): void {
+    if (!adminUserId) return;
+    this.prisma.userEvent
+      .create({ data: { userId: adminUserId, type: action, payload: JSON.stringify({ admin: true, ...meta }) } })
+      .catch(() => {});
+  }
 
   // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
   getFunnels() { return this.analyticsIntelligence.getFunnels(); }
@@ -43,7 +69,8 @@ export class AdminService {
       }),
       this.prisma.supportTicket.count(),
     ]);
-    return { data, total, page, limit };
+    const masked = data.map((t: any) => (t.user ? { ...t, user: { ...t.user, phone: maskPhone(t.user.phone) } } : t));
+    return { data: masked, total, page, limit };
   }
 
   async respondToTicket(ticketId: string, message: string) {
@@ -91,7 +118,8 @@ export class AdminService {
       }),
       this.prisma.user.count(),
     ]);
-    return { data, total, page, limit };
+    const masked = data.map((u: any) => ({ ...u, phone: maskPhone(u.phone), email: maskEmail(u.email) }));
+    return { data: masked, total, page, limit };
   }
 
   async getRecentEvents(limit = 100, page = 1, type?: string, from?: string, to?: string) {
@@ -149,7 +177,8 @@ export class AdminService {
         const p = JSON.parse(event.payload || '{}');
         if (p.recipeId) recipeTitle = recipeMap.get(p.recipeId) || null;
       } catch {}
-      return { ...event, recipeTitle };
+      const user = event.user ? { ...event.user, phone: maskPhone(event.user.phone) } : event.user;
+      return { ...event, user, recipeTitle };
     });
 
     return { events: enrichedEvents, total };
@@ -315,7 +344,8 @@ export class AdminService {
       ? profiles.reduce((sum, p) => sum + (p.consistencyScore || 0), 0) / profiles.length : 0;
     const avgChurnRisk = profiles.length > 0
       ? profiles.reduce((sum, p) => sum + (p.churnRiskScore || 0), 0) / profiles.length : 0;
-    return { profiles, avgConsistency, avgChurnRisk };
+    const maskedProfiles = profiles.map((p: any) => (p.user ? { ...p, user: { ...p.user, phone: maskPhone(p.user.phone) } } : p));
+    return { profiles: maskedProfiles, avgConsistency, avgChurnRisk };
   }
 
   async getPageViewStats() {

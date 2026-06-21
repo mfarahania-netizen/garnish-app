@@ -1,5 +1,5 @@
 // apps/server/src/admin/admin.controller.ts
-import { Controller, Get, Post, Patch, Param, Body, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, UseGuards, Query, Req } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
 import { Roles } from '../auth/roles.decorator';
@@ -15,17 +15,20 @@ export class AdminController {
   getDashboard() { return this.adminService.getDashboardStats(); }
 
   @Get('tickets')
-  getTickets(@Query('page') page: string, @Query('limit') limit: string) {
+  getTickets(@Req() req, @Query('page') page: string, @Query('limit') limit: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_view', { route: 'tickets' });
     return this.adminService.getAllTickets(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
   @Post('tickets/:id/respond')
-  respondToTicket(@Param('id') id: string, @Body('message') message: string) {
+  respondToTicket(@Req() req, @Param('id') id: string, @Body('message') message: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_ticket_reply', { ticketId: id });
     return this.adminService.respondToTicket(id, message);
   }
 
   @Patch('tickets/:id/status')
-  updateTicketStatus(@Param('id') id: string, @Body('status') status: string) {
+  updateTicketStatus(@Req() req, @Param('id') id: string, @Body('status') status: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_ticket_status', { ticketId: id, status });
     return this.adminService.updateTicketStatus(id, status);
   }
 
@@ -35,26 +38,33 @@ export class AdminController {
   }
 
   @Patch('recipes/:id/approve')
-  approveRecipe(@Param('id') id: string) { return this.adminService.updateRecipeStatus(id, 'approved'); }
+  approveRecipe(@Req() req, @Param('id') id: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_recipe_approve', { recipeId: id });
+    return this.adminService.updateRecipeStatus(id, 'approved');
+  }
 
   @Patch('recipes/:id/reject')
-  rejectRecipe(@Param('id') id: string, @Body('note') note: string) {
+  rejectRecipe(@Req() req, @Param('id') id: string, @Body('note') note: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_recipe_reject', { recipeId: id });
     return this.adminService.updateRecipeStatus(id, 'rejected', note);
   }
 
   @Get('users')
-  getUsers(@Query('page') page: string, @Query('limit') limit: string) {
+  getUsers(@Req() req, @Query('page') page: string, @Query('limit') limit: string) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_view', { route: 'users' });
     return this.adminService.getAllUsers(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
   @Get('analytics/events')
   getRecentEvents(
+    @Req() req,
     @Query('limit') limit: string,
     @Query('page') page: string,
     @Query('type') type: string,
     @Query('from') from: string,    // 🆕
     @Query('to') to: string,        // 🆕
   ) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_view', { route: 'events', type: type || 'all' });
     return this.adminService.getRecentEvents(
       parseInt(limit) || 50,
       parseInt(page) || 1,
@@ -86,7 +96,10 @@ export class AdminController {
   getShoppingAnalytics() { return this.adminService.getShoppingAnalytics(); }
 
   @Get('analytics/behavior-profiles')
-  getBehaviorProfiles() { return this.adminService.getBehaviorProfiles(); }
+  getBehaviorProfiles(@Req() req) {
+    this.adminService.recordAudit(req.user?.userId, 'admin_view', { route: 'behavior-profiles' });
+    return this.adminService.getBehaviorProfiles();
+  }
 
   @Get('analytics/page-views')
   getPageViewStats() { return this.adminService.getPageViewStats(); }
