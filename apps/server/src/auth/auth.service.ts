@@ -16,10 +16,10 @@ export class AuthService {
     const existing = await this.usersService.findByPhone(phone);
     if (existing) throw new UnauthorizedException('این شماره قبلاً ثبت شده است');
     const user = await this.usersService.createUser(phone, password, name);
-    // ❌ isAdmin از payload حذف شد
+    // ❌ isAdmin از payload حذف شد. ❌ phone هم حذف شد — JWT payload فقط base64 است (نه رمز)، و data-minimization
+    // برای GDPR یعنی PII (شماره) داخل تُوکنِ کلاینت نباشد. jwt.strategy کاربر را با sub از DB می‌خوانَد.
     const token = this.jwtService.sign({
       sub: user.id,
-      phone: user.phone,
     });
     return { token, user: sanitizeUser(user) };
   }
@@ -33,10 +33,10 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('شماره یا رمز عبور اشتباه است');
     }
-    // ❌ isAdmin از payload حذف شد
+    // ❌ isAdmin از payload حذف شد. ❌ phone هم حذف شد — JWT payload فقط base64 است (نه رمز)، و data-minimization
+    // برای GDPR یعنی PII (شماره) داخل تُوکنِ کلاینت نباشد. jwt.strategy کاربر را با sub از DB می‌خوانَد.
     const token = this.jwtService.sign({
       sub: user.id,
-      phone: user.phone,
     });
     return { token, user: sanitizeUser(user) };
   }
