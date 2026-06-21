@@ -9,6 +9,7 @@ import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.servic
 import { RealTimeContext } from '../../context/real-time-context';
 import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
 import { L1_WEIGHT_SOURCE, type WeightSource } from './weight-source';
+import { L1_RECIPE_PRIOR_SOURCE, type RecipePriorSource } from './recipe-prior.source';
 import {
   clamp01,
   deriveEstimatedEffort,
@@ -74,6 +75,7 @@ interface ScoreBreakdown {
   recency: number;
   recipeUnderstanding: number;
   ingredientIntelligence: number;
+  recipePrior: number; // L1 step 4 — learned reward-prior VALUE component (neutral 0.5; WEIGHT 0 until activated)
 }
 
 interface ContributionBreakdown {
@@ -88,6 +90,7 @@ interface ContributionBreakdown {
   recency: number;
   recipeUnderstanding: number;
   ingredientIntelligence: number;
+  recipePrior: number; // L1 step 4
 }
 
 @Injectable()
@@ -106,6 +109,9 @@ export class RankingService {
     recency: 0.02,
     recipeUnderstanding: 0.1,
     ingredientIntelligence: 0.05,
+    recipePrior: 0.0, // L1 step 4 — learned reward-prior component; WEIGHT pinned to 0 → byte-identical until a
+    // LearnedWeightSource raises it via L1_WEIGHT_SOURCE. A 0.0 addend leaves the sum at 1.00, so normalizeWeights
+    // keeps the other ten weights byte-identical.
   };
 
   private readonly signalTokenMap: Record<string, string[]> = {
@@ -136,6 +142,9 @@ export class RankingService {
     private recipeEmbedding: RecipeEmbeddingService,
     // L1 seam — pluggable learned/cohort weight source. @Optional + absent today → byte-identical behaviour.
     @Optional() @Inject(L1_WEIGHT_SOURCE) private readonly weightSource?: WeightSource,
+    // L1 step 4 seam — pluggable per-(recipe×cohort) prior VALUE source. @Optional + absent today → the
+    // recipePrior component is the neutral 0.5 for every candidate (and its weight is 0) → byte-identical.
+    @Optional() @Inject(L1_RECIPE_PRIOR_SOURCE) private readonly recipePriorSource?: RecipePriorSource,
   ) {}
 
   async rank(userId: string, candidateIds: string[], context?: RealTimeContext) {
@@ -230,6 +239,12 @@ export class RankingService {
     // FI-PHASE-2.2: weekday context for effortFit's mild weekday lean — one clock read per rank call.
     const weekday = isIranWeekday(new Date());
 
+    // L1 step 4 — prefetch the learned-prior VALUES for the whole slate in ONE batched call (no N+1). Absent
+    // source OR any error → empty map → every candidate reads the neutral 0.5 below → byte-identical.
+    const priorValues = this.recipePriorSource
+      ? (await this.recipePriorSource.valuesForSlate(userId, candidateIds, context).catch(() => null)) ?? new Map<string, number>()
+      : new Map<string, number>();
+
     const scoredRecipes = await Promise.all(
       recipes.map(async (recipe: RecipeForRanking) => {
         const matchedSignals = this.getMatchedSignals(recipe, userFeatures);
@@ -248,6 +263,9 @@ export class RankingService {
           recency: this.calculateRecencyScore(recipe),
           recipeUnderstanding: this.calculateRecipeUnderstanding(recipe, userFeatures, matchedSignals),
           ingredientIntelligence: this.calculateIngredientIntelligence(recipe, userFeatures, matchedSignals),
+          // L1 step 4 — learned reward-prior VALUE in [0,1]; NEUTRAL 0.5 when no prior (constant across
+          // candidates ⇒ cannot reorder). At weight 0 it contributes 0 → byte-identical.
+          recipePrior: priorValues.get(recipe.id) ?? 0.5,
         };
         scores.outcomeFit = this.capOutcomeFit(scores.outcomeFit, userFeatures);
 
