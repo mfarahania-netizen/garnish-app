@@ -78,7 +78,7 @@ function Browse({ d, openRecipe }) {
 }
 
 function Results({ d, openRecipe }) {
-  const { safe, flagged, total } = d.results;
+  const { safe, hiddenForSafety, total } = d.results;
   const { dismissed, dismiss } = useDismissRecommendation();
   return (
     <Box style={{ marginBlockStart: 'var(--g-space-4)' }}>
@@ -105,21 +105,13 @@ function Results({ d, openRecipe }) {
         ))}
       </Box>
 
-      {flagged.length ? (
-        <>
-          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', margin: 'var(--g-space-4) 2px var(--g-space-3)' }}>
-            <Box aria-hidden="true" style={{ flex: 1, blockSize: 1, background: 'var(--g-color-border-subtle)' }} />
-            <Text component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>
-              <IconShieldHalf size={13} stroke={1.8} aria-hidden="true" />برای ایمنی پایین‌تر
-            </Text>
-            <Box aria-hidden="true" style={{ flex: 1, blockSize: 1, background: 'var(--g-color-border-subtle)' }} />
-          </Box>
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
-            {flagged.map((r) => (
-              <RecipeCard key={r.id} title={r.title} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} allergen={{ name: r.allergen, text: '— حساسیتِ اعلام‌شده‌ات' }} onOpen={() => openRecipe(r.id)} />
-            ))}
-          </Box>
-        </>
+      {/* SAFETY (advisor audit): allergen-conflicting recipes are HARD-HIDDEN (never rendered/openable). We show
+          only an honest count so the user knows filtering happened, without exposing unsafe dishes. */}
+      {hiddenForSafety ? (
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', margin: 'var(--g-space-4) 2px 0', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
+          <IconShieldHalf size={14} stroke={1.8} aria-hidden="true" />
+          {toFa(hiddenForSafety)} غذا به‌خاطرِ حساسیتِ اعلام‌شده‌ات پنهان شد
+        </Box>
       ) : null}
     </Box>
   );

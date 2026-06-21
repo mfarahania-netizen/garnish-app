@@ -162,10 +162,12 @@ export function useDiscovery() {
     if (filters.quick) mapped = mapped.filter((m) => m.cookingTime && m.cookingTime <= 30);
     if (filters.veg) mapped = mapped.filter((m) => m.cats.some((c) => /گیاه|vegan|vegetarian/i.test(String(c))));
 
-    // demote-not-hidden: allergen conflicts to the bottom
+    // SAFETY (advisor audit): HARD-HIDE allergen conflicts (was demote-to-bottom, which still showed + let the
+    // user OPEN a recipe conflicting with their declared allergy). We surface only an honest hidden-count, never
+    // the unsafe cards. Consistent with the server-side hard allergy gate.
     const safe = mapped.filter((m) => !m.allergen);
-    const flagged = mapped.filter((m) => m.allergen);
-    return { safe, flagged, total: mapped.length };
+    const hiddenForSafety = mapped.filter((m) => m.allergen).length;
+    return { safe, hiddenForSafety, total: mapped.length };
   }, [search.data, allergiesFa, filters, toCard]);
 
   // status

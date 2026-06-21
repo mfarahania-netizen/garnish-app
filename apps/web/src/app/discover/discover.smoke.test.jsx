@@ -118,7 +118,7 @@ describe('DiscoveryPage smoke', () => {
     expect(screen.getByRole('heading', { name: '«سوشی» رو پیدا نکردیم' })).toBeInTheDocument();
   });
 
-  it('renders the results state with safe and flagged cards', () => {
+  it('HARD-HIDES allergen-conflicting recipes — shows only a safety count, never the unsafe card', () => {
     useDiscovery.mockReturnValue(
       baseShape({
         status: 'results',
@@ -126,7 +126,7 @@ describe('DiscoveryPage smoke', () => {
         query: 'کباب',
         results: {
           safe: [resultCard('r1')],
-          flagged: [resultCard('r2', { title: 'املت', allergen: 'تخم‌مرغ' })],
+          hiddenForSafety: 1, // one recipe conflicts with the declared allergy
           total: 2,
         },
       }),
@@ -134,10 +134,10 @@ describe('DiscoveryPage smoke', () => {
 
     renderWithProviders(<DiscoveryPage />);
 
-    // result count line ("۲ نتیجه") + the demote-not-hidden divider, both verbatim
     expect(screen.getByText('۲ نتیجه')).toBeInTheDocument();
-    expect(screen.getByText('برای ایمنی پایین‌تر')).toBeInTheDocument();
-    // a result card rendered
+    // the safe card is shown
     expect(screen.getByRole('heading', { name: 'کباب کوبیده' })).toBeInTheDocument();
+    // the honest hidden-for-safety count is shown (no openable unsafe card)
+    expect(screen.getByText(/پنهان شد/)).toBeInTheDocument();
   });
 });
