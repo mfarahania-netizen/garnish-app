@@ -61,6 +61,17 @@ default-off→0 · lift cap · lift-only-default · hard floor · bounded penalt
 bound · NaN-safe · INVARIANT sweep (term≥0 for all W/v/ta at penMult=0) · INVARIANT penMult=1 (ta>0.35⇒≥0) ·
 TASTE_NEUTRAL coupling · activation smoke (crowd dish UP, no dish drops below baseline). Full suite 1751 green.
 
+## Status — BUILT + guardian-verified (find → fix → re-review CLEAN)
+`28e69fcf` (build) · `ac919541` (diversity-invariant fix). Re-review: invariant holds end-to-end through
+applyDiversity, byte-identical default preserved, both reviewers fixSound/no-rework.
+
+### Known minor (guardian re-review, non-blocking)
+- The end-to-end invariant proof assumes the step-4 recipePrior **LINEAR** weight stays 0 (it does, in
+  defaultWeights). If a future `LearnedWeightSource` ever raises that linear weight, prior signal would enter
+  rawScore (hence diversityScore) — re-verify the invariant then. The step-5 slate-term mechanism is unaffected.
+- `diversityScore` is stripped at runtime (`delete`) but remains in rank()'s inferred return TYPE (undefined at
+  runtime; no consumer reads it). Cosmetic TS-typing nuance only.
+
 ## Open questions — ALL activation-time / policy (none block the build; flag at activation)
 1. CONTRACT: invariant is per-recipe SCORE never drops, NOT rank (rank-monotonicity is impossible for a
    slate reranker; matches the plan's verbatim wording). Founder sign-off.
