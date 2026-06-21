@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
+import { isRecipeVisibleTo } from '../recipes/recipe-visibility';
 import { getStartOfWeek } from '../utils/date.utils';
 
 @Injectable()
@@ -13,13 +14,28 @@ export class MealPlansService {
   async getCurrentPlan(userId: string) {
     const startOfWeek = getStartOfWeek();
 
-    return this.prisma.mealPlan.findFirst({
+    const plan = await this.prisma.mealPlan.findFirst({
       where: {
         userId,
         weekStart: startOfWeek,
       },
       include: { slots: { include: { recipe: true } } },
     });
+    return this.sanitizePlan(plan, userId);
+  }
+
+  /**
+   * SECURITY (advisor audit): null out the recipe BODY on any slot whose recipe is not published and not the
+   * user's own draft — so a stored reference to someone else's pending/private recipe never echoes its full
+   * body back. Byte-identical today (all curated recipes are active+public → every slot recipe stays).
+   */
+  private sanitizePlan<T extends { slots?: Array<{ recipe?: any }> } | null>(plan: T, userId: string): T {
+    if (plan && Array.isArray((plan as any).slots)) {
+      for (const slot of (plan as any).slots) {
+        if (slot?.recipe && !isRecipeVisibleTo(slot.recipe, userId)) slot.recipe = null;
+      }
+    }
+    return plan;
   }
 
   async savePlan(userId: string, weekStart: string, slots: { dayOfWeek: number; mealType: string; recipeId?: string; notes?: string }[]) {
@@ -31,7 +47,21 @@ export class MealPlansService {
       notes: slot.notes || '',
     }));
 
-    return this.prisma.$transaction(async (tx) => {
+    // SECURITY (advisor audit): every referenced recipe must be published (or the user's own draft) — block
+    // planning another user's pending/private UGC by a guessed id (which would echo back via getCurrentPlan).
+    const recipeIds = [...new Set(cleanSlots.map(s => s.recipeId).filter(Boolean))] as string[];
+    if (recipeIds.length) {
+      const recipes = await this.prisma.recipe.findMany({
+        where: { id: { in: recipeIds } },
+        select: { id: true, status: true, isPublic: true, authorId: true },
+      });
+      const byId = new Map(recipes.map(r => [r.id, r]));
+      for (const id of recipeIds) {
+        if (!isRecipeVisibleTo(byId.get(id), userId)) throw new NotFoundException(`Recipe ${id} is not available`);
+      }
+    }
+
+    const plan = await this.prisma.$transaction(async (tx) => {
       await tx.mealSlot.deleteMany({ where: { mealPlan: { userId, weekStart: start } } });
       await tx.mealPlan.deleteMany({ where: { userId, weekStart: start } });
 
@@ -44,6 +74,7 @@ export class MealPlansService {
         include: { slots: { include: { recipe: true } } },
       });
     });
+    return this.sanitizePlan(plan, userId);
   }
 
   async generateSmartPlan(userId: string) {
