@@ -178,7 +178,13 @@ export class AdminService {
         if (p.recipeId) recipeTitle = recipeMap.get(p.recipeId) || null;
       } catch {}
       const user = event.user ? { ...event.user, phone: maskPhone(event.user.phone) } : event.user;
-      return { ...event, user, recipeTitle };
+      // PRIVACY (guardian): return ONLY safe scalars — NEVER the raw `payload`/`enrichment` strings, which can
+      // carry free user text (search queries, AI messages). The derived recipeTitle is the display value.
+      return {
+        id: event.id, type: event.type, page: event.page, duration: event.duration,
+        timestamp: event.timestamp, recipeId: event.recipeId, consentPurpose: event.consentPurpose,
+        sessionId: event.sessionId, user, recipeTitle,
+      };
     });
 
     return { events: enrichedEvents, total };

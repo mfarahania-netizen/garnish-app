@@ -46,4 +46,29 @@ describe('admin PII minimization + audit (advisor audit)', () => {
       expect(() => svc.recordAudit('admin1', 'admin_view')).not.toThrow();
     });
   });
+
+  // guardian-caught leak: getRecentEvents must NOT return the raw payload/enrichment strings
+  describe('getRecentEvents PII', () => {
+    it('omits raw payload/enrichment and masks user.phone (keeps derived recipeTitle)', async () => {
+      const event = {
+        id: 'e1', type: 'search_query', page: '/discover', duration: null, timestamp: new Date(),
+        recipeId: null, consentPurpose: 'analytics', sessionId: 's1',
+        payload: JSON.stringify({ query: 'something private', recipeId: 'r1' }),
+        enrichment: JSON.stringify({ secret: 'x' }),
+        user: { name: 'علی', phone: '09123456789' },
+      };
+      const prisma: any = {
+        userEvent: { findMany: jest.fn(async () => [event]), count: jest.fn(async () => 1) },
+        recipe: { findMany: jest.fn(async () => [{ id: 'r1', title: 'قورمه' }]) },
+      };
+      const svc = new AdminService(prisma, {} as any, {} as any);
+      const { events } = await svc.getRecentEvents();
+      const e = events[0] as any;
+      expect(e).not.toHaveProperty('payload'); // raw user text must not cross the wire
+      expect(e).not.toHaveProperty('enrichment');
+      expect(e.user.phone).toBe('0912*****89'); // masked
+      expect(e.recipeTitle).toBe('قورمه'); // derived display value kept
+      expect(JSON.stringify(e)).not.toContain('something private');
+    });
+  });
 });
