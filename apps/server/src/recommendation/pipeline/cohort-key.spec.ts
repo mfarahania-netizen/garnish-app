@@ -1,4 +1,4 @@
-import { deriveCohortKey, regionKey } from './cohort-key';
+import { deriveCohortKey, regionKey, activeOccasionKey, facetsFromUser } from './cohort-key';
 
 describe('cohort-key — L1 cold-start prior join key', () => {
   describe('regionKey', () => {
@@ -35,6 +35,28 @@ describe('cohort-key — L1 cold-start prior join key', () => {
     it('returns null when no facet is known (caller falls back to population)', () => {
       expect(deriveCohortKey({})).toBeNull();
       expect(deriveCohortKey({ diet: '   ' })).toBeNull();
+    });
+  });
+
+  describe('activeOccasionKey', () => {
+    it('prefers the EUROPEAN occasion (Europe launch is the priority)', () => {
+      expect(activeOccasionKey({ occasion: { key: 'yalda' }, europeanOccasion: { key: 'christmas' } })).toBe('christmas');
+    });
+    it('falls back to the Persian occasion when no EU occasion is active', () => {
+      expect(activeOccasionKey({ occasion: { key: 'yalda' }, europeanOccasion: { key: 'none' } })).toBe('yalda');
+    });
+    it('returns null on an ordinary day (both none / missing)', () => {
+      expect(activeOccasionKey({ occasion: { key: 'none' }, europeanOccasion: { key: 'none' } })).toBeNull();
+      expect(activeOccasionKey({})).toBeNull();
+      expect(activeOccasionKey(null)).toBeNull();
+    });
+  });
+
+  describe('facetsFromUser', () => {
+    it('maps user + occasion to facets (null-safe)', () => {
+      const f = facetsFromUser({ country: 'NL', locale: 'nl-NL', preferences: { diet: 'vegetarian', skillLevel: 'beginner' } }, 'christmas');
+      expect(f).toEqual({ country: 'NL', locale: 'nl-NL', diet: 'vegetarian', skill: 'beginner', occasion: 'christmas' });
+      expect(facetsFromUser(null)).toEqual({ country: null, locale: null, diet: null, skill: null, occasion: null });
     });
   });
 });

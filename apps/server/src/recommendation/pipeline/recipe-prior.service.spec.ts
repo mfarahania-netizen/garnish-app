@@ -58,6 +58,14 @@ describe('RecipePriorService — read path (L1 step 4)', () => {
     expect(where.OR).toEqual(expect.arrayContaining([{ scope: 'person', scopeKey: 'u1' }]));
   });
 
+  it('folds the active EU occasion (Christmas) into the cohort key — CORE for the Europe launch', async () => {
+    on();
+    const { svc, findMany } = make([]);
+    await svc.valuesForSlate('u1', ['r1'], { occasion: { key: 'none' }, europeanOccasion: { key: 'christmas' } } as any);
+    const cohortClause = findMany.mock.calls[0][0].where.OR.find((c: any) => c.scope === 'cohort');
+    expect(cohortClause.scopeKey).toBe('country=nl;diet=vegetarian;occasion=christmas;skill=beginner');
+  });
+
   it('is BATCHED — one findMany for the whole slate (no N+1)', async () => {
     on();
     const { svc, findMany } = make([]);

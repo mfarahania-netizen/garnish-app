@@ -43,6 +43,22 @@ export function deriveCohortKey(f: CohortFacets): string | null {
  * (RecipePriorService) and the learner (RecipePriorLearnerService) so BOTH derive the SAME cohortKey for the
  * same user/occasion — a divergent mapping would silently miss the cohort prior. Pure; tolerates partial rows.
  */
+/**
+ * The active occasion for cohorting. The EUROPEAN occasion (Christmas/Easter/King's Day) takes priority — it is
+ * CORE for the general-public Europe/Holland launch — else the Persian occasion (Yalda/Nowruz), else null on an
+ * ordinary day (→ a broader, occasion-free cohort). SHARED by the prior READER (live context) and the LEARNER
+ * (serialized contextJson) so both fold the SAME occasion into the cohortKey.
+ */
+export function activeOccasionKey(
+  ctx: { occasion?: { key?: string | null } | null; europeanOccasion?: { key?: string | null } | null } | null | undefined,
+): string | null {
+  const eu = ctx?.europeanOccasion?.key;
+  if (eu && eu !== 'none') return eu;
+  const fa = ctx?.occasion?.key;
+  if (fa && fa !== 'none') return fa;
+  return null;
+}
+
 export function facetsFromUser(
   user:
     | { locale?: string | null; country?: string | null; preferences?: { diet?: string | null; skillLevel?: string | null } | null }

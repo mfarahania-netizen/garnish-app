@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { RealTimeContext } from '../../context/real-time-context';
-import { deriveCohortKey, facetsFromUser } from './cohort-key';
+import { deriveCohortKey, facetsFromUser, activeOccasionKey } from './cohort-key';
 import { hierarchicalPrior, shrink, DEFAULT_KAPPA } from './prior-shrinkage';
 import type { RecipePriorSource } from './recipe-prior.source';
 
@@ -88,7 +88,7 @@ export class RecipePriorService implements RecipePriorSource {
         where: { id: userId },
         select: { locale: true, country: true, preferences: { select: { diet: true, skillLevel: true } } },
       });
-      const facets = facetsFromUser(user, context?.occasion?.key);
+      const facets = facetsFromUser(user, activeOccasionKey(context));
       return deriveCohortKey(facets) ?? '';
     } catch {
       return '';
