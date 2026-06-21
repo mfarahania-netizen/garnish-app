@@ -24,8 +24,16 @@ async function bootstrap() {
   // E7: consistent error contract + server-side error logging (no PII in logs).
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  // سرو فایل‌های استاتیک از پوشهٔ uploads
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  // سرو فایل‌های استاتیک از پوشهٔ uploads — SECURITY (advisor audit): nosniff stops a browser from
+  // reinterpreting a stored file as HTML/JS, and a locked-down CSP neutralizes any script even if one slips
+  // through; together with the server-derived extension + magic-byte check in upload.controller this closes
+  // the stored-XSS / content-sniffing vector on user-uploaded files.
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads'), {
+    setHeaders: (res) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+    },
+  }));
 
   app.useGlobalPipes(
     new ValidationPipe({
