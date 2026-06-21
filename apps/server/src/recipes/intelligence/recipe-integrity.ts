@@ -40,9 +40,23 @@ const ALLERGEN_ALIASES: Record<string, string[]> = {
   // AND molluscs, so the umbrella expands to the specific EU-14 tokens (over-warn — the safe direction). Without
   // this, an oyster-sauce (molluscs) dish would not be filtered for a "shellfish"-allergic user even though the
   // ingredient now correctly carries the molluscs token.
-  seafood: ['fish', 'shellfish', 'crustaceans', 'molluscs'], shellfish: ['shellfish', 'crustaceans', 'molluscs'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'],
+  seafood: ['fish', 'shellfish', 'crustaceans', 'molluscs'], shellfish: ['shellfish', 'crustaceans', 'molluscs'], crustacean: ['crustaceans'], crustaceans: ['crustaceans'], molluscs: ['molluscs'], mollusks: ['molluscs'], mollusc: ['molluscs'], mollusk: ['molluscs'],
+  // SAFETY (live under-match found in the ingredient dictionary): variant spellings of the crustacean token were
+  // passing through verbatim, so the shellfish umbrella ([shellfish,crustaceans,molluscs]) never matched them and a
+  // shellfish-allergic user was NOT protected from those entries. Canonicalize the variants to crustaceans.
+  'crustacean shellfish': ['crustaceans'], crustacean_shellfish: ['crustaceans'], 'crustacean-shellfish': ['crustaceans'],
   soya: ['soy'], soybean: ['soy'], soybeans: ['soy'],
   egg: ['eggs'],
+  // EU-14 completeness (decision: full chip set). fish/mustard/celery/lupin already appear in recipes or the
+  // dictionary, so these chips are live immediately; sulphites has no data yet (chip is safe-but-inert until
+  // ingredients are tagged). Map the common spelling variants to one canonical token each so profile- and
+  // recipe-side tokens always intersect regardless of how the data was authored.
+  celeriac: ['celery'],
+  lupine: ['lupin'], lupins: ['lupin'],
+  'mustard seed': ['mustard'], 'mustard seeds': ['mustard'],
+  finfish: ['fish'],
+  sulphite: ['sulphites'], sulfite: ['sulphites'], sulfites: ['sulphites'],
+  'sulphur dioxide': ['sulphites'], sulphur_dioxide: ['sulphites'], 'sulfur dioxide': ['sulphites'], sulfur_dioxide: ['sulphites'], so2: ['sulphites'],
 };
 
 /** map any allergen token to its canonical form(s), preserving unknown tokens as-is (lowercased). */

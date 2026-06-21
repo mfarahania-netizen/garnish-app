@@ -33,6 +33,32 @@ describe('allergensConflict — canonical exact match (advisor audit: de-entangl
   });
 });
 
+describe('allergensConflict — EU-14 completeness + variant-spelling under-match fix', () => {
+  it('SAFETY: crustacean-shellfish variant tokens (present in the dictionary) now match the shellfish umbrella', () => {
+    // these passed through verbatim before and were NOT caught by a shellfish allergy → live under-match
+    expect(allergensConflict(['crustacean shellfish'], ['shellfish'])).toEqual(['crustacean shellfish']);
+    expect(allergensConflict(['crustacean_shellfish'], ['shellfish'])).toEqual(['crustacean_shellfish']);
+  });
+  it('the new standalone EU-14 chips flag their real tokens (celery/lupin/fish/mustard are live in data today)', () => {
+    expect(allergensConflict(['celery'], ['celery'])).toEqual(['celery']);
+    expect(allergensConflict(['celeriac'], ['celery'])).toEqual(['celeriac']); // celery root = same allergen
+    expect(allergensConflict(['lupin'], ['lupin'])).toEqual(['lupin']);
+    expect(allergensConflict(['fish'], ['fish'])).toEqual(['fish']);
+    expect(allergensConflict(['mustard'], ['mustard'])).toEqual(['mustard']);
+  });
+  it('sulphites variants canonicalize to one token (chip works the moment ingredients are tagged)', () => {
+    expect(allergensConflict(['sulphur dioxide'], ['sulphites'])).toEqual(['sulphur dioxide']);
+    expect(allergensConflict(['so2'], ['sulphites'])).toEqual(['so2']);
+    expect(allergensConflict(['sulfites'], ['sulphites'])).toEqual(['sulfites']);
+  });
+  it('NO new entanglement: the new chips do not over-match unrelated allergens', () => {
+    expect(allergensConflict(['fish'], ['celery'])).toEqual([]);
+    expect(allergensConflict(['mustard'], ['fish'])).toEqual([]);
+    expect(allergensConflict(['celery'], ['lupin'])).toEqual([]);
+    expect(allergensConflict(['fish'], ['shellfish'])).toEqual([]); // de-entanglement still holds
+  });
+});
+
 const recipe = {
   id: 'r1',
   diet: 'vegetarian',
