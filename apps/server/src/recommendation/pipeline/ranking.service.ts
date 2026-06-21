@@ -4,7 +4,7 @@ import { FeatureStoreService } from '../../behavior-engine/feature-store/feature
 import { ContributionCalculatorService } from '../ranking-model/contribution-calculator';
 import { ExperimentEngine } from '../../experimentation/experiment-engine.service';
 import { ExposureTrackingService } from '../exposure/exposure-tracking.service';
-import { TasteAffinityBuilder } from '../taste-affinity/taste-affinity.builder';
+import { TasteAffinityBuilder, TASTE_NEUTRAL } from '../taste-affinity/taste-affinity.builder';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
 import { RealTimeContext } from '../../context/real-time-context';
 import { coldStartWeightBlend, coldStartBlendEnabled } from './coldstart';
@@ -113,6 +113,42 @@ export class RankingService {
     // LearnedWeightSource raises it via L1_WEIGHT_SOURCE. A 0.0 addend leaves the sum at 1.00, so normalizeWeights
     // keeps the other ten weights byte-identical.
   };
+
+  // L1 step 5 — minority protection for the learned prior. Read at CALL TIME from env (flippable/testable,
+  // mirrors RecipePriorService.enabled()). DEFAULT-OFF: L1_PRIOR_STEP5_WEIGHT=0 → the slate term is a literal 0
+  // → byte-identical. penMult=0 → LIFT-ONLY, which makes the "positive personal signal ⇒ score never drops"
+  // invariant UNCONDITIONAL (the prior can only raise a score, never lower it). The two-sided down-signal is
+  // preserved in config (penCap/penMult/gate) for a post-launch, offline-replay-gated flip.
+  private priorStep5Config() {
+    const num = (v: string | undefined, d: number) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+    return {
+      weight: num(process.env.L1_PRIOR_STEP5_WEIGHT, 0.0), // activation knob; DEFAULT 0.0 (off)
+      liftCap: num(process.env.L1_PRIOR_STEP5_LIFT_CAP, 0.06), // A: max upward addend (score-space)
+      penCap: num(process.env.L1_PRIOR_STEP5_PEN_CAP, 0.02), // B: max downward magnitude (B ≪ A)
+      penMult: num(process.env.L1_PRIOR_STEP5_PEN_MULT, 0.0), // 0 ⇒ LIFT-ONLY default; 1 post-launch only
+      gateFull: num(process.env.L1_PRIOR_STEP5_GATE_FULL, 0.62), // tasteAffinity where the (off) penalty gate fully closes
+    };
+  }
+
+  // Bounded, gated, lift-only-by-default slate term derived from the SAME prior value the linear component holds
+  // (scores.recipePrior in [0,1]) and the user's personal signal (scores.tasteAffinity). Pure + NaN-safe.
+  //  • lift (prior above neutral): bounded by liftCap, ungated — the crowd can nudge UP.
+  //  • penalty (prior below neutral): default OFF (penMult 0). Even when enabled, a HARD FLOOR returns 0 for any
+  //    recipe with a positive personal signal (tasteAffinity > TASTE_NEUTRAL) → the invariant holds regardless
+  //    of the gate's shape; below the floor the gate eases the penalty smoothly to 0 as personal evidence rises.
+  private recipePriorSlateTerm(vPrior: number, tasteAffinity: number): number {
+    const { weight: W, liftCap, penCap, penMult, gateFull } = this.priorStep5Config();
+    if (!(W > 0)) return 0; // default-OFF ⇒ exact byte-identical; NaN-safe (NaN > 0 is false)
+    const v = Number.isFinite(vPrior) ? vPrior : 0.5;
+    const dev = 2 * v - 1; // [0,1] → [-1,1]; 0 at the neutral 0.5
+    const raw = W * dev;
+    if (raw >= 0) return Math.min(raw, liftCap); // lift: bounded, ungated
+    if (tasteAffinity > TASTE_NEUTRAL) return 0; // HARD FLOOR: any positive personal signal ⇒ never pull down
+    const ta = Number.isFinite(tasteAffinity) ? tasteAffinity : TASTE_NEUTRAL;
+    const gate = 1 - Math.max(0, Math.min(1, (ta - TASTE_NEUTRAL) / (gateFull - TASTE_NEUTRAL)));
+    return (Math.max(-penCap, raw) * penMult * gate) || 0; // bounded/gated/mult-scaled; ||0 normalizes -0 & NaN → 0
+
+  }
 
   private readonly signalTokenMap: Record<string, string[]> = {
     likes_grilled_food: ['grill', 'grilled', 'kebab', 'barbecue', 'bbq'],
@@ -274,7 +310,10 @@ export class RankingService {
         if (exposurePenalty > 0) matchedSignals.push('exposure_fatigue');
         const cleanedMatchedSignals = this.cleanMatchedSignals(recipe, matchedSignals, scores);
 
-        const finalScore = Math.max(0, rawScore - exposurePenalty) * this.contextBoost(recipe, context);
+        // L1 step 5 — bounded, lift-only-by-default minority-protected prior term (0 when default-OFF → byte-
+        // identical). Added INSIDE Math.max(0,…) so it can never drop finalScore below the existing 0 floor.
+        const priorTerm = this.recipePriorSlateTerm(scores.recipePrior, scores.tasteAffinity);
+        const finalScore = Math.max(0, rawScore + priorTerm - exposurePenalty) * this.contextBoost(recipe, context);
         const contributions = this.contributionCalculator.calculate(
           scores as unknown as Record<string, number>,
           resolvedWeights,

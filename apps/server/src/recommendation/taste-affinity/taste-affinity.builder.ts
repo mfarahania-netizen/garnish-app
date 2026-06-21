@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 type FeatureMap = Record<string, number>;
 
+// The builder's zero-evidence floor: the tasteAffinity score when the user has no matching personal signal yet.
+// Exported as the single source of truth so L1 step 5's minority-protection gate anchors to the EXACT same value
+// (the gate treats tasteAffinity > TASTE_NEUTRAL as "a positive personal signal exists").
+export const TASTE_NEUTRAL = 0.35;
+
 interface RecipeForTaste {
   title: string;
   diet?: string | null;
@@ -45,7 +50,7 @@ export class TasteAffinityBuilder {
       .filter(({ name }) => this.tasteSignalMap[name]);
 
     if (activeSignals.length === 0) {
-      return { score: 0.35, matchedSignals: [] as string[] };
+      return { score: TASTE_NEUTRAL, matchedSignals: [] as string[] };
     }
 
     let matchedWeight = 0;
@@ -65,7 +70,7 @@ export class TasteAffinityBuilder {
     }
 
     if (matchedSignals.length === 0) {
-      return { score: 0.35, matchedSignals };
+      return { score: TASTE_NEUTRAL, matchedSignals };
     }
 
     const signalSpecificity = Math.min(1, matchedSignals.length / Math.max(activeSignals.length, 1));

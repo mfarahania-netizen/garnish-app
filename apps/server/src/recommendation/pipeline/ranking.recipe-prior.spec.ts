@@ -65,4 +65,24 @@ describe('RankingService — recipePrior seam (L1 step 4)', () => {
     const withThrow = shape(await build(mocks(), prior).rank('u1', IDS));
     expect(withThrow).toEqual(baseline);
   });
+
+  // L1 step 5 — activation smoke (the minority-protection invariant end-to-end)
+  describe('step 5 activation (L1_PRIOR_STEP5_WEIGHT > 0, lift-only)', () => {
+    afterEach(() => { delete process.env.L1_PRIOR_STEP5_WEIGHT; });
+
+    it('lifts a crowd-loved dish UP and never drops any dish below its no-prior finalScore', async () => {
+      const baseline = shape(await build(mocks()).rank('u1', IDS));
+      const byId = (s: any[], id: string) => s.find((r) => r.id === id)!;
+
+      process.env.L1_PRIOR_STEP5_WEIGHT = '0.08';
+      // protein-bowl loved in cohort (prior 1.0); budget-pasta disliked-in-cohort (0.0) but must NOT drop.
+      const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1.0], ['budget-pasta', 0.0], ['family-stew', 0.5]])) };
+      const activated = shape(await build(mocks(), prior).rank('u1', IDS));
+
+      expect(byId(activated, 'protein-bowl').finalScore).toBeGreaterThan(byId(baseline, 'protein-bowl').finalScore); // crowd lift
+      for (const id of IDS) {
+        expect(byId(activated, id).finalScore).toBeGreaterThanOrEqual(byId(baseline, id).finalScore - 1e-9); // invariant: score never drops
+      }
+    });
+  });
 });
