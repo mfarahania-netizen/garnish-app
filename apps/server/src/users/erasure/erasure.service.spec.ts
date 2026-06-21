@@ -14,6 +14,7 @@ describe('ErasureService (E39-1C)', () => {
   function makeTx(order: string[]) {
     return {
       userSession: { deleteMany: jest.fn(async (_a: unknown) => { order.push('session'); return { count: 2 }; }) },
+      recipePrior: { deleteMany: jest.fn(async (_a: unknown) => { order.push('recipePrior'); return { count: 7 }; }) },
       consentLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('consent'); return { count: 3 }; }) },
       userAuditLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('audit'); return { count: 4 }; }) },
       dataAccessLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('access'); return { count: 5 }; }) },
@@ -44,12 +45,14 @@ describe('ErasureService (E39-1C)', () => {
 
     const result = await service.eraseUser(USER_ID);
 
-    expect(order).toEqual(['session', 'consent', 'audit', 'access', 'event', 'delete']);
+    expect(order).toEqual(['session', 'recipePrior', 'consent', 'audit', 'access', 'event', 'delete']);
     expect(order[order.length - 1]).toBe('delete'); // user.delete strictly last
     expect(tx.user.delete).toHaveBeenCalledWith({ where: { id: USER_ID } });
+    // L1 step 4 — no-FK RecipePrior person rows must be erased explicitly (they do NOT cascade)
+    expect(tx.recipePrior.deleteMany).toHaveBeenCalledWith({ where: { scope: 'person', scopeKey: USER_ID } });
     expect(result.status).toBe('erased');
     expect(result.erasureEventId).toBe('evt-1');
-    expect(result.summary).toEqual({ sessionsRevoked: 2, consentScrubbed: 3, auditScrubbed: 4, accessScrubbed: 5 });
+    expect(result.summary).toEqual({ sessionsRevoked: 2, consentScrubbed: 3, auditScrubbed: 4, accessScrubbed: 5, recipePriorRowsDeleted: 7 });
   });
 
   it('scrubs residual PII on the surviving audit-long records (null-out, scoped by userId)', async () => {
@@ -88,6 +91,7 @@ describe('ErasureService (E39-1C)', () => {
       consentScrubbed: 3,
       auditScrubbed: 4,
       accessScrubbed: 5,
+      recipePriorRowsDeleted: 7,
     });
   });
 
@@ -108,7 +112,7 @@ describe('ErasureService (E39-1C)', () => {
 
     const serialized = JSON.stringify(result);
     expect(serialized).not.toContain('@'); // no email
-    expect(serialized).not.toMatch(/password|phone|ip|userAgent/i);
+    expect(serialized).not.toMatch(/password|phone|\bip\b|userAgent/i); // \bip\b: catch an `ip` field, not the "ip" in "recipe"
     expect(Object.keys(result).sort()).toEqual(['erasureEventId', 'status', 'summary']);
   });
 

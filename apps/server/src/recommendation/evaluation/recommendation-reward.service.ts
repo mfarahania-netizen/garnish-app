@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { eventRewardValue } from './reward-values';
 
 @Injectable()
 export class RecommendationRewardService {
@@ -117,11 +118,6 @@ export class RecommendationRewardService {
   }
 
   private defaultEventValue(eventType: string) {
-    if (eventType === 'recommendation_cook') return 1;
-    if (eventType === 'recommendation_save') return 0.6;
-    if (eventType === 'recommendation_click') return 0.2;
-    if (eventType === 'recommendation_dismiss') return -0.8;
-    if (eventType === 'recommendation_ignore') return -0.4;
-    return 0;
+    return eventRewardValue(eventType); // shared canonical scale (reward-values.ts)
   }
 }

@@ -44,6 +44,12 @@ export class ErasureService {
       // 1. revoke active sessions (explicit; they would also cascade on delete)
       const sessions = await tx.userSession.deleteMany({ where: { userId } });
 
+      // 1b. delete L1 RecipePrior PERSON rows — they are keyed by scopeKey=userId with NO foreign key (the lean
+      //     hot-path choice mirroring RecommendationServedItem), so they do NOT cascade on user delete and must
+      //     be erased explicitly. Defensive: tolerate a missing table/client (→ count 0).
+      const recipePrior =
+        (await (tx as any).recipePrior?.deleteMany?.({ where: { scope: 'person', scopeKey: userId } })) ?? { count: 0 };
+
       // 2. scrub residual PII in audit-long records WHILE the userId link still exists
       //    (SetNull nulls userId on delete but does NOT scrub these fields)
       const consent = await tx.consentLog.updateMany({ where: { userId }, data: { ip: null } });
@@ -64,6 +70,7 @@ export class ErasureService {
             consentScrubbed: consent.count,
             auditScrubbed: audit.count,
             accessScrubbed: access.count,
+            recipePriorRowsDeleted: recipePrior.count,
           } as unknown as object,
         },
         select: { id: true },
@@ -79,6 +86,7 @@ export class ErasureService {
         consentScrubbed: consent.count,
         auditScrubbed: audit.count,
         accessScrubbed: access.count,
+        recipePriorRowsDeleted: recipePrior.count,
       };
     });
 
@@ -91,6 +99,7 @@ export class ErasureService {
         consentScrubbed: out.consentScrubbed,
         auditScrubbed: out.auditScrubbed,
         accessScrubbed: out.accessScrubbed,
+        recipePriorRowsDeleted: out.recipePriorRowsDeleted,
       },
     };
   }

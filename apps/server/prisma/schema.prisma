@@ -735,6 +735,31 @@ model RecommendationAttributionEvent {
   @@index([requestId])
 }
 
+// L1 step 4 — learned per-(recipe × scope) reward prior for empirical-Bayes hierarchical shrinkage.
+// scope = 'population' | 'cohort' | 'person'; scopeKey = '' (population) | deriveCohortKey(facets) | userId.
+// `mean` & `populationMu` are CENTERED deviations in [-1,1] (IPS-weighted realized reward minus the global slate
+// baseline), so an empty/neutral table yields a 0 posterior → the ranker stays byte-identical at cold start.
+// `n` is the IPS EFFECTIVE sample size (Σ propensity-weights), so κ-shrinkage down-trusts thin/over-weighted
+// estimates. JOINABLE-but-biased until L1.5 randomized propensity (NOT counterfactually unbiased).
+// No FK (mirrors RecommendationServedItem) → person rows do NOT cascade on user erasure; the erasure sweep
+// MUST delete scope='person', scopeKey=userId explicitly.
+model RecipePrior {
+  id           String   @id @default(uuid())
+  recipeId     String
+  scope        String // population | cohort | person
+  scopeKey     String // '' | deriveCohortKey(...) | userId
+  n            Float    @default(0) // IPS effective sample size Σw behind `mean`
+  mean         Float    @default(0) // centered IPS-weighted reward deviation in [-1,1]
+  posterior    Float    @default(0) // cached hierarchicalPrior output (convenience; recomputed at read)
+  populationMu Float    @default(0) // centered curated cold-start anchor (population rows; 0 elsewhere)
+  rewardM2     Float    @default(0) // Welford running variance (forward-looking; unused on the read path)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([recipeId, scope, scopeKey]) // the learner's upsert key
+  @@index([scope, scopeKey]) // load a whole cohort's priors in one query
+  @@index([recipeId]) // batch-fetch all priors for a candidate set in one findMany
+}
+
 model RecommendationMetrics {
   id                    String   @id @default(uuid())
   metricDate            DateTime @default(now())

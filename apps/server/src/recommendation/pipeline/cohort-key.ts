@@ -37,3 +37,24 @@ export function deriveCohortKey(f: CohortFacets): string | null {
   if (norm(f.occasion)) parts.push(`occasion=${norm(f.occasion)}`);
   return parts.length ? parts.sort().join(';') : null;
 }
+
+/**
+ * Map a user record (+ the active occasion) to cohort facets. SHARED by the L1 prior read path
+ * (RecipePriorService) and the learner (RecipePriorLearnerService) so BOTH derive the SAME cohortKey for the
+ * same user/occasion — a divergent mapping would silently miss the cohort prior. Pure; tolerates partial rows.
+ */
+export function facetsFromUser(
+  user:
+    | { locale?: string | null; country?: string | null; preferences?: { diet?: string | null; skillLevel?: string | null } | null }
+    | null
+    | undefined,
+  occasionKey?: string | null,
+): CohortFacets {
+  return {
+    country: user?.country ?? null,
+    locale: user?.locale ?? null,
+    diet: user?.preferences?.diet ?? null,
+    skill: user?.preferences?.skillLevel ?? null,
+    occasion: occasionKey ?? null,
+  };
+}
