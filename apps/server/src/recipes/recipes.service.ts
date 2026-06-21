@@ -9,7 +9,10 @@ export class RecipesService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(skip = 0, take = 20, category?: string) {
-    const where: any = {};
+    // SECURITY (advisor audit): only PUBLISHED + public recipes on the public rail. A user-authored recipe is
+    // created status:'pending', so this keeps unreviewed UGC off Home/Discover until an admin sets it active.
+    // All curated recipes are status:'active'+isPublic, so this is byte-identical today.
+    const where: any = { status: 'active', isPublic: true };
 
     if (category) {
       // استفاده از هر دو روش: searchTerms (دقیق) و categories (fallback)
@@ -46,6 +49,9 @@ export class RecipesService {
   async search(q: string, limit = 10) {
     const recipes = await this.prisma.recipe.findMany({
       where: {
+        // SECURITY (advisor audit): unreviewed UGC (status:'pending') must not surface in public search.
+        status: 'active',
+        isPublic: true,
         OR: [
           { title: { contains: q } },
           { description: { contains: q } },

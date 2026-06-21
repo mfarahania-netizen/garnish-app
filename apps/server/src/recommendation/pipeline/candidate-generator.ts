@@ -150,7 +150,7 @@ export class CandidateGeneratorService {
     if (recentRecipeIds.length === 0) return [];
 
     const allRecipes = await this.prisma.recipe.findMany({
-      where: { isPublic: true },
+      where: { isPublic: true, status: 'active' }, // advisor audit: exclude unreviewed UGC (byte-identical today)
       select: { id: true },
       take: 50,
     });
@@ -236,6 +236,7 @@ export class CandidateGeneratorService {
     const goalNames = user.healthGoals.map(g => g.healthGoal.name);
     const recipes = await this.prisma.recipe.findMany({
       where: {
+        status: 'active', isPublic: true, // advisor audit: exclude unreviewed UGC
         OR: goalNames.map((goal) => ({ categories: { contains: goal } })),
       },
       select: { id: true },
@@ -248,6 +249,7 @@ export class CandidateGeneratorService {
   private async getSeasonalRecipes(): Promise<string[]> {
     const recipes = await this.prisma.recipe.findMany({
       where: {
+        status: 'active', isPublic: true, // advisor audit: exclude unreviewed UGC
         categories: { contains: 'فصل' },
         createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       },
@@ -307,7 +309,7 @@ export class CandidateGeneratorService {
     // so even a broad pool stays safe.
     const where = this.coldStartWhere(profile);
     let pool = await this.prisma.recipe.findMany({ where, select: FIT_SELECT, take: 50 });
-    if (pool.length === 0) pool = await this.prisma.recipe.findMany({ where: { isPublic: true }, select: FIT_SELECT, take: 50 });
+    if (pool.length === 0) pool = await this.prisma.recipe.findMany({ where: { isPublic: true, status: 'active' }, select: FIT_SELECT, take: 50 });
 
     let ranked = this.fitRank(pool, profile);
 
@@ -319,7 +321,7 @@ export class CandidateGeneratorService {
         const have = new Set(ranked.map((r) => r.recipeId));
         const extraIds = neighbors.map((n) => n.recipeId).filter((id) => !have.has(id));
         if (extraIds.length) {
-          const extra = await this.prisma.recipe.findMany({ where: { id: { in: extraIds } }, select: FIT_SELECT });
+          const extra = await this.prisma.recipe.findMany({ where: { id: { in: extraIds }, status: 'active', isPublic: true }, select: FIT_SELECT });
           ranked = ranked.concat(this.fitRank(extra, profile));
         }
       } catch { /* content store unavailable → fit-ranked pool only */ }
@@ -342,7 +344,7 @@ export class CandidateGeneratorService {
 
   /** Best-effort soft pool filter from the declared/reconciled profile (NOT the allergy set — that's the hard fit filter). */
   private coldStartWhere(profile: any): any {
-    const where: any = { isPublic: true };
+    const where: any = { isPublic: true, status: 'active' }; // advisor audit: cold-start pool excludes unreviewed UGC
     const diet = profile?.reconciled?.dimensions?.['dietary_pattern']?.reconciledValue ?? profile?.declared?.dimensions?.['dietary.pattern']?.value;
     if (typeof diet === 'string' && diet.length) where.diet = diet;
     return where;

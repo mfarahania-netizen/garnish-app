@@ -51,6 +51,22 @@ describe('validateEnv (E1 fail-fast)', () => {
     ).toThrow('exit:1');
   });
 
+  // GDPR (advisor audit): production must run the consent gate in 'enforce'.
+  it('exits(1) in production when EVENT_CONSENT_GATE_MODE is not enforce (unset or off)', () => {
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'production' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'production', EVENT_CONSENT_GATE_MODE: 'off' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'production', EVENT_CONSENT_GATE_MODE: 'log' } as any)).toThrow('exit:1');
+  });
+
+  it('boots in production when EVENT_CONSENT_GATE_MODE=enforce', () => {
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'production', EVENT_CONSENT_GATE_MODE: 'enforce' } as any)).not.toThrow();
+  });
+
+  it('does NOT require enforce outside production (dev/test default-off stays valid)', () => {
+    expect(() => validateEnv({ ...valid } as any)).not.toThrow();
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'development' } as any)).not.toThrow();
+  });
+
   // TRUTH-AND-SAFETY FIX 2: GEMINI_API_KEY is required ONLY for live Gemini; the stub/dev path boots without it.
   const base = { DATABASE_URL: valid.DATABASE_URL, JWT_SECRET: valid.JWT_SECRET };
 

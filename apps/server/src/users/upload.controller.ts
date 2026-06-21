@@ -3,7 +3,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { readFileSync, unlinkSync } from 'fs';
+import { readFileSync, unlinkSync, mkdirSync } from 'fs';
+
+// SECURITY/OPS (advisor audit): multer's diskStorage does NOT create the destination dir, so on a clean deploy
+// the first upload would ENOENT. Ensure it once at module load (idempotent, recursive).
+const AVATAR_DIR = join(__dirname, '..', '..', 'uploads', 'avatars');
+try { mkdirSync(AVATAR_DIR, { recursive: true }); } catch { /* best-effort; multer surfaces a real write error */ }
 
 // SECURITY (advisor audit): never trust the client. The saved extension is SERVER-derived from an allowlisted
 // MIME (not extname(originalname), which an attacker controls), the MIME is allowlisted (not a regex over
@@ -34,7 +39,7 @@ export class UploadController {
   @Post('avatar')
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: join(__dirname, '..', '..', 'uploads', 'avatars'),
+      destination: AVATAR_DIR,
       filename: (_req, file, callback) => {
         // SERVER-controlled extension from the allowlisted MIME — never the attacker-supplied originalname.
         const ext = MIME_EXT[file.mimetype] || '.bin';

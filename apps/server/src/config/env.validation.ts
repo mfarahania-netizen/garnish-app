@@ -85,6 +85,17 @@ export function validateEnv(
     }
   }
 
+  // GDPR (advisor audit): in PRODUCTION the consent gate must be ENFORCED. Booting prod with the gate off/log
+  // would route personalization signals without the personalization consent purpose — a real EU exposure. The
+  // fail-closed consent read already exists; this guarantees prod is configured to use it. Dev/test (NODE_ENV
+  // not 'production') keep the default-off, byte-identical behavior.
+  if ((env.NODE_ENV ?? '').trim().toLowerCase() === 'production') {
+    const gate = (env.EVENT_CONSENT_GATE_MODE ?? '').trim().toLowerCase();
+    if (gate !== 'enforce') {
+      errors.push(`EVENT_CONSENT_GATE_MODE must be 'enforce' in production (GDPR) — got '${gate || 'unset'}'`);
+    }
+  }
+
   if (errors.length > 0) {
     // No secret values are included — only key names and failure reasons.
     const message =

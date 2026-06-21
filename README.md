@@ -14,7 +14,7 @@
 - **AI Core (E47 A1–A12) + grounded assistant:** single Orchestrator + mandatory BehavioralContextSnapshot · DB persistence (AICallLog / ChatMessage / UserFact) · legacy chat routed **through** the orchestrator · real read-only tools · Gemini provider **behind** the provider interface · cost ledger/daily budget + spend alerts · deterministic + output-safety eval gates · controlled live-Gemini smoke **PASS** (A7) · controlled **live chat adapter** behind explicit flags (A8) · runtime-boundary & product-safety gate (A9). **The chat reply is now GROUNDED in the real recipe corpus behind a HARD, server-side allergy gate** that runs before any reply is composed and before anything reaches a model (reuses the audited `assessRecipeFit`/`analyzeRecipeIntegrity` + the reconciled declared-allergy set; declared allergens are **never** put in a prompt). Empty safe set → honest "no safe match"; never an invented recipe.
 - **Live Gemini is NOT product-enabled** — gated/dev-only behind explicit env flags: live is enabled only by `AI_PROVIDER=gemini` + `AI_LIVE_ENABLED=true` + a real key. `AI_CHAT_LIVE_ENABLED` is a chat **kill-switch**, not a separate enabler: `false` forces chat deterministic even when live; **unset follows the general live flag** (see `model-provider.factory.ts`). **Default behavior is deterministic/grounded** (live flags unset). No streaming · no model-driven tools · no agents · no vision · no medical/diet advice. **AI Core is not complete.**
 - **Analytics / gamification honesty:** deliberate, user-initiated signals (`cook_complete` / `favorite_add` / `mealplan_add` …) now **bypass the anti-bot/duplicate gate** so a real cook fired right after a heavy scroll/impression burst is never silently dropped; high-frequency noise (views/impressions/page_view) stays gated. Gamification is server-authoritative and counts only real `cook_complete` events.
-- **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **200** (v0.6.1) **dev/preview import** to local `garnish_db` (2026-06-13) — superset upsert of the prior 122 (0 deletions, interactions preserved); **not final production data**, production import remains a separate gated decision. **Nutrition is not source-locked / not a final verified dataset.** See [data/README](data/README.md).
+- **Data:** ingredient dictionary **1008** (alias patch accepted; no new IDs / no nutrition changes) · recipes **350 dev/preview** = **200** (fa_, v0.6.1) **+ 150** (intl_, v0.6.0 international-core, **DRAFT**) in local `garnish_db` (verified 2026-06-21) — the fa_ set is a superset upsert of the prior 122 (0 deletions, interactions preserved); **not final production data** (the 150 intl_ are draft, pending audit), production import remains a separate gated decision. **Nutrition is not source-locked / not a final verified dataset.** See [data/README](data/README.md).
 - **Open security / compliance:** E1 secret **history purge — plan ready, history rewrite pending founder execution** (R-E1-HISTORY-DEAD-SECRETS — keys already rotated, repo private; HUMAN-GATED force-push, see [E1_HISTORY_PURGE_PLAN](docs/security/E1_HISTORY_PURGE_PLAN.md); working-tree secret scan = 0). **R16 / E39 GDPR privacy = BASELINE-CLOSED for dev/beta** (2026-06-14 final gate: erasure + export + retention-dry-run verified; legacy destructive cron neutralized) — **controlled destructive prune deferred** as a future operational task. See [E39 Final Privacy Gate](docs/security/E39_FINAL_PRIVACY_GATE_REPORT.md).
 
 ## 1. What Garnish OS is
@@ -48,7 +48,7 @@ universal-first for a Europe/Holland general-public launch — but currently in 
   separate gated decision, and **nutrition is not source-locked corpus-wide**. (Single source of truth; matches
   `data/README.md`.)
 - **Ingredient Resolver** (E11 ✅): free text → `ingredientId` via a normalized alias index
-  (10,304 aliases across all 1008 ingredients), names, and codes. `apps/server/src/ingredients/`.
+  (10,630 alias registry entries across all 1008 ingredients), names, and codes. `apps/server/src/ingredients/`.
 - Import/validate: `pnpm --dir apps/server data:validate:aliases` / `data:import:aliases` (and the
   `phase-one` / `ingredients` equivalents). See §14.
 
@@ -127,7 +127,7 @@ a Why · nutrition UI shows source/confidence · design decisions belong to UX, 
 ## 16. Event Envelope standard
 Canonical event envelope (`schemaVersion: 2`) — `docs/adr/ADR-0001-canonical-event-envelope.md`.
 Additive to the existing taxonomy; PII-free metadata; consentPurpose / privacyClass / retentionPolicy.
-Code contract `event-envelope.schema.ts` is a W6 deliverable.
+Code contract `apps/server/src/analytics/event-envelope.schema.ts` is **shipped** (E43-W6, 32 tests green); live ingest adoption stays Founder-gated (the runtime guard is observational — staged migration, not yet contract-enforced).
 
 ## 17. What not to build yet (Constitution Part 2.3)
 Algorithmic public feed · public chat/DM · public comments · individual public leaderboards · selling/
