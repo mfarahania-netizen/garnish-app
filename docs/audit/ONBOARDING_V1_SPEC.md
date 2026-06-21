@@ -103,9 +103,14 @@ Commits 15559c53 (spine) + the guardian-hardening follow-up. What is TRUE today:
   is the DESIGN, not the current behavior. End-to-end anonymous safety + browse-before-register land WITH the
   onboarding FE redesign (a guest is minted on first load, deviceKey persisted in localStorage), NOT bolted onto
   the about-to-be-replaced register-wall flow.
-- Guardian-hardened: deviceKey is SERVER-issued (CSPRNG 256-bit), never a client-chosen value → closes weak-key
-  resume-hijack + the upsert concurrent-create race; guest JWT is 24h (vs registered 7d); a @Cron reaper deletes
-  EMPTY abandoned guests (>48h, zero allergies/activity/preferences — any trace protects the row).
+- Guardian-hardened (2 passes): deviceKey is SERVER-issued (CSPRNG 256-bit), never a client-chosen value → closes
+  weak-key resume-hijack + the upsert concurrent-create race; guest JWT is 24h (vs registered 7d). The @Cron reaper
+  deletes only guests EMPTY across EVERY User relation (guard generated from the Prisma DMMF, so future relations
+  are auto-covered — no hand-list drift) and older than 48h, via an ATOMIC deleteMany that re-applies the guard at
+  delete time (closes the find→delete TOCTOU). This is the fix for the 2nd-pass HIGH: User.* are onDelete:Cascade,
+  so a plain delete on a partially-guarded guest would have SILENTLY cascade-deleted real data (incl. a guest's
+  GDPR userConsents row, which is guest-writable today via POST /users/consent). Open design follow-up: decide
+  whether a guest may write the consent ledger at all before the claim step.
 - DEPLOY REQUIREMENT (do not skip): the guest/login/register throttle is keyed by client IP. In production behind
   a proxy/CDN, set Express `trust proxy` to the exact known hop count and verify the throttler derives the IP from
   the trusted forwarded header — otherwise the bucket either collapses to one global limit (self-DoS) or becomes
