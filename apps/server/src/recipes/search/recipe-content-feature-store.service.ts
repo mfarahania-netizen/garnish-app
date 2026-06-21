@@ -11,6 +11,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { buildTfidfIndex, similarIndex, TfidfIndex } from './tfidf';
 import { buildContentDoc, extractFacets, buildContentVector, facetSimilarity, blendSimilarity, ContentFacets } from './recipe-content';
+import { PUBLISHED_RECIPE_WHERE } from '../recipe-visibility';
 
 const INDEX_TTL_MS = 5 * 60 * 1000;
 const CORPUS_CAP = 2000;
@@ -45,7 +46,7 @@ export class RecipeContentFeatureStore {
   async build(force = false): Promise<TfidfIndex> {
     if (!force && this.index && Date.now() - this.builtAt < INDEX_TTL_MS) return this.index;
     const recipes = await this.prisma.recipe.findMany({
-      where: { isPublic: true },
+      where: { ...PUBLISHED_RECIPE_WHERE }, // advisor audit: TF-IDF corpus (search + similar) excludes unreviewed UGC
       take: CORPUS_CAP,
       select: { id: true, title: true, description: true, diet: true, mealType: true, region: true, category: true, categories: true, difficulty: true, cookingTime: true, ingredients: { select: { name: true } }, searchTerms: { select: { term: true } } },
     });

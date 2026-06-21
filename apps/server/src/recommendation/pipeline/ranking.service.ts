@@ -222,7 +222,7 @@ export class RankingService {
     );
 
     const recipes = await this.prisma.recipe.findMany({
-      where: { id: { in: candidateIds } },
+      where: { id: { in: candidateIds }, status: 'active', isPublic: true }, // advisor audit: defense-in-depth — never rank/serve unreviewed UGC
       select: {
         id: true,
         title: true,

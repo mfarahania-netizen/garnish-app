@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { ProfileReadService } from '../../behavior-engine/profile/read/profile-read.service';
 import { assessRecipeFit } from './recipe-fit';
 import { analyzeRecipeIntegrity } from './recipe-integrity';
+import { PUBLISHED_RECIPE_WHERE } from '../recipe-visibility';
 
 /**
  * THE single, reusable HARD safety gate (guardian H1 rework). The allergy/observance invariant must hold on
@@ -39,7 +40,10 @@ export class RecipeSafetyFilterService {
       return []; // FAIL-CLOSED: cannot establish the safe allergy set → nothing rather than something unsafe
     }
     if (!profile) return [];
-    const recipes = await this.prisma.recipe.findMany({ where: { id: { in: candidateIds } }, select: SAFETY_FIT_SELECT });
+    // SECURITY (advisor audit): this is THE recommendation chokepoint — also exclude unreviewed UGC (pending),
+    // not just allergy conflicts, so a pending recipe id from the trending/collaborative/similar buckets (which
+    // derive ids from non-Recipe tables) can never reach a served slate. Byte-identical today (all curated active).
+    const recipes = await this.prisma.recipe.findMany({ where: { id: { in: candidateIds }, ...PUBLISHED_RECIPE_WHERE }, select: SAFETY_FIT_SELECT });
     const safe = new Set<string>();
     for (const r of recipes) {
       const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;

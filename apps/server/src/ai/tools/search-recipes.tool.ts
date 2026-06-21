@@ -28,7 +28,7 @@ export class SearchRecipesTool implements AiTool {
     try {
       recipes = await this.prisma.recipe.findMany({
         where: {
-          isPublic: true, // respect visibility
+          isPublic: true, status: 'active', // respect visibility + exclude unreviewed UGC (advisor audit)
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
             { description: { contains: query, mode: 'insensitive' } },

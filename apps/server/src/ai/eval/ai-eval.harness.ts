@@ -148,6 +148,8 @@ function groundingPrisma(c: EvalCase): any {
     recipe: {
       findMany: async () => recipes,
       findUnique: async (args: any) => (recipe && recipe.id === args?.where?.id ? recipe : null),
+      // explain_recipe_step now uses findFirst (published-only where); match by id (fixture is published).
+      findFirst: async (args: any) => (recipe && recipe.id === args?.where?.id ? recipe : null),
     },
     aICallLog: { create: async () => ({ id: 'l' }) },
   };

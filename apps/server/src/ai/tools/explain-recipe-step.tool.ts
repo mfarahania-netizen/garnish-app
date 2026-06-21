@@ -36,8 +36,8 @@ export class ExplainRecipeStepTool implements AiTool {
       | { id: string; title: string; tips: string | null; tools: string | null; steps: { order: number; title: string | null; instruction: string; duration: number | null }[] }
       | null = null;
     try {
-      recipe = await this.prisma.recipe.findUnique({
-        where: { id: recipeId },
+      recipe = await this.prisma.recipe.findFirst({
+        where: { id: recipeId, status: 'active', isPublic: true }, // advisor audit: no unreviewed UGC steps/tips
         select: {
           id: true,
           title: true,

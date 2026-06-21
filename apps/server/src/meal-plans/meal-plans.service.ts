@@ -55,7 +55,7 @@ export class MealPlansService {
     const userSkill = profile?.skillLevel || 'beginner';
     const userBudget = profile?.budget || 'low';
 
-    const where: any = {};
+    const where: any = { status: 'active', isPublic: true }; // advisor audit: plan only from published recipes
 
     if (userDiet === 'vegetarian' || userDiet === 'vegan') {
       where.diet = { in: ['vegetarian', 'vegan'] };

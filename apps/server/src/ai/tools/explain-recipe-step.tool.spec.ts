@@ -7,7 +7,8 @@ const ctx: ToolContext = { userId: 'u1', snapshot: SNAP };
 function makePrisma(recipe: any, opts: { throw?: boolean } = {}) {
   return {
     recipe: {
-      findUnique: jest.fn(async () => {
+      // tool now uses findFirst (filters status:'active'+isPublic in the where — published-only)
+      findFirst: jest.fn(async () => {
         if (opts.throw) throw new Error('db');
         return recipe;
       }),

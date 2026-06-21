@@ -38,5 +38,17 @@ describe('RecipesService', () => {
       await svc.search('murgh');
       expect(findMany.mock.calls[0][0].where).toMatchObject({ status: 'active', isPublic: true });
     });
+
+    it('findOne returns null for an unreviewed (pending) recipe — no anonymous leak by direct id', async () => {
+      const findUnique = jest.fn().mockResolvedValue({ id: 'r1', status: 'pending', isPublic: true, ingredients: [], steps: [], searchTerms: [] });
+      const svc = new RecipesService({ recipe: { findUnique } } as any);
+      expect(await svc.findOne('r1')).toBeNull();
+    });
+
+    it('findOne returns null for a private (isPublic:false) recipe', async () => {
+      const findUnique = jest.fn().mockResolvedValue({ id: 'r1', status: 'active', isPublic: false, ingredients: [], steps: [], searchTerms: [] });
+      const svc = new RecipesService({ recipe: { findUnique } } as any);
+      expect(await svc.findOne('r1')).toBeNull();
+    });
   });
 });

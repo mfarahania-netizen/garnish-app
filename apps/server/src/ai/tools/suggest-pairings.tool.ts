@@ -41,7 +41,7 @@ export class SuggestPairingsTool implements AiTool {
     let baseNames: string[] = [];
     try {
       recipes = await this.prisma.recipe.findMany({
-        where: { isPublic: true },
+        where: { isPublic: true, status: 'active' }, // advisor audit: exclude unreviewed UGC
         take: SuggestPairingsTool.SCAN_CAP,
         select: { id: true, title: true, ingredients: { select: { name: true } } },
       });

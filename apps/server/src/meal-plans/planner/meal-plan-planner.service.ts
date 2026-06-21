@@ -73,7 +73,7 @@ export class MealPlanPlannerService {
    *  conflicting recipes are HARD-EXCLUDED here — unchanged from the original proposePlan loop. */
   private async buildSafeCandidates(profile: any): Promise<{ candidates: PlanCandidate[]; excludedForAllergy: number }> {
     const recipes = await this.prisma.recipe.findMany({
-      where: { isPublic: true },
+      where: { isPublic: true, status: 'active' }, // advisor audit: plan/swap only from published recipes
       take: CORPUS_CAP,
       select: { id: true, title: true, diet: true, mealType: true, region: true, category: true, categories: true, difficulty: true, cookingTime: true, allergens: true, ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } } },
     });

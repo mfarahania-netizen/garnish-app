@@ -101,7 +101,7 @@ export class GroundedReplyService {
     // 3) load the FULL fit shape so the audited gate sees declared + ingredient-dictionary allergens.
     let pool: any[];
     try {
-      pool = await this.prisma.recipe.findMany({ where: { id: { in: ids }, isPublic: true }, select: FIT_SELECT });
+      pool = await this.prisma.recipe.findMany({ where: { id: { in: ids }, isPublic: true, status: 'active' }, select: FIT_SELECT }); // advisor audit: exclude unreviewed UGC
     } catch (err) {
       // retrieval/load failed → we cannot guarantee a safe set → surface nothing honestly.
       this.logger.warn(`candidate load failed; surfacing nothing: ${err instanceof Error ? err.name : 'error'}`);

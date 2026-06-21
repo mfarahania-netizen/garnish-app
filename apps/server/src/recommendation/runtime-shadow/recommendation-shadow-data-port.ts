@@ -45,7 +45,7 @@ export function createPrismaShadowDataPort(prisma: ShadowReadPrisma): ShadowData
       const ids = (Array.isArray(recipeIds) ? recipeIds : []).slice(0, MAX_CANDIDATES);
       if (!ids.length) return [];
       const rows = await prisma.recipe.findMany({
-        where: { id: { in: ids } },
+        where: { id: { in: ids }, status: 'active', isPublic: true }, // advisor audit: shadow traces exclude unreviewed UGC too
         // SAFE projection only — NEVER select description/steps/body.
         select: { id: true, title: true, region: true, difficulty: true, cookingTime: true, mealType: true, allergens: true },
       });

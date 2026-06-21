@@ -77,6 +77,9 @@ export class RecipesService {
       },
     });
     if (!recipe) return null;
+    // SECURITY (advisor audit): GET /recipes/:id is anonymous — never expose unreviewed (status:'pending') or
+    // private UGC by direct id. Own drafts are served by the authorId-scoped /recipes/my path, not here.
+    if ((recipe as any).status !== 'active' || (recipe as any).isPublic === false) return null;
     // GRIS v2 (additive): read the new `gris`/`containsPork` columns via raw SQL so this works even when the
     // generated Prisma client predates them. Purely additive — presentRecipe spreads them through; the allergy
     // filter + getLivingUserProfile are unaffected (they never read gris).

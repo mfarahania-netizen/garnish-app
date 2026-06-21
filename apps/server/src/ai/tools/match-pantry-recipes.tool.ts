@@ -38,7 +38,7 @@ export class MatchPantryRecipesTool implements AiTool {
     let recipes: { id: string; title: string; ingredients: { name: string }[] }[] = [];
     try {
       recipes = await this.prisma.recipe.findMany({
-        where: { isPublic: true },
+        where: { isPublic: true, status: 'active' }, // advisor audit: exclude unreviewed UGC
         take: MatchPantryRecipesTool.SCAN_CAP,
         select: { id: true, title: true, ingredients: { select: { name: true } } },
       });
