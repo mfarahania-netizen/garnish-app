@@ -39,4 +39,24 @@ describe('MealPlansService — publish gate (advisor audit)', () => {
     expect(out.slots[1].recipe).toBeNull();
     expect(out.slots[2].recipe?.id).toBe('c');
   });
+
+  it('addMealSlot REJECTS another user\'s unpublished recipe (no transaction, no body echo)', async () => {
+    const prisma: any = {
+      recipe: { findUnique: jest.fn().mockResolvedValue({ status: 'pending', isPublic: true, authorId: 'other' }) },
+      $transaction: jest.fn(),
+    };
+    await expect(new MealPlansService(prisma, safety).addMealSlot('me', 1, 'lunch', 'r1'))
+      .rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('addMealSlot allows a published recipe and returns its slot', async () => {
+    const created = { id: 's1', recipe: { id: 'r1', status: 'active', isPublic: true, authorId: 'x' } };
+    const prisma: any = {
+      recipe: { findUnique: jest.fn().mockResolvedValue({ status: 'active', isPublic: true, authorId: 'x' }) },
+      $transaction: jest.fn().mockResolvedValue(created),
+    };
+    const out: any = await new MealPlansService(prisma, safety).addMealSlot('me', 1, 'lunch', 'r1');
+    expect(out.recipe?.id).toBe('r1');
+  });
 });

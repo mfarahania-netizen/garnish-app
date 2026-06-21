@@ -153,7 +153,7 @@ export class MealPlansService {
       notes: slot.notes || '',
     }));
 
-    return this.prisma.$transaction(async (tx) => {
+    const plan = await this.prisma.$transaction(async (tx) => {
       await tx.mealSlot.deleteMany({ where: { mealPlan: { userId, weekStart: startOfWeek } } });
       await tx.mealPlan.deleteMany({ where: { userId, weekStart: startOfWeek } });
 
@@ -166,13 +166,25 @@ export class MealPlansService {
         include: { slots: { include: { recipe: true } } },
       });
     });
+    return this.sanitizePlan(plan, userId); // consistency/defense (source is already published-only)
   }
 
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====
   async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
     const startOfWeek = getStartOfWeek();
 
-    return this.prisma.$transaction(async (tx) => {
+    // SECURITY (advisor audit): this is the PRIMARY apply path (POST /meal-plans/slots). Only a published recipe
+    // (or the user's own draft) may be placed into a slot — block referencing another user's pending/private UGC
+    // by a guessed id, which would otherwise echo the full body back in the response. Byte-identical today.
+    if (recipeId) {
+      const recipe = await this.prisma.recipe.findUnique({
+        where: { id: recipeId },
+        select: { status: true, isPublic: true, authorId: true },
+      });
+      if (!isRecipeVisibleTo(recipe, userId)) throw new NotFoundException('Recipe is not available');
+    }
+
+    const slot = await this.prisma.$transaction(async (tx) => {
       let plan = await tx.mealPlan.findFirst({
         where: { userId, weekStart: startOfWeek },
       });
@@ -198,6 +210,9 @@ export class MealPlansService {
         include: { recipe: true },
       });
     });
+    // defense-in-depth: never echo a non-visible recipe body (the pre-check already guarantees this).
+    if (slot?.recipe && !isRecipeVisibleTo(slot.recipe as any, userId)) (slot as any).recipe = null;
+    return slot;
   }
 
   async removeMealSlot(userId: string, dayOfWeek: number, mealType: string) {
