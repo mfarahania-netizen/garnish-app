@@ -85,6 +85,18 @@ Behavior changes ONLY once cohort/person rows accrue n>0 AND a human raises the 
 cold-start E2E (nl-NL), IPS weighting, no-lost-signals, hierarchy borrow, cohort-key reuse, N+1=1, fail-safe,
 flag gate, erasure (E39), pipeline integration, activation smoke (minority-protection invariant).
 
+## Status — BUILT + guardian-verified (default-OFF)
+Seam atom `9f1e3255` · logic `79332d43` · guardian-loop fixes `b39be3c3` (canonical reward scale, funnel argmax,
+EU-occasion cohort, cook-max) · re-review CLEAN (fixesSound, no rework). Full suite green. Activation pending
+(founder-gated, below).
+
+## Deferred hardening (guardian re-review, LOW — not a defect, not a regression)
+- **Serve-time cohortKey persistence.** Today the learner re-derives the cohortKey from the user's CURRENT profile;
+  if a user's country/diet/skill changes between serve-time and the nightly batch, the learner writes under the
+  new-profile key while the reader reads under the current key — a transient cohort mismatch (minor accuracy
+  loss, inherent to any profile-keyed cohort, default-OFF). Fix when convenient: persist the resolved cohortKey
+  on RecommendationServedItem at serve time and have the learner reuse it verbatim. Orthogonal to activation.
+
 ## Open questions — ALL activation-time (none block the build; defaults below; plan already addresses)
 1. **Activation authority/timing** — ship default-OFF now; gate weight>0 behind offline-replay lift + L1.5 bandit (per plan). Founder call only when activating.
 2. **Curated populationMu authoring** — Europe gateway map + occasion calendar; founder content review loop. Neutral (0, byte-identical) until authored — a CONTENT gate, not engineering.
