@@ -47,8 +47,11 @@ export class BehaviorEngineScheduler {
     const failed = results.filter(r => r.status === 'rejected').length;
     console.log(`✅ Behavior Engine cron finished: ${succeeded} succeeded, ${failed} failed.`);
 
-    // 🆕 ارسال اعلان به کاربران با ریسک ریزش بالا
-    try {
+    // ⚠️ DISABLED BY DEFAULT (advisor audit): this directly created churn_risk notifications, BYPASSING the
+    // INE (consent / fatigue / quiet-hours / suppression). The INE (notifications/ine, churn_reengagement
+    // trigger) is the correct consent-aware path. Kept behind a default-OFF flag until churn is routed through
+    // the INE — do NOT enable as-is (it sends re-engagement nudges with no consent/fatigue gate).
+    if (process.env.CHURN_NOTIFICATIONS_DIRECT_ENABLED === 'true') try {
       const highRiskProfiles = await this.prisma.userBehaviorProfile.findMany({
         where: {
           churnRiskScore: { gte: 70 },

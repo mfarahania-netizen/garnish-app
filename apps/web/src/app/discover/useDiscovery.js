@@ -177,12 +177,15 @@ export function useDiscovery() {
     else status = 'results';
   }
 
-  // record the unmet search once per query (honest: real analytics event, signed-in only)
+  // record the unmet search once per query (honest: real analytics event, signed-in only).
+  // PRIVACY (GDPR): never send the RAW query text — it can carry incidental PII (a name, phone, condition).
+  // We capture only non-identifying shape (length + word count) so the "demand gap" signal stays useful.
   const recorded = useRef('');
   useEffect(() => {
     if (status === 'noresults' && query && recorded.current !== query) {
       recorded.current = query;
-      trackEvent('search_unmet', { query });
+      const q = query.trim();
+      trackEvent('search_unmet', { queryLength: q.length, wordCount: q ? q.split(/\s+/).length : 0 });
     }
   }, [status, query, trackEvent]);
 
