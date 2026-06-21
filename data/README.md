@@ -30,11 +30,13 @@
   (`garnish_recipe_international_core_150_draft_candidate_v0_6_0/`, 14 JSON files) and is **reproducible**:
   `node apps/server/scripts/recipes/validate-international-core-150-v0-6-0.js` → **PASS** (150 recipes,
   0 unresolved, **0 new ingredient IDs**, 0 duplicates).
-- **Status: DRAFT, pending external audit — NOT final-imported** (verdict
-  `INTERNATIONAL_CORE_150_DRAFT_CANDIDATE_V0_6_0_READY_FOR_EXTERNAL_AUDIT_NOT_FINAL_IMPORT`). Committed for
-  reproducibility only; **not** promoted to imported/final and **not** in any database.
-- Active recipe sources remain **200 (v0.6.1, dev-preview)** + **122 (legacy)**. The 150 is **not**
-  production/final; no specific live-DB total is asserted here — only the SOURCE reproducibility is recorded.
+- **Status: imported to the DEV/preview DB, but DRAFT for PRODUCTION — pending external audit** (verdict
+  `INTERNATIONAL_CORE_150_DRAFT_CANDIDATE_V0_6_0_READY_FOR_EXTERNAL_AUDIT_NOT_FINAL_IMPORT`). The source is
+  committed for reproducibility AND the 150 are present in the dev DB; they are **not** promoted to
+  production/final — production import remains a separate gated decision.
+- **Actual dev DB state (single source of truth, verified 2026-06-21):** **350 recipes** = **200** (`fa_`,
+  v0.6.1) + **150** (`intl_`, international-core v0.6.0); **127** are enriched to GRIS v2.1 so far. This is
+  dev/preview, **not** production-final, and nutrition is not yet source-locked corpus-wide.
 
 ## Import / search policy
 - **One** ingredient source only (the active array file above). Importers are idempotent (upsert).

@@ -1,10 +1,15 @@
 # UI MIGRATION STATUS
 
-> Execution artifact tracking the GES (Garnish Experience System) UI migration phases and their
-> acceptance state. **UI work is currently FROZEN** (Founder decision, 2026-06-13). Updated as phases
-> change state.
+> ⚠️ **SUPERSEDED (2026-06-21).** This artifact described the Phase-4A FREEZE (2026-06-13). It is **stale**:
+> the UI was subsequently RESET and rebuilt under **Track-5** — all 14 screens rebuilt + a Vitest web
+> smoke-test net (see root `README.md` §Frontend). The current source of truth for UI state is the root
+> README + the `garnish-fe-reset` track. The historical freeze record below is kept for context only; design
+> maturity (componentization of ~1180 inline styles, food imagery) remains an open pre-launch quality item.
 
-## Current state: ❄️ FROZEN (after Phase 4A visual rejection)
+> _(historical)_ Execution artifact tracking the GES (Garnish Experience System) UI migration phases and their
+> acceptance state. UI work was FROZEN (Founder decision, 2026-06-13).
+
+## Current state: ❄️ FROZEN (after Phase 4A visual rejection) — _superseded by Track-5 reset; see banner above_
 
 Phase 4A passed technical scans but **failed visual / product-quality review**. The Coding Assistant (CA)
 **must not continue visual redesign** without an approved visual spec / screenshot direction from

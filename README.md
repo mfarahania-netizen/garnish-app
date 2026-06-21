@@ -19,8 +19,9 @@
 
 ## 1. What Garnish OS is
 An AI-native food-intelligence product (PWA): recipe discovery, meal planning, a grocery list, and an
-AI assistant, on a behavioral-intelligence backbone. Mobile-first, GDPR-by-design, universal-first for a
-European audience.
+AI assistant, on a behavioral-intelligence backbone. Mobile-first and GDPR-by-design, **architected**
+universal-first for a Europe/Holland general-public launch — but currently in an **Iran sandbox first**
+(auth is Iran phone-only today; locale/EU onboarding is a pre-launch step, not yet shipped).
 
 ## 2. What Garnish OS is *not*
 - Not a social network. No public feed, no public chat/DM, no public comments (see §17).
@@ -41,9 +42,11 @@ European audience.
   WAT ops → compliance → observability → admin.
 
 ## 5. Data layer ✅
-- **~350 recipes (dev/preview) / 1008 ingredients**, 0 unresolved (verified in DB). The dev DB is a
-  superset upsert: 200 (v0.6.1) + 150 international-core (v0.6.0); **not final production data** — the
-  production import remains a separate gated decision, and **nutrition is not source-locked**.
+- **350 recipes (dev/preview) / 1008 ingredients**, 0 unresolved (verified in DB: 200 `fa_` v0.6.1 + 150
+  `intl_` international-core v0.6.0). **127 enriched to GRIS v2.1** so far. **Not final production data** — the
+  150 international-core is a draft candidate **pending external audit**; the production import remains a
+  separate gated decision, and **nutrition is not source-locked corpus-wide**. (Single source of truth; matches
+  `data/README.md`.)
 - **Ingredient Resolver** (E11 ✅): free text → `ingredientId` via a normalized alias index
   (10,304 aliases across all 1008 ingredients), names, and codes. `apps/server/src/ingredients/`.
 - Import/validate: `pnpm --dir apps/server data:validate:aliases` / `data:import:aliases` (and the
