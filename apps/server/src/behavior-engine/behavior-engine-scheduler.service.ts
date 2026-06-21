@@ -87,10 +87,12 @@ export class BehaviorEngineScheduler {
 
     // 🆕 ثبت لاگ cron با پیدا کردن یک userId معتبر
     try {
+      // Prefer an admin; fall back to any NON-GUEST real user. Never attach system telemetry to a guest — that
+      // child row would permanently block the guest-reaper from cleaning up an otherwise-abandoned guest.
       const user = await this.prisma.user.findFirst({
         where: { isAdmin: true },
         select: { id: true },
-      }) ?? await this.prisma.user.findFirst({ select: { id: true } });
+      }) ?? await this.prisma.user.findFirst({ where: { isGuest: false }, select: { id: true } });
 
       if (user) {
         await this.prisma.userEvent.create({
