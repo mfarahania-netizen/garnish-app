@@ -46,7 +46,7 @@ const ALLERGEN_ALIASES: Record<string, string[]> = {
 };
 
 /** map any allergen token to its canonical form(s), preserving unknown tokens as-is (lowercased). */
-function canonicalizeAllergens(tokens: Iterable<unknown>): string[] {
+export function canonicalizeAllergens(tokens: Iterable<unknown>): string[] {
   const out = new Set<string>();
   for (const raw of tokens) {
     if (typeof raw !== 'string') continue;
@@ -57,6 +57,28 @@ function canonicalizeAllergens(tokens: Iterable<unknown>): string[] {
     else out.add(t);
   }
   return [...out].sort();
+}
+
+/**
+ * SAFETY (advisor audit): which of a recipe's allergen tokens conflict with the user's declared allergies, by
+ * CANONICAL EXACT match. Replaces the prior bidirectional-substring looseMatch, which ENTANGLED distinct
+ * allergens — 'shellfish'.includes('fish') made a shellfish-allergy hide all FISH dishes (and vice-versa), and
+ * 'peanuts'.includes('nut') made a tree-nut allergy hide PEANUT dishes. Canonicalizing BOTH sides through the
+ * alias map (nut→tree_nuts, peanut↔peanuts, dairy→milk, egg→eggs, gluten→wheat/cereals, shellfish⊇crustaceans+
+ * molluscs) then intersecting on EXACT tokens preserves every intended match + the safe over-warn umbrella while
+ * removing the false entanglements. Returns the recipe's ORIGINAL tokens that conflict (for the wording).
+ */
+export function allergensConflict(recipeAllergens: Iterable<unknown>, profileAllergies: Iterable<unknown>): string[] {
+  const profileCanon = new Set(canonicalizeAllergens(profileAllergies));
+  if (profileCanon.size === 0) return [];
+  const out = new Set<string>();
+  for (const raw of recipeAllergens) {
+    if (typeof raw !== 'string') continue;
+    const a = raw.trim().toLowerCase();
+    if (!a) continue;
+    if (canonicalizeAllergens([a]).some((c) => profileCanon.has(c))) out.add(a);
+  }
+  return [...out];
 }
 
 /**

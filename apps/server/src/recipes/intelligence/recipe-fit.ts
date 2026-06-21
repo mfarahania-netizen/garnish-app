@@ -10,6 +10,7 @@
  *    warnings. Informational only — allergen data is not a safety guarantee; no medical/diet claims.
  */
 import { looseMatch, norm, toStringArray } from '../../ai/tools/grounding-utils';
+import { allergensConflict } from './recipe-integrity';
 
 const MEAT_TOKENS = ['chicken', 'beef', 'lamb', 'pork', 'meat', 'poultry', 'fish', 'seafood', 'shrimp', 'مرغ', 'گوشت', 'ماهی', 'میگو', 'گوسفند'];
 const VEG_RESTRICTIONS = new Set(['vegetarian', 'vegan']);
@@ -21,6 +22,12 @@ const VEG_RESTRICTIONS = new Set(['vegetarian', 'vegan']);
 const PORK_TOKENS = [
   'pork', 'ham', 'bacon', 'lard', 'lardon', 'prosciutto', 'pancetta', 'chorizo', 'salami', 'pepperoni',
   'mortadella', 'speck', 'guanciale', 'gammon', 'bratwurst', 'frankfurter', 'wurst', 'pork rind', 'pork sausage',
+  // advisor audit: plain 'sausage' + Dutch 'worst' (rookworst/leverworst) were missing for the EUROPEAN corpus;
+  // over-flag is the safe direction here (a chicken-sausage false-positive only over-restricts, never serves
+  // pork). NOTE: deliberately NOT adding Persian سوسیس/کالباس — those are typically halal (chicken/beef) in the
+  // Iran market, so flagging them as pork would wrongly hide halal food. The real fix is authoring the
+  // authoritative Recipe.containsPork flag; these tokens are only a best-effort fallback.
+  'sausage', 'worst',
   'gelatin', 'gelatine', 'خوک', 'ژامبون', 'بیکن', 'ژله خوکی',
 ];
 const NO_PORK_CONSTRAINTS = new Set(['no_pork', 'halal', 'kosher']);
@@ -90,7 +97,9 @@ export function recipeSafetyCheck(recipe: any, profile: any, derivedAllergens: s
   const allergSet = recipeAllergenSet(recipe, derivedAllergens);
   // the reconciled allergy set is the declared, safety-critical set (always respected)
   const profileAllergies = toStringArray(profileDim(profile, 'reconciled', 'allergies')?.reconciledValue).map((a) => a.toLowerCase());
-  const conflicting = allergSet.filter((a) => profileAllergies.some((p) => looseMatch(a, p)));
+  // SAFETY (advisor audit): CANONICAL exact match, not bidirectional substring. The old looseMatch entangled
+  // distinct allergens (shellfish⊃fish, peanuts⊃nut) — over-hiding a restricted user's safe dishes invisibly.
+  const conflicting = allergensConflict(allergSet, profileAllergies);
 
   const dietaryRestriction = (() => {
     const v = profileDim(profile, 'reconciled', 'dietary_pattern')?.reconciledValue;

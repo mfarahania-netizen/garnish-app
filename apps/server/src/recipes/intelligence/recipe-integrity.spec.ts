@@ -1,4 +1,37 @@
-import { analyzeRecipeIntegrity, extractDictionaryAllergens } from './recipe-integrity';
+import { analyzeRecipeIntegrity, extractDictionaryAllergens, allergensConflict } from './recipe-integrity';
+
+describe('allergensConflict — canonical exact match (advisor audit: de-entangle fish/shellfish + nut/peanut)', () => {
+  it('shellfish allergy flags shellfish but NOT fish (the entanglement fix)', () => {
+    expect(allergensConflict(['shellfish'], ['shellfish'])).toEqual(['shellfish']);
+    expect(allergensConflict(['fish'], ['shellfish'])).toEqual([]); // fish is SAFE for a shellfish-allergic user
+  });
+  it('fish allergy flags fish but NOT shellfish', () => {
+    expect(allergensConflict(['fish'], ['fish'])).toEqual(['fish']);
+    expect(allergensConflict(['shellfish'], ['fish'])).toEqual([]);
+  });
+  it('shellfish umbrella still covers crustaceans + molluscs (safe over-warn preserved)', () => {
+    expect(allergensConflict(['crustaceans'], ['shellfish'])).toEqual(['crustaceans']);
+    expect(allergensConflict(['molluscs'], ['shellfish'])).toEqual(['molluscs']);
+  });
+  it('tree-nut allergy flags tree_nuts but NOT peanuts; peanut allergy flags peanuts but NOT tree_nuts', () => {
+    expect(allergensConflict(['tree_nuts'], ['nut'])).toEqual(['tree_nuts']);
+    expect(allergensConflict(['peanuts'], ['nut'])).toEqual([]); // peanuts SAFE for a tree-nut-allergic user
+    expect(allergensConflict(['peanuts'], ['peanut'])).toEqual(['peanuts']);
+    expect(allergensConflict(['tree_nuts'], ['peanut'])).toEqual([]);
+  });
+  it('NO UNDER-MATCH: every onboarding chip still flags its real recipe token', () => {
+    expect(allergensConflict(['gluten'], ['gluten'])).toEqual(['gluten']);
+    expect(allergensConflict(['dairy'], ['dairy'])).toEqual(['dairy']);
+    expect(allergensConflict(['egg'], ['egg'])).toEqual(['egg']);
+    expect(allergensConflict(['soy'], ['soy'])).toEqual(['soy']);
+    expect(allergensConflict(['sesame'], ['sesame'])).toEqual(['sesame']);
+    expect(allergensConflict(['shellfish'], ['shellfish'])).toEqual(['shellfish']);
+  });
+  it('empty profile → no conflict; multiple allergies resolve independently', () => {
+    expect(allergensConflict(['fish', 'dairy'], [])).toEqual([]);
+    expect(allergensConflict(['fish', 'shellfish', 'peanuts'], ['shellfish', 'peanut']).sort()).toEqual(['peanuts', 'shellfish']);
+  });
+});
 
 const recipe = {
   id: 'r1',
