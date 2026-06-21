@@ -6,6 +6,7 @@ import { EventOutboxService } from '../behavior-engine/routing/event-outbox.serv
 import { EventQualityService } from './event-quality.service'; // 👈 جدید
 import { guardEventForRuntime, resolveRuntimeGuardMode } from './event-envelope-runtime-guard';
 import { ConsentService } from '../consent/consent.service';
+import { sanitizePayload, isKnownEventType } from './payload-sanitizer';
 
 @Injectable()
 export class AnalyticsService {
@@ -78,6 +79,12 @@ export class AnalyticsService {
     // E43-A2 shadow runtime guard (observational; never blocks/alters this flow).
     this.observeWithRuntimeGuard(data);
 
+    // Taxonomy drift (advisor audit): flag unknown event types so the signal layer stays clean — but NEVER
+    // drop the event (no lost signals). The known-type set is completed from observed flags over time.
+    if (!isKnownEventType(data.type)) {
+      this.logger.debug(`[event-taxonomy] unknown event type stored (not dropped): ${data.type}`);
+    }
+
     const eventData: any = {
       userId: data.userId,
       type: data.type,
@@ -85,7 +92,10 @@ export class AnalyticsService {
     if (data.page) eventData.page = data.page;
     if (data.duration) eventData.duration = data.duration;
     if (data.sessionId) eventData.sessionId = data.sessionId;
-    if (data.payload) eventData.payload = JSON.stringify(data.payload);
+    // PRIVACY (advisor audit): persist a REDACTED payload — free-text/PII keys dropped, strings capped. The raw
+    // payload stays in-memory only (used for the recipeId denorm below + passed to enrichment), never stored.
+    const safePayload = data.payload ? sanitizePayload(data.payload) : null;
+    if (safePayload && Object.keys(safePayload).length > 0) eventData.payload = JSON.stringify(safePayload);
     // L0/B — denormalize recipeId from the payload onto the row for fast recipe-level signal queries
     // (it previously lived only inside the opaque payload string). Processors still read payload.recipeId
     // unchanged; this is a purely additive column write.
@@ -111,8 +121,9 @@ export class AnalyticsService {
 
     const event = await this.prisma.userEvent.create({ data: eventData });
 
-    // غنی‌سازی را در پس‌زمینه اجرا کن
-    this.enrichmentService.enrichEvent(event.id);
+    // غنی‌سازی را در پس‌زمینه اجرا کن — pass the RAW payload so enrichment reads the original message while the
+    // stored payload stays redacted (only the structured, non-PII enrichment result is persisted).
+    this.enrichmentService.enrichEvent(event.id, data.payload);
 
     if (gateMode !== 'off' && !personalizationAllowed) {
       if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization

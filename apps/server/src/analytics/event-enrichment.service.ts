@@ -105,7 +105,10 @@ const RECIPES_LIST = [
 export class EventEnrichmentService {
   constructor(private prisma: PrismaService) {}
 
-  async enrichEvent(eventId: string) {
+  // rawPayload (PRIVACY): the caller passes the ORIGINAL payload so enrichment can read the free-text message
+  // even though the STORED payload is redacted (the raw message is never persisted — only the structured,
+  // non-PII enrichment below is). Falls back to the stored payload when no raw payload is supplied.
+  async enrichEvent(eventId: string, rawPayload?: any) {
     const event = await this.prisma.userEvent.findUnique({ where: { id: eventId } });
     if (!event || event.enrichment) return;
 
@@ -113,7 +116,7 @@ export class EventEnrichmentService {
 
     try {
       if (event.type === 'ai_message_send') {
-        const payload = JSON.parse(event.payload || '{}');
+        const payload = rawPayload ?? JSON.parse(event.payload || '{}');
         const message = payload.message || '';
         if (message.trim()) {
           // استخراج مواد اولیه از لیست ۵۰۰+ تایی
