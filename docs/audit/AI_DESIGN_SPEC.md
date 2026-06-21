@@ -247,6 +247,11 @@ Metric trees for arithmetic root-cause (`cook_completion = opens × start_rate �
 
 ## 9. FOUNDER DECISIONS
 
+**DECIDED 2026-06-22 (founder confirmed all three recommended defaults):**
+- **D1 = ≤15% of revenue (~$1.14/user-mo)** anti-abuse cost ceiling (real heavy use ~$0.19–0.48 stays well under → "unlimited in domain" preserved).
+- **D2 = confirm-then-write** for conversational allergies (deterministic gate remains the sole source of truth).
+- **D3 = build now + live-test in the IRAN SANDBOX (no EU legal gate); EU live ~Sep 2026** after DPIA + multilingual eval + legal (deferred past the 2 Aug Article-50 deadline).
+
 Three genuine business/product calls. Each has my recommended default + reasoning; **the founder owns the final call.**
 
 ### D1 — AI cost ceiling per active-user-month
