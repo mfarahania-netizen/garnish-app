@@ -59,16 +59,34 @@ converged: the round-5 items are mostly framing/edge-polish (the top one is lite
 plainly"), not design flaws. A ruthless 5-lens adversarial panel will never let the count hit exactly 0; chasing
 literal-zero is diminishing returns. The design is substantively settled + live-verified.
 
-## Genuine open decisions (FOUNDER — not solvable by more looping)
-1. **EU-14 allergen legal scope:** full EU-14 chip set vs a documented launch subset (legal sign-off).
-2. **Familiarity content:** who authors the approachable-anchor recipe allowlist (or populates a
-   Recipe.familiarity field) — a named content deliverable; the modal-user Aha can't ship until it exists.
-3. **Accept the scope:** v1 is a multi-week, multi-workstream build (allergy-wipe + merge → exact-match allergen +
-   fish/shellfish fix → no-pork audit + veg/vegan → familiarity content + cold-user fork → effort wire → NL/EN
-   i18n + IP-geo cohort → guest spine + guest-safety test → consent un-bundle → GET /recipes/:id guard).
-4. **Analytics lawful basis:** explicit consent vs documented legitimate-interest (legal).
-5. Minor: observance coexistence (vegan AND no-pork) in v1 or defer; diet corpus re-tag (high_protein/regular are
-   live values not surfaced); guest-spine abuse controls (rate-limit/TTL/geo).
+## Decisions — MADE (manager call + research, 2026-06-21; founder delegated, lacking domain knowledge)
+All decided by Claude with web research; the LEGAL ones are the conservative/safe default and still want a final
+Dutch IP/privacy-lawyer sign-off before public EU launch (not a build blocker — the safe default ships; the lawyer
+confirms wording/scope). Sources cited in chat.
+1. **Allergy chip scope → FULL EU-14.** Ship all 14 FIC-1169/2011 Annex-II allergens (add fish, mustard, celery,
+   lupin, sulphites, molluscs to the live 8). Rationale: the app's value-prop is allergy safety for an EU general
+   public; a sesame/celery/sulphite-allergic user MUST be able to declare it regardless of recipe count; full-14
+   is strictly safer than a subset (a subset would itself need legal sign-off). Cost = 14 chips on a one-time
+   safety screen with a one-tap "None" — acceptable. Engine: extend canonicalizeAllergens with celery/lupin/
+   sulphites/mustard (fish/molluscs/crustaceans already mapped).
+2. **Analytics lawful basis → EXPLICIT OPT-IN CONSENT** for analytics + personalization; legitimate interest ONLY
+   for strictly-essential first-party operational telemetry. Rationale: EU/GDPR + ePrivacy — non-essential
+   analytics needs consent; this matches the premium privacy-first positioning + the existing consent split
+   (EVENT_CONSENT_GATE_MODE / consentPurpose) + the consent-un-bundle work. Final essential/non-essential line =
+   lawyer sign-off.
+3. **Familiarity content → CURATED ALLOWLIST** (a small config of recipe ids flagged approachable-for-newcomers),
+   not a full Recipe.familiarity field (faster, controllable). SEED = the founder's ~40 photographed/videoed
+   dishes (they carry the only real premium media → perfect for the first slate) ∩ the most universally
+   approachable Persian dishes for a zero-background Dutch user. Claude drafts the ranked allowlist; founder
+   confirms the cultural-approachability calls + supplies which 40 are photographed.
+4. **Scope → ACCEPTED.** v1 is a multi-week multi-workstream build; sequence: safety foundation (DONE: exact-match
+   allergen + discover hard-hide) → guest spine → allergy screen (EU-14) → effort lever wire → first-slate
+   familiarity allowlist → consent un-bundle + timing → NL/EN i18n + IP-geo cohort → allergy-wipe-safe merge.
+   Built with the guardian loop.
+5. Minor: **observance coexistence** (vegan AND no-pork together) → ship in v1 (cheap, correct; vegan-halal users
+   exist). **Diet corpus** → MAP onboarding diet choices onto live values (vegetarian/vegan); do NOT surface
+   internal high_protein/regular as user choices. **Guest-spine abuse controls** → rate-limit + TTL + IP-geo at
+   POST /auth/guest (standard, part of the build).
 
 ## Imagery (founder-confirmed)
 Onboarding swipe-free; the first slate + famous-first use the founder's 40 owned photos/videos (premium, zero
