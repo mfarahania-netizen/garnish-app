@@ -12,7 +12,8 @@
  * Honesty rules (no over-claim):
  *  - `legacy_active` = currently emitted today in the legacy `UserEvent` shape.
  *  - `canonical_planned` = an ADR/envelope event type that is DESIGNED but NOT yet produced in
- *    production (e.g. cook_complete, consent_granted, workflow_run). These are PLANNED/STAGED.
+ *    production (e.g. consent_granted, workflow_run, ai_guard_block). These are PLANNED/STAGED.
+ *    (cook_complete was reconciled to legacy_active on 2026-06-22 — it IS emitted today.)
  *  - Unknown types are NEVER silently accepted as production-ready (strict rejects; shadow warns).
  *
  * Zero new dependency; pure functions.
@@ -164,7 +165,7 @@ const LEGACY_EVENT_TYPES: ReadonlySet<string> = new Set<string>(Object.values(Ev
  */
 const CANONICAL_PLANNED_EVENT_TYPES: ReadonlySet<string> = new Set<string>(
   [
-    'cook_complete',
+    // 'cook_complete' removed 2026-06-22 — reconciled to legacy_active (now in the EventType enum; it IS emitted).
     'ai_answer_feedback',
     'ai_guard_block',
     'notif_suppressed',

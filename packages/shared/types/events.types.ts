@@ -32,6 +32,10 @@ export const EVENT_TYPES = [
   'support_ticket_create', 'support_ticket_close', 'ticket_create', 'ticket_reply', 'ticket_close',
   'support_contact_click',
   'favorite_view', 'shopping_add_from_fav',
+  // Reconciled 2026-06-22 — web-emitted events that were LIVE but undeclared (silent contract gap):
+  // cook_complete (cook/[id]/useCook), search_unmet (discover/useDiscovery), ai_feedback (assistant/useAssistant),
+  // recommendation_dismiss (plan/page + useDismissRecommendation; already in the server EventType enum).
+  'cook_complete', 'search_unmet', 'ai_feedback', 'recommendation_dismiss',
 ] as const;
 
 export type EventType = typeof EVENT_TYPES[number];

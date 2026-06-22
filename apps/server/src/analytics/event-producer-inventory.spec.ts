@@ -70,7 +70,9 @@ function buildArtifact() {
   run('taxonomy', 'all 11 families have complete defaults', () =>
     EVENT_FAMILIES.length === 11 && EVENT_FAMILIES.every((f) => !!EVENT_FAMILY_DEFAULTS[f]?.surface));
   run('taxonomy', 'planned not reported as legacy', () =>
-    validateEventType('cook_complete').migrationStatus === 'canonical_planned');
+    validateEventType('consent_granted').migrationStatus === 'canonical_planned');
+  run('taxonomy', 'reconciled cook_complete is legacy_active (emitted today)', () =>
+    validateEventType('cook_complete').migrationStatus === 'legacy_active');
   run('taxonomy', 'family classification works', () =>
     classifyEventFamily('ai_message_send') === 'ai' && classifyEventFamily('shopping_item_add') === 'grocery');
 

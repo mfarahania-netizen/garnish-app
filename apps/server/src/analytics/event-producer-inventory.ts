@@ -314,7 +314,7 @@ export const EVENT_PRODUCER_INVENTORY: readonly ProducerRecord[] = [
 
 /** Families that have NO dedicated current server producer (events arrive via trackEvent or not at all). */
 export const PRODUCER_FAMILY_GAPS: { family: EventFamily; reason: string }[] = [
-  { family: 'cook', reason: 'No server cook producer; cooking events arrive via analytics.trackEvent; cook_complete is canonical_planned.' },
+  { family: 'cook', reason: 'No dedicated server cook producer; cooking events arrive via analytics.trackEvent (cook_complete reconciled 2026-06-22 to a declared legacy_active type, no longer canonical_planned).' },
   { family: 'admin', reason: 'No admin-action audit producer; admin reads are not logged as events (admin_diagnostic_view is canonical_planned).' },
   { family: 'workflow', reason: 'No WAT/workflow producer exists; workflow_run is canonical_planned.' },
   { family: 'notification', reason: 'Notification SEND/SUPPRESS decisions are not logged as events (Layer-10 suppressed-log gap).' },

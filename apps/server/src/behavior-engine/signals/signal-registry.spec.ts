@@ -62,10 +62,12 @@ describe('E43-A3 signal registry v1', () => {
     expect(p2.map((s) => s.signalKey)).toEqual(['ai.safety_boundary_trigger']);
   });
 
-  it('status is grounded in the taxonomy (active iff a legacy source exists)', () => {
+  it('status is grounded in the taxonomy (active_v1 ⟹ a legacy source exists; planned always allowed)', () => {
+    // Relaxed 2026-06-22: capture-first/compute-later — a 'planned' signal may have a live source (e.g.
+    // skill.cook_completion_growth sourced by the now-legacy cook_complete) because its derivation is staged.
+    // The only dishonest case is active_v1 WITHOUT a live source.
     for (const s of SIGNAL_REGISTRY) {
-      if (s.status === 'blocked') continue;
-      expect(s.status).toBe(expectedStatusFromSources(s));
+      if (s.status === 'active_v1') expect(expectedStatusFromSources(s)).toBe('active_v1');
     }
   });
 

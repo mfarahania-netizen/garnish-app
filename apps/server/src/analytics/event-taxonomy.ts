@@ -138,4 +138,13 @@ export enum EventType {
   RECIPE_SKIP = 'recipe_skip',
   NOT_INTERESTED = 'not_interested',
   QUICK_EXIT = 'quick_exit',
+
+  // ===== Reconciled 2026-06-22 — web-emitted + server-consumed but previously UNDECLARED =====
+  // These were live (trackEvent → POST /analytics/event → UserEvent) yet absent from the taxonomy, so the
+  // contract reported them as unknown/planned. By the contract's own rule (emitted today = legacy_active) they
+  // belong here. Declaration only — no consumer runtime change. Families auto-classify: cook_complete→cook,
+  // search_unmet→behavior, ai_feedback→ai.
+  COOK_COMPLETE = 'cook_complete',
+  SEARCH_UNMET = 'search_unmet',
+  AI_FEEDBACK = 'ai_feedback',
 }

@@ -42,10 +42,18 @@ describe('E43-A2 event taxonomy contract', () => {
     });
 
     it('flags canonical/planned event types as not-yet-produced (warning), still ok', () => {
-      const r = validateEventType('cook_complete', { mode: 'strict' });
+      const r = validateEventType('consent_granted', { mode: 'strict' });
       expect(r.ok).toBe(true); // it IS a known canonical type
       expect(r.migrationStatus).toBe('canonical_planned');
       expect(r.warnings.some((w) => w.includes('canonical/planned'))).toBe(true);
+    });
+
+    it('reconciled (2026-06-22): cook_complete is now legacy_active, not planned (it IS emitted)', () => {
+      const r = validateEventType('cook_complete', { mode: 'strict' });
+      expect(r.ok).toBe(true);
+      expect(r.migrationStatus).toBe('legacy_active');
+      expect(r.family).toBe('cook');
+      expect(r.warnings.some((w) => w.includes('canonical/planned'))).toBe(false);
     });
 
     it('rejects empty/non-string eventType without throwing', () => {
@@ -74,7 +82,8 @@ describe('E43-A2 event taxonomy contract', () => {
       expect(isKnownEventType('xyzzy')).toBe(false);
     });
     it('does NOT report planned categories as implemented/legacy', () => {
-      for (const planned of ['cook_complete', 'workflow_run', 'ai_guard_block', 'notif_suppressed', 'consent_granted']) {
+      // NOTE: cook_complete was reconciled to legacy_active 2026-06-22 (it IS emitted) — removed from this list.
+      for (const planned of ['workflow_run', 'ai_guard_block', 'notif_suppressed', 'consent_granted']) {
         expect(getEventTypeMigrationStatus(planned)).not.toBe('legacy_active');
       }
     });

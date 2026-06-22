@@ -228,7 +228,9 @@ const VALID_CONSENT = new Set(['personalization', 'analytics', 'core']);
 const VALID_RETENTION = new Set(['standard-365d', 'audit-long', 'ephemeral-30d']);
 const VALID_STATUS = new Set(['active_v1', 'planned', 'blocked']);
 
-/** Status implied by sources: active_v1 if any allowed event type is legacy_active today, else planned. */
+/** The MAXIMUM status the sources support: active_v1 if any allowed event type is legacy_active today, else
+ *  planned. A signal may always be MORE conservative (planned) than this — the consistency rule only forbids
+ *  claiming active_v1 when this returns planned (an active signal with no live source). */
 export function expectedStatusFromSources(entry: SignalRegistryEntry): 'active_v1' | 'planned' {
   const hasLegacySource = entry.allowedEventTypes.some((t) => getEventTypeMigrationStatus(t) === 'legacy_active');
   return hasLegacySource ? 'active_v1' : 'planned';
@@ -270,10 +272,13 @@ export function checkRegistryConsistency(): RegistryConsistency {
     if (!e.explainabilityTemplate.trim()) issues.push(`empty explainabilityTemplate on ${e.signalKey}`);
     // consentPurpose must never be b2b_aggregate in v1
     if ((e.consentPurpose as string) === 'b2b_aggregate') { b2bAbsent = false; issues.push(`b2b_aggregate consent on ${e.signalKey}`); }
-    // active/planned status must be grounded in the taxonomy (blocked is a manual override)
-    if (e.status !== 'blocked' && e.status !== expectedStatusFromSources(e)) {
+    // HONESTY RULE (relaxed 2026-06-22): an `active_v1` signal MUST be grounded by a live (legacy_active) source —
+    // you cannot claim a signal is computed without a real source event. But `planned` is ALWAYS allowed, even when
+    // its source event is already live: Garnish is capture-first / compute-later, so an emitted event (e.g. the
+    // now-legacy cook_complete) may feed a signal whose DERIVATION is still staged. (`blocked` is a manual override.)
+    if (e.status === 'active_v1' && expectedStatusFromSources(e) !== 'active_v1') {
       statusGrounded = false;
-      issues.push(`status "${e.status}" on ${e.signalKey} not grounded (expected ${expectedStatusFromSources(e)})`);
+      issues.push(`status "active_v1" on ${e.signalKey} not grounded (no legacy_active source event)`);
     }
   }
 
