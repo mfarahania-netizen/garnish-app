@@ -359,4 +359,26 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const c = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساس نیستم', conversationId: 'c-conj-3' });
     expect(c.suggestedAction).toBeUndefined();
   });
+
+  // guardian (final re-verify): POSITIVE-assertion-first — a real declaration that ALSO negates a DIFFERENT food
+  // (even with NO connector between the clauses) must STILL offer; pure retractions still suppress.
+  it('§3 guard: declaration + negation about a DIFFERENT food (no connector) STILL offers', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    const a = await svc.handleChat({ userId: 'u1', prompt: 'به شیر حساسیت دارم به پسته حساس نیستم', conversationId: 'c-pos-1' });
+    expect(a.suggestedAction).toBeDefined();
+    expect(a.suggestedAction!.allergens.map((x: any) => x.token)).toContain('dairy'); // the positively-declared milk allergy
+
+    const b = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت دارم بادام مشکلی نداره', conversationId: 'c-pos-2' });
+    expect(b.suggestedAction!.allergens.map((x: any) => x.token)).toContain('nut');
+
+    const c = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت دارم پس دیگه نمیخورمش', conversationId: 'c-pos-3' });
+    expect(c.suggestedAction!.allergens.map((x: any) => x.token)).toContain('nut');
+
+    // pure retractions still suppress (no positive assertion)
+    const d = await svc.handleChat({ userId: 'u1', prompt: 'حساسیت به گردو ندارم', conversationId: 'c-pos-4' });
+    expect(d.suggestedAction).toBeUndefined();
+    const e = await svc.handleChat({ userId: 'u1', prompt: 'دیگه به گردو حساس نیستم', conversationId: 'c-pos-5' });
+    expect(e.suggestedAction).toBeUndefined();
+  });
 });

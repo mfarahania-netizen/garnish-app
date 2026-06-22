@@ -78,7 +78,8 @@ describe('RecipeRichnessService.personalize (Phase 4 cascade)', () => {
   const dict = [
     { id: 'ing_beef', nameFa: 'گوشت', allergens: [], nutritionPer100g: { calories: 250, protein: 26, carbs: 0, fat: 17, fiber: 0 } },
     { id: 'ing_onion', nameFa: 'پیاز', allergens: [], nutritionPer100g: { calories: 40, protein: 1, carbs: 9, fat: 0, fiber: 2 } },
-    { id: 'ing_tofu', nameFa: 'توفو', allergens: ['soy'], nutritionPer100g: { calories: 76, protein: 8, carbs: 2, fat: 5, fiber: 0 } },
+    // production allergen shape is the {eu14,us9,other,mayContain} object (NOT a bare array) — the gate must read it.
+    { id: 'ing_tofu', nameFa: 'توفو', allergens: { eu14: ['soybeans'], us9: ['soybeans'], other: [], mayContain: [] }, nutritionPer100g: { calories: 76, protein: 8, carbs: 2, fat: 5, fiber: 0 } },
   ];
 
   it('recomputes per-serving nutrition from GRIS gram weights × source-locked per-100g', async () => {

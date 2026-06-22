@@ -14,7 +14,7 @@ import { RecipesService } from '../recipes.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProfileReadService } from '../../behavior-engine/profile/read/profile-read.service';
 import { AiAssistService } from '../../ai/assist/ai-assist.service';
-import { analyzeRecipeIntegrity, IntegrityReport } from './recipe-integrity';
+import { analyzeRecipeIntegrity, IntegrityReport, extractDictionaryAllergens, allergensConflict } from './recipe-integrity';
 import { assessRecipeFit, RecipeFitAssessment } from './recipe-fit';
 import { looseMatch, norm, toStringArray } from '../../ai/tools/grounding-utils';
 import { parseGrisName, sumNutrition, NutritionItem, NutritionResult } from './recipe-personalize';
@@ -183,9 +183,11 @@ export class RecipeRichnessService {
 
   private allergenConflict(allergens: unknown, declared: string[]): string | null {
     if (!declared.length) return null;
-    const tags = toStringArray(allergens).map((a) => a.toLowerCase());
-    for (const a of tags) if (declared.some((d) => looseMatch(a, d))) return a;
-    return null;
+    // GUARDIAN (final re-verify): read the canonical {eu14,us9,other,mayContain} dictionary shape (toStringArray
+    // returned [] on it → FAIL-OPEN) and intersect through the SAME alias map the hard gate uses — so a swap TO an
+    // allergenic substitute is correctly flagged, fa/en/Persian, EXACT-canonical (no looseMatch substring entangle).
+    const conflicts = allergensConflict(extractDictionaryAllergens(allergens), declared);
+    return conflicts[0] ?? null;
   }
 
   private async lookupIngredientByName(name: string) {

@@ -226,29 +226,25 @@ export class ChatOrchestrationService {
    * Is the turn a genuine allergy DECLARATION (vs a question or a retraction)? Deterministic, zero-LLM. Only a
    * declaration earns the §3 confirm-then-write offer; an interrogative or a RETRACTION must not.
    *
-   * GUARDIAN-HARDENED: the negation check is SCOPE-AWARE — it suppresses only when the negation ATTACHES to the
-   * allergy assertion (حساس نیستم / آلرژی ندارم / "not allergic"), NOT when an unrelated secondary clause merely
-   * contains a negation ("به گردو حساسیت دارم ولی پسته مشکلی نداره" is a real walnut declaration). A bare نیست/نداره
-   * anywhere would silently DROP common, natural declarations.
+   * GUARDIAN-HARDENED (final): POSITIVE-ASSERTION-FIRST instead of a fragile sliding negation window. If ANY
+   * positively-asserted allergy phrase is present (حساسم / حساسیت دارم / "allergic to"), it IS a declaration —
+   * even when a SEPARATE clause negates a DIFFERENT food ("به شیر حساسیت دارم به پسته حساس نیستم"). The positive
+   * verb دارم is distinguished from the negated ندارم by a negative lookbehind for ن. Only when NO positive
+   * assertion exists do the retraction patterns suppress (e.g. «حساسیت به گردو ندارم», "not allergic to nuts").
    */
   private isAllergyDeclaration(prompt: string): boolean {
     const t = normalizeText(prompt);
     if (!t) return false;
-    // questions
+    // questions are never a declaration
     if (/[؟?]/.test(t)) return false; // explicit question mark
-    if (/^(ایا|مگه|مگر|is |are |am i |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false; // «am i …?» (not the elliptical declaration «am allergic …»)
-    // retraction: negation attached to the allergy assertion within the SAME clause. The window stops at a clause
-    // separator (. ! ؟ ? ، ؛ newline) AND is forbidden from crossing a contrastive connector (ولی/اما/ولیکن), so
-    // an interposed allergen name ("حساسیت به گردو ندارم") is still caught as a retraction, but a genuine
-    // declaration whose SECOND clause is negated ("به شیر حساسیت دارم ولی پسته نداره") is NOT suppressed.
-    // The window also stops at the common conjunctions و/که/چون. « و » is SPACE-PADDED on purpose: a bare و would
-    // terminate inside words ending in و (e.g. گردو) and turn the genuine retraction «حساسیت به گردو ندارم» into a
-    // false declaration. که/چون are safe as bare tokens.
-    const WIN = '(?:(?!ولی|اما|ولیکن| و |که|چون)[^.!؟?،؛\n]){0,20}';
-    if (new RegExp('حساس\\S*' + WIN + '(نیست|نبود)').test(t)) return false; // «حساس [به گردو] نیستم»
-    if (new RegExp('(حساسیت|الرژی|آلرژی)' + WIN + '(ندار|نداشت)').test(t)) return false; // «حساسیت [به گردو] ندارم»
-    if (new RegExp('(دیگه|دیگر)' + WIN + '(نمیخورم|نمیخورمش|نمیخوام)').test(t)) return false; // «دیگه … نمیخورم»
-    // English retraction scoped to the allergy assertion (allow an interposed allergen word + "any")
+    if (/^(ایا|مگه|مگر|is |are |am i |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false; // «am i …?» (not the elliptical «am allergic …»)
+    // POSITIVE allergy assertion → declaration, regardless of any later negation about another food.
+    if (/حساسم|حساسه|حساسن|حساسند/.test(t)) return true; // «به X حساسم» (positive copula)
+    if (/(حساسیت|الرژی|آلرژی).{0,15}(?<!ن)(دارم|داری|داره|دارد|داریم|دارند)/.test(t)) return true; // «حساسیت [به X] دارم» — NOT «ندارم»
+    if (/\b(?:im|i am|am|are) allergic\b/.test(t) && !/\b(not|never|no longer) allergic\b/.test(t)) return true; // English positive
+    // No positive assertion found → treat negated-allergy / retraction phrasings as suppression.
+    if (/(حساسیت|الرژی|آلرژی|حساس).{0,20}(نیست|نبود|ندار|نداشت)/.test(t)) return false; // «حساس/حساسیت … نیست/ندار»
+    if (/(دیگه|دیگر).{0,20}(نمیخورم|نمیخورمش|نمیخوام)/.test(t)) return false; // «دیگه … نمیخورم»
     if (/\b(not|never|no longer) (allergic|sensitive)\b/.test(t)) return false;
     if (/\bno (allergy|allergies)\b/.test(t)) return false;
     if (/\b(dont|doesnt|didnt) have (an?|any)?\s?(\w+\s){0,2}allerg/.test(t)) return false; // «dont have [a/any] [nut] allergy»
