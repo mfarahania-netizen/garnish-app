@@ -134,10 +134,13 @@ const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
   /به ?.{0,20}حساس/,
   /اذیتم ?میکنه|اذیت ?میکنه|بهم ?نمیساز|نمیساز(ه|د)|تحمل ?نمیکنم|تحمل ?ندارم|عدم تحمل/,
   /نمی ?تونم.{0,15}بخورم|نمی ?خورم|نباید بخورم|پرهیز ?(میکنم|دارم|از)/,
-  // Dutch
+  // Dutch (recall-first for the Holland launch — over-trigger is acceptable; safety route)
   /allergisch|allergie|intoleran(t|tie)/,
-  /kan geen .{0,18}(eten|verdragen|hebben)/,
-  /\b(eet|drink|verdraag) geen\b/,
+  /kan geen .{0,24}(eten|drinken|verdragen|verteren|hebben|verdraag|lusten|koken|gebruiken)\b/,
+  /\b(eet|drink|verdraag|verteer|lust) geen\b/,
+  /\bverdraag ik niet\b|\bkan ik niet (?:eten|drinken|verdragen|verteren|hebben)\b/,
+  /\b(?:geeft|geven|bezorgt|bezorgen) (?:mij|me|mn) (?:buikpijn|jeuk|uitslag|huiduitslag|diarree|krampen)\b/,
+  /\b(?:krijg|word|wordt) (?:ik )?(?:uitslag|jeuk|huiduitslag|buikpijn|diarree|krampen) van\b/,
   // English (apostrophes already stripped → cant / im)
   /\baller(g|j)(y|ies|ic)/,
   /\balerg(y|ic|ies)\b/, // common misspelling
@@ -152,7 +155,8 @@ const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
   /\b(?:slecht|niet goed) voor (?:mij|me)\b/,
   /\b(?:is|are) bad for me\b/,
   // symptom-reaction declarations → route into the capture flow rather than a generic answer
-  /\bgives? me (?:hives|a rash|a stomach)|\bbreak(?:s)? out in\b/,
+  /\bgives? me (?:a )?(?:rash|hives|stomach ?ache|stomach pain|cramps|diarr?hea|itch(?:ing|y)?)\b|\bbreak(?:s)? out in\b/,
+  /\bi (?:get|break out in) (?:a )?(?:rash|hives|itch|stomach)/,
   /\b(?:word|wordt) ziek van|\bziek van\b/,
   /حالم.{0,4}بد ?میشه|معده.{0,8}خراب/,
 ];

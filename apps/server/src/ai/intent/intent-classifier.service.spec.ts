@@ -54,6 +54,12 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'peanuts give me hives',
       'ik word ziek van noten',
       'گردو میخورم حالم بد میشه',
+      // Dutch broad-verb + symptom-reaction declarations (guardian w90ifbn67 — these previously MISSED)
+      'ik kan geen melk drinken',
+      'ik krijg uitslag van noten',
+      'soja geeft mij buikpijn',
+      'walnoten verdraag ik niet',
+      'eieren bezorgen me jeuk',
     ];
     it.each(declarations)('classifies «%s» as stated_constraint (SPECIAL flow)', (text) => {
       const r = svc.classify(text);

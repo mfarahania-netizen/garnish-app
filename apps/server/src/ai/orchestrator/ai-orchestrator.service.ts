@@ -15,7 +15,7 @@ import { AiCallLogService } from '../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { resolveAiCostPolicy, AI_COST_SCHEMA_VERSION, UsageSource } from '../cost/ai-cost-policy';
 import { estimateCostUsdFromCatalog } from '../cost/ai-cost-rate-catalog';
-import { PersistedDailyBudgetService } from '../cost/persisted-daily-budget.service';
+import { PersistedDailyBudgetService, STUB_PROVIDER_NAME } from '../cost/persisted-daily-budget.service';
 import { SpendAlertService } from '../cost/spend-alert.service';
 import { isLiveModelConfigured } from '../providers/model-provider.factory';
 
@@ -147,8 +147,12 @@ export class AiOrchestratorService {
       return blockedResult;
     }
 
-    // success — record actual usage
-    this.cost.record({ userId: request.userId, tokens: (inputTokens ?? 0) + (outputTokens ?? 0) });
+    // success — record actual usage. SKIP the free stub/deterministic path so the in-memory ledger agrees with the
+    // persisted budget invariant (both count ONLY real provider usage) — else the free chat path could eventually
+    // self-block a user at the per-user token cap despite zero paid calls.
+    if (this.model.name !== STUB_PROVIDER_NAME) {
+      this.cost.record({ userId: request.userId, tokens: (inputTokens ?? 0) + (outputTokens ?? 0) });
+    }
     const okResult = await this.finish({ request, status: 'ok', text, model, inputTokens, outputTokens, totalTokens, usageSource, guardHits, toolCalls, reasons: [], start });
     await this.maybeEvaluateSpendAlerts(request, model);
     return okResult;

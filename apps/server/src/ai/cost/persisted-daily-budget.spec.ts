@@ -86,16 +86,16 @@ function setLive() {
 function provider(): ModelProvider & { generate: jest.Mock } {
   return { name: 'mock', generate: jest.fn(async () => ({ text: 'a simple stew', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
 }
-function buildOrch(p: ModelProvider, budget?: PersistedDailyBudgetService) {
+function buildOrch(p: ModelProvider, budget?: PersistedDailyBudgetService, cost: AiCostControllerService = new AiCostControllerService()) {
   const rows: any[] = [];
   const callLog = new AiCallLogService({ aICallLog: { create: jest.fn(async ({ data }: any) => { rows.push(data); return { id: 'log_1' }; }) } } as any);
   const orch = new AiOrchestratorService(
-    p, new PromptInjectionGuardService(), new AiCostControllerService(), new AiSafetyGuardService(),
+    p, new PromptInjectionGuardService(), cost, new AiSafetyGuardService(),
     new NutritionClaimGuardService(), callLog,
     new BehavioralContextSnapshotService({ userPreference: { findUnique: jest.fn(async () => null) } } as any),
     budget,
   );
-  return { orch, rows };
+  return { orch, rows, cost };
 }
 
 describe('Orchestrator multi-window budget enforcement (E47-A10B)', () => {
@@ -193,5 +193,15 @@ describe('Orchestrator multi-window budget enforcement (E47-A10B)', () => {
     expect(r.status).toBe('blocked_injection');
     expect(p.generate).not.toHaveBeenCalled();
     expect(findFirst).not.toHaveBeenCalled(); // injection short-circuits before the budget query
+  });
+
+  // guardian (final audit, low): the free stub/deterministic path must NOT consume the in-memory per-user budget
+  // (it would otherwise self-block a user despite zero paid calls) — mirrors the persisted budget's stub exclusion.
+  it('stub/deterministic success does NOT accrue the in-memory per-user budget', async () => {
+    for (const k of KEYS) delete process.env[k]; // default (stub) path
+    const stub: any = { name: 'stub-model', generate: jest.fn(async () => ({ text: 'a simple stew', model: 'stub-model-v0', usage: { promptTokens: 200, completionTokens: 100, totalTokens: 300, source: 'estimated' } })) };
+    const { orch, cost } = buildOrch(stub);
+    for (let i = 0; i < 5; i++) await orch.run({ userId: 'u-stub', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'chat' });
+    expect(cost.getUsage('u-stub')).toBe(0);
   });
 });

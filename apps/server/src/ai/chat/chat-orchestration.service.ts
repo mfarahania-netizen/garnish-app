@@ -241,7 +241,10 @@ export class ChatOrchestrationService {
     // separator (. ! ؟ ? ، ؛ newline) AND is forbidden from crossing a contrastive connector (ولی/اما/ولیکن), so
     // an interposed allergen name ("حساسیت به گردو ندارم") is still caught as a retraction, but a genuine
     // declaration whose SECOND clause is negated ("به شیر حساسیت دارم ولی پسته نداره") is NOT suppressed.
-    const WIN = '(?:(?!ولی|اما|ولیکن)[^.!؟?،؛\n]){0,20}';
+    // The window also stops at the common conjunctions و/که/چون. « و » is SPACE-PADDED on purpose: a bare و would
+    // terminate inside words ending in و (e.g. گردو) and turn the genuine retraction «حساسیت به گردو ندارم» into a
+    // false declaration. که/چون are safe as bare tokens.
+    const WIN = '(?:(?!ولی|اما|ولیکن| و |که|چون)[^.!؟?،؛\n]){0,20}';
     if (new RegExp('حساس\\S*' + WIN + '(نیست|نبود)').test(t)) return false; // «حساس [به گردو] نیستم»
     if (new RegExp('(حساسیت|الرژی|آلرژی)' + WIN + '(ندار|نداشت)').test(t)) return false; // «حساسیت [به گردو] ندارم»
     if (new RegExp('(دیگه|دیگر)' + WIN + '(نمیخورم|نمیخورمش|نمیخوام)').test(t)) return false; // «دیگه … نمیخورم»

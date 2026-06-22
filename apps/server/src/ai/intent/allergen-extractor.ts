@@ -18,7 +18,7 @@ export interface ExtractedAllergen {
 // chip token → { label, name-substrings to detect (already normalized: lowercased, fa→plain, digits/ZWNJ folded) }
 const ALLERGEN_LEXICON: Array<{ token: string; label: string; names: string[] }> = [
   { token: 'peanut', label: 'بادام‌زمینی', names: ['بادام زمینی', 'بادوم زمینی', 'peanut', 'groundnut', 'pinda'] },
-  { token: 'nut', label: 'آجیل/مغزها', names: ['گردو', 'بادام', 'بادوم', 'خشکبار', 'پسته', 'فندق', 'بادام هندی', 'کاجو', 'نارگیل', 'مغز', 'اجیل', 'nut', 'tree nut', 'treenut', 'walnut', 'almond', 'pistachio', 'hazelnut', 'cashew', 'pecan', 'macadamia', 'brazil nut', 'noot', 'noten', 'walnoot', 'amandel'] },
+  { token: 'nut', label: 'آجیل/مغزها', names: ['گردو', 'بادام', 'بادوم', 'خشکبار', 'پسته', 'فندق', 'بادام هندی', 'کاجو', 'نارگیل', 'مغز', 'اجیل', 'nut', 'tree nut', 'treenut', 'walnut', 'almond', 'pistachio', 'hazelnut', 'cashew', 'pecan', 'macadamia', 'brazil nut', 'noot', 'noten', 'walnoot', 'walnoten', 'amandel'] },
   { token: 'dairy', label: 'لبنیات', names: ['شیر', 'لبنیات', 'پنیر', 'ماست', 'خامه', 'لاکتوز', 'dairy', 'milk', 'cheese', 'yogurt', 'lactose', 'melk', 'kaas', 'zuivel'] }, // کره dropped: کره=Korea collides; شیر/پنیر/ماست/خامه/لبنیات cover dairy
   { token: 'egg', label: 'تخم‌مرغ', names: ['تخم مرغ', 'تخممرغ', 'تخم‌مرغ', 'egg', 'eggs', 'ei', 'eieren'] },
   { token: 'gluten', label: 'گلوتن', names: ['گلوتن', 'گندم', 'جو', 'آرد', 'نان', 'gluten', 'wheat', 'barley', 'rye', 'tarwe'] },

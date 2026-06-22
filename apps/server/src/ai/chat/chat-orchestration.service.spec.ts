@@ -345,4 +345,18 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const c = await svc.handleChat({ userId: 'u1', prompt: 'حساسیت به گردو ندارم', conversationId: 'c-2clause-3' });
     expect(c.suggestedAction).toBeUndefined();
   });
+
+  // guardian (final audit): the window must also stop at و/که/چون (final-audit high) — but « و » is space-padded
+  // so it does NOT terminate inside گردو (else a real retraction would leak as a declaration).
+  it('§3 guard: negated second clause across و/که/چون STILL offers; گردو-retraction still suppressed', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    const a = await svc.handleChat({ userId: 'u1', prompt: 'به شیر حساسیت دارم و مشکلی ندارم', conversationId: 'c-conj-1' });
+    expect(a.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
+    const b = await svc.handleChat({ userId: 'u1', prompt: 'به شیر حساسیت دارم که مشکلی نداره', conversationId: 'c-conj-2' });
+    expect(b.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
+    // regression: « و » padding must not break the گردو retraction (گردو ends in و)
+    const c = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساس نیستم', conversationId: 'c-conj-3' });
+    expect(c.suggestedAction).toBeUndefined();
+  });
 });
