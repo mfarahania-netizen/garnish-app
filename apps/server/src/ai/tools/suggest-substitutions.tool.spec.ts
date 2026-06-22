@@ -100,3 +100,73 @@ describe('SuggestSubstitutionsTool (E47-L4)', () => {
     expect((await tool2.handler({ ingredient: 'کره' }, ctx) as any).resultStatus).toBe('unavailable');
   });
 });
+
+/** Rich-data mock: handles the source OR-query, the `id: { in }` batch resolve, and the category-peers query. */
+function makeRichPrisma(source: any, refs: any[] = [], peers: any[] = []) {
+  const byId = new Map(refs.map((r) => [r.id, r]));
+  return {
+    ingredient: {
+      findMany: jest.fn(async (args: any) => {
+        if (args?.where?.id?.in) return (args.where.id.in as string[]).map((id) => byId.get(id)).filter(Boolean);
+        const isPeerQuery = args?.where?.category !== undefined && args?.where?.NOT !== undefined;
+        if (isPeerQuery) return peers;
+        return source ? [source] : [];
+      }),
+    },
+  } as any;
+}
+
+describe('SuggestSubstitutionsTool — rich curated objects (rebuild 2026-06-23)', () => {
+  const SAFFRON = {
+    id: 'ing_saffron', nameFa: 'زعفران', nameEn: 'saffron', code: 'SAFFRON', category: 'ادویه',
+    allergens: { eu14: [], us9: [], other: [], mayContain: [] }, dietFlags: [],
+    substitutionOptions: [
+      { replaceWithIngredientId: 'ing_turmeric', reason: 'color_match', confidence: 'high', notesFa: 'برای رنگ، زردچوبه جایگزین خوبی است.', impact: { taste: 'medium', texture: 'low', nutrition: 'low', allergenRisk: 'low' }, bestUseCases: ['rice', 'stew'] },
+      { replaceWithIngredientId: 'ing_safflower', reason: 'availability', confidence: 'medium', notesFa: 'گلرنگ ارزان‌تر است.' },
+    ],
+  };
+  const TURMERIC = { id: 'ing_turmeric', nameFa: 'زردچوبه', nameEn: 'turmeric', code: 'TURMERIC', category: 'ادویه', allergens: { eu14: [] } };
+  const SAFFLOWER = { id: 'ing_safflower', nameFa: 'گلرنگ', nameEn: 'safflower', code: 'SAFFLOWER', category: 'ادویه', allergens: { eu14: [] } };
+
+  it('RESOLVES replaceWithIngredientId → real name + surfaces confidence/impact/why/bestUseCases (the bug fix), confidence-ranked', async () => {
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(SAFFRON, [TURMERIC, SAFFLOWER]));
+    const out: any = await tool.handler({ ingredient: 'زعفران' }, ctx);
+    expect(out.resultStatus).toBe('ok');
+    expect(out.substitutions.map((s: any) => s.name)).toEqual(['زردچوبه', 'گلرنگ']); // high before medium
+    const turmeric = out.substitutions.find((s: any) => s.name === 'زردچوبه');
+    expect(turmeric.ingredientId).toBe('ing_turmeric');
+    expect(turmeric.basis).toBe('explicit_option');
+    expect(turmeric.confidence).toBe('high');
+    expect(turmeric.reasonCode).toBe('color_match');
+    expect(turmeric.why).toContain('زردچوبه');
+    expect(turmeric.impact).toMatchObject({ taste: 'medium' });
+    expect(turmeric.bestUseCases).toEqual(['rice', 'stew']);
+  });
+
+  it('SAFETY: drops a CURATED substitute whose RESOLVED ingredient carries an avoided allergen (canonical, de-entangled)', async () => {
+    const ALMOND = { id: 'ing_almond', nameFa: 'پودر بادام', nameEn: 'almond flour', category: 'آرد', allergens: { eu14: ['tree_nuts'] } };
+    const WHEATF = { id: 'ing_wheat', nameFa: 'آرد گندم', nameEn: 'wheat flour', category: 'آرد', allergens: { eu14: ['gluten'] } };
+    const RICE_FLOUR = {
+      id: 'ing_rice_flour', nameFa: 'آرد برنج', nameEn: 'rice flour', code: 'RICE_FLOUR', category: 'آرد',
+      allergens: { eu14: [] },
+      substitutionOptions: [
+        { replaceWithIngredientId: 'ing_almond', confidence: 'high' },
+        { replaceWithIngredientId: 'ing_wheat', confidence: 'medium' },
+      ],
+    };
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(RICE_FLOUR, [ALMOND, WHEATF]));
+    const out: any = await tool.handler({ ingredient: 'آرد برنج', avoidAllergens: ['nut'] }, ctx);
+    expect(out.resultStatus).toBe('ok');
+    const names = out.substitutions.map((s: any) => s.name);
+    expect(names).not.toContain('پودر بادام'); // tree_nuts dropped for a 'nut' allergy (nut→tree_nuts canonical)
+    expect(names).toContain('آرد گندم');
+    expect(out.dropped.some((d: any) => d.name === 'پودر بادام')).toBe(true);
+  });
+
+  it('resolves the name from the referenced ingredient even when the option has NO name field', async () => {
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(SAFFRON, [TURMERIC, SAFFLOWER]));
+    const out: any = await tool.handler({ ingredient: 'زعفران' }, ctx);
+    // neither option had a `name`; both names came from resolving replaceWithIngredientId
+    expect(out.substitutions.every((s: any) => !!s.name && !!s.ingredientId)).toBe(true);
+  });
+});
