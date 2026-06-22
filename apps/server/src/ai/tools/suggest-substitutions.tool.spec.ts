@@ -191,6 +191,20 @@ describe('SuggestSubstitutionsTool — rich curated objects (rebuild 2026-06-23)
     expect(out.dropped.some((d: any) => d.name === 'بادام خام')).toBe(true);
   });
 
+  it('SAFETY (ambiguous name): a name shared by two DIFFERENT ingredients is NOT resolved → fail-closed under a filter', async () => {
+    // two distinct dictionary rows share nameFa «دانه» — one safe, one tree_nuts. Resolver must refuse to guess.
+    const SAFE_TWIN = { id: 'ing_safe', nameFa: 'دانه', nameEn: 'safe seed', category: 'دانه', allergens: { eu14: [] } };
+    const NUT_TWIN = { id: 'ing_nut', nameFa: 'دانه', nameEn: 'nut seed', category: 'دانه', allergens: { eu14: ['tree_nuts'] } };
+    const SRC = {
+      id: 'ing_z', nameFa: 'منبع', nameEn: 'src', code: 'Z', category: 'دانه', allergens: { eu14: [] },
+      substitutionOptions: [{ name: 'دانه', confidence: 'high' }], // name-only, ambiguous
+    };
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(SRC, [SAFE_TWIN, NUT_TWIN]));
+    const out: any = await tool.handler({ ingredient: 'منبع', avoidAllergens: ['nut'] }, ctx);
+    expect(out.substitutions.map((s: any) => s.name)).not.toContain('دانه'); // ambiguous → not resolved → fail-closed
+    expect(out.dropped.some((d: any) => d.name === 'دانه')).toBe(true);
+  });
+
   it('SAFETY (fail-closed): an UNRESOLVABLE name-only option is dropped under an active allergy filter, but offered without one', async () => {
     const SRC = {
       id: 'ing_rare', nameFa: 'چیز نادر', nameEn: 'rare thing', code: 'RARE', category: 'متفرقه', allergens: { eu14: [] },

@@ -140,10 +140,19 @@ export class SuggestSubstitutionsTool implements AiTool {
             where: { OR: [{ nameFa: { in: nameOnly } }, { nameEn: { in: nameOnly } }] },
             select,
           });
+          const ambiguous = new Set<string>();
           for (const r of byNameRefs) {
-            if (r.nameFa) refByName.set(norm(r.nameFa), r);
-            if (r.nameEn) refByName.set(norm(r.nameEn), r);
+            for (const n of [r.nameFa, r.nameEn]) {
+              if (!n) continue;
+              const k = norm(n);
+              const existing = refByName.get(k);
+              if (existing && existing.id !== r.id) ambiguous.add(k); // two DIFFERENT ingredients share a name
+              else refByName.set(k, r);
+            }
           }
+          // SAFETY: an ambiguous name has no single allergen profile → drop it from the resolver so the candidate
+          // becomes allergensKnown=false → fail-closed under an active allergy filter (never guess the safe twin).
+          for (const k of ambiguous) refByName.delete(k);
         }
         // same-category peers ONLY when there is no curated data (pre-enrichment long tail)
         const sourceLocked =
