@@ -145,7 +145,17 @@ export class UsersService {
       return [];
     };
 
-    const allergies = safeParseArray(dto.allergies).sort();
+    // WRITE-BOUNDARY ALLOWLIST (guardian): the PRIMARY allergy write must enforce the SAME invariant as addAllergies
+    // — only canonical EU-14 chip tokens reach the global Allergy table, so a crafted/buggy client (or a future
+    // free-text field) can neither pollute it nor store a non-canonical token the hard gate silently ignores. The
+    // legit onboarding/settings UI already sends only canonical chip ids, so this is byte-identical for real users.
+    const allergies = [
+      ...new Set(
+        safeParseArray(dto.allergies)
+          .map((n) => String(n ?? '').trim().toLowerCase())
+          .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
+      ),
+    ].sort();
     const cuisine = safeParseArray(dto.cuisine).sort();
     const healthGoals = safeParseArray(dto.healthGoals).sort();
 

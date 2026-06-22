@@ -40,15 +40,24 @@ export const PATTERN_OPTIONS = [
   { id: 'halal', label: 'حلال', Icon: IconChecks },
 ];
 
+// EU-14 declarable allergens (FIC 1169/2011 Annex II). 'molluscs' is folded into the shellfish token (the
+// extractor + hard gate map molluscs⊆shellfish), so 13 chips cover all 14. Ids MUST equal the server's canonical
+// tokens (CANONICAL_ALLERGEN_TOKENS, derived from allergen-extractor.ts) so the hard allergy gate filters them —
+// asserted by allergen-options.canon.test in apps/web. sulphites is correct-but-inert until ingredients are tagged.
 export const ALLERGEN_OPTIONS = [
   { id: 'gluten', label: 'گلوتن' },
   { id: 'dairy', label: 'لبنیات' },
   { id: 'egg', label: 'تخم‌مرغ' },
   { id: 'nut', label: 'آجیل' },
   { id: 'peanut', label: 'بادام‌زمینی' },
-  { id: 'shellfish', label: 'صدف' },
+  { id: 'shellfish', label: 'صدف و سخت‌پوستان' },
+  { id: 'fish', label: 'ماهی' },
   { id: 'soy', label: 'سویا' },
   { id: 'sesame', label: 'کنجد' },
+  { id: 'mustard', label: 'خردل' },
+  { id: 'celery', label: 'کرفس' },
+  { id: 'lupin', label: 'لوپین' },
+  { id: 'sulphites', label: 'سولفیت' },
 ];
 
 export const DISLIKE_OPTIONS = [

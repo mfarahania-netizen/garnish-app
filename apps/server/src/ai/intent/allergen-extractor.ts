@@ -63,14 +63,15 @@ export function extractStatedAllergens(text: unknown): ExtractedAllergen[] {
   for (const e of NORM_LEXICON) {
     for (const name of e.names) {
       if (!name) continue;
-      const latinWord = /^[a-z]+$/.test(name); // single ASCII word
+      const latinWord = /^[a-z]+$/.test(name); // single ASCII word → allow an optional plural -s
       let hit: boolean;
-      if (latinWord) {
-        hit = new RegExp(`\\b${name}s?\\b`).test(scan); // ASCII word boundary + optional plural -s
-      } else {
-        // Persian / multi-word: name must be flanked by a non-letter or a string edge (\b is ASCII-only and never
-        // sits between two Persian letters, so it cannot be used here). Names hold only letters/spaces — safe in a regex.
-        hit = new RegExp(`(^|[^\\p{L}])${name}([^\\p{L}]|$)`, 'u').test(scan);
+      {
+        // UNICODE LETTER-boundary for BOTH scripts: the name must be flanked by a non-letter or a string edge. A
+        // digit/punct/space/edge all qualify, so 'milk2'/'soy3' (voice-to-text/paste) ARE caught while 'coconut'/
+        // 'shellfish'/'eggplant'/'nutmeg'/تنور/شیرینی stay rejected. (ASCII \b would block at a digit — script
+        // asymmetry the guardian caught.) Names hold only letters/spaces — safe inside the regex.
+        const plural = latinWord ? 's?' : '';
+        hit = new RegExp(`(^|[^\\p{L}])${name}${plural}([^\\p{L}]|$)`, 'u').test(scan);
       }
       if (hit) {
         if (!seen.has(e.token)) {
@@ -80,6 +81,11 @@ export function extractStatedAllergens(text: unknown): ExtractedAllergen[] {
         if (!latinWord) scan = scan.split(name).join(' '); // consume the mention before later overlapping tokens
       }
     }
+  }
+  // کره (butter) is a real, common Persian dairy word but was removed from the flat lexicon because کره=Korea
+  // collides. Recover the recall with a bounded rule: match کره UNLESS it is part of کرهٔ جنوبی/شمالی (Korea).
+  if (!seen.has('dairy') && /(^|[^\p{L}])کره(?! ?(جنوبی|شمالی))([^\p{L}]|$)/u.test(t)) {
+    out.push({ token: 'dairy', label: 'لبنیات' });
   }
   return out;
 }

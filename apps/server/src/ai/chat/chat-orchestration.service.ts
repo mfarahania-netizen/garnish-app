@@ -150,6 +150,10 @@ export class ChatOrchestrationService {
         snapshot,
         surface: 'chat',
         conversationId,
+        // Conservative estimate (~4 chars/token + output headroom) so BOTH cost gates project this turn: re-arms
+        // the per-request cap for chat AND makes the multi-window budget check projective (consumed + est > cap),
+        // not merely retrospective. Tune the headroom when paid Gemini is enabled.
+        estimatedTokens: Math.ceil(orchestratorPrompt.length / 4) + 512,
       });
       status = result.status;
       model = result.model ?? STUB_MODEL;
@@ -232,15 +236,17 @@ export class ChatOrchestrationService {
     if (!t) return false;
     // questions
     if (/[؟?]/.test(t)) return false; // explicit question mark
-    if (/^(ایا|مگه|مگر|is |are |am |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false;
-    // retraction: negation ATTACHED to the allergy assertion (not any unrelated نیست/نداره elsewhere)
-    if (/حساس\S* ?(نیست|نبود)/.test(t)) return false; // «حساس نیستم» — no longer sensitive
-    if (/(حساسیت|الرژی|آلرژی) ?(ندار|نداشت)/.test(t)) return false; // «حساسیت/آلرژی ندارم»
+    if (/^(ایا|مگه|مگر|is |are |am i |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false; // «am i …?» (not the elliptical declaration «am allergic …»)
+    // retraction: negation attached to the allergy assertion — within a BOUNDED same-clause window ([^.!؟?]{0,20})
+    // so an interposed allergen name ("حساسیت به گردو ندارم") is still caught, but an unrelated negation in a
+    // SEPARATE clause ("به گردو حساسیت دارم ولی پسته مشکلی نداره") does NOT suppress a genuine declaration.
+    if (/حساس\S*[^.!؟?]{0,20}(نیست|نبود)/.test(t)) return false; // «حساس [به گردو] نیستم»
+    if (/(حساسیت|الرژی|آلرژی)[^.!؟?]{0,20}(ندار|نداشت)/.test(t)) return false; // «حساسیت [به گردو] ندارم»
     if (/(دیگه|دیگر)[^.!؟?]{0,20}(نمیخورم|نمیخورمش|نمیخوام)/.test(t)) return false; // «دیگه … نمیخورم»
-    // English retraction scoped to the allergy assertion
+    // English retraction scoped to the allergy assertion (allow an interposed allergen word + "any")
     if (/\b(not|never|no longer) (allergic|sensitive)\b/.test(t)) return false;
     if (/\bno (allergy|allergies)\b/.test(t)) return false;
-    if (/\b(dont|doesnt|didnt) have (an? )?allerg/.test(t)) return false;
+    if (/\b(dont|doesnt|didnt) have (an?|any)?\s?(\w+\s){0,2}allerg/.test(t)) return false; // «dont have [a/any] [nut] allergy»
     return true;
   }
 

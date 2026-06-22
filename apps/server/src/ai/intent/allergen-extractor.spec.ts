@@ -84,4 +84,20 @@ describe('extractStatedAllergens (conversational-allergy §3, deterministic)', (
     expect(tokens('به تن ماهی حساسم')).toEqual(['fish']); // تن standalone (+ ماهی) → fish
     expect(tokens('به جو حساسیت دارم')).toEqual(['gluten']); // جو standalone → gluten
   });
+
+  // guardian (re-verify pass): کره(butter) recall recovered without re-introducing the Korea false-positive.
+  it('کره (butter) → dairy, but کره جنوبی/شمالی (Korea) → []', () => {
+    expect(tokens('به کره حساسم')).toEqual(['dairy']);
+    expect(tokens('من به کره آلرژی دارم')).toEqual(['dairy']);
+    expect(tokens('سفر به کره جنوبی')).toEqual([]);
+    expect(tokens('کره شمالی')).toEqual([]);
+  });
+
+  // guardian (re-verify pass): Latin letter-boundary now catches digit-adjacent words (voice-to-text/paste).
+  it('digit-adjacent Latin allergen words are caught (script symmetry)', () => {
+    expect(tokens('allergic to milk2 and soy3')).toEqual(['dairy', 'soy']);
+    expect(tokens('i am allergic to fish2')).toEqual(['fish']);
+    // substring rejections still hold with the letter-only boundary
+    expect(tokens('coconut butternut nutmeg jellyfish eggplant')).toEqual([]);
+  });
 });

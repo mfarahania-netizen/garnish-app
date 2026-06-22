@@ -312,4 +312,22 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const out = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت دارم ولی پسته مشکلی نداره', conversationId: 'c-decl-neg' });
     expect(out.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'nut', label: 'آجیل/مغزها' }] });
   });
+
+  // guardian (re-verify pass): interposed-negation retractions must NOT offer (negation separated from the allergen).
+  it('§3 guard: interposed-negation retractions (fa/en) do NOT offer', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    for (const [i, prompt] of ['حساسیت به گردو ندارم', 'آلرژی به سویا ندارم', 'i dont have a nut allergy'].entries()) {
+      const out = await svc.handleChat({ userId: 'u1', prompt, conversationId: `c-retract-${i}` });
+      expect(out.suggestedAction).toBeUndefined();
+    }
+  });
+
+  // guardian (re-verify pass): the elliptical (subject-dropped) declaration "am allergic to X" must still offer.
+  it('§3 guard: "am allergic to shellfish" (elliptical declaration) STILL offers', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'am allergic to shellfish', conversationId: 'c-ellipt' });
+    expect(out.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'shellfish', label: 'صدف و سخت‌پوستان' }] });
+  });
 });

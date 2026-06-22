@@ -48,3 +48,29 @@ describe('UsersService.addAllergies (additive §3 write)', () => {
     expect(svc2.prisma.$transaction).not.toHaveBeenCalled();
   });
 });
+
+// guardian (re-verify pass): the PRIMARY allergy write (updatePreferences, used by onboarding + settings) must
+// enforce the SAME canonical allowlist as addAllergies — else a crafted client pollutes the global Allergy table
+// and writes a non-canonical token the hard gate silently ignores.
+describe('UsersService.updatePreferences allergy allowlist', () => {
+  it('writes ONLY canonical chip tokens; drops free-text/typo/injection tokens', async () => {
+    const allergyUpsert = jest.fn(async () => ({}));
+    const tx = {
+      userPreference: { upsert: jest.fn(async () => ({})) },
+      userAllergy: { deleteMany: jest.fn(async () => ({})), createMany: jest.fn(async () => ({})) },
+      allergy: { upsert: allergyUpsert, findMany: jest.fn(async () => []) },
+      userCuisine: { deleteMany: jest.fn(async () => ({})), createMany: jest.fn(async () => ({})) },
+      cuisine: { upsert: jest.fn(async () => ({})), findMany: jest.fn(async () => []) },
+      userHealthGoal: { deleteMany: jest.fn(async () => ({})), createMany: jest.fn(async () => ({})) },
+      healthGoal: { upsert: jest.fn(async () => ({})), findMany: jest.fn(async () => []) },
+      preferenceHistory: { createMany: jest.fn(async () => ({})) },
+    };
+    const prisma = { user: { findUnique: jest.fn(async () => null) }, $transaction: jest.fn(async (cb: any) => cb(tx)) } as any;
+    const svc = new UsersService(prisma, {} as any, {} as any, {} as any);
+
+    await svc.updatePreferences('u1', { allergies: ['nut', 'free_text', 'peanut', 'DROP TABLE allergies', 'penut'], diet: 'omnivore', skillLevel: 'beginner', budget: 'low' } as any);
+
+    const upserted = allergyUpsert.mock.calls.map((c: any) => c[0].where.name).sort();
+    expect(upserted).toEqual(['nut', 'peanut']); // 'free_text'/'DROP TABLE…'/typo 'penut' dropped
+  });
+});
