@@ -99,6 +99,11 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'wat is goed voor mijn hart',
       'wat is goed voor mijn nieren',
       'anti-cancer foods', // intentional conservative refuse (health-claim territory) — documented
+      // bare person-noun "diabetic(s)" + nutrition anchor (3rd-pass systematic recall fix)
+      'how much sugar for a diabetic',
+      'sugar for diabetics',
+      'calories for a diabetic',
+      'calorieen voor diabetici',
     ];
     it.each(medical)('classifies «%s» as medical_or_health_advice (REFUSE)', (text) => {
       const r = svc.classify(text);
@@ -130,6 +135,11 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'blood orange salad',
       'bloedworst recept',
       'sugar-free cake recipe',
+      // "is X safe with/for me" = food-safety, not medical (3rd-pass over-refusal fix)
+      'is it safe with nuts',
+      'is the chicken safe with the sauce',
+      'is this safe with kids around',
+      'diabetic-friendly dessert', // still NOT refused after adding the diabetic person-noun pattern
     ];
     it.each(foodNotMedical)('does NOT refuse «%s» as medical', (text) => {
       expect(svc.classify(text).intent).not.toBe('medical_or_health_advice');

@@ -148,8 +148,9 @@ const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
   /\bmakes? me (sick|ill)\b/,
   /\bi avoid\b/,
   /\bno (nuts|dairy|gluten|shellfish|eggs?|peanuts?|soy|sesame|fish)\b/,
-  // Dutch aversion declaration ("X is bad for me") — runs before scoring so it beats the 'slecht' feedback anchor
+  // aversion declaration ("X is bad for me") — runs before scoring so it beats the 'slecht'/'sugar' anchors
   /\b(?:slecht|niet goed) voor (?:mij|me)\b/,
+  /\b(?:is|are) bad for me\b/,
   // symptom-reaction declarations → route into the capture flow rather than a generic answer
   /\bgives? me (?:hives|a rash|a stomach)|\bbreak(?:s)? out in\b/,
   /\b(?:word|wordt) ziek van|\bziek van\b/,
@@ -169,10 +170,12 @@ const MEDICAL_PATTERNS: RegExp[] = [
   // English — conditions; diabetes/pregnan bounded (so diabetic-friendly / pregnancy cake PASS); organ indirect
   /\b(?:diabetes|blood sugar|high sugar|blood pressure|hypertension|cholesterol|triglyceride|gout|thyroid|anemi|celiac|coeliac|ibs|crohn|reflux|gerd|kidney (?:disease|stone|problem)|renal|liver disease|fatty liver|heart (?:disease|condition|problem)|cancer|breastfeed|eating disorder|prescrib|my meds|medication)/,
   /\bi(?: am|m)? (?:a )?(?:diabetic|anemic|celiac|coeliac|pregnant)\b/,
+  /\bdiabetics?\b(?![ -]friendly)|\bdiabetici\b|\bdiabeet\b/, // person-noun "diabetic(s)" but NOT "diabetic-friendly"
   /\b(?:during|in) pregnan|pregnan\w* (?:diet|safe|can i eat)|safe.{0,15}pregnan/,
   /\b(?:good|safe) for my (?:heart|kidneys?|liver|bowel|gut|digestion|immune|bones?|joints?|blood)/,
   /\bketo\b.{0,15}\b(safe|for me|ok)\b/,
-  /\bis .{0,25} safe (for me|during|with)\b/,
+  // temporal/condition framing only — "is X safe with/for me" is overwhelmingly FOOD-safety, not medical
+  /\bis .{0,25} safe (?:during|while|when)\b/,
 ];
 
 @Injectable()
