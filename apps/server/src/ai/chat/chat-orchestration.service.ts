@@ -237,12 +237,14 @@ export class ChatOrchestrationService {
     // questions
     if (/[؟?]/.test(t)) return false; // explicit question mark
     if (/^(ایا|مگه|مگر|is |are |am i |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false; // «am i …?» (not the elliptical declaration «am allergic …»)
-    // retraction: negation attached to the allergy assertion — within a BOUNDED same-clause window ([^.!؟?]{0,20})
-    // so an interposed allergen name ("حساسیت به گردو ندارم") is still caught, but an unrelated negation in a
-    // SEPARATE clause ("به گردو حساسیت دارم ولی پسته مشکلی نداره") does NOT suppress a genuine declaration.
-    if (/حساس\S*[^.!؟?]{0,20}(نیست|نبود)/.test(t)) return false; // «حساس [به گردو] نیستم»
-    if (/(حساسیت|الرژی|آلرژی)[^.!؟?]{0,20}(ندار|نداشت)/.test(t)) return false; // «حساسیت [به گردو] ندارم»
-    if (/(دیگه|دیگر)[^.!؟?]{0,20}(نمیخورم|نمیخورمش|نمیخوام)/.test(t)) return false; // «دیگه … نمیخورم»
+    // retraction: negation attached to the allergy assertion within the SAME clause. The window stops at a clause
+    // separator (. ! ؟ ? ، ؛ newline) AND is forbidden from crossing a contrastive connector (ولی/اما/ولیکن), so
+    // an interposed allergen name ("حساسیت به گردو ندارم") is still caught as a retraction, but a genuine
+    // declaration whose SECOND clause is negated ("به شیر حساسیت دارم ولی پسته نداره") is NOT suppressed.
+    const WIN = '(?:(?!ولی|اما|ولیکن)[^.!؟?،؛\n]){0,20}';
+    if (new RegExp('حساس\\S*' + WIN + '(نیست|نبود)').test(t)) return false; // «حساس [به گردو] نیستم»
+    if (new RegExp('(حساسیت|الرژی|آلرژی)' + WIN + '(ندار|نداشت)').test(t)) return false; // «حساسیت [به گردو] ندارم»
+    if (new RegExp('(دیگه|دیگر)' + WIN + '(نمیخورم|نمیخورمش|نمیخوام)').test(t)) return false; // «دیگه … نمیخورم»
     // English retraction scoped to the allergy assertion (allow an interposed allergen word + "any")
     if (/\b(not|never|no longer) (allergic|sensitive)\b/.test(t)) return false;
     if (/\bno (allergy|allergies)\b/.test(t)) return false;

@@ -330,4 +330,19 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const out = await svc.handleChat({ userId: 'u1', prompt: 'am allergic to shellfish', conversationId: 'c-ellipt' });
     expect(out.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'shellfish', label: 'صدف و سخت‌پوستان' }] });
   });
+
+  // guardian (re-verify-2): a genuine declaration whose SECOND clause is negated (across «ولی»/«،») must STILL
+  // offer — the negation window must stop at the clause separator/connector, not swallow the next clause.
+  it('§3 guard: declaration + negated second clause (across ولی / comma) STILL offers', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    // second clause carries the negation (ولی … ندارم) but NO allergen → the window must stop at «ولی»/«،».
+    const a = await svc.handleChat({ userId: 'u1', prompt: 'به شیر حساسیت دارم ولی مشکلی ندارم', conversationId: 'c-2clause-1' });
+    expect(a.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
+    const b = await svc.handleChat({ userId: 'u1', prompt: 'به شیر حساسیت دارم، مشکلی ندارم', conversationId: 'c-2clause-2' });
+    expect(b.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
+    // and the real single-clause retraction is STILL suppressed
+    const c = await svc.handleChat({ userId: 'u1', prompt: 'حساسیت به گردو ندارم', conversationId: 'c-2clause-3' });
+    expect(c.suggestedAction).toBeUndefined();
+  });
 });
