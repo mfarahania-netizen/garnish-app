@@ -116,7 +116,7 @@ const RAW_INTENTS: IntentSpec[] = [
   { intent: 'out_of_domain', safetyRelevant: false, baseTier: 'REFUSE', dataScope: 'none',
     anchors: ['آب و هوا', 'هواشناسی', 'فوتبال', 'سیاست', 'بیت کوین', 'weer', 'voetbal', 'politiek', 'weather', 'football', 'soccer', 'politics', 'bitcoin', 'stock', 'translate this'] },
   { intent: 'feedback', safetyRelevant: false, baseTier: 'NONE', dataScope: 'user',
-    anchors: ['جواب خوب', 'خوب بود', 'عالی بود', 'کمک کرد', 'بد بود', 'اشتباه بود', 'goed antwoord', 'dat hielp', 'slecht', 'good answer', 'that helped', 'not helpful', 'wrong answer', 'thumbs up', 'thumbs down'] },
+    anchors: ['جواب خوب', 'خوب بود', 'عالی بود', 'کمک کرد', 'بد بود', 'اشتباه بود', 'goed antwoord', 'slecht antwoord', 'dat hielp', 'good answer', 'that helped', 'not helpful', 'wrong answer', 'thumbs up', 'thumbs down'] },
 ];
 
 // pre-normalize anchors so Persian digits/diacritics/ZWNJ in the lexicon match the normalized text
@@ -148,15 +148,29 @@ const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
   /\bmakes? me (sick|ill)\b/,
   /\bi avoid\b/,
   /\bno (nuts|dairy|gluten|shellfish|eggs?|peanuts?|soy|sesame|fish)\b/,
+  // Dutch aversion declaration ("X is bad for me") — runs before scoring so it beats the 'slecht' feedback anchor
+  /\b(?:slecht|niet goed) voor (?:mij|me)\b/,
+  // symptom-reaction declarations → route into the capture flow rather than a generic answer
+  /\bgives? me (?:hives|a rash|a stomach)|\bbreak(?:s)? out in\b/,
+  /\b(?:word|wordt) ziek van|\bziek van\b/,
+  /حالم.{0,4}بد ?میشه|معده.{0,8}خراب/,
 ];
 
 // Conditions/treatment context ONLY — NOT bare food/nutrition homonyms (قند/چربی/kidney/liver/قرص), so legit
 // cooking queries (sugar content, kidney beans, a liver dish, قرص نان/مرغ) are NOT falsely refused.
 const MEDICAL_PATTERNS: RegExp[] = [
-  /دیابت|قند خون|قندم|قند دارم|چربی خون|تری ?گلیسیرید|کلسترول|فشار خون|فشارم|فشار بالا|نقرس|تیروی?ید|کم ?خونی|رفلاکس|کبد چرب|سنگ کلیه|بیماری کلی|نارسایی کلی|سرطان|باردار|حامله|شیرده|رژیم درمانی|رژیم لاغری|اختلال خوردن|بیماری قلبی|مشکل قلبی|ناراحتی قلبی|دارو/,
-  /\b(?:suikerziekte|diabet|bloedsuiker|bloeddruk|cholesterol|jicht|schildklier|bloedarmoede|coeliakie|reflux|nier(?:ziekte|stenen|probleem)|leverziekte|hartkwaal|hart(?:probleem|aandoening|ziekte)|kanker|zwanger|borstvoeding|eetstoornis|medicijn)/,
-  /\b(?:diabet|blood sugar|high sugar|blood pressure|hypertension|cholesterol|triglyceride|gout|thyroid|anemi|celiac|coeliac|ibs|crohn|reflux|gerd|kidney (?:disease|stone|problem)|renal|liver disease|fatty liver|heart (?:disease|condition|problem)|cancer|pregnan|breastfeed|eating disorder|prescrib|my meds|medication)/,
-  /\bi(?: am|m)? (a )?(diabetic|anemic|celiac|coeliac)\b/,
+  // Persian — conditions; باردار/بارداری bounded so a pregnancy-CELEBRATION cake is not refused
+  /دیابت|قند خون|قندم|قند دارم|چربی خون|تری ?گلیسیرید|کلسترول|فشار خون|فشارم|فشار بالا|نقرس|تیروی?ید|کم ?خونی|رفلاکس|کبد چرب|سنگ کلیه|بیماری کلی|نارسایی کلی|سرطان|باردارم|حامله|دوران بارداری|بارداری.{0,8}(بخورم|رژیم|مجاز|چی)|شیرده|رژیم درمانی|رژیم لاغری|اختلال خوردن|بیماری قلبی|مشکل قلبی|ناراحتی قلبی|دارو/,
+  /برای (قلبم|کلیه ?ام|کبدم|گوارشم|معده ?ام|استخوان).{0,10}(خوبه|مفید|بهتر|بد)/,
+  // Dutch — conditions; diabetes/zwanger bounded; organ "goed voor mijn X"
+  /\b(?:suikerziekte|diabetes|bloedsuiker|bloeddruk|cholesterol|jicht|schildklier|bloedarmoede|coeliakie|reflux|nier(?:ziekte|stenen|probleem)|leverziekte|hartkwaal|hart(?:probleem|aandoening|ziekte)|kanker|borstvoeding|eetstoornis|medicijn)/,
+  /\bik ben zwanger|tijdens.{0,12}zwangerschap|zwanger.{0,10}(eten|mag ik|veilig|dieet)/,
+  /\bgoed (?:voor|tegen) (?:mijn )?(?:hart|nier|lever|spijsvertering|darmen|botten|gewricht|bloed)/,
+  // English — conditions; diabetes/pregnan bounded (so diabetic-friendly / pregnancy cake PASS); organ indirect
+  /\b(?:diabetes|blood sugar|high sugar|blood pressure|hypertension|cholesterol|triglyceride|gout|thyroid|anemi|celiac|coeliac|ibs|crohn|reflux|gerd|kidney (?:disease|stone|problem)|renal|liver disease|fatty liver|heart (?:disease|condition|problem)|cancer|breastfeed|eating disorder|prescrib|my meds|medication)/,
+  /\bi(?: am|m)? (?:a )?(?:diabetic|anemic|celiac|coeliac|pregnant)\b/,
+  /\b(?:during|in) pregnan|pregnan\w* (?:diet|safe|can i eat)|safe.{0,15}pregnan/,
+  /\b(?:good|safe) for my (?:heart|kidneys?|liver|bowel|gut|digestion|immune|bones?|joints?|blood)/,
   /\bketo\b.{0,15}\b(safe|for me|ok)\b/,
   /\bis .{0,25} safe (for me|during|with)\b/,
 ];

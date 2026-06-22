@@ -48,6 +48,12 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'i avoid peanuts',
       'no dairy for me',
       'i have a peanut alergy',
+      // Dutch aversion + symptom-reaction declarations (guardian w7cwv8ujr)
+      'pinda is slecht voor mij',
+      'melk is slecht voor me',
+      'peanuts give me hives',
+      'ik word ziek van noten',
+      'گردو میخورم حالم بد میشه',
     ];
     it.each(declarations)('classifies «%s» as stated_constraint (SPECIAL flow)', (text) => {
       const r = svc.classify(text);
@@ -82,10 +88,17 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'تیروئید دارم',
       'رفلاکس دارم',
       'i am diabetic',
+      'i am pregnant what can i eat',
       'i have celiac disease',
       'i have heart disease',
       'is keto safe for me',
       'ik heb suikerziekte',
+      // indirect-medical (organ "good for my X", no disease word) — guardian w7cwv8ujr
+      'what is good for my heart',
+      'what is good for my kidneys',
+      'wat is goed voor mijn hart',
+      'wat is goed voor mijn nieren',
+      'anti-cancer foods', // intentional conservative refuse (health-claim territory) — documented
     ];
     it.each(medical)('classifies «%s» as medical_or_health_advice (REFUSE)', (text) => {
       const r = svc.classify(text);
@@ -108,6 +121,15 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'recept met lever',           // Dutch liver dish
       'کالریِ این غذا چنده',       // bare قند/nutrition stays nutrition
       'قند این شیرینی چقدره',
+      // guardian w7cwv8ujr — adjectival / celebration uses must NOT refuse (CORE to the EU launch)
+      'diabetic-friendly dessert',
+      'diabetic friendly recipes',
+      'pregnancy announcement cake',
+      'zwangerschapsaankondiging taart',
+      'heart-shaped cookies',
+      'blood orange salad',
+      'bloedworst recept',
+      'sugar-free cake recipe',
     ];
     it.each(foodNotMedical)('does NOT refuse «%s» as medical', (text) => {
       expect(svc.classify(text).intent).not.toBe('medical_or_health_advice');
@@ -149,6 +171,7 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       ['what is the weather today', 'out_of_domain'],
       ['این جواب خیلی خوب بود', 'feedback'],
       ['that helped a lot', 'feedback'],
+      ['dat is een slecht antwoord', 'feedback'], // bounded 'slecht antwoord' still feedback (not aversion)
     ];
     it.each(cases)('«%s» → %s', (text, expected) => {
       expect(intentOf(text)).toBe(expected);
