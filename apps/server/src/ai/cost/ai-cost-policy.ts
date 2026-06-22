@@ -16,6 +16,34 @@ export const DEFAULT_CURRENCY = 'USD';
 export const PER_REQUEST_MAX_TOKENS = 8000;
 export const PER_USER_DAILY_MAX_TOKENS = 200000;
 
+/**
+ * Per-user MULTI-WINDOW token budgets + a per-user cooldown (founder requirement: 5h/daily/weekly/monthly caps +
+ * a 15s gap between live calls). These bite ONLY on a LIVE provider call (the orchestrator skips them entirely on
+ * the default stub path), so they are INERT until live Gemini is gated on — build-then-activate. The numbers below
+ * are conservative PLACEHOLDERS to TUNE when paid credits are purchased; each is env-overridable (no redeploy).
+ * Rolling windows (now − duration), not calendar buckets, so a midnight burst cannot game the cap.
+ */
+export interface BudgetWindow {
+  /** stable id used in the block reason code, e.g. '5h' → reason 'budget_exceeded_5h'. */
+  id: string;
+  durationMs: number;
+  /** null disables this window. */
+  maxTokens: number | null;
+}
+
+const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
+
+export const DEFAULT_BUDGET_WINDOWS: BudgetWindow[] = [
+  { id: '5h', durationMs: 5 * HOUR_MS, maxTokens: 60_000 },
+  { id: 'daily', durationMs: DAY_MS, maxTokens: PER_USER_DAILY_MAX_TOKENS },
+  { id: 'weekly', durationMs: 7 * DAY_MS, maxTokens: 700_000 },
+  { id: 'monthly', durationMs: 30 * DAY_MS, maxTokens: 2_000_000 },
+];
+
+/** Minimum seconds between a user's LIVE provider calls (founder: "15s cooldown"). 0 disables. */
+export const DEFAULT_COOLDOWN_MS = 15_000;
+
 export type UsageSource = 'provider' | 'estimated' | 'unavailable';
 
 export interface ModelRate {
@@ -31,6 +59,10 @@ export const DAILY_TOKEN_ALERT_THRESHOLD = Math.floor(PER_USER_DAILY_MAX_TOKENS 
 export interface AiCostPolicy {
   perRequestMaxTokens: number;
   perUserDailyMaxTokens: number;
+  /** Per-user rolling-window token caps (INERT until a live provider call). */
+  perUserBudgetWindows: BudgetWindow[];
+  /** Minimum ms between a user's live provider calls (0 disables). */
+  perUserCooldownMs: number;
   currency: string;
   /** Per-model USD rates. EMPTY by default → estimatedCostUsd stays null (no faked precision). */
   modelRatesUsdPer1k: Record<string, ModelRate>;
@@ -46,6 +78,8 @@ export interface AiCostPolicy {
 export const DEFAULT_AI_COST_POLICY: AiCostPolicy = {
   perRequestMaxTokens: PER_REQUEST_MAX_TOKENS,
   perUserDailyMaxTokens: PER_USER_DAILY_MAX_TOKENS,
+  perUserBudgetWindows: DEFAULT_BUDGET_WINDOWS,
+  perUserCooldownMs: DEFAULT_COOLDOWN_MS,
   currency: DEFAULT_CURRENCY,
   modelRatesUsdPer1k: {}, // no rates configured → no cost computed (placeholders only)
   liveModelAllowed: false,
@@ -54,9 +88,34 @@ export const DEFAULT_AI_COST_POLICY: AiCostPolicy = {
   schemaVersion: AI_COST_SCHEMA_VERSION,
 };
 
-/** Resolve the active policy; `liveModelAllowed` reflects the runtime env gate (default false). */
+/** Parse a non-negative integer env var; blank/invalid → fallback. Used for budget tuning without redeploy. */
+function intFromEnv(env: NodeJS.ProcessEnv, key: string, fallback: number): number {
+  const raw = env[key];
+  if (raw == null || raw === '') return fallback;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+}
+
+/**
+ * Resolve the active policy; `liveModelAllowed` reflects the runtime env gate (default false). The multi-window
+ * budgets + cooldown are env-overridable (AI_BUDGET_5H_MAX_TOKENS / _DAILY_ / _WEEKLY_ / _MONTHLY_, and
+ * AI_BUDGET_COOLDOWN_MS) so the founder can tune them at credit-purchase WITHOUT a redeploy. An override of 0
+ * disables that window/cooldown.
+ */
 export function resolveAiCostPolicy(env: NodeJS.ProcessEnv = process.env): AiCostPolicy {
-  return { ...DEFAULT_AI_COST_POLICY, liveModelAllowed: isLiveModelConfigured(env) };
+  const overrideKey: Record<string, string> = { '5h': 'AI_BUDGET_5H_MAX_TOKENS', daily: 'AI_BUDGET_DAILY_MAX_TOKENS', weekly: 'AI_BUDGET_WEEKLY_MAX_TOKENS', monthly: 'AI_BUDGET_MONTHLY_MAX_TOKENS' };
+  const perUserBudgetWindows = DEFAULT_BUDGET_WINDOWS.map((w) => {
+    const key = overrideKey[w.id];
+    if (!key || env[key] == null || env[key] === '') return w;
+    const v = intFromEnv(env, key, w.maxTokens ?? 0);
+    return { ...w, maxTokens: v === 0 ? null : v }; // explicit 0 disables the window
+  });
+  return {
+    ...DEFAULT_AI_COST_POLICY,
+    perUserBudgetWindows,
+    perUserCooldownMs: intFromEnv(env, 'AI_BUDGET_COOLDOWN_MS', DEFAULT_COOLDOWN_MS),
+    liveModelAllowed: isLiveModelConfigured(env),
+  };
 }
 
 /**

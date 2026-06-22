@@ -92,7 +92,10 @@ describe('Orchestrator → spend-alert integration (E47-A10C)', () => {
     const aggregate = jest.fn(async () => ({ _sum: { totalTokens: opts.dailySum } }));
     const findFirst = opts.alertFindFirst ?? jest.fn(async () => null);
     const create = opts.alertCreate ?? jest.fn(async () => ({ id: 'alert_1' }));
-    const prisma = { aICallLog: { create: aiCreate, aggregate }, aiSpendAlert: { findFirst, create }, userPreference: { findUnique: jest.fn(async () => null) } } as any;
+    // findMany feeds the MULTI-WINDOW budget gate (separate from the alert's aggregate). Empty history → the
+    // budget always ALLOWS here, so these tests isolate the ALERT path (the budget gate is covered elsewhere).
+    const findMany = jest.fn(async () => []);
+    const prisma = { aICallLog: { create: aiCreate, aggregate, findMany }, aiSpendAlert: { findFirst, create }, userPreference: { findUnique: jest.fn(async () => null) } } as any;
     const budget = new PersistedDailyBudgetService(prisma);
     const alerts = new SpendAlertService(prisma);
     const p = provider();

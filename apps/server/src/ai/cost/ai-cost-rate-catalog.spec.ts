@@ -1,5 +1,6 @@
 import {
   PRODUCTION_RATE_CATALOG,
+  REFERENCE_RATES_2026,
   getActiveRate,
   estimateCostUsdFromCatalog,
   AiModelRate,
@@ -25,6 +26,23 @@ const TEST_RATE: AiModelRate = {
 describe('AI cost rate catalog (E47-A10C)', () => {
   it('production catalog ships EMPTY (no invented prices)', () => {
     expect(PRODUCTION_RATE_CATALOG).toEqual([]);
+  });
+
+  it('REFERENCE rates are staged but NOT active — production estimate stays null until promotion', () => {
+    expect(REFERENCE_RATES_2026.length).toBeGreaterThan(0);
+    // every reference entry is source-attributed, dated, and inactive (must be promoted explicitly).
+    for (const r of REFERENCE_RATES_2026) {
+      expect(r.provider).toBe('gemini');
+      expect(r.isActive).toBe(false);
+      expect(r.sourceRef).toMatch(/^https?:\/\//);
+      expect(r.verifiedAt).toBeTruthy();
+      expect(r.inputRateUsdPer1M).toBeGreaterThan(0);
+      expect(r.outputRateUsdPer1M).toBeGreaterThan(0);
+    }
+    // a reference rate is NOT consulted by the production lookup (catalog is empty) → honest null.
+    const ref = REFERENCE_RATES_2026[0];
+    expect(getActiveRate(ref.provider, ref.model)).toBeNull();
+    expect(estimateCostUsdFromCatalog(ref.provider, ref.model, 1000, 1000).cost).toBeNull();
   });
 
   it('unknown model/rate → estimatedCostUsd null (production catalog)', () => {

@@ -62,7 +62,7 @@ class CountingFixtureProvider implements ModelProvider {
 
 function mockPrisma(overrides: any = {}) {
   return {
-    aICallLog: { create: overrides.aiCreate ?? (async () => ({ id: 'log' })), aggregate: overrides.aggregate ?? (async () => ({ _sum: { totalTokens: 0 } })) },
+    aICallLog: { create: overrides.aiCreate ?? (async () => ({ id: 'log' })), aggregate: overrides.aggregate ?? (async () => ({ _sum: { totalTokens: 0 } })), findMany: overrides.findMany ?? (async () => []) },
     aiSpendAlert: { findFirst: overrides.alertFind ?? (async () => null), create: overrides.alertCreate ?? (async () => ({ id: 'alert' })) },
     userPreference: { findUnique: async () => null },
   } as any;
@@ -149,16 +149,17 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
     const r = await buildOrchestrator(p, mockPrisma()).run({ userId: 'u', prompt: 'Diagnose my disease and prescribe medication.', snapshot: SNAP, surface: 'eval', estimatedTokens: 9000 });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };
   });
-  await run('guard_order', 'persisted daily budget blocks BEFORE provider (live-configured)', async () => withLiveEnv(async () => {
+  await run('guard_order', 'persisted multi-window budget blocks BEFORE provider (live-configured)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    const prisma = mockPrisma({ aggregate: async () => ({ _sum: { totalTokens: 10_000_000 } }) });
+    // 10M tokens 10h ago → over the daily window; the multi-window gate must block before any provider call.
+    const prisma = mockPrisma({ findMany: async () => [{ createdAt: new Date(Date.now() - 10 * 3_600_000), totalTokens: 10_000_000 }] });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };
   }));
   await run('guard_order', 'budget DB lookup error → FAILS CLOSED (no provider call)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    const prisma = mockPrisma({ aggregate: async () => { throw new Error('db down'); } });
+    const prisma = mockPrisma({ findMany: async () => { throw new Error('db down'); } });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };
@@ -224,7 +225,7 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
   });
   await run('failure_injection', 'persisted-budget throws → FAILS CLOSED (no provider call)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    const prisma = mockPrisma({ aggregate: async () => { throw new Error('budget db down'); } });
+    const prisma = mockPrisma({ findMany: async () => { throw new Error('budget db down'); } });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };

@@ -83,20 +83,21 @@ export class AiOrchestratorService {
       return this.finish({ request, status: 'blocked_safety', guardHits, toolCalls, reasons: safety.reasons, start });
     }
 
-    // 4.5. persisted per-user DAILY budget (E47-A10B) — ONLY before a LIVE provider call.
-    //      Skipped entirely for the default stub path (no live config) so offline behavior is unchanged.
-    //      Fails CLOSED on a lookup error: if we cannot verify the budget we do NOT make a paid call.
+    // 4.5. persisted per-user MULTI-WINDOW budget + cooldown (E47-A10B; founder: 5h/daily/weekly/monthly + 15s)
+    //      — ONLY before a LIVE provider call. Skipped entirely for the default stub path (no live config) so
+    //      offline behavior is unchanged. Fails CLOSED on a lookup error: if we cannot verify the budget we do
+    //      NOT make a paid call.
     if (this.persistedBudget && isLiveModelConfigured()) {
       let allowed = true;
       let reason = 'daily_budget_exceeded';
       try {
-        const budget = await this.persistedBudget.check(request.userId, request.estimatedTokens);
+        const budget = await this.persistedBudget.checkAllWindows(request.userId, request.estimatedTokens);
         allowed = budget.allowed;
         reason = budget.reason ?? reason;
       } catch (err) {
         allowed = false; // fail-closed (cost safety); no internal values leaked to the user
         reason = 'budget_check_unavailable';
-        this.logger.warn(`daily budget check failed; failing CLOSED (no provider call): ${err instanceof Error ? err.name : 'error'}`);
+        this.logger.warn(`budget check failed; failing CLOSED (no provider call): ${err instanceof Error ? err.name : 'error'}`);
       }
       if (!allowed) {
         guardHits.push('daily_budget');

@@ -40,6 +40,50 @@ export interface AiModelRate {
  */
 export const PRODUCTION_RATE_CATALOG: readonly AiModelRate[] = [];
 
+/**
+ * REFERENCE rates — staged, NOT yet production truth. These are the best-available paid-tier Gemini prices found
+ * via web search on 2026-06-22 (ai.google.dev/gemini-api/docs/pricing). They are deliberately NOT in
+ * PRODUCTION_RATE_CATALOG because they were NOT directly verified — the pricing page blocks automated fetch (HTTP
+ * 403), and the EXACT model id the live adapter reports (ModelProvider.name + model) is not yet pinned. This keeps
+ * faith with the catalog's invariant (no unverified price as production truth) AND the project's data-honesty
+ * ethos (USDA-source-locked nutrition, never invented numbers).
+ *
+ * TO PROMOTE at live-Gemini wire-up (with VPN, per the founder's constraint):
+ *   1. Confirm the live adapter's exact provider/model id and replace `model` below to match it verbatim.
+ *   2. Open the live pricing page, confirm input/output per-1M numbers, update `verifiedAt`, then spread the
+ *      confirmed entry into PRODUCTION_RATE_CATALOG. Until then runtime estimatedCostUsd stays null (honest).
+ */
+export const REFERENCE_RATES_2026: readonly AiModelRate[] = [
+  {
+    provider: 'gemini',
+    model: 'gemini-flash-lite', // PLACEHOLDER id — pin to the adapter's exact model string at promotion
+    inputRateUsdPer1M: 0.25,
+    outputRateUsdPer1M: 1.5,
+    currency: 'USD',
+    sourceName: 'Google AI — Gemini API pricing (Flash-Lite tier; web search 2026-06-22, page blocks fetch — RE-VERIFY)',
+    sourceRef: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-06-22',
+    effectiveFrom: '2026-06-22',
+    effectiveTo: null,
+    isActive: false, // reference only — flip to true (and move into PRODUCTION_RATE_CATALOG) at promotion
+    schemaVersion: RATE_CATALOG_SCHEMA_VERSION,
+  },
+  {
+    provider: 'gemini',
+    model: 'gemini-flash', // PLACEHOLDER id — pin to the adapter's exact model string at promotion
+    inputRateUsdPer1M: 1.5,
+    outputRateUsdPer1M: 9.0,
+    currency: 'USD',
+    sourceName: 'Google AI — Gemini API pricing (Flash tier; web search 2026-06-22, page blocks fetch — RE-VERIFY)',
+    sourceRef: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-06-22',
+    effectiveFrom: '2026-06-22',
+    effectiveTo: null,
+    isActive: false,
+    schemaVersion: RATE_CATALOG_SCHEMA_VERSION,
+  },
+];
+
 /** Most-recent active rate matching provider+model within the effective window at `at`, else null. */
 export function getActiveRate(
   provider: string | null | undefined,
