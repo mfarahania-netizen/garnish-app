@@ -147,4 +147,9 @@ export enum EventType {
   COOK_COMPLETE = 'cook_complete',
   SEARCH_UNMET = 'search_unmet',
   AI_FEEDBACK = 'ai_feedback',
+
+  // ===== P0 signal capture (2026-06-23) — personalization actions = the strongest taste signals (were sessionStorage-only) =====
+  INGREDIENT_SWAPPED = 'ingredient_swapped',
+  PORTION_SCALED = 'portion_scaled',
+  INGREDIENT_REMOVED = 'ingredient_removed',
 }

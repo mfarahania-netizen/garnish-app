@@ -36,6 +36,8 @@ export const EVENT_TYPES = [
   // cook_complete (cook/[id]/useCook), search_unmet (discover/useDiscovery), ai_feedback (assistant/useAssistant),
   // recommendation_dismiss (plan/page + useDismissRecommendation; already in the server EventType enum).
   'cook_complete', 'search_unmet', 'ai_feedback', 'recommendation_dismiss',
+  // P0 signal capture (2026-06-23) — personalization actions (were sessionStorage-only; now emitted as taste signals)
+  'ingredient_swapped', 'portion_scaled', 'ingredient_removed',
 ] as const;
 
 export type EventType = typeof EVENT_TYPES[number];

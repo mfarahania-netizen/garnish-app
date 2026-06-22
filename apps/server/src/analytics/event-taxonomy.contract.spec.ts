@@ -94,6 +94,9 @@ describe('E43-A2 event taxonomy contract', () => {
       ['recipe_view', 'recipe'],
       ['favorite_add', 'recipe'],
       ['nutrition_read', 'recipe'],
+      ['ingredient_swapped', 'recipe'], // P0 signal capture
+      ['ingredient_removed', 'recipe'],
+      ['portion_scaled', 'recipe'],
       ['cook_complete', 'cook'],
       ['start_cooking_click', 'cook'],
       ['ai_message_send', 'ai'],

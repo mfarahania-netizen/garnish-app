@@ -1,10 +1,15 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
+
+// mock the analytics hook so we can assert the P0 signal-capture emits (and keep the unit tests offline)
+const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }));
+vi.mock('./useAnalytics', () => ({ useAnalytics: () => ({ trackEvent }) }));
+
 import { usePersonalization } from './usePersonalization';
 
 // The shared session-state layer both the recipe page and Cook Mode read from.
 describe('usePersonalization', () => {
-  beforeEach(() => sessionStorage.clear());
+  beforeEach(() => { sessionStorage.clear(); trackEvent.mockClear(); });
 
   it('starts empty and computes a neutral scale factor', () => {
     const { result } = renderHook(() => usePersonalization('r1', 4));
@@ -61,5 +66,29 @@ describe('usePersonalization', () => {
     act(() => result.current.reset());
     expect(result.current.isPersonalized).toBe(false);
     expect(sessionStorage.getItem('garnish:personalization:r1')).toBeNull();
+  });
+
+  // P0 signal capture — the strongest taste signals must now reach the server (were sessionStorage-only)
+  describe('emits taste signals', () => {
+    it('applySwap → ingredient_swapped with from/to/meta + recipeId', () => {
+      const { result } = renderHook(() => usePersonalization('r1', 4));
+      act(() => result.current.applySwap('کره', 'روغن زیتون', { reason: 'taste' }));
+      expect(trackEvent).toHaveBeenCalledWith('ingredient_swapped', { recipeId: 'r1', from: 'کره', to: 'روغن زیتون', reason: 'taste' });
+    });
+
+    it('setServedFor → portion_scaled with servedFor + baseServings (only on a real change)', () => {
+      const { result } = renderHook(() => usePersonalization('r1', 4));
+      act(() => result.current.setServedFor(6));
+      expect(trackEvent).toHaveBeenCalledWith('portion_scaled', { recipeId: 'r1', servedFor: 6, baseServings: 4 });
+    });
+
+    it('toggleRemoved emits ingredient_removed on REMOVE only, not on restore', () => {
+      const { result } = renderHook(() => usePersonalization('r1', 4));
+      act(() => result.current.toggleRemoved('قارچ')); // remove
+      expect(trackEvent).toHaveBeenCalledWith('ingredient_removed', { recipeId: 'r1', ingredient: 'قارچ' });
+      trackEvent.mockClear();
+      act(() => result.current.toggleRemoved('قارچ')); // restore → no event
+      expect(trackEvent).not.toHaveBeenCalled();
+    });
   });
 });

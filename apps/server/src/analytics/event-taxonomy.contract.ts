@@ -240,12 +240,15 @@ export function classifyEventFamily(eventType: string): EventFamily | 'unknown' 
   if (t.startsWith('mealplan') || t.startsWith('meal_plan') || t.startsWith('family_plan')) return 'planner';
   // cook
   if (t === 'cook_complete' || t.startsWith('cook_') || t === 'start_cooking_click') return 'cook';
-  // recipe (view/share/favorite/detail-section engagement + recipe authoring)
+  // recipe (view/share/favorite/detail-section engagement + recipe authoring + personalization actions)
   if (
     t.startsWith('recipe_') ||
     t.startsWith('favorite') ||
     t.startsWith('add_recipe') ||
     t.startsWith('my_recipe') ||
+    t === 'ingredient_swapped' ||
+    t === 'ingredient_removed' ||
+    t === 'portion_scaled' ||
     /^(nutrition|timing|features|ingredients|tools|steps|tips|faq|excerpt)_/.test(t)
   ) {
     return 'recipe';

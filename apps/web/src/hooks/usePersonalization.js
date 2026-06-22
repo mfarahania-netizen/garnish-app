@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useAnalytics } from './useAnalytics';
 
 /**
  * usePersonalization — the single shared "session personalization" layer for one recipe.
@@ -35,9 +36,16 @@ const isEmpty = (s) => !s.servedFor && !s.removed.length && !Object.keys(s.swaps
 
 export function usePersonalization(recipeId, baseServings = 4) {
   const [state, setState] = useState(() => read(recipeId));
+  const { trackEvent } = useAnalytics();
 
   // re-hydrate when navigating to a different recipe
   useEffect(() => { setState(read(recipeId)); }, [recipeId]);
+
+  // P0 signal capture: a swap/scale/remove is the strongest taste signal in the app — emit it (was session-only).
+  // The emit reads the LATEST state via a ref so toggleRemoved can tell add-from-remove without a stale closure;
+  // emission is fire-and-forget + no-op for anonymous users (useAnalytics gates on a real token).
+  const stateRef = useRef(state);
+  useEffect(() => { stateRef.current = state; }, [state]);
 
   // persist every change so a later Cook-Mode mount reads the identical personalization
   useEffect(() => {
@@ -50,11 +58,15 @@ export function usePersonalization(recipeId, baseServings = 4) {
     }
   }, [recipeId, state]);
 
-  const setServedFor = useCallback((n) => setState((s) => ({ ...s, servedFor: n > 0 ? n : null })), []);
+  const setServedFor = useCallback((n) => {
+    if (n > 0 && n !== stateRef.current.servedFor) trackEvent('portion_scaled', { recipeId, servedFor: n, baseServings });
+    setState((s) => ({ ...s, servedFor: n > 0 ? n : null }));
+  }, [recipeId, baseServings, trackEvent]);
   const applySwap = useCallback((from, to, meta = {}) => {
     if (!from || !to) return;
+    trackEvent('ingredient_swapped', { recipeId, from, to, ...meta });
     setState((s) => ({ ...s, swaps: { ...s.swaps, [from]: { to, ...meta } } }));
-  }, []);
+  }, [recipeId, trackEvent]);
   const clearSwap = useCallback((from) => setState((s) => {
     if (!(from in s.swaps)) return s;
     const next = { ...s.swaps };
@@ -63,8 +75,10 @@ export function usePersonalization(recipeId, baseServings = 4) {
   }), []);
   const toggleRemoved = useCallback((name) => {
     if (!name) return;
+    const willRemove = !stateRef.current.removed.includes(name);
+    if (willRemove) trackEvent('ingredient_removed', { recipeId, ingredient: name });
     setState((s) => ({ ...s, removed: s.removed.includes(name) ? s.removed.filter((n) => n !== name) : [...s.removed, name] }));
-  }, []);
+  }, [recipeId, trackEvent]);
   const reset = useCallback(() => setState(EMPTY), []);
 
   const scaleFactor = useMemo(() => {
