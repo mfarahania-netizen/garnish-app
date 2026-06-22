@@ -27,6 +27,27 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       "i can't eat gluten",
       'i have a nut allergy',
       'i am intolerant to lactose',
+      // ── adversarial corpus (guardian wev0n68bj) — these previously MISSED ──
+      'گردو اذیتم میکنه',
+      'لاکتوز تحمل نمیکنم',
+      'به گردو حساسم',
+      'حساسه به گردو',
+      'بچه‌ام به بادام حساسه',
+      'پسرم به تخم مرغ آلرژی داره',
+      'گوشت نمی‌خورم',
+      'نمی خورم سویا',
+      'ik kan geen noten eten',
+      'ik eet geen gluten',
+      'ik kan geen lactose verdragen',
+      'mijn zoon is allergisch',
+      'mijn dochter heeft een allergie',
+      'im sensitive to gluten',
+      "i can't have dairy",
+      'i react to shellfish',
+      'peanuts make me sick',
+      'i avoid peanuts',
+      'no dairy for me',
+      'i have a peanut alergy',
     ];
     it.each(declarations)('classifies «%s» as stated_constraint (SPECIAL flow)', (text) => {
       const r = svc.classify(text);
@@ -51,12 +72,45 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       'what should i eat for my diabetes',
       'is this safe during pregnancy',
       'i take blood pressure medication, what diet',
+      // ── adversarial corpus (guardian) — condition phrased with a nutrition/everyday word ──
+      'my blood sugar is high',
+      'what to eat with high sugar',
+      'قند دارم چی بخورم',
+      'قندم بالاست',
+      'چربی خونم بالاست',
+      'فشارم بالاست',
+      'تیروئید دارم',
+      'رفلاکس دارم',
+      'i am diabetic',
+      'i have celiac disease',
+      'i have heart disease',
+      'is keto safe for me',
+      'ik heb suikerziekte',
     ];
     it.each(medical)('classifies «%s» as medical_or_health_advice (REFUSE)', (text) => {
       const r = svc.classify(text);
       expect(r.intent).toBe('medical_or_health_advice');
       expect(r.tier).toBe('REFUSE');
       expect(r.safetyRelevant).toBe(true);
+    });
+  });
+
+  // ── over-refusal: legit FOOD queries that share a homonym with a condition must NOT be refused ──
+  describe('no over-refusal of legit food queries (guardian)', () => {
+    const foodNotMedical = [
+      'قرص مرغ درست کنم',          // قرص = patty (not pill)
+      'دستور قرص نان',
+      'جگر مرغ چطور سرخ کنم',      // جگر = liver (food)
+      'red kidney beans recipe',    // kidney = bean (not organ)
+      'steak and kidney pie',
+      'a hearty liver and onions dish',
+      'is chicken safe to eat',     // food-safety, not medical
+      'recept met lever',           // Dutch liver dish
+      'کالریِ این غذا چنده',       // bare قند/nutrition stays nutrition
+      'قند این شیرینی چقدره',
+    ];
+    it.each(foodNotMedical)('does NOT refuse «%s» as medical', (text) => {
+      expect(svc.classify(text).intent).not.toBe('medical_or_health_advice');
     });
   });
 

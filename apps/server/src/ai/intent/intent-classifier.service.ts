@@ -69,7 +69,7 @@ export function normalizeText(input: unknown): string {
   if (!s) return '';
   s = s.replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d)));
   s = s.replace(/[٠-٩]/g, (d) => String(AR_DIGITS.indexOf(d)));
-  s = s.replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/آ/g, 'ا').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/إ|أ/g, 'ا');
+  s = s.replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ئ/g, 'ی').replace(/ؤ/g, 'و').replace(/آ|أ|إ/g, 'ا').replace(/ة/g, 'ه');
   s = s.replace(/‌/g, ' ').replace(/[ً-ٰٕ]/g, ''); // ZWNJ → space; strip harakat + hamza-above/below
   s = s.replace(/['’`]/g, ''); // strip apostrophes: can't → cant, i'm → im
   s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); // Latin diacritic fold
@@ -128,23 +128,37 @@ const WEAK_ANCHORS = new Set(['چیه', 'چیست', 'چی هست', 'چطور', '
 /* ── High-recall SAFETY overrides (recall ≥ 99% by design; over-trigger is acceptable, precision can be lower) ── */
 
 const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
-  /(من|بهم|به من|راستی).{0,25}(حساس|حساسیت|آلرژی|الرژی)/,
-  /(حساسیت|آلرژی|الرژی).{0,25}(دارم|دارن|دارد)/,
-  /نمیتونم.{0,20}بخورم/,
-  /نمیخورم/,
-  /(ik ben|ik heb).{0,20}(allergisch|allergie|intolerant)/,
-  /allergisch voor/,
-  /\b(i ?m|i am|im)\b.{0,20}allergic/,
-  /\bi( ?m| am)? ?(can ?t|cannot) eat/,
-  /\bi( ?m| am)? intolerant/,
-  /allergic to/,
-  /\ballerg(y|ies|ic)/,
+  // Persian — allergy/sensitivity (noun forms strong; verb forms + "به X حساس"); space-tolerant نمی (ZWNJ→space)
+  /حساسیت|آلرژی|الرژی/,
+  /حساسم|حساسه|حساسن|حساسند/,
+  /به ?.{0,20}حساس/,
+  /اذیتم ?میکنه|اذیت ?میکنه|بهم ?نمیساز|نمیساز(ه|د)|تحمل ?نمیکنم|تحمل ?ندارم|عدم تحمل/,
+  /نمی ?تونم.{0,15}بخورم|نمی ?خورم|نباید بخورم|پرهیز ?(میکنم|دارم|از)/,
+  // Dutch
+  /allergisch|allergie|intoleran(t|tie)/,
+  /kan geen .{0,18}(eten|verdragen|hebben)/,
+  /\b(eet|drink|verdraag) geen\b/,
+  // English (apostrophes already stripped → cant / im)
+  /\baller(g|j)(y|ies|ic)/,
+  /\balerg(y|ic|ies)\b/, // common misspelling
+  /\bintoleran(t|ce)\b/,
+  /\bsensitiv(e|ity) to\b/,
+  /\b(cant|cannot|can not) (have|eat|tolerate|do)\b/,
+  /\breact(s|ion)? to\b/,
+  /\bmakes? me (sick|ill)\b/,
+  /\bi avoid\b/,
+  /\bno (nuts|dairy|gluten|shellfish|eggs?|peanuts?|soy|sesame|fish)\b/,
 ];
 
+// Conditions/treatment context ONLY — NOT bare food/nutrition homonyms (قند/چربی/kidney/liver/قرص), so legit
+// cooking queries (sugar content, kidney beans, a liver dish, قرص نان/مرغ) are NOT falsely refused.
 const MEDICAL_PATTERNS: RegExp[] = [
-  /دیابت|قند خون|فشار خون|کلسترول|بارداری|باردارم|حامله|شیردهی|نقرس|کبد چرب|سرطان|دارو|قرص|رژیم درمانی/,
-  /\b(diabet|bloeddruk|cholesterol|zwanger|borstvoeding|medicijn|nier|lever|kanker)\b/,
-  /\b(diabet|blood pressure|cholesterol|pregnan|breastfeed|gout|kidney|liver disease|cancer|medication|my meds|prescrib|eating disorder|weight loss diet)/,
+  /دیابت|قند خون|قندم|قند دارم|چربی خون|تری ?گلیسیرید|کلسترول|فشار خون|فشارم|فشار بالا|نقرس|تیروی?ید|کم ?خونی|رفلاکس|کبد چرب|سنگ کلیه|بیماری کلی|نارسایی کلی|سرطان|باردار|حامله|شیرده|رژیم درمانی|رژیم لاغری|اختلال خوردن|بیماری قلبی|مشکل قلبی|ناراحتی قلبی|دارو/,
+  /\b(?:suikerziekte|diabet|bloedsuiker|bloeddruk|cholesterol|jicht|schildklier|bloedarmoede|coeliakie|reflux|nier(?:ziekte|stenen|probleem)|leverziekte|hartkwaal|hart(?:probleem|aandoening|ziekte)|kanker|zwanger|borstvoeding|eetstoornis|medicijn)/,
+  /\b(?:diabet|blood sugar|high sugar|blood pressure|hypertension|cholesterol|triglyceride|gout|thyroid|anemi|celiac|coeliac|ibs|crohn|reflux|gerd|kidney (?:disease|stone|problem)|renal|liver disease|fatty liver|heart (?:disease|condition|problem)|cancer|pregnan|breastfeed|eating disorder|prescrib|my meds|medication)/,
+  /\bi(?: am|m)? (a )?(diabetic|anemic|celiac|coeliac)\b/,
+  /\bketo\b.{0,15}\b(safe|for me|ok)\b/,
+  /\bis .{0,25} safe (for me|during|with)\b/,
 ];
 
 @Injectable()
