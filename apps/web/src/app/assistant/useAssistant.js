@@ -26,6 +26,7 @@ export function useAssistant() {
   const [added, setAdded] = useState({}); // message index → true once its allergens were added
   const convId = useRef(undefined);
   const lastPrompt = useRef('');
+  const inFlight = useRef(new Set()); // message indexes whose allergy write is in flight (sync double-tap guard)
 
   const send = useCallback(async (raw) => {
     const prompt = String(raw || '').trim();
@@ -55,18 +56,23 @@ export function useAssistant() {
   // gate then filters them from every recipe. Optimistic-safe: we only mark "added" after the server confirms.
   const confirmAllergens = useCallback(async (index, allergens) => {
     const tokens = [...new Set((allergens || []).map((a) => a && a.token).filter(Boolean))];
-    if (!tokens.length || added[index]) return;
+    // SYNC double-tap guard via a ref: setAdded only commits AFTER the await, so a second rapid tap would slip past
+    // an `added[index]` check and double-POST. The ref is checked + set synchronously, before the network call.
+    if (!tokens.length || added[index] || inFlight.current.has(index)) return;
+    inFlight.current.add(index);
     try {
       await apiClient.post('/users/allergies', { allergies: tokens });
       setAdded((s) => ({ ...s, [index]: true }));
       setMessages((m) => [...m, { role: 'ai', text: 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.' }]);
     } catch {
       setMessages((m) => [...m, { role: 'ai', text: 'الان نتونستم ذخیره‌اش کنم — می‌تونی از پروفایلت دستی اضافه‌اش کنی.' }]);
+    } finally {
+      inFlight.current.delete(index);
     }
   }, [added]);
 
   const retry = useCallback(() => { if (lastPrompt.current) { setError(false); send(lastPrompt.current); } }, [send]);
-  const reset = useCallback(() => { setMessages([]); setThinking(false); setError(false); setFeedback({}); convId.current = undefined; }, []);
+  const reset = useCallback(() => { setMessages([]); setThinking(false); setError(false); setFeedback({}); setAdded({}); inFlight.current.clear(); convId.current = undefined; }, []);
   const rate = useCallback((index, vote) => {
     setFeedback((f) => ({ ...f, [index]: vote }));
     try { trackEvent('ai_feedback', { vote }); } catch { /* non-blocking */ }

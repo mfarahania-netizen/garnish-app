@@ -5,6 +5,7 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { ErasureService } from './erasure/erasure.service';
 import { UserExportService } from './export/user-export.service';
 import { ConsentService, CONSENT_PURPOSES } from '../consent/consent.service';
+import { CANONICAL_ALLERGEN_TOKENS } from '../ai/intent/allergen-extractor';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 
@@ -83,7 +84,16 @@ export class UsersService {
    * filters the allergen. Names are the canonical chip tokens (e.g. 'nut','peanut','dairy').
    */
   async addAllergies(userId: string, names: string[]): Promise<{ added: string[] }> {
-    const clean = [...new Set((names || []).map((n) => String(n ?? '').trim().toLowerCase()).filter(Boolean))];
+    // WRITE-BOUNDARY ALLOWLIST (guardian): accept ONLY canonical EU-14 chip tokens, so a crafted/buggy client can
+    // neither pollute the global Allergy table with arbitrary strings nor write a non-canonical token the hard gate
+    // would silently ignore. Off-list tokens are dropped (not 400) so a partly-valid batch still saves its valid set.
+    const clean = [
+      ...new Set(
+        (names || [])
+          .map((n) => String(n ?? '').trim().toLowerCase())
+          .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
+      ),
+    ];
     if (!clean.length) return { added: [] };
     await this.prisma.$transaction(async (tx) => {
       for (const name of clean) await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });

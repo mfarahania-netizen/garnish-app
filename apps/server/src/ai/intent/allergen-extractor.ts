@@ -18,7 +18,7 @@ export interface ExtractedAllergen {
 // chip token → { label, name-substrings to detect (already normalized: lowercased, fa→plain, digits/ZWNJ folded) }
 const ALLERGEN_LEXICON: Array<{ token: string; label: string; names: string[] }> = [
   { token: 'peanut', label: 'بادام‌زمینی', names: ['بادام زمینی', 'بادوم زمینی', 'peanut', 'groundnut', 'pinda'] },
-  { token: 'nut', label: 'آجیل/مغزها', names: ['گردو', 'بادام', 'پسته', 'فندق', 'بادام هندی', 'کاجو', 'نارگیل', 'مغز', 'اجیل', 'tree nut', 'treenut', 'walnut', 'almond', 'pistachio', 'hazelnut', 'cashew', 'pecan', 'noot', 'noten', 'walnoot', 'amandel'] },
+  { token: 'nut', label: 'آجیل/مغزها', names: ['گردو', 'بادام', 'بادوم', 'خشکبار', 'پسته', 'فندق', 'بادام هندی', 'کاجو', 'نارگیل', 'مغز', 'اجیل', 'nut', 'tree nut', 'treenut', 'walnut', 'almond', 'pistachio', 'hazelnut', 'cashew', 'pecan', 'macadamia', 'brazil nut', 'noot', 'noten', 'walnoot', 'amandel'] },
   { token: 'dairy', label: 'لبنیات', names: ['شیر', 'لبنیات', 'پنیر', 'ماست', 'خامه', 'کره', 'لاکتوز', 'dairy', 'milk', 'cheese', 'yogurt', 'lactose', 'melk', 'kaas', 'zuivel'] },
   { token: 'egg', label: 'تخم‌مرغ', names: ['تخم مرغ', 'تخممرغ', 'تخم‌مرغ', 'egg', 'eggs', 'ei', 'eieren'] },
   { token: 'gluten', label: 'گلوتن', names: ['گلوتن', 'گندم', 'جو', 'آرد', 'نان', 'gluten', 'wheat', 'barley', 'rye', 'tarwe'] },
@@ -35,26 +35,45 @@ const ALLERGEN_LEXICON: Array<{ token: string; label: string; names: string[] }>
 const NORM_LEXICON = ALLERGEN_LEXICON.map((e) => ({ token: e.token, label: e.label, names: e.names.map(normalizeText).filter(Boolean) }));
 
 /**
+ * The canonical EU-14 allergen chip tokens this system recognizes on the PROFILE side (the same ids the onboarding
+ * chips + the deterministic hard gate use). SINGLE SOURCE for the §3 write allowlist: UsersService.addAllergies
+ * accepts ONLY these, so a crafted/buggy client can never pollute the global Allergy table with arbitrary strings
+ * or write an inert non-canonical token that the gate would silently ignore.
+ */
+export const CANONICAL_ALLERGEN_TOKENS: ReadonlySet<string> = new Set(ALLERGEN_LEXICON.map((e) => e.token));
+
+/**
  * Returns the distinct EU-14 allergens named in the text, as canonical chip tokens + Persian labels. Order is
  * the lexicon order (peanut before nut so "بادام‌زمینی" resolves to peanut, not nut). Over-detection is acceptable
  * (the confirm step lets the user reject); a MISS is the only costly error, so the name lists are generous.
+ *
+ * Matching rule (guardian-hardened): a single ASCII-Latin word (e.g. 'nut','fish','egg','soy') matches only on a
+ * WHOLE-WORD boundary (+ optional English plural -s) so it never fires inside another word — 'nut' must not match
+ * coconut/butternut/nutmeg, 'fish' must not match shellfish/jellyfish, 'egg' must not match eggplant. Persian and
+ * multi-word names keep substring matching (with the consume-on-match strip that separates بادام‌زمینی from بادام).
  */
 export function extractStatedAllergens(text: unknown): ExtractedAllergen[] {
   const t = normalizeText(text);
   if (!t) return [];
   const out: ExtractedAllergen[] = [];
   const seen = new Set<string>();
-  // Strip each matched name from the working text so a longer allergen does not leak into a shorter substring
-  // match later (peanut⊃بادام→nut, shellfish⊃fish). Lexicon order puts the more-specific token first.
-  let scan = t;
+  let scan = t; // mutated only for substring (Persian/multi-word) matches so a longer name cannot leak into a shorter one
   for (const e of NORM_LEXICON) {
     for (const name of e.names) {
-      if (name && scan.includes(name)) {
+      if (!name) continue;
+      const latinWord = /^[a-z]+$/.test(name); // single ASCII word → whole-word match (no substring leakage)
+      let hit: boolean;
+      if (latinWord) {
+        hit = new RegExp(`\\b${name}s?\\b`).test(scan); // word boundary + optional plural -s
+      } else {
+        hit = scan.includes(name); // Persian / multi-word / tokens with digits
+      }
+      if (hit) {
         if (!seen.has(e.token)) {
           seen.add(e.token);
           out.push({ token: e.token, label: e.label });
         }
-        scan = scan.split(name).join(' '); // consume the mention before later (substring-overlapping) tokens scan
+        if (!latinWord) scan = scan.split(name).join(' '); // consume the substring mention before later overlapping tokens
       }
     }
   }

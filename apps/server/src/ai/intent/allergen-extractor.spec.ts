@@ -34,4 +34,34 @@ describe('extractStatedAllergens (conversational-allergy §3, deterministic)', (
     const r = extractStatedAllergens('به گردو حساسم');
     expect(r[0]).toMatchObject({ token: 'nut', label: 'آجیل/مغزها' });
   });
+
+  // ── guardian regressions (piece-2 guardian wtmpheigp) ──
+  it('captures the bare English collective "nut"/"nuts" (the canonical English phrasing)', () => {
+    expect(tokens('i am allergic to nuts')).toEqual(['nut']);
+    expect(tokens('allergic to nut')).toEqual(['nut']);
+    expect(tokens('I have a nut allergy')).toEqual(['nut']);
+    expect(tokens('no nuts please')).toEqual(['nut']);
+  });
+
+  it('captures common Persian nut synonyms خشکبار / بادوم', () => {
+    expect(tokens('به خشکبار حساسم')).toEqual(['nut']);
+    expect(tokens('به بادوم حساسیت دارم')).toEqual(['nut']);
+  });
+
+  it('whole-word matching: "nut" does NOT fire inside coconut / butternut / nutmeg', () => {
+    expect(tokens('i love coconut')).toEqual([]);
+    expect(tokens('butternut squash soup')).toEqual([]);
+    expect(tokens('please add nutmeg')).toEqual([]);
+  });
+
+  it('whole-word matching: "fish" not in shellfish/jellyfish, "egg" not in eggplant', () => {
+    expect(tokens('allergic to shellfish')).toEqual(['shellfish']);
+    expect(tokens('jellyfish sting')).toEqual([]);
+    expect(tokens('i love eggplant')).toEqual([]);
+  });
+
+  it('bare "nut" must NOT leak into a peanut declaration', () => {
+    expect(tokens('allergic to peanut')).toEqual(['peanut']);
+    expect(tokens('allergic to peanuts')).toEqual(['peanut']);
+  });
 });

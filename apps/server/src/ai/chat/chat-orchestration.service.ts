@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { AiOrchestratorService } from '../orchestrator/ai-orchestrator.service';
-import { IntentClassifierService, IntentClassification } from '../intent/intent-classifier.service';
+import { IntentClassifierService, IntentClassification, normalizeText } from '../intent/intent-classifier.service';
 import { extractStatedAllergens, ExtractedAllergen } from '../intent/allergen-extractor';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from './chat-message.service';
@@ -95,7 +95,12 @@ export class ChatOrchestrationService {
     // silently ignored. Detect → extract the named allergen(s) → offer CONFIRM-then-write (decision D2). We never
     // auto-write (a misheard line must not fabricate an allergy) and never rely on the LLM summary for safety; the
     // user's one-tap confirm hits POST /users/allergies and the deterministic hard gate then filters it.
-    if (intentDecision.intent === 'stated_constraint') {
+    //
+    // GUARDIAN-HARDENED: the classifier flags stated_constraint on the mere presence of an allergy noun, so a
+    // QUESTION ("آیا گردو برای آلرژیم خطرناکه؟") or a RETRACTION ("دیگه به گردو حساس نیستم") also lands here. Neither
+    // should produce an ADD offer — gate the WRITE route on a declaration shape (not interrogative, not negated) and
+    // let everything else fall through to the normal grounded path.
+    if (intentDecision.intent === 'stated_constraint' && this.isAllergyDeclaration(input.prompt)) {
       const allergens = extractStatedAllergens(input.prompt);
       const reply = allergens.length
         ? `متوجه شدم که به ${allergens.map((a) => a.label).join('، ')} حساسیت داری. می‌خوای به پروفایلت اضافه‌اش کنم تا همیشه از غذاهات حذفش کنم و ایمن بمونی؟`
@@ -211,6 +216,23 @@ export class ChatOrchestrationService {
     });
 
     return { reply, conversationId, status, providerMode, aiCallLogId, intent: intentDecision };
+  }
+
+  /**
+   * Is the turn a genuine allergy DECLARATION (vs a question or a retraction)? Deterministic, zero-LLM. Only a
+   * declaration earns the §3 confirm-then-write offer; an interrogative or a negated clause must not.
+   *   - question: a '؟'/'?' anywhere, or a leading interrogative (آیا/مگه/can/is/are/do/does/am…), or "can I"/میتونم.
+   *   - retraction/negation: a negation verb near the allergy (نیستم/ندارم/نداره/not/no longer/never…).
+   */
+  private isAllergyDeclaration(prompt: string): boolean {
+    const t = normalizeText(prompt);
+    if (!t) return false;
+    if (/[؟?]/.test(t)) return false; // explicit question
+    if (/^(ایا|مگه|مگر|is |are |am |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false;
+    if (/(میتونم|میتوانم|میشه|میشود)/.test(t)) return false; // "can I…?" without a question mark (no \b: Persian)
+    if (/(نیستم|نیست|ندارم|نداره|نداشتم|نداریم)/.test(t)) return false; // Persian negation/retraction (no \b: Persian)
+    if (/\b(not|never|no longer|isnt|arent|dont|doesnt|didnt|cant)\b/.test(t)) return false; // English negation (apostrophes stripped)
+    return true;
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */

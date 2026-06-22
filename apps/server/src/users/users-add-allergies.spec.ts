@@ -32,4 +32,19 @@ describe('UsersService.addAllergies (additive §3 write)', () => {
     expect((await fresh.svc.addAllergies('u1', [])).added).toEqual([]);
     expect(fresh.prisma.$transaction).not.toHaveBeenCalled();
   });
+
+  // guardian: WRITE-BOUNDARY allowlist — only canonical EU-14 chip tokens are written; a crafted client cannot
+  // pollute the global Allergy table with arbitrary strings.
+  it('drops non-canonical tokens; keeps valid ones from a mixed batch', async () => {
+    const { svc } = makeService();
+    const r = await svc.addAllergies('u1', ['nut', 'free_text', 'DROP TABLE allergies', 'peanut', 'tree_nuts']);
+    expect(r.added).toEqual(['nut', 'peanut']); // 'tree_nuts' is the recipe-side token, not a profile chip → dropped
+  });
+
+  it('all-invalid input is a no-op that never opens a transaction', async () => {
+    const svc2 = makeService();
+    const r = await svc2.svc.addAllergies('u1', ['banana', 'chocolate', 'gluten_free']);
+    expect(r.added).toEqual([]);
+    expect(svc2.prisma.$transaction).not.toHaveBeenCalled();
+  });
 });

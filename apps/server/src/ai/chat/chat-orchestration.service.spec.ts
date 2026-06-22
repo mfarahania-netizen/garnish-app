@@ -283,4 +283,22 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     expect(out.suggestedAction).toBeUndefined();
     expect(typeof out.reply).toBe('string');
   });
+
+  // guardian: a QUESTION or RETRACTION classifies as stated_constraint (allergy noun present) but must NOT produce
+  // an add-offer — it falls through to the normal grounded path.
+  it('§3 guard: an allergy QUESTION does NOT offer a write (falls through to the grounded path)', async () => {
+    setDefault();
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'آیا گردو برای آلرژیم خطرناکه؟', conversationId: 'c-q' });
+    expect(out.suggestedAction).toBeUndefined();
+    expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // normal path, not the §3 early return
+  });
+
+  it('§3 guard: a RETRACTION ("no longer allergic") does NOT offer to ADD the allergen', async () => {
+    setDefault();
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'دیگه به گردو حساس نیستم', conversationId: 'c-neg' });
+    expect(out.suggestedAction).toBeUndefined();
+    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
+  });
 });
