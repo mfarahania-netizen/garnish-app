@@ -8,6 +8,8 @@
  * Design note: we redact, we do NOT drop the event — "capture every second / no lost signals" is a founder
  * value (the durable outbox exists for it). Unknown event TYPES are likewise logged, not rejected.
  */
+import { EventType } from './event-taxonomy';
+
 const PII_KEYS = new Set([
   'query', 'q', 'text', 'message', 'content', 'body', 'note', 'notes', 'comment', 'prompt', 'input',
   'search', 'searchterm', 'fulltext', 'raw', 'name', 'fullname', 'phone', 'tel', 'mobile', 'email',
@@ -44,6 +46,9 @@ export function sanitizePayload(payload: unknown): Record<string, unknown> | nul
 /** The canonical analytics event types (grounded from FE trackEvent + BE processors). Unknown types are still
  *  stored (no lost signals) but flagged, so taxonomy drift is observable and the set can be completed. */
 export const KNOWN_EVENT_TYPES = new Set<string>([
+  // single source: every canonical EventType enum value is known (no taxonomy drift — fixes the dual-list gap).
+  ...Object.values(EventType),
+  // BE-derived / processor-only types that are NOT in the legacy EventType enum (kept explicitly):
   'ai_feedback', 'ai_error', 'ai_message_send', 'ai_suggestion_generated', 'ai_voice_search',
   'admin_view', 'admin_ticket_reply', 'admin_ticket_status', 'admin_recipe_approve', 'admin_recipe_reject',
   'briefing_accept', 'briefing_view', 'churn_reengagement', 'churn_risk', 'cook_complete',

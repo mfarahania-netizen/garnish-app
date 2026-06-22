@@ -53,6 +53,11 @@ const DELIBERATE_SIGNALS = new Set<string>([
   'ai_message_send',
   'onboarding_answered',
   'preference_update',
+  // P0 signal capture — the strongest, lowest-frequency TASTE signals; must never be dropped by the shared
+  // bot counter after a scroll/impression burst (the exact poisoning this bypass exists to prevent).
+  'ingredient_swapped',
+  'portion_scaled',
+  'ingredient_removed',
 ]);
 
 /** Narrow accidental-double-fire window for deliberate signals (e.g. a double-tap on «پایان»). */

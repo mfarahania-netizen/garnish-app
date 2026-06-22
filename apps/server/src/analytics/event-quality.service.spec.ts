@@ -201,3 +201,15 @@ describe('EventQualityService → Gamification (E2E: cook after a burst counts)'
     expect(state.streak.currentWeeks).toBe(0);
   });
 });
+
+describe('EventQualityService — P0 taste signals survive a burst (guardian whf1h3szh)', () => {
+  it.each(['ingredient_swapped', 'portion_scaled', 'ingredient_removed'])(
+    '%s right after a 25-event scroll burst is still VALID (deliberate-signal bypass)',
+    (type) => {
+      const svc = new EventQualityService();
+      burst(svc, 'taste-user', 25); // poison the shared bot counter — the exact failing scenario
+      const q = svc.assess({ userId: 'taste-user', type, payload: { recipeId: 'r1', from: 'کره', to: 'روغن زیتون' } });
+      expect(q.isValid).toBe(true); // pre-fix: dropped as "bot" → no UserEvent → starved learning loop
+    },
+  );
+});
