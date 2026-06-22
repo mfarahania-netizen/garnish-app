@@ -57,14 +57,49 @@ const ALLERGEN_ALIASES: Record<string, string[]> = {
   finfish: ['fish'],
   sulphite: ['sulphites'], sulfite: ['sulphites'], sulfites: ['sulphites'],
   'sulphur dioxide': ['sulphites'], sulphur_dioxide: ['sulphites'], 'sulfur dioxide': ['sulphites'], sulfur_dioxide: ['sulphites'], so2: ['sulphites'],
+  // ── CRITICAL (final-audit fix): the live recipe corpus authors recipe.allergens in PERSIAN (and the EU launch
+  // will add Dutch), but the profile chips are English ids — without these the gate canonicalized the two sides to
+  // DIFFERENT tokens, never intersected, and FAILED OPEN (a nut-allergic user was served a nut dish). Keys are in
+  // the light-folded form canonicalizeAllergens produces (ZWNJ→space, ي/ك/آ folded). Over-map ambiguous (safe).
+  // Persian — the 8 corpus tokens + common synonyms/species:
+  'گلوتن': ['gluten_cereals', 'wheat'], 'گندم': ['wheat', 'gluten_cereals'], 'جو': ['gluten_cereals'], 'ارد': ['gluten_cereals', 'wheat'], 'نان': ['gluten_cereals'],
+  'لبنیات': ['milk'], 'شیر': ['milk'], 'پنیر': ['milk'], 'ماست': ['milk'], 'خامه': ['milk'], 'کره': ['milk'], 'لاکتوز': ['milk'],
+  'تخم مرغ': ['eggs'], 'تخممرغ': ['eggs'],
+  'اجیل': ['tree_nuts'], 'مغزها': ['tree_nuts'], 'مغز': ['tree_nuts'], 'گردو': ['tree_nuts'], 'بادام': ['tree_nuts'], 'پسته': ['tree_nuts'], 'فندق': ['tree_nuts'], 'خشکبار': ['tree_nuts'],
+  'بادام زمینی': ['peanut'], 'بادوم زمینی': ['peanut'],
+  'میگو': ['shellfish', 'crustaceans', 'molluscs'], 'صدف': ['shellfish', 'crustaceans', 'molluscs'], 'خرچنگ': ['crustaceans'], 'حلزون': ['molluscs'],
+  'ماهی': ['fish'], 'تن': ['fish'], 'سالمون': ['fish'],
+  'سویا': ['soy'], 'توفو': ['soy'],
+  'کنجد': ['sesame'], 'ارده': ['sesame'], 'طحینی': ['sesame'],
+  'خردل': ['mustard'], 'کرفس': ['celery'], 'لوپین': ['lupin'], 'سولفیت': ['sulphites'], 'سولفور': ['sulphites'],
+  // Dutch — for the EU/Holland launch corpus:
+  tarwe: ['wheat', 'gluten_cereals'], melk: ['milk'], kaas: ['milk'], zuivel: ['milk'], ei: ['eggs'], eieren: ['eggs'],
+  noten: ['tree_nuts'], noot: ['tree_nuts'], walnoot: ['tree_nuts'], amandel: ['tree_nuts'], pinda: ['peanut'],
+  schaaldieren: ['shellfish', 'crustaceans', 'molluscs'], garnaal: ['crustaceans'], vis: ['fish'], soja: ['soy'],
+  sesam: ['sesame'], mosterd: ['mustard'], selderij: ['celery'],
 };
 
-/** map any allergen token to its canonical form(s), preserving unknown tokens as-is (lowercased). */
+/**
+ * Light fold so a Persian/Dutch recipe token matches its alias key regardless of authoring variant: ZWNJ→space,
+ * Arabic ي/ك/ة and آأإ folded to Persian, whitespace collapsed. English tokens (no such chars) are unaffected.
+ * Deliberately NARROW (not the full classifier normalizeText) to avoid a cross-module dependency in the hard gate.
+ */
+function foldAllergenToken(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/‌/g, ' ') // ZWNJ → space (تخم‌مرغ → تخم مرغ)
+    .replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ة/g, 'ه').replace(/[آأإ]/g, 'ا')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** map any allergen token to its canonical form(s), preserving unknown tokens as-is (folded/lowercased). */
 export function canonicalizeAllergens(tokens: Iterable<unknown>): string[] {
   const out = new Set<string>();
   for (const raw of tokens) {
     if (typeof raw !== 'string') continue;
-    const t = raw.trim().toLowerCase();
+    const t = foldAllergenToken(raw);
     if (!t) continue;
     const mapped = ALLERGEN_ALIASES[t];
     if (mapped) mapped.forEach((m) => out.add(m));

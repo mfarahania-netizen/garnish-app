@@ -69,7 +69,9 @@ describe('SuggestSubstitutionsTool (E47-L4)', () => {
     expect(out.resultStatus).toBe('ok');
     const names = out.substitutions.map((s: any) => s.name);
     expect(names).not.toContain('روغن بادام‌زمینی'); // peanut oil dropped
-    expect(out.dropped).toEqual(expect.arrayContaining([{ name: 'روغن بادام‌زمینی', allergen: 'بادام‌زمینی' }]));
+    // the dropped allergen is reported in CANONICAL form (extractDictionaryAllergens canonicalizes بادام‌زمینی→peanut)
+    // — consistent with the system-wide canonicalization that now also covers Persian tokens (fail-open fix).
+    expect(out.dropped).toEqual(expect.arrayContaining([{ name: 'روغن بادام‌زمینی', allergen: 'peanut' }]));
   });
 
   it('never fabricates: every suggestion name comes from the dictionary fixtures', async () => {
