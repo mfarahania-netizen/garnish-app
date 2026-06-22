@@ -59,6 +59,17 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 
 ---
 
+## 4b. EXACT PHASE POSITION — we are at the TAIL of P0 (be precise; this is the "where exactly")
+P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
+- ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
+- ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
+- 🔧 **REMAINS (not blocked, not started):** make the multi-window cost/quota layer **Redis-atomic** (today it is DB-aggregate, single-instance-correct only); full end-to-end **`requestId` echo** verification (served→reward, the "irreversible" step); confirm `EventOutbox` producers are flipped from `not_started` and turn events emit tier-tagged.
+- ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
+
+**The immediate next work is a fork:** (a) close the non-blocked P0 tail (Redis cost atomicity + `requestId` echo + outbox producer flip) — mostly mechanical/infra, Sonnet-capable with the guardian; OR (b) start P1 design with Opus (multi-turn memory first). The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
+
+---
+
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)
 1. `docs/GARNISH_GROUND_TRUTH.md` — authoritative whole-project state.
 2. `docs/audit/AI_MASTER_SPEC.md` — the unified AI design (P0→P6 roadmap with pass/fail gates; **wins on disagreement**).
