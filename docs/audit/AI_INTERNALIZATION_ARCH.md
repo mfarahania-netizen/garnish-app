@@ -182,7 +182,7 @@ A **pure deterministic function** over `(normalizedTurn + AssistantContext)`: no
 { intent, modelTier: 'NONE'|'CHEAP'|'STRONG', dataScope, cacheable, safetyRelevant, confidence }
 ```
 
-`ai.service.ts:analyzeUserIntent` is a filter-EXTRACTOR, not a router — **do NOT extend it; build a separate `apps/server/src/ai/routing/intent-classifier.service.ts`.** An optional embedding/on-device tie-breaker for the ambiguous middle stays behind a flag; the default path makes ZERO network calls (that is what makes analyze-then-answer cheaper than naive chat). Wire it FIRST in `chat-orchestration.service.ts`, before grounding/cost.
+`ai.service.ts:analyzeUserIntent` is a filter-EXTRACTOR, not a router — **do NOT extend it; build a separate `apps/server/src/ai/intent/intent-classifier.service.ts`.** (BUILT 2026-06-23, guardian-converged; registered in ai-core.module but not yet wired into the orchestrator.) An optional embedding/on-device tie-breaker for the ambiguous middle stays behind a flag; the default path makes ZERO network calls (that is what makes analyze-then-answer cheaper than naive chat). Wire it FIRST in `chat-orchestration.service.ts`, before grounding/cost.
 
 ### 3.2 16-intent taxonomy (from `AI_DESIGN_SPEC §2.2`, mapped to tiers)
 
