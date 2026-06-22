@@ -43,20 +43,26 @@ export const PRODUCTION_RATE_CATALOG: readonly AiModelRate[] = [];
 /**
  * REFERENCE rates — staged, NOT yet production truth. These are the best-available paid-tier Gemini prices found
  * via web search on 2026-06-22 (ai.google.dev/gemini-api/docs/pricing). They are deliberately NOT in
- * PRODUCTION_RATE_CATALOG because they were NOT directly verified — the pricing page blocks automated fetch (HTTP
- * 403), and the EXACT model id the live adapter reports (ModelProvider.name + model) is not yet pinned. This keeps
- * faith with the catalog's invariant (no unverified price as production truth) AND the project's data-honesty
- * ethos (USDA-source-locked nutrition, never invented numbers).
+ * PRODUCTION_RATE_CATALOG because the RATES themselves were NOT directly verified — the pricing page blocks
+ * automated fetch (HTTP 403). This keeps faith with the catalog's invariant (no unverified price as production
+ * truth) AND the project's data-honesty ethos (USDA-source-locked nutrition, never invented numbers).
+ *
+ * NOTE: the live adapter's id IS pinned — ModelProvider.name='gemini' + model = DEFAULT_MODEL ('gemini-2.5-flash')
+ * in model-provider.factory.ts (overridable via AI_MODEL_NAME). getActiveRate matches provider+model by EXACT
+ * string, so the reference `model` below is set to that pinned id; the 'flash-lite' tier row is staged under the
+ * 2.5-family lite id for when/if AI_MODEL_NAME is switched to it.
  *
  * TO PROMOTE at live-Gemini wire-up (with VPN, per the founder's constraint):
- *   1. Confirm the live adapter's exact provider/model id and replace `model` below to match it verbatim.
- *   2. Open the live pricing page, confirm input/output per-1M numbers, update `verifiedAt`, then spread the
- *      confirmed entry into PRODUCTION_RATE_CATALOG. Until then runtime estimatedCostUsd stays null (honest).
+ *   1. Confirm AI_MODEL_NAME = the row's `model` (so getActiveRate('gemini', <that id>) resolves) — for the
+ *      default config that is the Flash row below ('gemini-2.5-flash').
+ *   2. Open the live pricing page, confirm input/output per-1M numbers for THAT exact model, update `verifiedAt`,
+ *      then spread the confirmed entry into PRODUCTION_RATE_CATALOG. Until then runtime estimatedCostUsd stays null.
+ *   3. Promote ONLY the row whose model matches AI_MODEL_NAME (do not leave two rows with the same id).
  */
 export const REFERENCE_RATES_2026: readonly AiModelRate[] = [
   {
     provider: 'gemini',
-    model: 'gemini-flash-lite', // PLACEHOLDER id — pin to the adapter's exact model string at promotion
+    model: 'gemini-2.5-flash-lite', // 2.5-family lite tier — promote if AI_MODEL_NAME is switched to it
     inputRateUsdPer1M: 0.25,
     outputRateUsdPer1M: 1.5,
     currency: 'USD',
@@ -70,7 +76,7 @@ export const REFERENCE_RATES_2026: readonly AiModelRate[] = [
   },
   {
     provider: 'gemini',
-    model: 'gemini-flash', // PLACEHOLDER id — pin to the adapter's exact model string at promotion
+    model: 'gemini-2.5-flash', // matches the pinned DEFAULT_MODEL — the default promotable row
     inputRateUsdPer1M: 1.5,
     outputRateUsdPer1M: 9.0,
     currency: 'USD',

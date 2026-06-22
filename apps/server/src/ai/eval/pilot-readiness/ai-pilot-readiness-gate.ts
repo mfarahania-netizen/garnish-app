@@ -62,7 +62,7 @@ class CountingFixtureProvider implements ModelProvider {
 
 function mockPrisma(overrides: any = {}) {
   return {
-    aICallLog: { create: overrides.aiCreate ?? (async () => ({ id: 'log' })), aggregate: overrides.aggregate ?? (async () => ({ _sum: { totalTokens: 0 } })), findMany: overrides.findMany ?? (async () => []) },
+    aICallLog: { create: overrides.aiCreate ?? (async () => ({ id: 'log' })), aggregate: overrides.aggregate ?? (async () => ({ _sum: { totalTokens: 0 } })), findFirst: overrides.aiFindFirst ?? (async () => null) },
     aiSpendAlert: { findFirst: overrides.alertFind ?? (async () => null), create: overrides.alertCreate ?? (async () => ({ id: 'alert' })) },
     userPreference: { findUnique: async () => null },
   } as any;
@@ -151,15 +151,15 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
   });
   await run('guard_order', 'persisted multi-window budget blocks BEFORE provider (live-configured)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    // 10M tokens 10h ago → over the daily window; the multi-window gate must block before any provider call.
-    const prisma = mockPrisma({ findMany: async () => [{ createdAt: new Date(Date.now() - 10 * 3_600_000), totalTokens: 10_000_000 }] });
+    // 10M tokens consumed → over a window; the multi-window gate (sum aggregate) must block before any provider call.
+    const prisma = mockPrisma({ aggregate: async () => ({ _sum: { totalTokens: 10_000_000 } }) });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };
   }));
   await run('guard_order', 'budget DB lookup error → FAILS CLOSED (no provider call)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    const prisma = mockPrisma({ findMany: async () => { throw new Error('db down'); } });
+    const prisma = mockPrisma({ aiFindFirst: async () => { throw new Error('db down'); } });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };
@@ -205,11 +205,15 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
   await run('failure_injection', 'hallucinated CAPABILITY output detected by evaluator', async () => detectOutputViolations('I searched the web and ran my search tool to fetch real-time data.').some((v) => v.category === 'hallucinated_capability'));
   await run('failure_injection', 'spend-alert service throws → chat still ok (best-effort)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('a simple stew');
-    // consumption 170k is ABOVE the daily token-alert threshold (160k) but BELOW the daily budget cap
-    // (200k) → the call is allowed, the alert path fires, and alertCreate throws → must be swallowed.
+    // Realistic distribution: light in the last 5h (under the 60k 5h cap) but 170k over the day — ABOVE the daily
+    // token-alert threshold (160k) yet BELOW the 200k daily budget cap → the call is allowed, the alert path fires,
+    // and alertCreate throws → must be swallowed. (A flat 170k in every window would trip the tighter 5h cap.)
     let alertAttempted = false;
     const prisma = mockPrisma({
-      aggregate: async () => ({ _sum: { totalTokens: 170_000 } }),
+      aggregate: async ({ where }: any = {}) => {
+        const ageMs = Date.now() - (where?.createdAt?.gte?.getTime?.() ?? 0);
+        return { _sum: { totalTokens: ageMs <= 6 * 3_600_000 ? 50_000 : 170_000 } }; // 5h window light; daily heavy
+      },
       alertFind: async () => null,
       alertCreate: async () => { alertAttempted = true; throw new Error('alert db down'); },
     });
@@ -225,7 +229,7 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
   });
   await run('failure_injection', 'persisted-budget throws → FAILS CLOSED (no provider call)', async () => withLiveEnv(async () => {
     const p = new CountingFixtureProvider('x');
-    const prisma = mockPrisma({ findMany: async () => { throw new Error('budget db down'); } });
+    const prisma = mockPrisma({ aiFindFirst: async () => { throw new Error('budget db down'); } });
     const orch = buildOrchestrator(p, prisma, new PersistedDailyBudgetService(prisma), new SpendAlertService(prisma));
     const r = await orch.run({ userId: 'u', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'eval' });
     return { ok: r.status === 'blocked_cost' && p.calls === 0, reason: `${r.status} calls=${p.calls}` };

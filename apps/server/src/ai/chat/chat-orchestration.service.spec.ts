@@ -300,5 +300,16 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const out = await svc.handleChat({ userId: 'u1', prompt: 'دیگه به گردو حساس نیستم', conversationId: 'c-neg' });
     expect(out.suggestedAction).toBeUndefined();
     expect(grounded.composeDeterministicReply).toHaveBeenCalled();
+    const out2 = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت ندارم', conversationId: 'c-neg2' });
+    expect(out2.suggestedAction).toBeUndefined(); // «حساسیت ندارم» retraction
+  });
+
+  // guardian (combined pass): scope-aware negation — a real declaration carrying a SECONDARY negated clause must
+  // STILL offer (the negation does not attach to the allergy assertion).
+  it('§3 guard: a declaration with a secondary negated clause STILL offers the write', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت دارم ولی پسته مشکلی نداره', conversationId: 'c-decl-neg' });
+    expect(out.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'nut', label: 'آجیل/مغزها' }] });
   });
 });

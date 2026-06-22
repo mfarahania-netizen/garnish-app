@@ -220,18 +220,27 @@ export class ChatOrchestrationService {
 
   /**
    * Is the turn a genuine allergy DECLARATION (vs a question or a retraction)? Deterministic, zero-LLM. Only a
-   * declaration earns the §3 confirm-then-write offer; an interrogative or a negated clause must not.
-   *   - question: a '؟'/'?' anywhere, or a leading interrogative (آیا/مگه/can/is/are/do/does/am…), or "can I"/میتونم.
-   *   - retraction/negation: a negation verb near the allergy (نیستم/ندارم/نداره/not/no longer/never…).
+   * declaration earns the §3 confirm-then-write offer; an interrogative or a RETRACTION must not.
+   *
+   * GUARDIAN-HARDENED: the negation check is SCOPE-AWARE — it suppresses only when the negation ATTACHES to the
+   * allergy assertion (حساس نیستم / آلرژی ندارم / "not allergic"), NOT when an unrelated secondary clause merely
+   * contains a negation ("به گردو حساسیت دارم ولی پسته مشکلی نداره" is a real walnut declaration). A bare نیست/نداره
+   * anywhere would silently DROP common, natural declarations.
    */
   private isAllergyDeclaration(prompt: string): boolean {
     const t = normalizeText(prompt);
     if (!t) return false;
-    if (/[؟?]/.test(t)) return false; // explicit question
+    // questions
+    if (/[؟?]/.test(t)) return false; // explicit question mark
     if (/^(ایا|مگه|مگر|is |are |am |do |does |can |could |should |would |what |which |how |why |when )/.test(t)) return false;
-    if (/(میتونم|میتوانم|میشه|میشود)/.test(t)) return false; // "can I…?" without a question mark (no \b: Persian)
-    if (/(نیستم|نیست|ندارم|نداره|نداشتم|نداریم)/.test(t)) return false; // Persian negation/retraction (no \b: Persian)
-    if (/\b(not|never|no longer|isnt|arent|dont|doesnt|didnt|cant)\b/.test(t)) return false; // English negation (apostrophes stripped)
+    // retraction: negation ATTACHED to the allergy assertion (not any unrelated نیست/نداره elsewhere)
+    if (/حساس\S* ?(نیست|نبود)/.test(t)) return false; // «حساس نیستم» — no longer sensitive
+    if (/(حساسیت|الرژی|آلرژی) ?(ندار|نداشت)/.test(t)) return false; // «حساسیت/آلرژی ندارم»
+    if (/(دیگه|دیگر)[^.!؟?]{0,20}(نمیخورم|نمیخورمش|نمیخوام)/.test(t)) return false; // «دیگه … نمیخورم»
+    // English retraction scoped to the allergy assertion
+    if (/\b(not|never|no longer) (allergic|sensitive)\b/.test(t)) return false;
+    if (/\bno (allergy|allergies)\b/.test(t)) return false;
+    if (/\b(dont|doesnt|didnt) have (an? )?allerg/.test(t)) return false;
     return true;
   }
 

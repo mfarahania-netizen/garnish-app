@@ -76,8 +76,14 @@ const SNAP: BehavioralContextSnapshot = {
   userId: 'u1', generatedAt: '2026-06-14T12:00:00.000Z', schemaVersion: 1, locale: 'fa',
   preferences: {}, signals: {}, consents: ['core'], nutritionSourceLocked: false,
 };
-const KEYS = ['AI_PROVIDER', 'AI_LIVE_ENABLED', 'GEMINI_API_KEY'] as const;
-function setLive() { process.env.AI_PROVIDER = 'gemini'; process.env.AI_LIVE_ENABLED = 'true'; process.env.GEMINI_API_KEY = 'test-fake-key'; }
+const KEYS = ['AI_PROVIDER', 'AI_LIVE_ENABLED', 'GEMINI_API_KEY', 'AI_BUDGET_COOLDOWN_MS', 'AI_BUDGET_5H_MAX_TOKENS', 'AI_BUDGET_DAILY_MAX_TOKENS', 'AI_BUDGET_WEEKLY_MAX_TOKENS', 'AI_BUDGET_MONTHLY_MAX_TOKENS'] as const;
+function setLive() {
+  process.env.AI_PROVIDER = 'gemini'; process.env.AI_LIVE_ENABLED = 'true'; process.env.GEMINI_API_KEY = 'test-fake-key';
+  // Disable the multi-window budget + cooldown here so checkAllWindows short-circuits to allowed — these tests
+  // isolate the ALERT path (the budget gate is covered in persisted-budget-windows.spec).
+  process.env.AI_BUDGET_COOLDOWN_MS = '0';
+  for (const k of ['AI_BUDGET_5H_MAX_TOKENS', 'AI_BUDGET_DAILY_MAX_TOKENS', 'AI_BUDGET_WEEKLY_MAX_TOKENS', 'AI_BUDGET_MONTHLY_MAX_TOKENS']) process.env[k] = '0';
+}
 function provider(): ModelProvider & { generate: jest.Mock } {
   return { name: 'gemini', generate: jest.fn(async () => ({ text: 'a stew', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
 }

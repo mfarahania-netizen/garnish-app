@@ -64,4 +64,24 @@ describe('extractStatedAllergens (conversational-allergy §3, deterministic)', (
     expect(tokens('allergic to peanut')).toEqual(['peanut']);
     expect(tokens('allergic to peanuts')).toEqual(['peanut']);
   });
+
+  // guardian (combined pass): the PERSIAN path used bare substring → short tokens fired inside common words.
+  it('whole-word matching (Persian): short tokens do NOT fire inside common words', () => {
+    expect(tokens('غذا رو توی تنور میپزم')).toEqual([]);   // تن(tuna) ⊄ تنور(oven)
+    expect(tokens('جوجه کباب دوست دارم')).toEqual([]);      // جو(barley) ⊄ جوجه(chicken)
+    expect(tokens('شیرینی نمیخورم')).toEqual([]);           // شیر(milk) ⊄ شیرینی(sweets)
+    expect(tokens('اردک سرخ‌شده')).toEqual([]);             // ارد(آرد/flour) ⊄ اردک(duck)
+    expect(tokens('سفر به کره جنوبی')).toEqual([]);          // کره dropped from dairy (=Korea)
+  });
+
+  it('real Persian declarations alongside non-allergen words capture ONLY the allergen', () => {
+    expect(tokens('من به بادام حساسم ولی جوجه دوست دارم')).toEqual(['nut']); // not [nut, gluten]
+    expect(tokens('به تخم‌مرغ حساسیت دارم، غذا رو توی تنور میپزم')).toEqual(['egg']); // not [egg, fish]
+    expect(tokens('به گردو آلرژی دارم. شیرینی هم نمیخورم')).toEqual(['nut']); // not [nut, dairy]
+  });
+
+  it('standalone short Persian allergen words STILL match (تن/جو as whole words)', () => {
+    expect(tokens('به تن ماهی حساسم')).toEqual(['fish']); // تن standalone (+ ماهی) → fish
+    expect(tokens('به جو حساسیت دارم')).toEqual(['gluten']); // جو standalone → gluten
+  });
 });

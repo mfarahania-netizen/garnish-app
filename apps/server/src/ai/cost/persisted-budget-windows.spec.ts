@@ -7,17 +7,25 @@ const HOUR = 3_600_000;
 const now = new Date('2026-06-22T12:00:00Z');
 const ago = (ms: number) => new Date(now.getTime() - ms);
 
+// checkAllWindows uses findFirst (cooldown) + a SUM aggregate per window. The mock replays the same rows through
+// both, replicating real DB semantics (most-recent row; sum of rows since where.createdAt.gte).
 function makeSvc(rows: Array<{ createdAt: Date; totalTokens: number }>) {
-  const findMany = jest.fn().mockResolvedValue(rows);
-  const prisma = { aICallLog: { findMany } } as any;
-  return { svc: new PersistedDailyBudgetService(prisma), findMany };
+  const findFirst = jest.fn(async () => (rows.length ? rows.reduce((a, b) => (a.createdAt > b.createdAt ? a : b)) : null));
+  const aggregate = jest.fn(async ({ where }: any) => {
+    const gte = where?.createdAt?.gte?.getTime?.() ?? -Infinity;
+    const sum = rows.filter((r) => r.createdAt.getTime() >= gte).reduce((s, r) => s + (r.totalTokens ?? 0), 0);
+    return { _sum: { totalTokens: sum } };
+  });
+  const prisma = { aICallLog: { findFirst, aggregate } } as any;
+  return { svc: new PersistedDailyBudgetService(prisma), findFirst, aggregate };
 }
 
 describe('PersistedDailyBudgetService.checkAllWindows (multi-window + cooldown)', () => {
   it('anonymous user → always allowed, no query issued', async () => {
-    const { svc, findMany } = makeSvc([]);
+    const { svc, findFirst, aggregate } = makeSvc([]);
     expect(await svc.checkAllWindows(null, 100, now)).toEqual({ allowed: true });
-    expect(findMany).not.toHaveBeenCalled();
+    expect(findFirst).not.toHaveBeenCalled();
+    expect(aggregate).not.toHaveBeenCalled();
   });
 
   it('cooldown: a live call within 15s blocks the next one', async () => {
@@ -57,8 +65,8 @@ describe('PersistedDailyBudgetService.checkAllWindows (multi-window + cooldown)'
   });
 
   it('propagates a DB error (caller fails CLOSED)', async () => {
-    const findMany = jest.fn().mockRejectedValue(new Error('db down'));
-    const svc = new PersistedDailyBudgetService({ aICallLog: { findMany } } as any);
+    const findFirst = jest.fn().mockRejectedValue(new Error('db down'));
+    const svc = new PersistedDailyBudgetService({ aICallLog: { findFirst, aggregate: jest.fn() } } as any);
     await expect(svc.checkAllWindows('u1', 0, now)).rejects.toThrow();
   });
 });

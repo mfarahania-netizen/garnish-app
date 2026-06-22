@@ -61,9 +61,16 @@ export function useAssistant() {
     if (!tokens.length || added[index] || inFlight.current.has(index)) return;
     inFlight.current.add(index);
     try {
-      await apiClient.post('/users/allergies', { allergies: tokens });
+      // Trust the SERVER's authoritative {added} set, not the HTTP status: addAllergies silently drops any
+      // off-allowlist token (still 200), so never claim an allergy was saved when it wasn't.
+      const res = await apiClient.post('/users/allergies', { allergies: tokens });
+      const added = Array.isArray(res?.data?.added) ? res.data.added : [];
+      const missing = tokens.filter((t) => !added.includes(t));
       setAdded((s) => ({ ...s, [index]: true }));
-      setMessages((m) => [...m, { role: 'ai', text: 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.' }]);
+      const text = missing.length === 0
+        ? 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.'
+        : 'بعضی موارد رو نتونستم ذخیره کنم — لطفاً از پروفایلت دستی اضافه‌شون کن.';
+      setMessages((m) => [...m, { role: 'ai', text }]);
     } catch {
       setMessages((m) => [...m, { role: 'ai', text: 'الان نتونستم ذخیره‌اش کنم — می‌تونی از پروفایلت دستی اضافه‌اش کنی.' }]);
     } finally {

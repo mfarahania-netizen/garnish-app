@@ -45,6 +45,17 @@ describe('AI cost rate catalog (E47-A10C)', () => {
     expect(estimateCostUsdFromCatalog(ref.provider, ref.model, 1000, 1000).cost).toBeNull();
   });
 
+  it('a reference row is keyed to the PINNED adapter id so promotion actually resolves (no silent null)', () => {
+    // guardian: placeholder ids ('gemini-flash') would never match the live lookup key ('gemini-2.5-flash'),
+    // so a "promoted" rate would silently compute null. Pin at least one row to the adapter's DEFAULT_MODEL.
+    const flash = REFERENCE_RATES_2026.find((r) => r.model === 'gemini-2.5-flash');
+    expect(flash).toBeDefined();
+    // simulate promotion: activate + spread into a catalog, then the runtime key must resolve + compute a cost.
+    const promoted = [{ ...flash!, isActive: true }];
+    expect(getActiveRate('gemini', 'gemini-2.5-flash', promoted)).not.toBeNull();
+    expect(estimateCostUsdFromCatalog('gemini', 'gemini-2.5-flash', 1_000_000, 1_000_000, promoted).cost).toBeGreaterThan(0);
+  });
+
   it('unknown model/rate → estimatedCostUsd null (production catalog)', () => {
     const e = estimateCostUsdFromCatalog('gemini', 'gemini-2.5-flash', 1000, 1000);
     expect(e.cost).toBeNull();

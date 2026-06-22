@@ -79,8 +79,8 @@ export class PersistedDailyBudgetService {
 
   /**
    * MULTI-WINDOW per-user budget + cooldown (founder: 5h/daily/weekly/monthly caps + a 15s gap between live
-   * calls). ONE query pulls the user's real-provider rows within the widest window; the cooldown and every
-   * rolling window are computed in memory from that one result set (no per-window round-trips). Anonymous user →
+   * calls). DB-AGGREGATE-based (guardian-hardened): one findFirst for the cooldown + one bounded sum aggregate per
+   * window — NOT an unbounded findMany that loads up to a 30-day row set into Node on every call. Anonymous user →
    * always allowed (the per-request cap still guards each call). Rolling windows (now − duration), not calendar.
    * Throws on DB error — the caller fails CLOSED (no paid call when the budget cannot be verified).
    */
@@ -93,33 +93,32 @@ export class PersistedDailyBudgetService {
     const policy = resolveAiCostPolicy();
     const windows = policy.perUserBudgetWindows.filter((w) => w.maxTokens != null);
     const cooldownMs = Math.max(0, policy.perUserCooldownMs ?? 0);
-    const widest = Math.max(cooldownMs, 0, ...windows.map((w) => w.durationMs));
-    if (widest <= 0) return { allowed: true }; // nothing configured
+    if (cooldownMs <= 0 && windows.length === 0) return { allowed: true }; // nothing configured
 
-    const since = new Date(now.getTime() - widest);
-    const rows = await this.prisma.aICallLog.findMany({
-      where: {
-        userId,
-        createdAt: { gte: since },
-        provider: { not: STUB_PROVIDER_NAME },
-        usageSource: { in: ['provider', 'estimated'] },
-      },
-      select: { createdAt: true, totalTokens: true },
-    });
-
+    const realProvider = { userId, provider: { not: STUB_PROVIDER_NAME }, usageSource: { in: ['provider', 'estimated'] } };
     const nowMs = now.getTime();
-    // cooldown: reject if the most recent live call was within the cooldown window.
-    if (cooldownMs > 0 && rows.length > 0) {
-      const lastMs = Math.max(...rows.map((r) => r.createdAt.getTime()));
-      if (nowMs - lastMs < cooldownMs) {
+
+    // cooldown: most-recent real-provider call (one indexed row), not a scan.
+    if (cooldownMs > 0) {
+      const last = await this.prisma.aICallLog.findFirst({
+        where: realProvider,
+        orderBy: { createdAt: 'desc' },
+        select: { createdAt: true },
+      });
+      if (last && nowMs - last.createdAt.getTime() < cooldownMs) {
         return { allowed: false, window: 'cooldown', reason: 'cooldown' };
       }
     }
 
+    // each window: a bounded SUM aggregate (DB-side), checked tightest-first so the most relevant cap reports.
     const est = Math.max(0, estimatedTokens ?? 0);
-    for (const w of windows) {
-      const start = nowMs - w.durationMs;
-      const consumed = rows.reduce((s, r) => (r.createdAt.getTime() >= start ? s + (r.totalTokens ?? 0) : s), 0);
+    const ordered = [...windows].sort((a, b) => a.durationMs - b.durationMs);
+    for (const w of ordered) {
+      const agg = await this.prisma.aICallLog.aggregate({
+        _sum: { totalTokens: true },
+        where: { ...realProvider, createdAt: { gte: new Date(nowMs - w.durationMs) } },
+      });
+      const consumed = agg._sum.totalTokens ?? 0;
       if (consumed + est > (w.maxTokens as number)) {
         return { allowed: false, window: w.id, reason: `budget_exceeded_${w.id}`, consumedTokens: consumed, limit: w.maxTokens as number };
       }

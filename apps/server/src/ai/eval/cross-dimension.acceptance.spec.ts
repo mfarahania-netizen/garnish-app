@@ -89,7 +89,15 @@ describe('AI cross-dimension acceptance', () => {
     const now = new Date('2026-06-22T12:00:00Z');
     const ago = (ms: number) => new Date(now.getTime() - ms);
     const svc = (rows: Array<{ createdAt: Date; totalTokens: number }>) =>
-      new PersistedDailyBudgetService({ aICallLog: { findMany: async () => rows } } as any);
+      new PersistedDailyBudgetService({
+        aICallLog: {
+          findFirst: async () => (rows.length ? rows.reduce((a, b) => (a.createdAt > b.createdAt ? a : b)) : null),
+          aggregate: async ({ where }: any) => {
+            const gte = where?.createdAt?.gte?.getTime?.() ?? -Infinity;
+            return { _sum: { totalTokens: rows.filter((r) => r.createdAt.getTime() >= gte).reduce((s, r) => s + r.totalTokens, 0) } };
+          },
+        },
+      } as any);
 
     it('blocks over the 5h window, blocks within cooldown, allows when clear', async () => {
       expect((await svc([{ createdAt: ago(20_000), totalTokens: 65_000 }]).checkAllWindows('u', 0, now)).window).toBe('5h');

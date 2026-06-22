@@ -19,7 +19,7 @@ export interface ExtractedAllergen {
 const ALLERGEN_LEXICON: Array<{ token: string; label: string; names: string[] }> = [
   { token: 'peanut', label: 'بادام‌زمینی', names: ['بادام زمینی', 'بادوم زمینی', 'peanut', 'groundnut', 'pinda'] },
   { token: 'nut', label: 'آجیل/مغزها', names: ['گردو', 'بادام', 'بادوم', 'خشکبار', 'پسته', 'فندق', 'بادام هندی', 'کاجو', 'نارگیل', 'مغز', 'اجیل', 'nut', 'tree nut', 'treenut', 'walnut', 'almond', 'pistachio', 'hazelnut', 'cashew', 'pecan', 'macadamia', 'brazil nut', 'noot', 'noten', 'walnoot', 'amandel'] },
-  { token: 'dairy', label: 'لبنیات', names: ['شیر', 'لبنیات', 'پنیر', 'ماست', 'خامه', 'کره', 'لاکتوز', 'dairy', 'milk', 'cheese', 'yogurt', 'lactose', 'melk', 'kaas', 'zuivel'] },
+  { token: 'dairy', label: 'لبنیات', names: ['شیر', 'لبنیات', 'پنیر', 'ماست', 'خامه', 'لاکتوز', 'dairy', 'milk', 'cheese', 'yogurt', 'lactose', 'melk', 'kaas', 'zuivel'] }, // کره dropped: کره=Korea collides; شیر/پنیر/ماست/خامه/لبنیات cover dairy
   { token: 'egg', label: 'تخم‌مرغ', names: ['تخم مرغ', 'تخممرغ', 'تخم‌مرغ', 'egg', 'eggs', 'ei', 'eieren'] },
   { token: 'gluten', label: 'گلوتن', names: ['گلوتن', 'گندم', 'جو', 'آرد', 'نان', 'gluten', 'wheat', 'barley', 'rye', 'tarwe'] },
   { token: 'shellfish', label: 'صدف و سخت‌پوستان', names: ['صدف', 'میگو', 'خرچنگ', 'خرچنگ دریایی', 'حلزون', 'shellfish', 'shrimp', 'prawn', 'crab', 'lobster', 'crustacean', 'mollusc', 'schaaldier', 'schaaldieren', 'garnaal'] },
@@ -47,33 +47,37 @@ export const CANONICAL_ALLERGEN_TOKENS: ReadonlySet<string> = new Set(ALLERGEN_L
  * the lexicon order (peanut before nut so "بادام‌زمینی" resolves to peanut, not nut). Over-detection is acceptable
  * (the confirm step lets the user reject); a MISS is the only costly error, so the name lists are generous.
  *
- * Matching rule (guardian-hardened): a single ASCII-Latin word (e.g. 'nut','fish','egg','soy') matches only on a
- * WHOLE-WORD boundary (+ optional English plural -s) so it never fires inside another word — 'nut' must not match
- * coconut/butternut/nutmeg, 'fish' must not match shellfish/jellyfish, 'egg' must not match eggplant. Persian and
- * multi-word names keep substring matching (with the consume-on-match strip that separates بادام‌زمینی from بادام).
+ * Matching rule (guardian-hardened, BOTH scripts): a name matches only on a WHOLE-WORD boundary, never inside a
+ * longer word. ASCII-Latin single words use \b (+ optional plural -s) so 'nut' ≠ coconut/butternut/nutmeg, 'fish'
+ * ≠ shellfish/jellyfish, 'egg' ≠ eggplant. Persian/multi-word names use a UNICODE letter-boundary (the name must
+ * be flanked by a non-letter or a string edge) so 'تن'(tuna) ≠ تنور(oven), 'شیر'(milk) ≠ شیرینی(sweets), 'جو'
+ * (barley) ≠ جوجه(chicken). A matched non-Latin name is consumed from the working text so a longer allergen does
+ * not leak into a shorter one (peanut 'بادام زمینی' is stripped before nut 'بادام' is scanned).
  */
 export function extractStatedAllergens(text: unknown): ExtractedAllergen[] {
   const t = normalizeText(text);
   if (!t) return [];
   const out: ExtractedAllergen[] = [];
   const seen = new Set<string>();
-  let scan = t; // mutated only for substring (Persian/multi-word) matches so a longer name cannot leak into a shorter one
+  let scan = t; // mutated for non-Latin matches so a longer name cannot leak into a shorter one
   for (const e of NORM_LEXICON) {
     for (const name of e.names) {
       if (!name) continue;
-      const latinWord = /^[a-z]+$/.test(name); // single ASCII word → whole-word match (no substring leakage)
+      const latinWord = /^[a-z]+$/.test(name); // single ASCII word
       let hit: boolean;
       if (latinWord) {
-        hit = new RegExp(`\\b${name}s?\\b`).test(scan); // word boundary + optional plural -s
+        hit = new RegExp(`\\b${name}s?\\b`).test(scan); // ASCII word boundary + optional plural -s
       } else {
-        hit = scan.includes(name); // Persian / multi-word / tokens with digits
+        // Persian / multi-word: name must be flanked by a non-letter or a string edge (\b is ASCII-only and never
+        // sits between two Persian letters, so it cannot be used here). Names hold only letters/spaces — safe in a regex.
+        hit = new RegExp(`(^|[^\\p{L}])${name}([^\\p{L}]|$)`, 'u').test(scan);
       }
       if (hit) {
         if (!seen.has(e.token)) {
           seen.add(e.token);
           out.push({ token: e.token, label: e.label });
         }
-        if (!latinWord) scan = scan.split(name).join(' '); // consume the substring mention before later overlapping tokens
+        if (!latinWord) scan = scan.split(name).join(' '); // consume the mention before later overlapping tokens
       }
     }
   }
