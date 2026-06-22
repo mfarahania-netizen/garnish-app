@@ -212,4 +212,13 @@ describe('EventQualityService — P0 taste signals survive a burst (guardian whf
       expect(q.isValid).toBe(true); // pre-fix: dropped as "bot" → no UserEvent → starved learning loop
     },
   );
+
+  it('two DISTINCT removes on the same 36-char-UUID recipe within 2s are BOTH valid (no slice(0,50) collision)', () => {
+    const svc = new EventQualityService();
+    const recipeId = '3f2504e0-4f89-41d3-9a0c-0305e82c3301'; // real uuid length — the prefix used to truncate here
+    const a = svc.assess({ userId: 'u', type: 'ingredient_removed', payload: { recipeId, ingredient: 'قارچ' } });
+    const b = svc.assess({ userId: 'u', type: 'ingredient_removed', payload: { recipeId, ingredient: 'پیاز' } });
+    expect(a.isValid).toBe(true);
+    expect(b.isValid).toBe(true); // pre-fix: identical 50-char key → dropped as 'duplicate'
+  });
 });

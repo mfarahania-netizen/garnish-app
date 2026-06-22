@@ -158,6 +158,19 @@ export class EventQualityService {
   }
 
   /**
+   * Whole-payload fingerprint for dedup keys — a djb2 hash over the FULL serialized payload, NOT a 50-char
+   * prefix. The prefix form collided when recipeId is a 36-char UUID (the prefix ended inside recipeId, before
+   * the differentiating field), silently collapsing two distinct deliberate actions on the same recipe. The
+   * hash discriminates the entire payload while keeping the key short.
+   */
+  private payloadFingerprint(payload: unknown): string {
+    const s = JSON.stringify(payload || {});
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36);
+  }
+
+  /**
    * Accidental double-fire guard for DELIBERATE signals only: true iff the SAME (userId, type, payload)
    * was seen strictly within the last DELIBERATE_DEDUP_MS (< 2000ms). Uses a dedicated `ddup:` key so it
    * never touches the bot:/dup: high-frequency counters — two DISTINCT deliberate actions (different
@@ -165,7 +178,7 @@ export class EventQualityService {
    * accepted.
    */
   private isAccidentalDoubleFire(event: { userId: string; type: string; payload?: any }): boolean {
-    const payloadKey = JSON.stringify(event.payload || {}).slice(0, 50);
+    const payloadKey = this.payloadFingerprint(event.payload);
     const key = `ddup:${event.userId}:${event.type}:${payloadKey}`;
     const now = Date.now();
     const last = this.interactionMap.get(key) || [];
@@ -180,7 +193,7 @@ export class EventQualityService {
   }
 
   private checkDuplicate(event: { userId: string; type: string; payload?: any }): boolean {
-    const payloadKey = JSON.stringify(event.payload || {}).slice(0, 50);
+    const payloadKey = this.payloadFingerprint(event.payload);
     const key = `dup:${event.userId}:${event.type}:${payloadKey}`;
     const now = Date.now();
     const timestamps = this.interactionMap.get(key) || [];
