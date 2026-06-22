@@ -7,6 +7,7 @@ import { AiCallLogService } from '../../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from '../../chat/chat-message.service';
 import { ChatOrchestrationService } from '../../chat/chat-orchestration.service';
+import { IntentClassifierService } from '../../intent/intent-classifier.service';
 import { createModelProvider, resolveAiProviderConfig, resolveChatLiveEnabled } from '../../providers/model-provider.factory';
 import { ModelProvider, ModelGenerateInput } from '../../ai-core.types';
 
@@ -131,6 +132,7 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
       screenLiveOutput: async () => ({ safe: true, reason: null }),
       composeDeterministicReply: () => DETERMINISTIC_REPLY,
     } as any,
+    new IntentClassifierService(),
   );
 
   const failures: string[] = [];

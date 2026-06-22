@@ -7,6 +7,7 @@ import { AiCostControllerService } from '../cost/ai-cost-controller.service';
 import { AiCallLogService } from '../logging/ai-call-log.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from './chat-message.service';
+import { IntentClassifierService } from '../intent/intent-classifier.service';
 import { ModelProvider } from '../ai-core.types';
 
 /**
@@ -44,7 +45,7 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
     screenLiveOutput: jest.fn().mockResolvedValue({ safe: true, reason: null }),
     composeDeterministicReply: jest.fn().mockReturnValue(groundedReply),
   } as any;
-  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded);
+  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded, new IntentClassifierService());
   return { svc, model, chatCreate, aiCreate, legacyAi, grounded, groundedReply };
 }
 
@@ -243,5 +244,20 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     expect(out.conversationId).toBe('c-a8-shape');
     expect(out).toHaveProperty('providerMode');
     expect(out).toHaveProperty('aiCallLogId');
+  });
+
+  // P0 DARK wiring (AI_MASTER_SPEC gate: "classify() invoked per turn"): the IntentClassifier runs on every chat
+  // turn and its decision is surfaced — without yet changing routing (dark).
+  it('classifies the intent on every turn (dark — surfaced, routing unchanged)', async () => {
+    setDefault();
+    const { svc, grounded } = makeChat();
+    const greet = await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-int-1' });
+    expect(greet.intent.intent).toBe('greeting_smalltalk');
+
+    const med = await svc.handleChat({ userId: 'u1', prompt: 'برای دیابتم چی بخورم؟', conversationId: 'c-int-2' });
+    expect(med.intent.intent).toBe('medical_or_health_advice');
+    expect(med.intent.tier).toBe('REFUSE');
+    // DARK: classification does NOT yet alter the reply path — the deterministic grounded reply still flows.
+    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
   });
 });

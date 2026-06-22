@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { AiOrchestratorService } from '../orchestrator/ai-orchestrator.service';
+import { IntentClassifierService, IntentClassification } from '../intent/intent-classifier.service';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
@@ -21,6 +22,9 @@ export interface HandleChatResult {
   providerMode: 'gemini' | 'deterministic';
   /** the AICallLog row id for this turn (null if persistence failed). */
   aiCallLogId: string | null;
+  /** the deterministic IntentClassifier decision for this turn — wired DARK (log/observe only; does not yet
+   *  change routing). Captured so its real-traffic accuracy can be measured before any activation gate. */
+  intent: IntentClassification;
 }
 
 const STUB_MODEL = 'stub-model-v0';
@@ -54,10 +58,23 @@ export class ChatOrchestrationService {
     private readonly chatMessages: ChatMessageService,
     private readonly legacyAi: AiService,
     private readonly grounded: GroundedReplyService,
+    private readonly intent: IntentClassifierService,
   ) {}
+
+  private readonly logger = new Logger('ChatOrchestration');
 
   async handleChat(input: HandleChatInput): Promise<HandleChatResult> {
     const conversationId = input.conversationId ?? randomUUID();
+
+    // DARK cost-governor wiring (AI_MASTER_SPEC P0): run the deterministic IntentClassifier on EVERY turn and
+    // RECORD its decision — but do NOT yet change routing (the model tiers need live Gemini, still OFF). This
+    // makes the classifier execute (it was dead code) so its real-traffic accuracy can be measured before any
+    // activation gate; the safety routing (medical→refuse / stated_constraint→confirm-write) is the next sub-piece.
+    const intentDecision = this.intent.classify(input.prompt, { locale: 'fa' });
+    this.logger.log(
+      `intent ${JSON.stringify({ intent: intentDecision.intent, tier: intentDecision.tier, dataScope: intentDecision.dataScope, safetyRelevant: intentDecision.safetyRelevant, confidence: intentDecision.confidence })}`,
+    );
+
     const snapshot = await this.snapshots.build(input.userId, { locale: 'fa' });
 
     // persist the user's message around orchestration
@@ -117,7 +134,7 @@ export class ChatOrchestrationService {
         model: STUB_MODEL,
         contentSafetyStatus: status,
       });
-      return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null };
+      return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null, intent: intentDecision };
     }
 
     // E47-A8 + AI-GROUNDED-ASSISTANT: surface the LIVE, post-guarded model output ONLY when chat-live is
@@ -159,7 +176,7 @@ export class ChatOrchestrationService {
       aiCallLogId,
     });
 
-    return { reply, conversationId, status, providerMode, aiCallLogId };
+    return { reply, conversationId, status, providerMode, aiCallLogId, intent: intentDecision };
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */
