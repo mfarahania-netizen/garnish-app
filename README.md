@@ -59,10 +59,19 @@ universal-first for a Europe/Holland general-public launch — but currently in 
   **grounded** in the real recipe corpus behind a **HARD, server-side allergy gate** (reuses the audited
   `assessRecipeFit`/`analyzeRecipeIntegrity`); the default reply is deterministic. A real live LLM (Gemini)
   sits **behind** the provider interface and stays **OFF** unless explicit env flags are set (see snapshot).
+- **P0 build (2026-06, deterministic / zero-LLM, guardian-converged):** (1) **signal capture** — swap/scale/remove
+  emit real learning events; (2) **IntentClassifier wired DARK** into chat (runs every turn, log-only, no routing
+  change yet — build-then-activate); (3) **§3 conversational-allergy** — a mid-chat allergy declaration ("I'm
+  allergic to nuts", fa/nl/en) is detected → one-tap **confirm-then-write** to the declared set (never auto-write;
+  the deterministic hard gate stays the sole safety source); the same canonical EU-14 allowlist now guards BOTH the
+  chat write and the onboarding/settings write; (4) **multi-window cost budget** (5h/daily/weekly/monthly + 15s
+  cooldown, env-tunable, fail-closed) — **inert until live Gemini**; the rate catalog ships **empty** (no invented
+  prices). A **cross-dimension acceptance test** proves the full chain spoken-word → filtered-recipe.
 - **Boundaries (E47 Annex):** no autonomous agents, no multi-agent/LangGraph, no medical or
   nutrition-specialist claims, no irreversible actions without explicit user confirmation; streaming for chat only.
 - **No image/photo recognition:** there is no real vision capability. The earlier *simulated* "fridge-photo"
-  ingredient detection was removed (no fake placeholder); the assistant is text-only. **AI Core is not complete.**
+  ingredient detection was removed (no fake placeholder); the assistant is text-only. **AI Core is not complete**
+  (live Gemini routing + the admin-analytics AI remain; the EU live flip is legal-gated).
 
 ## 7. BIP (Behavioral Intelligence Platform)
 Base exists (`apps/server/src/behavior-engine`). Envelope design is set (ADR-0001 ✅); full v1
