@@ -101,14 +101,21 @@ describe('SuggestSubstitutionsTool (E47-L4)', () => {
   });
 });
 
-/** Rich-data mock: handles the source OR-query, the `id: { in }` batch resolve, and the category-peers query. */
+/** Rich-data mock: handles the source OR-contains query, the `id:{in}` batch, the name `OR[nameFa/nameEn].in`
+ *  batch (name-only resolve), and the category-peers query. */
 function makeRichPrisma(source: any, refs: any[] = [], peers: any[] = []) {
   const byId = new Map(refs.map((r) => [r.id, r]));
   return {
     ingredient: {
       findMany: jest.fn(async (args: any) => {
-        if (args?.where?.id?.in) return (args.where.id.in as string[]).map((id) => byId.get(id)).filter(Boolean);
-        const isPeerQuery = args?.where?.category !== undefined && args?.where?.NOT !== undefined;
+        const w = args?.where ?? {};
+        if (w.id?.in) return (w.id.in as string[]).map((id) => byId.get(id)).filter(Boolean);
+        // name-only batch resolve uses OR with `.in` (the source query uses OR with `.contains`)
+        if (Array.isArray(w.OR) && (w.OR[0]?.nameFa?.in || w.OR[1]?.nameEn?.in)) {
+          const names = new Set<string>([...(w.OR[0]?.nameFa?.in ?? []), ...(w.OR[1]?.nameEn?.in ?? [])]);
+          return refs.filter((r) => names.has(r.nameFa) || names.has(r.nameEn));
+        }
+        const isPeerQuery = w.category !== undefined && w.NOT !== undefined;
         if (isPeerQuery) return peers;
         return source ? [source] : [];
       }),
@@ -168,5 +175,32 @@ describe('SuggestSubstitutionsTool — rich curated objects (rebuild 2026-06-23)
     const out: any = await tool.handler({ ingredient: 'زعفران' }, ctx);
     // neither option had a `name`; both names came from resolving replaceWithIngredientId
     expect(out.substitutions.every((s: any) => !!s.name && !!s.ingredientId)).toBe(true);
+  });
+
+  // ── guardian-found CRITICAL hole: the NAME-ONLY curated path (no replaceWithIngredientId) bypassed the allergy
+  //    filter (allergens:[] → never dropped). Now name-only options are resolved by exact name + fail-closed. ──
+  it('SAFETY: a NAME-ONLY curated option whose resolved substitute carries an avoided allergen is DROPPED (no id bypass)', async () => {
+    const ALMOND = { id: 'ing_almond', nameFa: 'بادام خام', nameEn: 'raw almond', category: 'آجیل', allergens: { eu14: ['tree_nuts'] } };
+    const SLIVERED = {
+      id: 'ing_slivered', nameFa: 'خلال بادام', nameEn: 'slivered almond', code: 'SLIVERED', category: 'آجیل', allergens: { eu14: ['tree_nuts'] },
+      substitutionOptions: [{ name: 'بادام خام', confidence: 'high' }], // NAME-ONLY (no replaceWithIngredientId)
+    };
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(SLIVERED, [ALMOND]));
+    const out: any = await tool.handler({ ingredient: 'خلال بادام', avoidAllergens: ['nut'] }, ctx);
+    expect(out.substitutions.map((s: any) => s.name)).not.toContain('بادام خام'); // tree_nuts → dropped for 'nut'
+    expect(out.dropped.some((d: any) => d.name === 'بادام خام')).toBe(true);
+  });
+
+  it('SAFETY (fail-closed): an UNRESOLVABLE name-only option is dropped under an active allergy filter, but offered without one', async () => {
+    const SRC = {
+      id: 'ing_rare', nameFa: 'چیز نادر', nameEn: 'rare thing', code: 'RARE', category: 'متفرقه', allergens: { eu14: [] },
+      substitutionOptions: [{ name: 'یک‌چیزِ‌ثبت‌نشده', confidence: 'medium' }], // resolves to NOTHING in the dictionary
+    };
+    const tool = new SuggestSubstitutionsTool(makeRichPrisma(SRC, [])); // no refs → name won't resolve
+    const withFilter: any = await tool.handler({ ingredient: 'چیز نادر', avoidAllergens: ['nut'] }, ctx);
+    expect(withFilter.substitutions).toEqual([]); // unverifiable allergens → fail-closed drop
+    expect(withFilter.dropped.some((d: any) => d.name === 'یک‌چیزِ‌ثبت‌نشده')).toBe(true);
+    const noFilter: any = await tool.handler({ ingredient: 'چیز نادر' }, ctx);
+    expect(noFilter.substitutions.map((s: any) => s.name)).toContain('یک‌چیزِ‌ثبت‌نشده'); // not over-dropped when no filter
   });
 });

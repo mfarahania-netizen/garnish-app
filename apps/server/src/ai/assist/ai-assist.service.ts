@@ -65,14 +65,24 @@ export class AiAssistService {
     if (typeof result.note === 'string') nlStrings.push(result.note);
     for (const key of ['substitutions', 'pairings']) {
       const arr = result[key];
-      if (Array.isArray(arr)) for (const item of arr) if (item && typeof (item as any).reason === 'string') nlStrings.push((item as any).reason);
+      if (Array.isArray(arr))
+        for (const item of arr) {
+          const it = item as any;
+          if (it && typeof it.reason === 'string') nlStrings.push(it.reason);
+          if (it && typeof it.why === 'string') nlStrings.push(it.why); // curated notesFa surfaced by the SubstitutionEngine
+        }
     }
     if (typeof result.instruction === 'string') nlStrings.push(result.instruction);
 
     const verdict = this.nutrition.inspect(nlStrings.join('\n'), { nutritionSourceLocked: sourceLocked });
     if (verdict.blocked) {
+      // neutralize per-item free text that may carry the claim (a curated `why`), preserving the structured data
+      const scrubWhy = (arr: unknown) =>
+        Array.isArray(arr) ? arr.map((it) => (it && typeof it === 'object' ? { ...it, why: null } : it)) : arr;
       return {
         ...result,
+        substitutions: scrubWhy((result as any).substitutions),
+        pairings: scrubWhy((result as any).pairings),
         note: 'این پاسخ فقط راهنمایی آشپزی است؛ ادعای تغذیه‌ای/سلامتی ارائه نمی‌شود.',
         nutritionGuard: 'blocked' as const,
         nutritionGuardReasons: verdict.reasons,

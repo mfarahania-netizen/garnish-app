@@ -101,6 +101,7 @@ export class SuggestSubstitutionsTool implements AiTool {
     let source: any = null;
     let curatedOptions: CuratedOption[] = [];
     const refById = new Map<string, any>();
+    const refByName = new Map<string, any>();
     let categoryPeers: any[] = [];
     try {
       const matches = await this.prisma.ingredient.findMany({
@@ -123,6 +124,26 @@ export class SuggestSubstitutionsTool implements AiTool {
         if (refIds.length) {
           const refs = await this.prisma.ingredient.findMany({ where: { id: { in: refIds } }, select });
           for (const r of refs) refById.set(r.id, r);
+        }
+        // SAFETY: also resolve NAME-only curated options (no replaceWithIngredientId) by EXACT dictionary name, so
+        // we recover the substitute's real allergens before the allergy filter (else they would pass unchecked).
+        const nameOnly = [
+          ...new Set(
+            curatedOptions
+              .filter((o) => !o.replaceWithIngredientId && typeof o.name === 'string')
+              .map((o) => (o.name as string).trim())
+              .filter(Boolean),
+          ),
+        ];
+        if (nameOnly.length) {
+          const byNameRefs = await this.prisma.ingredient.findMany({
+            where: { OR: [{ nameFa: { in: nameOnly } }, { nameEn: { in: nameOnly } }] },
+            select,
+          });
+          for (const r of byNameRefs) {
+            if (r.nameFa) refByName.set(norm(r.nameFa), r);
+            if (r.nameEn) refByName.set(norm(r.nameEn), r);
+          }
         }
         // same-category peers ONLY when there is no curated data (pre-enrichment long tail)
         const sourceLocked =
@@ -160,6 +181,7 @@ export class SuggestSubstitutionsTool implements AiTool {
       basis: 'explicit_option' | 'same_category';
       sharedCategory: string | null;
       allergens: string[]; // canonical dictionary allergens of the SUBSTITUTE
+      allergensKnown: boolean; // true iff resolved to a dictionary entry (else allergens are UNVERIFIED → fail-closed)
       confidence: string | null;
       reasonCode: string | null;
       why: string | null; // human Persian explanation (curated notesFa) or a generated same-role reason
@@ -173,8 +195,13 @@ export class SuggestSubstitutionsTool implements AiTool {
 
     // 1) CURATED options (authoritative) — resolve name + allergens from the referenced ingredient
     for (const opt of curatedOptions) {
-      const ref = opt.replaceWithIngredientId ? refById.get(opt.replaceWithIngredientId) : null;
-      const name = (opt.name || ref?.nameFa || ref?.nameEn || '').trim();
+      // resolve by id first, then by exact name (recovers allergens for the name-only shape)
+      const ref =
+        (opt.replaceWithIngredientId && refById.get(opt.replaceWithIngredientId)) ||
+        (opt.name && refByName.get(norm(opt.name))) ||
+        null;
+      // prefer the RESOLVED name so the displayed substitute always matches the entry whose allergens we filtered
+      const name = (ref?.nameFa || ref?.nameEn || opt.name || '').trim();
       if (!name) continue;
       const key = norm(name);
       if (!key || seen.has(key)) continue;
@@ -185,6 +212,7 @@ export class SuggestSubstitutionsTool implements AiTool {
         basis: 'explicit_option',
         sharedCategory: source.category ?? null,
         allergens: ref ? extractDictionaryAllergens(ref.allergens) : [],
+        allergensKnown: !!ref,
         confidence: typeof opt.confidence === 'string' ? opt.confidence : null,
         reasonCode: typeof opt.reason === 'string' ? opt.reason : null,
         why: (opt.notesFa || opt.note || '').trim() || null,
@@ -205,6 +233,7 @@ export class SuggestSubstitutionsTool implements AiTool {
         basis: 'same_category',
         sharedCategory: peer.category ?? null,
         allergens: extractDictionaryAllergens(peer.allergens),
+        allergensKnown: true, // peers always come from a resolved dictionary row
         confidence: null,
         reasonCode: null,
         why: `هم‌نقش با «${sourceName}» (هر دو در دستهٔ «${peer.category ?? '؟'}»)`,
@@ -234,11 +263,18 @@ export class SuggestSubstitutionsTool implements AiTool {
 
     for (const c of candidates) {
       if (isDisliked(c.name)) continue;
-      // SAFETY: canonical allergy match over the SUBSTITUTE's own dictionary allergens (over-warn is safe)
-      const conflicts = avoidAllergens.length ? allergensConflict(c.allergens, avoidAllergens) : [];
-      if (conflicts.length) {
-        dropped.push({ name: c.name, allergen: conflicts[0] });
-        continue;
+      // SAFETY (fail-closed): when an allergy filter is active, NEVER offer a swap whose allergens we could not
+      // verify against the dictionary — drop the unverifiable ones (over-warn), then canonical-match the rest.
+      if (avoidAllergens.length) {
+        if (!c.allergensKnown) {
+          dropped.push({ name: c.name, allergen: 'نامشخص (آلرژنِ تأییدنشده)' });
+          continue;
+        }
+        const conflicts = allergensConflict(c.allergens, avoidAllergens);
+        if (conflicts.length) {
+          dropped.push({ name: c.name, allergen: conflicts[0] });
+          continue;
+        }
       }
       const reason =
         c.basis === 'explicit_option'
