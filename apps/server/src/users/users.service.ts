@@ -76,6 +76,23 @@ export class UsersService {
     });
   }
 
+  /**
+   * ADDITIVE allergy declaration (conversational-allergy §3 confirm-then-write): ADD allergens to the declared
+   * set WITHOUT replacing it (unlike updatePreferences which set-replaces the whole set). Idempotent
+   * (skipDuplicates). The deterministic hard allergy gate reads this declared set — so once written, the gate
+   * filters the allergen. Names are the canonical chip tokens (e.g. 'nut','peanut','dairy').
+   */
+  async addAllergies(userId: string, names: string[]): Promise<{ added: string[] }> {
+    const clean = [...new Set((names || []).map((n) => String(n ?? '').trim().toLowerCase()).filter(Boolean))];
+    if (!clean.length) return { added: [] };
+    await this.prisma.$transaction(async (tx) => {
+      for (const name of clean) await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });
+      const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true } });
+      await tx.userAllergy.createMany({ data: records.map((a) => ({ userId, allergyId: a.id })), skipDuplicates: true });
+    });
+    return { added: clean };
+  }
+
   async getPreferences(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

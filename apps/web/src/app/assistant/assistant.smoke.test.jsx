@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import AssistantPage from './page';
 
@@ -39,11 +39,13 @@ function makeState(overrides = {}) {
     thinking: false,
     error: false,
     feedback: {},
+    added: {},
     starters: STARTERS,
     send: vi.fn(),
     retry: vi.fn(),
     reset: vi.fn(),
     rate: vi.fn(),
+    confirmAllergens: vi.fn(),
     isEmpty: true,
     ...overrides,
   };
@@ -80,6 +82,43 @@ describe('AssistantPage smoke', () => {
     expect(screen.getByText('پاسخِ AI ممکن است اشتباه کند.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'مفید بود' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'مفید نبود' })).toBeInTheDocument();
+  });
+
+  it('§3: renders the one-tap allergy confirm button and writes on tap', () => {
+    const confirmAllergens = vi.fn();
+    useAssistant.mockReturnValue(
+      makeState({
+        isEmpty: false,
+        confirmAllergens,
+        messages: [
+          { role: 'user', text: 'به گردو حساسم' },
+          { role: 'ai', text: 'متوجه شدم که به آجیل/مغزها حساسیت داری…', suggestedAction: { type: 'add_allergy', allergens: [{ token: 'nut', label: 'آجیل/مغزها' }] } },
+        ],
+      }),
+    );
+    renderWithProviders(<AssistantPage />);
+
+    const btn = screen.getByRole('button', { name: 'افزودن به آلرژی‌هام' });
+    expect(btn).toBeInTheDocument();
+    fireEvent.click(btn);
+    expect(confirmAllergens).toHaveBeenCalledWith(1, [{ token: 'nut', label: 'آجیل/مغزها' }]);
+  });
+
+  it('§3: shows the added confirmation and hides the button once added', () => {
+    useAssistant.mockReturnValue(
+      makeState({
+        isEmpty: false,
+        added: { 1: true },
+        messages: [
+          { role: 'user', text: 'به گردو حساسم' },
+          { role: 'ai', text: 'متوجه شدم…', suggestedAction: { type: 'add_allergy', allergens: [{ token: 'nut', label: 'آجیل/مغزها' }] } },
+        ],
+      }),
+    );
+    renderWithProviders(<AssistantPage />);
+
+    expect(screen.queryByRole('button', { name: 'افزودن به آلرژی‌هام' })).not.toBeInTheDocument();
+    expect(screen.getByText('به آلرژی‌هات اضافه شد')).toBeInTheDocument();
   });
 
   it('renders the thinking state', () => {

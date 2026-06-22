@@ -260,4 +260,27 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     // DARK: classification does NOT yet alter the reply path — the deterministic grounded reply still flows.
     expect(grounded.composeDeterministicReply).toHaveBeenCalled();
   });
+
+  // §3 conversational-allergy (ACTIVE, deterministic, zero-Gemini): a mid-chat allergy DECLARATION must surface a
+  // confirm-then-write offer (decision D2) — never auto-write, never the generic recipe path.
+  it('§3: an allergy declaration returns a confirm-then-write offer (suggestedAction), not the recipe path', async () => {
+    setDefault();
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'من به گردو حساسیت دارم', conversationId: 'c-allergy' });
+    expect(out.intent.intent).toBe('stated_constraint');
+    expect(out.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'nut', label: 'آجیل/مغزها' }] });
+    expect(out.reply).toContain('آجیل/مغزها');
+    expect(out.status).toBe('ok');
+    // confirm-then-write: NOT the orchestrator/grounded recipe path, and nothing is auto-written here.
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
+  });
+
+  it('§3: a declaration with no identifiable allergen asks the user which one (no suggestedAction)', async () => {
+    setDefault();
+    const { svc } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'به یه چیزی توی غذا حساسیت دارم', conversationId: 'c-allergy-2' });
+    expect(out.intent.intent).toBe('stated_constraint');
+    expect(out.suggestedAction).toBeUndefined();
+    expect(typeof out.reply).toBe('string');
+  });
 });

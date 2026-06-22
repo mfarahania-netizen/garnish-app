@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { AiOrchestratorService } from '../orchestrator/ai-orchestrator.service';
 import { IntentClassifierService, IntentClassification } from '../intent/intent-classifier.service';
+import { extractStatedAllergens, ExtractedAllergen } from '../intent/allergen-extractor';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
 import { ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
@@ -25,6 +26,10 @@ export interface HandleChatResult {
   /** the deterministic IntentClassifier decision for this turn — wired DARK (log/observe only; does not yet
    *  change routing). Captured so its real-traffic accuracy can be measured before any activation gate. */
   intent: IntentClassification;
+  /** §3 conversational-allergy: when the user DECLARES an allergy mid-chat, the assistant offers to add it to the
+   *  declared set (confirm-then-write, decision D2). The client renders this as a one-tap confirm → POST
+   *  /users/allergies. Nothing is auto-written; the deterministic gate stays the sole source of truth. */
+  suggestedAction?: { type: 'add_allergy'; allergens: ExtractedAllergen[] };
 }
 
 const STUB_MODEL = 'stub-model-v0';
@@ -69,7 +74,8 @@ export class ChatOrchestrationService {
     // DARK cost-governor wiring (AI_MASTER_SPEC P0): run the deterministic IntentClassifier on EVERY turn and
     // RECORD its decision — but do NOT yet change routing (the model tiers need live Gemini, still OFF). This
     // makes the classifier execute (it was dead code) so its real-traffic accuracy can be measured before any
-    // activation gate; the safety routing (medical→refuse / stated_constraint→confirm-write) is the next sub-piece.
+    // activation gate. The §3 stated_constraint→confirm-write SAFETY route IS active below (deterministic, zero-
+    // Gemini); the model-tier routing (medical→refuse, CHEAP/STRONG) stays dark until live Gemini is gated on.
     const intentDecision = this.intent.classify(input.prompt, { locale: 'fa' });
     this.logger.log(
       `intent ${JSON.stringify({ intent: intentDecision.intent, tier: intentDecision.tier, dataScope: intentDecision.dataScope, safetyRelevant: intentDecision.safetyRelevant, confidence: intentDecision.confidence })}`,
@@ -84,6 +90,34 @@ export class ChatOrchestrationService {
       role: 'user',
       content: input.prompt,
     });
+
+    // §3 CONVERSATIONAL-ALLERGY (ACTIVE, deterministic, zero-Gemini): a mid-chat allergy DECLARATION must never be
+    // silently ignored. Detect → extract the named allergen(s) → offer CONFIRM-then-write (decision D2). We never
+    // auto-write (a misheard line must not fabricate an allergy) and never rely on the LLM summary for safety; the
+    // user's one-tap confirm hits POST /users/allergies and the deterministic hard gate then filters it.
+    if (intentDecision.intent === 'stated_constraint') {
+      const allergens = extractStatedAllergens(input.prompt);
+      const reply = allergens.length
+        ? `متوجه شدم که به ${allergens.map((a) => a.label).join('، ')} حساسیت داری. می‌خوای به پروفایلت اضافه‌اش کنم تا همیشه از غذاهات حذفش کنم و ایمن بمونی؟`
+        : 'به‌نظر رسید یک حساسیت گفتی، ولی مطمئن نشدم دقیقاً کدوم ماده — اسمش رو بگو یا توی پروفایلت اضافه‌اش کن تا همیشه ایمن نگهت دارم.';
+      await this.chatMessages.create({
+        userId: input.userId,
+        conversationId,
+        role: 'assistant',
+        content: reply,
+        model: STUB_MODEL,
+        contentSafetyStatus: 'ok',
+      });
+      return {
+        reply,
+        conversationId,
+        status: 'ok',
+        providerMode: 'deterministic',
+        aiCallLogId: null,
+        intent: intentDecision,
+        ...(allergens.length ? { suggestedAction: { type: 'add_allergy' as const, allergens } } : {}),
+      };
+    }
 
     const chatLiveEnabled = resolveChatLiveEnabled(process.env);
 

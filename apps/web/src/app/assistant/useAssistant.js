@@ -23,6 +23,7 @@ export function useAssistant() {
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState(false);
   const [feedback, setFeedback] = useState({}); // index → 'up'|'down'
+  const [added, setAdded] = useState({}); // message index → true once its allergens were added
   const convId = useRef(undefined);
   const lastPrompt = useRef('');
 
@@ -37,13 +38,32 @@ export function useAssistant() {
       const data = await apiClient.post('/ai/chat', { prompt, conversationId: convId.current }).then((r) => r.data);
       if (data?.conversationId) convId.current = data.conversationId;
       const reply = (typeof data?.reply === 'string' && data.reply.trim()) ? data.reply.trim() : 'الان نتونستم جوابِ روشنی بدم — یه‌جور دیگه بپرس.';
-      setMessages((m) => [...m, { role: 'ai', text: reply }]);
+      // §3 conversational-allergy: a confirm-then-write offer rides on the turn. The user must tap to write it
+      // (decision D2); nothing is auto-saved. Only honor the recognized shape.
+      const sa = data?.suggestedAction;
+      const suggestedAction =
+        sa && sa.type === 'add_allergy' && Array.isArray(sa.allergens) && sa.allergens.length ? sa : undefined;
+      setMessages((m) => [...m, { role: 'ai', text: reply, suggestedAction }]);
     } catch {
       setError(true);
     } finally {
       setThinking(false);
     }
   }, [thinking]);
+
+  // §3 confirm: write the offered allergens to the declared set (POST /users/allergies). The deterministic hard
+  // gate then filters them from every recipe. Optimistic-safe: we only mark "added" after the server confirms.
+  const confirmAllergens = useCallback(async (index, allergens) => {
+    const tokens = [...new Set((allergens || []).map((a) => a && a.token).filter(Boolean))];
+    if (!tokens.length || added[index]) return;
+    try {
+      await apiClient.post('/users/allergies', { allergies: tokens });
+      setAdded((s) => ({ ...s, [index]: true }));
+      setMessages((m) => [...m, { role: 'ai', text: 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.' }]);
+    } catch {
+      setMessages((m) => [...m, { role: 'ai', text: 'الان نتونستم ذخیره‌اش کنم — می‌تونی از پروفایلت دستی اضافه‌اش کنی.' }]);
+    }
+  }, [added]);
 
   const retry = useCallback(() => { if (lastPrompt.current) { setError(false); send(lastPrompt.current); } }, [send]);
   const reset = useCallback(() => { setMessages([]); setThinking(false); setError(false); setFeedback({}); convId.current = undefined; }, []);
@@ -52,5 +72,5 @@ export function useAssistant() {
     try { trackEvent('ai_feedback', { vote }); } catch { /* non-blocking */ }
   }, [trackEvent]);
 
-  return { messages, thinking, error, feedback, starters: STARTERS, send, retry, reset, rate, isEmpty: messages.length === 0 };
+  return { messages, thinking, error, feedback, added, starters: STARTERS, send, retry, reset, rate, confirmAllergens, isEmpty: messages.length === 0 };
 }

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import {
   IconSparkles, IconEdit, IconArrowUp, IconChevronLeft, IconInfoCircle, IconArrowsExchange,
-  IconFridge, IconSalad, IconThumbUp, IconThumbDown, IconCloudOff, IconRefresh,
+  IconFridge, IconSalad, IconThumbUp, IconThumbDown, IconCloudOff, IconRefresh, IconShieldCheck, IconCheck,
 } from '@tabler/icons-react';
 import { useAssistant } from './useAssistant';
 
@@ -86,6 +86,17 @@ export default function AssistantPage() {
                 <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: 'var(--g-space-2) 0 0', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
                   <IconInfoCircle size={13} stroke={1.8} aria-hidden="true" style={{ flexShrink: 0, marginBlockStart: 1 }} />پاسخِ AI ممکن است اشتباه کند.
                 </Text>
+                {/* §3 conversational-allergy: one-tap confirm-then-write. The user must tap to save (decision D2). */}
+                {m.suggestedAction && m.suggestedAction.type === 'add_allergy' && !a.added?.[i] ? (
+                  <UnstyledButton type="button" onClick={() => a.confirmAllergens(i, m.suggestedAction.allergens)} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>
+                    <IconShieldCheck size={15} stroke={1.8} aria-hidden="true" />افزودن به آلرژی‌هام
+                  </UnstyledButton>
+                ) : null}
+                {a.added?.[i] ? (
+                  <Text component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-state-success-text, var(--g-color-brand-600))' }}>
+                    <IconCheck size={14} stroke={2} aria-hidden="true" />به آلرژی‌هات اضافه شد
+                  </Text>
+                ) : null}
                 <FeedbackRow value={a.feedback[i]} onUp={() => a.rate(i, 'up')} onDown={() => a.rate(i, 'down')} />
               </Box>
             )))}

@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { AddAllergiesDto } from './dto/add-allergies.dto';
 import { sanitizeUser } from '../common/serializers/user.serializer';
 
 @Controller('users')
@@ -34,6 +35,14 @@ export class UsersController {
   @Put('preferences')
   async updatePreferences(@Req() req, @Body() dto: UpdatePreferencesDto) {
     return this.usersService.updatePreferences(req.user.userId, dto);
+  }
+
+  // Conversational-allergy §3 confirm-then-write: ADD allergens to the declared set (the target of the in-chat
+  // "add to my allergies" confirm). Additive — never replaces the set; the hard allergy gate then filters them.
+  @UseGuards(AuthGuard('jwt'))
+  @Post('allergies')
+  async addAllergies(@Req() req, @Body() dto: AddAllergiesDto) {
+    return this.usersService.addAllergies(req.user.userId, dto.allergies);
   }
 
   // 🆕 ثبت رضایت‌نامه GDPR
