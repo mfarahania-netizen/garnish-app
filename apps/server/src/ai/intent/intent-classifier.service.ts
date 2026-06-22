@@ -1,0 +1,210 @@
+import { Injectable } from '@nestjs/common';
+
+/**
+ * IntentClassifierService (AI_INTERNALIZATION_ARCH · AI_DESIGN_SPEC §2) — the deterministic COST GOVERNOR.
+ *
+ * A PURE function over the turn text + a light AssistantContext. Zero network, zero LLM, sub-millisecond, fully
+ * unit-testable. It decides whether a turn is answered for €0 (deterministic) or (rarely) reaches a model, and it
+ * enforces the safety rule: a safety-relevant query is NEVER silently answered at a cheap tier on low confidence.
+ *
+ * Output drives least-privilege tool routing + tier selection in the orchestrator. The classifier may only
+ * DOWNGRADE cost when it is confident AND the intent is non-safety; any ambiguity fails toward MORE safety/cost.
+ */
+
+export type IntentName =
+  | 'greeting_smalltalk'
+  | 'unit_conversion'
+  | 'timer_or_time'
+  | 'scaling'
+  | 'substitution'
+  | 'technique_whyitworks'
+  | 'ingredient_facts'
+  | 'recipe_discovery'
+  | 'personal_plan_or_history'
+  | 'nutrition_query'
+  | 'during_cook_problem'
+  | 'stated_constraint'
+  | 'medical_or_health_advice'
+  | 'out_of_domain'
+  | 'feedback'
+  | 'low_confidence_fallback';
+
+/** NONE/CHEAP/STRONG = model-cost tiers; REFUSE = deterministic decline; SPECIAL = the conversational-allergy flow (§3). */
+export type IntentTier = 'NONE' | 'CHEAP' | 'STRONG' | 'REFUSE' | 'SPECIAL';
+export type IntentDataScope = 'none' | 'recipe' | 'recipe_step' | 'ingredient' | 'corpus' | 'user' | 'full';
+export type IntentConfidence = 'high' | 'medium' | 'low';
+
+export interface AssistantContext {
+  route?: string | null;
+  hasRecipeContext?: boolean;
+  currentStepIndex?: number | null;
+  locale?: string | null;
+}
+
+export interface IntentClassification {
+  intent: IntentName;
+  tier: IntentTier;
+  dataScope: IntentDataScope;
+  safetyRelevant: boolean;
+  confidence: IntentConfidence;
+  matched: string[]; // anchors that fired — for explainability/telemetry
+}
+
+interface IntentSpec {
+  intent: IntentName;
+  safetyRelevant: boolean;
+  baseTier: IntentTier;
+  dataScope: IntentDataScope;
+  anchors: string[]; // fa/nl/en keywords (normalized at load)
+}
+
+/* ───────────────────────── Normalization (fa/nl/en) ───────────────────────── */
+
+const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+
+/** Persian: map ي/ك/ة, strip ZWNJ + diacritics, Eastern-Arabic digits → ASCII; shared: lowercase, fold, collapse ws. */
+export function normalizeText(input: unknown): string {
+  let s = typeof input === 'string' ? input : '';
+  if (!s) return '';
+  s = s.replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d)));
+  s = s.replace(/[٠-٩]/g, (d) => String(AR_DIGITS.indexOf(d)));
+  s = s.replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/آ/g, 'ا').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/إ|أ/g, 'ا');
+  s = s.replace(/‌/g, ' ').replace(/[ً-ٰٕ]/g, ''); // ZWNJ → space; strip harakat + hamza-above/below
+  s = s.replace(/['’`]/g, ''); // strip apostrophes: can't → cant, i'm → im
+  s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); // Latin diacritic fold
+  return s.toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+/* ───────────────────────── Structural detectors ───────────────────────── */
+
+const NUMBER_RE = /\b\d+([.,]\d+)?\b/;
+const UNIT_TOKENS = ['گرم', 'کیلو', 'فنجان', 'پیمانه', 'قاشق', 'لیتر', 'میلی', 'cup', 'cups', 'gram', 'grams', 'gr', 'kg', 'ml', 'liter', 'litre', 'tbsp', 'tsp', 'eetlepel', 'theelepel', 'kopje'];
+const PERSON_TOKENS = ['نفر', 'نفره', 'persoon', 'personen', 'people', 'persons', 'serving', 'servings', 'porties'];
+
+const hasNumber = (t: string) => NUMBER_RE.test(t);
+const hasUnit = (t: string) => UNIT_TOKENS.some((u) => t.includes(u));
+const hasPerson = (t: string) => PERSON_TOKENS.some((u) => t.includes(u));
+
+/* ───────────────────────── Intent lexicons (governed param) ───────────────────────── */
+
+const RAW_INTENTS: IntentSpec[] = [
+  { intent: 'greeting_smalltalk', safetyRelevant: false, baseTier: 'NONE', dataScope: 'none',
+    anchors: ['سلام', 'درود', 'خوبی', 'ممنون', 'مرسی', 'خداحافظ', 'hoi', 'hallo', 'hi', 'hello', 'hey', 'thanks', 'thank you', 'bedankt', 'dank je', 'goedemorgen'] },
+  { intent: 'unit_conversion', safetyRelevant: false, baseTier: 'NONE', dataScope: 'none',
+    anchors: ['چند فنجان', 'چند گرم', 'چند پیمانه', 'چند قاشق', 'تبدیل', 'in cups', 'in grams', 'to grams', 'to cups', 'how many cups', 'how many grams', 'convert', 'omrekenen', 'hoeveel gram', 'hoeveel kopjes'] },
+  { intent: 'timer_or_time', safetyRelevant: false, baseTier: 'NONE', dataScope: 'recipe',
+    anchors: ['چقدر بپزه', 'بپزه', 'بپزد', 'بجوشه', 'چند دقیقه', 'چقدر طول', 'چقدر زمان', 'کی آماده', 'how long', 'how many minutes', 'cooking time', 'hoe lang', 'hoeveel minuten', 'kooktijd', 'gaartijd'] },
+  { intent: 'scaling', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
+    anchors: ['برای چند نفر', 'دو برابر', 'نصفش', 'نصف کن', 'مقدار برای', 'verdubbel', 'halveren', 'double the', 'halve the', 'scale', 'portie'] },
+  { intent: 'substitution', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
+    anchors: ['جایگزین', 'به جای', 'عوضش', 'vervang', 'vervanging', 'in plaats van', 'substitute', 'instead of', 'replace', 'swap'] },
+  { intent: 'technique_whyitworks', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'recipe',
+    anchors: ['چرا باید', 'چرا تفت', 'به چه دلیل', 'فایده', 'waarom', 'why do i', 'why should', 'what does it do', 'techniek'] },
+  { intent: 'ingredient_facts', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'ingredient',
+    anchors: ['چیه', 'چیست', 'چی هست', 'درباره', 'wat is', 'what is', 'tell me about', 'wat zijn'] },
+  { intent: 'recipe_discovery', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'corpus',
+    anchors: ['چی بپزم', 'یه غذای', 'غذای سریع', 'پیشنهاد غذا', 'چی درست کنم', 'wat kan ik koken', 'recept voor', 'iets snels', 'what can i cook', 'recipe for', 'suggest a', 'something quick', 'wat zal ik koken'] },
+  { intent: 'personal_plan_or_history', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'user',
+    anchors: ['برنامه ام', 'برنامه این هفته', 'چی پختم', 'لیست خریدم', 'تاریخچه', 'mijn plan', 'mijn weekmenu', 'mijn lijst', 'my plan', 'my week', 'my meal plan', 'what did i cook', 'my shopping list'] },
+  { intent: 'nutrition_query', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'ingredient',
+    anchors: ['کالری', 'چربی', 'پروتئین', 'قند', 'کربوهیدرات', 'ارزش غذایی', 'calorie', 'calories', 'calorieen', 'hoeveel calorieen', 'protein', 'eiwit', 'koolhydraten', 'how much fat', 'sugar', 'nutrition', 'voedingswaarde'] },
+  { intent: 'during_cook_problem', safetyRelevant: true, baseTier: 'STRONG', dataScope: 'recipe_step',
+    anchors: ['بریده شد', 'برید', 'شور شد', 'سوخت', 'شفته شد', 'ته گرفت', 'خراب شد', 'سفت نشد', 'وا رفت', 'geschift', 'aangebrand', 'te zout', 'mislukt', 'curdled', 'burnt', 'too salty', 'too watery', 'not setting', 'went wrong', 'broke', 'soggy', 'mushy'] },
+  { intent: 'stated_constraint', safetyRelevant: true, baseTier: 'SPECIAL', dataScope: 'user', anchors: [] },
+  { intent: 'medical_or_health_advice', safetyRelevant: true, baseTier: 'REFUSE', dataScope: 'none', anchors: [] },
+  { intent: 'out_of_domain', safetyRelevant: false, baseTier: 'REFUSE', dataScope: 'none',
+    anchors: ['آب و هوا', 'هواشناسی', 'فوتبال', 'سیاست', 'بیت کوین', 'weer', 'voetbal', 'politiek', 'weather', 'football', 'soccer', 'politics', 'bitcoin', 'stock', 'translate this'] },
+  { intent: 'feedback', safetyRelevant: false, baseTier: 'NONE', dataScope: 'user',
+    anchors: ['جواب خوب', 'خوب بود', 'عالی بود', 'کمک کرد', 'بد بود', 'اشتباه بود', 'goed antwoord', 'dat hielp', 'slecht', 'good answer', 'that helped', 'not helpful', 'wrong answer', 'thumbs up', 'thumbs down'] },
+];
+
+// pre-normalize anchors so Persian digits/diacritics/ZWNJ in the lexicon match the normalized text
+const INTENTS: IntentSpec[] = RAW_INTENTS.map((s) => ({ ...s, anchors: [...new Set(s.anchors.map(normalizeText).filter(Boolean))] }));
+
+/** generic question-openers — present in many intents, so weak signal (weight 1). */
+const WEAK_ANCHORS = new Set(['چیه', 'چیست', 'چی هست', 'چطور', 'چی', 'what is', 'wat is', 'wat zijn', 'tell me about', 'waarom', 'why do i'].map(normalizeText));
+
+/* ── High-recall SAFETY overrides (recall ≥ 99% by design; over-trigger is acceptable, precision can be lower) ── */
+
+const STATED_CONSTRAINT_PATTERNS: RegExp[] = [
+  /(من|بهم|به من|راستی).{0,25}(حساس|حساسیت|آلرژی|الرژی)/,
+  /(حساسیت|آلرژی|الرژی).{0,25}(دارم|دارن|دارد)/,
+  /نمیتونم.{0,20}بخورم/,
+  /نمیخورم/,
+  /(ik ben|ik heb).{0,20}(allergisch|allergie|intolerant)/,
+  /allergisch voor/,
+  /\b(i ?m|i am|im)\b.{0,20}allergic/,
+  /\bi( ?m| am)? ?(can ?t|cannot) eat/,
+  /\bi( ?m| am)? intolerant/,
+  /allergic to/,
+  /\ballerg(y|ies|ic)/,
+];
+
+const MEDICAL_PATTERNS: RegExp[] = [
+  /دیابت|قند خون|فشار خون|کلسترول|بارداری|باردارم|حامله|شیردهی|نقرس|کبد چرب|سرطان|دارو|قرص|رژیم درمانی/,
+  /\b(diabet|bloeddruk|cholesterol|zwanger|borstvoeding|medicijn|nier|lever|kanker)\b/,
+  /\b(diabet|blood pressure|cholesterol|pregnan|breastfeed|gout|kidney|liver disease|cancer|medication|my meds|prescrib|eating disorder|weight loss diet)/,
+];
+
+@Injectable()
+export class IntentClassifierService {
+  classify(text: unknown, _ctx: AssistantContext = {}): IntentClassification {
+    const t = normalizeText(text);
+    if (!t || t.length < 2) return this.fallback([]);
+
+    // 1) SAFETY OVERRIDES FIRST (high recall — a missed allergy/medical query is the only truly costly error)
+    if (MEDICAL_PATTERNS.some((re) => re.test(t))) {
+      return { intent: 'medical_or_health_advice', tier: 'REFUSE', dataScope: 'none', safetyRelevant: true, confidence: 'high', matched: ['medical_pattern'] };
+    }
+    if (STATED_CONSTRAINT_PATTERNS.some((re) => re.test(t))) {
+      return { intent: 'stated_constraint', tier: 'SPECIAL', dataScope: 'user', safetyRelevant: true, confidence: 'high', matched: ['stated_constraint_pattern'] };
+    }
+
+    // 2) score lexicon intents (single-word anchors match on TOKEN boundary so 'hi' never fires inside 'this')
+    const tokens = new Set(t.split(/[^\p{L}\p{N}]+/u).filter(Boolean));
+    const weightOf = (a: string) => (WEAK_ANCHORS.has(a) ? 1 : a.includes(' ') ? 3 : 2);
+    const fires = (a: string) => (a.includes(' ') ? t.includes(a) : tokens.has(a));
+
+    const scores = new Map<IntentName, { score: number; matched: string[] }>();
+    for (const spec of INTENTS) {
+      let score = 0;
+      const matched: string[] = [];
+      for (const a of spec.anchors) if (fires(a)) { score += weightOf(a); matched.push(a); }
+      if (score > 0) scores.set(spec.intent, { score, matched });
+    }
+
+    // 3) structural boosts
+    const boost = (intent: IntentName, by: number, tag: string) => {
+      const cur = scores.get(intent) ?? { score: 0, matched: [] };
+      cur.score += by;
+      cur.matched.push(tag);
+      scores.set(intent, cur);
+    };
+    if (hasNumber(t) && hasUnit(t)) boost('unit_conversion', 3, '#num+unit');
+    if (hasPerson(t) && (hasNumber(t) || t.includes('چند') || t.includes('hoeveel'))) boost('scaling', 3, '#person+count');
+    if (hasNumber(t) && (t.includes('دقیقه') || t.includes('minu'))) boost('timer_or_time', 2, '#minutes');
+
+    if (scores.size === 0) return this.fallback([]);
+
+    // 4) winner + confidence
+    const ranked = [...scores.entries()].sort((a, b) => b[1].score - a[1].score);
+    const [winnerIntent, winner] = ranked[0];
+    const runnerUp = ranked[1]?.[1].score ?? 0;
+    const spec = INTENTS.find((s) => s.intent === winnerIntent)!;
+    const confidence: IntentConfidence =
+      winner.score >= 4 || (winner.score >= 2 && winner.score - runnerUp >= 2) ? 'high' : 'medium';
+
+    // 5) routing rules + fail-toward-cost safety rule (§2.3 / §2.4)
+    let tier = spec.baseTier;
+    if (tier === 'NONE' && !(confidence === 'high' && !spec.safetyRelevant)) tier = 'CHEAP';
+    if (spec.safetyRelevant && confidence !== 'high' && (tier === 'NONE' || tier === 'CHEAP')) tier = 'STRONG';
+
+    return { intent: winnerIntent, tier, dataScope: spec.dataScope, safetyRelevant: spec.safetyRelevant, confidence, matched: winner.matched };
+  }
+
+  /** low-confidence / no signal → STRONG + full grounding, treated as safety-relevant (fail toward safety). */
+  private fallback(matched: string[]): IntentClassification {
+    return { intent: 'low_confidence_fallback', tier: 'STRONG', dataScope: 'full', safetyRelevant: true, confidence: 'low', matched };
+  }
+}

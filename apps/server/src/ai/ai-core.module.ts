@@ -23,6 +23,7 @@ import { MatchPantryRecipesTool } from './tools/match-pantry-recipes.tool';
 import { ExplainRecipeStepTool } from './tools/explain-recipe-step.tool';
 import { SuggestPairingsTool } from './tools/suggest-pairings.tool';
 import { AiAssistService } from './assist/ai-assist.service';
+import { IntentClassifierService } from './intent/intent-classifier.service';
 
 /**
  * AI Core v1 skeleton (E47-A1).
@@ -59,6 +60,7 @@ import { AiAssistService } from './assist/ai-assist.service';
     ExplainRecipeStepTool,
     SuggestPairingsTool,
     AiAssistService,
+    IntentClassifierService,
     { provide: AI_MODEL_PROVIDER, useFactory: () => createModelProvider(resolveAiProviderConfig()) },
   ],
   exports: [
@@ -70,6 +72,7 @@ import { AiAssistService } from './assist/ai-assist.service';
     ChatMessageService,
     UserFactService,
     AiAssistService,
+    IntentClassifierService,
   ],
 })
 export class AiCoreModule {}
