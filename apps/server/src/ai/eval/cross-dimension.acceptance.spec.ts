@@ -83,6 +83,16 @@ describe('AI cross-dimension acceptance', () => {
         expect(canon.every((c) => typeof c === 'string' && c.length > 0)).toBe(true);
       }
     });
+    // strengthened after the critical fail-open find: the prior length>0 check was misleading — a chip token must
+    // INTERSECT the REAL Persian recipe-corpus tokens, not just canonicalize to something. (Full corpus matrix lives
+    // in recipe-allergen-corpus.spec; this is the capstone's honest spot-check of the actual fail-open class.)
+    it('declared chips INTERSECT the real Persian recipe tokens (the fail-open class)', () => {
+      expect(allergensConflict(['آجیل'], ['nut']).length).toBeGreaterThan(0); // recipe Persian 'آجیل' vs chip 'nut'
+      expect(allergensConflict(['لبنیات'], ['dairy']).length).toBeGreaterThan(0);
+      expect(allergensConflict(['تخم‌مرغ'], ['egg']).length).toBeGreaterThan(0); // ZWNJ form, as authored
+      expect(allergensConflict(['میگو'], ['shellfish']).length).toBeGreaterThan(0);
+      expect(allergensConflict(['ماهی'], ['nut'])).toEqual([]); // and does NOT over-block (fish recipe, nut allergy)
+    });
   });
 
   describe('D5 — cost governor (multi-window budget + cooldown)', () => {
