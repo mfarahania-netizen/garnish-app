@@ -12,7 +12,8 @@
 2. Read `docs/GARNISH_GROUND_TRUTH.md` (authoritative project state) + `docs/audit/AI_MASTER_SPEC.md` (the AI design, **where fragments disagree, it wins**).
 3. Read the auto-loaded `MEMORY.md` index (it is already in context every session) — it links the standing facts.
 4. Confirm the repo is green before touching anything (see §4 verify command), then pick up §6 (pending) / §7 (next).
-5. Work the §1 method **word-for-word**. Do not start a new capability without a guardian loop.
+5. Work the §1 method **word-for-word**. Do not start a new capability without the **tiered** guardian (Tier 0 deterministic always; the swarm only at milestones — see `docs/audit/GUARDIAN_PROTOCOL.md`, which replaces the expensive per-piece swarm).
+6. **Resuming after a Codex/ChatGPT session?** First read `docs/audit/CODEX_WORK_LOG.md`, then run the verification protocol in `docs/audit/CODEX_BRIDGE.md` (§FOR CLAUDE) — must be green + safe before you continue. Baseline for that diff = `6b584134`.
 
 ---
 
