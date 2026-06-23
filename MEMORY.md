@@ -1,0 +1,38 @@
+# Garnish Memory Index
+
+Last updated: 2026-06-23
+
+## Non-negotiable method
+- Advisor mode: confidence tags, direct disagreement when needed, no flattery, no inflated state.
+- Every piece uses guardian discipline: find -> verify -> fix -> re-verify until convergence.
+- Deterministic-first; the LLM narrates deterministic facts and never decides safety, quantities, or truth.
+- Allergy/safety gate stays outside the LLM, pre+post, fail-closed. Learning may only change data the core reads.
+- Live Gemini requires founder VPN. Stop and ask before any live Gemini call. `PRODUCTION_RATE_CATALOG` stays empty until VPN-verified rates are promoted.
+
+## Current AI phase
+- We are at the tail of P0: Observability + Cost Honesty + Safety-Wiring.
+- P1 is not started: multi-turn memory, fa/nl/en TemplateRegistry, repair, retrieval, groundedness.
+- Rate catalog remains blocked on VPN.
+
+## Latest completed work: requestId echo propagation
+- Date: 2026-06-23.
+- Scope: recommendation served-slate `requestId` propagation for impression attribution.
+- What works now: `RecommendationPipelineService` generates `requestId`; Home preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; server passes it into analytics payload; existing `RecommendationSignalProcessor` can persist it into `RecommendationAttributionEvent.requestId`.
+- Tests run: targeted server + targeted web; full server `246 suites / 2009 tests`; full web `36 files / 169 tests`; web build pass; `git diff --check` clean.
+- Closure status: NOT 100%. Unit and propagation tests are green, but the dimension is not fully closed until an end-to-end integration/capstone proves `trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` and learner join behavior.
+
+## Dimension closure rule going forward
+For every AI/spec dimension or piece, close with:
+1. What the dimension must do.
+2. Exact pass/fail gates from `docs/audit/AI_MASTER_SPEC.md`.
+3. Files changed and runtime path.
+4. Unit + integration/acceptance tests run.
+5. Whether it is 100% closed.
+6. If not 100%, exact remaining gaps and next smallest step.
+
+## Immediate next step
+Do not jump to EventOutbox producer flip yet. First add the requestId end-to-end capstone/integration test so the current Learning/Observability dimension closure moves from ~75% to 100% if it passes.
+
+## Known repo/document caveats
+- `apps/web` currently has no `tsconfig*.json` and no local `typescript` dependency; documented `npx tsc --noEmit` is not a real web gate yet.
+- Existing unrelated modified files before this work: `docs/qa/ai/e47_a12_ai_internal_pilot_readiness_results.json`, `docs/qa/analytics/e43_a2_event_producer_migration_results.json`.

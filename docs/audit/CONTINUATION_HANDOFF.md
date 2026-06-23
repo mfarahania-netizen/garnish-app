@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-22, at `master` `e37a36cd`.
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-23, working tree after requestId echo propagation (uncommitted unless founder asks).
 
 ---
 
@@ -33,6 +33,16 @@ When Opus budget is scarce (e.g. weekly cap near reset), **match the work to the
 - **Do NOT originate net-new architecture with Sonnet** — re-auditing 2 days of Sonnet-built architecture with Opus costs nearly as much as building it, and risks correlated blind spots. Defer P1 origination to Opus.
 - After a reset: Opus audits **premises**, not line-by-line (tests + guardian already cover lines).
 
+## 1c. DIMENSION CLOSURE RULE — mandatory at the end of every AI/spec dimension
+At the end of each dimension/piece, report and record:
+1. What the dimension must do for the product.
+2. Exact pass/fail gates from `AI_MASTER_SPEC.md`.
+3. Files/runtime path changed.
+4. Unit + integration/acceptance tests run.
+5. Whether it is 100% closed.
+6. If not 100%, exact remaining gaps and next smallest step.
+
+Never mark a dimension 100% because general tests passed. Mark 100% only when the dimension-specific unit + integration/capstone gates pass and no external gate (VPN/legal/native-review/etc.) remains.
 ---
 
 ## 2. STANDING CONSTRAINTS — verbatim, do not violate
@@ -53,10 +63,10 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 ---
 
 ## 4. CURRENT STATE (verify before trusting — re-stamp at each milestone)
-- Branch `master`, last commit `e37a36cd`. **246 server suites / 2007 tests green; web 36 suites / 171 tests; `tsc --noEmit` clean.**
+- Branch `master`; current working tree includes requestId echo propagation. **Verified 2026-06-23: server 246 suites / 2009 tests green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
 - **P0 AI build: complete + guardian-converged.** Shipped & verified: EU-14 allergen engine + canonicalization; IntentClassifier (the €0 cost+safety router) wired on every chat turn (dark/log-only); §3 conversational-allergy (declare → confirm → one-tap write → hard gate); multi-window cost budget (5h/daily/weekly/monthly + 15s cooldown, **inert** until live Gemini); SubstitutionEngine; signal capture; the cross-dimension acceptance capstone (`apps/server/src/ai/eval/cross-dimension.acceptance.spec.ts`).
 - **CRITICAL bug the guardian caught & closed:** the hard allergy gate was silently **failing open on the entire live recipe corpus** — recipes author allergens in Persian (آجیل/گلوتن/لبنیات/…), the canonicalizer was English-only → a nut-allergic user was served nut dishes. Fixed (Persian+Dutch canonicalization in `recipe-integrity.ts`) and locked with a regression test that reads the real shipped corpus.
-- **Verify command (run first in a new chat):** from `apps/server` → `npm test`; from `apps/web` → `npm test` + `npx tsc --noEmit`. Must be green before any new work.
+- **Verify command (run first in a new chat):** from `apps/server` → `npm test`; from `apps/web` → `npm test` + `npm run build`. Do **not** claim web `tsc --noEmit` until `apps/web` has a real `tsconfig*.json` + local `typescript` dependency.
 
 ---
 
@@ -64,10 +74,10 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
 - ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
 - ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
-- 🔧 **REMAINS (not blocked, not started):** make the multi-window cost/quota layer **Redis-atomic** (today it is DB-aggregate, single-instance-correct only); full end-to-end **`requestId` echo** verification (served→reward, the "irreversible" step); confirm `EventOutbox` producers are flipped from `not_started` and turn events emit tier-tagged.
+- 🔧 **REMAINS / UPDATED:** multi-window cost/quota still needs **Redis-atomic**; `requestId` echo propagation is now built + unit/full-suite verified, but **NOT 100% dimension-closed** until an end-to-end capstone proves `trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` and learner join behavior; confirm `EventOutbox` producers are flipped from `not_started` and turn events emit tier-tagged.
 - ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is a fork:** (a) close the non-blocked P0 tail (Redis cost atomicity + `requestId` echo + outbox producer flip) — mostly mechanical/infra, Sonnet-capable with the guardian; OR (b) start P1 design with Opus (multi-turn memory first). The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
+**The immediate next work is now:** finish the `requestId` dimension closure with an end-to-end/capstone integration test. After that, continue the non-blocked P0 tail: EventOutbox producer flip/tier-tagged assistant turns, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
 
 ---
 
@@ -84,6 +94,18 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 - **BUILD:** piece 1 (guest spine) **DONE + guardian-converged — backend-only**; the onboarding allergen chips were expanded 8→13 this session. The rest of the onboarding FE (the S0→S4 screens) lands with the **FE reset / redesign** track (`garnish-fe-reset`: old UI wiped, rebuilt screen-by-screen, all 14 screens + a web smoke-test net merged).
 - **REMAINS:** the effort lever wire (cooking_time persistence + the ranking effort term + graded effortFit), un-bundled personalization consent asked at a high-engagement moment, diet/no-pork behind a pork-coverage audit, and FE wiring of the safe-slate S0→S4 flow. A Dutch IP/privacy lawyer signs off wording/scope before public EU launch (NOT a build blocker — the safe default ships).
 
+## 4d. LATEST DIMENSION CLOSURE SNAPSHOT — requestId echo (2026-06-23)
+**Dimension(s):** Learning & Adaptation + Observability/Cost/Ops substrate.
+
+**What this dimension must do:** every served recommendation slate must be joinable to later reward/action events by `requestId`, so L1/P4 learning can connect exposure -> reward at recipe/position/propensity grain. This is irreversible: missed requestIds cannot be recovered later.
+
+**What is built now:** `RecommendationPipelineService` already generated a slate `requestId`; Home now preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; `RecommendationController.trackImpression` passes it into analytics payload; existing `RecommendationSignalProcessor` reads `payload.requestId` and writes `RecommendationAttributionEvent.requestId`.
+
+**Verification run:** targeted server test green; targeted web hook test green; full server `246 suites / 2009 tests`; full web `36 files / 169 tests`; web production build green; `git diff --check` clean.
+
+**Is it 100% closed?** No. Current confidence: ~75-80%. The propagation path is covered, but the dimension is not complete until a capstone/integration test proves `POST /recommendations/impression -> UserEvent payload -> EventOutbox/processNow/drain -> RecommendationAttributionEvent.requestId`, plus learner join behavior.
+
+**Next smallest step:** add the end-to-end requestId attribution capstone before moving to EventOutbox producer flip.
 ---
 
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)

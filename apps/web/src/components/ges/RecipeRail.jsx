@@ -31,7 +31,7 @@ export default function RecipeRail({ title, icon: Icon, items = [], onSeeAll, on
         style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', marginInline: 'calc(var(--g-space-4) * -1)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-1)' }}
       >
         {items.map((it) => (
-          <Box key={it.recipeId} ref={registerImpression ? registerImpression(it.recipeId) : undefined} style={{ inlineSize: 188, flexShrink: 0 }}>
+          <Box key={it.recipeId} ref={registerImpression ? registerImpression(it.recipeId, it.requestId) : undefined} style={{ inlineSize: 188, flexShrink: 0 }}>
             <RecipeCard
               compact
               title={it.title}

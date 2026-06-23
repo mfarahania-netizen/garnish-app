@@ -25,3 +25,31 @@ describe('RecommendationController — placeholder routes return honest 501', ()
     await expect(call()).rejects.toBeInstanceOf(NotImplementedException);
   });
 });
+
+describe('RecommendationController — requestId echo for attribution', () => {
+  it('passes impression requestId into analytics payload so served and reward rows are joinable', async () => {
+    const exposureTracking = { trackExposures: jest.fn().mockResolvedValue(undefined) };
+    const analytics = { trackEvent: jest.fn().mockResolvedValue(undefined) };
+    const c = new RecommendationController(
+      {} as any,
+      exposureTracking as any,
+      {} as any,
+      {} as any,
+      {} as any,
+      analytics as any,
+    );
+
+    const result = await c.trackImpression(
+      { user: { userId: 'u1' } } as any,
+      { recipeIds: ['r1'], viewportMs: 1200, visibleRatio: 0.75, source: 'home', requestId: 'req-123' },
+    );
+
+    expect(result).toMatchObject({ accepted: true, learned: true, trackedRecipeIds: ['r1'] });
+    expect(exposureTracking.trackExposures).toHaveBeenCalledWith('u1', ['r1'], 'home');
+    expect(analytics.trackEvent).toHaveBeenCalledWith(expect.objectContaining({
+      userId: 'u1',
+      type: 'recommendation_impression',
+      payload: expect.objectContaining({ recipeId: 'r1', requestId: 'req-123' }),
+    }));
+  });
+});

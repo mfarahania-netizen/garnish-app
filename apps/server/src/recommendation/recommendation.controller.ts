@@ -50,6 +50,7 @@ export class RecommendationController {
       visibleRatio?: number;
       testMode?: boolean;
       source?: string;
+      requestId?: string;
     },
   ) {
     const userId = req.user.userId;
@@ -93,6 +94,7 @@ export class RecommendationController {
             visibleRatio,
             viewportMs,
             source: body.source || 'viewport',
+            requestId: body.requestId,
           },
         }),
       ),

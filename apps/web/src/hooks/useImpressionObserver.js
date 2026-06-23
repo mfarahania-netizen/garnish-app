@@ -4,31 +4,46 @@ import apiClient from '../lib/apiClient';
 /**
  * useImpressionObserver — honest recommendation-impression telemetry.
  *
- * A single shared IntersectionObserver watches the cards registered via `observe(recipeId)` (a stable ref
- * callback). A card qualifies when it is ≥50% visible for ≥1000ms; qualifying recipeIds are batched and sent
- * ONCE per page session to the real `POST /recommendations/impression` with the MEASURED `viewportMs`
- * (real dwell) + `visibleRatio` (real ratio) — never faked, never below the backend's threshold. De-duped via
- * a `reported` set. No-op when `enabled` is false or IntersectionObserver is unavailable (jsdom/SSR).
+ * A single shared IntersectionObserver watches the cards registered via `observe(recipeId, requestId)`
+ * (a stable ref callback). A card qualifies when it is >=50% visible for >=1000ms; qualifying recipeIds
+ * are batched by requestId and sent ONCE per page session to the real `POST /recommendations/impression`
+ * with the MEASURED `viewportMs` (real dwell) + `visibleRatio` (real ratio) — never faked, never below
+ * the backend's threshold. De-duped via a `reported` set. No-op when `enabled` is false or
+ * IntersectionObserver is unavailable (jsdom/SSR).
  */
 const QUALIFY_MS = 1000;
 const QUALIFY_RATIO = 0.5;
 
 export function useImpressionObserver({ enabled = true, source = 'home' } = {}) {
   const observerRef = useRef(null);
-  const nodes = useRef(new Map()); // node → { recipeId, ratio, since, timer }
+  const nodes = useRef(new Map()); // node -> { recipeId, requestId, ratio, since, timer }
   const reported = useRef(new Set()); // recipeIds already sent (max once per session)
-  const pending = useRef(new Map()); // recipeId → { viewportMs, visibleRatio } awaiting flush
+  const pending = useRef(new Map()); // recipeId -> { viewportMs, visibleRatio, requestId } awaiting flush
   const flushTimer = useRef(null);
-  const refCallbacks = useRef(new Map()); // recipeId → stable ref callback
+  const refCallbacks = useRef(new Map()); // `${recipeId}:${requestId}` -> stable ref callback
 
   const flush = useCallback(() => {
     if (pending.current.size === 0) return;
-    const recipeIds = [...pending.current.keys()];
-    const vals = [...pending.current.values()];
-    const viewportMs = Math.max(...vals.map((v) => v.viewportMs));
-    const visibleRatio = Math.max(...vals.map((v) => v.visibleRatio));
+    const groups = new Map();
+    for (const [recipeId, val] of pending.current.entries()) {
+      const key = val.requestId || '';
+      if (!groups.has(key)) groups.set(key, { recipeIds: [], vals: [], requestId: val.requestId });
+      const group = groups.get(key);
+      group.recipeIds.push(recipeId);
+      group.vals.push(val);
+    }
     pending.current.clear();
-    apiClient.post('/recommendations/impression', { recipeIds, viewportMs, visibleRatio, source }).catch(() => {});
+    for (const group of groups.values()) {
+      const viewportMs = Math.max(...group.vals.map((v) => v.viewportMs));
+      const visibleRatio = Math.max(...group.vals.map((v) => v.visibleRatio));
+      apiClient.post('/recommendations/impression', {
+        recipeIds: group.recipeIds,
+        viewportMs,
+        visibleRatio,
+        source,
+        ...(group.requestId ? { requestId: group.requestId } : {}),
+      }).catch(() => {});
+    }
   }, [source]);
 
   const scheduleFlush = useCallback(() => {
@@ -50,7 +65,7 @@ export function useImpressionObserver({ enabled = true, source = 'home' } = {}) 
             rec.timer = null;
             if (rec.ratio >= QUALIFY_RATIO && !reported.current.has(rec.recipeId)) {
               reported.current.add(rec.recipeId);
-              pending.current.set(rec.recipeId, { viewportMs: Math.max(QUALIFY_MS, Date.now() - rec.since), visibleRatio: rec.ratio });
+              pending.current.set(rec.recipeId, { viewportMs: Math.max(QUALIFY_MS, Date.now() - rec.since), visibleRatio: rec.ratio, requestId: rec.requestId });
               scheduleFlush();
             }
           }, QUALIFY_MS);
@@ -71,17 +86,18 @@ export function useImpressionObserver({ enabled = true, source = 'home' } = {}) 
     };
   }, [enabled, scheduleFlush]);
 
-  const observe = useCallback((recipeId) => {
+  const observe = useCallback((recipeId, requestId = null) => {
     if (!recipeId) return undefined;
-    if (!refCallbacks.current.has(recipeId)) {
-      refCallbacks.current.set(recipeId, (node) => {
+    const key = `${recipeId}:${requestId || ''}`;
+    if (!refCallbacks.current.has(key)) {
+      refCallbacks.current.set(key, (node) => {
         if (node) {
-          nodes.current.set(node, { recipeId, ratio: 0, since: 0, timer: null });
+          nodes.current.set(node, { recipeId, requestId, ratio: 0, since: 0, timer: null });
           observerRef.current?.observe(node);
         }
       });
     }
-    return refCallbacks.current.get(recipeId);
+    return refCallbacks.current.get(key);
   }, []);
 
   return { observe };

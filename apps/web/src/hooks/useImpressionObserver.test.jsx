@@ -63,3 +63,38 @@ describe('useImpressionObserver — qualifies only at ≥50% for ≥1000ms', () 
     expect(post).not.toHaveBeenCalled();
   });
 });
+
+describe('useImpressionObserver — requestId echo', () => {
+  it('echoes the served-slate requestId on qualifying impressions', () => {
+    const { result } = renderHook(() => useImpressionObserver({ enabled: true, source: 'home' }));
+    const node = document.createElement('div');
+    act(() => { result.current.observe('r1', 'req-123')(node); });
+
+    act(() => ioCallback([{ target: node, isIntersecting: true, intersectionRatio: 0.6 }]));
+    act(() => vi.advanceTimersByTime(1100));
+    act(() => vi.advanceTimersByTime(600));
+
+    expect(post).toHaveBeenCalledTimes(1);
+    expect(post.mock.calls[0][1]).toMatchObject({ recipeIds: ['r1'], requestId: 'req-123', source: 'home' });
+  });
+
+  it('keeps different requestIds in separate impression posts', () => {
+    const { result } = renderHook(() => useImpressionObserver({ enabled: true, source: 'home' }));
+    const a = document.createElement('div');
+    const b = document.createElement('div');
+    act(() => { result.current.observe('r1', 'req-a')(a); });
+    act(() => { result.current.observe('r2', 'req-b')(b); });
+
+    act(() => ioCallback([
+      { target: a, isIntersecting: true, intersectionRatio: 0.6 },
+      { target: b, isIntersecting: true, intersectionRatio: 0.7 },
+    ]));
+    act(() => vi.advanceTimersByTime(1100));
+    act(() => vi.advanceTimersByTime(600));
+
+    expect(post).toHaveBeenCalledTimes(2);
+    const bodies = post.mock.calls.map(([, body]) => body).sort((x, y) => x.requestId.localeCompare(y.requestId));
+    expect(bodies[0]).toMatchObject({ recipeIds: ['r1'], requestId: 'req-a' });
+    expect(bodies[1]).toMatchObject({ recipeIds: ['r2'], requestId: 'req-b' });
+  });
+});

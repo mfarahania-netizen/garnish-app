@@ -78,6 +78,7 @@ export function useHomeData() {
       const labels = reasonLabels(r.matchedSignals || r.reasonSignals || [], 3);
       return {
         recipeId: r.recipeId,
+        requestId: r.requestId || null,
         title: r.title || recipe?.title || 'دستور پیشنهادی',
         seed: stableSeed(r.recipeId),
         fit: fitFromScore(r.finalScore),
@@ -94,6 +95,7 @@ export function useHomeData() {
     // ── Rails (omit gracefully when thin) ──
     const pantry = recList.slice(3, 11).map((r) => ({
       recipeId: r.recipeId,
+      requestId: r.requestId || null,
       title: r.title || catalogById.get(String(r.recipeId))?.title || 'دستور',
       seed: stableSeed(r.recipeId),
       cookTimeText: faDuration(catalogById.get(String(r.recipeId))?.cookingTime),

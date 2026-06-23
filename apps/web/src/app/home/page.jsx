@@ -272,7 +272,7 @@ export default function HomePage() {
               </Box>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
                 {picks.filter((p) => !dismissed.has(p.recipeId)).map((p, i) => (
-                  <Box key={p.recipeId} ref={observe(p.recipeId)} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
+                  <Box key={p.recipeId} ref={observe(p.recipeId, p.requestId)} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
                     <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} onDismiss={() => dismiss(p.recipeId)} />
                   </Box>
                 ))}
