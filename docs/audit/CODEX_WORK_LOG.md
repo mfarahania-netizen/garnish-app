@@ -4,6 +4,7 @@ Continue the Garnish AI work under the bridge/guardian rules with the lowest use
 
 ## 2. Commits - paste `git log --oneline 6b584134..HEAD`
 ```text
+639065b1 ai: echo recommendation requestId through impressions
 b978298a docs: CODEX_BRIDGE — correct the web gate (no tsc on apps/web) + cover uncommitted work
 61b429a2 docs: CODEX_BRIDGE + GUARDIAN_PROTOCOL — cheap tiered verification for the Codex handoff
 ```
