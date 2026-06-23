@@ -70,6 +70,21 @@ P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `
 
 ---
 
+## 4c. PARALLEL TRACKS (non-AI) — recommendation engine + onboarding (a new chat must see these too)
+These run alongside the AI work; the AI phase position (§4b) is NOT the whole app.
+
+**Recommendation engine (L1 ranker) — BUILT, default-OFF, ~0% learning; the flip is P4, founder-gated.**
+- Live scorer = `RankingService` (10-component weighted sum). L1 learning steps 1–5 are wired into the LIVE ranker but all **byte-identical**: the `WeightSource`/`PriorResolver` seam (only `StaticWeightSource` registered); `RecipePriorService` (empirical-Bayes shrinkage) + `RecipePrior` table + `RecipePriorLearnerService` (IPS + weighted-Welford) at **component weight 0**; collective-degradation + minority-protection `recipePriorSlateTerm` **LIFT-ONLY** (penMult=0, activated only by `L1_PRIOR_STEP5_WEIGHT>0`). Property-test invariant: a positive personal signal can never LOWER a score. So today it serves byte-identical to before.
+- **Turning it on (APPROVED-but-PAUSED) needs:** the `requestId` served↔reward join (the SAME P0 §4b item — without it 116 served / 706 attribution rows are unjoinable forever), then an offline-replay harness + curated `populationMu` authoring + an L1.5 bandit for honest propensity. The flip is gated on a **MEASURED reward lift, not a date** → it lives in **P4 (Learning activation)**, not now.
+- ✅ **SAFETY closed:** the guardian found + fixed a hard-allergy-gate **bypass on the live recommendation feed** (a returning user could be served allergen recipes) — now `RecipeSafetyFilterService` on ALL serving paths, fail-closed. The feed is SAFE; only the learning is off. Home: `L1_PLAN.md` + `L1_STEP4/5_*_SPEC.md`.
+
+**Onboarding v1 — design SETTLED + live-verified; backend spine DONE; FE rides the redesign track.**
+- Spec `ONBOARDING_V1_SPEC.md`: v1 = **ONE up-front question** (allergy safety, full EU-14 chips + a visually-primary one-tap "None"); diet/effort optional/post-slate; account = a **silent device-keyed GUEST spine**; **NO swipe deck** in v1 (the in-session re-ranker doesn't exist yet). The 4 founder-delegated decisions are **MADE** (full EU-14, opt-in/un-bundled consent, IP-geo familiarity cohort, additive allergy-preserving guest→registered merge).
+- **BUILD:** piece 1 (guest spine) **DONE + guardian-converged — backend-only**; the onboarding allergen chips were expanded 8→13 this session. The rest of the onboarding FE (the S0→S4 screens) lands with the **FE reset / redesign** track (`garnish-fe-reset`: old UI wiped, rebuilt screen-by-screen, all 14 screens + a web smoke-test net merged).
+- **REMAINS:** the effort lever wire (cooking_time persistence + the ranking effort term + graded effortFit), un-bundled personalization consent asked at a high-engagement moment, diet/no-pork behind a pork-coverage audit, and FE wiring of the safe-slate S0→S4 flow. A Dutch IP/privacy lawyer signs off wording/scope before public EU launch (NOT a build blocker — the safe default ships).
+
+---
+
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)
 1. `docs/GARNISH_GROUND_TRUTH.md` — authoritative whole-project state.
 2. `docs/audit/AI_MASTER_SPEC.md` — the unified AI design (P0→P6 roadmap with pass/fail gates; **wins on disagreement**).
