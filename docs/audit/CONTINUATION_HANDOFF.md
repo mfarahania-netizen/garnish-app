@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-23, working tree after requestId echo propagation (uncommitted unless founder asks).
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after requestId echo capstone closure.
 
 ---
 
@@ -63,7 +63,7 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 ---
 
 ## 4. CURRENT STATE (verify before trusting — re-stamp at each milestone)
-- Branch `master`; current working tree includes requestId echo propagation. **Verified 2026-06-23: server 246 suites / 2009 tests green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
+- Branch `master`; requestId echo propagation + capstone are committed in the current Codex line. **Verified 2026-06-24: server 247 suites / 2010 tests green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
 - **P0 AI build: complete + guardian-converged.** Shipped & verified: EU-14 allergen engine + canonicalization; IntentClassifier (the €0 cost+safety router) wired on every chat turn (dark/log-only); §3 conversational-allergy (declare → confirm → one-tap write → hard gate); multi-window cost budget (5h/daily/weekly/monthly + 15s cooldown, **inert** until live Gemini); SubstitutionEngine; signal capture; the cross-dimension acceptance capstone (`apps/server/src/ai/eval/cross-dimension.acceptance.spec.ts`).
 - **CRITICAL bug the guardian caught & closed:** the hard allergy gate was silently **failing open on the entire live recipe corpus** — recipes author allergens in Persian (آجیل/گلوتن/لبنیات/…), the canonicalizer was English-only → a nut-allergic user was served nut dishes. Fixed (Persian+Dutch canonicalization in `recipe-integrity.ts`) and locked with a regression test that reads the real shipped corpus.
 - **Verify command (run first in a new chat):** from `apps/server` → `npm test`; from `apps/web` → `npm test` + `npm run build`. Do **not** claim web `tsc --noEmit` until `apps/web` has a real `tsconfig*.json` + local `typescript` dependency.
@@ -74,10 +74,10 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
 - ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
 - ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
-- 🔧 **REMAINS / UPDATED:** multi-window cost/quota still needs **Redis-atomic**; `requestId` echo propagation is now built + unit/full-suite verified, but **NOT 100% dimension-closed** until an end-to-end capstone proves `trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` and learner join behavior; confirm `EventOutbox` producers are flipped from `not_started` and turn events emit tier-tagged.
+- **REMAINS / UPDATED:** `requestId` echo is now **100% dimension-closed** by capstone (`trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` + learner join). Remaining non-VPN P0 tail: confirm `EventOutbox` producers are flipped from `not_started`, turn events emit tier-tagged, and multi-window cost/quota becomes **Redis-atomic**.
 - ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is now:** finish the `requestId` dimension closure with an end-to-end/capstone integration test. After that, continue the non-blocked P0 tail: EventOutbox producer flip/tier-tagged assistant turns, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
+**The immediate next work is now:** continue the non-blocked P0 tail: EventOutbox producer flip/tier-tagged assistant turns, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let �6/�7 read as "P0 is fully done" � it is not; this �4b is the precise position.**
 
 ---
 
@@ -86,7 +86,7 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Recommendation engine (L1 ranker) — BUILT, default-OFF, ~0% learning; the flip is P4, founder-gated.**
 - Live scorer = `RankingService` (10-component weighted sum). L1 learning steps 1–5 are wired into the LIVE ranker but all **byte-identical**: the `WeightSource`/`PriorResolver` seam (only `StaticWeightSource` registered); `RecipePriorService` (empirical-Bayes shrinkage) + `RecipePrior` table + `RecipePriorLearnerService` (IPS + weighted-Welford) at **component weight 0**; collective-degradation + minority-protection `recipePriorSlateTerm` **LIFT-ONLY** (penMult=0, activated only by `L1_PRIOR_STEP5_WEIGHT>0`). Property-test invariant: a positive personal signal can never LOWER a score. So today it serves byte-identical to before.
-- **Turning it on (APPROVED-but-PAUSED) needs:** the `requestId` served↔reward join (the SAME P0 §4b item — without it 116 served / 706 attribution rows are unjoinable forever), then an offline-replay harness + curated `populationMu` authoring + an L1.5 bandit for honest propensity. The flip is gated on a **MEASURED reward lift, not a date** → it lives in **P4 (Learning activation)**, not now.
+- **Turning it on (APPROVED-but-PAUSED) needs:** the now-closed `requestId` served-to-reward join (the SAME P0 section 4b item), then an offline-replay harness + curated `populationMu` authoring + an L1.5 bandit for honest propensity. The flip is gated on a **MEASURED reward lift, not a date**; it lives in **P4 (Learning activation)**, not now.
 - ✅ **SAFETY closed:** the guardian found + fixed a hard-allergy-gate **bypass on the live recommendation feed** (a returning user could be served allergen recipes) — now `RecipeSafetyFilterService` on ALL serving paths, fail-closed. The feed is SAFE; only the learning is off. Home: `L1_PLAN.md` + `L1_STEP4/5_*_SPEC.md`.
 
 **Onboarding v1 — design SETTLED + live-verified; backend spine DONE; FE rides the redesign track.**
@@ -94,18 +94,18 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 - **BUILD:** piece 1 (guest spine) **DONE + guardian-converged — backend-only**; the onboarding allergen chips were expanded 8→13 this session. The rest of the onboarding FE (the S0→S4 screens) lands with the **FE reset / redesign** track (`garnish-fe-reset`: old UI wiped, rebuilt screen-by-screen, all 14 screens + a web smoke-test net merged).
 - **REMAINS:** the effort lever wire (cooking_time persistence + the ranking effort term + graded effortFit), un-bundled personalization consent asked at a high-engagement moment, diet/no-pork behind a pork-coverage audit, and FE wiring of the safe-slate S0→S4 flow. A Dutch IP/privacy lawyer signs off wording/scope before public EU launch (NOT a build blocker — the safe default ships).
 
-## 4d. LATEST DIMENSION CLOSURE SNAPSHOT — requestId echo (2026-06-23)
+## 4d. LATEST DIMENSION CLOSURE SNAPSHOT - requestId echo (2026-06-24)
 **Dimension(s):** Learning & Adaptation + Observability/Cost/Ops substrate.
 
 **What this dimension must do:** every served recommendation slate must be joinable to later reward/action events by `requestId`, so L1/P4 learning can connect exposure -> reward at recipe/position/propensity grain. This is irreversible: missed requestIds cannot be recovered later.
 
-**What is built now:** `RecommendationPipelineService` already generated a slate `requestId`; Home now preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; `RecommendationController.trackImpression` passes it into analytics payload; existing `RecommendationSignalProcessor` reads `payload.requestId` and writes `RecommendationAttributionEvent.requestId`.
+**What is built now:** `RecommendationPipelineService` generates a slate `requestId`; Home preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; `RecommendationController.trackImpression` passes it into analytics payload; `RecommendationSignalProcessor` reads `payload.requestId` and writes `RecommendationAttributionEvent.requestId`; capstone proves learner join behavior.
 
-**Verification run:** targeted server test green; targeted web hook test green; full server `246 suites / 2009 tests`; full web `36 files / 169 tests`; web production build green; `git diff --check` clean.
+**Verification run:** requestId capstone `apps/server/src/recommendation/recommendation-requestid-capstone.spec.ts` green; targeted server controller test green; targeted web hook test green; full server `247 suites / 2010 tests`; full web `36 files / 169 tests`; web production build green; `git diff --check` clean when last checked.
 
-**Is it 100% closed?** No. Current confidence: ~75-80%. The propagation path is covered, but the dimension is not complete until a capstone/integration test proves `POST /recommendations/impression -> UserEvent payload -> EventOutbox/processNow/drain -> RecommendationAttributionEvent.requestId`, plus learner join behavior.
+**Is it 100% closed?** Yes for requestId echo. The capstone proves `POST /recommendations/impression -> UserEvent payload -> EventOutbox/processNow -> RecommendationAttributionEvent.requestId`, then proves `RecipePriorLearnerService` reads attribution by served `requestId` and writes joined prior rows.
 
-**Next smallest step:** add the end-to-end requestId attribution capstone before moving to EventOutbox producer flip.
+**Next smallest step:** move to EventOutbox producer flip / tier-tagged assistant-turn events; after that, Redis-atomic cost quota. Do not start live Gemini/rate catalog without founder VPN.
 ---
 
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)

@@ -1,6 +1,6 @@
 # Garnish Memory Index
 
-Last updated: 2026-06-23
+Last updated: 2026-06-24
 
 ## Non-negotiable method
 - Advisor mode: confidence tags, direct disagreement when needed, no flattery, no inflated state.
@@ -14,12 +14,12 @@ Last updated: 2026-06-23
 - P1 is not started: multi-turn memory, fa/nl/en TemplateRegistry, repair, retrieval, groundedness.
 - Rate catalog remains blocked on VPN.
 
-## Latest completed work: requestId echo propagation
-- Date: 2026-06-23.
+## Latest completed work: requestId echo propagation + capstone closure
+- Date: 2026-06-24.
 - Scope: recommendation served-slate `requestId` propagation for impression attribution.
-- What works now: `RecommendationPipelineService` generates `requestId`; Home preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; server passes it into analytics payload; existing `RecommendationSignalProcessor` can persist it into `RecommendationAttributionEvent.requestId`.
-- Tests run: targeted server + targeted web; full server `246 suites / 2009 tests`; full web `36 files / 169 tests`; web build pass; `git diff --check` clean.
-- Closure status: NOT 100%. Unit and propagation tests are green, but the dimension is not fully closed until an end-to-end integration/capstone proves `trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` and learner join behavior.
+- What works now: `RecommendationPipelineService` generates `requestId`; Home preserves it; `useImpressionObserver` echoes it to `POST /recommendations/impression`; server passes it into analytics payload; `RecommendationSignalProcessor` persists it into `RecommendationAttributionEvent.requestId`; the capstone proves the outbox-routed attribution remains joinable to served rows and feeds `RecipePriorLearnerService`.
+- Tests run: requestId capstone `apps/server/src/recommendation/recommendation-requestid-capstone.spec.ts`; full server `247 suites / 2010 tests`; prior requestId propagation server/web targeted tests; full web `36 files / 169 tests`; web build pass.
+- Closure status: 100% for the requestId echo dimension. The capstone proves `trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` and learner join behavior.
 
 ## Dimension closure rule going forward
 For every AI/spec dimension or piece, close with:
@@ -31,7 +31,7 @@ For every AI/spec dimension or piece, close with:
 6. If not 100%, exact remaining gaps and next smallest step.
 
 ## Immediate next step
-Do not jump to EventOutbox producer flip yet. First add the requestId end-to-end capstone/integration test so the current Learning/Observability dimension closure moves from ~75% to 100% if it passes.
+Continue the non-VPN P0 tail: EventOutbox producer flip / tier-tagged assistant turns, then Redis-atomic cost quota. Rate catalog remains parked until founder enables VPN for live Gemini price verification.
 
 ## Known repo/document caveats
 - `apps/web` currently has no `tsconfig*.json` and no local `typescript` dependency; documented `npx tsc --noEmit` is not a real web gate yet.
