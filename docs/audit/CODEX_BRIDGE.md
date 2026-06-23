@@ -4,24 +4,27 @@
 > output is checkable, and (b) defines EXACTLY how Claude verifies that work afterward and continues — with the
 > **cheap guardian (no token-burning swarm)**.
 >
-> **BASELINE = `master` @ `6b584134`** (246 server suites / 2007 tests, web 36 / 171, `tsc --noEmit` clean). Tomorrow's
-> review surface is precisely `git diff 6b584134..HEAD`.
+> **BASELINE = `master` @ `6b584134`** (246 server suites / 2007 tests; web 36 / 171). Tomorrow's review surface is
+> `git diff 6b584134..HEAD` **plus any uncommitted working-tree changes** (Codex may leave work unstaged).
+> **tsc note:** `tsc --noEmit` is a **server-only** gate — `apps/web` has no `tsconfig`/`typescript` (verified), so there
+> is NO web tsc gate; do not claim it green. The web gate is `npm test` + `npm run build`.
 
 ---
 
 ## FOR CODEX — working rules (read FIRST, before touching code)
 1. Read `docs/audit/CONTINUATION_HANDOFF.md` and follow its method.
-2. **Small, complete increments. The repo stays GREEN:** `npm test` (server + web) + `npx tsc --noEmit` must pass **before every commit**. Never commit red.
+2. **Small, complete increments. The repo stays GREEN before every commit:** `apps/server` → `npm test` + `npx tsc --noEmit`; `apps/web` → `npm test` + `npm run build` (no web tsc gate). Never commit red.
 3. **Deterministic-first:** the LLM narrates a deterministic answer; it is NEVER the source of a fact, quantity, or safety decision.
 4. **The HARD allergy/safety gate lives OUTSIDE the LLM, fail-closed. NEVER weaken it.** Learning may only change DATA the core reads — never the request-time control flow or the gate.
 5. Commit with descriptive messages; **commit + push as separate steps**; work on `master`.
 6. **Keep a running log in `docs/audit/CODEX_WORK_LOG.md`** (template below), updated each meaningful step — this is how Claude understands what you did.
+7. **COMMIT your work before handing back** — do not leave it only in the working tree, so `git diff 6b584134..HEAD` is the complete record. If you must stop mid-edit, say so explicitly in the work log §4.
 
 ## SAFETY-CRITICAL FILES — do NOT change silently; if you touch one, flag it LOUDLY in the work log
 - `apps/server/src/recipes/intelligence/recipe-integrity.ts` — `canonicalizeAllergens` + `ALLERGEN_ALIASES` + the Persian fold.
 - `apps/server/src/ai/intent/allergen-extractor.ts` — `CANONICAL_ALLERGEN_TOKENS` + extractor word-boundaries.
 - `apps/server/src/recipes/intelligence/recipe-visibility.ts` — `PUBLISHED_RECIPE_WHERE` (UGC must never reach a public surface).
-- The recommendation safety filter (`RecipeSafetyFilterService`) + any allergy-gate / consent path.
+- The recommendation safety filter (`RecipeSafetyFilterService`) + `recommendation.controller.ts` + any allergy-gate / consent path (requestId-echo work lives here — verify it did NOT reorder or bypass the filter).
 - `apps/server/src/users/users.service.ts` — the allergy-write allowlist on BOTH `addAllergies` and `updatePreferences`.
 
 ## STANDING CONSTRAINTS (do not violate)
@@ -49,8 +52,8 @@
 
 ## FOR CLAUDE — verification protocol when the work is handed back (the cheap guardian, NO swarm)
 Run in order. Do **not** continue building until it is green + safe.
-1. `git log --oneline 6b584134..HEAD` — see the commits. Read `docs/audit/CODEX_WORK_LOG.md`.
-2. **Tier 0 (deterministic, $0):** `apps/server` → `npm test`; `apps/web` → `npm test` + `npx tsc --noEmit`. **Any red = fix FIRST, no continuation.**
+1. `git log --oneline 6b584134..HEAD` **and** `git status` / `git diff` — cover BOTH committed and uncommitted working-tree changes. Read `docs/audit/CODEX_WORK_LOG.md`.
+2. **Tier 0 (deterministic, $0):** `apps/server` → `npm test` + `npx tsc --noEmit`; `apps/web` → `npm test` + `npm run build` (no web tsc). **Any red = fix FIRST, no continuation.**
 3. **Tier 1 (targeted, cheap — a single focused read, NOT a swarm):** `git diff 6b584134..HEAD --` on the SAFETY-CRITICAL files above. Look for: gate weakened / made fail-open · an ungrounded fact or quantity · allowlist drift · a public recipe read missing `PUBLISHED_RECIPE_WHERE`.
 4. **Escalate only if needed:** a scoped single-agent adversarial review ONLY if a safety file changed substantively; the Tier-2 swarm ONLY for a large/architectural change. Most days, steps 1–3 are the entire check.
 5. **Green + safe → continue** from `CODEX_WORK_LOG` §9. Encode any newly found invariant as a Tier-0 test before moving on (see `GUARDIAN_PROTOCOL.md`).
