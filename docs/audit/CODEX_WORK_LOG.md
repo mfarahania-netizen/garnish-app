@@ -4,6 +4,7 @@ Close the requestId echo dimension with a deterministic capstone and keep the ne
 
 ## 2. Commits - paste `git log --oneline 6b584134..HEAD`
 ```text
+3ce75146 test: close recommendation requestId attribution capstone
 57e450d7 docs: record Codex requestId commit in work log
 639065b1 ai: echo recommendation requestId through impressions
 b978298a docs: CODEX_BRIDGE - correct the web gate (no tsc on apps/web) + cover uncommitted work
