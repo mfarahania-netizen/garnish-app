@@ -6,6 +6,7 @@ import { AiCoreModule } from './ai-core.module';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { GroundedReplyService } from './chat/grounded-reply.service';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
@@ -16,7 +17,7 @@ import { GroundedReplyService } from './chat/grounded-reply.service';
  * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule, ProfileModule],
+  imports: [AiCoreModule, ProfileModule, AnalyticsModule],
   controllers: [AiController],
   providers: [AiService, PersonalizationService, ChatOrchestrationService, GroundedReplyService],
 })

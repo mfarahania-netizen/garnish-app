@@ -133,6 +133,7 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
       composeDeterministicReply: () => DETERMINISTIC_REPLY,
     } as any,
     new IntentClassifierService(),
+    { trackEvent: async () => ({ id: 'ev_ai_turn' }) } as any,
   );
 
   const failures: string[] = [];

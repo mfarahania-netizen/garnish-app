@@ -116,6 +116,23 @@ export const EVENT_PRODUCER_INVENTORY: readonly ProducerRecord[] = [
     ],
   },
   {
+    id: 'prod-ai-assistant-turn-event',
+    sourceFile: 'apps/server/src/ai/chat/chat-orchestration.service.ts:recordAssistantTurnEvent',
+    producerName: 'ChatOrchestrationService.recordAssistantTurnEvent',
+    currentEventType: 'ai_suggestion_generated',
+    currentShape: 'legacy',
+    targetEventFamily: 'ai',
+    targetCanonicalEventType: 'ai_suggestion_generated',
+    migrationPriority: 'P0',
+    risk: 'medium',
+    migrationStatus: 'canonical_emitting',
+    notes: [
+      'P0 assistant-turn observability producer; emits one tier-tagged event per assistant reply through AnalyticsService.trackEvent and EventOutbox.',
+      'Payload carries references and routing metadata only (conversationId/messageId/aiCallLogId/status/providerMode/tier/intent); it must never copy raw prompt or reply text.',
+    ],
+  },
+
+  {
     id: 'prod-reco-exposure',
     sourceFile: 'apps/server/src/recommendation/exposure/exposure-tracking.service.ts:trackExposure(s)',
     producerName: 'ExposureTrackingService.trackExposure / trackExposures',

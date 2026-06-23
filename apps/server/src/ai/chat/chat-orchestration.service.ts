@@ -9,6 +9,8 @@ import { AiService } from '../ai.service';
 import { GroundedReplyService, GroundingResult } from './grounded-reply.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
 import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
+import { AnalyticsService } from '../../analytics/analytics.service';
+import { EventType } from '../../analytics/event-taxonomy';
 
 export interface HandleChatInput {
   userId: string;
@@ -64,6 +66,7 @@ export class ChatOrchestrationService {
     private readonly legacyAi: AiService,
     private readonly grounded: GroundedReplyService,
     private readonly intent: IntentClassifierService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   private readonly logger = new Logger('ChatOrchestration');
@@ -105,13 +108,20 @@ export class ChatOrchestrationService {
       const reply = allergens.length
         ? `متوجه شدم که به ${allergens.map((a) => a.label).join('، ')} حساسیت داری. می‌خوای به پروفایلت اضافه‌اش کنم تا همیشه از غذاهات حذفش کنم و ایمن بمونی؟`
         : 'به‌نظر رسید یک حساسیت گفتی، ولی مطمئن نشدم دقیقاً کدوم ماده — اسمش رو بگو یا توی پروفایلت اضافه‌اش کن تا همیشه ایمن نگهت دارم.';
-      await this.chatMessages.create({
+      const assistantMessage = await this.chatMessages.create({
         userId: input.userId,
         conversationId,
         role: 'assistant',
         content: reply,
         model: STUB_MODEL,
         contentSafetyStatus: 'ok',
+      });
+      await this.recordAssistantTurnEvent(input.userId, conversationId, assistantMessage?.id, intentDecision, {
+        status: 'ok',
+        providerMode: 'deterministic',
+        model: STUB_MODEL,
+        aiCallLogId: null,
+        suggestedActionType: allergens.length ? 'add_allergy' : null,
       });
       return {
         reply,
@@ -169,13 +179,20 @@ export class ChatOrchestrationService {
       const reply = rejected
         ? 'در حال حاضر امکان پردازش این درخواست نیست. لطفاً بعداً دوباره تلاش کن.'
         : 'مشکلی پیش اومد. لطفاً دوباره تلاش کن.';
-      await this.chatMessages.create({
+      const assistantMessage = await this.chatMessages.create({
         userId: input.userId,
         conversationId,
         role: 'assistant',
         content: reply,
         model: STUB_MODEL,
         contentSafetyStatus: status,
+      });
+      await this.recordAssistantTurnEvent(input.userId, conversationId, assistantMessage?.id, intentDecision, {
+        status,
+        providerMode: 'deterministic',
+        model: STUB_MODEL,
+        aiCallLogId: null,
+        blocked: true,
       });
       return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null, intent: intentDecision };
     }
@@ -209,7 +226,7 @@ export class ChatOrchestrationService {
       }
     }
 
-    await this.chatMessages.create({
+    const assistantMessage = await this.chatMessages.create({
       userId: input.userId,
       conversationId,
       role: 'assistant',
@@ -218,8 +235,57 @@ export class ChatOrchestrationService {
       contentSafetyStatus: status,
       aiCallLogId,
     });
+    await this.recordAssistantTurnEvent(input.userId, conversationId, assistantMessage?.id, intentDecision, {
+      status,
+      providerMode,
+      model,
+      aiCallLogId,
+      blocked,
+    });
 
     return { reply, conversationId, status, providerMode, aiCallLogId, intent: intentDecision };
+  }
+
+  /**
+   * P0 observability: every assistant turn emits a structured, tier-tagged event through AnalyticsService,
+   * which persists UserEvent and routes via EventOutbox. Never copy raw user/assistant text into payload.
+   */
+  private async recordAssistantTurnEvent(
+    userId: string,
+    conversationId: string,
+    messageId: string | undefined,
+    intent: IntentClassification,
+    meta: {
+      status: AiCallStatus;
+      providerMode: 'gemini' | 'deterministic';
+      model: string | null;
+      aiCallLogId: string | null;
+      blocked?: boolean;
+      suggestedActionType?: string | null;
+    },
+  ): Promise<void> {
+    await this.analytics.trackEvent({
+      userId,
+      type: EventType.AI_SUGGESTION_GENERATED,
+      page: 'chat',
+      payload: {
+        conversationId,
+        messageId: messageId ?? null,
+        aiCallLogId: meta.aiCallLogId,
+        status: meta.status,
+        providerMode: meta.providerMode,
+        model: meta.model,
+        blocked: !!meta.blocked,
+        intent: intent.intent,
+        tier: intent.tier,
+        dataScope: intent.dataScope,
+        safetyRelevant: intent.safetyRelevant,
+        confidence: intent.confidence,
+        suggestedActionType: meta.suggestedActionType ?? null,
+      },
+    }).catch((err) => {
+      this.logger.debug(`assistant turn event skipped: ${err?.message ?? err}`);
+    });
   }
 
   /**

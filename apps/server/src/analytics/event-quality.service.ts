@@ -12,6 +12,7 @@ const BASE_CONFIDENCE_MAP: Record<string, number> = {
   recommendation_dismiss: 1.0,
   ai_chat_started: 1.0,
   ai_message_send: 1.0,
+  ai_suggestion_generated: 1.0,
   cook_complete: 1.0, // the canonical completion signal — a deliberate, high-value user action
   mealplan_add: 0.9,
   recommendation_click: 0.9,
@@ -51,6 +52,7 @@ const DELIBERATE_SIGNALS = new Set<string>([
   'recommendation_cook',
   'shopping_item_add',
   'ai_message_send',
+  'ai_suggestion_generated',
   'onboarding_answered',
   'preference_update',
   // P0 signal capture — the strongest, lowest-frequency TASTE signals; must never be dropped by the shared

@@ -56,7 +56,7 @@ describe('EventQualityService — DELIBERATE signals are ALWAYS accepted (the fi
     const svc = new EventQualityService();
     const deliberate = [
       'cook_complete', 'favorite_add', 'mealplan_add', 'recommendation_save', 'recommendation_cook',
-      'shopping_item_add', 'ai_message_send', 'onboarding_answered', 'preference_update',
+      'shopping_item_add', 'ai_message_send', 'ai_suggestion_generated', 'onboarding_answered', 'preference_update',
     ];
     burst(svc, 'u-many', 30);
     for (const type of deliberate) {
@@ -74,8 +74,31 @@ describe('EventQualityService — DELIBERATE signals are ALWAYS accepted (the fi
     expect(svc.assess({ userId: 'u2', type: 'cook_complete', payload: {} }).confidence).toBe(1.0);
     expect(svc.assess({ userId: 'u2', type: 'mealplan_add', payload: { x: 1 } }).confidence).toBe(0.9); // from the map
     expect(svc.assess({ userId: 'u2', type: 'recommendation_cook', payload: { x: 1 } }).confidence).toBe(0.6); // from the map
+    expect(svc.assess({ userId: 'u2', type: 'ai_suggestion_generated', payload: { x: 1 } }).confidence).toBe(1.0); // from the map
     expect(svc.assess({ userId: 'u2', type: 'onboarding_answered', payload: { x: 1 } }).confidence).toBe(1.0); // unmapped → 1.0
     expect(svc.assess({ userId: 'u2', type: 'preference_update', payload: { x: 1 } }).confidence).toBe(1.0); // unmapped → 1.0
+  });
+
+  it('ai_suggestion_generated survives a scroll burst and keeps tier metadata', () => {
+    const svc = new EventQualityService();
+    burst(svc, 'assistant-user', 25);
+    const r = svc.assess({
+      userId: 'assistant-user',
+      type: 'ai_suggestion_generated',
+      payload: {
+        conversationId: 'c1',
+        messageId: 'm1',
+        aiCallLogId: 'log1',
+        status: 'ok',
+        providerMode: 'deterministic',
+        tier: 'CHEAP',
+      },
+    });
+    expect(r.isValid).toBe(true);
+    expect(r.reason).toBeUndefined();
+    expect(r.evidence?.botProbability).toBe(0);
+    expect(r.evidence?.duplicateCheck).toBe(false);
+    expect(r.confidence).toBe(1.0);
   });
 });
 
