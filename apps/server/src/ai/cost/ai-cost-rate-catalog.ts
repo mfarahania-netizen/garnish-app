@@ -1,18 +1,17 @@
 /**
- * AI Cost Rate Catalog (E47-A10C) — versioned, source-tagged provider/model pricing.
+ * AI Cost Rate Catalog (E47-A10C) - versioned, source-tagged provider/model pricing.
  *
- * GOVERNANCE ONLY — not billing, not monetization. Lets the system produce an HONEST estimated cost
- * ONLY when a verified, source-attributed rate exists. We do NOT invent prices: the production catalog
- * ships EMPTY (no active rates) because no verified rate source is available in this task context, so
- * `estimatedCostUsd` stays null at runtime and R3 stays Mitigating. Tests inject clearly test-only rates.
+ * GOVERNANCE ONLY - not billing, not monetization. Runtime cost is computed ONLY when a
+ * verified, source-attributed production rate exists for the exact provider/model returned by
+ * the ModelProvider. Missing rates still produce an honest null; rates are never guessed.
  */
 
 export const RATE_CATALOG_SCHEMA_VERSION = 1;
 
 export interface AiModelRate {
-  /** MUST match the active provider's `ModelProvider.name` (e.g. 'gemini') — that is the key getActiveRate
-   *  is queried with at runtime (orchestrator passes `this.model.name`). Keep these aligned when adding rates. */
+  /** MUST match the active provider's `ModelProvider.name` (e.g. 'gemini'). */
   provider: string;
+  /** MUST match the provider-returned model id exactly. */
   model: string;
   /** USD per 1,000,000 input tokens. */
   inputRateUsdPer1M: number;
@@ -23,7 +22,7 @@ export interface AiModelRate {
   sourceName: string;
   /** URL or internal reference to the verifiable source. */
   sourceRef: string;
-  /** ISO-8601 timestamp the rate was verified against its source. */
+  /** ISO-8601 timestamp/date the rate was verified against its source. */
   verifiedAt: string;
   /** ISO-8601 start of the rate's validity window. */
   effectiveFrom: string;
@@ -34,56 +33,41 @@ export interface AiModelRate {
 }
 
 /**
- * PRODUCTION catalog — intentionally EMPTY (no verified rates available). Do NOT add unverified prices
- * here as production truth; any real entry MUST carry provider/model/rates/currency/source/verifiedAt/
- * effectiveFrom/isActive/schemaVersion. Until then, runtime estimatedCostUsd remains null.
+ * PRODUCTION catalog - verified 2026-06-24 against the official Google AI Gemini API pricing page.
+ * Active rows may be used for runtime `estimatedCostUsd`; unknown models still return null.
  */
-export const PRODUCTION_RATE_CATALOG: readonly AiModelRate[] = [];
+export const PRODUCTION_RATE_CATALOG: readonly AiModelRate[] = [
+  {
+    provider: 'gemini',
+    model: 'gemini-3.1-flash-lite',
+    inputRateUsdPer1M: 0.25,
+    outputRateUsdPer1M: 1.5,
+    currency: 'USD',
+    sourceName: 'Google AI for Developers - Gemini Developer API pricing (Gemini 3.1 Flash-Lite Standard Paid Tier)',
+    sourceRef: 'https://ai.google.dev/gemini-api/docs/pricing',
+    verifiedAt: '2026-06-24',
+    effectiveFrom: '2026-06-24',
+    effectiveTo: null,
+    isActive: true,
+    schemaVersion: RATE_CATALOG_SCHEMA_VERSION,
+  },
+];
 
 /**
- * REFERENCE rates — staged, NOT yet production truth. These are the best-available paid-tier Gemini prices found
- * via web search on 2026-06-22 (ai.google.dev/gemini-api/docs/pricing). They are deliberately NOT in
- * PRODUCTION_RATE_CATALOG because the RATES themselves were NOT directly verified — the pricing page blocks
- * automated fetch (HTTP 403). This keeps faith with the catalog's invariant (no unverified price as production
- * truth) AND the project's data-honesty ethos (USDA-source-locked nutrition, never invented numbers).
- *
- * NOTE: the live adapter's id IS pinned — ModelProvider.name='gemini' + model = DEFAULT_MODEL ('gemini-2.5-flash')
- * in model-provider.factory.ts (overridable via AI_MODEL_NAME). getActiveRate matches provider+model by EXACT
- * string, so the reference `model` below is set to that pinned id; the 'flash-lite' tier row is staged under the
- * 2.5-family lite id for when/if AI_MODEL_NAME is switched to it.
- *
- * TO PROMOTE at live-Gemini wire-up (with VPN, per the founder's constraint):
- *   1. Confirm AI_MODEL_NAME = the row's `model` (so getActiveRate('gemini', <that id>) resolves) — for the
- *      default config that is the Flash row below ('gemini-2.5-flash').
- *   2. Open the live pricing page, confirm input/output per-1M numbers for THAT exact model, update `verifiedAt`,
- *      then spread the confirmed entry into PRODUCTION_RATE_CATALOG. Until then runtime estimatedCostUsd stays null.
- *   3. Promote ONLY the row whose model matches AI_MODEL_NAME (do not leave two rows with the same id).
+ * REFERENCE rates - staged, inactive rows for nearby tiers. They are not consulted by production lookup
+ * until explicitly promoted into PRODUCTION_RATE_CATALOG with a fresh verifiedAt/source review.
  */
 export const REFERENCE_RATES_2026: readonly AiModelRate[] = [
   {
     provider: 'gemini',
-    model: 'gemini-2.5-flash-lite', // 2.5-family lite tier — promote if AI_MODEL_NAME is switched to it
-    inputRateUsdPer1M: 0.25,
-    outputRateUsdPer1M: 1.5,
-    currency: 'USD',
-    sourceName: 'Google AI — Gemini API pricing (Flash-Lite tier; web search 2026-06-22, page blocks fetch — RE-VERIFY)',
-    sourceRef: 'https://ai.google.dev/gemini-api/docs/pricing',
-    verifiedAt: '2026-06-22',
-    effectiveFrom: '2026-06-22',
-    effectiveTo: null,
-    isActive: false, // reference only — flip to true (and move into PRODUCTION_RATE_CATALOG) at promotion
-    schemaVersion: RATE_CATALOG_SCHEMA_VERSION,
-  },
-  {
-    provider: 'gemini',
-    model: 'gemini-2.5-flash', // matches the pinned DEFAULT_MODEL — the default promotable row
+    model: 'gemini-3.5-flash',
     inputRateUsdPer1M: 1.5,
     outputRateUsdPer1M: 9.0,
     currency: 'USD',
-    sourceName: 'Google AI — Gemini API pricing (Flash tier; web search 2026-06-22, page blocks fetch — RE-VERIFY)',
+    sourceName: 'Google AI for Developers - Gemini Developer API pricing (Gemini 3.5 Flash Standard Paid Tier)',
     sourceRef: 'https://ai.google.dev/gemini-api/docs/pricing',
-    verifiedAt: '2026-06-22',
-    effectiveFrom: '2026-06-22',
+    verifiedAt: '2026-06-24',
+    effectiveFrom: '2026-06-24',
     effectiveTo: null,
     isActive: false,
     schemaVersion: RATE_CATALOG_SCHEMA_VERSION,
@@ -119,8 +103,8 @@ export interface CostEstimate {
 
 /**
  * Estimate USD cost from token counts using a verified catalog rate.
- * - No matching rate → cost null (honest unknown).
- * - Missing input/output split (only totalTokens) → cost null (no faked precision).
+ * - No matching rate -> cost null (honest unknown).
+ * - Missing input/output split (only totalTokens) -> cost null (no faked precision).
  */
 export function estimateCostUsdFromCatalog(
   provider: string | null | undefined,
@@ -133,7 +117,6 @@ export function estimateCostUsdFromCatalog(
   const rate = getActiveRate(provider, model, catalog, at);
   if (!rate) return { cost: null, rateUsed: null, currency: null };
   if (inputTokens == null || outputTokens == null) {
-    // we have a rate but not the input/output split → refuse to fake precision
     return { cost: null, rateUsed: rate, currency: rate.currency };
   }
   const usd =

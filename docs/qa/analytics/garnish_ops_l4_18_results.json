@@ -15,7 +15,7 @@
     "allergy_safety_pass": true,
     "notification_dry_run_off": true,
     "health_honest_null": true,
-    "economics_cost_honest_null": true,
+    "economics_cost_awaiting_pilot_until_rows": true,
     "revenue_not_yet": true,
     "pii_safe": true
   },

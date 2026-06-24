@@ -59,6 +59,21 @@ export class PersistedDailyBudgetService {
     return agg._sum.totalTokens ?? 0;
   }
 
+  /** Sum of real-provider estimated USD cost for this user since the start of the current UTC day. */
+  async consumedEstimatedCostUsdToday(userId: string, now: Date = new Date()): Promise<number> {
+    const since = startOfUtcDay(now);
+    const agg = await this.prisma.aICallLog.aggregate({
+      _sum: { estimatedCost: true },
+      where: {
+        userId,
+        createdAt: { gte: since },
+        provider: { not: STUB_PROVIDER_NAME },
+        estimatedCost: { not: null },
+      },
+    });
+    return agg._sum.estimatedCost ?? 0;
+  }
+
   /**
    * Check whether a live provider call is within the per-user daily token budget.
    * Anonymous/null user → no per-user budget applies (the per-request cap still guards each call).

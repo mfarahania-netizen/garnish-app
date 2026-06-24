@@ -60,19 +60,19 @@ describe('OpsIntelligenceService — deterministic + HONEST', () => {
     expect(JSON.stringify(s.consentPosture)).not.toMatch(/userId|email|@/i);
   });
 
-  it('ECONOMICS: cost is honest awaiting_rates (empty rate catalog), revenue not_yet, NO billing/PII', async () => {
+  it('ECONOMICS: verified rates but no rated rows yet -> awaiting_pilot, revenue not_yet, NO billing/PII', async () => {
     const svc = new OpsIntelligenceService(makePrisma());
     const e = await svc.getEconomics(NOW);
-    expect(e.cost.status).toBe('awaiting_rates');
+    expect(e.cost.status).toBe('awaiting_pilot');
     expect(e.cost.costPerUserUsd).toBeNull();
     expect(e.revenue.status).toBe('not_yet');
     expect(e.usage.status).toBe('awaiting_pilot');
   });
 
-  it('ECONOMICS: real token usage rollups when calls exist (accounting, aggregate only)', async () => {
+  it('ECONOMICS: real token and cost rollups when rated calls exist (accounting, aggregate only)', async () => {
     const calls = [
-      { totalTokens: 1000, estimatedCost: null, surface: 'chat', userId: 'u1' },
-      { totalTokens: 500, estimatedCost: null, surface: 'chat', userId: 'u2' },
+      { totalTokens: 1000, estimatedCost: 0.001, surface: 'chat', userId: 'u1' },
+      { totalTokens: 500, estimatedCost: 0.002, surface: 'chat', userId: 'u2' },
     ];
     const svc = new OpsIntelligenceService(makePrisma({ calls }));
     const e = await svc.getEconomics(NOW);
@@ -80,6 +80,9 @@ describe('OpsIntelligenceService — deterministic + HONEST', () => {
     expect(e.usage.totalTokens).toBe(1500);
     expect(e.usage.distinctUsers).toBe(2);
     expect(e.usage.tokensBySurface.chat).toBe(1500);
+    expect(e.cost.status).toBe('real');
+    expect(e.cost.totalEstimatedCostUsd).toBe(0.003);
+    expect(e.cost.costPerUserUsd).toBe(0.0015);
     expect(JSON.stringify(e)).not.toMatch(/u1|u2|email/i); // aggregates only, no raw user ids
   });
 });

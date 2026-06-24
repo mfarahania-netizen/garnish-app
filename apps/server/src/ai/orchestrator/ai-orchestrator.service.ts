@@ -174,16 +174,14 @@ export class AiOrchestratorService {
       // single clock for both the token-sum window and the alert's dayUtc (consistent UTC-day boundary)
       const now = new Date();
       const consumedTokensToday = await this.persistedBudget.consumedTokensToday(request.userId, now);
+      const estimatedCostUsdToday = await this.persistedBudget.consumedEstimatedCostUsdToday(request.userId, now);
       await this.spendAlerts.evaluateDaily(
         {
           userId: request.userId,
           provider: this.model.name,
           model: model ?? null,
           consumedTokensToday,
-          // null until verified rates exist → the cost-alert stays inactive (no faked cost). WARNING for a
-          // future rate-enabler: this field is a per-user DAILY cost aggregate — do NOT wire the per-call
-          // `estimate.cost` here; build a daily estimatedCost sum (analogous to consumedTokensToday) first.
-          estimatedCostUsdToday: null,
+          estimatedCostUsdToday,
         },
         now,
       );

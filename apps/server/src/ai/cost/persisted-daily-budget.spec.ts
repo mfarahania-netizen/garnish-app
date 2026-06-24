@@ -53,6 +53,18 @@ describe('PersistedDailyBudgetService (E47-A10B)', () => {
     expect(await svc.consumedTokensToday('u1')).toBe(0);
   });
 
+  it('sums provider estimatedCostUsd for the user, scoped to UTC day, excluding stub/null cost', async () => {
+    const aggregate = jest.fn(async () => ({ _sum: { estimatedCost: 0.123456 } }));
+    const svc = new PersistedDailyBudgetService({ aICallLog: { aggregate } } as any);
+    const consumed = await svc.consumedEstimatedCostUsdToday('u1', new Date('2026-06-14T15:00:00.000Z'));
+    expect(consumed).toBe(0.123456);
+    const where = (aggregate.mock.calls as any[])[0][0].where;
+    expect(where.userId).toBe('u1');
+    expect(where.createdAt.gte.toISOString()).toBe('2026-06-14T00:00:00.000Z');
+    expect(where.provider).toEqual({ not: STUB_PROVIDER_NAME });
+    expect(where.estimatedCost).toEqual({ not: null });
+  });
+
   it('check(): under budget → allowed', async () => {
     const { svc } = budgetService(1000);
     const r = await svc.check('u1', 50);
@@ -84,7 +96,7 @@ function setLive() {
   process.env.GEMINI_API_KEY = 'test-fake-key-not-real';
 }
 function provider(): ModelProvider & { generate: jest.Mock } {
-  return { name: 'mock', generate: jest.fn(async () => ({ text: 'a simple stew', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
+  return { name: 'mock', generate: jest.fn(async () => ({ text: 'a simple stew', model: 'gemini-3.1-flash-lite', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
 }
 function buildOrch(p: ModelProvider, budget?: PersistedDailyBudgetService, cost: AiCostControllerService = new AiCostControllerService()) {
   const rows: any[] = [];

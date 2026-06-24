@@ -144,8 +144,8 @@ export class OpsIntelligenceService {
     const distinctUsers = new Set(rows.map((r) => r.userId).filter(Boolean)).size;
     const bySurface: Record<string, number> = {};
     for (const r of rows) { const k = r.surface ?? 'unknown'; bySurface[k] = (bySurface[k] ?? 0) + (r.totalTokens ?? 0); }
-    // probe: does ANY verified rate exist? (production catalog is empty → estimate null = honest)
-    const sampleEstimate = estimateCostUsdFromCatalog('gemini', 'gemini-2.5-flash', 1000, 1000);
+    // probe: does a verified production rate exist for the default live model?
+    const sampleEstimate = estimateCostUsdFromCatalog('gemini', 'gemini-3.1-flash-lite', 1000, 1000);
     const ratesVerified = sampleEstimate.cost !== null;
 
     return {
@@ -159,7 +159,9 @@ export class OpsIntelligenceService {
       },
       cost: ratesVerified && costRows.length > 0
         ? { status: 'real' as const, estimate: true, currency: 'USD', totalEstimatedCostUsd: Math.round(totalCost * 1e6) / 1e6, costPerUserUsd: distinctUsers > 0 ? Math.round((totalCost / distinctUsers) * 1e6) / 1e6 : null }
-        : { status: 'awaiting_rates' as const, estimate: true, totalEstimatedCostUsd: null, costPerUserUsd: null, note: 'verified per-model USD rates not configured (production rate catalog empty) — cost is honest-null, never fabricated' },
+        : ratesVerified
+          ? { status: 'awaiting_pilot' as const, estimate: true, currency: 'USD', totalEstimatedCostUsd: null, costPerUserUsd: null, note: 'verified per-model USD rates configured; awaiting rated non-stub AI call rows' }
+          : { status: 'awaiting_rates' as const, estimate: true, totalEstimatedCostUsd: null, costPerUserUsd: null, note: 'verified per-model USD rates not configured - cost is honest-null, never fabricated' },
       policy: { perRequestMaxTokens: DEFAULT_AI_COST_POLICY.perRequestMaxTokens, perUserDailyMaxTokens: DEFAULT_AI_COST_POLICY.perUserDailyMaxTokens, currency: DEFAULT_AI_COST_POLICY.currency, liveModelAllowed: DEFAULT_AI_COST_POLICY.liveModelAllowed },
       revenue: { status: 'not_yet' as const, note: 'future monetization — no charging or payment-processor integration yet (out of scope)' },
     };

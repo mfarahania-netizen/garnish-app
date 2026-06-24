@@ -123,13 +123,13 @@ describe('AiOrchestratorService — provider integration (mocked "gemini" provid
   }
 
   it('calls the gemini provider for a safe prompt and logs provider/model/status/latency', async () => {
-    const provider = { name: 'gemini', generate: jest.fn().mockResolvedValue({ text: 'a saffron rice dish', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12 } }) };
+    const provider = { name: 'gemini', generate: jest.fn().mockResolvedValue({ text: 'a saffron rice dish', model: 'gemini-3.1-flash-lite', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12 } }) };
     const { orch, create } = makeWithProvider(provider);
     const res = await orch.run({ userId: 'u1', prompt: 'suggest a dinner', snapshot: validSnapshot(), surface: 'chat' });
     expect(provider.generate).toHaveBeenCalledTimes(1);
     expect(res.status).toBe('ok');
     const data = create.mock.calls[0][0].data;
-    expect(data).toMatchObject({ provider: 'gemini', model: 'gemini-2.5-flash', status: 'ok', estimatedInputTokens: 5, estimatedOutputTokens: 7 });
+    expect(data).toMatchObject({ provider: 'gemini', model: 'gemini-3.1-flash-lite', status: 'ok', estimatedInputTokens: 5, estimatedOutputTokens: 7 });
     expect(typeof data.latencyMs).toBe('number');
   });
 

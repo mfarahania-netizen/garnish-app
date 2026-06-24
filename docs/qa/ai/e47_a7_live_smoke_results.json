@@ -1,6 +1,6 @@
 {
   "suite": "E47-A7",
-  "timestamp": "2026-06-13T21:17:53.660Z",
+  "timestamp": "2026-06-24T12:37:25.956Z",
   "providerMode": "gemini",
   "liveEnabled": true,
   "conditions": {
@@ -16,7 +16,7 @@
   "status": "executed",
   "liveProviderCallCount": 3,
   "blockedProviderCallCount": 0,
-  "averageLatencyMs": 10554,
+  "averageLatencyMs": 6261,
   "failures": [],
   "redactedErrorSummary": [],
   "cases": [
@@ -70,5 +70,6 @@
     }
   ],
   "aiCallLogWrites": 6,
+  "aiCallLogEstimatedCostRows": 3,
   "note": "Live smoke executed: blocked prompts made 0 provider calls; safe prompts reached the live model through the Orchestrator only."
 }

@@ -26,9 +26,9 @@ describe('model-provider.factory', () => {
       AI_PROVIDER: 'gemini',
       AI_LIVE_ENABLED: 'true',
       GEMINI_API_KEY: 'realkey123',
-      AI_MODEL_NAME: 'gemini-2.5-flash',
+      AI_MODEL_NAME: 'gemini-3.1-flash-lite',
     } as any);
-    expect(cfg).toMatchObject({ provider: 'gemini', liveEnabled: true, apiKey: 'realkey123', modelName: 'gemini-2.5-flash' });
+    expect(cfg).toMatchObject({ provider: 'gemini', liveEnabled: true, apiKey: 'realkey123', modelName: 'gemini-3.1-flash-lite' });
     expect(createModelProvider(cfg, silentLogger)).toBeInstanceOf(GeminiModelProvider);
   });
 
@@ -46,7 +46,7 @@ describe('model-provider.factory', () => {
 
   it('defaults the model name and never throws on odd env', () => {
     const cfg = resolveAiProviderConfig({ AI_PROVIDER: 'GEMINI', AI_LIVE_ENABLED: 'TRUE', GEMINI_API_KEY: 'k' } as any);
-    expect(cfg.modelName).toBe('gemini-2.5-flash');
+    expect(cfg.modelName).toBe('gemini-3.1-flash-lite');
     expect(cfg.provider).toBe('gemini');
     expect(cfg.liveEnabled).toBe(true);
   });

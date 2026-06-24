@@ -50,7 +50,7 @@ describe('OPS-L4-18 QA gate', () => {
     expect(s.guardCorpus.blockedCases).toBeGreaterThan(0); // real corpus guard runs
     expect(s.allergySafety.pass).toBe(true); // standing allergy hard-filter indicator
     expect(s.notificationDelivery.realSendEnabled).toBe(false); // dry-run posture
-    expect((await svc.getEconomics(NOW)).cost.status).toBe('awaiting_rates');
+    expect((await svc.getEconomics(NOW)).cost.status).toBe('awaiting_pilot');
   });
 
   it('PII-safe + accounting-only economics (no raw user ids, no billing)', async () => {
@@ -73,7 +73,7 @@ describe('OPS-L4-18 QA gate', () => {
       allergy_safety_pass: s.allergySafety?.pass === true && s.allergySafety?.leaks === 0,
       notification_dry_run_off: s.notificationDelivery.realSendEnabled === false,
       health_honest_null: h.aiCalls.status === 'awaiting_pilot' && h.aiCalls.errorRate === null,
-      economics_cost_honest_null: e.cost.status === 'awaiting_rates' && e.cost.costPerUserUsd === null,
+      economics_cost_awaiting_pilot_until_rows: e.cost.status === 'awaiting_pilot' && e.cost.costPerUserUsd === null,
       revenue_not_yet: e.revenue.status === 'not_yet',
       pii_safe: !PII_FIELD.test(JSON.stringify({ s, e, h })),
     };

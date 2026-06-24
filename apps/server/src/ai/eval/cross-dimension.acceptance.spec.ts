@@ -120,9 +120,12 @@ describe('AI cross-dimension acceptance', () => {
   });
 
   describe('D6 — rate-catalog honesty (no invented prices)', () => {
-    it('production catalog is EMPTY so runtime cost stays null until a verified rate is promoted', () => {
-      expect(PRODUCTION_RATE_CATALOG).toEqual([]);
-      expect(getActiveRate('gemini', 'gemini-flash-lite')).toBeNull();
+    it('production catalog contains a verified active rate for the default live model', () => {
+      expect(PRODUCTION_RATE_CATALOG.length).toBeGreaterThan(0);
+      const rate = getActiveRate('gemini', 'gemini-3.1-flash-lite');
+      expect(rate).not.toBeNull();
+      expect(rate?.sourceRef).toBe('https://ai.google.dev/gemini-api/docs/pricing');
+      expect(rate?.verifiedAt).toBe('2026-06-24');
     });
     it('reference rates are staged but inactive (must be promoted, never auto-consulted)', () => {
       expect(REFERENCE_RATES_2026.length).toBeGreaterThan(0);

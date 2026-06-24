@@ -21,7 +21,7 @@ const SNAP: BehavioralContextSnapshot = {
 function provider(opts: { text?: string; source?: 'provider' | 'estimated'; name?: string; throwMsg?: string } = {}): ModelProvider & { generate: jest.Mock } {
   const generate = jest.fn(async () => {
     if (opts.throwMsg) throw new Error(opts.throwMsg);
-    return { text: opts.text ?? 'a simple stew', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: opts.source ?? 'estimated' } };
+    return { text: opts.text ?? 'a simple stew', model: 'gemini-3.1-flash-lite', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: opts.source ?? 'estimated' } };
   });
   return { name: opts.name ?? 'mock', generate } as any;
 }
@@ -44,11 +44,11 @@ function build(p: ModelProvider, prismaCreate?: jest.Mock) {
 
 describe('AI cost policy', () => {
   it('returns null cost when no per-model rate is configured (no faked precision)', () => {
-    expect(estimateCostUsd('gemini-2.5-flash', 1000, 1000, resolveAiCostPolicy({} as any))).toBeNull();
+    expect(estimateCostUsd('gemini-3.1-flash-lite', 1000, 1000, resolveAiCostPolicy({} as any))).toBeNull();
   });
   it('computes cost only when a rate exists', () => {
-    const policy = { ...resolveAiCostPolicy({} as any), modelRatesUsdPer1k: { 'gemini-2.5-flash': { inputPer1k: 0.1, outputPer1k: 0.4 } } };
-    expect(estimateCostUsd('gemini-2.5-flash', 1000, 1000, policy)).toBeCloseTo(0.5, 6);
+    const policy = { ...resolveAiCostPolicy({} as any), modelRatesUsdPer1k: { 'gemini-3.1-flash-lite': { inputPer1k: 0.1, outputPer1k: 0.4 } } };
+    expect(estimateCostUsd('gemini-3.1-flash-lite', 1000, 1000, policy)).toBeCloseTo(0.5, 6);
   });
   it('liveModelAllowed is false by default (env gate)', () => {
     expect(resolveAiCostPolicy({} as any).liveModelAllowed).toBe(false);

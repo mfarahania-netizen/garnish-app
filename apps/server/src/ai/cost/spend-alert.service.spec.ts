@@ -40,7 +40,7 @@ describe('SpendAlertService (E47-A10C)', () => {
 
   it('at/above token threshold → creates one token_daily alert (PII-free metadata)', async () => {
     const { svc, create } = alertSvc();
-    const ids = await svc.evaluateDaily({ userId: 'u1', provider: 'gemini', model: 'gemini-2.5-flash', consumedTokensToday: DAILY_TOKEN_ALERT_THRESHOLD });
+    const ids = await svc.evaluateDaily({ userId: 'u1', provider: 'gemini', model: 'gemini-3.1-flash-lite', consumedTokensToday: DAILY_TOKEN_ALERT_THRESHOLD });
     expect(ids).toHaveLength(1);
     const data = create.mock.calls[0][0].data;
     expect(data.thresholdType).toBe('token_daily');
@@ -85,7 +85,7 @@ function setLive() {
   for (const k of ['AI_BUDGET_5H_MAX_TOKENS', 'AI_BUDGET_DAILY_MAX_TOKENS', 'AI_BUDGET_WEEKLY_MAX_TOKENS', 'AI_BUDGET_MONTHLY_MAX_TOKENS']) process.env[k] = '0';
 }
 function provider(): ModelProvider & { generate: jest.Mock } {
-  return { name: 'gemini', generate: jest.fn(async () => ({ text: 'a stew', model: 'gemini-2.5-flash', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
+  return { name: 'gemini', generate: jest.fn(async () => ({ text: 'a stew', model: 'gemini-3.1-flash-lite', usage: { promptTokens: 5, completionTokens: 7, totalTokens: 12, source: 'provider' } })) } as any;
 }
 
 describe('Orchestrator → spend-alert integration (E47-A10C)', () => {

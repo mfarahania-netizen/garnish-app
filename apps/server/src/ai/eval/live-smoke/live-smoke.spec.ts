@@ -56,6 +56,7 @@ describe('E47-A7 — controlled live Gemini smoke gate', () => {
       expect(result.liveProviderCallCount).toBeGreaterThan(0);
       expect(result.liveProviderCallCount).toBeLessThanOrEqual(result.safeLiveCases);
       expect(result.aiCallLogWrites).toBeGreaterThanOrEqual(result.totalCases);
+      expect(result.aiCallLogEstimatedCostRows).toBeGreaterThanOrEqual(result.liveProviderCallCount);
       for (const c of result.cases.filter((x) => x.kind === 'safe')) expect(c.passed).toBe(true);
     } else {
       expect(result.liveProviderCallCount).toBe(0);

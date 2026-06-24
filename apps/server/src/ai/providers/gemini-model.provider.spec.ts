@@ -19,20 +19,20 @@ describe('GeminiModelProvider (mocked SDK — no live API)', () => {
         usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 20, totalTokenCount: 30 },
       },
     });
-    const provider = new GeminiModelProvider('realkey123', 'gemini-2.5-flash');
+    const provider = new GeminiModelProvider('realkey123', 'gemini-3.1-flash-lite');
     const result = await provider.generate({ prompt: 'یه شام پیشنهاد بده' });
 
     expect(provider.name).toBe('gemini');
     expect(result.text).toBe('یک پلوی زعفرانی ساده');
-    expect(result.model).toBe('gemini-2.5-flash');
+    expect(result.model).toBe('gemini-3.1-flash-lite');
     // E47-A10A: usage now carries provenance — 'provider' when the SDK returned real usageMetadata.
     expect(result.usage).toEqual({ promptTokens: 10, completionTokens: 20, totalTokens: 30, source: 'provider' });
-    expect(mockGetGenerativeModel).toHaveBeenCalledWith({ model: 'gemini-2.5-flash' });
+    expect(mockGetGenerativeModel).toHaveBeenCalledWith({ model: 'gemini-3.1-flash-lite' });
   });
 
   it('SANITIZES errors and never leaks the API key', async () => {
     mockGenerateContent.mockRejectedValue(new Error('request failed key=realkey123 token AIzaSECRETKEY123456'));
-    const provider = new GeminiModelProvider('realkey123', 'gemini-2.5-flash');
+    const provider = new GeminiModelProvider('realkey123', 'gemini-3.1-flash-lite');
 
     await expect(provider.generate({ prompt: 'x' })).rejects.toThrow(/gemini_provider_error/);
     try {

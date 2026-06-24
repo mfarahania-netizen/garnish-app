@@ -31,7 +31,7 @@ class CountingProvider implements ModelProvider {
     this.calls += 1;
     return {
       text: this.text,
-      model: this.name === 'gemini' ? 'gemini-2.5-flash' : 'stub-model-v0',
+      model: this.name === 'gemini' ? 'gemini-3.1-flash-lite' : 'stub-model-v0',
       usage: { promptTokens: 5, completionTokens: 5, totalTokens: 10 },
     };
   }

@@ -18,7 +18,7 @@ export interface AiProviderConfig {
 }
 
 const PLACEHOLDER_KEYS = new Set(['', 'your-gemini-api-key', 'changeme', 'placeholder']);
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
 
 /** Chat-specific kill switch (E47-A8): an EXTRA gate on top of the general live config. */
 export const CHAT_LIVE_FLAG = 'AI_CHAT_LIVE_ENABLED';

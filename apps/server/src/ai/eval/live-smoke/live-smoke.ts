@@ -95,6 +95,7 @@ export interface LiveSmokeResult {
   redactedErrorSummary: string[];
   cases: { id: string; kind: 'blocked' | 'safe'; prompt: string; status?: string; providerDelta: number; passed: boolean }[];
   aiCallLogWrites: number;
+  aiCallLogEstimatedCostRows: number;
   note: string;
 }
 
@@ -123,6 +124,7 @@ export async function runLiveSmoke(env: NodeJS.ProcessEnv = process.env): Promis
       redactedErrorSummary: [],
       cases: [],
       aiCallLogWrites: 0,
+      aiCallLogEstimatedCostRows: 0,
       note: 'Live smoke skipped — set AI_PROVIDER=gemini, AI_LIVE_ENABLED=true, a real GEMINI_API_KEY, and RUN_LIVE_AI_SMOKE=true to execute. No live call made.',
     };
   }
@@ -183,6 +185,8 @@ export async function runLiveSmoke(env: NodeJS.ProcessEnv = process.env): Promis
   }
 
   const avg = provider.latencies.length ? Math.round(provider.latencies.reduce((a, b) => a + b, 0) / provider.latencies.length) : null;
+  const costRows = aiRows.filter((r) => typeof r.estimatedCost === 'number');
+  if (liveProviderCallCount > 0 && costRows.length < liveProviderCallCount) failures.push(`estimatedCostUsd missing for live call rows: costRows=${costRows.length} liveCalls=${liveProviderCallCount}`);
 
   return {
     ...base,
@@ -194,6 +198,7 @@ export async function runLiveSmoke(env: NodeJS.ProcessEnv = process.env): Promis
     redactedErrorSummary,
     cases,
     aiCallLogWrites: aiRows.length,
+    aiCallLogEstimatedCostRows: costRows.length,
     note: 'Live smoke executed: blocked prompts made 0 provider calls; safe prompts reached the live model through the Orchestrator only.',
   };
 }
