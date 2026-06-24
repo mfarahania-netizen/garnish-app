@@ -86,6 +86,11 @@ function buildArtifact() {
   run('inventory', 'coverage reported as targeted_static_scan (no over-claim)', () =>
     PRODUCER_INVENTORY_COVERAGE === 'targeted_static_scan');
   run('inventory', 'family gaps recorded honestly', () => PRODUCER_FAMILY_GAPS.length >= 3);
+  run('inventory', 'P0 assistant and personalization producers are canonical_emitting', () => {
+    const byId = new Map(EVENT_PRODUCER_INVENTORY.map((p) => [p.id, p]));
+    return byId.get('prod-ai-assistant-turn-event')?.migrationStatus === 'canonical_emitting' &&
+      byId.get('prod-web-personalization-events')?.migrationStatus === 'canonical_emitting';
+  });
 
   // runtime guard
   run('runtime_guard', 'off skips', () => {
@@ -206,7 +211,7 @@ function buildArtifact() {
     dbWritesDuringGate: 0,
     runtimeModeDefault: 'shadow',
     remainingIntegrationGaps: [
-      'Only 1 of ~21 producers is shadow-guarded (analytics.service.trackEvent); the rest are not_started.',
+      'P0 assistant-turn and personalization signal producers are canonical_emitting; most non-P0 mapped producers remain not_started.',
       'No producer emits canonical_v2 yet; runtime emission/migration is staged.',
       'Notification SEND/SUPPRESS decisions are not logged as events (Layer-10 gap).',
       'No admin-action audit producer; no WAT/workflow producer; cook family has no server producer.',
@@ -233,6 +238,17 @@ describe('E43-A2 event producer inventory + migration', () => {
     }
   });
 
+
+  it('marks the P0 assistant-turn and personalization signal producers as canonical_emitting', () => {
+    const byId = new Map(EVENT_PRODUCER_INVENTORY.map((p) => [p.id, p]));
+    const p0Ids = ['prod-ai-assistant-turn-event', 'prod-web-personalization-events'];
+    for (const id of p0Ids) {
+      expect(byId.get(id)?.migrationStatus).toBe('canonical_emitting');
+    }
+    expect(byId.get('prod-web-personalization-events')?.currentEventType).toContain('ingredient_swapped');
+    expect(byId.get('prod-web-personalization-events')?.currentEventType).toContain('portion_scaled');
+    expect(byId.get('prod-web-personalization-events')?.currentEventType).toContain('ingredient_removed');
+  });
   it('has no duplicate producer ids', () => {
     const ids = EVENT_PRODUCER_INVENTORY.map((p) => p.id);
     expect(new Set(ids).size).toBe(ids.length);

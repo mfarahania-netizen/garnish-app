@@ -18,12 +18,16 @@ const base: AICallLogInput = {
 describe('AiCallLogService (DB-backed)', () => {
   it('persists a successful call with JSON guardHits/toolCalls', async () => {
     const { svc, create } = makeService();
-    const out = await svc.record({ ...base, status: 'ok', guardHits: [], toolCalls: ['search_recipes'] });
+    const out = await svc.record({ ...base, status: 'ok', guardHits: [], toolCalls: ['search_recipes'], intent: 'recipe_discovery', tier: 'CHEAP', cacheHit: true, cacheTokens: 512 });
     expect(out).toEqual({ id: 'log_1' });
     const data = create.mock.calls[0][0].data;
     expect(data.status).toBe('ok');
     expect(data.toolCalls).toEqual(['search_recipes']);
     expect(data.guardHits).toEqual([]);
+    expect(data.intent).toBe('recipe_discovery');
+    expect(data.tier).toBe('CHEAP');
+    expect(data.cacheHit).toBe(true);
+    expect(data.cacheTokens).toBe(512);
   });
 
   it('persists a blocked call', async () => {

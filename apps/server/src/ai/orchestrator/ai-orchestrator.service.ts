@@ -17,6 +17,7 @@ import { resolveAiCostPolicy, AI_COST_SCHEMA_VERSION, UsageSource } from '../cos
 import { estimateCostUsdFromCatalog } from '../cost/ai-cost-rate-catalog';
 import { PersistedDailyBudgetService, STUB_PROVIDER_NAME } from '../cost/persisted-daily-budget.service';
 import { SpendAlertService } from '../cost/spend-alert.service';
+import { GarnishRateLimitService } from '../cost/garnish-rate-limit.service';
 import { isLiveModelConfigured } from '../providers/model-provider.factory';
 
 /**
@@ -49,6 +50,8 @@ export class AiOrchestratorService {
     @Optional() private readonly persistedBudget?: PersistedDailyBudgetService,
     // E47-A10C: optional spend-alert evaluator (wired in the app; absent in unit constructions).
     @Optional() private readonly spendAlerts?: SpendAlertService,
+    // P0: Redis-atomic live quota. Preferred over DB aggregates when wired.
+    @Optional() private readonly rateLimit?: GarnishRateLimitService,
   ) {}
 
   async run(request: AiCallRequest): Promise<AiCallResult> {
@@ -87,11 +90,13 @@ export class AiOrchestratorService {
     //      — ONLY before a LIVE provider call. Skipped entirely for the default stub path (no live config) so
     //      offline behavior is unchanged. Fails CLOSED on a lookup error: if we cannot verify the budget we do
     //      NOT make a paid call.
-    if (this.persistedBudget && isLiveModelConfigured()) {
+    if ((this.rateLimit || this.persistedBudget) && isLiveModelConfigured()) {
       let allowed = true;
       let reason = 'daily_budget_exceeded';
       try {
-        const budget = await this.persistedBudget.checkAllWindows(request.userId, request.estimatedTokens);
+        const budget = this.rateLimit
+          ? await this.rateLimit.checkAndReserve(request.userId, request.estimatedTokens)
+          : await this.persistedBudget!.checkAllWindows(request.userId, request.estimatedTokens);
         allowed = budget.allowed;
         reason = budget.reason ?? reason;
       } catch (err) {
@@ -233,6 +238,10 @@ export class AiOrchestratorService {
       costIsEstimated,
       currency,
       costSchemaVersion: AI_COST_SCHEMA_VERSION,
+      intent: args.request.intent ?? null,
+      tier: args.request.tier ?? null,
+      cacheHit: args.request.cacheHit ?? false,
+      cacheTokens: args.request.cacheTokens ?? null,
       guardHits: args.guardHits,
       toolCalls: args.toolCalls,
       metadata: args.reasons.length ? { reasons: args.reasons } : {},

@@ -11,6 +11,7 @@ import { NutritionClaimGuardService } from './guards/nutrition-claim.guard';
 import { AiCostControllerService } from './cost/ai-cost-controller.service';
 import { PersistedDailyBudgetService } from './cost/persisted-daily-budget.service';
 import { SpendAlertService } from './cost/spend-alert.service';
+import { GarnishRateLimitService } from './cost/garnish-rate-limit.service';
 import { AiCallLogService } from './logging/ai-call-log.service';
 import { ChatMessageService } from './chat/chat-message.service';
 import { UserFactService } from './facts/user-fact.service';
@@ -46,6 +47,7 @@ import { IntentClassifierService } from './intent/intent-classifier.service';
     AiSafetyGuardService,
     NutritionClaimGuardService,
     AiCostControllerService,
+    GarnishRateLimitService,
     PersistedDailyBudgetService,
     SpendAlertService,
     AiCallLogService,
@@ -69,6 +71,7 @@ import { IntentClassifierService } from './intent/intent-classifier.service';
     BehavioralContextSnapshotService,
     AiCallLogService,
     AiCostControllerService,
+    GarnishRateLimitService,
     ChatMessageService,
     UserFactService,
     AiAssistService,

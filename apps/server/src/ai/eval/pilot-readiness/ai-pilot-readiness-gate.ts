@@ -211,7 +211,17 @@ export async function runPilotReadinessGate(opts: { timestamp?: string } = {}): 
     let alertAttempted = false;
     const prisma = mockPrisma({
       aggregate: async ({ where }: any = {}) => {
-        const ageMs = Date.now() - (where?.createdAt?.gte?.getTime?.() ?? 0);
+        const since = where?.createdAt?.gte;
+        if (
+          since instanceof Date
+          && since.getUTCHours() === 0
+          && since.getUTCMinutes() === 0
+          && since.getUTCSeconds() === 0
+          && since.getUTCMilliseconds() === 0
+        ) {
+          return { _sum: { totalTokens: 170_000 } };
+        }
+        const ageMs = Date.now() - (since?.getTime?.() ?? 0);
         return { _sum: { totalTokens: ageMs <= 6 * 3_600_000 ? 50_000 : 170_000 } }; // 5h window light; daily heavy
       },
       alertFind: async () => null,

@@ -32,6 +32,10 @@ export interface AICallLogInput {
   costIsEstimated?: boolean | null;
   currency?: string | null;
   costSchemaVersion?: number | null;
+  intent?: string | null;
+  tier?: string | null;
+  cacheHit?: boolean | null;
+  cacheTokens?: number | null;
   guardHits: string[];
   toolCalls: string[];
   metadata?: Record<string, unknown> | null;
@@ -67,6 +71,10 @@ export class AiCallLogService {
           costIsEstimated: input.costIsEstimated ?? null,
           currency: input.currency ?? null,
           costSchemaVersion: input.costSchemaVersion ?? null,
+          intent: input.intent ?? null,
+          tier: input.tier ?? null,
+          cacheHit: input.cacheHit ?? false,
+          cacheTokens: input.cacheTokens ?? null,
           guardHits: (input.guardHits ?? []) as unknown as object,
           toolCalls: (input.toolCalls ?? []) as unknown as object,
           metadata: metadata as unknown as object,

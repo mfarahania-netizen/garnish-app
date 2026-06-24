@@ -78,6 +78,11 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     // AICallLog persisted with chat surface
     expect(aiCreate.mock.calls[0][0].data.surface).toBe('chat');
     expect(aiCreate.mock.calls[0][0].data.provider).toBe('mock');
+    // AICallLog carries deterministic routing/cache observability (P0 cost/perf ledger).
+    expect(aiCreate.mock.calls[0][0].data.intent).toBe('recipe_discovery');
+    expect(aiCreate.mock.calls[0][0].data.tier).toBe('CHEAP');
+    expect(aiCreate.mock.calls[0][0].data.cacheHit).toBe(false);
+    expect(aiCreate.mock.calls[0][0].data.cacheTokens).toBeNull();
     expect(analytics.trackEvent).toHaveBeenCalledWith(expect.objectContaining({
       userId: 'u1',
       type: 'ai_suggestion_generated',

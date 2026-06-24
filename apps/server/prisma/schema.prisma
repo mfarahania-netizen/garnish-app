@@ -928,6 +928,10 @@ model AICallLog {
   costIsEstimated       Boolean? // true while estimatedCost is null / not precisely metered
   currency              String? // ISO currency for estimatedCost (e.g. 'USD'); null when no cost
   costSchemaVersion     Int? // ledger schema version for forward migration
+  intent                String? // P0 observability: deterministic intent label when known
+  tier                  String? // P0 observability: NONE | CHEAP | STRONG | REFUSE | SPECIAL when known
+  cacheHit              Boolean? // P0 observability: true only when a verified cache hit served the turn
+  cacheTokens           Int? // P0 observability: provider-reported/verified cached tokens, null when unavailable
   guardHits             Json // string[] — guard categories that fired
   toolCalls             Json // string[] — tool names invoked
   metadata              Json // PII-free only (assertNoPIIInMetadata enforced in the service)
@@ -939,6 +943,8 @@ model AICallLog {
   @@index([status])
   @@index([conversationId])
   @@index([provider, model, createdAt])
+  @@index([intent, tier, createdAt])
+  @@index([cacheHit, createdAt])
 }
 
 // E47-A10C — spend-alert foundation (governance only; NOT billing, no charging).

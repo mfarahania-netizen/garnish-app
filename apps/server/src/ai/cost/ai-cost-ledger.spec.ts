@@ -58,7 +58,7 @@ describe('AI cost policy', () => {
 describe('AICallLog cost ledger — per terminal path', () => {
   it('OK (estimated usage): writes full ledger row with estimated provenance and null cost', async () => {
     const { orch, rows } = build(provider({ source: 'estimated' }));
-    const r = await orch.run({ userId: 'u1', prompt: 'یه شام ساده پیشنهاد بده', snapshot: SNAP, surface: 'chat' });
+    const r = await orch.run({ userId: 'u1', prompt: 'یه شام ساده پیشنهاد بده', snapshot: SNAP, surface: 'chat', intent: 'recipe_discovery', tier: 'CHEAP', cacheHit: false, cacheTokens: null });
     expect(r.status).toBe('ok');
     const row = rows[0];
     expect(row.status).toBe('ok');
@@ -70,6 +70,10 @@ describe('AICallLog cost ledger — per terminal path', () => {
     expect(row.costIsEstimated).toBe(true);
     expect(row.currency).toBe(DEFAULT_CURRENCY);
     expect(row.costSchemaVersion).toBe(AI_COST_SCHEMA_VERSION);
+    expect(row.intent).toBe('recipe_discovery');
+    expect(row.tier).toBe('CHEAP');
+    expect(row.cacheHit).toBe(false);
+    expect(row.cacheTokens).toBeNull();
   });
 
   it('OK (provider usage): records usageSource=provider', async () => {

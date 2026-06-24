@@ -46,7 +46,7 @@ describe('AiOrchestratorService (E47-A2 DB-backed logging)', () => {
 
   it('persists a SUCCESSFUL orchestrator call to AICallLog', async () => {
     const { orch, create, model } = makeOrchestrator();
-    const res = await orch.run({ userId: 'u1', prompt: 'suggest a quick dinner', snapshot: validSnapshot(), surface: 'chat', conversationId: 'c1' });
+    const res = await orch.run({ userId: 'u1', prompt: 'suggest a quick dinner', snapshot: validSnapshot(), surface: 'chat', conversationId: 'c1', intent: 'recipe_discovery', tier: 'CHEAP', cacheHit: true, cacheTokens: 128 });
     expect(res.status).toBe('ok');
     expect(model.generate).toHaveBeenCalledTimes(1);
     expect(create).toHaveBeenCalledTimes(1);
@@ -60,6 +60,10 @@ describe('AiOrchestratorService (E47-A2 DB-backed logging)', () => {
       conversationId: 'c1',
       estimatedInputTokens: 9,
       estimatedOutputTokens: 3,
+      intent: 'recipe_discovery',
+      tier: 'CHEAP',
+      cacheHit: true,
+      cacheTokens: 128,
     });
     expect(Array.isArray(data.guardHits)).toBe(true);
     expect(Array.isArray(data.toolCalls)).toBe(true);

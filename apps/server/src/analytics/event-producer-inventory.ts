@@ -133,6 +133,23 @@ export const EVENT_PRODUCER_INVENTORY: readonly ProducerRecord[] = [
   },
 
   {
+    id: 'prod-web-personalization-events',
+    sourceFile: 'apps/web/src/hooks/usePersonalization.js:trackEvent',
+    producerName: 'usePersonalization personalization apply events',
+    currentEventType: 'ingredient_swapped | portion_scaled | ingredient_removed',
+    currentShape: 'legacy',
+    targetEventFamily: 'recipe',
+    targetCanonicalEventType: 'ingredient_swapped | portion_scaled | ingredient_removed',
+    migrationPriority: 'P0',
+    risk: 'low',
+    migrationStatus: 'canonical_emitting',
+    notes: [
+      'P0 personalization signal producer; emits swap/scale/remove via the web analytics client into AnalyticsService.trackEvent and EventOutbox.',
+      'Covered by usePersonalization.test.js plus server event-quality tests proving these deliberate signals survive burst/noise filtering.',
+    ],
+  },
+
+  {
     id: 'prod-reco-exposure',
     sourceFile: 'apps/server/src/recommendation/exposure/exposure-tracking.service.ts:trackExposure(s)',
     producerName: 'ExposureTrackingService.trackExposure / trackExposures',

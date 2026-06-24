@@ -164,6 +164,10 @@ export class ChatOrchestrationService {
         // the per-request cap for chat AND makes the multi-window budget check projective (consumed + est > cap),
         // not merely retrospective. Tune the headroom when paid Gemini is enabled.
         estimatedTokens: Math.ceil(orchestratorPrompt.length / 4) + 512,
+        intent: intentDecision.intent,
+        tier: intentDecision.tier,
+        cacheHit: false,
+        cacheTokens: null,
       });
       status = result.status;
       model = result.model ?? STUB_MODEL;

@@ -87,6 +87,12 @@ export interface AiCallRequest {
   estimatedTokens?: number;
   /** overrides snapshot.nutritionSourceLocked when provided. */
   nutritionSourceLocked?: boolean;
+  /** Deterministic routing metadata for the AICallLog ledger; never derived by the model. */
+  intent?: string | null;
+  tier?: string | null;
+  /** Cache observability. Defaults to false/null until a verified cache serves the turn. */
+  cacheHit?: boolean | null;
+  cacheTokens?: number | null;
 }
 
 export interface AiCallResult {

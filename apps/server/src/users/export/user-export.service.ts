@@ -139,7 +139,7 @@ export class UserExportService {
             orderBy: { createdAt: 'desc' },
             select: {
               id: true, eventId: true, conversationId: true, surface: true, model: true, provider: true, status: true,
-              latencyMs: true, estimatedInputTokens: true, estimatedOutputTokens: true, estimatedCost: true,
+              latencyMs: true, estimatedInputTokens: true, estimatedOutputTokens: true, estimatedCost: true, intent: true, tier: true, cacheHit: true, cacheTokens: true,
               guardHits: true, toolCalls: true, metadata: true, errorCode: true, createdAt: true,
             },
           }),

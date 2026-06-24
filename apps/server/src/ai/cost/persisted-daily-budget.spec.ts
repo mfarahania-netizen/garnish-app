@@ -115,6 +115,30 @@ describe('Orchestrator multi-window budget enforcement (E47-A10B)', () => {
     expect(p.generate).toHaveBeenCalledTimes(1);
   });
 
+  it('LIVE + Redis quota block -> provider NOT called; DB aggregate fallback not used', async () => {
+    setLive();
+    const p = provider();
+    const findFirst = jest.fn(async () => null);
+    const aggregate = jest.fn(async () => ({ _sum: { totalTokens: 0 } }));
+    const budget = new PersistedDailyBudgetService({ aICallLog: { findFirst, aggregate } } as any);
+    const rateLimit: any = { checkAndReserve: jest.fn(async () => ({ allowed: false, window: '5h', reason: 'budget_exceeded_5h', consumedTokens: 60_000, limit: 60_000 })) };
+    const rows: any[] = [];
+    const callLog = new AiCallLogService({ aICallLog: { create: jest.fn(async ({ data }: any) => { rows.push(data); return { id: 'log_1' }; }) } } as any);
+    const orch = new AiOrchestratorService(
+      p, new PromptInjectionGuardService(), new AiCostControllerService(), new AiSafetyGuardService(),
+      new NutritionClaimGuardService(), callLog,
+      new BehavioralContextSnapshotService({ userPreference: { findUnique: jest.fn(async () => null) } } as any),
+      budget, undefined, rateLimit,
+    );
+    const r = await orch.run({ userId: 'u1', prompt: 'a safe dinner idea', snapshot: SNAP, surface: 'chat' });
+    expect(r.status).toBe('blocked_cost');
+    expect(p.generate).not.toHaveBeenCalled();
+    expect(rateLimit.checkAndReserve).toHaveBeenCalledTimes(1);
+    expect(findFirst).not.toHaveBeenCalled();
+    expect(aggregate).not.toHaveBeenCalled();
+    expect(JSON.stringify(rows[0].metadata)).toContain('budget_exceeded_5h');
+  });
+
   it('LIVE + over budget → provider NOT called; blocked_cost ledger row (daily window)', async () => {
     setLive();
     const p = provider();
