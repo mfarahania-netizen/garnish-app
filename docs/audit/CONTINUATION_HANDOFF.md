@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after assistant-turn EventOutbox/tier-tagged event closure.
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after non-VPN P0 observability/quota closure (AICallLog intent/tier/cache fields + P0 producer inventory + Redis-atomic quota).
 
 ---
 
@@ -63,10 +63,7 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 ---
 
 ## 4. CURRENT STATE (verify before trusting — re-stamp at each milestone)
-- Branch `master`; requestId echo + assistant-turn EventOutbox/tier-tagged events are committed in the current Codex line. **Verified 2026-06-24: server 247 suites / 2011 tests green; server `npx tsc --noEmit` green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
-- **P0 core safety/correctness build: complete + guardian-converged.** Shipped & verified: EU-14 allergen engine + canonicalization; IntentClassifier (the €0 cost+safety router) wired on every chat turn (dark/log-only); §3 conversational-allergy (declare → confirm → one-tap write → hard gate); multi-window cost budget (5h/daily/weekly/monthly + 15s cooldown, **inert** until live Gemini); SubstitutionEngine; signal capture; the cross-dimension acceptance capstone (`apps/server/src/ai/eval/cross-dimension.acceptance.spec.ts`).
-- **CRITICAL bug the guardian caught & closed:** the hard allergy gate was silently **failing open on the entire live recipe corpus** — recipes author allergens in Persian (آجیل/گلوتن/لبنیات/…), the canonicalizer was English-only → a nut-allergic user was served nut dishes. Fixed (Persian+Dutch canonicalization in `recipe-integrity.ts`) and locked with a regression test that reads the real shipped corpus.
-- **Verify command (run first in a new chat):** from `apps/server` → `npm test`; from `apps/web` → `npm test` + `npm run build`. Do **not** claim web `tsc --noEmit` until `apps/web` has a real `tsconfig*.json` + local `typescript` dependency.
+- Branch `master`; requestId echo, assistant-turn EventOutbox/tier-tagged events, AICallLog intent/tier/cache fields, P0 producer-inventory truth, and Redis-atomic quota are committed in the current Codex line. **Verified 2026-06-24 after commit `60c8c45b`: server 248 suites / 2017 tests green; server `npx tsc --noEmit` green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
 
 ---
 
@@ -74,10 +71,10 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
 - ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
 - ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
-- **REMAINS / UPDATED:** `requestId` echo is **100% dimension-closed** by capstone. Assistant-turn `ai_suggestion_generated` events are now **100% dimension-closed**: every assistant reply path emits structured tier/status/intent metadata through `AnalyticsService.trackEvent`/EventOutbox, and `prod-ai-assistant-turn-event` is marked `canonical_emitting`. Remaining non-VPN P0 tail: audit/close any still-unproven P0 observability gaps (especially AICallLog cache-hit/tier/intent/cacheTokens and producer-inventory truth for swap/scale/remove), then make multi-window cost/quota **Redis-atomic**.
+- **REMAINS / UPDATED:** `requestId` echo is **100% dimension-closed** by capstone. Assistant-turn `ai_suggestion_generated` events are now **100% dimension-closed**: every assistant reply path emits structured tier/status/intent metadata through `AnalyticsService.trackEvent`/EventOutbox, and `prod-ai-assistant-turn-event` is marked `canonical_emitting`. Remaining non-VPN P0 tail is now closed: AICallLog cache-hit/tier/intent/cacheTokens landed, producer-inventory truth for swap/scale/remove landed, and multi-window quota is Redis-atomic when wired.
 - ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is now:** continue the non-blocked P0 tail by auditing/closing the remaining observability gaps against `AI_MASTER_SPEC.md`, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
+**The immediate next work is now:** close the only remaining whole-P0 blocker: founder enables VPN / approves live verification, then populate `PRODUCTION_RATE_CATALOG` from verified dated Gemini rates and prove `estimatedCostUsd` becomes non-null on a live-gated path. No live Gemini call before explicit VPN confirmation. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
 
 ---
 
@@ -123,6 +120,23 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 **Next smallest step:** audit/close the remaining P0 observability gaps (AICallLog cache-hit/tier/intent/cacheTokens and any producer-inventory mismatch for swap/scale/remove), then do Redis-atomic multi-window cost quota. Do not start live Gemini/rate catalog without founder VPN.
 ---
 
+## 4f. LATEST DIMENSION CLOSURE SNAPSHOT - non-VPN P0 observability/quota (2026-06-24)
+**Dimension(s):** Observability/Cost/Ops substrate + Cost Honesty + Safety-Wiring.
+
+**What this dimension must do:** P0 must make AI/product signals queryable end-to-end, make model-call ledger rows attributable by intent/tier/cache state, and prevent live paid-call abuse under multiple app instances. The LLM still cannot be the source of a fact, quantity, safety decision, or price.
+
+**What is built now:**
+- `AICallLog` has `intent`, `tier`, `cacheHit`, `cacheTokens` plus indexes and safe export coverage. `ChatOrchestrationService` forwards intent/tier/cache metadata into `AiOrchestratorService`, which writes it through `AiCallLogService`.
+- `EVENT_PRODUCER_INVENTORY` marks `prod-ai-assistant-turn-event` and `prod-web-personalization-events` as `canonical_emitting`; swap/scale/remove are represented as `ingredient_swapped | portion_scaled | ingredient_removed` through web analytics -> `AnalyticsService.trackEvent` -> EventOutbox.
+- `GarnishRateLimitService` uses Redis Lua with Redis server time for atomic cooldown + multi-window token reservation. `AiOrchestratorService` prefers Redis when wired and fails closed if Redis quota is unavailable; DB aggregate fallback remains only for non-Redis wiring/tests.
+- The pilot-readiness spend-alert failure-injection mock is clock-stable: start-of-UTC-day aggregate no longer aliases the rolling 5h window during early UTC hours.
+
+**Verification run:** focused AICallLog/orchestrator/chat ledger tests green; focused inventory/event-quality tests green; focused Redis quota tests green; pilot-readiness gate green; final full server `248 suites / 2017 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; `git diff --check` clean except CRLF warnings.
+
+**Is it 100% closed?** Yes for the non-VPN P0 observability/quota dimension. No for whole P0: `PRODUCTION_RATE_CATALOG` is still intentionally empty until VPN/live-verified Gemini rates are promoted, so `estimatedCostUsd` remains null by design.
+
+**Next smallest step:** ask the founder to enable VPN / approve live verification, then populate `PRODUCTION_RATE_CATALOG` from verified dated Gemini rates and prove a live-gated call produces a non-null ledger `estimatedCostUsd` plus a real daily estimated-cost aggregate. Do not make any live Gemini call before that confirmation.
+---
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)
 1. `docs/GARNISH_GROUND_TRUTH.md` — authoritative whole-project state.
 2. `docs/audit/AI_MASTER_SPEC.md` — the unified AI design (P0→P6 roadmap with pass/fail gates; **wins on disagreement**).
