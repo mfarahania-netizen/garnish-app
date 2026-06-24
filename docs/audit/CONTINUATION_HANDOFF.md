@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after requestId echo capstone closure.
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after assistant-turn EventOutbox/tier-tagged event closure.
 
 ---
 
@@ -63,8 +63,8 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 ---
 
 ## 4. CURRENT STATE (verify before trusting — re-stamp at each milestone)
-- Branch `master`; requestId echo propagation + capstone are committed in the current Codex line. **Verified 2026-06-24: server 247 suites / 2010 tests green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
-- **P0 AI build: complete + guardian-converged.** Shipped & verified: EU-14 allergen engine + canonicalization; IntentClassifier (the €0 cost+safety router) wired on every chat turn (dark/log-only); §3 conversational-allergy (declare → confirm → one-tap write → hard gate); multi-window cost budget (5h/daily/weekly/monthly + 15s cooldown, **inert** until live Gemini); SubstitutionEngine; signal capture; the cross-dimension acceptance capstone (`apps/server/src/ai/eval/cross-dimension.acceptance.spec.ts`).
+- Branch `master`; requestId echo + assistant-turn EventOutbox/tier-tagged events are committed in the current Codex line. **Verified 2026-06-24: server 247 suites / 2011 tests green; server `npx tsc --noEmit` green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
+- **P0 core safety/correctness build: complete + guardian-converged.** Shipped & verified: EU-14 allergen engine + canonicalization; IntentClassifier (the €0 cost+safety router) wired on every chat turn (dark/log-only); §3 conversational-allergy (declare → confirm → one-tap write → hard gate); multi-window cost budget (5h/daily/weekly/monthly + 15s cooldown, **inert** until live Gemini); SubstitutionEngine; signal capture; the cross-dimension acceptance capstone (`apps/server/src/ai/eval/cross-dimension.acceptance.spec.ts`).
 - **CRITICAL bug the guardian caught & closed:** the hard allergy gate was silently **failing open on the entire live recipe corpus** — recipes author allergens in Persian (آجیل/گلوتن/لبنیات/…), the canonicalizer was English-only → a nut-allergic user was served nut dishes. Fixed (Persian+Dutch canonicalization in `recipe-integrity.ts`) and locked with a regression test that reads the real shipped corpus.
 - **Verify command (run first in a new chat):** from `apps/server` → `npm test`; from `apps/web` → `npm test` + `npm run build`. Do **not** claim web `tsc --noEmit` until `apps/web` has a real `tsconfig*.json` + local `typescript` dependency.
 
@@ -74,10 +74,10 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
 - ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
 - ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
-- **REMAINS / UPDATED:** `requestId` echo is now **100% dimension-closed** by capstone (`trackImpression -> UserEvent payload -> EventOutbox/process -> RecommendationAttributionEvent.requestId` + learner join). Remaining non-VPN P0 tail: confirm `EventOutbox` producers are flipped from `not_started`, turn events emit tier-tagged, and multi-window cost/quota becomes **Redis-atomic**.
+- **REMAINS / UPDATED:** `requestId` echo is **100% dimension-closed** by capstone. Assistant-turn `ai_suggestion_generated` events are now **100% dimension-closed**: every assistant reply path emits structured tier/status/intent metadata through `AnalyticsService.trackEvent`/EventOutbox, and `prod-ai-assistant-turn-event` is marked `canonical_emitting`. Remaining non-VPN P0 tail: audit/close any still-unproven P0 observability gaps (especially AICallLog cache-hit/tier/intent/cacheTokens and producer-inventory truth for swap/scale/remove), then make multi-window cost/quota **Redis-atomic**.
 - ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is now:** continue the non-blocked P0 tail: EventOutbox producer flip/tier-tagged assistant turns, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let �6/�7 read as "P0 is fully done" � it is not; this �4b is the precise position.**
+**The immediate next work is now:** continue the non-blocked P0 tail by auditing/closing the remaining observability gaps against `AI_MASTER_SPEC.md`, then Redis cost atomicity. The rate-catalog P0 item is parked until VPN. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
 
 ---
 
@@ -105,7 +105,22 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Is it 100% closed?** Yes for requestId echo. The capstone proves `POST /recommendations/impression -> UserEvent payload -> EventOutbox/processNow -> RecommendationAttributionEvent.requestId`, then proves `RecipePriorLearnerService` reads attribution by served `requestId` and writes joined prior rows.
 
-**Next smallest step:** move to EventOutbox producer flip / tier-tagged assistant-turn events; after that, Redis-atomic cost quota. Do not start live Gemini/rate catalog without founder VPN.
+**Next smallest step:** audit/close the remaining P0 observability gaps (AICallLog cache-hit/tier/intent/cacheTokens and any producer-inventory mismatch for swap/scale/remove), then do Redis-atomic cost quota. Do not start live Gemini/rate catalog without founder VPN.
+---
+
+
+## 4e. LATEST DIMENSION CLOSURE SNAPSHOT - assistant-turn EventOutbox/tier tagging (2026-06-24)
+**Dimension(s):** Observability/Cost/Ops substrate + Safety-Wiring chat paths.
+
+**What this dimension must do:** every assistant reply must create a queryable, tier-tagged `UserEvent` through the existing analytics/EventOutbox path so cost, safety refusals, cache/tier mix, and product quality can be measured without copying raw chat text.
+
+**What is built now:** `ChatOrchestrationService.handleChat` records `ai_suggestion_generated` for normal replies, blocked-injection replies, blocked-safety replies, orchestration-error replies, and §3 conversational-allergy confirm-then-write offers. Payload includes references and metadata only: `conversationId`, `messageId`, `aiCallLogId`, `status`, `providerMode`, `model`, `blocked`, `intent`, `tier`, `dataScope`, `safetyRelevant`, `confidence`, `suggestedActionType`. `ai_suggestion_generated` is deliberate in `EventQualityService`, so burst/noise heuristics do not drop it. `EVENT_PRODUCER_INVENTORY` now includes `prod-ai-assistant-turn-event` as `canonical_emitting`.
+
+**Verification run:** targeted assistant/event-quality/inventory tests green (60 tests after inventory update); full server `247 suites / 2011 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; code `git diff --check` clean.
+
+**Is it 100% closed?** Yes for assistant-turn EventOutbox/tier tagging. No for whole P0: rate catalog remains VPN-blocked, Redis-atomic cost quota remains, and remaining observability requirements must be audited against `AI_MASTER_SPEC.md` before P0 can be called closed.
+
+**Next smallest step:** audit/close the remaining P0 observability gaps (AICallLog cache-hit/tier/intent/cacheTokens and any producer-inventory mismatch for swap/scale/remove), then do Redis-atomic multi-window cost quota. Do not start live Gemini/rate catalog without founder VPN.
 ---
 
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)
