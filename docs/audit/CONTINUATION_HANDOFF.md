@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after non-VPN P0 observability/quota closure (AICallLog intent/tier/cache fields + P0 producer inventory + Redis-atomic quota).
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after whole-P0 closure (verified Gemini production rate catalog + live smoke with non-null estimatedCostUsd).
 
 ---
 
@@ -47,7 +47,7 @@ Never mark a dimension 100% because general tests passed. Mark 100% only when th
 
 ## 2. STANDING CONSTRAINTS — verbatim, do not violate
 - **VPN for live Gemini.** Live Gemini requires the founder's VPN. **STOP and ask the founder to enable VPN before ANY live-Gemini test step.** Never silently attempt a live call.
-- **`PRODUCTION_RATE_CATALOG` stays EMPTY** until VPN-verified real rates are promoted. `REFERENCE_RATES_2026` is staged + `isActive:false`. No invented prices → runtime cost stays `null` (honest).
+- **`PRODUCTION_RATE_CATALOG` contains only verified production truth.** As of 2026-06-24 it has one active source-attributed row for `gemini-3.1-flash-lite`; never add unverified or guessed prices. `REFERENCE_RATES_2026` remains staged/inactive.
 - **§3 confirm-then-write: NEVER auto-write an allergy.** Only a user-tapped `POST /users/allergies` writes to the safe set. Chat may *offer*; only the tap commits. Writes pass the `CANONICAL_ALLERGEN_TOKENS` allowlist on BOTH `addAllergies` and `updatePreferences`.
 - **`apps/server/.env` is gitignored** (Gemini key is local-only, never in the repo).
 - **Commit AND push as SEPARATE Bash/PowerShell calls; work directly on `master`.** End commit messages with the Co-Authored-By trailer. Commit/push only when the founder asks.
@@ -63,18 +63,17 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 ---
 
 ## 4. CURRENT STATE (verify before trusting — re-stamp at each milestone)
-- Branch `master`; requestId echo, assistant-turn EventOutbox/tier-tagged events, AICallLog intent/tier/cache fields, P0 producer-inventory truth, and Redis-atomic quota are committed in the current Codex line. **Verified 2026-06-24 after commit `60c8c45b`: server 248 suites / 2017 tests green; server `npx tsc --noEmit` green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
+- Branch `master`; P0 is committed in the current Codex line through `227db7e7` plus docs commit to follow. **Verified 2026-06-24: live Gemini smoke executed with `gemini-3.1-flash-lite` and wrote 3 non-null `estimatedCostUsd` rows; server 248 suites / 2018 tests green; server `npx tsc --noEmit` green; web 36 files / 169 tests green; web build green.** Honest caveat: `apps/web` has no `tsconfig*.json` / local `typescript`, so the documented `npx tsc --noEmit` web gate is currently not runnable and must not be claimed green.
 
 ---
 
-## 4b. EXACT PHASE POSITION — we are at the TAIL of P0 (be precise; this is the "where exactly")
-P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` §roadmap):
-- ✅ **DONE + guardian-converged** (the live safety/correctness/compliance bugs P0 existed to fix): IntentClassifier wired dark per turn; §3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed (off `toStringArray`); EU-14 engine; the **CRITICAL Persian hard-gate fail-open closed**; signal capture (swap/scale/remove → `UserEvent`).
-- ⛔ **BLOCKED-on-VPN:** populate `PRODUCTION_RATE_CATALOG` with verified, dated Gemini rates → `estimatedCostUsd` non-null. Cannot be done honestly until the founder enables VPN and live rates are confirmed. The P0 gate "estimatedCostUsd non-null + counters correct under 2 instances" stays **RED** until then.
-- **REMAINS / UPDATED:** `requestId` echo is **100% dimension-closed** by capstone. Assistant-turn `ai_suggestion_generated` events are now **100% dimension-closed**: every assistant reply path emits structured tier/status/intent metadata through `AnalyticsService.trackEvent`/EventOutbox, and `prod-ai-assistant-turn-event` is marked `canonical_emitting`. Remaining non-VPN P0 tail is now closed: AICallLog cache-hit/tier/intent/cacheTokens landed, producer-inventory truth for swap/scale/remove landed, and multi-window quota is Redis-atomic when wired.
-- ❌ **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
+## 4b. EXACT PHASE POSITION - P0 is CLOSED; P1 is NEXT
+P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` roadmap):
+- ? **DONE + guardian/test-covered:** IntentClassifier dark/logged per turn; �3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed; EU-14 engine; Persian hard-gate fail-open closed; signal capture; requestId served-to-reward echo; assistant-turn EventOutbox/tier tagging; AICallLog `intent/tier/cacheHit/cacheTokens`; P0 producer inventory truth for assistant-turn + swap/scale/remove; Redis-atomic multi-window quota.
+- **DONE after VPN/live verification:** `PRODUCTION_RATE_CATALOG` has active, source-attributed `gemini-3.1-flash-lite` rates verified 2026-06-24 from the official Google AI pricing page (`https://ai.google.dev/gemini-api/docs/pricing`). Default live model now matches that exact row. Live smoke proved 3 live provider calls, 0 blocked-provider calls, 6 AICallLog writes, and 3 non-null `estimatedCostUsd` rows.
+- ? **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is now:** close the only remaining whole-P0 blocker: founder enables VPN / approves live verification, then populate `PRODUCTION_RATE_CATALOG` from verified dated Gemini rates and prove `estimatedCostUsd` becomes non-null on a live-gated path. No live Gemini call before explicit VPN confirmation. **Do not let §6/§7 read as "P0 is fully done" — it is not; this §4b is the precise position.**
+**The immediate next work is now:** Claude verifies Codex from baseline `6b584134` using `CODEX_BRIDGE.md`; if green/safe, start P1 with multi-turn memory. Do not let �6/�7 read as "P0 still blocked" - it is closed as of this handoff.
 
 ---
 
@@ -102,7 +101,7 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Is it 100% closed?** Yes for requestId echo. The capstone proves `POST /recommendations/impression -> UserEvent payload -> EventOutbox/processNow -> RecommendationAttributionEvent.requestId`, then proves `RecipePriorLearnerService` reads attribution by served `requestId` and writes joined prior rows.
 
-**Next smallest step:** audit/close the remaining P0 observability gaps (AICallLog cache-hit/tier/intent/cacheTokens and any producer-inventory mismatch for swap/scale/remove), then do Redis-atomic cost quota. Do not start live Gemini/rate catalog without founder VPN.
+**Next smallest step:** see §4g for whole-P0 closure; after Claude verification, proceed to P1 multi-turn memory.
 ---
 
 
@@ -115,9 +114,9 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Verification run:** targeted assistant/event-quality/inventory tests green (60 tests after inventory update); full server `247 suites / 2011 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; code `git diff --check` clean.
 
-**Is it 100% closed?** Yes for assistant-turn EventOutbox/tier tagging. No for whole P0: rate catalog remains VPN-blocked, Redis-atomic cost quota remains, and remaining observability requirements must be audited against `AI_MASTER_SPEC.md` before P0 can be called closed.
+**Is it 100% closed?** Yes for assistant-turn EventOutbox/tier tagging. Whole P0 was closed later by the verified rate-catalog/live-smoke slice in §4g.
 
-**Next smallest step:** audit/close the remaining P0 observability gaps (AICallLog cache-hit/tier/intent/cacheTokens and any producer-inventory mismatch for swap/scale/remove), then do Redis-atomic multi-window cost quota. Do not start live Gemini/rate catalog without founder VPN.
+**Next smallest step:** see §4g for whole-P0 closure; after Claude verification, proceed to P1 multi-turn memory.
 ---
 
 ## 4f. LATEST DIMENSION CLOSURE SNAPSHOT - non-VPN P0 observability/quota (2026-06-24)
@@ -133,9 +132,27 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Verification run:** focused AICallLog/orchestrator/chat ledger tests green; focused inventory/event-quality tests green; focused Redis quota tests green; pilot-readiness gate green; final full server `248 suites / 2017 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; `git diff --check` clean except CRLF warnings.
 
-**Is it 100% closed?** Yes for the non-VPN P0 observability/quota dimension. No for whole P0: `PRODUCTION_RATE_CATALOG` is still intentionally empty until VPN/live-verified Gemini rates are promoted, so `estimatedCostUsd` remains null by design.
+**Is it 100% closed?** Yes for the non-VPN P0 observability/quota dimension. Whole P0 was closed later by the verified rate-catalog/live-smoke slice in §4g.
 
-**Next smallest step:** ask the founder to enable VPN / approve live verification, then populate `PRODUCTION_RATE_CATALOG` from verified dated Gemini rates and prove a live-gated call produces a non-null ledger `estimatedCostUsd` plus a real daily estimated-cost aggregate. Do not make any live Gemini call before that confirmation.
+**Next smallest step:** see §4g for the rate-catalog/live-smoke closure; after Claude verification, proceed to P1 multi-turn memory.
+---
+## 4g. LATEST DIMENSION CLOSURE SNAPSHOT - verified rate catalog / whole-P0 closure (2026-06-24)
+**Dimension(s):** Cost Honesty + Observability/Cost/Ops substrate.
+
+**What this dimension must do:** live model calls must have a source-verified exact-model rate so `estimatedCostUsd` becomes non-null on ledger rows; cost dashboards must distinguish "rates missing" from "rates exist but no usage yet"; daily estimated-cost alert input must be a real ledger aggregate, not a per-call fake.
+
+**What is built now:**
+- Default live model is `gemini-3.1-flash-lite`.
+- `PRODUCTION_RATE_CATALOG` contains one active source-attributed row for `provider='gemini'`, `model='gemini-3.1-flash-lite'`, USD `$0.25/1M input` and `$1.50/1M output`, verified 2026-06-24 from `https://ai.google.dev/gemini-api/docs/pricing`.
+- Unknown models still return honest null; inactive `REFERENCE_RATES_2026` rows are not consulted.
+- `PersistedDailyBudgetService.consumedEstimatedCostUsdToday` sums `AICallLog.estimatedCost` for the UTC day, excluding stub/null-cost rows; `AiOrchestratorService` passes that aggregate into `SpendAlertService`.
+- `live-smoke` now fails if live calls do not produce non-null estimated-cost ledger rows.
+
+**Verification run:** focused rate/cost/ops tests green; controlled live Gemini smoke green with 3 live calls and `aiCallLogEstimatedCostRows: 3`; final full server `248 suites / 2018 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; `git diff --check` clean except CRLF warnings.
+
+**Is it 100% closed?** Yes for P0 as tracked in this handoff. Remaining work is P1+, not a P0 blocker.
+
+**Next smallest step:** P1 multi-turn memory: wire 8 verbatim turns plus a short untrusted rolling summary into chat orchestration, user turn last, and keep all safety decisions on structured gates/profile only.
 ---
 ## 5. SOURCE-OF-TRUTH DOCS (reading order)
 1. `docs/GARNISH_GROUND_TRUTH.md` — authoritative whole-project state.
