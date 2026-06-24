@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after whole-P0 closure (verified Gemini production rate catalog + live smoke with non-null estimatedCostUsd).
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after P1 multi-turn memory slice closure.
 
 ---
 
@@ -71,9 +71,9 @@ Garnish = a premium ($7-that-feels-like-$20) Persian-cuisine-**FOR-EVERYONE** co
 P0 = "Observability + Cost Honesty + Safety-Wiring." Status, item by item (per `AI_MASTER_SPEC.md` roadmap):
 - ? **DONE + guardian/test-covered:** IntentClassifier dark/logged per turn; �3 conversational-allergy confirm-then-write; granular Art.9 consent split + withdrawal cascade; rich `substitutionOptions` consumed; EU-14 engine; Persian hard-gate fail-open closed; signal capture; requestId served-to-reward echo; assistant-turn EventOutbox/tier tagging; AICallLog `intent/tier/cacheHit/cacheTokens`; P0 producer inventory truth for assistant-turn + swap/scale/remove; Redis-atomic multi-window quota.
 - **DONE after VPN/live verification:** `PRODUCTION_RATE_CATALOG` has active, source-attributed `gemini-3.1-flash-lite` rates verified 2026-06-24 from the official Google AI pricing page (`https://ai.google.dev/gemini-api/docs/pricing`). Default live model now matches that exact row. Live smoke proved 3 live provider calls, 0 blocked-provider calls, 6 AICallLog writes, and 3 non-null `estimatedCostUsd` rows.
-- ? **P1 NOT STARTED:** multi-turn memory, fa/nl/en `TemplateRegistry`, hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
+- **P1 STARTED:** multi-turn memory slice is DONE + test-covered. Remaining P1/D1 gaps: fa/nl/en `TemplateRegistry` (Dutch required), hybrid+alias retrieval, conversational repair, cross-surface thread, runtime groundedness validator.
 
-**The immediate next work is now:** Claude verifies Codex from baseline `6b584134` using `CODEX_BRIDGE.md`; if green/safe, start P1 with multi-turn memory. Do not let �6/�7 read as "P0 still blocked" - it is closed as of this handoff.
+**The immediate next work is now:** Claude verifies Codex from baseline `6b584134` using `CODEX_BRIDGE.md`; if green/safe, continue P1 after the now-closed multi-turn memory slice. Do not let §6/§7 read as P0 still blocked - it is closed as of this handoff.
 
 ---
 
@@ -136,6 +136,21 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** see §4g for the rate-catalog/live-smoke closure; after Claude verification, proceed to P1 multi-turn memory.
 ---
+## 4h. LATEST DIMENSION CLOSURE SNAPSHOT - P1 multi-turn memory slice (2026-06-24)
+**Dimension(s):** Dimension 1 - Capability & Conversational UX.
+
+**What this slice must do:** chat must read short-term episodic context so a follow-up like "for 6 people" carries the prior turn into grounding, while the current user turn remains last and memory remains untrusted for safety.
+
+**What is built now:** `ChatMessageService.listRecentForMemory(userId, conversationId, limit=8)` reads only user/assistant turns for the same user and conversation, newest-limited then oldest-first. `ChatOrchestrationService` builds a deterministic memory context with an untrusted short summary, recent verbatim turns, and `CURRENT USER TURN` last. Grounding and live prompt construction receive that memory context; no raw prompt text is copied into analytics payloads.
+
+**Safety boundary:** memory is context only. `IntentClassifierService.classify`, §3 allergy declaration detection, `extractStatedAllergens`, and confirm-then-write still read only `input.prompt`. A prior memory line such as "I am allergic to walnuts" cannot trigger `suggestedAction` or write an allergy. If memory read fails, chat falls back to the raw current prompt.
+
+**Verification run:** focused `chat-message.service.spec.ts` + `chat-orchestration.service.spec.ts` green (32 tests); focused grounding/capstone set green (`chat-message`, `chat-orchestration`, `grounded-reply`, `cross-dimension.acceptance`: 57 tests); final full server `248 suites / 2022 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green; `git diff --check` clean except CRLF warnings.
+
+**Is it 100% closed?** Yes for the multi-turn memory slice. No for Dimension 1 overall: TemplateRegistry fa/nl/en, conversational repair, cross-surface context, retrieval upgrade, and runtime groundedness validator remain.
+
+**Next smallest step:** P1 fa/nl/en `TemplateRegistry` with Dutch required, or conversational repair if product flow needs the ask-one-question middle path first.
+---
 ## 4g. LATEST DIMENSION CLOSURE SNAPSHOT - verified rate catalog / whole-P0 closure (2026-06-24)
 **Dimension(s):** Cost Honesty + Observability/Cost/Ops substrate.
 
@@ -176,7 +191,7 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 ## 7. NEXT — P1 (Opus-gated; from AI_MASTER_SPEC §D "Must-build")
 Do NOT originate these with Sonnet. Lock the design with Opus first, then execute.
-- **Multi-turn memory:** wire 8 verbatim turns via `ChatMessageService.findMany` + a ~300-token rolling summary into `chat-orchestration` (summary EARLY in the cacheable prefix, user turn LAST, **summary UNTRUSTED for safety**). Pass: "for 6 people" resolves against the prior turn AND the cache prefix stays intact.
+- **Multi-turn memory:** DONE as slice 4h: 8 user-scoped verbatim turns + deterministic untrusted short summary are wired into `chat-orchestration`, user turn last, safety still reads only current prompt/profile. Remaining cache-provider optimization belongs to the P1 provider/cache upgrade.
 - **fa/nl/en TemplateRegistry** — Dutch is REQUIRED (today there is zero Dutch in any deterministic answer string; only the lexicon has Dutch).
 - **Conversational repair** — ask ONE clarifying question instead of guess-or-refuse (the missing productive middle of the abstention ladder).
 - Then per the P1→P6 roadmap in AI_MASTER_SPEC (retrieval upgrade above the BM25 floor; `AiTurnDecision` substrate for Loop-3; etc.).

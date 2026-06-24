@@ -12,9 +12,18 @@ Last updated: 2026-06-24
 
 ## Current AI phase
 - P0 Observability + Cost Honesty + Safety-Wiring is closed as of commit `227db7e7` plus docs commit to follow.
-- P1 is not started: multi-turn memory, fa/nl/en TemplateRegistry, repair, retrieval, groundedness.
+- P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: P1 multi-turn memory slice
+- Date: 2026-06-24.
+- Commit: pending in current Codex handoff until commit finalization.
+- Built: `ChatMessageService.listRecentForMemory(userId, conversationId, limit=8)` reads only the current user's user/assistant turns, newest-limited then oldest-first.
+- Built: `ChatOrchestrationService` now builds a deterministic short-term memory prompt before chat grounding: untrusted summary, 8 recent verbatim turns, and the current user turn last.
+- Safety boundary: memory is context only. Intent classification, conversational-allergy detection, and confirm-then-write still read `input.prompt` only; memory cannot auto-write an allergy.
+- Failure mode: if memory read fails, chat falls back to the raw current prompt and continues safely.
+- Tests: focused chat memory/safety tests, grounded reply tests, cross-dimension acceptance, full server test, server `tsc --noEmit`, web test, and web build all passed.
+- Closure status: 100% for the multi-turn memory slice. Dimension 1 as a whole is NOT 100% closed yet: TemplateRegistry Dutch, conversational repair, cross-surface context, retrieval upgrade, and groundedness validator remain.
 ## Latest completed work: verified Gemini rate catalog / whole-P0 closure
 - Date: 2026-06-24.
 - Commit: `227db7e7 ai: promote verified Gemini rate catalog`.
@@ -56,7 +65,7 @@ For every AI/spec dimension or piece, close with:
 6. If not 100%, exact remaining gaps and next smallest step.
 
 ## Immediate next step
-Move to P1 only after Claude verifies Codex work from baseline `6b584134` using `docs/audit/CODEX_BRIDGE.md`: committed diff + the two remaining unstaged historical QA JSONs. Recommended P1 first step: multi-turn memory design/wiring under the same deterministic-first and hard safety-gate rules.
+Move to P1 only after Claude verifies Codex work from baseline `6b584134` using `docs/audit/CODEX_BRIDGE.md`: committed diff + the two remaining unstaged historical QA JSONs. Recommended next P1 step: fa/nl/en TemplateRegistry (Dutch required) or conversational repair; multi-turn memory slice is now built and verified.
 
 ## Known repo/document caveats
 - `apps/web` currently has no `tsconfig*.json` and no local `typescript` dependency; documented `npx tsc --noEmit` is not a real web gate yet.

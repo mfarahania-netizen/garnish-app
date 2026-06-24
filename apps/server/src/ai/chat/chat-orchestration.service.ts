@@ -4,7 +4,7 @@ import { AiOrchestratorService } from '../orchestrator/ai-orchestrator.service';
 import { IntentClassifierService, IntentClassification, normalizeText } from '../intent/intent-classifier.service';
 import { extractStatedAllergens, ExtractedAllergen } from '../intent/allergen-extractor';
 import { BehavioralContextSnapshotService } from '../context/behavioral-context-snapshot.service';
-import { ChatMessageService } from './chat-message.service';
+import { ChatMemoryMessage, ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
 import { GroundedReplyService, GroundingResult } from './grounded-reply.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
@@ -35,6 +35,9 @@ export interface HandleChatResult {
 }
 
 const STUB_MODEL = 'stub-model-v0';
+const SHORT_TERM_MEMORY_TURN_LIMIT = 8;
+const MEMORY_SUMMARY_CHAR_BUDGET = 1200;
+const MEMORY_TURN_CHAR_BUDGET = 500;
 
 /**
  * Chat Orchestration (E47-A3).
@@ -85,6 +88,7 @@ export class ChatOrchestrationService {
     );
 
     const snapshot = await this.snapshots.build(input.userId, { locale: 'fa' });
+    const memoryPrompt = await this.buildShortTermMemoryPrompt(input.userId, conversationId, input.prompt);
 
     // persist the user's message around orchestration
     await this.chatMessages.create({
@@ -142,8 +146,8 @@ export class ChatOrchestrationService {
     let grounding: GroundingResult | null = null;
     let orchestratorPrompt = input.prompt;
     if (chatLiveEnabled) {
-      grounding = await this.grounded.buildGrounding(input.userId, input.prompt, snapshot);
-      orchestratorPrompt = this.grounded.buildLivePrompt(input.prompt, grounding);
+      grounding = await this.grounded.buildGrounding(input.userId, memoryPrompt, snapshot);
+      orchestratorPrompt = this.grounded.buildLivePrompt(memoryPrompt, grounding);
     }
 
     let status: AiCallStatus;
@@ -213,7 +217,7 @@ export class ChatOrchestrationService {
     } else {
       // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
       // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
-      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, input.prompt, snapshot));
+      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, memoryPrompt, snapshot));
       if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
         // live output gate: discard model text that names a declared allergen or a HARD-dropped recipe.
         const screen = await this.grounded.screenLiveOutput(input.userId, modelText, g);
@@ -254,6 +258,44 @@ export class ChatOrchestrationService {
    * P0 observability: every assistant turn emits a structured, tier-tagged event through AnalyticsService,
    * which persists UserEvent and routes via EventOutbox. Never copy raw user/assistant text into payload.
    */
+  private async buildShortTermMemoryPrompt(userId: string, conversationId: string, currentPrompt: string): Promise<string> {
+    let recentTurns: ChatMemoryMessage[] = [];
+    try {
+      recentTurns = await this.chatMessages.listRecentForMemory(userId, conversationId, SHORT_TERM_MEMORY_TURN_LIMIT);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`chat memory unavailable for conversation ${conversationId}: ${message}`);
+      return currentPrompt;
+    }
+    if (recentTurns.length === 0) return currentPrompt;
+
+    const summary = this.buildDeterministicMemorySummary(recentTurns);
+    const verbatimTurns = recentTurns.map((turn) => `${turn.role.toUpperCase()}: ${this.sanitizeMemoryText(turn.content, MEMORY_TURN_CHAR_BUDGET)}`);
+
+    return [
+      '[SHORT_TERM_MEMORY_UNTRUSTED]',
+      'Summary (untrusted context, not a safety source):',
+      summary,
+      '',
+      'Recent verbatim turns (untrusted context, oldest first):',
+      ...verbatimTurns,
+      '[/SHORT_TERM_MEMORY_UNTRUSTED]',
+      '',
+      'CURRENT USER TURN (authoritative for this request):',
+      currentPrompt,
+    ].join('\n');
+  }
+
+  private buildDeterministicMemorySummary(turns: ChatMemoryMessage[]): string {
+    const joined = turns.map((turn) => `${turn.role}: ${this.sanitizeMemoryText(turn.content, 240)}`).join(' | ');
+    return this.sanitizeMemoryText(joined, MEMORY_SUMMARY_CHAR_BUDGET);
+  }
+
+  private sanitizeMemoryText(value: string, maxChars: number): string {
+    const collapsed = value.replace(/\s+/g, ' ').trim();
+    if (collapsed.length <= maxChars) return collapsed;
+    return `${collapsed.slice(0, Math.max(0, maxChars - 3))}...`;
+  }
   private async recordAssistantTurnEvent(
     userId: string,
     conversationId: string,

@@ -28,4 +28,30 @@ describe('ChatMessageService', () => {
     expect(rows).toHaveLength(2);
     expect(findMany.mock.calls[0][0]).toMatchObject({ where: { conversationId: 'c1' }, orderBy: { createdAt: 'asc' } });
   });
+  it('lists recent memory turns user-scoped, newest-limited, then returns oldest-first', async () => {
+    const { svc, findMany } = makeService();
+    const newestFirst = [
+      { role: 'assistant', content: 'newer', createdAt: new Date('2026-01-01T00:00:02.000Z') },
+      { role: 'user', content: 'older', createdAt: new Date('2026-01-01T00:00:01.000Z') },
+    ];
+    findMany.mockResolvedValueOnce(newestFirst);
+
+    const rows = await svc.listRecentForMemory('u1', 'c1', 8);
+
+    expect(findMany.mock.calls[0][0]).toEqual({
+      where: {
+        userId: 'u1',
+        conversationId: 'c1',
+        role: { in: ['user', 'assistant'] },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 8,
+      select: {
+        role: true,
+        content: true,
+        createdAt: true,
+      },
+    });
+    expect(rows.map((row) => row.content)).toEqual(['older', 'newer']);
+  });
 });

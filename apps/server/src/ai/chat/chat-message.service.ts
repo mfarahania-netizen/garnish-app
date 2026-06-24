@@ -14,6 +14,12 @@ export interface CreateChatMessageInput {
   aiCallLogId?: string | null;
 }
 
+export interface ChatMemoryMessage {
+  role: Extract<ChatRole, 'user' | 'assistant'>;
+  content: string;
+  createdAt: Date;
+}
+
 /**
  * ChatMessage persistence (E47-A2). Minimal create/read for AI Core v1.
  * No medical/diet claim expansion, no vision — it only stores what the orchestrator/chat produces.
@@ -45,5 +51,23 @@ export class ChatMessageService {
       where: { conversationId },
       orderBy: { createdAt: 'asc' },
     });
+  }
+
+  async listRecentForMemory(userId: string, conversationId: string, limit = 8): Promise<ChatMemoryMessage[]> {
+    const rows = await this.prisma.chatMessage.findMany({
+      where: {
+        userId,
+        conversationId,
+        role: { in: ['user', 'assistant'] },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        role: true,
+        content: true,
+        createdAt: true,
+      },
+    });
+    return rows.reverse() as ChatMemoryMessage[];
   }
 }
