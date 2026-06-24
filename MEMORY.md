@@ -17,7 +17,7 @@ Last updated: 2026-06-24
 
 ## Latest completed work: P1 multi-turn memory slice
 - Date: 2026-06-24.
-- Commit: pending in current Codex handoff until commit finalization.
+- Commit: `d00b1980 ai: wire chat short-term memory` (docs closure commit follows).
 - Built: `ChatMessageService.listRecentForMemory(userId, conversationId, limit=8)` reads only the current user's user/assistant turns, newest-limited then oldest-first.
 - Built: `ChatOrchestrationService` now builds a deterministic short-term memory prompt before chat grounding: untrusted summary, 8 recent verbatim turns, and the current user turn last.
 - Safety boundary: memory is context only. Intent classification, conversational-allergy detection, and confirm-then-write still read `input.prompt` only; memory cannot auto-write an allergy.

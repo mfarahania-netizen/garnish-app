@@ -4,8 +4,22 @@ Close the first P1 / Dimension 1 slice after whole-P0 closure: multi-turn memory
 
 ## 2. Commits - paste `git log --oneline 6b584134..HEAD`
 ```text
-PENDING: this commit will be amended after commit hash is known.
+d00b1980 ai: wire chat short-term memory
+a693b384 docs: record whole P0 closure
+227db7e7 ai: promote verified Gemini rate catalog
+79501674 docs: record non-vpn P0 closure
+60c8c45b ai: close non-vpn P0 observability and quota
+559c5c73 docs: record assistant-turn EventOutbox closure
+ce0d9fbb ai: emit tiered assistant turn events
+0f292da2 docs: record requestId capstone commit in work log
+3ce75146 test: close recommendation requestId attribution capstone
+57e450d7 docs: record Codex requestId commit in work log
+639065b1 ai: echo recommendation requestId through impressions
+b978298a docs: CODEX_BRIDGE — correct the web gate (no tsc on apps/web) + cover uncommitted work
+61b429a2 docs: CODEX_BRIDGE + GUARDIAN_PROTOCOL — cheap tiered verification for the Codex handoff
 ```
+
+Note: this docs-only closure commit follows `d00b1980`; Claude should still run `git log --oneline 6b584134..HEAD` as required for the exact final list.
 
 ## 3. DONE (complete + which test covers it)
 - P1 multi-turn memory slice is built.
