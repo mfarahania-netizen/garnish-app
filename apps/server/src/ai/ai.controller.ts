@@ -26,13 +26,15 @@ export class AiController {
     // explicitly enabled by env; otherwise it is the deterministic recipe reply (safe default).
     // Response keeps `reply` + `conversationId` (backward-compatible) and adds safe optional fields.
     // `context` (D1 live per-request context) is sanitized + DARK-captured server-side — never trusted raw.
-    const { reply, conversationId, status, providerMode, aiCallLogId } = await this.chatOrchestration.handleChat({
+    const { reply, conversationId, status, providerMode, aiCallLogId, suggestedAction } = await this.chatOrchestration.handleChat({
       userId,
       prompt: body.prompt,
       conversationId: body.conversationId,
       context: body.context,
     });
-    return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId };
+    // §3 confirm-then-write: surface the allergy-add OFFER so the client can render the one-tap confirm. This is
+    // an OFFER only — the safe set is written solely by the user's explicit POST /users/allergies, never here.
+    return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId, ...(suggestedAction ? { suggestedAction } : {}) };
   }
 
   /**
