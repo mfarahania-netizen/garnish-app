@@ -90,7 +90,7 @@ const hasPerson = (t: string) => PERSON_TOKENS.some((u) => t.includes(u));
 
 const RAW_INTENTS: IntentSpec[] = [
   { intent: 'greeting_smalltalk', safetyRelevant: false, baseTier: 'NONE', dataScope: 'none',
-    anchors: ['سلام', 'درود', 'خوبی', 'ممنون', 'مرسی', 'خداحافظ', 'hoi', 'hallo', 'hi', 'hello', 'hey', 'thanks', 'thank you', 'bedankt', 'dank je', 'goedemorgen'] },
+    anchors: ['سلام', 'درود', 'خوبی', 'ممنون', 'مرسی', 'خداحافظ', 'صبح بخیر', 'عصر بخیر', 'شب بخیر', 'وقت بخیر', 'سلام علیکم', 'hoi', 'hallo', 'hi', 'hello', 'hey', 'thanks', 'thank you', 'bedankt', 'dank je', 'goedemorgen'] },
   { intent: 'unit_conversion', safetyRelevant: false, baseTier: 'NONE', dataScope: 'none',
     anchors: ['چند فنجان', 'چند گرم', 'چند پیمانه', 'چند قاشق', 'تبدیل', 'in cups', 'in grams', 'to grams', 'to cups', 'how many cups', 'how many grams', 'convert', 'omrekenen', 'hoeveel gram', 'hoeveel kopjes'] },
   { intent: 'timer_or_time', safetyRelevant: false, baseTier: 'NONE', dataScope: 'recipe',
@@ -98,7 +98,7 @@ const RAW_INTENTS: IntentSpec[] = [
   { intent: 'scaling', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
     anchors: ['برای چند نفر', 'دو برابر', 'نصفش', 'نصف کن', 'مقدار برای', 'verdubbel', 'halveren', 'double the', 'halve the', 'scale', 'portie'] },
   { intent: 'substitution', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
-    anchors: ['جایگزین', 'به جای', 'جای', 'عوضش', 'vervang', 'vervanging', 'in plaats van', 'substitute', 'instead of', 'replace', 'swap'] },
+    anchors: ['جایگزین', 'جانشین', 'به جای', 'جای', 'عوضش', 'نداشتم چی', 'نداشتم', 'نداشتیم', 'نباشه چی', 'تموم شده چی', 'vervang', 'vervanging', 'in plaats van', 'substitute', 'instead of', 'replace', 'swap'] },
   { intent: 'technique_whyitworks', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'recipe',
     anchors: ['چرا باید', 'چرا تفت', 'به چه دلیل', 'فایده', 'waarom', 'why do i', 'why should', 'what does it do', 'techniek'] },
   { intent: 'ingredient_facts', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'ingredient',
@@ -108,13 +108,13 @@ const RAW_INTENTS: IntentSpec[] = [
   { intent: 'personal_plan_or_history', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'user',
     anchors: ['برنامه ام', 'برنامه این هفته', 'چی پختم', 'لیست خریدم', 'تاریخچه', 'mijn plan', 'mijn weekmenu', 'mijn lijst', 'my plan', 'my week', 'my meal plan', 'what did i cook', 'my shopping list'] },
   { intent: 'nutrition_query', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'ingredient',
-    anchors: ['کالری', 'چربی', 'پروتئین', 'قند', 'کربوهیدرات', 'ارزش غذایی', 'calorie', 'calories', 'calorieen', 'hoeveel calorieen', 'protein', 'eiwit', 'koolhydraten', 'how much fat', 'sugar', 'nutrition', 'voedingswaarde'] },
+    anchors: ['کالری', 'کالریه', 'چربی', 'پروتئین', 'قند', 'کربوهیدرات', 'فیبر', 'ارزش غذایی', 'تغذیه ای', 'تغذیه‌ای', 'calorie', 'calories', 'calorieen', 'hoeveel calorieen', 'protein', 'eiwit', 'koolhydraten', 'fiber', 'vezels', 'how much fat', 'sugar', 'nutrition', 'voedingswaarde'] },
   { intent: 'during_cook_problem', safetyRelevant: true, baseTier: 'STRONG', dataScope: 'recipe_step',
-    anchors: ['بریده شد', 'برید', 'شور شد', 'سوخت', 'شفته شد', 'ته گرفت', 'خراب شد', 'سفت نشد', 'وا رفت', 'geschift', 'aangebrand', 'te zout', 'mislukt', 'curdled', 'burnt', 'too salty', 'too watery', 'not setting', 'went wrong', 'broke', 'soggy', 'mushy'] },
+    anchors: ['بریده شد', 'برید', 'شور شد', 'سوخت', 'شفته شد', 'ته گرفت', 'خراب شد', 'سفت نشد', 'وا رفت', 'نپخت', 'نپخته', 'غلیظ شد', 'رقیق شد', 'بو میده', 'بوی زهم', 'بوی بد', 'سفت موند', 'سفت مونده', 'له شد', 'geschift', 'aangebrand', 'te zout', 'mislukt', 'curdled', 'burnt', 'too salty', 'too watery', 'not setting', 'went wrong', 'broke', 'soggy', 'mushy'] },
   { intent: 'stated_constraint', safetyRelevant: true, baseTier: 'SPECIAL', dataScope: 'user', anchors: [] },
   { intent: 'medical_or_health_advice', safetyRelevant: true, baseTier: 'REFUSE', dataScope: 'none', anchors: [] },
   { intent: 'out_of_domain', safetyRelevant: false, baseTier: 'REFUSE', dataScope: 'none',
-    anchors: ['آب و هوا', 'هواشناسی', 'فوتبال', 'سیاست', 'بیت کوین', 'weer', 'voetbal', 'politiek', 'weather', 'football', 'soccer', 'politics', 'bitcoin', 'stock', 'translate this'] },
+    anchors: ['آب و هوا', 'هواشناسی', 'هوا چطور', 'چند درجه', 'فوتبال', 'بازی پرسپولیس', 'بازی استقلال', 'نتیجه بازی', 'سیاست', 'انتخابات', 'بیت کوین', 'ارز دیجیتال', 'شعر', 'فیلم', 'سریال', 'آهنگ', 'موزیک', 'ماشین چی', 'خودرو', 'موبایل', 'لپ تاپ', 'برنامه نویسی', 'اخبار', 'ترجمه کن', 'پایتخت', 'تعطیل', 'تعطیله', 'weer', 'voetbal', 'politiek', 'weather', 'football', 'soccer', 'politics', 'bitcoin', 'stock', 'translate this'] },
   { intent: 'feedback', safetyRelevant: false, baseTier: 'NONE', dataScope: 'user',
     anchors: ['جواب خوب', 'خوب بود', 'عالی بود', 'کمک کرد', 'بد بود', 'اشتباه بود', 'goed antwoord', 'slecht antwoord', 'dat hielp', 'good answer', 'that helped', 'not helpful', 'wrong answer', 'thumbs up', 'thumbs down'] },
 ];
@@ -167,6 +167,8 @@ const MEDICAL_PATTERNS: RegExp[] = [
   // Persian — conditions; باردار/بارداری bounded so a pregnancy-CELEBRATION cake is not refused
   /دیابت|قند خون|قندم|قند دارم|چربی خون|تری ?گلیسیرید|کلسترول|فشار خون|فشارم|فشار بالا|نقرس|تیروی?ید|کم ?خونی|رفلاکس|کبد چرب|سنگ کلیه|بیماری کلی|نارسایی کلی|سرطان|باردارم|حامله|دوران بارداری|بارداری.{0,8}(بخورم|رژیم|مجاز|چی)|شیرده|رژیم درمانی|رژیم لاغری|اختلال خوردن|بیماری قلبی|مشکل قلبی|ناراحتی قلبی|دارو/,
   /برای (قلبم|کلیه ?ام|کبدم|گوارشم|معده ?ام|استخوان).{0,10}(خوبه|مفید|بهتر|بد)/,
+  // symptom / diagnosis / treatment framing (not a food query) → decline + redirect to a professional
+  /تشخیص ?بده|علائم|نشانه ?ها(ی)? ?بیماری|درمان ?کنم|درمانش ?چیه|بیمارم|مریضم|سرماخورد(م|گی)|تب ?دارم|سرفه ?دارم/,
   // Dutch — conditions; diabetes/zwanger bounded; organ "goed voor mijn X"
   /\b(?:suikerziekte|diabetes|bloedsuiker|bloeddruk|cholesterol|jicht|schildklier|bloedarmoede|coeliakie|reflux|nier(?:ziekte|stenen|probleem)|leverziekte|hartkwaal|hart(?:probleem|aandoening|ziekte)|kanker|borstvoeding|eetstoornis|medicijn)/,
   /\bik ben zwanger|tijdens.{0,12}zwangerschap|zwanger.{0,10}(eten|mag ik|veilig|dieet)/,

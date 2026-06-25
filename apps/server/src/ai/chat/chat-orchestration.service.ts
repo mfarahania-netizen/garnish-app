@@ -444,6 +444,13 @@ export class ChatOrchestrationService {
         }
       }
     }
+    // Nothing resolved. If the substitution intent is UNAMBIGUOUS (high confidence — a clear «جایگزین/جانشین X»,
+    // not a mixed «به جای X چی بپزم»), answer HONESTLY that we have no swap for the named ingredient instead of
+    // falling through to a topically-irrelevant recipe list. A mixed/low-confidence turn still falls through.
+    if (intentDecision.confidence === 'high') {
+      const named = { resolved: { name: targets[0] }, substitutions: [] };
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(named, locale));
+    }
     return null;
   }
 
