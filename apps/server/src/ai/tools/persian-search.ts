@@ -181,8 +181,11 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
   let stripped = folded;
   // capture «بدون X» / «بی X» (and a 2nd word for compound ingredients like «تخم مرغ»/«گوشت قرمز»), removing
   // the WHOLE span so neither word becomes a positive term — «بدون تخم مرغ» must not search FOR مرغ.
-  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)(?:\s+([^\s،,؛.!?]+))?/g, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
-  stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)(?:\s+([a-z؀-ۿ‌]+))?/gi, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  // The optional 2nd word captures a COMPOUND ingredient («تخم مرغ»), but it must NOT swallow the next
+  // negation marker — «بدون شکر بدون آرد» has to exclude BOTH (else «آرد» leaks back as a POSITIVE term and a
+  // flour-bearing savory dish answers a dessert query). The lookahead stops the 2nd word from eating «بدون»/«بی».
+  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)(?:\s+(?!بدون\s|بی\s)([^\s،,؛.!?]+))?/g, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)(?:\s+(?!without\s|no\s|zonder\s|geen\s)([a-z؀-ۿ‌]+))?/gi, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
 
   const diets: string[] = /وگان|\bvegan\b/i.test(folded)
     ? ['vegan']

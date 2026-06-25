@@ -172,4 +172,20 @@ describe('parseSearchQuery', () => {
   it('strips a bare «بدون» (no junk positive term)', () => {
     expect(parseSearchQuery('بدون').include).toEqual([]);
   });
+
+  it('CHAINED «بدون A بدون B بدون C» excludes EVERY negated term (none leaks back as positive)', () => {
+    const r = parseSearchQuery('یه دسر بدون شکر بدون آرد بدون تخم مرغ بدون کره');
+    expect(r.exclude).toContain('شکر');
+    expect(r.exclude).toContain('آرد'); // the bug: a chained «بدون» used to swallow this, leaking «آرد» as positive
+    expect(r.exclude).toContain('تخم');
+    expect(r.exclude).toContain('کره');
+    expect(r.include).not.toContain('آرد'); // must NOT be a positive term
+    expect(r.include).toContain('دسر'); // the real dish-type intent survives
+  });
+
+  it('latin chained negation excludes both terms (zonder ui zonder ei)', () => {
+    const r = parseSearchQuery('iets zonder ui zonder ei');
+    expect(r.exclude).toContain('ui');
+    expect(r.exclude).toContain('ei');
+  });
 });
