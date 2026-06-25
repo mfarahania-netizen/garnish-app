@@ -155,12 +155,71 @@ export function isConfidentIngredientMatch(query: unknown, name: unknown): boole
   return remainder.split(/\s+/).every((tok) => MODIFIER_TOKENS.has(tok));
 }
 
+// Words that don't narrow a search on their own — «غذای بدون گوشت» should rely on the EXCLUDE, not «غذا»,
+// and «غذای گیاهی ایرانی» on the diet filter, not the descriptor «ایرانی».
+const GENERIC_FOOD_WORDS = new Set([
+  'غذا', 'غذای', 'چیز', 'چیزی', 'خوراکی', 'یه‌چیزی', 'ایرانی', 'سنتی', 'اصیل', 'خوشمزه', 'خوشمزه‌ای', 'محلی',
+]);
+
+export interface ParsedSearchQuery {
+  /** positive content terms to match (may be empty for a pure «بدون X» / diet query). */
+  include: string[];
+  /** terms whose recipes must be EXCLUDED — fixes «بدون گوشت» returning meat (a real correctness bug). */
+  exclude: string[];
+  /** Recipe.diet values to filter to (vegetarian/vegan/high_protein), or empty. */
+  diets: string[];
+}
+
+/**
+ * Parse a discovery query into include / exclude / diet. Negation («بدون X», «بی X», without/zonder/geen X)
+ * and diet words (گیاهی→vegetarian+vegan, وگان→vegan, high-protein) are pulled out so retrieval can FILTER
+ * rather than positively matching the negated/diet word. Deterministic; no LLM.
+ */
+export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
+  const folded = foldPersian(raw);
+  const exclude: string[] = [];
+  let stripped = folded;
+  // capture «بدون X» / «بی X» and the latin equivalents, and remove the span so X is NOT a positive term
+  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)/g, (_m, w) => { const t = String(w).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)/gi, (_m, w) => { const t = String(w).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+
+  const diets: string[] = /وگان|\bvegan\b/i.test(folded)
+    ? ['vegan']
+    : /گیاهی|vegetar/i.test(folded)
+      ? ['vegetarian', 'vegan']
+      : /پرپروتئین|پروتئین بالا|high.?protein/i.test(folded)
+        ? ['high_protein']
+        : [];
+  stripped = stripped.replace(/گیاهی|وگان|vegan|vegetar\w*|پرپروتئین|high.?protein/gi, ' ');
+
+  const { terms, fallback } = tokenizeQuery(stripped);
+  const excludeSet = new Set(exclude);
+  // fallback = no real content tokens survived (all stopwords) — don't use the whole string as a positive term
+  // when we already have an exclude/diet filter to apply (e.g. «چی بپزم بدون پیاز» → just exclude پیاز).
+  const include = fallback ? [] : terms.filter((t) => !GENERIC_FOOD_WORDS.has(t.replace(ZWNJ, '')) && !excludeSet.has(t.replace(ZWNJ, '')));
+  return { include, exclude: [...excludeSet], diets };
+}
+
 /**
  * Pull the candidate INGREDIENT term(s) from a substitution question ("جایگزینِ ماست چی بزنم؟" -> ["ماست"]),
  * by tokenizing, dropping question stopwords AND the substitution verbs/connectors. Longest-first so a more
  * specific token is tried before a generic modifier; the caller resolves each against the dictionary and the
  * first that resolves wins (so an adjective like «سفید» that resolves to nothing is harmlessly skipped).
  */
+// Nutrition-question words — stripped so only the INGREDIENT remains («کالریِ برنج چقدره؟» -> «برنج»).
+const NUTRITION_WORDS = new Set([
+  'کالری', 'کالریه', 'کالریِ', 'پروتئین', 'پروتیین', 'چربی', 'قند', 'کربوهیدرات', 'فیبر', 'سدیم', 'نمک',
+  'ارزش', 'غذایی', 'چقدر', 'چقدره', 'چنده', 'مقدار', 'انرژی', 'calorie', 'calories', 'protein', 'fat', 'carb', 'carbs',
+]);
+
+/** Pull the candidate ingredient term(s) from a nutrition question, longest-first (caller resolves each). */
+export function extractNutritionTargets(raw: unknown): string[] {
+  const { terms, fallback } = tokenizeQuery(raw);
+  if (fallback) return [];
+  const targets = terms.filter((t) => !NUTRITION_WORDS.has(t.replace(ZWNJ, '')));
+  return [...targets].sort((a, b) => b.length - a.length);
+}
+
 export function extractSubstitutionTargets(raw: unknown): string[] {
   const { terms, fallback } = tokenizeQuery(raw);
   if (fallback) return [];

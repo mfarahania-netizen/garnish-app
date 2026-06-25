@@ -5,6 +5,7 @@ import { ToolRegistryService } from '../tools/tool-registry.service';
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 import { looseMatch, toStringArray } from '../tools/grounding-utils';
+import { foldPersian, aliasIngredient, isConfidentIngredientMatch } from '../tools/persian-search';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 
 /**
@@ -248,6 +249,36 @@ export class GroundedReplyService {
     return toStringArray(profile?.reconciled?.dimensions?.['allergies']?.reconciledValue)
       .map((a) => a.trim())
       .filter(Boolean);
+  }
+
+  /**
+   * Look up an ingredient's per-100g nutrition (USDA-sourced data in the dictionary) for a factual «کالری برنج»
+   * answer. Alias-first with a raw fallback; prefer an exact/confident match that actually carries nutrition
+   * data, else the shortest. Returns null when nothing is found — the caller stays honest, never invents a number.
+   */
+  async getIngredientNutrition(term: string): Promise<{ name: string; per100g: Record<string, number> } | null> {
+    const lookups = [aliasIngredient(term), term].filter((v, i, a) => v && a.indexOf(v) === i);
+    for (const lookup of lookups) {
+      let rows: any[];
+      try {
+        rows = await this.prisma.ingredient.findMany({
+          where: { OR: [{ nameFa: { contains: lookup } }, { nameEn: { contains: lookup } }] },
+          take: 25,
+          select: { nameFa: true, nameEn: true, code: true, nutritionPer100g: true },
+        });
+      } catch {
+        return null;
+      }
+      const withNutri = rows.filter((r) => r?.nutritionPer100g && typeof r.nutritionPer100g === 'object');
+      if (!withNutri.length) continue;
+      const byLen = (a: any, b: any) => (foldPersian(a?.nameFa).length || 9999) - (foldPersian(b?.nameFa).length || 9999);
+      const exact = withNutri.find((r) => [r.nameFa, r.nameEn].some((n) => n && foldPersian(n) === foldPersian(lookup)));
+      const confident = withNutri.filter((r) => [r.nameFa, r.nameEn].some((n) => isConfidentIngredientMatch(lookup, n))).sort(byLen);
+      const best = exact || confident[0] || [...withNutri].sort(byLen)[0];
+      const name = best.nameFa || best.nameEn || best.code;
+      return { name, per100g: best.nutritionPer100g as Record<string, number> };
+    }
+    return null;
   }
 
   private async retrieveCandidateIds(userId: string, prompt: string, snapshot?: BehavioralContextSnapshot): Promise<string[]> {

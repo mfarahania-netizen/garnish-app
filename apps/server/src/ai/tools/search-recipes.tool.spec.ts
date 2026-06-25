@@ -64,6 +64,27 @@ describe('SearchRecipesTool (real, read-only)', () => {
     expect(where.status).toBe('active');
   });
 
+  it('builds a NOT/exclude clause for «بدون X» so the negated ingredient is filtered out (correctness)', async () => {
+    const findMany = jest.fn().mockResolvedValue([]);
+    const tool = new SearchRecipesTool({ recipe: { findMany } } as any);
+    await tool.handler({ query: 'یه غذای بدون گوشت بپز' }, ctx);
+    const where = findMany.mock.calls[0][0].where;
+    expect(where.AND).toBeDefined();
+    const notClause = where.AND.find((c: any) => c.NOT);
+    expect(notClause).toBeDefined();
+    const excluded = notClause.NOT.OR.filter((c: any) => c.title).map((c: any) => c.title.contains);
+    expect(excluded).toContain('گوشت'); // recipes with گوشت are excluded
+  });
+
+  it('builds a diet filter for «گیاهی»/«وگان»', async () => {
+    const findMany = jest.fn().mockResolvedValue([]);
+    const tool = new SearchRecipesTool({ recipe: { findMany } } as any);
+    await tool.handler({ query: 'یه غذای وگان' }, ctx);
+    const where = findMany.mock.calls[0][0].where;
+    const dietClause = where.AND.find((c: any) => c.diet);
+    expect(dietClause.diet.in).toEqual(['vegan']);
+  });
+
   it('ranks a recipe matching more query terms above one matching fewer', async () => {
     const findMany = jest.fn().mockResolvedValue([
       { id: 'one', title: 'خورش سبزی', description: null, ingredients: [{ name: 'سبزی' }] },

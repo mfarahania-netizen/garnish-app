@@ -1,4 +1,4 @@
-import { foldPersian, tokenizeQuery, extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient } from './persian-search';
+import { foldPersian, tokenizeQuery, extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, parseSearchQuery } from './persian-search';
 
 describe('foldPersian', () => {
   it('folds Arabic kaf/yeh to the Persian corpus forms', () => {
@@ -127,5 +127,38 @@ describe('aliasIngredient', () => {
   it('returns the term unchanged when not aliased', () => {
     expect(aliasIngredient('زعفران')).toBe('زعفران');
     expect(aliasIngredient('بادمجان')).toBe('بادمجان');
+  });
+});
+
+describe('parseSearchQuery', () => {
+  it('pulls «بدون X» into EXCLUDE (the negation correctness fix) and keeps a generic descriptor out of include', () => {
+    const r = parseSearchQuery('یه غذای بدون گوشت بپز');
+    expect(r.exclude).toContain('گوشت');
+    expect(r.include).not.toContain('گوشت'); // the negated word is NEVER a positive term
+    expect(r.include).not.toContain('غذای'); // generic
+  });
+
+  it('keeps the dish but excludes the negated ingredient', () => {
+    const r = parseSearchQuery('خورش بدون گوشت');
+    expect(r.include).toContain('خورش');
+    expect(r.exclude).toContain('گوشت');
+  });
+
+  it('maps diet words to Recipe.diet filters (گیاهی → vegetarian+vegan, وگان → vegan)', () => {
+    expect(parseSearchQuery('غذای گیاهی ایرانی').diets).toEqual(['vegetarian', 'vegan']);
+    expect(parseSearchQuery('یه غذای وگان').diets).toEqual(['vegan']);
+    expect(parseSearchQuery('غذای گیاهی ایرانی').include).toEqual([]); // descriptors don't narrow
+  });
+
+  it('handles latin negation (without/zonder/geen)', () => {
+    expect(parseSearchQuery('iets zonder ui').exclude).toContain('ui');
+    expect(parseSearchQuery('something without meat').exclude).toContain('meat');
+  });
+
+  it('is a no-op (include only) for a plain query', () => {
+    const r = parseSearchQuery('با مرغ و سبزی چی بپزم؟');
+    expect(r.include).toEqual(['مرغ', 'سبزی']);
+    expect(r.exclude).toEqual([]);
+    expect(r.diets).toEqual([]);
   });
 });

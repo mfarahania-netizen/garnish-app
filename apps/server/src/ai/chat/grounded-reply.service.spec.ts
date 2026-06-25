@@ -175,6 +175,27 @@ describe('GroundedReplyService — getDeclaredAllergens (substitution avoid-set 
   });
 });
 
+describe('GroundedReplyService — getIngredientNutrition', () => {
+  function svcWithIngredients(rows: any[]) {
+    const prisma: any = { recipe: { findMany: jest.fn() }, ingredient: { findMany: jest.fn().mockResolvedValue(rows) } };
+    return new GroundedReplyService(prisma, { getLivingUserProfile: jest.fn() } as any, { getTool: jest.fn() } as any);
+  }
+
+  it('returns the per-100g nutrition for a resolved ingredient, preferring the entry that has data', async () => {
+    const svc = svcWithIngredients([
+      { nameFa: 'برنج سفید خام', nameEn: 'white rice raw', code: 'RICE', nutritionPer100g: { calories: 365, protein: 7.1 } },
+    ]);
+    const n = await svc.getIngredientNutrition('برنج');
+    expect(n?.name).toBe('برنج سفید خام');
+    expect(n?.per100g.calories).toBe(365);
+  });
+
+  it('returns null (no invented number) when no match carries nutrition data', async () => {
+    const svc = svcWithIngredients([{ nameFa: 'چیز نادر', nameEn: 'rare', nutritionPer100g: null }]);
+    await expect(svc.getIngredientNutrition('چیز نادر')).resolves.toBeNull();
+  });
+});
+
 describe('GroundedReplyService — deterministic reply formatting', () => {
   const base = { safeRecipes: [], unsafeTitles: [], retrievedCount: 0 };
 

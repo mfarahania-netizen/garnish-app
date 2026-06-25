@@ -46,6 +46,7 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
     screenLiveOutput: jest.fn().mockResolvedValue({ safe: true, reason: null }),
     composeDeterministicReply: jest.fn().mockReturnValue(groundedReply),
     getDeclaredAllergens: jest.fn().mockResolvedValue([]), // known profile, no declared allergies (default)
+    getIngredientNutrition: jest.fn().mockResolvedValue(null), // default: no nutrition data → honest fallback
   } as any;
   const analytics = { trackEvent: jest.fn().mockResolvedValue({ id: 'ev-ai-turn' }) } as any;
   // default: nothing resolves → substitution routing falls through to the grounded path
@@ -201,6 +202,26 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(out.intent.intent).toBe('substitution');
     expect(out.reply).not.toContain('سیب خام'); // the confidently-wrong swap is never shown
     expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // safe grounded fallback instead
+  });
+
+  it('answers a nutrition question with factual per-100g data (not a recipe list, not advice)', async () => {
+    const { svc, grounded } = makeChat();
+    grounded.getIngredientNutrition.mockResolvedValueOnce({ name: 'برنج سفید خام', per100g: { calories: 365, protein: 7.1, carbs: 80, fat: 0.7 } });
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'کالریِ برنج چقدره؟', conversationId: 'c-nut' });
+    expect(out.intent.intent).toBe('nutrition_query');
+    expect(grounded.getIngredientNutrition).toHaveBeenCalled();
+    expect(out.reply).toContain('برنج سفید خام');
+    expect(out.reply).toContain('۳۶۵'); // Persian-digit calories
+    expect(out.reply).toContain('کالری');
+    expect(out.reply).toMatch(/توصیهٔ تغذیه‌ای|پزشکی نیست/); // honest non-advice disclaimer
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled(); // not a recipe dump
+  });
+
+  it('falls back honestly for a nutrition question with no data match', async () => {
+    const { svc, grounded } = makeChat(); // default getIngredientNutrition → null
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'کالریِ فلان‌چیزِ نامعلوم چقدره؟', conversationId: 'c-nut2' });
+    expect(out.intent.intent).toBe('nutrition_query');
+    expect(out.reply).toContain('اسمِ خودِ ماده'); // honest ask, never invents a number
   });
 
   it('intent-routes a during-cook problem to troubleshooting guidance, NOT a recipe list', async () => {

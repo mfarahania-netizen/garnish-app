@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiTool, ToolContext } from '../ai-core.types';
-import { foldPersian, tokenizeQuery } from './persian-search';
+import { foldPersian, parseSearchQuery } from './persian-search';
 
 const SUMMARY_MAX = 140;
 
@@ -30,16 +30,35 @@ export class SearchRecipesTool implements AiTool {
       return { tool: this.name, query, results: [], resultStatus: 'empty_query' };
     }
 
-    const { terms } = tokenizeQuery(query);
+    // Parse include / EXCLUDE («بدون گوشت») / diet («گیاهی»/«وگان») so retrieval FILTERS instead of positively
+    // matching a negated/diet word (the «بدون گوشت returns meat» correctness bug).
+    const { include, exclude, diets } = parseSearchQuery(query);
     // OR-match each content term across title/description/ingredient name (substring, insensitive).
     // RecipeIngredient.name holds the Persian ingredient text (e.g. «ران مرغ»), so «مرغ» matches it.
-    const or = terms.flatMap((t) => [
+    const clause = (t: string) => [
       { title: { contains: t, mode: 'insensitive' as const } },
       { description: { contains: t, mode: 'insensitive' as const } },
       { ingredients: { some: { name: { contains: t, mode: 'insensitive' as const } } } },
-    ]);
+    ];
+    const includeOr = include.flatMap(clause);
+    const excludeOr = exclude.flatMap(clause);
     // Pull a window wider than `limit` so the relevance ranking has candidates to sort; capped small.
     const window = Math.min(Math.max(limit * 4, 24), 80);
+
+    // When there is a NEGATION or DIET filter, build an AND query (positive OR + NOT(exclude) + diet IN). A
+    // plain query keeps the original `where.OR` shape (so existing behavior/tests are unchanged).
+    const where: any =
+      excludeOr.length || diets.length
+        ? {
+            isPublic: true,
+            status: 'active',
+            AND: [
+              ...(includeOr.length ? [{ OR: includeOr }] : []),
+              ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
+              ...(diets.length ? [{ diet: { in: diets } }] : []),
+            ],
+          }
+        : { isPublic: true, status: 'active', OR: includeOr };
 
     let recipes: {
       id: string;
@@ -49,11 +68,7 @@ export class SearchRecipesTool implements AiTool {
     }[] = [];
     try {
       recipes = await this.prisma.recipe.findMany({
-        where: {
-          isPublic: true,
-          status: 'active', // respect visibility + exclude unreviewed UGC (advisor audit)
-          OR: or,
-        },
+        where,
         take: window,
         select: {
           id: true,
@@ -67,7 +82,7 @@ export class SearchRecipesTool implements AiTool {
     }
 
     const ranked = recipes
-      .map((r) => ({ r, ...scoreRecipe(r, terms) }))
+      .map((r) => ({ r, ...scoreRecipe(r, include) }))
       // STABLE sort by score desc; never drops rows (the WHERE clause already guaranteed a match in
       // production — a zero score only happens against artificial test doubles).
       .map((x, i) => ({ ...x, i }))

@@ -12,7 +12,7 @@ import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
-import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient } from '../tools/persian-search';
+import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets } from '../tools/persian-search';
 import { matchTroubleshooting } from './cooking-troubleshooting';
 
 export interface HandleChatInput {
@@ -160,6 +160,12 @@ export class ChatOrchestrationService {
     const intentReply = this.intentRoutedReply(intentDecision.intent);
     if (intentReply) {
       return this.respondDeterministicTurn(input, conversationId, intentDecision, intentReply);
+    }
+
+    // Nutrition: answer «کالریِ برنج چقدره؟» with the FACTUAL per-100g USDA data from the ingredient dictionary
+    // (numbers, not health claims), or an honest fallback. Never medical/diet advice.
+    if (intentDecision.intent === 'nutrition_query') {
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt));
     }
 
     // INTENT-AWARE ROUTING (deterministic): a during-cook problem ("چرا برنجم شفته شد؟") wants TROUBLESHOOTING,
@@ -410,8 +416,7 @@ export class ChatOrchestrationService {
         return 'من نمی‌تونم توصیهٔ پزشکی یا رژیمِ درمانی بدم؛ برای این موضوع بهتره با پزشک یا متخصصِ تغذیه مشورت کنی. اما اگه بخوای، می‌تونم غذاهای سادهٔ خوش‌طعم از رسپی‌های گارنیش برات پیدا کنم — فقط بگو چه موادی دوست داری.';
       case 'out_of_domain':
         return 'من فقط توی آشپزی و رسپی‌ها می‌تونم کمکت کنم 🍳 — یه ماده یا غذایی بگو تا برات پیدا کنم یا جایگزینش رو پیشنهاد بدم.';
-      case 'nutrition_query':
-        return 'برای ارزش غذایی و کالریِ دقیقِ هر غذا، صفحهٔ همون رسپی رو باز کن — اونجا اطلاعاتِ تغذیه‌ای آورده شده. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم، ولی می‌تونم غذای متناسب با موادت پیشنهاد بدم.';
+      // nutrition_query is handled by an async DB-backed branch (composeNutritionReply), not here.
       case 'technique_whyitworks':
         return 'سؤال خوبیه! توضیحِ گام‌به‌گامِ تکنیک‌ها رو داخل «حالت پخت» (Cook Mode) هر رسپی می‌بینی. اسم غذایی که داری می‌پزی رو بگو تا پیداش کنم و مرحله‌به‌مرحله راهنماییت کنم.';
       // NOTE: scaling is deliberately NOT routed here — a follow-up like «برای ۶ نفر» should carry the prior
@@ -419,6 +424,26 @@ export class ChatOrchestrationService {
       default:
         return null;
     }
+  }
+
+  /** Factual per-100g nutrition readout for an ingredient (USDA-sourced), or an honest ask. No health claims. */
+  private async composeNutritionReply(prompt: string): Promise<string> {
+    const header = '🤖 دستیار آشپزی گارنیش:';
+    const fa = (n: unknown) => String(n ?? '').replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+    for (const term of extractNutritionTargets(prompt).slice(0, 3)) {
+      const n = await this.grounded.getIngredientNutrition(term);
+      if (!n) continue;
+      const p = n.per100g || {};
+      const parts: string[] = [];
+      if (p.calories != null) parts.push(`${fa(p.calories)} کالری`);
+      if (p.protein != null) parts.push(`${fa(p.protein)} گرم پروتئین`);
+      if (p.carbs != null) parts.push(`${fa(p.carbs)} گرم کربوهیدرات`);
+      if (p.fat != null) parts.push(`${fa(p.fat)} گرم چربی`);
+      if (p.fiber != null) parts.push(`${fa(p.fiber)} گرم فیبر`);
+      if (!parts.length) break;
+      return `${header}\n\n**${n.name}** (هر ۱۰۰ گرم): ${parts.join('، ')}.\n\nℹ️ عددها تقریبی و بر اساس ۱۰۰ گرمِ مادهٔ خام است؛ توصیهٔ تغذیه‌ای یا پزشکی نیست.`;
+    }
+    return `${header}\n\nبرای ارزشِ غذایی، اسمِ خودِ ماده رو بگو (مثلاً «کالری برنج» یا «پروتئین عدس»). برای کالریِ یک غذای کامل هم صفحهٔ همون رسپی رو ببین. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم.`;
   }
 
   /** Answer a during-cook problem from the curated troubleshooting KB, or honestly ask for the dish + symptom. */
