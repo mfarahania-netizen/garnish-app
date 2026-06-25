@@ -1,4 +1,4 @@
-import { foldPersian, tokenizeQuery } from './persian-search';
+import { foldPersian, tokenizeQuery, extractSubstitutionTargets, isConfidentIngredientMatch } from './persian-search';
 
 describe('foldPersian', () => {
   it('folds Arabic kaf/yeh to the Persian corpus forms', () => {
@@ -50,5 +50,53 @@ describe('tokenizeQuery', () => {
   it('dedupes and caps tokens', () => {
     const { terms } = tokenizeQuery('مرغ مرغ مرغ');
     expect(terms).toEqual(['مرغ']);
+  });
+});
+
+describe('extractSubstitutionTargets', () => {
+  it('isolates the ingredient from a substitution question (drops the verb + stopwords)', () => {
+    expect(extractSubstitutionTargets('جایگزینِ ماست چی بزنم؟')).toEqual(['ماست']);
+  });
+
+  it('handles the «به جای X» form (strips the connector)', () => {
+    expect(extractSubstitutionTargets('به جای کره چی بزنم؟')).toEqual(['کره']);
+  });
+
+  it('tries the full phrase first, then tokens longest-first, for a multi-word target', () => {
+    // the full phrase «شکر سفید» is tried before the split tokens; the resolver decides what is real
+    expect(extractSubstitutionTargets('به جای شکر سفید چی بزنم؟')).toEqual(['شکر سفید', 'سفید', 'شکر']);
+  });
+
+  it('returns nothing when no ingredient is named', () => {
+    expect(extractSubstitutionTargets('عوضش کن')).toEqual([]);
+  });
+
+  it('folds Arabic forms so the dictionary lookup matches the Persian corpus', () => {
+    expect(extractSubstitutionTargets('جایگزين شير چيست؟')).toEqual(['شیر']); // Arabic yeh -> Persian
+  });
+});
+
+describe('isConfidentIngredientMatch', () => {
+  it('accepts an exact fold-match', () => {
+    expect(isConfidentIngredientMatch('ماست', 'ماست')).toBe(true);
+    expect(isConfidentIngredientMatch('كره', 'کره')).toBe(true); // Arabic kaf folds to Persian
+  });
+
+  it('accepts a base + culinary-modifier match (same ingredient, more specific)', () => {
+    expect(isConfidentIngredientMatch('ماست', 'ماست ساده')).toBe(true);
+    expect(isConfidentIngredientMatch('کره', 'کره شور')).toBe(true);
+    expect(isConfidentIngredientMatch('کره', 'کره بدون نمک')).toBe(true);
+    expect(isConfidentIngredientMatch('تخم مرغ', 'تخم مرغ خام')).toBe(true);
+  });
+
+  it('REJECTS a different base ingredient that merely shares a prefix', () => {
+    expect(isConfidentIngredientMatch('کره', 'کره سیب')).toBe(false); // apple butter is not butter
+    expect(isConfidentIngredientMatch('کره', 'کره بادام')).toBe(false); // almond butter is not butter
+    expect(isConfidentIngredientMatch('تخم', 'تخمه کدو')).toBe(false); // pumpkin seed is not egg
+  });
+
+  it('rejects empty / unrelated', () => {
+    expect(isConfidentIngredientMatch('', 'کره')).toBe(false);
+    expect(isConfidentIngredientMatch('کره', 'روغن زیتون')).toBe(false);
   });
 });

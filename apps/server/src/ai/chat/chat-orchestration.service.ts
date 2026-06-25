@@ -11,6 +11,8 @@ import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
 import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
+import { AiAssistService } from '../assist/ai-assist.service';
+import { extractSubstitutionTargets, isConfidentIngredientMatch } from '../tools/persian-search';
 
 export interface HandleChatInput {
   userId: string;
@@ -40,6 +42,8 @@ const MEMORY_SUMMARY_CHAR_BUDGET = 1200;
 const MEMORY_TURN_CHAR_BUDGET = 500;
 // How many recent USER turns feed the clean retrieval query (so a follow-up carries the prior dish).
 const RETRIEVAL_MEMORY_USER_TURNS = 3;
+// How many extracted ingredient candidates we try to resolve for a substitution turn (caps tool calls).
+const SUBSTITUTION_MAX_CANDIDATES = 3;
 
 /**
  * Chat Orchestration (E47-A3).
@@ -72,6 +76,7 @@ export class ChatOrchestrationService {
     private readonly grounded: GroundedReplyService,
     private readonly intent: IntentClassifierService,
     private readonly analytics: AnalyticsService,
+    private readonly assist: AiAssistService,
   ) {}
 
   private readonly logger = new Logger('ChatOrchestration');
@@ -145,6 +150,16 @@ export class ChatOrchestrationService {
         intent: intentDecision,
         ...(allergens.length ? { suggestedAction: { type: 'add_allergy' as const, allergens } } : {}),
       };
+    }
+
+    // INTENT-AWARE ROUTING (deterministic): a substitution question ("جایگزینِ ماست چی بزنم؟") wants a SWAP,
+    // not a recipe list. Route it to the grounded, allergy-filtered SubstitutionEngine (via AiAssistService,
+    // which also applies the nutrition-claim guard). Medical/§3 already classified earlier and never reach here.
+    // If nothing resolves (no ingredient named / not in the dictionary / profile unavailable) we fall THROUGH to
+    // the normal grounded recipe reply — never a dead-end, never an unfiltered/unsafe answer.
+    if (intentDecision.intent === 'substitution') {
+      const handled = await this.tryAnswerSubstitution(input, conversationId, intentDecision);
+      if (handled) return handled;
     }
 
     const chatLiveEnabled = resolveChatLiveEnabled(process.env);
@@ -313,6 +328,91 @@ export class ChatOrchestrationService {
       .slice(-RETRIEVAL_MEMORY_USER_TURNS)
       .map((turn) => this.sanitizeMemoryText(turn.content, MEMORY_TURN_CHAR_BUDGET));
     return [currentPrompt, ...recentUserText].join(' ').trim() || currentPrompt;
+  }
+
+  /**
+   * Answer a substitution turn from the grounded SubstitutionEngine, allergy-filtered. Returns the finished
+   * turn, or `null` to fall through to the normal grounded recipe reply (no ingredient named, none resolves,
+   * or the declared-allergy set cannot be established → fail-closed: we do NOT offer an unverified-safety swap).
+   */
+  private async tryAnswerSubstitution(
+    input: HandleChatInput,
+    conversationId: string,
+    intentDecision: IntentClassification,
+  ): Promise<HandleChatResult | null> {
+    const targets = extractSubstitutionTargets(input.prompt);
+    if (targets.length === 0) return null;
+
+    // SAFETY: source the avoid-set from the SAME reconciled profile the hard gate uses. null = profile
+    // unavailable → do NOT call the tool with an empty avoid-set (that would be unfiltered) → fall through.
+    const avoidAllergens = await this.grounded.getDeclaredAllergens(input.userId);
+    if (avoidAllergens === null) return null;
+
+    for (const ingredient of targets.slice(0, SUBSTITUTION_MAX_CANDIDATES)) {
+      let result: any;
+      try {
+        result = await this.assist.substitutions(input.userId, { ingredient, avoidAllergens });
+      } catch {
+        return null; // missing snapshot / tool failure → fall through to the safe grounded path
+      }
+      const status = result?.resultStatus;
+      // 'ok' (found swaps) and 'no_substitution_data' (ingredient resolved, none recorded) are both honest,
+      // on-topic answers — BUT only when the resolution is CONFIDENT. The USDA dictionary has no colloquial
+      // base rows, so «کره» can resolve to «کره سیب» (apple butter); a confidently-WRONG answer is worse than
+      // none. If the resolved ingredient is not the user's term (or its base+modifier), keep trying / fall
+      // through to the safe grounded path. 'ingredient_not_found' / 'empty_query' → try the next candidate.
+      if (status === 'ok' || status === 'no_substitution_data') {
+        if (isConfidentIngredientMatch(ingredient, result?.resolved?.name)) {
+          return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(result));
+        }
+      }
+    }
+    return null;
+  }
+
+  /** Render a substitution tool result as a safe Persian reply (AI disclosure + non-medical hedge). */
+  private composeSubstitutionReply(result: any): string {
+    const header = '🤖 دستیار هوش مصنوعی گارنیش (اطلاعات عمومی، نه توصیهٔ پزشکی):';
+    const name = result?.resolved?.name ?? 'این ماده';
+    const subs = Array.isArray(result?.substitutions) ? result.substitutions : [];
+    const note = typeof result?.note === 'string' && result.note.trim() ? result.note.trim() : '';
+    if (subs.length === 0) {
+      const body = note || `برای «${name}» جایگزینی در داده‌های گارنیش پیدا نکردم.`;
+      return `${header}\n\n${body}`;
+    }
+    const lines = subs.slice(0, 5).map((s: any) => {
+      const why = typeof s?.why === 'string' && s.why.trim()
+        ? s.why.trim()
+        : typeof s?.reason === 'string' ? s.reason.trim() : '';
+      return why ? `**${s?.name}** — ${why}` : `**${s?.name}**`;
+    });
+    const intro = `برای «${name}» این جایگزین‌ها رو از فرهنگ مواد اولیهٔ گارنیش پیدا کردم:`;
+    const footer = `ℹ️ ${note ? `${note} ` : ''}همیشه فهرست کامل مواد رو بررسی کن؛ این راهنماییِ آشپزی است، نه توصیهٔ پزشکی.`;
+    return `${header}\n\n${intro}\n\n${lines.join('\n')}\n\n${footer}`;
+  }
+
+  /** Persist the assistant message + emit the tier-tagged turn event for a deterministic, non-blocked reply. */
+  private async respondDeterministicTurn(
+    input: HandleChatInput,
+    conversationId: string,
+    intentDecision: IntentClassification,
+    reply: string,
+  ): Promise<HandleChatResult> {
+    const assistantMessage = await this.chatMessages.create({
+      userId: input.userId,
+      conversationId,
+      role: 'assistant',
+      content: reply,
+      model: STUB_MODEL,
+      contentSafetyStatus: 'ok',
+    });
+    await this.recordAssistantTurnEvent(input.userId, conversationId, assistantMessage?.id, intentDecision, {
+      status: 'ok',
+      providerMode: 'deterministic',
+      model: STUB_MODEL,
+      aiCallLogId: null,
+    });
+    return { reply, conversationId, status: 'ok', providerMode: 'deterministic', aiCallLogId: null, intent: intentDecision };
   }
 
   private buildDeterministicMemorySummary(turns: ChatMemoryMessage[]): string {

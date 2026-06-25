@@ -27,9 +27,12 @@ for (let d = 0; d < 10; d++) {
   CHAR_FOLD[String.fromCharCode(0x06F0 + d)] = String(d);
 }
 
-/** Normalize a Persian/Latin string: fold char/digit variants, lowercase, collapse whitespace. */
+/** Arabic harakat / tashkil (kasra, fatha, damma, sukun, tanwin, superscript alef) — stripped before matching. */
+const HARAKAT = /[ً-ْٰ]/g;
+
+/** Normalize a Persian/Latin string: strip harakat, fold char/digit variants, lowercase, collapse whitespace. */
 export function foldPersian(input: unknown): string {
-  const s = String(input ?? '');
+  const s = String(input ?? '').replace(HARAKAT, '');
   let out = '';
   for (const ch of s) out += CHAR_FOLD[ch] ?? ch;
   return out.toLowerCase().replace(/\s+/g, ' ').trim();
@@ -40,7 +43,7 @@ export function foldPersian(input: unknown): string {
 // purpose — content adjectives like سبک/مقوی/سریع are intentionally NOT here.
 const STOPWORDS = new Set<string>([
   'با', 'و', 'یا', 'از', 'به', 'در', 'که', 'را', 'رو', 'این', 'اون', 'آن', 'یه', 'یک', 'یکم',
-  'چی', 'چه', 'چیه', 'چیزی', 'چطور', 'چطوری', 'چگونه', 'چرا', 'کجا', 'کی', 'آیا', 'ایا',
+  'چی', 'چه', 'چیه', 'چیست', 'چیزی', 'چطور', 'چطوری', 'چگونه', 'چرا', 'کجا', 'کی', 'کدوم', 'کدام', 'آیا', 'ایا',
   'میخوام', 'میخواهم', 'میخوای', 'بپزم', 'بپز', 'بپزیم', 'بخورم', 'بخوریم', 'درست', 'بسازم',
   'کنم', 'کنیم', 'کن', 'کنید', 'بزنم', 'بزن', 'پیشنهاد', 'بده', 'بدید', 'بدی', 'برای', 'تا',
   'هم', 'اگه', 'اگر', 'هست', 'هستش', 'میشه', 'میتونم', 'میتونی', 'الان', 'خوب', 'دارم', 'دارین',
@@ -80,4 +83,57 @@ export function tokenizeQuery(raw: unknown): TokenizedQuery {
   }
   if (terms.length === 0) return { terms: [folded], fallback: true };
   return { terms, fallback: false };
+}
+
+// Substitution-intent verbs/connectors — stripped so only the INGREDIENT token remains. Stored ZWNJ-free
+// + folded (the tokenizer already folds; we compare on the ZWNJ-removed key).
+const SUBSTITUTION_ANCHORS = new Set<string>([
+  'جایگزین', 'جای', 'بهجای', 'عوض', 'عوضش', 'عوضی', 'بدل',
+  'vervang', 'vervanging', 'vervangen', 'plaats', 'alternatief',
+  'substitute', 'substitution', 'instead', 'replace', 'replacement', 'swap', 'alternative', 'sub',
+]);
+
+// Culinary MODIFIERS that keep the base ingredient the same (ZWNJ-free + folded). They let us tell
+// «ماست ساده»/«کره شور»/«تخم مرغ خام» (same base, more specific — CONFIDENT) apart from «کره سیب»/«کره بادام»
+// (a DIFFERENT base — NOT a confident match for «کره»). The USDA dictionary has no colloquial base rows.
+const MODIFIER_TOKENS = new Set<string>([
+  'ساده', 'خام', 'تازه', 'پخته', 'ابپز', 'شور', 'بینمک', 'بدون', 'نمک', 'کمچرب', 'پرچرب', 'چرب',
+  'محلی', 'یونانی', 'چکیده', 'بوداده', 'بو', 'داده', 'اسیابشده', 'اسیاب', 'شده', 'پودر', 'رنده',
+  'رندهشده', 'نرم', 'سفت', 'کامل', 'چربی', 'قند', 'شکر', 'منجمد', 'کنسروی', 'خشک', 'تلخ', 'شیرین',
+  'سرخشده', 'سرخ', 'گرم', 'سرد', 'درشت', 'ریز', 'بزرگ', 'کوچک', 'قرمز', 'سفید', 'سیاه', 'سبز', 'زرد',
+]);
+
+/**
+ * Is `name` a CONFIDENT resolution of the user's `query` ingredient term? True when the names fold-equal,
+ * or when `name` is `query` + only culinary modifiers (e.g. «ماست»→«ماست ساده», «کره»→«کره شور»). False for
+ * a different base («کره»→«کره سیب», «تخم»→«تخمه کدو»), so the caller can fall through instead of mis-answering.
+ */
+export function isConfidentIngredientMatch(query: unknown, name: unknown): boolean {
+  const fq = foldPersian(query);
+  const fn = foldPersian(name);
+  if (!fq || !fn) return false;
+  if (fn === fq) return true;
+  if (!fn.startsWith(`${fq} `)) return false;
+  const remainder = fn.slice(fq.length + 1).trim();
+  if (!remainder) return false;
+  return remainder.split(/\s+/).every((tok) => MODIFIER_TOKENS.has(tok.replace(ZWNJ, '')));
+}
+
+/**
+ * Pull the candidate INGREDIENT term(s) from a substitution question ("جایگزینِ ماست چی بزنم؟" -> ["ماست"]),
+ * by tokenizing, dropping question stopwords AND the substitution verbs/connectors. Longest-first so a more
+ * specific token is tried before a generic modifier; the caller resolves each against the dictionary and the
+ * first that resolves wins (so an adjective like «سفید» that resolves to nothing is harmlessly skipped).
+ */
+export function extractSubstitutionTargets(raw: unknown): string[] {
+  const { terms, fallback } = tokenizeQuery(raw);
+  if (fallback) return [];
+  const targets = terms.filter((t) => !SUBSTITUTION_ANCHORS.has(t.replace(ZWNJ, '')));
+  if (targets.length === 0) return [];
+  // Try the FULL phrase first so a multi-word ingredient («تخم مرغ») resolves before its split tokens
+  // («تخم» alone matches «تخم گشنیز»). Then the individual tokens, longest-first.
+  const out: string[] = [];
+  if (targets.length > 1) out.push(targets.join(' '));
+  for (const t of [...targets].sort((a, b) => b.length - a.length)) if (!out.includes(t)) out.push(t);
+  return out;
 }

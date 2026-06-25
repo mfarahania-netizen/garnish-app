@@ -150,6 +150,31 @@ describe('GroundedReplyService — live OUTPUT allergy gate', () => {
   });
 });
 
+describe('GroundedReplyService — getDeclaredAllergens (substitution avoid-set source)', () => {
+  it('returns the reconciled declared allergens (the SAME source the hard gate reads)', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies(['dairy', 'nut']) });
+    await expect(svc.getDeclaredAllergens('u1')).resolves.toEqual(['dairy', 'nut']);
+  });
+
+  it('returns [] for a known profile with no allergies', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies([]) });
+    await expect(svc.getDeclaredAllergens('u1')).resolves.toEqual([]);
+  });
+
+  it('returns null (fail-closed) when the living profile cannot be loaded', async () => {
+    const { svc } = makeService({ profileThrows: true });
+    await expect(svc.getDeclaredAllergens('u1')).resolves.toBeNull();
+  });
+
+  it('returns null (fail-closed) when the profile is null', async () => {
+    // makeService coalesces a null profile, so construct directly to assert the null path.
+    const prisma: any = { recipe: { findMany: jest.fn() } };
+    const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(null) };
+    const svc = new GroundedReplyService(prisma, profiles, { getTool: jest.fn() } as any);
+    await expect(svc.getDeclaredAllergens('u1')).resolves.toBeNull();
+  });
+});
+
 describe('GroundedReplyService — provider-agnostic (no model dependency)', () => {
   it('builds grounding + composes a disclosed, hedged reply with NO model provider', async () => {
     const pool = [recipe('r1', { title: 'آش رشته' })];

@@ -220,6 +220,25 @@ export class GroundedReplyService {
     return { safe: true, reason: null };
   }
 
+  /**
+   * The user's reconciled DECLARED allergy set — the SAME accessor `assessRecipeFit` / `screenLiveOutput`
+   * read. Returned so the substitution flow can pass it as `avoidAllergens` (a substitution must never offer
+   * a declared allergen). Returns `null` when the living profile cannot be established (fail-closed signal:
+   * the caller must NOT proceed with an unverified-safety answer); `[]` means a known profile with no allergies.
+   */
+  async getDeclaredAllergens(userId: string): Promise<string[] | null> {
+    let profile: any;
+    try {
+      profile = await this.profiles.getLivingUserProfile(userId);
+    } catch {
+      return null;
+    }
+    if (!profile) return null;
+    return toStringArray(profile?.reconciled?.dimensions?.['allergies']?.reconciledValue)
+      .map((a) => a.trim())
+      .filter(Boolean);
+  }
+
   private async retrieveCandidateIds(userId: string, prompt: string, snapshot?: BehavioralContextSnapshot): Promise<string[]> {
     const tool = this.tools.getTool('search_recipes');
     if (!tool) return [];

@@ -2,7 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiTool, ToolContext } from '../ai-core.types';
 import { norm, toStringArray, looseMatch, clampLimit } from './grounding-utils';
+import { foldPersian, isConfidentIngredientMatch } from './persian-search';
 import { allergensConflict, extractDictionaryAllergens } from '../../recipes/intelligence/recipe-integrity';
+
+/**
+ * Pick the best dictionary row for a free-text ingredient term. A bare `contains` + take-1 returns an
+ * arbitrary first row, so «کره» could resolve to «کره بادام» (almond butter). Prefer, in order: an EXACT
+ * fold-match; a CONFIDENT base+modifier match («کره»→«کره شور», NOT «کره سیب»), shortest first; else the
+ * shortest name as a best-effort. The chat path additionally GATES on a confident match (see orchestration).
+ */
+function pickBestIngredientMatch(rows: any[], query: string): any | null {
+  if (!rows?.length) return null;
+  const fq = foldPersian(query);
+  const byLenFa = (a: any, b: any) => (foldPersian(a?.nameFa).length || 9999) - (foldPersian(b?.nameFa).length || 9999);
+  const exact = rows.find((r) => [r?.nameFa, r?.nameEn, r?.code].some((n) => n && foldPersian(n) === fq));
+  if (exact) return exact;
+  const confident = rows
+    .filter((r) => [r?.nameFa, r?.nameEn].some((n) => isConfidentIngredientMatch(query, n)))
+    .sort(byLenFa);
+  if (confident.length) return confident[0];
+  return [...rows].sort(byLenFa)[0];
+}
 
 /**
  * suggest_substitutions (E47-L4 · rebuilt 2026-06-23) — REAL, read-only, grounded in the frozen ingredient
@@ -112,10 +132,10 @@ export class SuggestSubstitutionsTool implements AiTool {
             { code: { contains: input.ingredient as string } },
           ],
         },
-        take: 1,
+        take: 12, // pull a few so we can prefer an EXACT/base match over an arbitrary first compound
         select,
       });
-      source = matches[0] ?? null;
+      source = pickBestIngredientMatch(matches, input.ingredient as string);
 
       if (source) {
         curatedOptions = parseCuratedOptions(source.substitutionOptions);

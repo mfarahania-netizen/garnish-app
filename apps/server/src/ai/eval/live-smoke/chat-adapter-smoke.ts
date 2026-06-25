@@ -131,9 +131,12 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
       buildLivePrompt: (p: string) => p,
       screenLiveOutput: async () => ({ safe: true, reason: null }),
       composeDeterministicReply: () => DETERMINISTIC_REPLY,
+      getDeclaredAllergens: async () => [],
     } as any,
     new IntentClassifierService(),
     { trackEvent: async () => ({ id: 'ev_ai_turn' }) } as any,
+    // Assist stub: this smoke targets the live adapter, not substitution routing — nothing resolves.
+    { substitutions: async () => ({ resultStatus: 'ingredient_not_found', substitutions: [] }) } as any,
   );
 
   const failures: string[] = [];
