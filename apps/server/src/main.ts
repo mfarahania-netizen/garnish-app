@@ -6,6 +6,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { validateEnv } from './config/env.validation';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { resolveCorsOrigins } from './config/cors-origins';
 
 async function bootstrap() {
   // Load apps/server/.env into process.env (Node built-in `loadEnvFile`, no dependency).
@@ -44,9 +45,9 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    // accept a comma-separated list so multiple dev frontends (e.g. 5173 + a preview on 5176) work without
-    // reconfiguring; a single value still behaves exactly as before (split returns a 1-element array).
-    origin: String(env.FRONTEND_URL).split(',').map((o) => o.trim()).filter(Boolean),
+    // Accept a comma-separated list and include the same-port localhost/127.0.0.1 loopback peer for dev.
+    // This stays narrow (no wildcard) but prevents Vite's 127.0.0.1 URL from breaking browser auth via CORS.
+    origin: resolveCorsOrigins(env.FRONTEND_URL),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
