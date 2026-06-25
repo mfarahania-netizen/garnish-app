@@ -93,7 +93,7 @@ const INGREDIENT_ALIAS: Record<string, string> = {
   'شیر': 'شیر کامل',
   'تخم مرغ': 'تخم‌مرغ کامل خام',
   'تخممرغ': 'تخم‌مرغ کامل خام',
-  'کره': 'کره شور',
+  'کره': 'کره بدون نمک', // generic/cooking butter ≈ unsalted; this row has the rich, sensible swap set
   'ماست': 'ماست ساده',
   'خامه': 'خامه پرچرب',
   'پنیر': 'پنیر فتا',

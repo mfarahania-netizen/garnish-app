@@ -84,11 +84,16 @@ export class SearchRecipesTool implements AiTool {
   }
 }
 
+// Generic dish-CLASS words appear in dozens of titles, so a title match on them is a weak signal: «خورش قیمه»
+// must let «قیمه» (the specific dish) outrank «خورش چغرتمه» (matched only on the class word «خورش»).
+const GENERIC_DISH_WORDS = new Set(['خورش', 'خورشت', 'اش', 'آش', 'پلو', 'کباب', 'خوراک', 'سوپ', 'دمپخت', 'دمی', 'سالاد']);
+
 /**
  * Relevance score + which field first matched. Order/weight: TITLE (dish is named after the term) >
  * INGREDIENT (the term is a real ingredient — what «با X چی بپزم» actually wants) > DESCRIPTION (the term
  * is only mentioned in prose — the weakest signal). Putting ingredient above description fixes the case
- * where «خورشت سیب» (mentions لپه in its blurb) out-ranked «کوفته تبریزی» (actually built on لپه).
+ * where «خورشت سیب» (mentions لپه in its blurb) out-ranked «کوفته تبریزی» (actually built on لپه). A title
+ * match on a generic dish-class word («خورش») is weighted low so a specific dish word («قیمه») wins.
  */
 function scoreRecipe(
   r: { title: string; description: string | null; ingredients?: { name: string | null }[] },
@@ -102,7 +107,7 @@ function scoreRecipe(
   let ingredientHit = false;
   let descHit = false;
   for (const t of terms) {
-    if (title.includes(t)) { score += 3; titleHit = true; }
+    if (title.includes(t)) { score += GENERIC_DISH_WORDS.has(t) ? 1 : 3; titleHit = true; }
     else if (ingredients.some((n) => n.includes(t))) { score += 2; ingredientHit = true; }
     else if (desc.includes(t)) { score += 1; descHit = true; }
   }

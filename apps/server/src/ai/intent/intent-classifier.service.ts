@@ -98,7 +98,7 @@ const RAW_INTENTS: IntentSpec[] = [
   { intent: 'scaling', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
     anchors: ['برای چند نفر', 'دو برابر', 'نصفش', 'نصف کن', 'مقدار برای', 'verdubbel', 'halveren', 'double the', 'halve the', 'scale', 'portie'] },
   { intent: 'substitution', safetyRelevant: true, baseTier: 'CHEAP', dataScope: 'recipe',
-    anchors: ['جایگزین', 'به جای', 'عوضش', 'vervang', 'vervanging', 'in plaats van', 'substitute', 'instead of', 'replace', 'swap'] },
+    anchors: ['جایگزین', 'به جای', 'جای', 'عوضش', 'vervang', 'vervanging', 'in plaats van', 'substitute', 'instead of', 'replace', 'swap'] },
   { intent: 'technique_whyitworks', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'recipe',
     anchors: ['چرا باید', 'چرا تفت', 'به چه دلیل', 'فایده', 'waarom', 'why do i', 'why should', 'what does it do', 'techniek'] },
   { intent: 'ingredient_facts', safetyRelevant: false, baseTier: 'CHEAP', dataScope: 'ingredient',

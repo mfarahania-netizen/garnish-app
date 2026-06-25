@@ -168,6 +168,7 @@ describe('IntentClassifierService (AI_DESIGN_SPEC §2 — deterministic cost gov
       ['scale this for 6 people', 'scaling'],
       ['voor 6 personen', 'scaling'],
       ['جایگزینِ گردو چیه؟', 'substitution'],
+      ['جای پیاز چی بریزم؟', 'substitution'], // colloquial «جای X» (not «جایگزین»/«به جای»)
       ['vervanging voor boter', 'substitution'],
       ['what can i use instead of butter', 'substitution'],
       ['چرا باید پیاز رو تفت بدم؟', 'technique_whyitworks'],

@@ -109,7 +109,7 @@ describe('aliasIngredient', () => {
   it('maps colloquial base terms to their canonical dictionary name', () => {
     expect(aliasIngredient('شیر')).toBe('شیر کامل');
     expect(aliasIngredient('تخم مرغ')).toBe('تخم‌مرغ کامل خام');
-    expect(aliasIngredient('کره')).toBe('کره شور');
+    expect(aliasIngredient('کره')).toBe('کره بدون نمک');
     expect(aliasIngredient('گوجه')).toBe('گوجه‌فرنگی خام');
     expect(aliasIngredient('رب گوجه')).toBe('رب گوجه‌فرنگی');
   });

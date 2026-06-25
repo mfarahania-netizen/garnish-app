@@ -42,6 +42,9 @@ const FIT_SELECT = {
 const RETRIEVE_LIMIT = 12; // candidates pulled from the corpus before the HARD allergy gate
 const SURFACE_LIMIT = 5; // safe recipes actually shown
 
+// Recipe difficulty is stored in English in the corpus; render it in Persian (the UI is RTL/Persian).
+const DIFFICULTY_FA: Record<string, string> = { easy: 'آسان', medium: 'متوسط', hard: 'سخت' };
+
 export type GroundingStatus = 'ok' | 'empty' | 'unsafe_set_unavailable';
 
 export interface SafeRecipe {
@@ -153,17 +156,25 @@ export class GroundedReplyService {
       return 'الان نمی‌تونم به‌صورت امن برات پیشنهاد شخصی‌سازی‌شده بدم. لطفاً کمی بعد دوباره تلاش کن.';
     }
     if (grounding.groundingStatus !== 'ok' || grounding.safeRecipes.length === 0) {
-      return 'بر اساس رسپی‌های گارنیش، گزینهٔ امنی که با محدودیت‌های اعلام‌شده‌ات بخواند پیدا نشد. می‌تونی مواد یا سؤالت رو طور دیگه‌ای بپرسی.';
+      // Only frame the empty result as an ALLERGY filter when something was actually dropped for allergy;
+      // otherwise (gibberish / no understood term) a neutral clarifier avoids implying a safety block.
+      return grounding.droppedForAllergy > 0
+        ? 'بر اساس رسپی‌های گارنیش، گزینه‌ای که با آلرژی‌های اعلام‌شده‌ات بسازد پیدا نشد. می‌تونی مواد یا سؤالت رو طور دیگه‌ای بپرسی.'
+        : 'متوجه نشدم دقیقاً چی می‌خوای 🙂 — یه ماده، یه غذا یا موادی که داری بنویس تا برات پیدا کنم.';
     }
     const lines = grounding.safeRecipes.map((r) => {
       const time = r.cookingTime ? `${r.cookingTime} دقیقه` : 'زمان نامشخص';
-      const diff = r.difficulty ? ` | ${r.difficulty}` : '';
+      const d = r.difficulty ? (DIFFICULTY_FA[r.difficulty.toLowerCase()] ?? r.difficulty) : '';
+      const diff = d ? ` | ${d}` : '';
       return `**${r.title}**\n⏱ ${time}${diff}`;
     });
     const header = '🤖 دستیار هوش مصنوعی گارنیش (اطلاعات عمومی، نه توصیهٔ پزشکی):';
     const intro = 'بر اساس رسپی‌های گارنیش، این گزینه‌ها رو برات پیدا کردم:';
-    // honest, non-overclaiming safety note mirroring the audited fit wording (informational, not a guarantee)
-    const footer = `📚 این ${grounding.safeRecipes.length} پیشنهاد از پایگاه رسپی گارنیش انتخاب شده و غذاهایی که با آلرژی‌های اعلام‌شده‌ات تداخل داشتند کنار گذاشته شدند (اطلاعاتی است، نه تضمین؛ همیشه فهرست کامل مواد رو بررسی کن).`;
+    const n = grounding.safeRecipes.length;
+    // honest, non-overclaiming note; only mention the allergy filter when it actually removed something.
+    const footer = grounding.droppedForAllergy > 0
+      ? `📚 این ${n} پیشنهاد از رسپی‌های گارنیش انتخاب شده و غذاهایی که با آلرژی‌های اعلام‌شده‌ات تداخل داشتند کنار گذاشته شدند (اطلاعاتی است، نه تضمین؛ همیشه فهرست کامل مواد رو بررسی کن).`
+      : `📚 این ${n} پیشنهاد از رسپی‌های گارنیش انتخاب شده (اطلاعاتی است، نه تضمین؛ همیشه فهرست کامل مواد رو بررسی کن).`;
     return `${header}\n\n${intro}\n\n${lines.join('\n\n')}\n\n${footer}`;
   }
 

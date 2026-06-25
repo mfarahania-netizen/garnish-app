@@ -171,7 +171,7 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
   it('passes the declared allergies to the substitution tool as avoidAllergens (safety)', async () => {
     const { svc, grounded, assist } = makeChat();
     grounded.getDeclaredAllergens.mockResolvedValueOnce(['dairy']);
-    assist.substitutions.mockResolvedValueOnce({ resultStatus: 'no_substitution_data', resolved: { name: 'کره شور' }, substitutions: [], note: 'برای «کره شور» جایگزینی در داده‌ها ثبت نشده است.' });
+    assist.substitutions.mockResolvedValueOnce({ resultStatus: 'no_substitution_data', resolved: { name: 'کره بدون نمک' }, substitutions: [], note: 'برای «کره بدون نمک» جایگزینی در داده‌ها ثبت نشده است.' });
     const out = await svc.handleChat({ userId: 'u1', prompt: 'به جای کره چی بزنم؟', conversationId: 'c-sub-allergy' });
     expect(assist.substitutions).toHaveBeenCalledWith('u1', { ingredient: 'کره', avoidAllergens: ['dairy'] });
     expect(out.reply).toContain('کره'); // honest "resolved but no swaps" reply, still on-topic

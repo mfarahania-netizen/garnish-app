@@ -175,6 +175,42 @@ describe('GroundedReplyService — getDeclaredAllergens (substitution avoid-set 
   });
 });
 
+describe('GroundedReplyService — deterministic reply formatting', () => {
+  const base = { safeRecipes: [], unsafeTitles: [], retrievedCount: 0 };
+
+  it('renders recipe difficulty in Persian (easy→آسان) and drops the allergy framing when nothing was dropped', async () => {
+    const { svc } = makeService({});
+    const reply = svc.composeDeterministicReply({
+      ...base,
+      groundingStatus: 'ok',
+      safeRecipes: [{ id: 'r1', title: 'آش رشته', cookingTime: 90, difficulty: 'easy', fit: 'ok' }],
+      droppedForAllergy: 0,
+    } as any);
+    expect(reply).toContain('آسان');
+    expect(reply).not.toMatch(/easy|medium|hard/i);
+    expect(reply).not.toContain('آلرژی'); // nothing dropped → no allergy-filter claim
+  });
+
+  it('keeps the allergy-filter note ONLY when a recipe was dropped for allergy', async () => {
+    const { svc } = makeService({});
+    const reply = svc.composeDeterministicReply({
+      ...base,
+      groundingStatus: 'ok',
+      safeRecipes: [{ id: 'r1', title: 'خورش کدو', cookingTime: 80, difficulty: 'hard', fit: 'ok' }],
+      droppedForAllergy: 2,
+    } as any);
+    expect(reply).toContain('سخت');
+    expect(reply).toContain('آلرژی');
+  });
+
+  it('an empty result with NO allergy drop returns a neutral clarifier (not an allergy-flavored dead-end)', async () => {
+    const { svc } = makeService({});
+    const reply = svc.composeDeterministicReply({ ...base, groundingStatus: 'empty', droppedForAllergy: 0 } as any);
+    expect(reply).toContain('متوجه نشدم');
+    expect(reply).not.toContain('آلرژی');
+  });
+});
+
 describe('GroundedReplyService — provider-agnostic (no model dependency)', () => {
   it('builds grounding + composes a disclosed, hedged reply with NO model provider', async () => {
     const pool = [recipe('r1', { title: 'آش رشته' })];
