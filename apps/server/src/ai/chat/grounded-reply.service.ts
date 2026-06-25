@@ -6,6 +6,7 @@ import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 import { looseMatch, toStringArray } from '../tools/grounding-utils';
 import { foldPersian, aliasIngredient, isConfidentIngredientMatch } from '../tools/persian-search';
+import { t, Locale, resolveLocale } from '../i18n/template-registry';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 
 /**
@@ -43,8 +44,12 @@ const FIT_SELECT = {
 const RETRIEVE_LIMIT = 12; // candidates pulled from the corpus before the HARD allergy gate
 const SURFACE_LIMIT = 5; // safe recipes actually shown
 
-// Recipe difficulty is stored in English in the corpus; render it in Persian (the UI is RTL/Persian).
-const DIFFICULTY_FA: Record<string, string> = { easy: 'آسان', medium: 'متوسط', hard: 'سخت' };
+// Recipe difficulty is stored in English in the corpus; render it per locale.
+const DIFFICULTY: Record<Locale, Record<string, string>> = {
+  fa: { easy: 'آسان', medium: 'متوسط', hard: 'سخت' },
+  nl: { easy: 'makkelijk', medium: 'gemiddeld', hard: 'moeilijk' },
+  en: { easy: 'easy', medium: 'medium', hard: 'hard' },
+};
 
 export type GroundingStatus = 'ok' | 'empty' | 'unsafe_set_unavailable';
 
@@ -152,31 +157,36 @@ export class GroundedReplyService {
    * Carries the AI disclosure + non-medical hedge; cites the recipe corpus as the grounding source;
    * makes no nutrition/medical/diet claims; never invents a recipe.
    */
-  composeDeterministicReply(grounding: GroundingResult): string {
+  composeDeterministicReply(grounding: GroundingResult, locale: Locale = 'fa'): string {
     if (grounding.groundingStatus === 'unsafe_set_unavailable') {
-      return 'الان نمی‌تونم به‌صورت امن برات پیشنهاد شخصی‌سازی‌شده بدم. لطفاً کمی بعد دوباره تلاش کن.';
+      return t('unsafe_set_unavailable', locale);
     }
     if (grounding.groundingStatus !== 'ok' || grounding.safeRecipes.length === 0) {
       // Only frame the empty result as an ALLERGY filter when something was actually dropped for allergy;
       // otherwise (gibberish / no understood term) a neutral clarifier avoids implying a safety block.
-      return grounding.droppedForAllergy > 0
-        ? 'بر اساس رسپی‌های گارنیش، گزینه‌ای که با آلرژی‌های اعلام‌شده‌ات بسازد پیدا نشد. می‌تونی مواد یا سؤالت رو طور دیگه‌ای بپرسی.'
-        : 'متوجه نشدم دقیقاً چی می‌خوای 🙂 — یه ماده، یه غذا یا موادی که داری بنویس تا برات پیدا کنم.';
+      return grounding.droppedForAllergy > 0 ? t('empty_allergy_filtered', locale) : t('empty_neutral', locale);
     }
     const lines = grounding.safeRecipes.map((r) => {
-      const time = r.cookingTime ? `${r.cookingTime} دقیقه` : 'زمان نامشخص';
-      const d = r.difficulty ? (DIFFICULTY_FA[r.difficulty.toLowerCase()] ?? r.difficulty) : '';
+      const time = r.cookingTime ? t('recipe_minutes', locale, { n: r.cookingTime }) : t('recipe_time_unknown', locale);
+      const d = r.difficulty ? (DIFFICULTY[locale][r.difficulty.toLowerCase()] ?? r.difficulty) : '';
       const diff = d ? ` | ${d}` : '';
       return `**${r.title}**\n⏱ ${time}${diff}`;
     });
-    const header = '🤖 دستیار هوش مصنوعی گارنیش (اطلاعات عمومی، نه توصیهٔ پزشکی):';
-    const intro = 'بر اساس رسپی‌های گارنیش، این گزینه‌ها رو برات پیدا کردم:';
     const n = grounding.safeRecipes.length;
-    // honest, non-overclaiming note; only mention the allergy filter when it actually removed something.
     const footer = grounding.droppedForAllergy > 0
-      ? `📚 این ${n} پیشنهاد از رسپی‌های گارنیش انتخاب شده و غذاهایی که با آلرژی‌های اعلام‌شده‌ات تداخل داشتند کنار گذاشته شدند (اطلاعاتی است، نه تضمین؛ همیشه فهرست کامل مواد رو بررسی کن).`
-      : `📚 این ${n} پیشنهاد از رسپی‌های گارنیش انتخاب شده (اطلاعاتی است، نه تضمین؛ همیشه فهرست کامل مواد رو بررسی کن).`;
-    return `${header}\n\n${intro}\n\n${lines.join('\n\n')}\n\n${footer}`;
+      ? t('recipe_list_footer_allergy', locale, { n })
+      : t('recipe_list_footer_plain', locale, { n });
+    return `${t('ai_disclosure_header', locale)}\n\n${t('recipe_list_intro', locale)}\n\n${lines.join('\n\n')}\n\n${footer}`;
+  }
+
+  /** The user's template locale (from User.locale, BCP-47), default fa. Safe-fails to fa on any read error. */
+  async getLocale(userId: string): Promise<Locale> {
+    try {
+      const u = await this.prisma.user.findUnique({ where: { id: userId }, select: { locale: true } });
+      return resolveLocale(u?.locale);
+    } catch {
+      return 'fa';
+    }
   }
 
   /**

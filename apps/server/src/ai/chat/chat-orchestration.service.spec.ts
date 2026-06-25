@@ -47,6 +47,7 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
     composeDeterministicReply: jest.fn().mockReturnValue(groundedReply),
     getDeclaredAllergens: jest.fn().mockResolvedValue([]), // known profile, no declared allergies (default)
     getIngredientNutrition: jest.fn().mockResolvedValue(null), // default: no nutrition data → honest fallback
+    getLocale: jest.fn().mockResolvedValue('fa'),
   } as any;
   const analytics = { trackEvent: jest.fn().mockResolvedValue({ id: 'ev-ai-turn' }) } as any;
   // default: nothing resolves → substitution routing falls through to the grounded path

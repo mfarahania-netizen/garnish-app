@@ -14,6 +14,7 @@ import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
 import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets } from '../tools/persian-search';
 import { matchTroubleshooting } from './cooking-troubleshooting';
+import { t, Locale } from '../i18n/template-registry';
 
 export interface HandleChatInput {
   userId: string;
@@ -96,6 +97,8 @@ export class ChatOrchestrationService {
     );
 
     const snapshot = await this.snapshots.build(input.userId, { locale: 'fa' });
+    // The user's template locale (fa/nl/en from User.locale) — every deterministic reply renders in it.
+    const locale = await this.grounded.getLocale(input.userId);
     // Short-term memory feeds TWO deliberately-separated consumers:
     //  - memoryPrompt: the full untrusted, annotated block for the LIVE model context (live rails only).
     //  - retrievalQuery: a CLEAN conversational query (recent user turns + current turn) for grounding, so a
@@ -125,8 +128,8 @@ export class ChatOrchestrationService {
     if (intentDecision.intent === 'stated_constraint' && this.isAllergyDeclaration(input.prompt)) {
       const allergens = extractStatedAllergens(input.prompt);
       const reply = allergens.length
-        ? `متوجه شدم که به ${allergens.map((a) => a.label).join('، ')} حساسیت داری. می‌خوای به پروفایلت اضافه‌اش کنم تا همیشه از غذاهات حذفش کنم و ایمن بمونی؟`
-        : 'به‌نظر رسید یک حساسیت گفتی، ولی مطمئن نشدم دقیقاً کدوم ماده — اسمش رو بگو یا توی پروفایلت اضافه‌اش کن تا همیشه ایمن نگهت دارم.';
+        ? t('allergy_offer', locale, { names: allergens.map((a) => a.label).join(t('list_sep', locale)) })
+        : t('allergy_offer_unknown', locale);
       const assistantMessage = await this.chatMessages.create({
         userId: input.userId,
         conversationId,
@@ -157,7 +160,7 @@ export class ChatOrchestrationService {
     // would answer a "thank you", a weather question, or a medical question with an irrelevant recipe list).
     // The classifier already labels these; give each an on-brand, SAFE canned reply. Safety intents (medical)
     // get a clear non-medical decline. Allergy DECLARATION (§3) is handled above and never reaches here.
-    const intentReply = this.intentRoutedReply(intentDecision.intent);
+    const intentReply = this.intentRoutedReply(intentDecision.intent, locale);
     if (intentReply) {
       return this.respondDeterministicTurn(input, conversationId, intentDecision, intentReply);
     }
@@ -165,7 +168,7 @@ export class ChatOrchestrationService {
     // Nutrition: answer «کالریِ برنج چقدره؟» with the FACTUAL per-100g USDA data from the ingredient dictionary
     // (numbers, not health claims), or an honest fallback. Never medical/diet advice.
     if (intentDecision.intent === 'nutrition_query') {
-      return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt));
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt, locale));
     }
 
     // INTENT-AWARE ROUTING (deterministic): a during-cook problem ("چرا برنجم شفته شد؟") wants TROUBLESHOOTING,
@@ -174,7 +177,7 @@ export class ChatOrchestrationService {
     // «خشک شد»/«لعاب نداره» that the classifier misses). No match → ask for the dish + symptom, never a recipe
     // dump. (The infinite tail of arbitrary "why did X happen" is the live L2a assistant, gated.)
     if (this.shouldTroubleshoot(input.prompt, intentDecision.intent)) {
-      return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeTroubleshootingReply(input.prompt));
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeTroubleshootingReply(input.prompt, locale));
     }
 
     // INTENT-AWARE ROUTING (deterministic): a substitution question ("جایگزینِ ماست چی بزنم؟") wants a SWAP,
@@ -183,7 +186,7 @@ export class ChatOrchestrationService {
     // If nothing resolves (no ingredient named / not in the dictionary / profile unavailable) we fall THROUGH to
     // the normal grounded recipe reply — never a dead-end, never an unfiltered/unsafe answer.
     if (intentDecision.intent === 'substitution') {
-      const handled = await this.tryAnswerSubstitution(input, conversationId, intentDecision);
+      const handled = await this.tryAnswerSubstitution(input, conversationId, intentDecision, locale);
       if (handled) return handled;
     }
 
@@ -233,9 +236,7 @@ export class ChatOrchestrationService {
       const rejected = err instanceof MissingBehavioralContextError;
       status = rejected ? 'error' : 'error';
       blocked = true;
-      const reply = rejected
-        ? 'در حال حاضر امکان پردازش این درخواست نیست. لطفاً بعداً دوباره تلاش کن.'
-        : 'مشکلی پیش اومد. لطفاً دوباره تلاش کن.';
+      const reply = rejected ? t('blocked_rejected', locale) : t('blocked_error', locale);
       const assistantMessage = await this.chatMessages.create({
         userId: input.userId,
         conversationId,
@@ -261,7 +262,7 @@ export class ChatOrchestrationService {
     let reply: string;
     let providerMode: 'gemini' | 'deterministic';
     if (blocked || status === 'error') {
-      reply = this.safeBlockedReply(status, reasons);
+      reply = this.safeBlockedReply(status, reasons, locale);
       providerMode = 'deterministic';
     } else {
       // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
@@ -274,11 +275,11 @@ export class ChatOrchestrationService {
           reply = modelText; // passed the orchestrator's outbound guards AND the allergy-safety gate
           providerMode = 'gemini';
         } else {
-          reply = this.grounded.composeDeterministicReply(g);
+          reply = this.grounded.composeDeterministicReply(g, locale);
           providerMode = 'deterministic';
         }
       } else {
-        reply = this.grounded.composeDeterministicReply(g);
+        reply = this.grounded.composeDeterministicReply(g, locale);
         providerMode = 'deterministic';
       }
     }
@@ -364,6 +365,7 @@ export class ChatOrchestrationService {
     input: HandleChatInput,
     conversationId: string,
     intentDecision: IntentClassification,
+    locale: Locale,
   ): Promise<HandleChatResult | null> {
     const targets = extractSubstitutionTargets(input.prompt);
     if (targets.length === 0) return null;
@@ -394,7 +396,7 @@ export class ChatOrchestrationService {
           isConfidentIngredientMatch(ingredient, resolvedName) ||
           isConfidentIngredientMatch(aliasIngredient(ingredient), resolvedName)
         ) {
-          return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(result));
+          return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(result, locale));
         }
       }
     }
@@ -406,19 +408,14 @@ export class ChatOrchestrationService {
    * Returns null for recipe-bearing intents (recipe_discovery, timer, ingredient_facts, scaling-with-context…)
    * so they continue to the grounded path. SAFE by construction — medical gets a clear non-medical decline.
    */
-  private intentRoutedReply(intent: IntentClassification['intent']): string | null {
+  private intentRoutedReply(intent: IntentClassification['intent'], locale: Locale): string | null {
     switch (intent) {
-      case 'greeting_smalltalk':
-        return 'سلام! 👋 من دستیار آشپزی گارنیشم. بگو چی دوست داری بپزی یا چه موادی توی خونه داری تا کمکت کنم.';
-      case 'feedback':
-        return 'خوشحالم که به کارت اومد! 🙌 هر وقت سؤال آشپزی داشتی — جایگزین، ایدهٔ غذا یا طرز تهیه — در خدمتم.';
-      case 'medical_or_health_advice':
-        return 'من نمی‌تونم توصیهٔ پزشکی یا رژیمِ درمانی بدم؛ برای این موضوع بهتره با پزشک یا متخصصِ تغذیه مشورت کنی. اما اگه بخوای، می‌تونم غذاهای سادهٔ خوش‌طعم از رسپی‌های گارنیش برات پیدا کنم — فقط بگو چه موادی دوست داری.';
-      case 'out_of_domain':
-        return 'من فقط توی آشپزی و رسپی‌ها می‌تونم کمکت کنم 🍳 — یه ماده یا غذایی بگو تا برات پیدا کنم یا جایگزینش رو پیشنهاد بدم.';
+      case 'greeting_smalltalk': return t('greeting', locale);
+      case 'feedback': return t('feedback_thanks', locale);
+      case 'medical_or_health_advice': return t('medical_decline', locale);
+      case 'out_of_domain': return t('out_of_domain', locale);
       // nutrition_query is handled by an async DB-backed branch (composeNutritionReply), not here.
-      case 'technique_whyitworks':
-        return 'سؤال خوبیه! توضیحِ گام‌به‌گامِ تکنیک‌ها رو داخل «حالت پخت» (Cook Mode) هر رسپی می‌بینی. اسم غذایی که داری می‌پزی رو بگو تا پیداش کنم و مرحله‌به‌مرحله راهنماییت کنم.';
+      case 'technique_whyitworks': return t('technique_to_cookmode', locale);
       // NOTE: scaling is deliberately NOT routed here — a follow-up like «برای ۶ نفر» should carry the prior
       // dish into grounding (short-term memory), so it falls through to the grounded path.
       default:
@@ -427,23 +424,24 @@ export class ChatOrchestrationService {
   }
 
   /** Factual per-100g nutrition readout for an ingredient (USDA-sourced), or an honest ask. No health claims. */
-  private async composeNutritionReply(prompt: string): Promise<string> {
-    const header = '🤖 دستیار آشپزی گارنیش:';
-    const fa = (n: unknown) => String(n ?? '').replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+  private async composeNutritionReply(prompt: string, locale: Locale): Promise<string> {
+    const header = t('assistant_header', locale);
+    const num = (n: unknown) => (locale === 'fa' ? String(n ?? '').replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]) : String(n ?? ''));
     for (const term of extractNutritionTargets(prompt).slice(0, 3)) {
       const n = await this.grounded.getIngredientNutrition(term);
       if (!n) continue;
       const p = n.per100g || {};
       const parts: string[] = [];
-      if (p.calories != null) parts.push(`${fa(p.calories)} کالری`);
-      if (p.protein != null) parts.push(`${fa(p.protein)} گرم پروتئین`);
-      if (p.carbs != null) parts.push(`${fa(p.carbs)} گرم کربوهیدرات`);
-      if (p.fat != null) parts.push(`${fa(p.fat)} گرم چربی`);
-      if (p.fiber != null) parts.push(`${fa(p.fiber)} گرم فیبر`);
+      if (p.calories != null) parts.push(t('nutrient_calories', locale, { v: num(p.calories) }));
+      if (p.protein != null) parts.push(t('nutrient_protein', locale, { v: num(p.protein) }));
+      if (p.carbs != null) parts.push(t('nutrient_carbs', locale, { v: num(p.carbs) }));
+      if (p.fat != null) parts.push(t('nutrient_fat', locale, { v: num(p.fat) }));
+      if (p.fiber != null) parts.push(t('nutrient_fiber', locale, { v: num(p.fiber) }));
       if (!parts.length) break;
-      return `${header}\n\n**${n.name}** (هر ۱۰۰ گرم): ${parts.join('، ')}.\n\nℹ️ عددها تقریبی و بر اساس ۱۰۰ گرمِ مادهٔ خام است؛ توصیهٔ تغذیه‌ای یا پزشکی نیست.`;
+      const line = t('nutrition_line', locale, { name: n.name, parts: parts.join(t('list_sep', locale)) });
+      return `${header}\n\n${line}\n\n${t('nutrition_disclaimer', locale)}`;
     }
-    return `${header}\n\nبرای ارزشِ غذایی، اسمِ خودِ ماده رو بگو (مثلاً «کالری برنج» یا «پروتئین عدس»). برای کالریِ یک غذای کامل هم صفحهٔ همون رسپی رو ببین. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم.`;
+    return `${header}\n\n${t('nutrition_ask', locale)}`;
   }
 
   /**
@@ -461,31 +459,31 @@ export class ChatOrchestrationService {
   }
 
   /** Answer a during-cook problem from the curated troubleshooting KB, or honestly ask for the dish + symptom. */
-  private composeTroubleshootingReply(prompt: string): string {
-    const header = '🤖 دستیار آشپزی گارنیش:';
+  private composeTroubleshootingReply(prompt: string, locale: Locale): string {
+    const header = t('assistant_header', locale);
     const entry = matchTroubleshooting(prompt);
-    if (!entry) {
-      return `${header}\n\nکمکت می‌کنم رفعش کنیم — فقط بگو کدوم غذا بود و دقیقاً چی شد (مثلاً «برنجم شفته شد» یا «ته‌دیگم چسبید»). اگر بخوای می‌تونم جایگزینِ مواد یا یه ایدهٔ غذای دیگه هم بدم.`;
-    }
+    if (!entry) return `${header}\n\n${t('ts_ask', locale)}`;
+    // The cause/fix/prevent CONTENT is Persian (the KB) — its nl/en translation is corpus-i18n (Dimension 7);
+    // the FRAME (labels + note) is localized here.
     return [
       header,
       '',
-      `**چرا این‌طور شد:** ${entry.cause}`,
-      `**الان چی‌کار کن:** ${entry.fix}`,
-      `**دفعهٔ بعد:** ${entry.prevent}`,
+      t('ts_why', locale, { cause: entry.cause }),
+      t('ts_now', locale, { fix: entry.fix }),
+      t('ts_next', locale, { prevent: entry.prevent }),
       '',
-      'ℹ️ راهنماییِ آشپزیه؛ بسته به دستور و موادت ممکنه کمی فرق کنه.',
+      t('cooking_guidance_note', locale),
     ].join('\n');
   }
 
-  /** Render a substitution tool result as a safe Persian reply (AI disclosure + non-medical hedge). */
-  private composeSubstitutionReply(result: any): string {
-    const header = '🤖 دستیار هوش مصنوعی گارنیش (اطلاعات عمومی، نه توصیهٔ پزشکی):';
-    const name = result?.resolved?.name ?? 'این ماده';
+  /** Render a substitution tool result as a safe reply (localized FRAME; the swap names/notes are corpus data). */
+  private composeSubstitutionReply(result: any, locale: Locale): string {
+    const header = t('ai_disclosure_header', locale);
+    const name = result?.resolved?.name ?? '—';
     const subs = Array.isArray(result?.substitutions) ? result.substitutions : [];
     const note = typeof result?.note === 'string' && result.note.trim() ? result.note.trim() : '';
     if (subs.length === 0) {
-      const body = note || `برای «${name}» جایگزینی در داده‌های گارنیش پیدا نکردم.`;
+      const body = note || t('substitution_none', locale, { name });
       return `${header}\n\n${body}`;
     }
     const lines = subs.slice(0, 5).map((s: any) => {
@@ -494,8 +492,9 @@ export class ChatOrchestrationService {
         : typeof s?.reason === 'string' ? s.reason.trim() : '';
       return why ? `**${s?.name}** — ${why}` : `**${s?.name}**`;
     });
-    const intro = `برای «${name}» این جایگزین‌ها رو از فرهنگ مواد اولیهٔ گارنیش پیدا کردم:`;
-    const footer = `ℹ️ ${note ? `${note} ` : ''}همیشه فهرست کامل مواد رو بررسی کن؛ این راهنماییِ آشپزی است، نه توصیهٔ پزشکی.`;
+    const intro = t('substitution_intro', locale, { name });
+    // the tool `note` is corpus-language content (Dim 7); the fixed safety hedge is localized
+    const footer = `${note ? `${note}\n` : ''}${t('substitution_footer', locale)}`;
     return `${header}\n\n${intro}\n\n${lines.join('\n')}\n\n${footer}`;
   }
 
@@ -601,23 +600,19 @@ export class ChatOrchestrationService {
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */
-  private safeBlockedReply(status: AiCallStatus, reasons: string[] = []): string {
+  private safeBlockedReply(status: AiCallStatus, reasons: string[] = [], locale: Locale = 'fa'): string {
     // E47-A7: explicit "image analysis unavailable" message when a vision request is refused.
     if (status === 'blocked_safety' && reasons.includes('fake_vision_claim')) {
-      return 'تحلیل تصویر در این نسخه در دسترس نیست؛ من فقط دستیار آشپزی متنی هستم. لطفاً مواد یا اسم غذا را بنویس. (Image analysis is not available in this build.)';
+      return t('blocked_vision', locale);
     }
     switch (status) {
-      case 'blocked_injection':
-        return 'این درخواست قابل پردازش نیست. لطفاً سؤال آشپزی‌ات را ساده و مستقیم بپرس.';
-      case 'blocked_safety':
-        return 'من فقط دستیار آشپزی گارنیش هستم و نمی‌تونم در زمینهٔ پزشکی، رژیم درمانی یا موارد حساس کمک کنم. لطفاً یک سؤال آشپزی بپرس.';
-      case 'blocked_nutrition':
-        return 'نمی‌تونم ادعای تغذیه‌ای یا سلامتی بدم؛ اما می‌تونم رسپی و پیشنهاد آشپزی ارائه بدم.';
-      case 'blocked_cost':
-        return 'درخواست‌های زیادی در این بازه ثبت شده. لطفاً کمی بعد دوباره امتحان کن.';
+      case 'blocked_injection': return t('blocked_injection', locale);
+      case 'blocked_safety': return t('blocked_safety', locale);
+      case 'blocked_nutrition': return t('blocked_nutrition', locale);
+      case 'blocked_cost': return t('blocked_cost', locale);
       case 'error':
       default:
-        return 'مشکلی پیش اومد. لطفاً دوباره تلاش کن.';
+        return t('blocked_error', locale);
     }
   }
 }

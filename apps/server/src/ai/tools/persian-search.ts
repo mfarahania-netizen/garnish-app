@@ -209,8 +209,13 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
  */
 // Nutrition-question words — stripped so only the INGREDIENT remains («کالریِ برنج چقدره؟» -> «برنج»).
 const NUTRITION_WORDS = new Set([
+  // fa
   'کالری', 'کالریه', 'کالریِ', 'پروتئین', 'پروتیین', 'چربی', 'قند', 'کربوهیدرات', 'فیبر', 'سدیم', 'نمک',
-  'ارزش', 'غذایی', 'چقدر', 'چقدره', 'چنده', 'مقدار', 'انرژی', 'calorie', 'calories', 'protein', 'fat', 'carb', 'carbs',
+  'ارزش', 'غذایی', 'چقدر', 'چقدره', 'چنده', 'مقدار', 'انرژی',
+  // en
+  'calorie', 'calories', 'protein', 'fat', 'carb', 'carbs', 'fiber', 'energy', 'kcal', 'of', 'in', 'the', 'how', 'much',
+  // nl
+  'calorieën', 'calorieen', 'eiwit', 'koolhydraten', 'vet', 'vezels', 'voedingswaarde', 'energie', 'hoeveel', 'zit', 'van', 'het',
 ]);
 
 /** Pull the candidate ingredient term(s) from a nutrition question, longest-first (caller resolves each). */

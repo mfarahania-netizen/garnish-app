@@ -132,6 +132,7 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
       screenLiveOutput: async () => ({ safe: true, reason: null }),
       composeDeterministicReply: () => DETERMINISTIC_REPLY,
       getDeclaredAllergens: async () => [],
+      getLocale: async () => 'fa',
     } as any,
     new IntentClassifierService(),
     { trackEvent: async () => ({ id: 'ev_ai_turn' }) } as any,
