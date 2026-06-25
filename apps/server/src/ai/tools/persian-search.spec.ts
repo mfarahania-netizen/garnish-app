@@ -189,3 +189,21 @@ describe('parseSearchQuery', () => {
     expect(r.exclude).toContain('ei');
   });
 });
+
+describe('colloquial/typo fold (curated, NOT fuzzy)', () => {
+  it('folds a colloquial vowel spelling to canonical so retrieval matches («بادمجون»→«بادمجان»)', () => {
+    expect(tokenizeQuery('با بادمجون چی بپزم').terms).toContain('بادمجان');
+    expect(tokenizeQuery('نون').terms).toContain('نان');
+  });
+
+  it('folds a substitution head-word typo so the target is extracted («جیگزین ماست»)', () => {
+    const targets = extractSubstitutionTargets('جیگزین ماست');
+    expect(targets).toContain('ماست'); // «جیگزین»→«جایگزین» (a substitution anchor) is stripped, «ماست» remains
+    expect(targets).not.toContain('جیگزین');
+  });
+
+  it('does NOT fuzzy-map an allergen-adjacent word (شیر/سیر stay distinct — safety)', () => {
+    expect(tokenizeQuery('شیر').terms).toContain('شیر'); // milk stays milk
+    expect(tokenizeQuery('سیر').terms).toContain('سیر'); // garlic stays garlic — never folded into each other
+  });
+});

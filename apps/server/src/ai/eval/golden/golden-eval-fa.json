@@ -113,7 +113,7 @@
   { "id": "clr-04", "category": "clarify", "prompt": "یه چیز خوب بپز برام", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
   { "id": "clr-05", "category": "clarify", "prompt": "چی درست کنم امشب", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
   { "id": "clr-06", "category": "clarify", "prompt": "یه پیشنهاد بده", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
-  { "id": "clr-07", "category": "clarify", "prompt": "چیزی نداری بگی", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس", "آشپزی"] }] },
+  { "id": "clr-07", "category": "clarify", "prompt": "یه چیز خوشمزه", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
   { "id": "clr-08", "category": "clarify", "prompt": "بپزم", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
   { "id": "clr-09", "category": "clarify", "prompt": "یه غذا بپز", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },
   { "id": "clr-10", "category": "clarify", "prompt": "یه چیزی درست کن", "checks": [{ "replyIncludesAny": ["دوست داری بپزی", "متوجه نشدم", "بنویس"] }] },

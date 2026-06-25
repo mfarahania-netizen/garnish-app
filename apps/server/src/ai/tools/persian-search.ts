@@ -53,6 +53,18 @@ const STOPWORDS = new Set<string>([
 const ZWNJ = /‌/g;
 const MAX_TOKENS = 6;
 
+// CURATED colloquial/typo → canonical map (EXACT whole-token replacement, never a fuzzy guess). Deliberately
+// NOT edit-distance: on short Persian words «شیر»(milk, an allergen) and «سیر»(garlic) are 1 edit apart, so a
+// fuzzy match could confuse an allergen — unacceptable next to the allergy gate. Only unambiguous, allergen-safe
+// colloquial spellings (و→ا) and common head-word typos live here. Applied per token in tokenizeQuery.
+const COLLOQUIAL_MAP = new Map<string, string>([
+  ['بادمجون', 'بادمجان'], ['نون', 'نان'], ['خونه', 'خانه'], ['آشپزخونه', 'آشپزخانه'],
+  ['ارزون', 'ارزان'], ['آسون', 'آسان'], ['مهمون', 'مهمان'], ['مهمونی', 'مهمانی'],
+  ['لیمون', 'لیمو'], ['زمستون', 'زمستان'], ['تابستون', 'تابستان'], ['قیموه', 'قیمه'],
+  // common typos of the substitution head-word (NOT ingredient names — safe to canonicalize)
+  ['جیگزین', 'جایگزین'], ['جاگزین', 'جایگزین'], ['جایگرین', 'جایگزین'], ['جانیشن', 'جانشین'],
+]);
+
 export interface TokenizedQuery {
   /** Content terms to OR-match against the corpus (folded). Always at least one entry. */
   terms: string[];
@@ -73,12 +85,14 @@ export function tokenizeQuery(raw: unknown): TokenizedQuery {
   const terms: string[] = [];
   const seen = new Set<string>();
   for (const tok of rawTokens) {
-    const key = tok.replace(ZWNJ, '');
+    const rawKey = tok.replace(ZWNJ, '');
+    const canon = COLLOQUIAL_MAP.get(rawKey); // exact colloquial/typo fold, else undefined
+    const key = canon ?? rawKey;
     if (key.length < 2) continue;
     if (STOPWORDS.has(key)) continue;
     if (seen.has(key)) continue;
     seen.add(key);
-    terms.push(tok);
+    terms.push(canon ?? tok); // push the canonical form when folded, else the original token
     if (terms.length >= MAX_TOKENS) break;
   }
   if (terms.length === 0) return { terms: [folded], fallback: true };

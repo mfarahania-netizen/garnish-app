@@ -444,10 +444,13 @@ export class ChatOrchestrationService {
         }
       }
     }
-    // Nothing resolved. If the substitution intent is UNAMBIGUOUS (high confidence — a clear «جایگزین/جانشین X»,
-    // not a mixed «به جای X چی بپزم»), answer HONESTLY that we have no swap for the named ingredient instead of
-    // falling through to a topically-irrelevant recipe list. A mixed/low-confidence turn still falls through.
-    if (intentDecision.confidence === 'high') {
+    // Nothing resolved. Answer HONESTLY («برای «X» جایگزینی پیدا نکردم») rather than falling through to a
+    // topically-irrelevant recipe list WHEN the request is UNAMBIGUOUSLY a substitution — either high overall
+    // confidence, OR the prompt carries an EXPLICIT substitute noun (جایگزین/جانشین/substitute). The explicit
+    // noun matters because a «چیه» suffix («جایگزین شکر چیه») drops the score to medium, yet the intent is clear.
+    // A mixed «به جای X چی بپزم» (no explicit noun + recipe-discovery signal) still falls through to grounding.
+    const explicitSubNoun = /جایگزین|جانشین|جیگزین|جاگزین|substitut|vervang/i.test(input.prompt);
+    if (intentDecision.confidence === 'high' || explicitSubNoun) {
       const named = { resolved: { name: targets[0] }, substitutions: [] };
       return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(named, locale));
     }

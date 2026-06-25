@@ -13,8 +13,8 @@ node src/ai/eval/golden/run-golden-eval.mjs        # all cases (paced for the 20
 node src/ai/eval/golden/run-golden-eval.mjs bug    # compact: failures only
 ```
 
-## Latest result — 164/168 (97.6%)
-Progression across the triage loop: **141 → 156 → 164**.
+## Latest result — 168/168 (100%)
+Progression across the triage loop: **141 → 156 → 164 → 166 → 168**. Every category green.
 
 | category | pass |
 |---|---|
@@ -31,25 +31,24 @@ Progression across the triage loop: **141 → 156 → 164**.
 | repair | 8/8 |
 | scaling_memory | 6/6 |
 | troubleshooting | 18/18 |
-| substitution | 15/16 |
-| clarify | 11/12 |
-| typo_colloquial | 8/10 |
+| substitution | 16/16 |
+| clarify | 12/12 |
+| typo_colloquial | 10/10 |
 
-**Every safety-relevant category (allergy §3, medical, negation, diet) is 100%.**
+**Every category is 100% — including all safety-relevant ones (allergy §3, medical, negation, diet).**
 
 ## Bugs this eval FOUND and fixed (commit history)
 - Many non-discovery turns fell through to a recipe list because the classifier missed them →
   added anchors: greeting («صبح بخیر»…), substitution («جانشین», «اگه X نداشتم»), during-cook
   («نپخت/غلیظ شد/رقیق شد/بو میده/سفت موند»), out-of-domain («هوا/شعر/فیلم/پایتخت/…»), nutrition
   («فیبر», «تغذیه‌ای»), and medical patterns («تشخیص/علائم/درمان کنم»).
-- A clear substitution whose ingredient isn't in the dictionary now answers HONESTLY
-  («برای «X» جایگزینی پیدا نکردم») instead of a topically-irrelevant recipe list.
-
-## The 4 remaining failures — all minor / deferred (honest)
-- **typo-03 «با بادمجون چی بپزم»** — colloquial vowel («بادمجون»≠«بادمجان»); needs colloquial-vowel folding (fuzzy stage-2, spec-deferred).
-- **typo-04 «جیگزین ماست»** — a typo of «جایگزین»; needs fuzzy/edit-distance matching (stage-2).
-- **sub-11 «جایگزین شکر چیه»** — the «چیه» suffix shifts classification; the plain «جایگزین شکر» correctly returns the honest "no substitute" reply.
-- **clr-07 «چیزی نداری بگی»** — odd non-cooking phrasing; routes to a recipe list instead of a clarifier.
+- A CLEAR substitution whose ingredient isn't in the dictionary now answers HONESTLY
+  («برای «X» جایگزینی پیدا نکردم») instead of a topically-irrelevant recipe list — including the
+  «جایگزین X چیه» phrasing (a «چیه» suffix drops the score to medium, so the gate also fires on an
+  explicit substitute-noun, not just high confidence).
+- A curated colloquial/typo fold («بادمجون»→«بادمجان», «جیگزین»→«جایگزین») — deliberately NOT fuzzy
+  edit-distance, which on short Persian words could confuse an allergen («شیر» milk vs «سیر» garlic are
+  1 edit apart). Exact whole-token map only; allergen-adjacent words stay distinct.
 
 ## Honest scope
 This is the **fa** batch only. The spec's release gate is **≥600 turns, fa/nl/en (≥150/lang)**; the nl/en

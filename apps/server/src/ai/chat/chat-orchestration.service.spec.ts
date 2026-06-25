@@ -188,21 +188,24 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // safe grounded fallback
   });
 
-  it('falls through to the grounded recipe path when no named ingredient resolves', async () => {
+  it('answers an EXPLICIT substitution HONESTLY (no swap found) instead of dumping a recipe list', async () => {
     const { svc, grounded } = makeChat(); // default assist.substitutions → ingredient_not_found
     const out = await svc.handleChat({ userId: 'u1', prompt: 'جایگزین فلان‌چیز عجیب چیه؟', conversationId: 'c-sub-none' });
-    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
-    expect(out.reply).toBe('🤖 grounded allergy-safe recipe reply');
+    expect(out.intent.intent).toBe('substitution');
+    expect(out.reply).toMatch(/جایگزین|پیدا نکردم/); // honest "no substitute for X", on-topic
+    expect(out.reply).not.toBe('🤖 grounded allergy-safe recipe reply'); // NOT a topically-irrelevant recipe dump
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
   });
 
-  it('confidence gate: a wrong-base resolution (کره → کره سیب) is NOT surfaced — falls through to grounded', async () => {
+  it('confidence gate: a wrong-base resolution (کره → کره سیب) is NEVER surfaced; answers honestly instead', async () => {
     const { svc, grounded, assist } = makeChat();
     // the dictionary resolved «کره» to a DIFFERENT base ("کره سیب" = apple butter): must NOT be presented
     assist.substitutions.mockResolvedValue({ resultStatus: 'ok', resolved: { name: 'کره سیب' }, substitutions: [{ name: 'سیب خام' }], note: 'x' });
     const out = await svc.handleChat({ userId: 'u1', prompt: 'جایگزین کره چیه؟', conversationId: 'c-sub-wrongbase' });
     expect(out.intent.intent).toBe('substitution');
-    expect(out.reply).not.toContain('سیب خام'); // the confidently-wrong swap is never shown
-    expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // safe grounded fallback instead
+    expect(out.reply).not.toContain('سیب خام'); // SAFETY: the confidently-wrong swap is never shown
+    expect(out.reply).not.toContain('کره سیب');
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled(); // honest no-swap reply, not a recipe dump
   });
 
   it('answers a nutrition question with factual per-100g data (not a recipe list, not advice)', async () => {
@@ -294,6 +297,14 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(ev.payload.contextRecipeId).toBeNull();
     expect(ev.payload.currentScreen).toBeNull();
     expect(ev.payload.stepIndex).toBeNull();
+  });
+
+  it('answers an EXPLICIT substitution honestly when nothing resolves, even with a «چیه» suffix (no recipe dump)', async () => {
+    const { svc, grounded } = makeChat(); // default assist → ingredient_not_found (شکر not in the dictionary)
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'جایگزین شکر چیه', conversationId: 'c-sub-cye' });
+    expect(out.intent.intent).toBe('substitution');
+    expect(out.reply).toMatch(/جایگزین|پیدا نکردم/); // honest "no substitute", not a grounded recipe list
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
   });
 
   it('intent-routes a during-cook problem to troubleshooting guidance, NOT a recipe list', async () => {
