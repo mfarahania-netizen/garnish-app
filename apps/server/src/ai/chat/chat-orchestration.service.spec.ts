@@ -48,6 +48,7 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
     getDeclaredAllergens: jest.fn().mockResolvedValue([]), // known profile, no declared allergies (default)
     getIngredientNutrition: jest.fn().mockResolvedValue(null), // default: no nutrition data → honest fallback
     getLocale: jest.fn().mockResolvedValue('fa'),
+    getRecipeContent: jest.fn().mockResolvedValue(null), // default: no recipe content
   } as any;
   const analytics = { trackEvent: jest.fn().mockResolvedValue({ id: 'ev-ai-turn' }) } as any;
   // default: nothing resolves → substitution routing falls through to the grounded path
@@ -305,6 +306,19 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(out.intent.intent).toBe('substitution');
     expect(out.reply).toMatch(/جایگزین|پیدا نکردم/); // honest "no substitute", not a grounded recipe list
     expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
+  });
+
+  it('DELIVERS the real recipe (ingredients + steps from the DB) when asked «دستور پخت بده», not «go to the page»', async () => {
+    const { svc, grounded } = makeChat();
+    grounded.buildGrounding.mockResolvedValue({ safeRecipes: [{ id: 'r1', title: 'کتلت گوشت', cookingTime: 40, difficulty: 'easy', fit: 'ok' }], unsafeTitles: [], groundingStatus: 'ok', retrievedCount: 1, droppedForAllergy: 0 });
+    grounded.getRecipeContent.mockResolvedValue({ title: 'کتلت گوشت', ingredients: [{ name: 'گوشت چرخ‌کرده', amount: '400' }], steps: [{ title: 'ورز دادن مایه', detail: null }] });
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'دستور پخت کتلت رو کامل بده', conversationId: 'c-recipe' });
+    expect(grounded.getRecipeContent).toHaveBeenCalledWith('r1'); // top allergy-safe recipe
+    expect(out.reply).toContain('مواد لازم');
+    expect(out.reply).toContain('گوشت چرخ‌کرده'); // real ingredient (with amount)
+    expect(out.reply).toContain('مراحل پخت');
+    expect(out.reply).toContain('ورز دادن مایه'); // real step from the DB
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled(); // delivered the recipe, not a recommendation
   });
 
   it('intent-routes a during-cook problem to troubleshooting guidance, NOT a recipe list', async () => {

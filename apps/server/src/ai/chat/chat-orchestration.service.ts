@@ -209,6 +209,20 @@ export class ChatOrchestrationService {
       if (handled) return handled;
     }
 
+    // RECIPE DELIVERY: «دستور پختِ X رو بده» / «طرز تهیه» / «کاملش» — the chat must DELIVER the real recipe, not
+    // «برو صفحه‌اش». Find the best allergy-SAFE recipe for the (memory-enriched) query, then present its actual
+    // ingredients + steps from the DB (deterministic — quantities never come from the model). Falls through if no
+    // safe recipe / no content (then the normal path stays honest).
+    if (this.wantsRecipeDetail(input.prompt)) {
+      const g = await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot);
+      if (g.safeRecipes.length) {
+        const detail = await this.grounded.getRecipeContent(g.safeRecipes[0].id);
+        if (detail) {
+          return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeRecipeDetailReply(detail, locale));
+        }
+      }
+    }
+
     // CONFIDENCE-DRIVEN CLARIFY (D1 P1): a genuinely AMBIGUOUS discovery turn — the classifier found no/low
     // signal AND the (memory-enriched) query carries NO actionable content (no ingredient, dish, constraint or
     // diet) — asks ONE targeted question instead of dumping a topically-random fallback list. ANY concrete
@@ -496,6 +510,30 @@ export class ChatOrchestrationService {
     // reaches here — its `include` is non-empty.)
     const p = parseSearchQuery(query);
     return p.include.length === 0 && p.exclude.length === 0 && p.diets.length === 0;
+  }
+
+  /** Does this turn want the FULL recipe (ingredients + steps), not just a recommendation? */
+  private wantsRecipeDetail(prompt: string): boolean {
+    const x = normalizeText(prompt);
+    return /دستور ?پخت|طرز ?(تهیه|پخت)|مراحل ?(پخت|رو|اش|شو)|کاملش|کامل ?بده|چطور ?(درست|بپزم|بپزه|درستش|می ?پزن)|دستورش|رسپیش|رسپی ?کامل/.test(x);
+  }
+
+  /** Present a recipe’s ACTUAL ingredients + steps (from the DB, deterministic) — the chat DELIVERS the recipe. */
+  private composeRecipeDetailReply(
+    detail: { title: string; ingredients: { name: string; amount: string | null }[]; steps: { title: string; detail: string | null }[] },
+    locale: Locale,
+  ): string {
+    const lines: string[] = [t('assistant_header', locale), '', `**${detail.title}**`];
+    if (detail.ingredients.length) {
+      lines.push('', '**مواد لازم:**');
+      for (const ing of detail.ingredients.slice(0, 30)) lines.push(`• ${ing.name}${ing.amount ? ` — ${ing.amount}` : ''}`);
+    }
+    if (detail.steps.length) {
+      lines.push('', '**مراحل پخت:**');
+      detail.steps.slice(0, 20).forEach((s, i) => lines.push(`${i + 1}. ${s.title}${s.detail ? `\n   ${s.detail}` : ''}`));
+    }
+    lines.push('', t('cooking_guidance_note', locale));
+    return lines.join('\n');
   }
 
   /**

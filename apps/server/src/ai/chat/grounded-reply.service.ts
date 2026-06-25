@@ -287,6 +287,47 @@ export class GroundedReplyService {
   }
 
   /**
+   * DELIVER the recipe: fetch a recipe's ACTUAL ingredients (with amounts) + ordered cooking steps from the GRIS
+   * blob, so the chat can give the real recipe inline instead of «go to the page». PUBLISHED-gated (isPublic +
+   * active). The recipe is already allergy-safe (the caller passes an id from `buildGrounding`'s filtered set).
+   * Steps/amounts come from the DB — never the model — so quantities are exact (deterministic-first). Returns null
+   * when not found / unpublished / it has no usable content.
+   */
+  async getRecipeContent(recipeId: string): Promise<{
+    title: string;
+    ingredients: { name: string; amount: string | null }[];
+    steps: { title: string; detail: string | null }[];
+  } | null> {
+    let r: any;
+    try {
+      r = await this.prisma.recipe.findUnique({
+        where: { id: recipeId },
+        select: { title: true, isPublic: true, status: true, gris: true, ingredients: { select: { name: true, amount: true } } },
+      });
+    } catch {
+      return null;
+    }
+    if (!r || r.isPublic !== true || r.status !== 'active') return null; // PUBLISHED gate
+    const gris = (r.gris ?? {}) as any;
+    const rawSteps = Array.isArray(gris.steps) ? gris.steps : [];
+    const steps = rawSteps
+      .map((s: any, i: number) => ({
+        order: typeof s?.order === 'number' ? s.order : i + 1,
+        title: String(s?.title ?? '').trim(),
+        // one short cue from the GRIS step so it reads like guidance, not just a label
+        detail: [s?.doneness, s?.sees, s?.tip].map((x: any) => (typeof x === 'string' ? x.trim() : '')).find(Boolean) || null,
+      }))
+      .filter((s: any) => s.title)
+      .sort((a: any, b: any) => a.order - b.order)
+      .map((s: any) => ({ title: s.title, detail: s.detail }));
+    const ingredients = (r.ingredients ?? [])
+      .map((ing: any) => ({ name: String(ing?.name ?? '').trim(), amount: ing?.amount != null ? String(ing.amount).trim() : null }))
+      .filter((x: any) => x.name);
+    if (!steps.length && !ingredients.length) return null;
+    return { title: String(r.title ?? ''), ingredients, steps };
+  }
+
+  /**
    * Look up an ingredient's per-100g nutrition (USDA-sourced data in the dictionary) for a factual «کالری برنج»
    * answer. Alias-first with a raw fallback; prefer an exact/confident match that actually carries nutrition
    * data, else the shortest. Returns null when nothing is found — the caller stays honest, never invents a number.
