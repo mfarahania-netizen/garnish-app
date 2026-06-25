@@ -247,6 +247,28 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // generic clarifier, repair returned null
   });
 
+  it('asks ONE clarifying question for a genuinely AMBIGUOUS turn («یه چیزی بپز»), never a random list', async () => {
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه چیزی بپز', conversationId: 'c-clarify' });
+    expect(out.reply).toContain('دوست داری بپزی'); // the targeted clarify question
+    expect(grounded.buildGrounding).not.toHaveBeenCalled(); // intercepted BEFORE grounding — no random fallback list
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
+  });
+
+  it('clarifies a pure-stopword discovery turn («چی بپزم») instead of dead-ending on empty', async () => {
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'چی بپزم', conversationId: 'c-clarify2' });
+    expect(out.reply).toContain('دوست داری بپزی');
+    expect(grounded.buildGrounding).not.toHaveBeenCalled();
+  });
+
+  it('does NOT clarify when the turn names a concrete ingredient — it grounds normally', async () => {
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه غذای سریع با مرغ', conversationId: 'c-noclar' });
+    expect(out.reply).not.toContain('دوست داری بپزی');
+    expect(grounded.buildGrounding).toHaveBeenCalled(); // grounded, not clarified
+  });
+
   it('DARK-captures sanitized live turn context (currentScreen/recipeId/stepIndex) on the turn event', async () => {
     const { svc, analytics } = makeChat();
     await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-ctx', context: { currentScreen: 'cook', recipeId: 'ckRecipe_123', stepIndex: 2 } });

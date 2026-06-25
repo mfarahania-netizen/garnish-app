@@ -209,6 +209,15 @@ export class ChatOrchestrationService {
       if (handled) return handled;
     }
 
+    // CONFIDENCE-DRIVEN CLARIFY (D1 P1): a genuinely AMBIGUOUS discovery turn — the classifier found no/low
+    // signal AND the (memory-enriched) query carries NO actionable content (no ingredient, dish, constraint or
+    // diet) — asks ONE targeted question instead of dumping a topically-random fallback list. ANY concrete
+    // signal (an ingredient/constraint, or a follow-up that carries the prior dish via short-term memory) skips
+    // this and grounds normally. Safety intents (medical/§3) are already routed above and never reach here.
+    if (this.shouldClarifyAmbiguous(retrievalQuery, intentDecision)) {
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, t('clarify_vague', locale));
+    }
+
     const chatLiveEnabled = resolveChatLiveEnabled(process.env);
 
     // LIVE rails only: build the allergy-safe grounding BEFORE the model call so the model sees ONLY
@@ -456,6 +465,24 @@ export class ChatOrchestrationService {
       default:
         return null;
     }
+  }
+
+  /**
+   * D1 P1 — should this turn ask ONE clarifying question instead of grounding? YES only when the turn is a
+   * discovery-ish intent the classifier was UNSURE about (low_confidence_fallback, or a weak recipe_discovery)
+   * AND the memory-enriched query has NO actionable content at all — no include term, no excluded term, no diet.
+   * That is the genuinely ambiguous case («یه چیزی بپز», «گرسنمه») where any retrieval would be a topically-random
+   * guess. A single ingredient/constraint, or a follow-up carrying the prior dish, makes `include`/`exclude`/
+   * `diets` non-empty → we ground instead. Deterministic; no model call; never reached by safety intents.
+   */
+  private shouldClarifyAmbiguous(query: string, intent: IntentClassification): boolean {
+    if (intent.intent !== 'low_confidence_fallback' && intent.intent !== 'recipe_discovery') return false;
+    // The real gate is ACTIONABLE CONTENT, not the classifier's intent-confidence: «چی بپزم» is a confident
+    // discovery intent yet carries nothing to search on. If parse finds any include term / excluded term / diet,
+    // we ground; only a truly content-less query clarifies. (A confident discovery WITH an ingredient never
+    // reaches here — its `include` is non-empty.)
+    const p = parseSearchQuery(query);
+    return p.include.length === 0 && p.exclude.length === 0 && p.diets.length === 0;
   }
 
   /**

@@ -165,6 +165,12 @@ const TEMPLATES: Record<string, Entry> = {
     en: 'Something went wrong. Please try again.',
   },
   list_sep: { fa: '، ', nl: ', ', en: ', ' },
+  // ── confidence-driven clarify (an AMBIGUOUS turn asks ONE question, never a random list) ──
+  clarify_vague: {
+    fa: 'چی دوست داری بپزی؟ یه ماده بگو (مثلاً مرغ، گوشت یا بادمجان) یا یه حال‌وهوا (گیاهی، سریع، مجلسی) تا برات پیدا کنم 🙂',
+    nl: 'Wat wil je graag koken? Noem een ingrediënt (bijv. kip, vlees of aubergine) of een sfeer (vegetarisch, snel, feestelijk), dan zoek ik het voor je 🙂',
+    en: 'What would you like to cook? Name an ingredient (e.g. chicken, meat or eggplant) or a vibe (vegetarian, quick, festive) and I’ll find it for you 🙂',
+  },
   // ── conversational repair (turn a dead-end into ONE concrete next step) ──
   repair_constraint: {
     fa: 'با محدودیتی که گفتی غذای امنی پیدا نکردم. می‌خوای محدودیت رو بردارم و دوباره بگردم، یا یه غذای دیگه بگیم؟',
