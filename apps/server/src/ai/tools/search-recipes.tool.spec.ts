@@ -46,4 +46,31 @@ describe('SearchRecipesTool (real, read-only)', () => {
     expect(out.results).toEqual([]);
     expect(out.resultStatus).toBe('unavailable');
   });
+
+  // The dead-assistant fix: a natural-language turn must be tokenized into content terms and OR-matched,
+  // NOT searched as one literal substring (which never matches a title and dead-ends every chat turn).
+  it('tokenizes a natural-language question into content terms (not a whole-string contains)', async () => {
+    const findMany = jest.fn().mockResolvedValue([]);
+    const tool = new SearchRecipesTool({ recipe: { findMany } } as any);
+    await tool.handler({ query: 'با مرغ و سبزی چی بپزم؟' }, ctx);
+
+    const where = findMany.mock.calls[0][0].where;
+    const orTitles = where.OR.filter((c: any) => c.title).map((c: any) => c.title.contains);
+    expect(orTitles).toContain('مرغ');
+    expect(orTitles).toContain('سبزی');
+    // the whole sentence is NEVER used as a search term
+    expect(orTitles.some((t: string) => t.includes('بپزم'))).toBe(false);
+    expect(where.isPublic).toBe(true);
+    expect(where.status).toBe('active');
+  });
+
+  it('ranks a recipe matching more query terms above one matching fewer', async () => {
+    const findMany = jest.fn().mockResolvedValue([
+      { id: 'one', title: 'خورش سبزی', description: null, ingredients: [{ name: 'سبزی' }] },
+      { id: 'both', title: 'مرغ و سبزی', description: null, ingredients: [{ name: 'مرغ' }, { name: 'سبزی' }] },
+    ]);
+    const tool = new SearchRecipesTool({ recipe: { findMany } } as any);
+    const out: any = await tool.handler({ query: 'مرغ و سبزی', limit: 5 }, ctx);
+    expect(out.results.map((r: any) => r.id)).toEqual(['both', 'one']);
+  });
 });

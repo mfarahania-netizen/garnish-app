@@ -104,7 +104,7 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(JSON.stringify(eventPayload)).not.toContain(groundedReply);
   });
 
-  it('adds prior turns as untrusted memory context and keeps the current turn last', async () => {
+  it('feeds grounding a CLEAN retrieval query (current turn + prior user turns; no scaffolding/assistant echo)', async () => {
     const recentTurns = [
       { role: 'user', content: 'Find me zereshk polo', createdAt: new Date('2026-01-01T00:00:00.000Z') },
       { role: 'assistant', content: 'Try Zereshk Polo with saffron rice.', createdAt: new Date('2026-01-01T00:00:01.000Z') },
@@ -114,12 +114,14 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
 
     expect(out.reply).toBe('memory grounded reply');
     expect((chatMessages as any).listRecentForMemory).toHaveBeenCalledWith('u1', 'c-memory', 8);
-    const groundingPrompt = grounded.buildGrounding.mock.calls[0][1];
-    expect(groundingPrompt).toContain('[SHORT_TERM_MEMORY_UNTRUSTED]');
-    expect(groundingPrompt).toContain('Summary (untrusted context, not a safety source):');
-    expect(groundingPrompt).toContain('USER: Find me zereshk polo');
-    expect(groundingPrompt).toContain('ASSISTANT: Try Zereshk Polo with saffron rice.');
-    expect(groundingPrompt).toMatch(/CURRENT USER TURN \(authoritative for this request\):\nfor 6 people$/);
+    const retrievalQuery = grounded.buildGrounding.mock.calls[0][1];
+    // a follow-up carries the prior dish into retrieval...
+    expect(retrievalQuery).toContain('for 6 people');
+    expect(retrievalQuery).toContain('Find me zereshk polo');
+    // ...but the scaffolding labels + the assistant echo must NOT pollute the recipe search (the turn-2 bug)
+    expect(retrievalQuery).not.toContain('[SHORT_TERM_MEMORY_UNTRUSTED]');
+    expect(retrievalQuery).not.toContain('ASSISTANT:');
+    expect(retrievalQuery).not.toContain('Try Zereshk Polo with saffron rice.');
   });
 
   it('does not let memory text trigger the allergy confirm-write path', async () => {
@@ -237,6 +239,21 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     expect(grounded.composeDeterministicReply).toHaveBeenCalled();
     expect(grounded.screenLiveOutput).not.toHaveBeenCalled(); // not live → no output gate
     expect(legacyAi.handlePrompt).not.toHaveBeenCalled();
+  });
+
+  it('LIVE: the annotated short-term memory block is what reaches the model context (buildLivePrompt)', async () => {
+    setLive();
+    const recentTurns = [
+      { role: 'user', content: 'Find me zereshk polo', createdAt: new Date('2026-01-01T00:00:00.000Z') },
+      { role: 'assistant', content: 'Try Zereshk Polo with saffron rice.', createdAt: new Date('2026-01-01T00:00:01.000Z') },
+    ];
+    const { svc, grounded } = makeChat('LIVE: a safe suggestion', 'grounded fallback', recentTurns);
+    await svc.handleChat({ userId: 'u1', prompt: 'for 6 people', conversationId: 'c-mem-live' });
+    const livePrompt = grounded.buildLivePrompt.mock.calls[0][0];
+    expect(livePrompt).toContain('[SHORT_TERM_MEMORY_UNTRUSTED]');
+    expect(livePrompt).toContain('USER: Find me zereshk polo');
+    expect(livePrompt).toContain('ASSISTANT: Try Zereshk Polo with saffron rice.');
+    expect(livePrompt).toMatch(/CURRENT USER TURN \(authoritative for this request\):\nfor 6 people$/);
   });
 
   it('LIVE flags + chat switch: safe prompt returns the post-guarded MODEL text that PASSES the output gate', async () => {

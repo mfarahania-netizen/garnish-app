@@ -38,6 +38,8 @@ const STUB_MODEL = 'stub-model-v0';
 const SHORT_TERM_MEMORY_TURN_LIMIT = 8;
 const MEMORY_SUMMARY_CHAR_BUDGET = 1200;
 const MEMORY_TURN_CHAR_BUDGET = 500;
+// How many recent USER turns feed the clean retrieval query (so a follow-up carries the prior dish).
+const RETRIEVAL_MEMORY_USER_TURNS = 3;
 
 /**
  * Chat Orchestration (E47-A3).
@@ -88,7 +90,14 @@ export class ChatOrchestrationService {
     );
 
     const snapshot = await this.snapshots.build(input.userId, { locale: 'fa' });
-    const memoryPrompt = await this.buildShortTermMemoryPrompt(input.userId, conversationId, input.prompt);
+    // Short-term memory feeds TWO deliberately-separated consumers:
+    //  - memoryPrompt: the full untrusted, annotated block for the LIVE model context (live rails only).
+    //  - retrievalQuery: a CLEAN conversational query (recent user turns + current turn) for grounding, so a
+    //    follow-up like «برای ۶ نفر» still retrieves on the prior dish WITHOUT the scaffolding labels
+    //    polluting the recipe search. Conflating the two dead-ends every turn-2 retrieval.
+    const recentTurns = await this.loadRecentMemoryTurns(input.userId, conversationId);
+    const memoryPrompt = this.composeMemoryPrompt(recentTurns, input.prompt);
+    const retrievalQuery = this.composeRetrievalQuery(recentTurns, input.prompt);
 
     // persist the user's message around orchestration
     await this.chatMessages.create({
@@ -146,7 +155,7 @@ export class ChatOrchestrationService {
     let grounding: GroundingResult | null = null;
     let orchestratorPrompt = input.prompt;
     if (chatLiveEnabled) {
-      grounding = await this.grounded.buildGrounding(input.userId, memoryPrompt, snapshot);
+      grounding = await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot);
       orchestratorPrompt = this.grounded.buildLivePrompt(memoryPrompt, grounding);
     }
 
@@ -217,7 +226,7 @@ export class ChatOrchestrationService {
     } else {
       // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
       // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
-      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, memoryPrompt, snapshot));
+      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot));
       if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
         // live output gate: discard model text that names a declared allergen or a HARD-dropped recipe.
         const screen = await this.grounded.screenLiveOutput(input.userId, modelText, g);
@@ -255,20 +264,26 @@ export class ChatOrchestrationService {
   }
 
   /**
-   * P0 observability: every assistant turn emits a structured, tier-tagged event through AnalyticsService,
-   * which persists UserEvent and routes via EventOutbox. Never copy raw user/assistant text into payload.
+   * Short-term memory loader. Reads recent user/assistant turns for THIS conversation; on any failure it
+   * degrades to no memory (the current turn alone) — memory is a convenience, never a safety input.
    */
-  private async buildShortTermMemoryPrompt(userId: string, conversationId: string, currentPrompt: string): Promise<string> {
-    let recentTurns: ChatMemoryMessage[] = [];
+  private async loadRecentMemoryTurns(userId: string, conversationId: string): Promise<ChatMemoryMessage[]> {
     try {
-      recentTurns = await this.chatMessages.listRecentForMemory(userId, conversationId, SHORT_TERM_MEMORY_TURN_LIMIT);
+      return await this.chatMessages.listRecentForMemory(userId, conversationId, SHORT_TERM_MEMORY_TURN_LIMIT);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.logger.warn(`chat memory unavailable for conversation ${conversationId}: ${message}`);
-      return currentPrompt;
+      return [];
     }
-    if (recentTurns.length === 0) return currentPrompt;
+  }
 
+  /**
+   * The untrusted, annotated memory block for the LIVE model context: a short deterministic summary, the
+   * recent verbatim turns, and the CURRENT USER TURN last (authoritative). With no history it is just the
+   * current prompt. Safety NEVER reads this — intent / §3 / allergen extraction read input.prompt only.
+   */
+  private composeMemoryPrompt(recentTurns: ChatMemoryMessage[], currentPrompt: string): string {
+    if (recentTurns.length === 0) return currentPrompt;
     const summary = this.buildDeterministicMemorySummary(recentTurns);
     const verbatimTurns = recentTurns.map((turn) => `${turn.role.toUpperCase()}: ${this.sanitizeMemoryText(turn.content, MEMORY_TURN_CHAR_BUDGET)}`);
 
@@ -284,6 +299,20 @@ export class ChatOrchestrationService {
       'CURRENT USER TURN (authoritative for this request):',
       currentPrompt,
     ].join('\n');
+  }
+
+  /**
+   * The CLEAN retrieval query for grounding: the current turn + recent USER-turn text, with NO scaffolding
+   * labels and NO assistant echoes, so a follow-up carries the prior dish into the recipe search while the
+   * search terms stay recipe-relevant. Current turn is first so its intent is never dropped by the token cap.
+   * With no history it is just the current prompt.
+   */
+  private composeRetrievalQuery(recentTurns: ChatMemoryMessage[], currentPrompt: string): string {
+    const recentUserText = recentTurns
+      .filter((turn) => turn.role === 'user')
+      .slice(-RETRIEVAL_MEMORY_USER_TURNS)
+      .map((turn) => this.sanitizeMemoryText(turn.content, MEMORY_TURN_CHAR_BUDGET));
+    return [currentPrompt, ...recentUserText].join(' ').trim() || currentPrompt;
   }
 
   private buildDeterministicMemorySummary(turns: ChatMemoryMessage[]): string {
