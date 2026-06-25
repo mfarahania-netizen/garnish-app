@@ -13,6 +13,7 @@ import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
 import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient } from '../tools/persian-search';
+import { matchTroubleshooting } from './cooking-troubleshooting';
 
 export interface HandleChatInput {
   userId: string;
@@ -159,6 +160,15 @@ export class ChatOrchestrationService {
     const intentReply = this.intentRoutedReply(intentDecision.intent);
     if (intentReply) {
       return this.respondDeterministicTurn(input, conversationId, intentDecision, intentReply);
+    }
+
+    // INTENT-AWARE ROUTING (deterministic): a during-cook problem ("چرا برنجم شفته شد؟") wants TROUBLESHOOTING,
+    // not a recipe list. The curated KB matcher (dish + symptom) is a HIGH-PRECISION detector — richer than the
+    // classifier's anchor list — so trigger on EITHER the classifier intent OR a concrete KB match («چسبید»/
+    // «خشک شد»/«لعاب نداره» that the classifier misses). No match → ask for the dish + symptom, never a recipe
+    // dump. (The infinite tail of arbitrary "why did X happen" is the live L2a assistant, gated.)
+    if (intentDecision.intent === 'during_cook_problem' || matchTroubleshooting(input.prompt)) {
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeTroubleshootingReply(input.prompt));
     }
 
     // INTENT-AWARE ROUTING (deterministic): a substitution question ("جایگزینِ ماست چی بزنم؟") wants a SWAP,
@@ -409,6 +419,24 @@ export class ChatOrchestrationService {
       default:
         return null;
     }
+  }
+
+  /** Answer a during-cook problem from the curated troubleshooting KB, or honestly ask for the dish + symptom. */
+  private composeTroubleshootingReply(prompt: string): string {
+    const header = '🤖 دستیار آشپزی گارنیش:';
+    const entry = matchTroubleshooting(prompt);
+    if (!entry) {
+      return `${header}\n\nکمکت می‌کنم رفعش کنیم — فقط بگو کدوم غذا بود و دقیقاً چی شد (مثلاً «برنجم شفته شد» یا «ته‌دیگم چسبید»). اگر بخوای می‌تونم جایگزینِ مواد یا یه ایدهٔ غذای دیگه هم بدم.`;
+    }
+    return [
+      header,
+      '',
+      `**چرا این‌طور شد:** ${entry.cause}`,
+      `**الان چی‌کار کن:** ${entry.fix}`,
+      `**دفعهٔ بعد:** ${entry.prevent}`,
+      '',
+      'ℹ️ راهنماییِ آشپزیه؛ بسته به دستور و موادت ممکنه کمی فرق کنه.',
+    ].join('\n');
   }
 
   /** Render a substitution tool result as a safe Persian reply (AI disclosure + non-medical hedge). */
