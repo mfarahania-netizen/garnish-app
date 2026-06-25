@@ -10,6 +10,14 @@
 
 ---
 
+## ⚙️ CURRENT POLICY (set by founder, 2026-06-24): the swarm is OFF by default
+The per-piece multi-agent swarm burned too many tokens. Standing policy until the founder says otherwise:
+- **Per piece:** Tier 0 (deterministic tests/build) + Tier 1 (Claude reads the diff itself, **NO agents**). That is the entire check.
+- **The multi-agent swarm runs ONLY at the END of a full DIMENSION** (every phase of that dimension done): a complete, precise audit of that one dimension, **≤5 agents + Claude**, find-cheap/verify-strong, **one pass** (no loop-to-zero).
+- No per-piece swarm. The 14-dimension spec is a reference, not a per-run checklist.
+
+---
+
 ## Tier 0 — deterministic, $0, ALWAYS (no LLM)
 - `tsc --noEmit` + the full test suite (server + web).
 - The **protected-invariant tests**: the allergy-gate intersection (`recipe-allergen-corpus.spec`), the cross-dimension acceptance capstone (`cross-dimension.acceptance.spec`), the write-boundary allowlist, the fail-closed checks. **These ARE the guardian for everything already discovered.**

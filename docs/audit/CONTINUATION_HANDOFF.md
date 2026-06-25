@@ -3,7 +3,7 @@
 > **Purpose.** This is the single durable entry point so a NEW chat continues the **exact same method, oversight,
 > and rigor** with zero loss of context — for the AI work now and for the whole app going forward. It does NOT
 > duplicate the specs; it points to them and encodes the *method + standing rules + current state + next step*.
-> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after P1 multi-turn memory slice closure.
+> Code-grounded, no flattery. Keep it current at every milestone. Last refresh: 2026-06-24, after onboarding/auth dev-loop CORS fix.
 
 ---
 
@@ -20,7 +20,7 @@
 ## 1. THE METHOD — non-negotiable (this is the "how", and it does not change)
 1. **Advisor mode, not order-taker.** Follow the global working agreement (`~/.claude/CLAUDE.md`) word-for-word: anti-sycophancy, confidence tags `[قطعی]/[احتمالاً]/[حدسی]/[نامطمئن]`, disagree-when-wrong, Reality Check on big calls, end important answers with «نتیجهٔ عملی». Investor-grade rigor on every code/product/AI decision. Bring the 90% — name gaps proactively, don't just execute.
 2. **Small, complete, guardian-verified increments.** No piece advances while it has a known problem. No half-wiring. The repo is **always green + shippable**. One piece = built + wired + tested + guardian-converged.
-3. **The guardian loop is mandatory on every piece.** Multi-agent adversarial cycle: **find → independently verify → I-fix → 2+ reviewers re-verify → loop until it converges** (confirmed-finding counts must *shrink*, e.g. 16→7→1→clean). Diversify reviewer **lenses** (correctness / safety-invariant / spec-conformance / actually-runs), not just count — identical reviewers share blind spots. Run it per piece AND as a whole-system drift sweep at every milestone and on demand («پایش»). Tooling: `guardian-audit.workflow.js` + `guardian-review.workflow.js`.
+3. **Guardian = tiered, swarm OFF by default (founder policy 2026-06-24).** Per piece: **Tier 0** deterministic tests/build + **Tier 1** (Claude reads the diff itself, **no agents**). The multi-agent swarm runs **ONLY at the END of a full dimension** (all its phases done): a complete **≤5-agent + Claude** audit, find-cheap/verify-strong, **one pass** — never per-piece, never loop-to-zero. Full policy: `docs/audit/GUARDIAN_PROTOCOL.md`. (Reviewer lenses still diversify: correctness / safety-invariant / spec-conformance / actually-runs.)
 4. **Deterministic-first, LLM-as-last-resort.** The database answers ~85–90% of turns at €0. The LLM **narrates** a deterministic answer; it is NEVER the source of a fact, a quantity, or a safety decision.
 5. **Build-then-activate.** Every risky capability ships **default-OFF / byte-identical** until a MEASURED gate passes. Never bet the product on an untested flip. (The proven L1 discipline.)
 6. **The HARD allergy/safety gate lives OUTSIDE the LLM, fail-closed (pre + post).** Learning may only change DATA the core READS — it may NEVER weaken the gate or the request-time control flow. This invariant outranks every feature.
@@ -136,6 +136,21 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** see §4g for the rate-catalog/live-smoke closure; after Claude verification, proceed to P1 multi-turn memory.
 ---
+## 4i. LATEST APP-BLOCKING BUGFIX SNAPSHOT - onboarding/auth dev-loop CORS (2026-06-24)
+**Area:** Web onboarding/auth + server CORS.
+
+**What this fix must do:** the app must allow login/register from the dev URL Vite actually shows (`http://127.0.0.1:5173`) as well as `http://localhost:5173`, without broadening CORS to a wildcard.
+
+**What was broken:** server `.env` had `FRONTEND_URL=http://localhost:5173`; when the web app was opened at `http://127.0.0.1:5173`, auth responses lacked `Access-Control-Allow-Origin`, so the browser blocked register/login and the user stayed in onboarding.
+
+**What is built now:** `resolveCorsOrigins` keeps the configured comma-separated origins and adds only same-port loopback peers between `localhost` and `127.0.0.1`. `main.ts` uses this helper for Nest CORS.
+
+**Verification run:** focused `cors-origins.spec.ts` green; live local HTTP proof from `Origin: http://127.0.0.1:5173` shows register=201, login=201, `/users/me`=200, and all return `Access-Control-Allow-Origin: http://127.0.0.1:5173`; final full server `249 suites / 2026 tests`; server `npx tsc --noEmit`; web `36 files / 169 tests`; web production build green.
+
+**Is it 100% closed?** Yes for the dev-origin onboarding/auth loop. If a user still loops after this, the next diagnosis should inspect the visible browser console/network error and token clearing path, not CORS.
+
+**Next smallest step:** continue P1 Dimension 1 (`TemplateRegistry` Dutch or conversational repair) after Claude verification; do not reopen P0.
+---
 ## 4h. LATEST DIMENSION CLOSURE SNAPSHOT - P1 multi-turn memory slice (2026-06-24)
 **Dimension(s):** Dimension 1 - Capability & Conversational UX.
 
@@ -189,8 +204,17 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 ---
 
-## 7. NEXT — P1 (Opus-gated; from AI_MASTER_SPEC §D "Must-build")
-Do NOT originate these with Sonnet. Lock the design with Opus first, then execute.
+## 7. NEXT — in priority order (verify → fix the dead assistant → P1)
+
+**0. VERIFY Codex's handoff FIRST** (baseline `6b584134`, per `CODEX_BRIDGE.md` §FOR CLAUDE). Tier 0 (server `npm test` + `tsc --noEmit`; web `npm test` + `npm run build`) + Tier 1 diff review. Scrutinize the high-claim items:
+- **Live-Gemini smoke + `PRODUCTION_RATE_CATALOG`:** a REAL live call happened (`gemini-3.1-flash-lite`). Confirm the rate row is source-attributed + dated (Google pricing page), the default model id matches the verified row, and NO unverified/guessed price slipped in. [نامطمئن for Claude — the model id/price came from a live source Codex read; verify the attribution, don't trust training data.]
+- **Multi-turn memory safety boundary:** memory must NOT influence §3 / intent / allergen-write — confirm intent + `extractStatedAllergens` + confirm-then-write still read only `input.prompt`, and a memory line like "I'm allergic to walnuts" cannot auto-write.
+- **CORS fix:** same-port loopback peers only, no wildcard.
+- **requestId echo:** did NOT reorder or bypass `RecipeSafetyFilterService` in `recommendation.controller.ts`.
+
+**1. DIAGNOSE the dead AI assistant in the app UI (TOP product priority — outranks new P1 features).** The code wiring EXISTS (`apps/web/src/app/assistant/useAssistant.js` → `POST /ai/chat` → `apps/server/src/ai/ai.controller.ts`), so this is a RUNTIME / reachability / stub issue, not missing code. Run the app (preview tools), open the assistant, watch console + network on the `/ai/chat` call: is the screen reachable in the rebuilt nav? does the call 200 or fail (auth / base-URL / CORS)? is it returning a stub answer so it only *feels* dead? Fix end-to-end so a real user gets a real answer. **A non-functioning assistant means the entire AI backend delivers ZERO user value today.**
+
+**2. Then P1 (Opus-gated; from AI_MASTER_SPEC §D "Must-build").** Do NOT originate these with Sonnet. Lock the design with Opus first, then execute.
 - **Multi-turn memory:** DONE as slice 4h: 8 user-scoped verbatim turns + deterministic untrusted short summary are wired into `chat-orchestration`, user turn last, safety still reads only current prompt/profile. Remaining cache-provider optimization belongs to the P1 provider/cache upgrade.
 - **fa/nl/en TemplateRegistry** — Dutch is REQUIRED (today there is zero Dutch in any deterministic answer string; only the lexicon has Dutch).
 - **Conversational repair** — ask ONE clarifying question instead of guess-or-refuse (the missing productive middle of the abstention ladder).
