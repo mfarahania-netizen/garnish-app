@@ -202,6 +202,12 @@ describe('colloquial/typo fold (curated, NOT fuzzy)', () => {
     expect(targets).not.toContain('جیگزین');
   });
 
+  it('strips the command verb «بگو» so it does not substring-match «آبگوشت» (آ-بگو-شت)', () => {
+    const r = tokenizeQuery('یه غذای تند بگو');
+    expect(r.terms).toContain('تند');
+    expect(r.terms).not.toContain('بگو'); // «بگو» would otherwise match every abgoosht recipe
+  });
+
   it('does NOT fuzzy-map an allergen-adjacent word (شیر/سیر stay distinct — safety)', () => {
     expect(tokenizeQuery('شیر').terms).toContain('شیر'); // milk stays milk
     expect(tokenizeQuery('سیر').terms).toContain('سیر'); // garlic stays garlic — never folded into each other
