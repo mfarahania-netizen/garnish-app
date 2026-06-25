@@ -180,13 +180,68 @@ describe('parseSearchQuery', () => {
     expect(r.exclude).toContain('تخم');
     expect(r.exclude).toContain('کره');
     expect(r.include).not.toContain('آرد'); // must NOT be a positive term
-    expect(r.include).toContain('دسر'); // the real dish-type intent survives
+    expect(r.mealTypes).toContain('dessert'); // the real dish-type intent survives AS a criterion (دسر→dessert)
+    expect(r.include).not.toContain('دسر'); // no longer a substring term — it filters by mealType now
   });
 
   it('latin chained negation excludes both terms (zonder ui zonder ei)', () => {
     const r = parseSearchQuery('iets zonder ui zonder ei');
     expect(r.exclude).toContain('ui');
     expect(r.exclude).toContain('ei');
+  });
+});
+
+describe('parseSearchQuery — CRITERIA (region/mealType/cookingTime) from corpus metadata', () => {
+  it('maps «خارجی»→region international and «ایرانی»→persian, keeping them OUT of include', () => {
+    const r = parseSearchQuery('یه غذای خارجی میخوام');
+    expect(r.regions).toEqual(['international']);
+    expect(r.include).not.toContain('خارجی');
+    expect(parseSearchQuery('غذای ایرانی').regions).toEqual(['persian']);
+  });
+
+  it('maps meal words: «شام»→dinner, «دسر»→dessert, «صبحانه»→breakfast', () => {
+    expect(parseSearchQuery('برای شام چی بپزم').mealTypes).toContain('dinner');
+    expect(parseSearchQuery('یه دسر میخوام').mealTypes).toContain('dessert');
+    expect(parseSearchQuery('صبحانه سبک').mealTypes).toContain('breakfast');
+  });
+
+  it('is TOKEN-exact: «شامی کباب» does NOT trigger the شام→dinner criterion (no substring collision)', () => {
+    const r = parseSearchQuery('شامی کباب');
+    expect(r.mealTypes).toEqual([]);
+    expect(r.include).toContain('شامی'); // stays a positive dish term
+  });
+
+  it('maps quick/explicit-time words to a cookingTime ceiling', () => {
+    expect(parseSearchQuery('یه غذای سریع').maxCookingTime).toBe(30);
+    expect(parseSearchQuery('غذای زیر ۲۰ دقیقه').maxCookingTime).toBe(20);
+    expect(parseSearchQuery('با مرغ چی بپزم').maxCookingTime).toBeNull();
+  });
+
+  it('AND-combines a dish term with a criterion: «خورش خارجی» keeps خورش AND filters region', () => {
+    const r = parseSearchQuery('خورش خارجی');
+    expect(r.regions).toEqual(['international']);
+    expect(r.include).toContain('خورش');
+  });
+
+  it('strips stray colloquial verb endings so a criteria-only turn is NOT over-constrained to zero', () => {
+    // «برای شام چی پیشنهاد میدی» must NOT keep «میدی» as a positive term (dinner ∩ «میدی» = empty results)
+    const r = parseSearchQuery('برای شام چی پیشنهاد میدی');
+    expect(r.mealTypes).toContain('dinner');
+    expect(r.include).not.toContain('میدی');
+    expect(parseSearchQuery('دسر چی داری').include).not.toContain('داری');
+  });
+});
+
+describe('parseSearchQuery — «بی» negation must sit on a word boundary (suffix collision)', () => {
+  it('does NOT treat the trailing «بی» of a word as negation («کبابی بادمجان» keeps بادمجان)', () => {
+    const r = parseSearchQuery('کبابی بادمجان میخوام');
+    expect(r.exclude).not.toContain('بادمجان');
+    expect(r.exclude).not.toContain('میخوام');
+  });
+
+  it('still honors a standalone «بی X» negation', () => {
+    expect(parseSearchQuery('غذای بی نمک').exclude).toContain('نمک');
+    expect(parseSearchQuery('بی پیاز').exclude).toContain('پیاز');
   });
 });
 

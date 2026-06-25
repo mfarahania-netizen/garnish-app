@@ -509,7 +509,12 @@ export class ChatOrchestrationService {
     // we ground; only a truly content-less query clarifies. (A confident discovery WITH an ingredient never
     // reaches here — its `include` is non-empty.)
     const p = parseSearchQuery(query);
-    return p.include.length === 0 && p.exclude.length === 0 && p.diets.length === 0;
+    // CRITERIA (region «خارجی» / mealType «شام» / cookingTime «سریع») are ACTIONABLE too — they retrieve a real
+    // metadata-filtered set, so a criteria-only turn must GROUND, never clarify.
+    return (
+      p.include.length === 0 && p.exclude.length === 0 && p.diets.length === 0 &&
+      p.regions.length === 0 && p.mealTypes.length === 0 && p.maxCookingTime == null
+    );
   }
 
   /** Does this turn want the FULL recipe (ingredients + steps), not just a recommendation? */

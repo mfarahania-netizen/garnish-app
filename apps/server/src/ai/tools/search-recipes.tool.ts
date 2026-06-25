@@ -30,9 +30,10 @@ export class SearchRecipesTool implements AiTool {
       return { tool: this.name, query, results: [], resultStatus: 'empty_query' };
     }
 
-    // Parse include / EXCLUDE («بدون گوشت») / diet («گیاهی»/«وگان») so retrieval FILTERS instead of positively
-    // matching a negated/diet word (the «بدون گوشت returns meat» correctness bug).
-    const { include, exclude, diets } = parseSearchQuery(query);
+    // Parse include / EXCLUDE («بدون گوشت») / diet («گیاهی»/«وگان») / CRITERIA (region «خارجی»→international,
+    // mealType «شام»→dinner, cookingTime «سریع»→≤30m) so retrieval answers BY CRITERIA using the corpus metadata
+    // instead of positively substring-matching a word that appears in almost no title.
+    const { include, exclude, diets, regions, mealTypes, maxCookingTime } = parseSearchQuery(query);
     // OR-match each content term across title/description/ingredient name (substring, insensitive).
     // RecipeIngredient.name holds the Persian ingredient text (e.g. «ران مرغ»), so «مرغ» matches it.
     const clause = (t: string) => [
@@ -45,20 +46,24 @@ export class SearchRecipesTool implements AiTool {
     // Pull a window wider than `limit` so the relevance ranking has candidates to sort; capped small.
     const window = Math.min(Math.max(limit * 4, 24), 80);
 
-    // When there is a NEGATION or DIET filter, build an AND query (positive OR + NOT(exclude) + diet IN). A
-    // plain query keeps the original `where.OR` shape (so existing behavior/tests are unchanged).
-    const where: any =
-      excludeOr.length || diets.length
-        ? {
-            isPublic: true,
-            status: 'active',
-            AND: [
-              ...(includeOr.length ? [{ OR: includeOr }] : []),
-              ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
-              ...(diets.length ? [{ diet: { in: diets } }] : []),
-            ],
-          }
-        : { isPublic: true, status: 'active', OR: includeOr };
+    // When there is a NEGATION / DIET / CRITERIA filter, build an AND query (positive OR + NOT(exclude) + diet IN
+    // + region IN + mealType-contains + cookingTime lte). A plain include-only query keeps the original `where.OR`
+    // shape (so existing behavior/tests are unchanged). mealType/dishType are JSON-array strings → `contains`.
+    const hasFilter = excludeOr.length || diets.length || regions.length || mealTypes.length || maxCookingTime != null;
+    const where: any = hasFilter
+      ? {
+          isPublic: true,
+          status: 'active',
+          AND: [
+            ...(includeOr.length ? [{ OR: includeOr }] : []),
+            ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
+            ...(diets.length ? [{ diet: { in: diets } }] : []),
+            ...(regions.length ? [{ region: { in: regions } }] : []),
+            ...(mealTypes.length ? [{ OR: mealTypes.map((m) => ({ mealType: { contains: m, mode: 'insensitive' as const } })) }] : []),
+            ...(maxCookingTime != null ? [{ cookingTime: { lte: maxCookingTime } }] : []),
+          ],
+        }
+      : { isPublic: true, status: 'active', OR: includeOr };
 
     let recipes: {
       id: string;

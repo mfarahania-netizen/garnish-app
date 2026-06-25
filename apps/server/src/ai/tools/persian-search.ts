@@ -50,6 +50,9 @@ const STOPWORDS = new Set<string>([
   'بگو', 'بگم', 'بگید', 'بگین', 'بگو بهم', 'بهم', 'باشه', 'باشد', 'نشونم', 'نشون', 'نشان', 'معرفی', 'معرفیکن',
   'کنم', 'کنیم', 'کن', 'کنید', 'بزنم', 'بزن', 'پیشنهاد', 'بده', 'بدید', 'بدی', 'برای', 'تا',
   'هم', 'اگه', 'اگر', 'هست', 'هستش', 'میشه', 'میتونم', 'میتونی', 'الان', 'خوب', 'دارم', 'دارین',
+  // 2nd/3rd-person verb endings that aren't content — left in, they over-constrain a criteria query to ~zero
+  // («برای شام چی پیشنهاد میدی» → stray «میدی» AND dinner = empty; «دسر چی داری» → stray «داری»). Whole-token only.
+  'میدی', 'میدید', 'میدن', 'بدم', 'بدن', 'داری', 'دارید', 'داره', 'داشته', 'میگی', 'میگیری',
   'دوست', 'چند', 'چندتا', 'لطفا', 'لطفاً', 'ممنون', 'سلام', 'های', 'یا', 'بدون',
 ]);
 
@@ -178,13 +181,41 @@ const GENERIC_FOOD_WORDS = new Set([
   'غذا', 'غذای', 'چیز', 'چیزی', 'خوراکی', 'یه‌چیزی', 'ایرانی', 'سنتی', 'اصیل', 'خوشمزه', 'خوشمزه‌ای', 'محلی',
 ]);
 
+// CRITERIA → corpus metadata maps. Verified against the live published corpus (2026-06-26): Recipe.region is
+// 'persian'(187)|'international'(163); Recipe.mealType is a JSON-array string over dinner/lunch/breakfast/dessert/
+// appetizer/snack/drink/…; Recipe.cookingTime is numeric on every row. These let the assistant answer BY CRITERIA
+// («غذای خارجی»→163 intl recipes, «شام»→dinner, «دسر»→dessert, «سریع»→≤30m) instead of substring-matching a word
+// that appears in almost no title. Matching is TOKEN-EXACT (never substring) so «شام»→dinner but «شامی»(کباب) is
+// untouched — the same collision class as «بگو»→«آبگوشت».
+const REGION_TOKENS: Record<string, string> = {
+  خارجی: 'international', فرنگی: 'international', غیرایرانی: 'international', اروپایی: 'international',
+  ایتالیایی: 'international', تایلندی: 'international', چینی: 'international', ژاپنی: 'international', هندی: 'international',
+  مکزیکی: 'international', فرانسوی: 'international', یونانی: 'international', اسپانیایی: 'international', ترکی: 'international',
+  foreign: 'international', international: 'international',
+  ایرانی: 'persian', فارسی: 'persian', persian: 'persian', iranian: 'persian',
+};
+const MEALTYPE_TOKENS: Record<string, string> = {
+  شام: 'dinner', dinner: 'dinner', ناهار: 'lunch', نهار: 'lunch', lunch: 'lunch',
+  صبحانه: 'breakfast', صبونه: 'breakfast', breakfast: 'breakfast', دسر: 'dessert', dessert: 'dessert',
+  اسنک: 'snack', snack: 'snack', نوشیدنی: 'drink', drink: 'drink', اردور: 'appetizer', appetizer: 'appetizer', پیشغذا: 'appetizer',
+};
+// «سریع/فوری/زود/quick» → ≤30m; «زیر/کمتر از N دقیقه» → ≤N. Stripped from include so they never substring-match.
+const QUICK_RE = /سریع|فوری|زود|\bquick\b|\bfast\b/i;
+const TIME_RE = /(?:زیر|کمتر ?از|حداکثر|تا|under|less ?than|max)\s*(\d{1,3})\s*(?:دقیقه|min|minute)/i;
+
 export interface ParsedSearchQuery {
-  /** positive content terms to match (may be empty for a pure «بدون X» / diet query). */
+  /** positive content terms to match (may be empty for a pure «بدون X» / diet / criteria query). */
   include: string[];
   /** terms whose recipes must be EXCLUDED — fixes «بدون گوشت» returning meat (a real correctness bug). */
   exclude: string[];
   /** Recipe.diet values to filter to (vegetarian/vegan/high_protein), or empty. */
   diets: string[];
+  /** Recipe.region values to filter to ('persian'|'international'), or empty — «خارجی»→international. */
+  regions: string[];
+  /** Recipe.mealType values to require (contains-match each), or empty — «شام»→dinner, «دسر»→dessert. */
+  mealTypes: string[];
+  /** Upper bound on Recipe.cookingTime (minutes), or null — «سریع»→30, «زیر ۲۰ دقیقه»→20. */
+  maxCookingTime: number | null;
 }
 
 /**
@@ -201,7 +232,10 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
   // The optional 2nd word captures a COMPOUND ingredient («تخم مرغ»), but it must NOT swallow the next
   // negation marker — «بدون شکر بدون آرد» has to exclude BOTH (else «آرد» leaks back as a POSITIVE term and a
   // flour-bearing savory dish answers a dessert query). The lookahead stops the 2nd word from eating «بدون»/«بی».
-  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)(?:\s+(?!بدون\s|بی\s)([^\s،,؛.!?]+))?/g, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  // «بدون X» / «بی X» → EXCLUDE. The negation marker MUST sit on a left boundary (start or whitespace/punct) so
+  // the trailing «بی» of a WORD («کبابی», «عربی», «گلابی») can't masquerade as the negation «بی» and wrongly
+  // exclude the next word (the «بی»-suffix collision — same class as «بگو»→«آبگوشت»).
+  stripped = stripped.replace(/(?:^|[\s،,؛.!?])(?:بدون|بی)\s+([^\s،,؛.!?]+)(?:\s+(?!بدون\s|بی\s)([^\s،,؛.!?]+))?/g, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
   stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)(?:\s+(?!without\s|no\s|zonder\s|geen\s)([a-z؀-ۿ‌]+))?/gi, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
 
   const diets: string[] = /وگان|\bvegan\b/i.test(folded)
@@ -213,12 +247,37 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
         : [];
   stripped = stripped.replace(/گیاهی|وگان|vegan|vegetar\w*|پرپروتئین|high.?protein/gi, ' ');
 
+  // CRITERIA extraction (region/mealType, TOKEN-exact) + cookingTime (phrase). Matched words are removed from
+  // `stripped` so they never become positive include terms (a criteria word substring-matches almost no title,
+  // and combined with its metadata filter would over-constrain the query to ~zero results).
+  const regions = new Set<string>();
+  const mealTypes = new Set<string>();
+  stripped = stripped
+    .split(/\s+/)
+    .filter((tok) => {
+      const t = tok.replace(ZWNJ, '').trim();
+      if (!t) return false;
+      const region = REGION_TOKENS[t];
+      const meal = MEALTYPE_TOKENS[t];
+      if (region) regions.add(region);
+      if (meal) mealTypes.add(meal);
+      return !region && !meal; // drop the criteria word from the positive-term stream
+    })
+    .join(' ');
+  let maxCookingTime: number | null = null;
+  const tm = folded.match(TIME_RE);
+  if (tm) maxCookingTime = Math.min(Math.max(parseInt(tm[1], 10), 1), 600);
+  else if (QUICK_RE.test(folded)) maxCookingTime = 30;
+  stripped = stripped.replace(TIME_RE, ' ').replace(QUICK_RE, ' ');
+
   const { terms, fallback } = tokenizeQuery(stripped);
   const excludeSet = new Set(exclude);
   // fallback = no real content tokens survived (all stopwords) — don't use the whole string as a positive term
-  // when we already have an exclude/diet filter to apply (e.g. «چی بپزم بدون پیاز» → just exclude پیاز).
+  // when we already have an exclude/diet/criteria filter to apply (e.g. «چی بپزم بدون پیاز» → just exclude پیاز;
+  // «یه غذای خارجی» → just region=international). A genuinely content-less, filter-less «چی بپزم» stays empty so
+  // the caller clarifies instead of searching junk.
   const include = fallback ? [] : terms.filter((t) => !GENERIC_FOOD_WORDS.has(t.replace(ZWNJ, '')) && !excludeSet.has(t.replace(ZWNJ, '')));
-  return { include, exclude: [...excludeSet], diets };
+  return { include, exclude: [...excludeSet], diets, regions: [...regions], mealTypes: [...mealTypes], maxCookingTime };
 }
 
 /**

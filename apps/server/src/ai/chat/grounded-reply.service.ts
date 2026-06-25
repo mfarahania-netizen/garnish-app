@@ -59,6 +59,8 @@ export interface SafeRecipe {
   title: string;
   cookingTime: number | null;
   difficulty: string | null;
+  /** 'persian' | 'international' — carried so the live model can frame a foreign dish correctly, not deny it. */
+  region: string | null;
   /** the non-allergen fit recommendation ('great_fit' | 'ok' | 'caution'); never 'avoid_allergen'. */
   fit: string;
 }
@@ -144,6 +146,7 @@ export class GroundedReplyService {
         title: String(r.title ?? ''),
         cookingTime: typeof r.cookingTime === 'number' ? r.cookingTime : null,
         difficulty: typeof r.difficulty === 'string' ? r.difficulty : null,
+        region: typeof r.region === 'string' ? r.region : null,
         fit: fit.recommendation,
       });
     }
@@ -202,10 +205,10 @@ export class GroundedReplyService {
    */
   buildLivePrompt(prompt: string, grounding: GroundingResult): string {
     const safeList = grounding.safeRecipes.length
-      ? grounding.safeRecipes.map((r, i) => `${i + 1}. ${r.title}${r.cookingTime ? ` (${r.cookingTime}m)` : ''}`).join('\n')
+      ? grounding.safeRecipes.map((r, i) => `${i + 1}. ${r.title}${r.region ? ` — ${r.region}` : ''}${r.cookingTime ? ` (${r.cookingTime}m)` : ''}`).join('\n')
       : '(none)';
     return [
-      'You are Garnish’s AI cooking assistant. Garnish specializes in PERSIAN/Iranian cuisine. Reply in Persian (fa) — warm, natural, and concise.',
+      'You are Garnish’s AI cooking assistant. Garnish offers BOTH Persian/Iranian AND many international recipes. Reply in Persian (fa) — warm, natural, and concise.',
       '',
       'STYLE (this is what makes you feel like a real assistant, not a bot):',
       '- Greet/introduce yourself ONLY on the very first message. If the CONVERSATION below already has earlier turns, DO NOT say «سلام» or re-introduce yourself — just answer.',
@@ -219,7 +222,7 @@ export class GroundedReplyService {
       '- If the SAFE RECIPES genuinely fit the request, recommend the best 2–4 with a short, specific reason each.',
       '- If they only PARTLY fit (e.g. the user asked for «تند»/spicy, «سریع»/quick, «پرکالری»/«سبک», or a specific style but the list isn’t filtered that way), be HONEST: say you can’t filter exactly by that, then offer the closest options AND a concrete tip to adapt. NEVER claim a dish is spicy/quick/light/etc. when it isn’t — and NEVER present the SAME dish as matching two OPPOSITE requests (e.g. high-calorie and light).',
       '- FULL RECIPE / STEPS: you can recommend dishes and give brief tips, but the complete step-by-step recipe and exact amounts live on each dish’s PAGE in the app. If the user asks for the full recipe/«دستور پخت» of a dish that was mentioned, tell them they can open THAT dish’s page for the complete recipe (name the dish). Do NOT say you «don’t have it» and do NOT silently switch to a different dish.',
-      '- If the user asks for NON-Persian / foreign food, say warmly that Garnish focuses on Persian cuisine and offer a Persian alternative — do NOT list unrelated Persian dishes as if they were the foreign dish.',
+      '- The SAFE RECIPES include both Persian AND international dishes (the «— international» tag marks a foreign one). If the user asks for foreign / non-Persian food and matching dishes are in the list, recommend them directly and confidently. NEVER claim Garnish «only has Persian food» or lacks a whole cuisine — it has many international recipes. Only if the list has NOTHING fitting the request, say you couldn’t find a match for THIS specific request.',
       '- If the SAFE RECIPES list is «(none)» or none of them fit, do NOT list unrelated dishes. Say you couldn’t find a good match and ask ONE short clarifying question (an ingredient or a vibe).',
       '- Use the earlier turns to understand follow-ups (e.g. «ایرانی باشه» after «غذای تند» = a SPICY Iranian dish). Don’t repeat the same list mechanically.',
       '- No medical, dietary, diagnosis, or nutrition claims.',
@@ -306,7 +309,7 @@ export class GroundedReplyService {
     try {
       r = await this.prisma.recipe.findUnique({
         where: { id: recipeId },
-        select: { title: true, isPublic: true, status: true, gris: true, ingredients: { select: { name: true, amount: true } } },
+        select: { title: true, isPublic: true, status: true, gris: true, ingredients: { select: { name: true, amount: true, unit: true } } },
       });
     } catch {
       return null;
@@ -325,7 +328,11 @@ export class GroundedReplyService {
       .sort((a: any, b: any) => a.order - b.order)
       .map((s: any) => ({ title: s.title, detail: s.detail }));
     const ingredients = (r.ingredients ?? [])
-      .map((ing: any) => ({ name: String(ing?.name ?? '').trim(), amount: ing?.amount != null ? String(ing.amount).trim() : null }))
+      .map((ing: any) => ({
+        name: String(ing?.name ?? '').trim(),
+        // amount + UNIT together — «۲ پیمانه» not a bare «۲» (a quantity without its unit is meaningless).
+        amount: [ing?.amount, ing?.unit].map((v: any) => (v != null ? String(v).trim() : '')).filter(Boolean).join(' ') || null,
+      }))
       .filter((x: any) => x.name);
     if (!steps.length && !ingredients.length) return null;
     return { title: String(r.title ?? ''), ingredients, steps };
