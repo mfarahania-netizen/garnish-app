@@ -15,6 +15,13 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: assistant relevance audit + fixes
+- Date: 2026-06-25. Commits: `90fe933e`, `97fb297e`. Founder asked to "test every word/term/phrase" after a screenshot showed irrelevant «لپه» results + Latin difficulty labels.
+- Method: live-probed ~40 Persian queries (Node/UTF-8 — PowerShell mangles Persian bodies; single guest + 3.3s pacing for the 20/min throttle) + a 5-lens multi-agent Workflow audit.
+- Fixed + verified live: ranking title>ingredient>desc + de-weight generic dish words (خورش/آش/پلو/کباب) so «خورش قیمه»→قیمه dishes; colloquial→canonical ingredient alias map (شیر/تخم مرغ/کره→کره بدون نمک/گوجه/رب گوجه/پیاز…) alias-first+raw-fallback, ZWNJ-insensitive gate (raw OR alias); bare «جای X» now a substitution anchor; non-recipe intents (greeting/feedback/medical/ood/nutrition/technique) get canned replies not recipe dumps; gibberish/empty/scaling get a NEUTRAL clarifier (not allergy-flavored); difficulty labels rendered Persian.
+- Suite: 250 suites / 2062 tests green.
+- RESIDUALS (handoff §4l + ideas): لپه/iconic ranking (no popularity signal); Finglish/typos/Dutch/diet/NEGATION («بدون گوشت» may include meat — possible bug, do first)/during-cook coverage thin; saffron data gap (گلرنگ absent).
+
 ## Latest completed work: intent-aware assistant routing (substitution)
 - Date: 2026-06-25. Commit: `1d00f77c`. Founder-chosen P1 after the assistant revival.
 - A substitution question («جایگزینِ ماست چی بزنم؟») now answers with a SWAP, not a recipe list. Classifier already labels `substitution`; chat used to ignore it.

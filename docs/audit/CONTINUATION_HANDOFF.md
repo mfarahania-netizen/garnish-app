@@ -184,6 +184,19 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** extend the same routing to `technique_whyitworks` / `ingredient_facts` (tools exist), OR fa/nl/en TemplateRegistry (Dutch), OR a small colloquial-ingredient alias map to lift substitution resolution.
 ---
+## 4l. LATEST DIMENSION CLOSURE SNAPSHOT - assistant relevance audit + fixes (2026-06-25, commits `90fe933e`, `97fb297e`)
+**Dimension(s):** Dimension 1 - Conversational UX quality (founder asked to "test every word/term/phrase" after the «لپه» screenshot showed irrelevant results + Latin difficulty labels).
+
+**Method:** live-probed ~40 real Persian queries through `/ai/chat` (Node/UTF-8, single guest + 3.3s pacing to respect the 20/min throttle — PowerShell mangles Persian bodies, do NOT use it), then a 5-lens multi-agent Workflow judged relevance/substitution/intent/Persian-tone/coverage.
+
+**Fixed + verified live:** (1) recipe-discovery ranking now title>INGREDIENT>desc AND de-weights generic dish-class words (خورش/آش/پلو/کباب) so «خورش قیمه» surfaces قیمه dishes; (2) substitution resolution via a VERIFIED colloquial→canonical alias map (شیر→شیر کامل, تخم مرغ→تخم‌مرغ کامل خام, کره→کره بدون نمک, گوجه→گوجه‌فرنگی خام, رب گوجه→رب گوجه‌فرنگی, پیاز→پیاز خام, …) applied alias-first + raw-fallback, wider window, ZWNJ-insensitive confident gate (raw OR alias); (3) bare «جای X» now a substitution anchor; (4) non-recipe intents (greeting/feedback/medical/out-of-domain/nutrition/technique) get on-brand canned replies instead of recipe dumps; (5) gibberish/empty/context-free-scaling get a NEUTRAL clarifier (not the allergy-flavored dead-end); (6) difficulty labels rendered Persian (آسان/متوسط/سخت).
+
+**Verification:** full server suite 250 suites / 2062 tests green; tsc green; live re-probe confirms قیمه/جای-پیاز/کره/گرسنمه/difficulty all fixed.
+
+**Is it 100% closed?** No — this was a quality PASS, not a closed dimension. KNOWN RESIDUALS (logged, prioritized): **(a)** «لپه»/«بادمجان» ingredient queries surface real but NON-iconic dishes — iconic ones (کوفته تبریزی, قیمه, میرزا قاسمی) are dropped because ingredient-match ties break on DB order; needs a popularity/centrality signal or a curated signature-dish map (no popularity field on Recipe today). **(b)** Coverage gaps a Holland-GENERAL launch hits: Finglish (ghorme sabzi → no transliteration layer), typos/missing-ZWNJ (contains() is brittle), Dutch/English turns (classifier supports them, untested end-to-end), diet filtering (گیاهی/وگان/بدون گلوتن ignored), NEGATION («بدون گوشت» may INCLUDE meat via OR-substring — possible correctness bug), during-cook problems (STRONG path untested), pantry multi-ingredient. **(c)** Data: saffron has only a turmeric (color-only) swap (گلرنگ absent from dictionary); some swap `why` notes mix formal/informal register.
+
+**Next smallest step:** negation handling (verify «بدون گوشت» excludes meat — potential correctness bug, do FIRST), then لپه/iconic ranking (curated signature map), then Finglish transliteration aliases, then fa/nl/en TemplateRegistry (Dutch). Full gap list also belongs in `IDEAS_AND_GAPS.md`.
+---
 ## 4h. LATEST DIMENSION CLOSURE SNAPSHOT - P1 multi-turn memory slice (2026-06-24)
 **Dimension(s):** Dimension 1 - Capability & Conversational UX.
 

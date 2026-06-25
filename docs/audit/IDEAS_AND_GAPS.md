@@ -141,6 +141,27 @@ it must be added (the seam exists); it is NOT a deferred "localize-later" item. 
 (Yalda/Nowruz) are computed always as **cultural-discovery offered to everyone**, not a diaspora feature.
 Timezone is driven by the user's profile/location.
 
+### 17. 🔎👤 Assistant relevance gaps — surfaced by the 2026-06-25 live audit (5-lens agent pass)
+A live probe of ~40 Persian chat queries + a multi-agent relevance audit fixed the headline misses
+(ranking, colloquial-ingredient substitution, non-recipe intents, Persian difficulty labels — see
+handoff §4l, commits `90fe933e`/`97fb297e`). Remaining, prioritized gaps vs a world-class cooking
+assistant — each grounded in a real query that failed:
+- **NEGATION may be a correctness BUG (do first).** Retrieval OR-matches content tokens, so «بدون گوشت» /
+  «without onion» likely *includes* the negated ingredient (گوشت is a content token). Verify + exclude. → L2.
+- **Iconic-dish ranking.** «با لپه چی بپزم» returns real but non-iconic لپه dishes; کوفته تبریزی/قیمه/میرزا
+  قاسمی get dropped because ingredient-match ties break on DB insertion order. Needs a popularity/centrality
+  signal (no such field on `Recipe` today) or a curated signature-dish map for the top ~50 ingredients. → L1/L2.
+- **Finglish + typos.** ghorme sabzi / قرمسبزی / بادمجون don't match (only Arabic→Persian fold exists). A
+  transliteration + colloquial-spelling alias layer is launch-critical for the diaspora slice. → L2.
+- **Dutch/English end-to-end.** The classifier carries fa/nl/en lexicons but no probe confirms a Dutch user
+  gets a Dutch answer — ties into the fa/nl/en TemplateRegistry P1 (Dutch required). → L2/D1.
+- **Diet filtering.** گیاهی/وگان/بدون گلوتن/بدون لبنیات are dropped as noise, not used to filter — a core
+  EU-general-public request, distinct from allergy (safety) and medical (refused). → L2.
+- **During-cook rescue + pantry.** The STRONG `during_cook_problem` path (برنجم شفته شد…) and multi-ingredient
+  pantry discovery are unverified from chat — the highest-stress UX moments. → L2.
+- **Data:** saffron offers only a turmeric (color-only) swap (گلرنگ/safflower absent from the 1008-ingredient
+  dictionary); some substitution `why` notes mix formal/informal register. → data-quality initiative.
+
 ## How this document stays alive
 - Every research workflow (AI SOTA, recsys, retention, …) MUST end with an "ideas + gaps vs world-class"
   contribution appended here — not just a standard doc.
