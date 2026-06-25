@@ -38,7 +38,7 @@ import { BehavioralContextSnapshot } from '../ai-core.types';
 // Mirror the recommendation candidate-generator's FIT_SELECT EXACTLY so the SAME audited fit/allergen
 // derivation runs on the SAME recipe shape (declared `allergens` + ingredient→dictionary `allergens`).
 const FIT_SELECT = {
-  id: true, title: true, diet: true, difficulty: true, cookingTime: true, allergens: true, categories: true, region: true,
+  id: true, title: true, diet: true, difficulty: true, cookingTime: true, allergens: true, categories: true, region: true, containsPork: true,
   ingredients: { select: { name: true, ingredient: { select: { allergens: true } } } },
 } as const;
 
@@ -130,10 +130,14 @@ export class GroundedReplyService {
       if (!r) continue;
       const derived = analyzeRecipeIntegrity(r).derivedAllergens.allergens;
       const fit = assessRecipeFit(r, profile, derived);
-      if (fit.recommendation === 'avoid_allergen') {
+      // HARD gate honors the FULL verdict of the audited primitive: declared allergens (avoid_allergen) AND
+      // observance constraints (avoid_constraint = pork under halal/kosher/no_pork) are NEVER surfaced — not in a
+      // recommendation, not in the inline recipe delivery. Both push the title to unsafeTitles so the live OUTPUT
+      // gate (screenLiveOutput) also discards a model reply that names one.
+      if (fit.recommendation === 'avoid_allergen' || fit.recommendation === 'avoid_constraint') {
         dropped += 1;
         if (typeof r.title === 'string' && r.title.trim()) unsafeTitles.push(r.title.trim());
-        continue; // declared allergies are NEVER surfaced
+        continue;
       }
       safe.push({
         id: String(r.id),

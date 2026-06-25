@@ -98,6 +98,25 @@ describe('GroundedReplyService — ALLERGY HARD GATE (leaks must be 0)', () => {
   });
 });
 
+describe('GroundedReplyService — OBSERVANCE HARD GATE (halal/kosher/no-pork: pork is NEVER surfaced)', () => {
+  it('HARD-drops a pork recipe for a halal user (avoid_constraint) — not recommended, not deliverable, recorded for the output gate', async () => {
+    // the authoritative containsPork flag drives the verdict — now that FIT_SELECT carries it
+    const porkRecipe = { ...recipe('pork', { title: 'خوراک خوک' }), containsPork: true };
+    const pool = [recipe('safe', { title: 'خورش کدو' }), porkRecipe];
+    const halalProfile = { reconciled: { dimensions: { dietary_pattern: { reconciledValue: 'halal' } } } };
+    const { svc } = makeService({ profile: halalProfile, pool, ids: ['safe', 'pork'] });
+
+    const g = await svc.buildGrounding('halal-user', 'یه غذای گوشتی');
+
+    const ids = g.safeRecipes.map((r) => r.id);
+    expect(ids).toEqual(['safe']);
+    expect(ids).not.toContain('pork'); // THE leak assertion: pork is never surfaced to a halal/kosher/no-pork user
+    expect(g.safeRecipes.map((r) => r.title)).not.toContain('خوراک خوک');
+    expect(g.droppedForAllergy).toBe(1); // dropped + counted
+    expect(g.unsafeTitles).toContain('خوراک خوک'); // recorded so screenLiveOutput also discards a live mention
+  });
+});
+
 describe('GroundedReplyService — unsafe set unavailable (surface nothing)', () => {
   it('returns unsafe_set_unavailable and never retrieves when the living profile cannot be loaded', async () => {
     const { svc, prisma, tools } = makeService({ profileThrows: true });
