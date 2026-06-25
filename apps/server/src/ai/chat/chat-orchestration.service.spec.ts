@@ -225,6 +225,28 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(out.reply).toContain('اسمِ خودِ ماده'); // honest ask, never invents a number
   });
 
+  it('REPAIRS an empty result caused by a user CONSTRAINT into ONE concrete next step (offer to relax it)', async () => {
+    const { svc, grounded } = makeChat(); // default buildGrounding → empty, droppedForAllergy 0
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه غذای سریع بدون پیاز', conversationId: 'c-repair-con' });
+    expect(out.reply).toContain('محدودیت'); // offers to relax the «بدون پیاز» constraint, not a flat "I didn't get it"
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled(); // repair short-circuits the generic clarifier
+  });
+
+  it('REPAIRS an empty result for a RECOGNIZED ingredient by offering its substitutes (not a dead-end)', async () => {
+    const { svc, grounded } = makeChat();
+    grounded.getIngredientNutrition.mockResolvedValue({ name: 'بادمجان خام', per100g: {} }); // term IS a real ingredient
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه غذای خاص با بادمجان', conversationId: 'c-repair-ing' });
+    expect(out.reply).toContain('بادمجان خام'); // echoes what we DID understand
+    expect(out.reply).toMatch(/جایگزین/); // offers substitutes as the concrete next step
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
+  });
+
+  it('does NOT repair (falls back to the neutral clarifier) when there is NO constraint and NO known ingredient', async () => {
+    const { svc, grounded } = makeChat(); // getIngredientNutrition → null, no exclude/diet
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه غذای خاص و خوشمزه', conversationId: 'c-repair-none' });
+    expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // generic clarifier, repair returned null
+  });
+
   it('intent-routes a during-cook problem to troubleshooting guidance, NOT a recipe list', async () => {
     const { svc, grounded } = makeChat();
     const out = await svc.handleChat({ userId: 'u1', prompt: 'چرا برنجم شفته شد؟', conversationId: 'c-cook' });

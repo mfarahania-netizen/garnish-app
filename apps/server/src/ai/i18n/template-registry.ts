@@ -165,6 +165,17 @@ const TEMPLATES: Record<string, Entry> = {
     en: 'Something went wrong. Please try again.',
   },
   list_sep: { fa: '، ', nl: ', ', en: ', ' },
+  // ── conversational repair (turn a dead-end into ONE concrete next step) ──
+  repair_constraint: {
+    fa: 'با محدودیتی که گفتی غذای امنی پیدا نکردم. می‌خوای محدودیت رو بردارم و دوباره بگردم، یا یه غذای دیگه بگیم؟',
+    nl: 'Met de beperking die je noemde vond ik geen veilig gerecht. Zal ik de beperking loslaten en opnieuw zoeken, of proberen we een ander gerecht?',
+    en: 'With the constraint you gave I couldn’t find a safe dish. Shall I drop the constraint and search again, or try a different dish?',
+  },
+  repair_ingredient: {
+    fa: '«{name}» رو شناختم ولی غذای کاملی باهاش پیدا نکردم. می‌خوای جایگزین‌های «{name}» رو بگم، یا یه مادهٔ دیگه بگو تا برات بگردم؟',
+    nl: 'Ik herken «{name}», maar vond er geen volledig gerecht mee. Wil je vervangers voor «{name}», of noem een ander ingrediënt dan zoek ik verder?',
+    en: 'I recognized «{name}», but found no full dish with it. Want substitutes for «{name}», or name another ingredient and I’ll keep looking?',
+  },
   blocked_vision: {
     fa: 'تحلیل تصویر در این نسخه در دسترس نیست؛ من فقط دستیار آشپزی متنی هستم. لطفاً مواد یا اسم غذا را بنویس. (Image analysis is not available in this build.)',
     nl: 'Beeldanalyse is in deze versie niet beschikbaar; ik ben alleen een tekstuele kookassistent. Schrijf je ingrediënten of de naam van het gerecht.',

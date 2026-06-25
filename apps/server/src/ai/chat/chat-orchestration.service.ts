@@ -12,7 +12,7 @@ import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
-import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets } from '../tools/persian-search';
+import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets, parseSearchQuery } from '../tools/persian-search';
 import { matchTroubleshooting } from './cooking-troubleshooting';
 import { t, Locale } from '../i18n/template-registry';
 
@@ -275,11 +275,11 @@ export class ChatOrchestrationService {
           reply = modelText; // passed the orchestrator's outbound guards AND the allergy-safety gate
           providerMode = 'gemini';
         } else {
-          reply = this.grounded.composeDeterministicReply(g, locale);
+          reply = (await this.composeEmptyRepair(input.prompt, retrievalQuery, g, locale)) ?? this.grounded.composeDeterministicReply(g, locale);
           providerMode = 'deterministic';
         }
       } else {
-        reply = this.grounded.composeDeterministicReply(g, locale);
+        reply = (await this.composeEmptyRepair(input.prompt, retrievalQuery, g, locale)) ?? this.grounded.composeDeterministicReply(g, locale);
         providerMode = 'deterministic';
       }
     }
@@ -421,6 +421,28 @@ export class ChatOrchestrationService {
       default:
         return null;
     }
+  }
+
+  /**
+   * D1 conversational REPAIR — when grounding came back empty (and NOT because of an allergy drop, which has
+   * its own message), don't dead-end with a generic "I didn't get it". Convert the highest-confidence signal we
+   * DID parse into ONE concrete next step:
+   *   1) a CONSTRAINT the user gave («بدون پیاز» / vegan / zonder…) emptied the set → offer to relax it;
+   *   2) a RECOGNIZED ingredient (real in the dictionary) with no full dish → offer its substitutes.
+   * Returns null (→ fall back to the generic neutral clarifier) when there is no actionable signal. Never
+   * touches the allergy-safe set; purely additive framing over the SAME empty result.
+   */
+  private async composeEmptyRepair(prompt: string, query: string, g: GroundingResult, locale: Locale): Promise<string | null> {
+    if (g.groundingStatus !== 'empty' || g.droppedForAllergy > 0) return null; // ok / allergy / unavailable → composer handles it
+    const parsed = parseSearchQuery(query);
+    if (parsed.exclude.length > 0 || parsed.diets.length > 0) {
+      return t('repair_constraint', locale);
+    }
+    for (const term of [...extractSubstitutionTargets(prompt), ...extractNutritionTargets(prompt)].slice(0, 4)) {
+      const n = await this.grounded.getIngredientNutrition(term);
+      if (n?.name) return t('repair_ingredient', locale, { name: n.name });
+    }
+    return null;
   }
 
   /** Factual per-100g nutrition readout for an ingredient (USDA-sourced), or an honest ask. No health claims. */
