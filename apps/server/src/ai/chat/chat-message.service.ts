@@ -58,7 +58,13 @@ export class ChatMessageService {
       where: {
         userId,
         conversationId,
-        role: { in: ['user', 'assistant'] },
+        // Keep all USER turns; keep only assistant turns that actually answered. A blocked/error reply
+        // («درخواست‌های زیادی…» / a safety refusal) must NOT pollute the short-term memory the live model reads —
+        // otherwise the next turn treats the error as "what the assistant said", apologizes, and loses the thread.
+        OR: [
+          { role: 'user' },
+          { role: 'assistant', NOT: { contentSafetyStatus: { in: ['error', 'blocked_injection', 'blocked_safety', 'blocked_nutrition', 'blocked_cost'] } } },
+        ],
       },
       orderBy: { createdAt: 'desc' },
       take: limit,

@@ -42,7 +42,11 @@ describe('ChatMessageService', () => {
       where: {
         userId: 'u1',
         conversationId: 'c1',
-        role: { in: ['user', 'assistant'] },
+        // user turns always; assistant turns only when they actually answered (blocked/error excluded from memory)
+        OR: [
+          { role: 'user' },
+          { role: 'assistant', NOT: { contentSafetyStatus: { in: ['error', 'blocked_injection', 'blocked_safety', 'blocked_nutrition', 'blocked_cost'] } } },
+        ],
       },
       orderBy: { createdAt: 'desc' },
       take: 8,

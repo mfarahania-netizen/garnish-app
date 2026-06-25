@@ -14,7 +14,11 @@
  *
  * Escape hatch: AI_ALLOW_LIVE_IN_TESTS=true keeps the live config (for the on-demand `ai:live-smoke`).
  */
-const LIVE_KEYS = ['AI_PROVIDER', 'AI_LIVE_ENABLED', 'AI_CHAT_LIVE_ENABLED', 'GEMINI_API_KEY', 'AI_MODEL_NAME'];
+const LIVE_KEYS = [
+  'AI_PROVIDER', 'AI_LIVE_ENABLED', 'AI_CHAT_LIVE_ENABLED', 'GEMINI_API_KEY', 'AI_MODEL_NAME',
+  // cost-policy overrides also leak from .env and would flip default-budget specs; tests must use the code defaults
+  'AI_BUDGET_COOLDOWN_MS', 'AI_BUDGET_5H_MAX_TOKENS', 'AI_BUDGET_DAILY_MAX_TOKENS', 'AI_BUDGET_WEEKLY_MAX_TOKENS', 'AI_BUDGET_MONTHLY_MAX_TOKENS',
+];
 const clearLiveEnv = () => {
   if (process.env.AI_ALLOW_LIVE_IN_TESTS === 'true') return;
   for (const k of LIVE_KEYS) delete process.env[k];
