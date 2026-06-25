@@ -15,6 +15,14 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: onboarding/auth dev-loop CORS fix
+- Date: 2026-06-24 (committed 2026-06-25).
+- Commit: `1685480a fix(server): allow same-port loopback CORS peer for dev auth`.
+- Claude verification (2026-06-25): Tier 0 green (server 249 suites/2026 tests, server tsc, web 36/169, web build); Tier 1 diff read clean — no wildcard, same-port loopback only; safety-critical files (allergen-extractor/recipe-integrity/recipe-visibility/users.service) unchanged; memory boundary intact (intent/extractStatedAllergens/§3 read only input.prompt); requestId echo additive (no safety-filter bypass). CAVEAT: the verified `gemini-3.1-flash-lite` rate ($0.25/$1.50 per 1M) is identical to the prior unverified guess; live-smoke proves a call + non-null cost rows but does NOT independently confirm the price number (cost is computed FROM the catalog) — re-confirm against the live pricing page (VPN) before any cost claim leaves the system.
+- Bug: the app could appear stuck in onboarding/login when opened from Vite's `http://127.0.0.1:5173` URL while the server allowed only `http://localhost:5173` in CORS.
+- Root cause proof: local auth from `Origin: http://localhost:5173` returned CORS headers and `/users/me` worked; local auth from `Origin: http://127.0.0.1:5173` previously returned no `Access-Control-Allow-Origin`, so browsers blocked login/register responses.
+- Fix: server CORS now keeps configured origins narrow, but expands same-port loopback peers between `localhost` and `127.0.0.1`; no wildcard.
+- Verification: register/login/users-me from `Origin: http://127.0.0.1:5173` all return OK with `Access-Control-Allow-Origin: http://127.0.0.1:5173`; server full test, server tsc, web test, and web build passed.
 ## Latest completed work: P1 multi-turn memory slice
 - Date: 2026-06-24.
 - Commit: `d00b1980 ai: wire chat short-term memory` (docs closure commit follows).

@@ -2,18 +2,18 @@
   "schemaVersion": 1,
   "generatedAt": "2026-06-14T00:00:00.000Z",
   "runMode": "offline-deterministic",
-  "totalChecks": 21,
-  "passedChecks": 21,
+  "totalChecks": 23,
+  "passedChecks": 23,
   "failedChecks": 0,
   "categoryBreakdown": {
     "taxonomy": {
-      "total": 6,
-      "passed": 6,
+      "total": 7,
+      "passed": 7,
       "failed": 0
     },
     "inventory": {
-      "total": 7,
-      "passed": 7,
+      "total": 8,
+      "passed": 8,
       "failed": 0
     },
     "runtime_guard": {
@@ -34,34 +34,35 @@
   },
   "taxonomySummary": {
     "families": 11,
-    "legacyEventTypeCount": 117,
-    "canonicalPlannedEventTypeCount": 13,
+    "legacyEventTypeCount": 123,
+    "canonicalPlannedEventTypeCount": 12,
     "strictRejectsUnknown": true,
     "shadowAllowsUnknownWithWarning": true
   },
   "producerInventorySummary": {
     "coverage": "targeted_static_scan",
-    "totalProducers": 20,
+    "totalProducers": 22,
     "uniqueIds": true,
     "byFamily": {
       "behavior": 9,
-      "ai": 3,
+      "ai": 4,
+      "recipe": 2,
       "recommendation": 2,
-      "recipe": 1,
       "planner": 1,
       "grocery": 1,
       "notification": 2,
       "consent": 1
     },
     "byPriority": {
-      "P0": 1,
+      "P0": 3,
       "P2": 8,
       "P1": 5,
       "P3": 6
     },
     "byStatus": {
       "shadow_guarded": 1,
-      "not_started": 19
+      "not_started": 19,
+      "canonical_emitting": 2
     },
     "familyGaps": [
       "cook",
@@ -96,7 +97,7 @@
   },
   "migrationMapSummary": {
     "document": "docs/analytics/E43_A2_EVENT_PRODUCER_MIGRATION_MAP.md",
-    "producersMapped": 20,
+    "producersMapped": 22,
     "familyGaps": 4
   },
   "piiRedactionSummary": {
@@ -107,7 +108,7 @@
   "dbWritesDuringGate": 0,
   "runtimeModeDefault": "shadow",
   "remainingIntegrationGaps": [
-    "Only 1 of ~21 producers is shadow-guarded (analytics.service.trackEvent); the rest are not_started.",
+    "P0 assistant-turn and personalization signal producers are canonical_emitting; most non-P0 mapped producers remain not_started.",
     "No producer emits canonical_v2 yet; runtime emission/migration is staged.",
     "Notification SEND/SUPPRESS decisions are not logged as events (Layer-10 gap).",
     "No admin-action audit producer; no WAT/workflow producer; cook family has no server producer.",

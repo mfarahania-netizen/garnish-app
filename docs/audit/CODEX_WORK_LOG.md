@@ -1,6 +1,6 @@
 # CODEX WORK LOG (baseline 6b584134)
 ## 1. Goal this session
-Close the first P1 / Dimension 1 slice after whole-P0 closure: multi-turn memory for chat, without weakening deterministic safety boundaries or making live Gemini calls.
+Close the first P1 / Dimension 1 slice after whole-P0 closure, then fix the reported app-blocking onboarding/auth loop caused by dev-origin CORS mismatch. No live Gemini calls.
 
 ## 2. Commits - paste `git log --oneline 6b584134..HEAD`
 ```text
@@ -35,10 +35,15 @@ Note: this docs-only closure commit follows `d00b1980`; Claude should still run 
   - `npm.cmd test -- chat-message.service.spec.ts chat-orchestration.service.spec.ts` (2 suites / 32 tests).
   - `npm.cmd test -- chat-message.service.spec.ts chat-orchestration.service.spec.ts grounded-reply.service.spec.ts cross-dimension.acceptance.spec.ts` (4 suites / 57 tests).
 - Full gates passed:
-  - server `npm.cmd test` (248 suites / 2022 tests).
+  - server `npm.cmd test` (249 suites / 2026 tests) after the CORS fix.
   - server `npx.cmd tsc --noEmit`.
   - web `npm.cmd test` (36 files / 169 tests).
   - web `npm.cmd run build`.
+
+- Onboarding/auth dev-origin CORS loop fixed.
+  - Root cause: `FRONTEND_URL=http://localhost:5173` did not allow browser auth calls from Vite's `http://127.0.0.1:5173` origin.
+  - Fix: `resolveCorsOrigins` expands only same-port loopback peers (`localhost` <-> `127.0.0.1`), no wildcard.
+  - Covered by `cors-origins.spec.ts` and local HTTP proof for register/login/users-me from `Origin: http://127.0.0.1:5173`.
 
 ## 4. IN-PROGRESS / half-done (file:line + exact next step)
 - No half-done code in this slice.
@@ -68,11 +73,11 @@ Safety-relevant chat path touched:
 Reason: multi-turn context is now passed into grounding. This does not change allergen canonicalization/extraction, §3 write allowlist, hard recipe allergy filtering, output screening, consent, recommendation safety filtering, or recipe visibility.
 
 ## 8. Build/test state at stop - server npm test / web npm test / tsc --noEmit
-- `apps/server`: `npm.cmd test` passed (248 suites / 2022 tests).
+- `apps/server`: `npm.cmd test` passed (249 suites / 2026 tests).
 - `apps/server`: `npx.cmd tsc --noEmit` passed.
 - `apps/web`: `npm.cmd test` passed (36 files / 169 tests).
 - `apps/web`: `npm.cmd run build` passed.
 - `git diff --check` passed; only CRLF warnings were reported.
 
 ## 9. EXACT next step for the new Claude chat
-Verify from baseline `6b584134` using `CODEX_BRIDGE.md`, including committed changes plus the two unrelated unstaged QA JSONs. If green/safe, continue P1 Dimension 1 with fa/nl/en `TemplateRegistry` (Dutch required) or conversational repair. Do not reopen P0; it is closed.
+Verify from baseline `6b584134` using `CODEX_BRIDGE.md`, including committed changes plus the two unrelated unstaged QA JSONs. If green/safe, confirm onboarding/auth from the actual browser URL once more if needed, then continue P1 Dimension 1 with fa/nl/en `TemplateRegistry` (Dutch required) or conversational repair. Do not reopen P0; it is closed.

@@ -128,7 +128,7 @@
     },
     {
       "category": "guard_order",
-      "name": "persisted daily budget blocks BEFORE provider (live-configured)",
+      "name": "persisted multi-window budget blocks BEFORE provider (live-configured)",
       "pass": true
     },
     {
