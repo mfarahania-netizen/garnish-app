@@ -142,6 +142,20 @@ describe('GroundedReplyService — live OUTPUT allergy gate', () => {
     expect(verdict.reason).toBeNull();
   });
 
+  it('discards output that NAMES a declared allergen by its Persian name, not the token («nut»→«گردو/بادام»)', async () => {
+    // the live gap: the declared set holds the canonical token «nut», but a live model names «گردو»/«بادام».
+    const { svc } = makeService({ profile: profileWithAllergies(['nut']) });
+    const verdict = await svc.screenLiveOutput('u1', 'این دستور با گردو و بادام واقعاً خوشمزه می‌شود', grounding);
+    expect(verdict.safe).toBe(false);
+    expect(verdict.reason).toBe('declared_allergen_named_in_output');
+  });
+
+  it('still allows a nut-allergic user benign text that names NO nut (no over-block on unrelated food)', async () => {
+    const { svc } = makeService({ profile: profileWithAllergies(['nut']) });
+    const verdict = await svc.screenLiveOutput('u1', 'یک خورش قورمه‌سبزی با گوشت و لوبیا پیشنهاد می‌کنم', grounding);
+    expect(verdict.safe).toBe(true);
+  });
+
   it('FAILS CLOSED: discards live output when the allergy set cannot be read', async () => {
     const { svc } = makeService({ profileThrows: true });
     const verdict = await svc.screenLiveOutput('u1', 'هر متنی', grounding);

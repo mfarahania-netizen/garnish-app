@@ -6,6 +6,7 @@ import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 import { looseMatch, toStringArray } from '../tools/grounding-utils';
 import { foldPersian, aliasIngredient, isConfidentIngredientMatch } from '../tools/persian-search';
+import { extractStatedAllergens } from '../intent/allergen-extractor';
 import { t, Locale, resolveLocale } from '../i18n/template-registry';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 
@@ -233,11 +234,20 @@ export class GroundedReplyService {
     }
 
     const lowered = text.toLowerCase();
+    // (a) literal match of the stored token/value.
     if (allergySet.some((a) => looseMatch(lowered, a) || lowered.includes(a))) {
       return { safe: false, reason: 'declared_allergen_in_output' };
     }
+    // (b) named a recipe HARD-dropped for this user's allergy (most specific reason).
     if (grounding.unsafeTitles.some((t) => t && lowered.includes(t.toLowerCase()))) {
       return { safe: false, reason: 'unsafe_recipe_named' };
+    }
+    // (c) NAME-EXPANDED allergen match — the output may NAME «گردو» while the declared set holds the canonical
+    //     token «nut». Reuse the AUDITED extractor (whole-word, fa/nl/en, alias-aware) on the output and intersect
+    //     by token, so a hallucinated allergen mention can't slip through just because it used a Persian/Dutch name.
+    const declaredTokens = new Set(allergySet.flatMap((a) => [a, ...extractStatedAllergens(a).map((x) => x.token)]));
+    if (extractStatedAllergens(text).some((a) => declaredTokens.has(a.token))) {
+      return { safe: false, reason: 'declared_allergen_named_in_output' };
     }
     return { safe: true, reason: null };
   }

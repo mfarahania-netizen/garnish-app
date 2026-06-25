@@ -94,13 +94,25 @@ export class AiOrchestratorService {
       let allowed = true;
       let reason = 'daily_budget_exceeded';
       try {
-        const budget = this.rateLimit
-          ? await this.rateLimit.checkAndReserve(request.userId, request.estimatedTokens)
-          : await this.persistedBudget!.checkAllWindows(request.userId, request.estimatedTokens);
+        let budget;
+        if (this.rateLimit) {
+          try {
+            budget = await this.rateLimit.checkAndReserve(request.userId, request.estimatedTokens);
+          } catch (redisErr) {
+            // Redis fast-path unavailable (e.g. a cold lazy connection) → DEGRADE to the durable DB budget,
+            // which enforces the SAME multi-window limits, rather than failing fully closed and blocking every
+            // live turn on a Redis hiccup. Only if the DB path ALSO fails do we fail closed (outer catch).
+            this.logger.warn(`rate-limit redis unavailable; falling back to DB budget: ${redisErr instanceof Error ? redisErr.name : 'error'}`);
+            if (!this.persistedBudget) throw redisErr;
+            budget = await this.persistedBudget.checkAllWindows(request.userId, request.estimatedTokens);
+          }
+        } else {
+          budget = await this.persistedBudget!.checkAllWindows(request.userId, request.estimatedTokens);
+        }
         allowed = budget.allowed;
         reason = budget.reason ?? reason;
       } catch (err) {
-        allowed = false; // fail-closed (cost safety); no internal values leaked to the user
+        allowed = false; // BOTH paths unavailable → fail-closed (cost safety); no internal values leaked
         reason = 'budget_check_unavailable';
         this.logger.warn(`budget check failed; failing CLOSED (no provider call): ${err instanceof Error ? err.name : 'error'}`);
       }
@@ -118,7 +130,9 @@ export class AiOrchestratorService {
     let totalTokens: number | null = null;
     let usageSource: UsageSource = 'unavailable';
     try {
-      const result = await this.model.generate({ prompt: request.prompt });
+      // Guards (above) inspected `request.prompt` (the untrusted USER input); the model receives the grounded
+      // `modelPrompt` when present (system instruction + allergy-safe set + user turn), else the same prompt.
+      const result = await this.model.generate({ prompt: request.modelPrompt ?? request.prompt });
       text = result.text;
       model = result.model;
       inputTokens = result.usage?.promptTokens ?? request.estimatedTokens ?? null;

@@ -240,7 +240,10 @@ export class ChatOrchestrationService {
     try {
       const result = await this.orchestrator.run({
         userId: input.userId,
-        prompt: orchestratorPrompt,
+        // Guards inspect the UNTRUSTED user input; the model gets the grounded wrapped prompt (when live). This
+        // split stops the grounding system-instruction's safety vocabulary from self-blocking every live turn.
+        prompt: input.prompt,
+        modelPrompt: orchestratorPrompt,
         snapshot,
         surface: 'chat',
         conversationId,

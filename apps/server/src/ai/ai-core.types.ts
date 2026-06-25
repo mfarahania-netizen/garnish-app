@@ -79,7 +79,13 @@ export type AiCallStatus =
 
 export interface AiCallRequest {
   userId: string;
+  /** The UNTRUSTED user input — the inbound guards (injection/safety) inspect THIS. */
   prompt: string;
+  /** OPTIONAL grounded/wrapped prompt actually sent to the model (system instruction + safe-set + user turn).
+   *  When present the model sees this while the guards still inspect `prompt`. This prevents the grounding
+   *  system-instruction's own safety vocabulary ("no medical/diagnosis/nutrition claims") from tripping the
+   *  inbound safety guard and self-blocking every live turn. Falls back to `prompt` when absent. */
+  modelPrompt?: string;
   /** MANDATORY — the orchestrator fails fast if this is missing/invalid. */
   snapshot?: BehavioralContextSnapshot | null;
   surface?: string;
