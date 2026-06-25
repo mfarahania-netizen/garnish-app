@@ -15,6 +15,12 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: negation + diet + nutrition + guardian-reviewed fixes
+- Date: 2026-06-25. Commits: `31d6a20e` (features), `dd2e54ae` (guardian fixes). Autonomous block (founder away 2h, full autonomy + "check with agents, no bugs").
+- NEGATION (was a real bug): «بدون گوشت»→کباب چنجه, «وگان»→بیف استروگانف because retrieval OR-matched the negated word. `parseSearchQuery` (persian-search.ts) pulls «بدون X»/«بی X»/without/zonder/geen X (up to 2 words for «تخم مرغ») into EXCLUDE; search_recipes adds a NOT clause. DIET on Recipe.diet: گیاهی→vegetarian+vegan, وگان→vegan, پرپروتئین→high_protein. NUTRITION from Ingredient.nutritionPer100g (USDA): «کالریِ برنج»→«برنج سفید خام (هر ۱۰۰ گرم): ۳۶۵ کالری، ۷.۱ گرم پروتئین…» — factual numbers + non-advice disclaimer, never invents.
+- FINAL multi-agent guardian review (4 lenses): SAFETY=clean, RUNS=clean; found + I fixed: troubleshooting OR-steal (substitution/recipe turns with a symptom-adjective — new `shouldTroubleshoot` gate suppresses requests/desires), two-word negation leak, bare «بدون», and a content bug (گاورس=millet → گوشت‌کوبِ برقی). All probe-confirmed fixed.
+- Suite: 2102 tests green. DEFERRED (low/pre-existing): pure-stopword «چی بپزم» returns empty (needs popularity fallback). Residual gaps still in handoff §4l + IDEAS #17 (iconic ranking, Finglish, Dutch e2e, during-cook tail=L2a).
+
 ## Latest completed work: during-cook troubleshooting KB
 - Date: 2026-06-25. Commit: `7736e3ad`. Founder asked these («چرا برنجم شفته شد/ته‌دیگم چسبید/کوفته وا رفت/جوجه خشک شد…») be answered THIS phase, not later — and explicitly chose a curated KB over deferring to L2a.
 - Built `apps/server/src/ai/chat/cooking-troubleshooting.ts`: curated deterministic KB of common Persian cooking failures (rice/tahdig/koobideh/koofteh/chicken/khoresh+meat/sauce-dairy/dough-cake + general salty/oily/burnt), each cause→fix→prevention. `matchTroubleshooting` requires dish+symptom (high precision); general failures match symptom-only; ZWNJ-insensitive.

@@ -184,6 +184,22 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** extend the same routing to `technique_whyitworks` / `ingredient_facts` (tools exist), OR fa/nl/en TemplateRegistry (Dutch), OR a small colloquial-ingredient alias map to lift substitution resolution.
 ---
+## 4m. LATEST DIMENSION CLOSURE SNAPSHOT - negation/diet/nutrition + during-cook KB + guardian fixes (2026-06-25)
+**Dimension(s):** Dimension 1 - Conversational UX (autonomous block: founder away 2h, full autonomy, "check with agents, no bugs like dimension-1").
+
+**What is built now (commits `7736e3ad`, `31d6a20e`, `dd2e54ae`):**
+- **During-cook troubleshooting KB** (`cooking-troubleshooting.ts`): ~20 curated Persian failure modes (rice/tahdig/koobideh/koofteh/chicken/khoresh+meat/sauce-dairy/dough-cake + general salty/oily/burnt) → cause/fix/prevention. Routed from `during_cook_problem` via a high-precision dish+symptom matcher.
+- **Negation correctness** (was a real bug): `parseSearchQuery` pulls «بدون X»/«بی X»/without/zonder/geen X (up to 2 words for «تخم مرغ») into an EXCLUDE NOT-clause; «بدون» is a stopword. **Diet** filtering on the real `Recipe.diet` field (گیاهی→vegetarian+vegan, وگان→vegan, پرپروتئین→high_protein). **Nutrition** answers from `Ingredient.nutritionPer100g` (USDA): factual per-100g numbers + a non-advice disclaimer, never invented.
+- **Guardian-reviewed**: a 4-lens adversarial review (SAFETY=clean, RUNS=clean) found + I fixed: troubleshooting OR-steal of substitution/recipe turns (new `shouldTroubleshoot` gate), two-word negation leak, bare «بدون», and a content error (گاورس=millet → گوشت‌کوبِ برقی).
+
+**Safety:** medical/§3 classify + route FIRST (unchanged); the hard allergy gate runs on every surfaced recipe (guardian-confirmed not bypassed by any new branch); nutrition is factual data, not a health claim.
+
+**Verification:** full server suite **2102 tests** green; tsc green; live-probed every feature + every guardian-found case.
+
+**Is it 100% closed?** Conversational UX is now broad + bug-checked. NOT closed: **(a)** pure-stopword «چی بپزم» returns empty (deferred low — needs a popularity fallback). **(b)** Still open from §4l/IDEAS #17: iconic-dish ranking (no popularity signal), Finglish/typos, Dutch end-to-end (→ fa/nl/en TemplateRegistry P1), the infinite during-cook tail (→ L2a, gated).
+
+**Next smallest step:** fa/nl/en TemplateRegistry (Dutch required — the biggest remaining Dimension-1 gap for the Holland general-public launch), OR a popularity/centrality signal for ranking (lifts لپه/بادمجان + the «چی بپزم» fallback at once).
+---
 ## 4l. LATEST DIMENSION CLOSURE SNAPSHOT - assistant relevance audit + fixes (2026-06-25, commits `90fe933e`, `97fb297e`)
 **Dimension(s):** Dimension 1 - Conversational UX quality (founder asked to "test every word/term/phrase" after the «لپه» screenshot showed irrelevant results + Latin difficulty labels).
 
