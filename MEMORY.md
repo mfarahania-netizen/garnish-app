@@ -15,6 +15,12 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: during-cook troubleshooting KB
+- Date: 2026-06-25. Commit: `7736e3ad`. Founder asked these («چرا برنجم شفته شد/ته‌دیگم چسبید/کوفته وا رفت/جوجه خشک شد…») be answered THIS phase, not later — and explicitly chose a curated KB over deferring to L2a.
+- Built `apps/server/src/ai/chat/cooking-troubleshooting.ts`: curated deterministic KB of common Persian cooking failures (rice/tahdig/koobideh/koofteh/chicken/khoresh+meat/sauce-dairy/dough-cake + general salty/oily/burnt), each cause→fix→prevention. `matchTroubleshooting` requires dish+symptom (high precision); general failures match symptom-only; ZWNJ-insensitive.
+- chat-orchestration routes `during_cook_problem` to the KB, triggering on EITHER classifier intent OR a concrete KB match (the matcher is richer than the classifier anchors, so «چسبید/خشک شد/لعاب نداره/ریخت/ور نیومد» — which the classifier misses — still answer). No match → ask dish+symptom, never a recipe dump. medical/§3 classify+route first.
+- SCOPE (honest): curated set = common failures NOW; infinite arbitrary tail = live L2a assistant (founder-gated). Verified live: all 10 founder examples return guidance; suite 2087 tests green.
+
 ## Latest completed work: assistant relevance audit + fixes
 - Date: 2026-06-25. Commits: `90fe933e`, `97fb297e`. Founder asked to "test every word/term/phrase" after a screenshot showed irrelevant «لپه» results + Latin difficulty labels.
 - Method: live-probed ~40 Persian queries (Node/UTF-8 — PowerShell mangles Persian bodies; single guest + 3.3s pacing for the 20/min throttle) + a 5-lens multi-agent Workflow audit.
