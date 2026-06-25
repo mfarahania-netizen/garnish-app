@@ -47,7 +47,7 @@ const STOPWORDS = new Set<string>([
   'میخوام', 'میخواهم', 'میخوای', 'بپزم', 'بپز', 'بپزیم', 'بخورم', 'بخوریم', 'درست', 'بسازم',
   'کنم', 'کنیم', 'کن', 'کنید', 'بزنم', 'بزن', 'پیشنهاد', 'بده', 'بدید', 'بدی', 'برای', 'تا',
   'هم', 'اگه', 'اگر', 'هست', 'هستش', 'میشه', 'میتونم', 'میتونی', 'الان', 'خوب', 'دارم', 'دارین',
-  'دوست', 'چند', 'چندتا', 'لطفا', 'لطفاً', 'ممنون', 'سلام', 'های', 'یا',
+  'دوست', 'چند', 'چندتا', 'لطفا', 'لطفاً', 'ممنون', 'سلام', 'های', 'یا', 'بدون',
 ]);
 
 const ZWNJ = /‌/g;
@@ -179,9 +179,10 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
   const folded = foldPersian(raw);
   const exclude: string[] = [];
   let stripped = folded;
-  // capture «بدون X» / «بی X» and the latin equivalents, and remove the span so X is NOT a positive term
-  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)/g, (_m, w) => { const t = String(w).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
-  stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)/gi, (_m, w) => { const t = String(w).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  // capture «بدون X» / «بی X» (and a 2nd word for compound ingredients like «تخم مرغ»/«گوشت قرمز»), removing
+  // the WHOLE span so neither word becomes a positive term — «بدون تخم مرغ» must not search FOR مرغ.
+  stripped = stripped.replace(/(?:بدون|بی)\s+([^\s،,؛.!?]+)(?:\s+([^\s،,؛.!?]+))?/g, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
+  stripped = stripped.replace(/\b(?:without|no|zonder|geen)\s+([a-z؀-ۿ‌]+)(?:\s+([a-z؀-ۿ‌]+))?/gi, (_m, w1) => { const t = String(w1).replace(ZWNJ, '').trim(); if (t.length >= 2) exclude.push(t); return ' '; });
 
   const diets: string[] = /وگان|\bvegan\b/i.test(folded)
     ? ['vegan']

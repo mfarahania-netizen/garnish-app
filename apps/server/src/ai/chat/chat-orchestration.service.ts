@@ -173,7 +173,7 @@ export class ChatOrchestrationService {
     // classifier's anchor list — so trigger on EITHER the classifier intent OR a concrete KB match («چسبید»/
     // «خشک شد»/«لعاب نداره» that the classifier misses). No match → ask for the dish + symptom, never a recipe
     // dump. (The infinite tail of arbitrary "why did X happen" is the live L2a assistant, gated.)
-    if (intentDecision.intent === 'during_cook_problem' || matchTroubleshooting(input.prompt)) {
+    if (this.shouldTroubleshoot(input.prompt, intentDecision.intent)) {
       return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeTroubleshootingReply(input.prompt));
     }
 
@@ -444,6 +444,20 @@ export class ChatOrchestrationService {
       return `${header}\n\n**${n.name}** (هر ۱۰۰ گرم): ${parts.join('، ')}.\n\nℹ️ عددها تقریبی و بر اساس ۱۰۰ گرمِ مادهٔ خام است؛ توصیهٔ تغذیه‌ای یا پزشکی نیست.`;
     }
     return `${header}\n\nبرای ارزشِ غذایی، اسمِ خودِ ماده رو بگو (مثلاً «کالری برنج» یا «پروتئین عدس»). برای کالریِ یک غذای کامل هم صفحهٔ همون رسپی رو ببین. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم.`;
+  }
+
+  /**
+   * Should this turn be answered as a during-cook PROBLEM? Yes if the classifier said so. Otherwise the KB
+   * matcher (dish + symptom) is high-precision but can over-fire on a REQUEST/DESIRE that merely mentions a
+   * symptom-shaped adjective («جایگزین گوشت سفت», «کیک خشک دوست دارم»). Suppress those: a substitution or
+   * recipe-discovery turn, or an explicit desire phrase, is NOT a problem report.
+   */
+  private shouldTroubleshoot(prompt: string, intent: IntentClassification['intent']): boolean {
+    if (intent === 'during_cook_problem') return true;
+    if (!matchTroubleshooting(prompt)) return false;
+    if (intent === 'substitution' || intent === 'recipe_discovery') return false;
+    if (/دوست دارم|دوست داری|میخوام|میخواهم|میخوای|می خوام|هوس|میل دارم|عاشق/.test(normalizeText(prompt))) return false;
+    return true;
   }
 
   /** Answer a during-cook problem from the curated troubleshooting KB, or honestly ask for the dish + symptom. */

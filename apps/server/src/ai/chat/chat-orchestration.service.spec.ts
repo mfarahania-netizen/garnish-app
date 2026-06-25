@@ -242,6 +242,23 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
   });
 
+  it('does NOT let the troubleshooting matcher steal a substitution turn («جایگزین گوشت سفت»)', async () => {
+    const { svc, assist } = makeChat();
+    assist.substitutions.mockResolvedValueOnce({ resultStatus: 'ok', resolved: { name: 'گوشت گوسفند خام' }, substitutions: [{ name: 'گوشت گوساله' }], note: 'x' });
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'جایگزینِ گوشت سفت چیه؟', conversationId: 'c-steal-sub' });
+    expect(out.intent.intent).toBe('substitution');
+    // «سفت» is a troubleshooting symptom, but a substitution turn must reach the substitution path, not troubleshooting
+    expect(out.reply).not.toContain('الان چی‌کار کن'); // not the troubleshooting template
+    expect(assist.substitutions).toHaveBeenCalled();
+  });
+
+  it('does NOT troubleshoot a DESIRE that merely mentions a symptom adjective («کیک خشک دوست دارم»)', async () => {
+    const { svc, grounded } = makeChat();
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'کیک خشک دوست دارم', conversationId: 'c-steal-desire' });
+    expect(out.reply).not.toContain('الان چی‌کار کن'); // a want, not a problem → grounded recipe path
+    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
+  });
+
   it('a during-cook problem with no curated match asks for the dish + symptom (still not a recipe dump)', async () => {
     const { svc, grounded } = makeChat();
     const out = await svc.handleChat({ userId: 'u1', prompt: 'شیرینی‌ام خراب شد', conversationId: 'c-cook2' });

@@ -161,4 +161,15 @@ describe('parseSearchQuery', () => {
     expect(r.exclude).toEqual([]);
     expect(r.diets).toEqual([]);
   });
+
+  it('a two-word negated ingredient never leaks its 2nd word into INCLUDE (املت بدون تخم مرغ)', () => {
+    const r = parseSearchQuery('املت بدون تخم مرغ');
+    expect(r.exclude).toContain('تخم');
+    expect(r.include).not.toContain('مرغ'); // the bug: «مرغ» must NOT become a positive term
+    expect(r.include).toContain('املت');
+  });
+
+  it('strips a bare «بدون» (no junk positive term)', () => {
+    expect(parseSearchQuery('بدون').include).toEqual([]);
+  });
 });
