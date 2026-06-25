@@ -247,6 +247,33 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(grounded.composeDeterministicReply).toHaveBeenCalled(); // generic clarifier, repair returned null
   });
 
+  it('DARK-captures sanitized live turn context (currentScreen/recipeId/stepIndex) on the turn event', async () => {
+    const { svc, analytics } = makeChat();
+    await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-ctx', context: { currentScreen: 'cook', recipeId: 'ckRecipe_123', stepIndex: 2 } });
+    const ev = analytics.trackEvent.mock.calls.at(-1)[0];
+    expect(ev.payload.currentScreen).toBe('cook');
+    expect(ev.payload.contextRecipeId).toBe('ckRecipe_123');
+    expect(ev.payload.stepIndex).toBe(2);
+  });
+
+  it('drops malformed live turn context before capture (untrusted client input)', async () => {
+    const { svc, analytics } = makeChat();
+    await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-ctx2', context: { recipeId: 'bad id!', stepIndex: -3, currentScreen: '   ' } as any });
+    const ev = analytics.trackEvent.mock.calls.at(-1)[0];
+    expect(ev.payload.contextRecipeId).toBeNull();
+    expect(ev.payload.stepIndex).toBeNull();
+    expect(ev.payload.currentScreen).toBeNull();
+  });
+
+  it('captures null context when the client supplies none (DARK — no behavior/routing change)', async () => {
+    const { svc, analytics } = makeChat();
+    await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-ctx3' });
+    const ev = analytics.trackEvent.mock.calls.at(-1)[0];
+    expect(ev.payload.contextRecipeId).toBeNull();
+    expect(ev.payload.currentScreen).toBeNull();
+    expect(ev.payload.stepIndex).toBeNull();
+  });
+
   it('intent-routes a during-cook problem to troubleshooting guidance, NOT a recipe list', async () => {
     const { svc, grounded } = makeChat();
     const out = await svc.handleChat({ userId: 'u1', prompt: 'چرا برنجم شفته شد؟', conversationId: 'c-cook' });

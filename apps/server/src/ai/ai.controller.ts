@@ -16,16 +16,21 @@ export class AiController {
   @UseGuards(AuthGuard('jwt'))
   @Throttle({ default: { limit: 20, ttl: 60000 } }) // افزایش محدودیت مخصوص چت
   @Post('chat')
-  async chat(@Req() req, @Body() body: { prompt: string; conversationId?: string }) {
+  async chat(
+    @Req() req,
+    @Body() body: { prompt: string; conversationId?: string; context?: { currentScreen?: string; recipeId?: string; stepIndex?: number } },
+  ) {
     const userId = req.user.userId;
     // E47-A3/A8: every chat request routes THROUGH the AI Orchestrator (mandatory snapshot, guards,
     // cost, AICallLog). The reply is the LIVE post-guarded model output only when chat-live is
     // explicitly enabled by env; otherwise it is the deterministic recipe reply (safe default).
     // Response keeps `reply` + `conversationId` (backward-compatible) and adds safe optional fields.
+    // `context` (D1 live per-request context) is sanitized + DARK-captured server-side — never trusted raw.
     const { reply, conversationId, status, providerMode, aiCallLogId } = await this.chatOrchestration.handleChat({
       userId,
       prompt: body.prompt,
       conversationId: body.conversationId,
+      context: body.context,
     });
     return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId };
   }

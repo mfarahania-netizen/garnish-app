@@ -16,10 +16,26 @@ import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient
 import { matchTroubleshooting } from './cooking-troubleshooting';
 import { t, Locale } from '../i18n/template-registry';
 
+/**
+ * D1 live per-request context — WHERE the user is when they ask, so the assistant can ground to "this" recipe/
+ * step and never feel lost. Wired DARK for now (captured/observed only; does NOT change routing or grounding),
+ * mirroring the intentDecision dark-capture pattern: the FE rebuild will populate it (recipe/cook/shopping/plan)
+ * and context-aware grounding is then gated on that wiring + a deixis design decision. Untrusted client input —
+ * always sanitized (`sanitizeTurnContext`) before use.
+ */
+export interface ChatTurnContext {
+  /** which surface the user is on (e.g. 'recipe' | 'cook' | 'shopping' | 'plan' | 'home'). */
+  currentScreen?: string;
+  /** the recipe being viewed/cooked, if any. */
+  recipeId?: string;
+  /** 0-based cook-mode step index, if mid-cook. */
+  stepIndex?: number;
+}
 export interface HandleChatInput {
   userId: string;
   prompt: string;
   conversationId?: string;
+  context?: ChatTurnContext;
 }
 export interface HandleChatResult {
   reply: string;
@@ -85,6 +101,8 @@ export class ChatOrchestrationService {
 
   async handleChat(input: HandleChatInput): Promise<HandleChatResult> {
     const conversationId = input.conversationId ?? randomUUID();
+    // D1 live per-request context — sanitized + DARK-captured on the turn event (no routing/grounding change yet).
+    const turnContext = this.sanitizeTurnContext(input.context);
 
     // DARK cost-governor wiring (AI_MASTER_SPEC P0): run the deterministic IntentClassifier on EVERY turn and
     // RECORD its decision — but do NOT yet change routing (the model tiers need live Gemini, still OFF). This
@@ -144,6 +162,7 @@ export class ChatOrchestrationService {
         model: STUB_MODEL,
         aiCallLogId: null,
         suggestedActionType: allergens.length ? 'add_allergy' : null,
+        turnContext,
       });
       return {
         reply,
@@ -251,6 +270,7 @@ export class ChatOrchestrationService {
         model: STUB_MODEL,
         aiCallLogId: null,
         blocked: true,
+        turnContext,
       });
       return { reply, conversationId, status, providerMode: 'deterministic', aiCallLogId: null, intent: intentDecision };
     }
@@ -299,9 +319,24 @@ export class ChatOrchestrationService {
       model,
       aiCallLogId,
       blocked,
+      turnContext,
     });
 
     return { reply, conversationId, status, providerMode, aiCallLogId, intent: intentDecision };
+  }
+
+  /**
+   * Bound the untrusted client-supplied turn context before it is captured/observed. Drops anything malformed;
+   * charset/length-restricts strings; clamps stepIndex. Returns undefined when nothing valid remains. (Defence in
+   * depth: this is DARK-captured only today, but sanitizing now means activation later can't surface raw input.)
+   */
+  private sanitizeTurnContext(raw?: ChatTurnContext): ChatTurnContext | undefined {
+    if (!raw || typeof raw !== 'object') return undefined;
+    const out: ChatTurnContext = {};
+    if (typeof raw.currentScreen === 'string' && raw.currentScreen.trim()) out.currentScreen = raw.currentScreen.trim().slice(0, 32);
+    if (typeof raw.recipeId === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(raw.recipeId)) out.recipeId = raw.recipeId;
+    if (typeof raw.stepIndex === 'number' && Number.isInteger(raw.stepIndex) && raw.stepIndex >= 0 && raw.stepIndex <= 500) out.stepIndex = raw.stepIndex;
+    return Object.keys(out).length ? out : undefined;
   }
 
   /**
@@ -540,6 +575,7 @@ export class ChatOrchestrationService {
       providerMode: 'deterministic',
       model: STUB_MODEL,
       aiCallLogId: null,
+      turnContext: this.sanitizeTurnContext(input.context),
     });
     return { reply, conversationId, status: 'ok', providerMode: 'deterministic', aiCallLogId: null, intent: intentDecision };
   }
@@ -566,6 +602,7 @@ export class ChatOrchestrationService {
       aiCallLogId: string | null;
       blocked?: boolean;
       suggestedActionType?: string | null;
+      turnContext?: ChatTurnContext;
     },
   ): Promise<void> {
     await this.analytics.trackEvent({
@@ -586,6 +623,10 @@ export class ChatOrchestrationService {
         safetyRelevant: intent.safetyRelevant,
         confidence: intent.confidence,
         suggestedActionType: meta.suggestedActionType ?? null,
+        // D1 live context (DARK observability): WHERE the turn happened, when the client supplies it.
+        currentScreen: meta.turnContext?.currentScreen ?? null,
+        contextRecipeId: meta.turnContext?.recipeId ?? null,
+        stepIndex: meta.turnContext?.stepIndex ?? null,
       },
     }).catch((err) => {
       this.logger.debug(`assistant turn event skipped: ${err?.message ?? err}`);
