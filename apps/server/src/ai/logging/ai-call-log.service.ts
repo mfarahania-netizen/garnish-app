@@ -85,8 +85,11 @@ export class AiCallLogService {
       });
       return row;
     } catch (err) {
-      // Auditing must never break the AI call itself.
-      this.logger.error(`Failed to persist AICallLog: ${err instanceof Error ? err.message : String(err)}`);
+      // Auditing must never break the AI call itself. Log the Prisma error CODE too — a silent persist failure is
+      // how the whole cost/token ledger went blind (an un-applied migration → P2022 «column does not exist» on
+      // EVERY real call). The code makes that diagnosable instead of a vague message.
+      const code = (err as { code?: string })?.code;
+      this.logger.error(`Failed to persist AICallLog${code ? ` [${code}]` : ''}: ${err instanceof Error ? err.message : String(err)}`);
       return null;
     }
   }
