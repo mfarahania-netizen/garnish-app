@@ -1,5 +1,11 @@
 # Garnish AI — MASTER SPEC (the single authoritative, all-dimensions design)
 
+> 🔴 **URGENT EXECUTION (read first):** the prioritized plan to make the chat actually intelligent — what's
+> broken, what's FIXED (criteria retrieval, foreign food, pork-observance gate, inline recipe delivery, cost/token
+> observability), and the prioritized remaining work — lives in
+> [`CHAT_INTELLIGENCE_EXECUTION_PLAN.md`](CHAT_INTELLIGENCE_EXECUTION_PLAN.md). This SPEC is the DESIGN; that doc is
+> the live execution list (founder priority: the chat is the core foundation of the app).
+
 > **Status:** authoritative. **Supersedes-by-unification** the fragments — `AI_DESIGN_SPEC.md`, `AI_STANDARD.md`, `AI_INTERNALIZATION_ARCH.md`, `AI_LEARNING_ARCH.md`, `LIVING_USER_CONTEXT.md`, `L1_PLAN.md` + `L1_STEP4/5_*_SPEC.md`, and the AI sections of `IDEAS_AND_GAPS.md` / `GUARDIAN_LOG.md`. Those remain the deep-dive references; **where they disagree, THIS doc wins.** Code-grounded against `apps/server/src/ai/**`, `apps/server/src/recommendation/**`, `apps/server/src/analytics/**`, `apps/server/prisma/schema.prisma`, `apps/web/src/**`, re-verified 2026-06-22 (not asserted).
 >
 > **Provider** = Gemini (paid, ~$1.14/user-mo COGS ceiling = 15% of €7), abstracted at the `ModelProvider` seam (provider-agnostic; Claude-switch is config, not rework). **Deterministic-first, LLM-as-last-resort.** Persian-cuisine-FOR-EVERYONE PWA. **EU/Holland general-public launch** (a Dutch user with **zero** Persian background must succeed); **Iran sandbox first.**
