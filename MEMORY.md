@@ -15,6 +15,15 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: chat assistant retrieval revival (the "dead assistant")
+- Date: 2026-06-25. Commit: `ce9ba378`.
+- Symptom: the UI assistant felt dead — every turn returned "no safe match".
+- Root cause: NOT wiring/auth/CORS (those were fine; `/ai/chat` returned 200). `search_recipes` matched the WHOLE prompt as one substring, so any natural-language turn (incl. all 3 UI starter chips, which are full sentences) retrieved nothing. Codex's memory slice also fed the annotated `[SHORT_TERM_MEMORY_UNTRUSTED]` block to retrieval, dead-ending turn-2+.
+- Fix (deterministic, hard allergy gate UNCHANGED): `persian-search.ts` (Arabic kaf/yeh + digit fold; tokenize -> content terms; stopword strip; bare keyword falls back to whole query). `search_recipes` OR-matches content terms + ranks by distinct-term hits. `chat-orchestration` feeds grounding a CLEAN retrieval query (current turn + recent USER turns) while the annotated block still feeds the LIVE LLM.
+- Safety: intent classify, §3 declaration detection, and `extractStatedAllergens` still read ONLY `input.prompt`.
+- Verification: full server suite 250 suites / 2038 tests green; server tsc green; live guest-auth probe of all 3 starters + a 2-turn follow-up returns real grounded recipes. Browser-pixel pass not run (preview can't reuse external :5173; no Chrome extension) — proven at the API layer + web `assistant.smoke.test`.
+- Follow-up: a substitution question still returns matching recipes, not a substitution — intent-aware routing is the next layer.
+
 ## Latest completed work: onboarding/auth dev-loop CORS fix
 - Date: 2026-06-24 (committed 2026-06-25).
 - Commit: `1685480a fix(server): allow same-port loopback CORS peer for dev auth`.

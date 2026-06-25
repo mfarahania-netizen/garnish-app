@@ -152,6 +152,23 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** continue P1 Dimension 1 (`TemplateRegistry` Dutch or conversational repair) after Claude verification; do not reopen P0.
 ---
+## 4j. LATEST DIMENSION CLOSURE SNAPSHOT - assistant retrieval revival (2026-06-25, commit `ce9ba378`)
+**Dimension(s):** Dimension 1 - Capability & Conversational UX (the grounded retrieval that EVERY chat turn depends on).
+
+**What this must do:** a real user's natural-language turn (and the 3 UI starter chips, which are full sentences) must retrieve real recipes from the corpus so the assistant gives a grounded answer instead of dead-ending.
+
+**Root cause found (not what the handoff guessed):** wiring/auth/CORS/nav were all fine and `/ai/chat` returned 200; `search_recipes` did a WHOLE-prompt substring `contains`, which never matches a title, so every conversational turn returned empty -> "no safe match". Codex's memory slice also fed the annotated `[SHORT_TERM_MEMORY_UNTRUSTED]` block into retrieval, dead-ending turn-2+ specifically. (An early PowerShell probe falsely showed even keywords failing — that was a PS-5.1 body-encoding artifact, not the app; re-probed with Node/UTF-8.)
+
+**What is built now:** `apps/server/src/ai/tools/persian-search.ts` (fold Arabic kaf/yeh + digits to the Persian corpus forms; tokenize -> content terms; drop function/question stopwords; fall back to the whole query for a bare keyword). `search_recipes` OR-matches content terms over title/description/ingredient and ranks by distinct-term hits (title weighted most); single-word queries behave exactly as before. `chat-orchestration` now feeds grounding a CLEAN retrieval query (`composeRetrievalQuery`: current turn + recent USER turns, no scaffolding) while the annotated block still feeds the LIVE LLM via `composeMemoryPrompt`.
+
+**Safety:** the hard allergy gate (`buildGrounding` assessRecipeFit/analyzeRecipeIntegrity) is UNCHANGED and still filters whatever is retrieved; intent classify, §3 declaration detection, and `extractStatedAllergens` still read ONLY `input.prompt`.
+
+**Verification:** full server suite 250 suites / 2038 tests green; server tsc green; live guest-auth probe of all 3 starters + a 2-turn follow-up returns real grounded recipes. CAVEAT: the live browser-pixel pass was not run (preview harness can't reuse the founder's external :5173 Vite; no Chrome extension connected) — proven at the API layer + web `assistant.smoke.test`.
+
+**Is it 100% closed?** Yes for "the assistant returns grounded answers to natural-language turns." NOT closed for Dimension 1 overall: intent-aware routing (a substitution question should answer with a substitution, not ماست-recipes), fa/nl/en TemplateRegistry (Dutch), conversational repair, retrieval upgrade above this token-OR floor, and groundedness validator remain.
+
+**Next smallest step:** P1 — conversational repair (ask ONE clarifying question) OR fa/nl/en TemplateRegistry (Dutch required); both Opus-design-gated.
+---
 ## 4h. LATEST DIMENSION CLOSURE SNAPSHOT - P1 multi-turn memory slice (2026-06-24)
 **Dimension(s):** Dimension 1 - Capability & Conversational UX.
 
@@ -213,7 +230,7 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 - **CORS fix:** same-port loopback peers only, no wildcard.
 - **requestId echo:** did NOT reorder or bypass `RecipeSafetyFilterService` in `recommendation.controller.ts`.
 
-**1. DIAGNOSE the dead AI assistant in the app UI (TOP product priority — outranks new P1 features).** The code wiring EXISTS (`apps/web/src/app/assistant/useAssistant.js` → `POST /ai/chat` → `apps/server/src/ai/ai.controller.ts`), so this is a RUNTIME / reachability / stub issue, not missing code. Run the app (preview tools), open the assistant, watch console + network on the `/ai/chat` call: is the screen reachable in the rebuilt nav? does the call 200 or fail (auth / base-URL / CORS)? is it returning a stub answer so it only *feels* dead? Fix end-to-end so a real user gets a real answer. **A non-functioning assistant means the entire AI backend delivers ZERO user value today.**
+**1. ✅ DONE 2026-06-25 — the "dead assistant" is REVIVED (commit `ce9ba378`).** Diagnosis: the wiring/auth/CORS were all fine and `/ai/chat` returned 200; the real bug was RETRIEVAL — `search_recipes` matched the WHOLE prompt as one substring, so every natural-language turn (incl. all 3 UI starter chips, which are full sentences) retrieved nothing and dead-ended with "no safe match". Codex's memory slice made it worse on turn-2+ by feeding the annotated `[SHORT_TERM_MEMORY_UNTRUSTED]` block to retrieval. Fix (deterministic, allergy gate untouched): Persian-aware tokenizer (`persian-search.ts`: kaf/yeh/digit fold + stopword strip), `search_recipes` OR-matches content terms + ranks by term hits, and chat-orchestration now feeds grounding a CLEAN retrieval query (current turn + recent USER turns) while the annotated block still feeds the LIVE LLM context. Verified live (guest auth → `/ai/chat`): all 3 starters + a 2-turn follow-up return real grounded recipes; 250 suites / 2038 tests green. NOTE: a methodological caveat — the live browser-pixel pass was NOT run (the preview harness can't reuse the founder's external Vite on :5173, and no Chrome extension was connected); the E2E was proven at the API layer (the exact backend path the FE consumes) + the web `assistant.smoke.test` covers FE rendering. Known follow-up: `جایگزین ماست` returns ماست-recipes, not a true substitution — substitution-intent routing is the next layer (conversational repair / intent routing, §7.2).
 
 **2. Then P1 (Opus-gated; from AI_MASTER_SPEC §D "Must-build").** Do NOT originate these with Sonnet. Lock the design with Opus first, then execute.
 - **Multi-turn memory:** DONE as slice 4h: 8 user-scoped verbatim turns + deterministic untrusted short summary are wired into `chat-orchestration`, user turn last, safety still reads only current prompt/profile. Remaining cache-provider optimization belongs to the P1 provider/cache upgrade.
