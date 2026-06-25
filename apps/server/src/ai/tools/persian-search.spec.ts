@@ -1,4 +1,4 @@
-import { foldPersian, tokenizeQuery, extractSubstitutionTargets, isConfidentIngredientMatch } from './persian-search';
+import { foldPersian, tokenizeQuery, extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient } from './persian-search';
 
 describe('foldPersian', () => {
   it('folds Arabic kaf/yeh to the Persian corpus forms', () => {
@@ -98,5 +98,34 @@ describe('isConfidentIngredientMatch', () => {
   it('rejects empty / unrelated', () => {
     expect(isConfidentIngredientMatch('', 'کره')).toBe(false);
     expect(isConfidentIngredientMatch('کره', 'روغن زیتون')).toBe(false);
+  });
+
+  it('is ZWNJ-insensitive (typed «تخم مرغ» vs corpus «تخم‌مرغ»)', () => {
+    expect(isConfidentIngredientMatch('تخم مرغ', 'تخم‌مرغ کامل خام')).toBe(true);
+  });
+});
+
+describe('aliasIngredient', () => {
+  it('maps colloquial base terms to their canonical dictionary name', () => {
+    expect(aliasIngredient('شیر')).toBe('شیر کامل');
+    expect(aliasIngredient('تخم مرغ')).toBe('تخم‌مرغ کامل خام');
+    expect(aliasIngredient('کره')).toBe('کره شور');
+    expect(aliasIngredient('گوجه')).toBe('گوجه‌فرنگی خام');
+    expect(aliasIngredient('رب گوجه')).toBe('رب گوجه‌فرنگی');
+  });
+
+  it('an aliased canonical is accepted by the confidence gate (gate compares the aliased term)', () => {
+    // گوجه→گوجه‌فرنگی خام: «فرنگی» is not a modifier, so the gate must compare the ALIASED term, not the raw one
+    expect(isConfidentIngredientMatch(aliasIngredient('گوجه'), 'گوجه‌فرنگی خام')).toBe(true);
+    expect(isConfidentIngredientMatch(aliasIngredient('رب گوجه'), 'رب گوجه‌فرنگی')).toBe(true);
+  });
+
+  it('folds Arabic forms before lookup', () => {
+    expect(aliasIngredient('شير')).toBe('شیر کامل'); // Arabic yeh
+  });
+
+  it('returns the term unchanged when not aliased', () => {
+    expect(aliasIngredient('زعفران')).toBe('زعفران');
+    expect(aliasIngredient('بادمجان')).toBe('بادمجان');
   });
 });

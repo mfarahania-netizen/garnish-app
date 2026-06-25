@@ -85,6 +85,40 @@ export function tokenizeQuery(raw: unknown): TokenizedQuery {
   return { terms, fallback: false };
 }
 
+// Colloquial base ingredient -> the canonical dictionary entry. The USDA-derived ingredient dictionary
+// names things specifically (no plain «شیر»/«تخم مرغ»/«کره»), so a user's everyday term needs mapping to a
+// real, sensible default row. Keys are foldPersian forms; values are EXACT dictionary names (VERIFIED by DB
+// query 2026-06-25). Extend as new gaps surface. This only steers resolution; the allergy filter is untouched.
+const INGREDIENT_ALIAS: Record<string, string> = {
+  'شیر': 'شیر کامل',
+  'تخم مرغ': 'تخم‌مرغ کامل خام',
+  'تخممرغ': 'تخم‌مرغ کامل خام',
+  'کره': 'کره شور',
+  'ماست': 'ماست ساده',
+  'خامه': 'خامه پرچرب',
+  'پنیر': 'پنیر فتا',
+  'پیاز': 'پیاز خام',
+  'سیر': 'سیر خام',
+  'گوجه': 'گوجه‌فرنگی خام',
+  'گوجه فرنگی': 'گوجه‌فرنگی خام',
+  'لیمو': 'لیمو زرد خام',
+  'ابلیمو': 'آبلیموی بطری',
+  'نمک': 'نمک خوراکی',
+  'نشاسته': 'نشاسته ذرت',
+  'سرکه': 'سرکه سیب',
+  'رب گوجه': 'رب گوجه‌فرنگی',
+  'رب گوجه فرنگی': 'رب گوجه‌فرنگی',
+  'رب': 'رب گوجه‌فرنگی',
+  'روغن': 'روغن آفتابگردان',
+  'مرغ': 'مرغ کامل خام',
+};
+
+/** Map a colloquial ingredient term to its canonical dictionary name, or return it unchanged. */
+export function aliasIngredient(term: unknown): string {
+  const raw = String(term ?? '').trim();
+  return INGREDIENT_ALIAS[foldPersian(raw)] ?? raw;
+}
+
 // Substitution-intent verbs/connectors — stripped so only the INGREDIENT token remains. Stored ZWNJ-free
 // + folded (the tokenizer already folds; we compare on the ZWNJ-removed key).
 const SUBSTITUTION_ANCHORS = new Set<string>([
@@ -109,14 +143,16 @@ const MODIFIER_TOKENS = new Set<string>([
  * a different base («کره»→«کره سیب», «تخم»→«تخمه کدو»), so the caller can fall through instead of mis-answering.
  */
 export function isConfidentIngredientMatch(query: unknown, name: unknown): boolean {
-  const fq = foldPersian(query);
-  const fn = foldPersian(name);
+  // ZWNJ is a soft space: «تخم‌مرغ» (corpus) and «تخم مرغ» (typed) must compare equal here.
+  const soft = (s: string) => s.replace(ZWNJ, ' ').replace(/\s+/g, ' ').trim();
+  const fq = soft(foldPersian(query));
+  const fn = soft(foldPersian(name));
   if (!fq || !fn) return false;
   if (fn === fq) return true;
   if (!fn.startsWith(`${fq} `)) return false;
   const remainder = fn.slice(fq.length + 1).trim();
   if (!remainder) return false;
-  return remainder.split(/\s+/).every((tok) => MODIFIER_TOKENS.has(tok.replace(ZWNJ, '')));
+  return remainder.split(/\s+/).every((tok) => MODIFIER_TOKENS.has(tok));
 }
 
 /**

@@ -153,9 +153,9 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     const { svc, grounded, assist } = makeChat();
     assist.substitutions.mockResolvedValueOnce({
       resultStatus: 'ok',
-      resolved: { name: 'ماست' },
+      resolved: { name: 'ماست ساده' }, // the tool aliases «ماست»→«ماست ساده» and resolves to it
       substitutions: [{ name: 'کفیر', why: 'بافت و ترشی مشابه' }, { name: 'خامهٔ ترش', why: null, reason: 'هم‌نقش' }],
-      note: '۲ جایگزین برای «ماست» پیشنهاد شد.',
+      note: '۲ جایگزین برای «ماست ساده» پیشنهاد شد.',
     });
     const out = await svc.handleChat({ userId: 'u1', prompt: 'جایگزین ماست چی بزنم؟', conversationId: 'c-sub' });
 
@@ -171,7 +171,7 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
   it('passes the declared allergies to the substitution tool as avoidAllergens (safety)', async () => {
     const { svc, grounded, assist } = makeChat();
     grounded.getDeclaredAllergens.mockResolvedValueOnce(['dairy']);
-    assist.substitutions.mockResolvedValueOnce({ resultStatus: 'no_substitution_data', resolved: { name: 'کره' }, substitutions: [], note: 'برای «کره» جایگزینی در داده‌ها ثبت نشده است.' });
+    assist.substitutions.mockResolvedValueOnce({ resultStatus: 'no_substitution_data', resolved: { name: 'کره شور' }, substitutions: [], note: 'برای «کره شور» جایگزینی در داده‌ها ثبت نشده است.' });
     const out = await svc.handleChat({ userId: 'u1', prompt: 'به جای کره چی بزنم؟', conversationId: 'c-sub-allergy' });
     expect(assist.substitutions).toHaveBeenCalledWith('u1', { ingredient: 'کره', avoidAllergens: ['dairy'] });
     expect(out.reply).toContain('کره'); // honest "resolved but no swaps" reply, still on-topic
@@ -219,18 +219,19 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     expect(roleOf(chatCreate, 1)).toBe('assistant');
   });
 
-  it('blocks a medical/diagnostic chat and returns a safe non-medical reply', async () => {
-    const { svc, aiCreate, legacyAi, grounded, analytics } = makeChat();
+  it('intent-routes a medical/health question to a safe deterministic non-medical decline (no recipe, no echo)', async () => {
+    const { svc, legacyAi, grounded, analytics } = makeChat();
     const out = await svc.handleChat({ userId: 'u1', prompt: 'diagnose my disease and prescribe medication', conversationId: 'c3' });
-    expect(out.status).toBe('blocked_safety');
+    expect(out.intent.intent).toBe('medical_or_health_advice');
+    expect(out.status).toBe('ok'); // deterministic decline, classified REFUSE (the AiSafetyGuard remains a backstop)
+    expect(out.reply).toMatch(/پزشک|تغذیه/); // declines + points to a professional
+    expect(out.reply).not.toMatch(/diagnos|medication|treat/i); // never echoes the medical ask
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled(); // NOT the recipe path
     expect(legacyAi.handlePrompt).not.toHaveBeenCalled();
-    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
     expect(analytics.trackEvent).toHaveBeenCalledWith(expect.objectContaining({
       type: 'ai_suggestion_generated',
-      payload: expect.objectContaining({ conversationId: 'c3', status: 'blocked_safety', tier: 'REFUSE', blocked: true }),
+      payload: expect.objectContaining({ conversationId: 'c3', intent: 'medical_or_health_advice', tier: 'REFUSE' }),
     }));
-    expect(out.reply).not.toMatch(/diagnos|medication|treat/i);
-    expect(aiCreate.mock.calls[0][0].data.status).toBe('blocked_safety');
   });
 
   it('blocks a fake-vision chat and returns the "image analysis not available" message', async () => {
@@ -255,7 +256,8 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
     const { svc, model } = makeChat();
     // force an invalid snapshot
     (svc as any).snapshots = { build: jest.fn().mockResolvedValue({ userId: '', generatedAt: '', schemaVersion: 1 }) };
-    const out = await svc.handleChat({ userId: 'u1', prompt: 'hi', conversationId: 'c5' });
+    // a recipe-discovery prompt (reaches the orchestrator; a greeting/medical would be intent-routed earlier)
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'یه غذای سریع با مرغ', conversationId: 'c5' });
     expect(out.status).toBe('error');
     expect(out.reply).toBeTruthy();
     expect(model.generate).not.toHaveBeenCalled();
@@ -395,17 +397,24 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
 
   // P0 DARK wiring (AI_MASTER_SPEC gate: "classify() invoked per turn"): the IntentClassifier runs on every chat
   // turn and its decision is surfaced — without yet changing routing (dark).
-  it('classifies the intent on every turn (dark — surfaced, routing unchanged)', async () => {
+  it('intent-routes non-recipe turns (greeting / medical / out-of-domain) to safe canned replies, not recipe grounding', async () => {
     setDefault();
     const { svc, grounded } = makeChat();
     const greet = await svc.handleChat({ userId: 'u1', prompt: 'سلام', conversationId: 'c-int-1' });
     expect(greet.intent.intent).toBe('greeting_smalltalk');
+    expect(greet.reply).toContain('آشپزی'); // friendly greeting, not a recipe list
 
     const med = await svc.handleChat({ userId: 'u1', prompt: 'برای دیابتم چی بخورم؟', conversationId: 'c-int-2' });
     expect(med.intent.intent).toBe('medical_or_health_advice');
     expect(med.intent.tier).toBe('REFUSE');
-    // DARK: classification does NOT yet alter the reply path — the deterministic grounded reply still flows.
-    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
+    expect(med.reply).toMatch(/پزشک|تغذیه/); // non-medical decline, not "no recipe found"
+
+    const ood = await svc.handleChat({ userId: 'u1', prompt: 'آب و هوای تهران چطوره؟', conversationId: 'c-int-3' });
+    expect(ood.intent.intent).toBe('out_of_domain');
+    expect(ood.reply).toContain('آشپزی'); // cooking-only scope, not تهرانی recipes
+
+    // NONE of these reached the recipe-grounding composer
+    expect(grounded.composeDeterministicReply).not.toHaveBeenCalled();
   });
 
   // §3 conversational-allergy (ACTIVE, deterministic, zero-Gemini): a mid-chat allergy DECLARATION must surface a

@@ -84,7 +84,12 @@ export class SearchRecipesTool implements AiTool {
   }
 }
 
-/** Relevance score + which field first matched. Title hits weigh most, then description, then ingredient. */
+/**
+ * Relevance score + which field first matched. Order/weight: TITLE (dish is named after the term) >
+ * INGREDIENT (the term is a real ingredient — what «با X چی بپزم» actually wants) > DESCRIPTION (the term
+ * is only mentioned in prose — the weakest signal). Putting ingredient above description fixes the case
+ * where «خورشت سیب» (mentions لپه in its blurb) out-ranked «کوفته تبریزی» (actually built on لپه).
+ */
 function scoreRecipe(
   r: { title: string; description: string | null; ingredients?: { name: string | null }[] },
   terms: string[],
@@ -94,13 +99,13 @@ function scoreRecipe(
   const ingredients = (r.ingredients ?? []).map((ing) => foldPersian(ing?.name)).filter(Boolean);
   let score = 0;
   let titleHit = false;
-  let descHit = false;
   let ingredientHit = false;
+  let descHit = false;
   for (const t of terms) {
     if (title.includes(t)) { score += 3; titleHit = true; }
-    else if (desc.includes(t)) { score += 2; descHit = true; }
-    else if (ingredients.some((n) => n.includes(t))) { score += 1; ingredientHit = true; }
+    else if (ingredients.some((n) => n.includes(t))) { score += 2; ingredientHit = true; }
+    else if (desc.includes(t)) { score += 1; descHit = true; }
   }
-  const reason = titleHit ? 'title_match' : descHit ? 'description_match' : ingredientHit ? 'ingredient_match' : 'title_match';
+  const reason = titleHit ? 'title_match' : ingredientHit ? 'ingredient_match' : descHit ? 'description_match' : 'title_match';
   return { score, reason };
 }

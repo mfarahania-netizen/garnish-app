@@ -12,7 +12,7 @@ import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
-import { extractSubstitutionTargets, isConfidentIngredientMatch } from '../tools/persian-search';
+import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient } from '../tools/persian-search';
 
 export interface HandleChatInput {
   userId: string;
@@ -150,6 +150,15 @@ export class ChatOrchestrationService {
         intent: intentDecision,
         ...(allergens.length ? { suggestedAction: { type: 'add_allergy' as const, allergens } } : {}),
       };
+    }
+
+    // INTENT-AWARE ROUTING (deterministic): non-recipe intents must NOT fall through to recipe grounding (which
+    // would answer a "thank you", a weather question, or a medical question with an irrelevant recipe list).
+    // The classifier already labels these; give each an on-brand, SAFE canned reply. Safety intents (medical)
+    // get a clear non-medical decline. Allergy DECLARATION (§3) is handled above and never reaches here.
+    const intentReply = this.intentRoutedReply(intentDecision.intent);
+    if (intentReply) {
+      return this.respondDeterministicTurn(input, conversationId, intentDecision, intentReply);
     }
 
     // INTENT-AWARE ROUTING (deterministic): a substitution question ("جایگزینِ ماست چی بزنم؟") wants a SWAP,
@@ -362,12 +371,44 @@ export class ChatOrchestrationService {
       // none. If the resolved ingredient is not the user's term (or its base+modifier), keep trying / fall
       // through to the safe grounded path. 'ingredient_not_found' / 'empty_query' → try the next candidate.
       if (status === 'ok' || status === 'no_substitution_data') {
-        if (isConfidentIngredientMatch(ingredient, result?.resolved?.name)) {
+        // Accept when the resolved ingredient is a confident match for EITHER the raw term OR its curated alias
+        // (e.g. «گوجه»→«گوجه‌فرنگی خام», whose canonical isn't a bare modifier extension of «گوجه»).
+        const resolvedName = result?.resolved?.name;
+        if (
+          isConfidentIngredientMatch(ingredient, resolvedName) ||
+          isConfidentIngredientMatch(aliasIngredient(ingredient), resolvedName)
+        ) {
           return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeSubstitutionReply(result));
         }
       }
     }
     return null;
+  }
+
+  /**
+   * Deterministic, on-brand replies for non-recipe intents so they don't fall through to recipe grounding.
+   * Returns null for recipe-bearing intents (recipe_discovery, timer, ingredient_facts, scaling-with-context…)
+   * so they continue to the grounded path. SAFE by construction — medical gets a clear non-medical decline.
+   */
+  private intentRoutedReply(intent: IntentClassification['intent']): string | null {
+    switch (intent) {
+      case 'greeting_smalltalk':
+        return 'سلام! 👋 من دستیار آشپزی گارنیشم. بگو چی دوست داری بپزی یا چه موادی توی خونه داری تا کمکت کنم.';
+      case 'feedback':
+        return 'خوشحالم که به کارت اومد! 🙌 هر وقت سؤال آشپزی داشتی — جایگزین، ایدهٔ غذا یا طرز تهیه — در خدمتم.';
+      case 'medical_or_health_advice':
+        return 'من نمی‌تونم توصیهٔ پزشکی یا رژیمِ درمانی بدم؛ برای این موضوع بهتره با پزشک یا متخصصِ تغذیه مشورت کنی. اما اگه بخوای، می‌تونم غذاهای سادهٔ خوش‌طعم از رسپی‌های گارنیش برات پیدا کنم — فقط بگو چه موادی دوست داری.';
+      case 'out_of_domain':
+        return 'من فقط توی آشپزی و رسپی‌ها می‌تونم کمکت کنم 🍳 — یه ماده یا غذایی بگو تا برات پیدا کنم یا جایگزینش رو پیشنهاد بدم.';
+      case 'nutrition_query':
+        return 'برای ارزش غذایی و کالریِ دقیقِ هر غذا، صفحهٔ همون رسپی رو باز کن — اونجا اطلاعاتِ تغذیه‌ای آورده شده. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم، ولی می‌تونم غذای متناسب با موادت پیشنهاد بدم.';
+      case 'technique_whyitworks':
+        return 'سؤال خوبیه! توضیحِ گام‌به‌گامِ تکنیک‌ها رو داخل «حالت پخت» (Cook Mode) هر رسپی می‌بینی. اسم غذایی که داری می‌پزی رو بگو تا پیداش کنم و مرحله‌به‌مرحله راهنماییت کنم.';
+      // NOTE: scaling is deliberately NOT routed here — a follow-up like «برای ۶ نفر» should carry the prior
+      // dish into grounding (short-term memory), so it falls through to the grounded path.
+      default:
+        return null;
+    }
   }
 
   /** Render a substitution tool result as a safe Persian reply (AI disclosure + non-medical hedge). */

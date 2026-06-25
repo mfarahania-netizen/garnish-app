@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiTool, ToolContext } from '../ai-core.types';
 import { norm, toStringArray, looseMatch, clampLimit } from './grounding-utils';
-import { foldPersian, isConfidentIngredientMatch } from './persian-search';
+import { foldPersian, isConfidentIngredientMatch, aliasIngredient } from './persian-search';
 import { allergensConflict, extractDictionaryAllergens } from '../../recipes/intelligence/recipe-integrity';
 
 /**
@@ -97,6 +97,10 @@ export class SuggestSubstitutionsTool implements AiTool {
 
   async handler(input: Record<string, unknown>, _ctx: ToolContext) {
     const query = norm(input.ingredient);
+    const rawTerm = String(input.ingredient ?? '');
+    // Map a colloquial term («شیر»/«تخم مرغ») to its canonical dictionary name; fall back to the raw term below
+    // if the alias finds nothing (so a non-canonical fixture/name still resolves).
+    const lookup = aliasIngredient(rawTerm);
     const avoidAllergens = toStringArray(input.avoidAllergens).map((s) => s.trim()).filter(Boolean);
     const dislikes = toStringArray(input.dislikes).map(norm);
     const limit = clampLimit(input.limit, 6, 12);
@@ -124,18 +128,21 @@ export class SuggestSubstitutionsTool implements AiTool {
     const refByName = new Map<string, any>();
     let categoryPeers: any[] = [];
     try {
-      const matches = await this.prisma.ingredient.findMany({
-        where: {
-          OR: [
-            { nameFa: { contains: input.ingredient as string } },
-            { nameEn: { contains: input.ingredient as string } },
-            { code: { contains: input.ingredient as string } },
-          ],
-        },
-        take: 12, // pull a few so we can prefer an EXACT/base match over an arbitrary first compound
-        select,
+      const whereFor = (term: string) => ({
+        OR: [
+          { nameFa: { contains: term } },
+          { nameEn: { contains: term } },
+          { code: { contains: term } },
+        ],
       });
-      source = pickBestIngredientMatch(matches, input.ingredient as string);
+      // pull a wide window so a high-frequency term (شیر, آرد) still includes its base+modifier row
+      let matches = await this.prisma.ingredient.findMany({ where: whereFor(lookup), take: 40, select });
+      source = pickBestIngredientMatch(matches, lookup);
+      if (!source && lookup !== rawTerm) {
+        // the canonical alias matched nothing here → retry with the raw term as typed
+        matches = await this.prisma.ingredient.findMany({ where: whereFor(rawTerm), take: 40, select });
+        source = pickBestIngredientMatch(matches, rawTerm);
+      }
 
       if (source) {
         curatedOptions = parseCuratedOptions(source.substitutionOptions);
