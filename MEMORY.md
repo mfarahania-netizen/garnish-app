@@ -15,6 +15,13 @@ Last updated: 2026-06-24
 - P1 has started: the multi-turn memory slice is built and verified; fa/nl/en TemplateRegistry, repair, retrieval upgrades, cross-surface context, and groundedness remain.
 - Default live model is now `gemini-3.1-flash-lite`, aligned to the verified production rate row.
 
+## Latest completed work: intent-aware assistant routing (substitution)
+- Date: 2026-06-25. Commit: `1d00f77c`. Founder-chosen P1 after the assistant revival.
+- A substitution question («جایگزینِ ماست چی بزنم؟») now answers with a SWAP, not a recipe list. Classifier already labels `substitution`; chat used to ignore it.
+- Routes `intent==='substitution'` → grounded, allergy-filtered SubstitutionEngine (`AiAssistService.substitutions` + nutrition guard). Ingredient extracted deterministically (`extractSubstitutionTargets`, phrase-first); declared allergies sourced from the SAME reconciled profile as the hard gate (`GroundedReplyService.getDeclaredAllergens`; null=fail-closed → no unfiltered swap).
+- Resolution upgraded (contains+take-1 → EXACT → base+modifier → shortest), so «کره»→«کره شور» (real butter) not «کره سیب» (apple butter). `isConfidentIngredientMatch` + a confidence gate: a confidently-WRONG resolution is NEVER surfaced — falls through to the safe grounded path.
+- Verified live + 250 suites / 2056 tests. KNOWN BOUND: precision is capped by the USDA dictionary lacking colloquial base rows (no plain «کره»/«تخم مرغ»); next lift = colloquial-alias map / dictionary base entries (data-quality initiative).
+
 ## Latest completed work: chat assistant retrieval revival (the "dead assistant")
 - Date: 2026-06-25. Commit: `ce9ba378`.
 - Symptom: the UI assistant felt dead — every turn returned "no safe match".

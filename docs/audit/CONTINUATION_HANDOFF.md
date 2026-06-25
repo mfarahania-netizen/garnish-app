@@ -169,6 +169,21 @@ These run alongside the AI work; the AI phase position (§4b) is NOT the whole a
 
 **Next smallest step:** P1 — conversational repair (ask ONE clarifying question) OR fa/nl/en TemplateRegistry (Dutch required); both Opus-design-gated.
 ---
+## 4k. LATEST DIMENSION CLOSURE SNAPSHOT - intent-aware assistant routing / substitution (2026-06-25, commit `1d00f77c`)
+**Dimension(s):** Dimension 1 - Capability & Conversational UX (founder-chosen P1 after the assistant revival).
+
+**What this must do:** a substitution question («جایگزینِ ماست چی بزنم؟») must answer with a SWAP, not a recipe list. The classifier already labels `substitution` intent; chat ignored it and always ran recipe-discovery grounding.
+
+**What is built now:** `ChatOrchestrationService` routes an `intent==='substitution'` turn to the grounded, allergy-filtered SubstitutionEngine via `AiAssistService.substitutions` (which also applies the nutrition-claim guard). Pieces: `extractSubstitutionTargets` (tokenize, drop question-stopwords + substitution verbs, full-phrase-first then tokens); `GroundedReplyService.getDeclaredAllergens` (reconciled declared allergies from the SAME source the hard gate uses → passed as `avoidAllergens`; `null` = profile unavailable → fail-closed); `suggest_substitutions` resolution upgraded from contains+take-1 to EXACT → base+modifier → shortest (so «کره»→«کره شور» the real butter, not «کره سیب» apple butter); `isConfidentIngredientMatch` (a small culinary-modifier allow-list) + a **confidence gate** in chat so a confidently-WRONG resolution is never surfaced — it falls THROUGH to the safe grounded recipe path instead.
+
+**Safety:** medical/§3 classify earlier and never reach this branch; the substitution tool is deterministic, read-only, allergy-filtered, nutrition-guarded; memory/intent/§3 still read only `input.prompt`.
+
+**Verification:** full server suite 250 suites / 2056 tests green; tsc green; live guest-auth probe — «ماست»→ماست ساده swaps, «کره»→کره شور (real butter) swaps, «تخم مرغ» (no clean dictionary base) gracefully falls through to egg recipes (never a wrong swap).
+
+**Is it 100% closed?** Yes for substitution routing with a confidence gate. KNOWN BOUND (honest): resolution precision is capped by the USDA ingredient dictionary having NO colloquial base rows (no plain «کره»/«تخم مرغ») — terms with a clean/near entry answer correctly, others gracefully fall through. The real lift is a colloquial-alias map or dictionary base-entry coverage (the existing data-quality initiative). NOT closed for Dimension 1: pairings/technique routing (same pattern), fa/nl/en TemplateRegistry (Dutch), conversational repair, groundedness validator remain.
+
+**Next smallest step:** extend the same routing to `technique_whyitworks` / `ingredient_facts` (tools exist), OR fa/nl/en TemplateRegistry (Dutch), OR a small colloquial-ingredient alias map to lift substitution resolution.
+---
 ## 4h. LATEST DIMENSION CLOSURE SNAPSHOT - P1 multi-turn memory slice (2026-06-24)
 **Dimension(s):** Dimension 1 - Capability & Conversational UX.
 
