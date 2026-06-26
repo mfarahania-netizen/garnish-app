@@ -101,6 +101,22 @@ export const COOKTIME_OPTIONS = [
   { id: '60_plus', label: 'بیشتر از یک ساعت', Icon: IconCoffee },
 ];
 
+// STEP 4 — goal (multi-select) → declared `goals.primary`. WELLNESS framing only (no clinical weight/muscle goals).
+export const GOAL_V1_OPTIONS = [
+  { id: 'eat_healthier', label: 'سالم‌تر و سبک‌تر', Icon: IconLeaf },
+  { id: 'learn_cooking', label: 'یادگیریِ آشپزی', Icon: IconSchool },
+  { id: 'save_time', label: 'صرفه‌جویی در زمان', Icon: IconClock },
+  { id: 'save_money', label: 'مدیریت هزینه', Icon: IconWallet },
+  { id: 'more_energy', label: 'انرژی و تعادل', Icon: IconBolt },
+];
+
+// STEP 4 — cuisine style (single) → declared `context.cuisine_style`. SOFT lean (boosts, never hides the other).
+export const STYLE_OPTIONS = [
+  { id: 'traditional', label: 'سنتی و اصیل', Icon: IconChefHat },
+  { id: 'modern', label: 'سریع و امروزی', Icon: IconClockBolt },
+  { id: 'both', label: 'هر دو، فرقی نداره', Icon: IconArrowsShuffle },
+];
+
 // ── Food DNA reveal traits — derived ONLY from the user's real answers (never invented) ──
 const PATTERN_TRAIT = {
   flexitarian: 'گیاه‌محور', vegetarian: 'گیاه‌خوار', vegan: 'وگن', pescatarian: 'ماهی‌محور',

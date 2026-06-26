@@ -35,6 +35,8 @@ function answers(overrides = {}) {
     pattern: '',
     workdayTime: '',
     taste: { likes: [], dislikes: [] },
+    goals: {},
+    style: '',
     ...overrides,
   };
 }
@@ -51,6 +53,8 @@ function baseShape(overrides = {}) {
     answers: answers(),
     setPattern: vi.fn(),
     setWorkdayTime: vi.fn(),
+    setStyle: vi.fn(),
+    toggleGoal: vi.fn(),
     addTaste: vi.fn(),
     removeTaste: vi.fn(),
     toggleAllergen: vi.fn(),
@@ -58,7 +62,7 @@ function baseShape(overrides = {}) {
     clearAllergensAndNext: vi.fn(),
     canContinue: true,
     progressIndex: 1,
-    progressTotal: 2,
+    progressTotal: 3,
     traits: [],
     authMode: 'signup',
     isSignup: true,
@@ -121,9 +125,17 @@ describe('OnboardingPage smoke', () => {
     expect(screen.getByPlaceholderText(/هر ماده‌ای رو بنویس/)).toBeInTheDocument(); // free-form search, not a fixed list
   });
 
-  it('renders the reveal step (step 4) with derived traits', () => {
+  it('renders the goal & style step (step 4) — soft cuisine lean', () => {
+    useOnboarding.mockReturnValue(baseShape({ step: 4, progressIndex: 3 }));
+    renderWithProviders(<OnboardingPage />);
+    expect(screen.getByText('هدف و سبک')).toBeInTheDocument();
+    expect(screen.getByText('سالم‌تر و سبک‌تر')).toBeInTheDocument(); // a goal option
+    expect(screen.getByText('سنتی و اصیل')).toBeInTheDocument(); // a style option
+  });
+
+  it('renders the reveal step (step 5) with derived traits', () => {
     useOnboarding.mockReturnValue(
-      baseShape({ step: 4, traits: [{ label: 'گیاه‌محور' }, { label: 'سریعِ وسط‌هفته' }] }),
+      baseShape({ step: 5, traits: [{ label: 'گیاه‌محور' }, { label: 'سریعِ روزهای هفته' }] }),
     );
     renderWithProviders(<OnboardingPage />);
     expect(
@@ -132,8 +144,8 @@ describe('OnboardingPage smoke', () => {
     expect(screen.getByText('گیاه‌محور')).toBeInTheDocument();
   });
 
-  it('renders the account step (step 5) in signup mode', () => {
-    useOnboarding.mockReturnValue(baseShape({ step: 5, isSignup: true }));
+  it('renders the account step (step 6) in signup mode', () => {
+    useOnboarding.mockReturnValue(baseShape({ step: 6, isSignup: true }));
     renderWithProviders(<OnboardingPage />);
     expect(
       screen.getByRole('heading', { name: 'یک قدم تا شروع' }),
@@ -146,7 +158,7 @@ describe('OnboardingPage smoke', () => {
   it('renders the account step error sub-state with an alert', () => {
     useOnboarding.mockReturnValue(
       baseShape({
-        step: 5,
+        step: 6,
         isSignup: false,
         error: 'ورود ناموفق بود. شماره یا گذرواژه را بررسی کن.',
       }),

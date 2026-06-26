@@ -11,7 +11,7 @@ import { prefersReducedMotion } from '../../lib/motion';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import TasteBuilder from './TasteBuilder';
 import {
-  PATTERN_OPTIONS, ALLERGEN_OPTIONS, COOKTIME_OPTIONS,
+  PATTERN_OPTIONS, ALLERGEN_OPTIONS, COOKTIME_OPTIONS, GOAL_V1_OPTIONS, STYLE_OPTIONS,
 } from './steps';
 
 /* ── layout ── */
@@ -376,7 +376,7 @@ export default function OnboardingPage() {
     <Column>
       {o.step === 1 ? <Welcome onStart={o.next} onLogin={o.goLogin} showLogin={!o.authed} /> : null}
 
-      {o.step >= 2 && o.step <= 3 ? (
+      {o.step >= 2 && o.step <= 4 ? (
         <QuestionShell o={o}>
           {/* STEP 2 — the ONE required up-front question: allergy safety (EU-14 + a one-tap "None" fast-exit). */}
           {o.step === 2 ? (
@@ -403,11 +403,23 @@ export default function OnboardingPage() {
               <TasteBuilder likes={a.taste.likes} dislikes={a.taste.dislikes} onAdd={o.addTaste} onRemove={o.removeTaste} />
             </>
           ) : null}
+
+          {/* STEP 4 — intent + style. Goal → declared goals.primary; style → the SOFT cuisine lean (never a filter). */}
+          {o.step === 4 ? (
+            <>
+              <Text component="h2" style={h2}>هدف و سبک</Text>
+              <Text component="h3" style={h3}>دنبالِ چی هستی؟ <Text component="span" style={{ fontWeight: 600, color: 'var(--g-color-text-muted)' }}>(هرچند تا)</Text></Text>
+              <OptionGrid options={GOAL_V1_OPTIONS} multi selectedMap={a.goals} onSelect={o.toggleGoal} />
+              <Text component="h3" style={h3}>بیشتر سنتی، یا سریع و امروزی؟</Text>
+              <Text component="p" style={infoText}><IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />این فقط وزن می‌ده — اون یکی هیچ‌وقت ازت پنهان نمی‌شه.</Text>
+              <OptionGrid options={STYLE_OPTIONS} value={a.style} onSelect={o.setStyle} cols={3} />
+            </>
+          ) : null}
         </QuestionShell>
       ) : null}
 
-      {o.step === 4 ? <Reveal o={o} /> : null}
-      {o.step === 5 ? <Auth o={o} /> : null}
+      {o.step === 5 ? <Reveal o={o} /> : null}
+      {o.step === 6 ? <Auth o={o} /> : null}
     </Column>
   );
 }

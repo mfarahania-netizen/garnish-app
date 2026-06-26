@@ -42,6 +42,8 @@ const initialAnswers = {
   pattern: '',       // diet pattern → candidate pool
   workdayTime: '',   // cooking_time_workday band → assessRecipeFit (quicker slate)
   taste: { likes: [], dislikes: [] }, // [{id,name}] → /profile/taste/correct (+ dislikes → hard_dislikes)
+  goals: {},         // { [goalId]: true } → declared goals.primary (why the user is here)
+  style: '',         // traditional | modern | both → declared cuisine_style (SOFT region lean)
 };
 
 function authError(err, mode) {
@@ -51,8 +53,8 @@ function authError(err, mode) {
   return mode === 'signup' ? 'ثبت‌نام ناموفق بود. دوباره تلاش کن.' : 'ورود ناموفق بود. شماره یا گذرواژه را بررسی کن.';
 }
 
-// STEP_COUNT: 1 Welcome · 2 Allergy · 3 Taste&Time · 4 Reveal · 5 Account
-const LAST_STEP = 5;
+// STEP_COUNT: 1 Welcome · 2 Allergy · 3 Taste&Time · 4 Goal&Style · 5 Reveal · 6 Account
+const LAST_STEP = 6;
 
 export function useOnboarding() {
   const navigate = useNavigate();
@@ -83,6 +85,12 @@ export function useOnboarding() {
   const setSingle = (key) => (id) => setAnswers((a) => ({ ...a, [key]: a[key] === id ? '' : id }));
   const setPattern = setSingle('pattern');
   const setWorkdayTime = setSingle('workdayTime');
+  const setStyle = setSingle('style');
+  const toggleGoal = (id) => setAnswers((a) => {
+    const m = { ...a.goals };
+    if (m[id]) delete m[id]; else m[id] = true;
+    return { ...a, goals: m };
+  });
   const addTaste = (stance, item) => setAnswers((a) => {
     const key = stance === 'like' ? 'likes' : 'dislikes';
     if (!item?.id || a.taste[key].some((x) => x.id === item.id)) return a;
@@ -133,7 +141,13 @@ export function useOnboarding() {
     if (dislikeNames.length) { try { await apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }); } catch { /* non-blocking */ } }
     // EFFORT LEVER → declared cooking_time_workday band → assessRecipeFit (quicker first slate for busy users).
     if (answers.workdayTime) { try { await apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime }); } catch { /* non-blocking */ } }
-  }, [buildPreferences, answers.taste, answers.workdayTime]);
+    // GOAL → declared goals.primary (why the user is here — the profile/assistant read it). STYLE → the SOFT
+    // cuisine_style lean (boosts the chosen style in ranking, never hides the other — verified: traditional 15/1,
+    // modern 2/14 persian/international).
+    const goalIds = Object.keys(answers.goals);
+    if (goalIds.length) { try { await apiClient.post('/profile/answer', { key: 'goals.primary', value: goalIds }); } catch { /* non-blocking */ } }
+    if (answers.style) { try { await apiClient.post('/profile/answer', { key: 'context.cuisine_style', value: answers.style }); } catch { /* non-blocking */ } }
+  }, [buildPreferences, answers.taste, answers.workdayTime, answers.goals, answers.style]);
 
   const finish = useCallback(async () => {
     setSubmitting(true);
@@ -169,9 +183,9 @@ export function useOnboarding() {
   return {
     step, go, next, back, skip,
     answers,
-    setPattern, setWorkdayTime, addTaste, removeTaste, toggleAllergen, setSeverity, clearAllergensAndNext,
+    setPattern, setWorkdayTime, setStyle, toggleGoal, addTaste, removeTaste, toggleAllergen, setSeverity, clearAllergensAndNext,
     canContinue,
-    progressIndex: Math.max(1, step - 1), progressTotal: 2,
+    progressIndex: Math.max(1, step - 1), progressTotal: 3,
     traits,
     authMode, isSignup, toggleAuth, goLogin,
     phone, setPhone, phoneValid,
