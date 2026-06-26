@@ -139,7 +139,14 @@ export function useOnboarding() {
     const EXPAND = { seafood: ['ماهی', 'میگو', 'صدف', 'خرچنگ', 'غذای دریایی'] };
     const dislikeNames = [...new Set(Object.keys(answers.dislikes).flatMap((id) => EXPAND[id] || [DISLIKE_OPTIONS.find((o) => o.id === id)?.label]).filter(Boolean))];
     if (dislikeNames.length) { try { await apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }); } catch { /* non-blocking */ } }
-  }, [buildPreferences, answers.dislikes]);
+    // EFFORT LEVER (declared) → the workday-routine answer maps to the `cooking_time_workday` band the engine reads
+    // (reconciliation → assessRecipeFit → cold-start slate + chat lean quicker for busy users). Proven live: a busy
+    // declared user's first slate averaged ~39m vs ~78m for a relaxed one. The question's own helper frames it as
+    // "how much time you have to cook midweek", so this mapping is honest, not invented.
+    const WORK_TO_BAND = { desk: '15_30', shift: '15_30', home: '30_60', free: '60_plus' };
+    const band = WORK_TO_BAND[answers.work];
+    if (band) { try { await apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: band }); } catch { /* non-blocking */ } }
+  }, [buildPreferences, answers.dislikes, answers.work]);
 
   const finish = useCallback(async () => {
     setSubmitting(true);
