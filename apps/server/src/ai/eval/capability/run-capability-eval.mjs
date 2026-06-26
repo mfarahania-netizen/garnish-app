@@ -75,6 +75,8 @@ const SUITE = [
   ]},
   { cap: 'topic-reset', cases: [
     { turns: ['جوجه کباب میخوام', 'صبحانه میخوام'], checks: [{ notContains: 'کباب' }, { minLen: 40 }] },
+    // naming a NEW famous dish mid-thread must RESET (not merge into the prior thread → the absurd «کوبیده نداریم»).
+    { turns: ['کباب حرفه‌ای میخوام', 'کوبیده چی؟'], checks: [{ matches: 'کوبیده' }, { notMatches: 'وجود ندار|امکان.{0,8}ندار|نیست در لیست' }] },
   ]},
   { cap: 'personalization-memory', seedFacts: [{ key: 'رژیم غذایی', value: 'گیاهی' }], cases: [
     { turns: ['یه غذا پیشنهاد بده'], checks: [{ matches: 'گیاه' }] },

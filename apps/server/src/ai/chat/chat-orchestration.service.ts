@@ -13,6 +13,7 @@ import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
 import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets, parseSearchQuery, foldPersian } from '../tools/persian-search';
+import { famousTier } from '../tools/famous-dishes';
 import { matchTroubleshooting } from './cooking-troubleshooting';
 import { t, Locale } from '../i18n/template-registry';
 
@@ -430,11 +431,13 @@ export class ChatOrchestrationService {
    * With no history it is just the current prompt.
    */
   private composeRetrievalQuery(recentTurns: ChatMemoryMessage[], currentPrompt: string): string {
-    // TOPIC RESET: a turn that names a MEAL/COURSE («صبحانه»/«دسر»/«شام») is a NEW request — retrieve on it ALONE.
-    // Blindly merging the last few turns is what dragged «صبحانه جذاب» into the previous kebab thread and produced
-    // «صبحانه نداریم، کباب بخور». A modifier-only or content-less follow-up («کمتر چرب»/«ایرانی باشه»/«اولی») still
-    // borrows the prior dish from memory so refinements keep working.
-    if (parseSearchQuery(currentPrompt).mealTypes.length > 0) return currentPrompt;
+    // TOPIC RESET: a turn that names a MEAL/COURSE («صبحانه»/«دسر»/«شام») OR a well-known DISH («کوبیده»/«قرمه‌سبزی»/
+    // «کباب») is a NEW request — retrieve on it ALONE. Blindly merging the last few turns is what dragged «کوبیده چی؟»
+    // into the previous «کباب حرفه‌ای مجلسی» thread, over-constrained the AND query, and produced the absurd «کوبیده
+    // نداریم» (we DO have چلو کباب کوبیده). We gate the dish-reset on the curated famous-dish list (NOT any content
+    // token) so a modifier/servings follow-up («کمتر چرب»/«برای ۶ نفر»/«اولی»/«۳ تا دیگه») — whose «چرب»/«نفر» are
+    // NOT dishes — still borrows the prior dish from memory and refinements keep working.
+    if (parseSearchQuery(currentPrompt).mealTypes.length > 0 || famousTier(currentPrompt) > 0) return currentPrompt;
     const recentUserText = recentTurns
       .filter((turn) => turn.role === 'user')
       .slice(-RETRIEVAL_MEMORY_USER_TURNS)
