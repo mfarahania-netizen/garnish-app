@@ -60,6 +60,37 @@ export class IngredientResolverService implements OnModuleInit {
     return texts.map((t) => this.resolve(t));
   }
 
+  /**
+   * Typeahead over the 1008 ingredients' Persian/English names — powers the user's "add what I like / dislike"
+   * picker (the founder's requirement: pick ANY ingredient, not a fixed handful). Best matches first
+   * (prefix > substring, then shortest). Returns {id, name} so the client can write taste via the resolved id.
+   */
+  async search(q: string, limit = 12): Promise<Array<{ id: string; name: string }>> {
+    const term = String(q ?? '').trim();
+    if (!term) return [];
+    const rows = await this.prisma.ingredient.findMany({
+      where: {
+        OR: [
+          { nameFa: { contains: term, mode: 'insensitive' } },
+          { nameEn: { contains: term, mode: 'insensitive' } },
+        ],
+      },
+      select: { id: true, nameFa: true, nameEn: true },
+      take: 40,
+    });
+    const norm = term.toLowerCase();
+    const cap = Math.min(Math.max(Number(limit) || 12, 1), 25);
+    return rows
+      .map((r) => ({ id: r.id, name: (r.nameFa || r.nameEn || '').trim() }))
+      .filter((r) => r.name)
+      .sort((a, b) => {
+        const ap = a.name.toLowerCase().startsWith(norm) ? 0 : 1;
+        const bp = b.name.toLowerCase().startsWith(norm) ? 0 : 1;
+        return ap - bp || a.name.length - b.name.length || a.name.localeCompare(b.name, 'fa');
+      })
+      .slice(0, cap);
+  }
+
   getStats() {
     return {
       ingredients: this.index.size,

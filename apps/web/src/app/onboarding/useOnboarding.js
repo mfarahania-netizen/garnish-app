@@ -2,28 +2,24 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
 import { useAuth, ONBOARDED_KEY } from '../../context/AuthContext';
-import { deriveTraits, DISLIKE_OPTIONS } from './steps';
+import { deriveTraits } from './steps';
 
 /**
  * useOnboarding — the first-run flow's state machine + honest persistence.
  *
- * REBUILT to the ONBOARDING_V1 research design: the front door is minimal. ONE required safety screen (allergy,
- * EU-14), then ONE tight "taste & time" screen (diet + workday cooking-time + dislikes — the levers that make the
- * recommendation engine precise from the first slate), then straight into the app. The lower-value declared bits
- * (skill, budget, goals, household, servings) are NOT asked up front — they're earned progressively in-app. Every
- * signal we DO collect is wired to a real engine consumer (verified): allergy → HARD safety gate (UserAllergy);
- * diet → candidate pool; cooking-time → assessRecipeFit (quicker first slate); dislikes → the assistant.
+ * ONBOARDING_V1 research design: minimal front door. ONE required safety screen (allergy, EU-14), then ONE tight
+ * "taste & time" screen (diet + workday cooking-time + a FREE-FORM taste builder where the user searches ANY of the
+ * 1008 ingredients and marks love/never), then into the app. Lower-value declared bits (skill, budget, goals,
+ * household, servings) are earned progressively in-app, not asked up front.
  *
- * The account step is LAST and only with the user's consent persists consent (personalization, which gates the
- * taste profile) + the DTO-supported preferences. The guest spine (AuthContext) already gave them a safe session,
- * so nothing is sent before the account exists; persist() runs once, on the real registered user.
+ * Every signal is wired to a real, verified engine consumer: allergy → HARD gate (UserAllergy); diet → candidate
+ * pool; cooking-time → assessRecipeFit (quicker first slate); per-ingredient taste → /profile/taste/correct; and
+ * dislikes ALSO → the declared hard_dislikes the chat strictly avoids.
  */
 
 const FA = '۰۱۲۳۴۵۶۷۸۹';
 const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => FA.indexOf(d));
 const PHONE_RE = /^09\d{9}$/;
-// Forgive common phone formatting so a valid number never silently fails validation:
-// strip spaces/dashes/parens and normalize +98 / 0098 / 98… to the local 09… form.
 const normalizePhone = (s) => {
   let d = toLatin(s).replace(/[\s\-()]/g, '');
   if (d.startsWith('+98')) d = '0' + d.slice(3);
@@ -32,11 +28,20 @@ const normalizePhone = (s) => {
   return d;
 };
 
+// «بادمجان خام» → «بادمجان» — strip ONE trailing ingredient-state word so a declared hard-dislike matches how
+// recipes actually name the ingredient (recipes say بادمجان, the catalog row is بادمجان خام).
+const STATE_SUFFIXES = ['خام', 'خشک', 'پخته', 'کبابی', 'سرخ‌شده', 'کنسروی', 'آب‌پز', 'بخارپز', 'تازه', 'منجمد', 'پودر', 'له‌شده', 'رنده‌شده', 'برشته', 'آسیاب‌شده'];
+const baseIngredientName = (name) => {
+  const n = String(name ?? '').trim();
+  for (const w of STATE_SUFFIXES) if (n.endsWith(' ' + w)) return n.slice(0, -(w.length + 1)).trim();
+  return n;
+};
+
 const initialAnswers = {
   allergens: {},     // { [allergenId]: 'mild' | 'severe' } → HARD safety gate
   pattern: '',       // diet pattern → candidate pool
   workdayTime: '',   // cooking_time_workday band → assessRecipeFit (quicker slate)
-  dislikes: {},      // { [dislikeId]: true } → assistant hard_dislikes
+  taste: { likes: [], dislikes: [] }, // [{id,name}] → /profile/taste/correct (+ dislikes → hard_dislikes)
 };
 
 function authError(err, mode) {
@@ -76,28 +81,27 @@ export function useOnboarding() {
 
   // answer setters
   const setSingle = (key) => (id) => setAnswers((a) => ({ ...a, [key]: a[key] === id ? '' : id }));
-  const toggleMap = (key, value = true) => (id) => setAnswers((a) => {
-    const m = { ...a[key] };
-    if (m[id]) delete m[id]; else m[id] = value;
-    return { ...a, [key]: m };
-  });
   const setPattern = setSingle('pattern');
   const setWorkdayTime = setSingle('workdayTime');
-  const toggleDislike = toggleMap('dislikes');
+  const addTaste = (stance, item) => setAnswers((a) => {
+    const key = stance === 'like' ? 'likes' : 'dislikes';
+    if (!item?.id || a.taste[key].some((x) => x.id === item.id)) return a;
+    return { ...a, taste: { ...a.taste, [key]: [...a.taste[key], { id: item.id, name: item.name }] } };
+  });
+  const removeTaste = (stance, id) => setAnswers((a) => {
+    const key = stance === 'like' ? 'likes' : 'dislikes';
+    return { ...a, taste: { ...a.taste, [key]: a.taste[key].filter((x) => x.id !== id) } };
+  });
   const toggleAllergen = (id) => setAnswers((a) => {
     const m = { ...a.allergens };
     if (m[id]) delete m[id]; else m[id] = 'severe';
     return { ...a, allergens: m };
   });
   const setSeverity = (id, sev) => setAnswers((a) => ({ ...a, allergens: { ...a.allergens, [id]: sev } }));
-  // "None" fast-exit on the allergy screen: clear every allergen, then advance.
   const clearAllergensAndNext = useCallback(() => { setAnswers((a) => ({ ...a, allergens: {} })); go(step + 1); }, [go, step]);
 
-  // Both question steps are answerable in one tap (allergy has a "None" exit; taste&time is optional), so «ادامه» is
-  // never blocked — the flow never traps a user behind a question they don't want to answer.
-  const canContinue = true;
+  const canContinue = true; // both question steps are one-tap answerable (allergy has None; taste&time is optional)
 
-  // The reveal is a warm "we've started" moment, NOT a score — only the derived trait chips, never a percentage.
   const traits = useMemo(() => deriveTraits(answers), [answers]);
 
   const isSignup = authMode === 'signup';
@@ -116,23 +120,20 @@ export function useOnboarding() {
     return body;
   }, [answers]);
 
-  // persist consent + every collected signal, each to its real engine consumer. Runs once on the registered user
-  // (or, for a menu re-entry, on the already-signed-in user). All writes are non-blocking — onboarding must never
-  // dead-end on a transient network error.
+  // persist consent + every collected signal, each to its real engine consumer. All writes non-blocking.
   const persist = useCallback(async () => {
     try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); try { localStorage.setItem('garnish.consent.personalization', 'true'); } catch { /* */ } } catch { /* non-blocking */ }
     try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
-    // diet → candidate pool; allergies → HARD gate (UserAllergy, via the canonical EU-14 write boundary).
     try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
-    // DISLIKES → declared `dietary.hard_dislikes` the assistant reads. Category dislikes («غذای دریایی») expand to
-    // the names the engine matches. (consent granted above, so the answer persists rather than being dropped.)
-    const EXPAND = { seafood: ['ماهی', 'میگو', 'صدف', 'خرچنگ', 'غذای دریایی'] };
-    const dislikeNames = [...new Set(Object.keys(answers.dislikes).flatMap((id) => EXPAND[id] || [DISLIKE_OPTIONS.find((o) => o.id === id)?.label]).filter(Boolean))];
+    // LIKES + DISLIKES → per-ingredient soft taste (resolved id). DISLIKES additionally → the declared hard_dislikes
+    // the chat strictly avoids (cleaned base name so it matches recipe ingredient naming).
+    for (const it of answers.taste.likes) { try { await apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }); } catch { /* non-blocking */ } }
+    for (const it of answers.taste.dislikes) { try { await apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }); } catch { /* non-blocking */ } }
+    const dislikeNames = [...new Set(answers.taste.dislikes.map((it) => baseIngredientName(it.name)).filter(Boolean))];
     if (dislikeNames.length) { try { await apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }); } catch { /* non-blocking */ } }
-    // EFFORT LEVER → declared `cooking_time_workday` band → reconciliation → assessRecipeFit → quicker first slate
-    // (proven: busy declared user's slate averaged ~39m vs ~78m). Asked directly now, not derived.
+    // EFFORT LEVER → declared cooking_time_workday band → assessRecipeFit (quicker first slate for busy users).
     if (answers.workdayTime) { try { await apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime }); } catch { /* non-blocking */ } }
-  }, [buildPreferences, answers.dislikes, answers.workdayTime]);
+  }, [buildPreferences, answers.taste, answers.workdayTime]);
 
   const finish = useCallback(async () => {
     setSubmitting(true);
@@ -159,7 +160,7 @@ export function useOnboarding() {
       setSubmitting(false);
       return;
     }
-    if (isSignup) await persist(); // consent (personalization gates the profile) + every collected signal
+    if (isSignup) await persist();
     try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
     setSubmitting(false);
     navigate('/', { replace: true });
@@ -168,7 +169,7 @@ export function useOnboarding() {
   return {
     step, go, next, back, skip,
     answers,
-    setPattern, setWorkdayTime, toggleDislike, toggleAllergen, setSeverity, clearAllergensAndNext,
+    setPattern, setWorkdayTime, addTaste, removeTaste, toggleAllergen, setSeverity, clearAllergensAndNext,
     canContinue,
     progressIndex: Math.max(1, step - 1), progressTotal: 2,
     traits,

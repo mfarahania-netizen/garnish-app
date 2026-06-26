@@ -9,8 +9,9 @@ import { useOnboarding } from './useOnboarding';
 import { toFaDigits } from '../../components/ges/format';
 import { prefersReducedMotion } from '../../lib/motion';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
+import TasteBuilder from './TasteBuilder';
 import {
-  PATTERN_OPTIONS, ALLERGEN_OPTIONS, DISLIKE_OPTIONS, COOKTIME_OPTIONS,
+  PATTERN_OPTIONS, ALLERGEN_OPTIONS, COOKTIME_OPTIONS,
 } from './steps';
 
 /* ── layout ── */
@@ -395,10 +396,11 @@ export default function OnboardingPage() {
               <Text component="p" style={infoText}><IconSparkles size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />همین چند تا، پیشنهادها رو از اولین لیست به ذائقه‌ات نزدیک می‌کنه — هر کدوم خواستی رد کن.</Text>
               <Text component="h3" style={h3}>چه‌جور غذایی دوست داری؟</Text>
               <OptionGrid options={PATTERN_OPTIONS} value={a.pattern} onSelect={o.setPattern} />
-              <Text component="h3" style={h3}>وسطِ هفته معمولاً چقدر برای آشپزی وقت داری؟</Text>
+              <Text component="h3" style={h3}>توی روزهای هفته معمولاً چقدر وقت برای آشپزی داری؟</Text>
               <OptionGrid options={COOKTIME_OPTIONS} value={a.workdayTime} onSelect={o.setWorkdayTime} />
-              <Text component="h3" style={h3}>چیزی هست که هیچ‌وقت نمی‌خوای؟</Text>
-              <ChipSelect options={DISLIKE_OPTIONS} selectedMap={a.dislikes} onToggle={o.toggleDislike} />
+              <Text component="h3" style={h3}>چی دوست داری، چی رو نه؟</Text>
+              <Text component="p" style={infoText}><IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />هر ماده‌ای رو سرچ کن و بزن «دوست دارم» یا «دوست ندارم» — هر تعداد که خواستی، از بینِ همهٔ مواد.</Text>
+              <TasteBuilder likes={a.taste.likes} dislikes={a.taste.dislikes} onAdd={o.addTaste} onRemove={o.removeTaste} />
             </>
           ) : null}
         </QuestionShell>

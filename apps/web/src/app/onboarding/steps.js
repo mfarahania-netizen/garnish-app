@@ -113,10 +113,10 @@ export function deriveTraits(state) {
 
   // Derived ONLY from the v1 answers actually collected (diet · workday cooking-time · dislikes) — never invented.
   if (state.pattern && PATTERN_TRAIT[state.pattern]) push(PATTERN_TRAIT[state.pattern], IconLeaf);
-  if (state.workdayTime === 'under_15' || state.workdayTime === '15_30') push('سریعِ وسط‌هفته', IconClockBolt);
+  if (state.workdayTime === 'under_15' || state.workdayTime === '15_30') push('سریعِ روزهای هفته', IconClockBolt);
   else if (state.workdayTime === '60_plus') push('وقت‌دارِ آشپزی', IconCoffee);
-  const dislikeCount = state.dislikes ? Object.keys(state.dislikes).length : 0;
-  if (dislikeCount) push('سلیقهٔ مشخص', IconChecks);
+  const tasteCount = (state.taste?.likes?.length || 0) + (state.taste?.dislikes?.length || 0);
+  if (tasteCount) push('سلیقهٔ مشخص', IconChecks);
 
   return out.slice(0, 3);
 }

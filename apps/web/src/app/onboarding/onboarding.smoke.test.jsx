@@ -34,7 +34,7 @@ function answers(overrides = {}) {
     allergens: {},
     pattern: '',
     workdayTime: '',
-    dislikes: {},
+    taste: { likes: [], dislikes: [] },
     ...overrides,
   };
 }
@@ -51,7 +51,8 @@ function baseShape(overrides = {}) {
     answers: answers(),
     setPattern: vi.fn(),
     setWorkdayTime: vi.fn(),
-    toggleDislike: vi.fn(),
+    addTaste: vi.fn(),
+    removeTaste: vi.fn(),
     toggleAllergen: vi.fn(),
     setSeverity: vi.fn(),
     clearAllergensAndNext: vi.fn(),
@@ -109,14 +110,15 @@ describe('OnboardingPage smoke', () => {
     expect(screen.getByText('شدت برای ایمنی')).toBeInTheDocument();
   });
 
-  it('renders the taste & time step (step 3) — diet + cooking-time + dislikes', () => {
+  it('renders the taste & time step (step 3) — diet + cooking-time + free-form taste builder', () => {
     useOnboarding.mockReturnValue(baseShape({ step: 3, progressIndex: 2 }));
     renderWithProviders(<OnboardingPage />);
     expect(screen.getByText('یه کم از سلیقه‌ات')).toBeInTheDocument();
     expect(screen.getByText('چه‌جور غذایی دوست داری؟')).toBeInTheDocument();
-    expect(screen.getByText('وسطِ هفته معمولاً چقدر برای آشپزی وقت داری؟')).toBeInTheDocument();
+    expect(screen.getByText('توی روزهای هفته معمولاً چقدر وقت برای آشپزی داری؟')).toBeInTheDocument();
     expect(screen.getByText('کمتر از ۱۵ دقیقه')).toBeInTheDocument(); // a COOKTIME band
-    expect(screen.getByText('بادمجان')).toBeInTheDocument(); // a dislike chip
+    expect(screen.getByText('چی دوست داری، چی رو نه؟')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/هر ماده‌ای رو بنویس/)).toBeInTheDocument(); // free-form search, not a fixed list
   });
 
   it('renders the reveal step (step 4) with derived traits', () => {
