@@ -72,6 +72,16 @@ export interface SafeRecipe {
   fit: string;
 }
 
+/** What the assistant KNOWS about this user — read from UserBehaviorProfile + the UserFact memory. NOT a safety
+ *  input (allergies stay in the HARD gate); this is preference/personality so the AI feels like it knows you. */
+export interface UserModelContext {
+  dislikes: string[];
+  favorites: string[];
+  skill: string | null;
+  /** durable user-stated facts («گیاهی‌ام», «۲ بچه دارم») — the "remember this" memory. */
+  facts: { key: string; value: string }[];
+}
+
 export interface GroundingResult {
   safeRecipes: SafeRecipe[];
   /** titles of RETRIEVED recipes HARD-dropped by the allergy gate — used by the live OUTPUT gate. */
@@ -79,6 +89,8 @@ export interface GroundingResult {
   groundingStatus: GroundingStatus;
   retrievedCount: number;
   droppedForAllergy: number;
+  /** the user-model (dislikes/favorites/skill/memory) — optional; absent on empty/unsafe grounding. */
+  userModel?: UserModelContext;
 }
 
 export interface LiveOutputVerdict {
@@ -170,7 +182,35 @@ export class GroundedReplyService {
       groundingStatus: safe.length ? 'ok' : 'empty',
       retrievedCount: ids.length,
       droppedForAllergy: dropped,
+      userModel: await this.loadUserModel(userId),
     };
+  }
+
+  /**
+   * Load what the assistant KNOWS about this user — preference/personality, NOT safety (allergies stay in the HARD
+   * gate). Reads UserBehaviorProfile (dislikes/favorites/skill) + the UserFact «remember this» memory. Best-effort:
+   * any failure or empty data → an empty model (the assistant just won't personalise; it never breaks the turn).
+   */
+  private async loadUserModel(userId: string): Promise<UserModelContext> {
+    const empty: UserModelContext = { dislikes: [], favorites: [], skill: null, facts: [] };
+    if (!userId) return empty;
+    const arr = (s: unknown): string[] => {
+      try { const a = JSON.parse(typeof s === 'string' ? s : '[]'); return Array.isArray(a) ? a.map((x) => String(x).trim()).filter(Boolean) : []; } catch { return []; }
+    };
+    try {
+      const [bp, facts] = await Promise.all([
+        this.prisma.userBehaviorProfile.findFirst({ where: { userId }, select: { dislikedIngredients: true, dislikedFoods: true, favoriteFoods: true, favoriteIngredients: true, cookingSkill: true } }).catch(() => null),
+        this.prisma.userFact.findMany({ where: { userId }, orderBy: { updatedAt: 'desc' }, take: 10, select: { key: true, value: true } }).catch(() => [] as { key: string; value: unknown }[]),
+      ]);
+      return {
+        dislikes: [...new Set([...arr(bp?.dislikedIngredients), ...arr(bp?.dislikedFoods)])].slice(0, 12),
+        favorites: [...new Set([...arr(bp?.favoriteFoods), ...arr(bp?.favoriteIngredients)])].slice(0, 12),
+        skill: typeof bp?.cookingSkill === 'string' && bp.cookingSkill.trim() ? bp.cookingSkill.trim() : null,
+        facts: (facts ?? []).map((f) => ({ key: String(f.key), value: typeof f.value === 'string' ? f.value : JSON.stringify(f.value) })).filter((f) => f.key && f.value),
+      };
+    } catch {
+      return empty;
+    }
   }
 
   /**
@@ -220,6 +260,16 @@ export class GroundedReplyService {
     const safeList = grounding.safeRecipes.length
       ? grounding.safeRecipes.map((r, i) => `${i + 1}. ${r.title}${r.region ? ` — ${r.region}` : ''}${r.cookingTime ? ` (${r.cookingTime}m)` : ''}${r.keyIngredients?.length ? ` — مواد: ${r.keyIngredients.join('، ')}` : ''}`).join('\n')
       : '(none)';
+    // PERSONALIZATION — what we KNOW about this user (preference/memory, NOT safety; allergies are gated separately).
+    const um = grounding.userModel;
+    const userLines: string[] = [];
+    if (um?.facts.length) userLines.push(`- یادداشت‌های ماندگار دربارهٔ این کاربر (به‌خاطر بسپار و حتماً رعایت کن): ${um.facts.map((f) => `${f.key}=${f.value}`).join('؛ ')}`);
+    if (um?.dislikes.length) userLines.push(`- از این‌ها بدش می‌آید — پیشنهاد نده مگر خودش بخواهد: ${um.dislikes.join('، ')}`);
+    if (um?.favorites.length) userLines.push(`- این‌ها را دوست دارد — در صورت تناسب اولویت بده: ${um.favorites.join('، ')}`);
+    if (um?.skill) userLines.push(`- سطح آشپزی‌اش: ${um.skill} (سختی و لحن را متناسب کن)`);
+    const userBlock = userLines.length
+      ? ['WHAT YOU KNOW ABOUT THIS USER (personalization — use it so you feel like you genuinely KNOW them; reference it naturally e.g. «چون گیاهی هستی…». Allergies are handled separately by the safety filter, do NOT mention allergy filtering here):', ...userLines, '']
+      : [];
     return [
       'You are Garnish’s AI cooking assistant. Garnish offers BOTH Persian/Iranian AND many international recipes. Reply in Persian (fa) — warm, natural, and concise.',
       '',
@@ -240,8 +290,10 @@ export class GroundedReplyService {
       '- If the SAFE RECIPES list is «(none)» or none of them fit, do NOT list unrelated dishes. Say you couldn’t find a good match and ask ONE short clarifying question (an ingredient or a vibe).',
       '- VARY your wording every turn — do NOT end every message with the same «بگو دستورِ X رو بده» sentence or «کدومیک؟». Mention the «دستورِ ...» tip only OCCASIONALLY (e.g. once), not on every single reply; often just give the recommendations and stop. Reading the same closing line every turn feels robotic.',
       '- Use the earlier turns to understand follow-ups (e.g. «ایرانی باشه» after «غذای تند» = a SPICY Iranian dish). Don’t repeat the same list mechanically.',
+      '- PERSONALIZE with WHAT YOU KNOW ABOUT THIS USER (below, if present): never suggest something they dislike, lean toward their favorites, match their cooking skill, and HONOR the remembered notes (e.g. a note «گیاهی=بله» → suggest ONLY vegetarian dishes). Reference what you remember naturally so they feel known — but don’t recite the whole profile back.',
       '- No medical, dietary, diagnosis, or nutrition claims.',
       '',
+      ...userBlock,
       'SAFE RECIPES:',
       safeList,
       '',
