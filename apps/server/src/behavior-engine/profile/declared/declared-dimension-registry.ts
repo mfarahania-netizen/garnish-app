@@ -62,6 +62,9 @@ export const DECLARED_DIMENSIONS: readonly DeclaredDimensionDef[] = [
   def({ key: 'context.cooks_for_count', group: 'context', label: 'How many people you usually cook for', valueType: 'band', storeAsBand: true, priority: 7, options: ['1', '2', '3_4', '5_plus'], safeExplanationTemplate: 'The number of people you cook for sizes portions and shopping lists.' }),
   def({ key: 'context.time_at_home', group: 'context', label: 'Time at home per day', valueType: 'band', consentPurpose: 'analytics', priority: 4, options: ['low', 'medium', 'high'], safeExplanationTemplate: 'Roughly how much time you are home helps pace meal suggestions.' }),
   def({ key: 'context.exercise_frequency', group: 'context', label: 'Exercise frequency', valueType: 'single_select', sensitive: true, priority: 4, options: ['rarely', 'weekly_1_2', 'weekly_3_5', 'daily', 'prefer_not'], safeExplanationTemplate: 'Activity frequency you shared; used for energy-fit suggestions only.' }),
+  // cuisine-style lean (traditional vs quick-modern) — a SOFT ranking preference, NEVER a filter: it boosts the
+  // preferred style and gently lowers the other, but the other is always still shown (only allergy/observance hide).
+  def({ key: 'context.cuisine_style', group: 'context', label: 'Cuisine style lean', valueType: 'single_select', priority: 7, options: ['traditional', 'modern', 'both'], safeExplanationTemplate: 'Whether you lean traditional or quick-modern — a soft preference that ranks suggestions, never hides a style.' }),
 
   // ── dietary profile (mature) ──
   def({ key: 'dietary.pattern', group: 'dietary', label: 'Dietary pattern', valueType: 'single_select', consentPurpose: 'core', priority: 10, persistence: 'user_preference', options: ['omnivore', 'vegetarian', 'vegan', 'pescatarian', 'flexitarian', 'mediterranean', 'keto', 'low_carb', 'paleo', 'halal', 'kosher', 'custom'], safeExplanationTemplate: 'Your dietary pattern filters and ranks the recipes you see.' }),

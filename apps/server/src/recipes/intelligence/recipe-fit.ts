@@ -162,6 +162,17 @@ export function assessRecipeFit(recipe: any, profile: any, derivedAllergens: str
   const dislikedIngredientWarnings: string[] = [...new Set(ingNames.filter((n) => dislikes.some((d) => looseMatch(n, d))))];
   if (dislikedIngredientWarnings.length) reasons.push(`includes ingredients you dislike: ${dislikedIngredientWarnings.join(', ')}`);
 
+  // cuisine-style lean (declared traditional/modern) — SOFT: boosts the preferred region, gently lowers the other,
+  // but NEVER hides it (the rule: a lean, not a filter; only allergy/observance hard-exclude).
+  let styleFit: 'match' | 'mismatch' | 'neutral' = 'neutral';
+  const cuisineStyle = String(profileDim(profile, 'declared', 'context.cuisine_style')?.value ?? '');
+  const region = String(recipe?.region ?? '').toLowerCase();
+  if ((cuisineStyle === 'traditional' || cuisineStyle === 'modern') && (region === 'persian' || region === 'international')) {
+    const wantPersian = cuisineStyle === 'traditional';
+    styleFit = (wantPersian && region === 'persian') || (!wantPersian && region === 'international') ? 'match' : 'mismatch';
+    if (styleFit === 'mismatch') reasons.push('a different style than your usual — still shown, just ranked lower');
+  }
+
   // recommendation + score (allergen conflict dominates — never softened)
   let recommendation: FitRecommendation;
   let fitScore: number;
@@ -181,6 +192,8 @@ export function assessRecipeFit(recipe: any, profile: any, derivedAllergens: str
     if (effortFit === 'stretch') score -= 0.1;
     if (skillFit === 'fit') score += 0.1;
     if (skillFit === 'stretch') score -= 0.1;
+    if (styleFit === 'match') score += 0.12;   // lean toward the chosen style…
+    if (styleFit === 'mismatch') score -= 0.08; // …without hiding the other (base 0.6 keeps it well above 0)
     score -= dislikedIngredientWarnings.length * 0.15;
     fitScore = Math.max(0, Math.min(1, Number(score.toFixed(2))));
     recommendation = safety.dietaryRestrictionConflict || dislikedIngredientWarnings.length ? 'caution' : fitScore >= 0.8 ? 'great_fit' : 'ok';

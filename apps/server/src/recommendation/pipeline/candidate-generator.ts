@@ -308,7 +308,22 @@ export class CandidateGeneratorService {
     // Narrow the pool by declared diet (best-effort); the allergy HARD filter + fit ranking do the real work,
     // so even a broad pool stays safe.
     const where = this.coldStartWhere(profile);
-    let pool = await this.prisma.recipe.findMany({ where, select: FIT_SELECT, take: 50 });
+    // When the user declared a cuisine-style lean, fetch BOTH regions explicitly so the soft style boost in
+    // assessRecipeFit can actually surface the preferred one — otherwise the pool's default ordering (persian-first
+    // in the DB) starves international (≈half the corpus) and the lean can't move the slate. The non-preferred
+    // region STAYS in the pool (never hidden — only the rank shifts). No declared style → plain take-50 (unchanged).
+    const cuisineStyle = String(profile?.declared?.dimensions?.['context.cuisine_style']?.value ?? '');
+    let pool: any[] = [];
+    if (cuisineStyle === 'traditional' || cuisineStyle === 'modern') {
+      const pref = cuisineStyle === 'traditional' ? 'persian' : 'international';
+      const other = cuisineStyle === 'traditional' ? 'international' : 'persian';
+      const [a, b] = await Promise.all([
+        this.prisma.recipe.findMany({ where: { ...where, region: pref }, select: FIT_SELECT, take: 35 }),
+        this.prisma.recipe.findMany({ where: { ...where, region: other }, select: FIT_SELECT, take: 25 }),
+      ]);
+      pool = [...a, ...b];
+    }
+    if (pool.length === 0) pool = await this.prisma.recipe.findMany({ where, select: FIT_SELECT, take: 50 });
     if (pool.length === 0) pool = await this.prisma.recipe.findMany({ where: { isPublic: true, status: 'active' }, select: FIT_SELECT, take: 50 });
 
     let ranked = this.fitRank(pool, profile);
