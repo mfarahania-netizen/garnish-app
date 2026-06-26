@@ -6,6 +6,7 @@ jest.mock('@google/generative-ai', () => ({
 import { resolveAiProviderConfig, createModelProvider, resolveChatLiveEnabled, isLiveModelConfigured } from './model-provider.factory';
 import { StubModelProvider } from './stub-model.provider';
 import { GeminiModelProvider } from './gemini-model.provider';
+import { FallbackModelProvider } from './fallback-model.provider';
 
 const LIVE = { AI_PROVIDER: 'gemini', AI_LIVE_ENABLED: 'true', GEMINI_API_KEY: 'realkey123' } as any;
 
@@ -49,6 +50,48 @@ describe('model-provider.factory', () => {
     expect(cfg.modelName).toBe('gemini-3.1-flash-lite');
     expect(cfg.provider).toBe('gemini');
     expect(cfg.liveEnabled).toBe(true);
+  });
+
+  describe('multi-model fallback chain', () => {
+    it('builds a FallbackModelProvider from OPENROUTER_CHAIN, honoring per-model keys, order, and the gemini marker', () => {
+      const cfg = resolveAiProviderConfig({
+        ...LIVE,
+        OPENROUTER_CHAIN: 'openai/gpt-oss-120b:free|sk-or-aaa;openrouter/owl-alpha|sk-or-bbb;gemini;openai/gpt-oss-20b:free|sk-or-ccc',
+      } as any);
+      expect(cfg.chainSpec).toEqual([
+        { kind: 'openrouter', model: 'openai/gpt-oss-120b:free', key: 'sk-or-aaa' },
+        { kind: 'openrouter', model: 'openrouter/owl-alpha', key: 'sk-or-bbb' },
+        { kind: 'gemini' },
+        { kind: 'openrouter', model: 'openai/gpt-oss-20b:free', key: 'sk-or-ccc' },
+      ]);
+      const p = createModelProvider(cfg, silentLogger);
+      expect(p).toBeInstanceOf(FallbackModelProvider);
+      // order preserved, gemini placed by the marker (NOT appended again at the end)
+      expect(p.name).toBe('fallback(openrouter:openai/gpt-oss-120b:free>openrouter:openrouter/owl-alpha>gemini>openrouter:openai/gpt-oss-20b:free)');
+    });
+
+    it('appends Gemini LAST as the safety net when no gemini marker is given', () => {
+      const cfg = resolveAiProviderConfig({ ...LIVE, OPENROUTER_CHAIN: 'openai/gpt-oss-120b:free|sk-or-aaa' } as any);
+      const p = createModelProvider(cfg, silentLogger);
+      expect(p.name).toBe('fallback(openrouter:openai/gpt-oss-120b:free>gemini)');
+    });
+
+    it('supports the simple OPENROUTER_MODELS × single-key form', () => {
+      const cfg = resolveAiProviderConfig({ ...LIVE, OPENROUTER_API_KEY: 'sk-or-zzz', OPENROUTER_MODELS: 'a/m1,b/m2' } as any);
+      expect(cfg.chainSpec).toEqual([
+        { kind: 'openrouter', model: 'a/m1', key: 'sk-or-zzz' },
+        { kind: 'openrouter', model: 'b/m2', key: 'sk-or-zzz' },
+      ]);
+    });
+
+    it('drops chain entries whose key is missing/placeholder (no half-built providers)', () => {
+      const cfg = resolveAiProviderConfig({ ...LIVE, OPENROUTER_CHAIN: 'good/model|sk-or-aaa;bad/model|sk-or-...' } as any);
+      expect(cfg.chainSpec).toEqual([{ kind: 'openrouter', model: 'good/model', key: 'sk-or-aaa' }]);
+    });
+
+    it('is LIVE with an OpenRouter chain even when GEMINI_API_KEY is absent', () => {
+      expect(isLiveModelConfigured({ AI_PROVIDER: 'gemini', AI_LIVE_ENABLED: 'true', OPENROUTER_CHAIN: 'x/y|sk-or-aaa' } as any)).toBe(true);
+    });
   });
 
   describe('resolveChatLiveEnabled (E47-A8 chat-live gate)', () => {
