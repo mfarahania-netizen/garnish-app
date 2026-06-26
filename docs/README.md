@@ -6,8 +6,9 @@
 > the data-layer source of truth is [`../data/README.md`](../data/README.md).
 >
 > **AI — current source of truth (2026-06-26):** the old aspirational AI design specs (the big "dimensions"
-> master spec + its fragments) were RETIRED — they designed a lot but didn't ship a working assistant. The live
-> plan is the rebuild into a true agentic companion, measured by an eval:
+> master spec + its fragments) were RETIRED — they designed a lot but didn't ship a working assistant. The single
+> consolidated plan (founder's complete vision + all research + honest state + the eval-gated roadmap) is
+> **[`audit/AI_MASTER_PLAN.md`](audit/AI_MASTER_PLAN.md)**. Detailed supporting docs:
 > [`audit/AI_COMPANION_REARCHITECTURE.md`](audit/AI_COMPANION_REARCHITECTURE.md) (architecture) ·
 > [`audit/AI_WORLDCLASS_CAPABILITY_MAP.md`](audit/AI_WORLDCLASS_CAPABILITY_MAP.md) (the full capability map) ·
 > [`audit/CHAT_INTELLIGENCE_EXECUTION_PLAN.md`](audit/CHAT_INTELLIGENCE_EXECUTION_PLAN.md) (what's fixed/remaining) ·
