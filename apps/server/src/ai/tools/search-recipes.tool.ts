@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiTool, ToolContext } from '../ai-core.types';
 import { foldPersian, parseSearchQuery } from './persian-search';
+import { famousTier } from './famous-dishes';
 
 const SUMMARY_MAX = 140;
 
@@ -147,6 +148,11 @@ function scoreRecipe(
     else if (ingredients.some((n) => n.includes(t))) { score += 2; ingredientHit = true; }
     else if (desc.includes(t)) { score += 1; descHit = true; }
   }
+  // FAMOUS prior — surface the beloved classics (قرمه‌سبزی/قیمه/فسنجان…) ahead of obscure dishes when relevance is
+  // otherwise similar (a generic «خورشت» ask). A strong specific-title match (+3) still dominates this nudge.
+  const tier = famousTier(r.title);
+  if (tier === 2) score += 2.5;
+  else if (tier === 1) score += 1.5;
   const reason = titleHit ? 'title_match' : ingredientHit ? 'ingredient_match' : descHit ? 'description_match' : 'title_match';
   return { score, reason };
 }

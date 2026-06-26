@@ -10,6 +10,7 @@
  *    warnings. Informational only — allergen data is not a safety guarantee; no medical/diet claims.
  */
 import { looseMatch, norm, toStringArray } from '../../ai/tools/grounding-utils';
+import { famousTier } from '../../ai/tools/famous-dishes';
 import { allergensConflict } from './recipe-integrity';
 
 const MEAT_TOKENS = ['chicken', 'beef', 'lamb', 'pork', 'meat', 'poultry', 'fish', 'seafood', 'shrimp', 'مرغ', 'گوشت', 'ماهی', 'میگو', 'گوسفند'];
@@ -194,6 +195,9 @@ export function assessRecipeFit(recipe: any, profile: any, derivedAllergens: str
     if (skillFit === 'stretch') score -= 0.1;
     if (styleFit === 'match') score += 0.12;   // lean toward the chosen style…
     if (styleFit === 'mismatch') score -= 0.08; // …without hiding the other (base 0.6 keeps it well above 0)
+    const fame = famousTier(recipe?.title); // surface the beloved classics in the cold-start slate (curated popularity prior)
+    if (fame === 2) score += 0.15;
+    else if (fame === 1) score += 0.08;
     score -= dislikedIngredientWarnings.length * 0.15;
     fitScore = Math.max(0, Math.min(1, Number(score.toFixed(2))));
     recommendation = safety.dietaryRestrictionConflict || dislikedIngredientWarnings.length ? 'caution' : fitScore >= 0.8 ? 'great_fit' : 'ok';
