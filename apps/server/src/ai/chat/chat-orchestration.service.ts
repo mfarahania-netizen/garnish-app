@@ -430,6 +430,11 @@ export class ChatOrchestrationService {
    * With no history it is just the current prompt.
    */
   private composeRetrievalQuery(recentTurns: ChatMemoryMessage[], currentPrompt: string): string {
+    // TOPIC RESET: a turn that names a MEAL/COURSE («صبحانه»/«دسر»/«شام») is a NEW request — retrieve on it ALONE.
+    // Blindly merging the last few turns is what dragged «صبحانه جذاب» into the previous kebab thread and produced
+    // «صبحانه نداریم، کباب بخور». A modifier-only or content-less follow-up («کمتر چرب»/«ایرانی باشه»/«اولی») still
+    // borrows the prior dish from memory so refinements keep working.
+    if (parseSearchQuery(currentPrompt).mealTypes.length > 0) return currentPrompt;
     const recentUserText = recentTurns
       .filter((turn) => turn.role === 'user')
       .slice(-RETRIEVAL_MEMORY_USER_TURNS)

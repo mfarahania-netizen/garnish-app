@@ -135,7 +135,9 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
       { role: 'user', content: 'I am allergic to walnuts', createdAt: new Date('2026-01-01T00:00:00.000Z') },
     ];
     const { svc, grounded } = makeChat('model text', 'safe recipe reply', recentTurns);
-    const out = await svc.handleChat({ userId: 'u1', prompt: 'a dinner idea', conversationId: 'c-memory-safety' });
+    // a modifier-only prompt (NO meal/course word) so memory still merges into RETRIEVAL — proving even then the
+    // memory text does NOT trigger the allergy WRITE path (§3 reads input.prompt only). A meal word would topic-reset.
+    const out = await svc.handleChat({ userId: 'u1', prompt: 'a tasty plate', conversationId: 'c-memory-safety' });
 
     expect(out.suggestedAction).toBeUndefined();
     expect(out.status).toBe('ok');
