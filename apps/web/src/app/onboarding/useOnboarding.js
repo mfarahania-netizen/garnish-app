@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
 import { useAuth, ONBOARDED_KEY } from '../../context/AuthContext';
@@ -36,6 +36,17 @@ const baseIngredientName = (name) => {
   for (const w of STATE_SUFFIXES) if (n.endsWith(' ' + w)) return n.slice(0, -(w.length + 1)).trim();
   return n;
 };
+// over-broad base words that must NOT be expanded to their genus (would wrongly hide unrelated dishes).
+const BROAD_BASE = new Set(['روغن', 'سس', 'آب', 'پودر', 'آرد', 'شیر', 'عصاره', 'خمیر', 'نان', 'دانه']);
+// A dislike emits its cleaned name PLUS its genus word, so a SPECIFIC pick («قارچ صدفی») still catches the generic
+// ingredient recipes actually name («قارچ»). The genus is skipped for over-broad bases (روغن/سس/آب…).
+const dislikeTokens = (name) => {
+  const clean = baseIngredientName(name);
+  const out = [clean];
+  const first = clean.split(/\s+/)[0];
+  if (first && first !== clean && first.length >= 3 && !BROAD_BASE.has(first)) out.push(first);
+  return out.filter(Boolean);
+};
 
 const initialAnswers = {
   allergens: {},     // { [allergenId]: 'mild' | 'severe' } → HARD safety gate
@@ -71,6 +82,37 @@ export function useOnboarding() {
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+
+  // HYDRATE on entry: pre-fill EVERY answer from the saved profile so a returning user SEES their previous choices
+  // (allergy/diet/time/goal/style) and their like/dislike list — instead of a blank flow each time. Best-effort,
+  // once per session; a brand-new visitor (empty profile) just starts clean.
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    (async () => {
+      const [prof, taste] = await Promise.all([
+        apiClient.get('/profile').then((r) => r.data).catch(() => null),
+        apiClient.get('/profile/taste').then((r) => r.data).catch(() => []),
+      ]);
+      if (cancelled) return;
+      const dims = prof?.declared?.dimensions || {};
+      const val = (k) => dims?.[k]?.value;
+      const next = {};
+      const allergyVals = val('dietary.allergies_intolerances');
+      if (Array.isArray(allergyVals) && allergyVals.length) next.allergens = Object.fromEntries(allergyVals.map((a) => [String(a), 'severe']));
+      const diet = val('dietary.pattern'); if (typeof diet === 'string' && diet) next.pattern = diet;
+      const ct = val('constraints.cooking_time_workday'); if (typeof ct === 'string' && ct) next.workdayTime = ct;
+      const style = val('context.cuisine_style'); if (typeof style === 'string' && style) next.style = style;
+      const goalVals = val('goals.primary');
+      if (Array.isArray(goalVals) && goalVals.length) next.goals = Object.fromEntries(goalVals.map((g) => [String(g), true]));
+      const list = Array.isArray(taste) ? taste : [];
+      const pick = (st) => list.filter((t) => t?.stance === st && t?.ingredientId).map((t) => ({ id: t.ingredientId, name: t.name || t.ingredientId }));
+      const likes = pick('like'); const dislikes = pick('dislike');
+      if (likes.length || dislikes.length) next.taste = { likes, dislikes };
+      if (Object.keys(next).length) setAnswers((a) => ({ ...a, ...next }));
+    })();
+    return () => { cancelled = true; };
+  }, [token]);
 
   const go = useCallback((n) => {
     setStep(Math.max(1, Math.min(LAST_STEP, n)));
@@ -144,7 +186,7 @@ export function useOnboarding() {
       // strictly avoids (cleaned base name so it matches recipe ingredient naming).
       for (const it of answers.taste.likes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }));
       for (const it of answers.taste.dislikes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }));
-      const dislikeNames = [...new Set(answers.taste.dislikes.map((it) => baseIngredientName(it.name)).filter(Boolean))];
+      const dislikeNames = [...new Set(answers.taste.dislikes.flatMap((it) => dislikeTokens(it.name)))];
       if (dislikeNames.length) writes.push(apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }));
       if (answers.workdayTime) writes.push(apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime })); // → assessRecipeFit (quicker slate)
       const goalIds = Object.keys(answers.goals);
