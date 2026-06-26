@@ -69,6 +69,10 @@ const SUITE = [
     { turns: ['برای شام پیشنهاد بده'], checks: [{ notMatches: 'شام.{0,12}ندار|ندار.{0,12}شام' }, { minLen: 40 }] },
     { turns: ['دسر چی داری'], checks: [{ notMatches: 'دسر.{0,12}ندار|ندار.{0,12}دسر' }, { minLen: 40 }] },
   ]},
+  { cap: 'cook-problem', cases: [
+    // a during-cook PROBLEM («کوبیده میریزه») must route to TROUBLESHOOTING (cause/fix), NOT a list of other recipes.
+    { turns: ['کوبیده میریزه'], checks: [{ matches: 'پیاز|ورز|یخچال|چربی|سیخ' }, { minLen: 40 }] },
+  ]},
   { cap: 'famous-dishes', cases: [
     // the founder's «قرمه‌سبزی و قیمه کجاست؟» — a generic stew ask must surface the BELOVED classics, not obscure ones.
     { turns: ['چند تا خورشت درجه یک بهم پیشنهاد بده'], checks: [{ matches: 'قرمه|قیمه|فسنجان' }, { minLen: 40 }] },
