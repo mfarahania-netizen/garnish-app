@@ -1,9 +1,11 @@
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 
-// Mock the HTTP client so the catalogue query is deterministic (no network).
+// Mock the HTTP client so the catalogue query is deterministic (no network). `post` covers the AuthProvider guest
+// mint that now runs on mount (logged-out harness) — without it the provider would throw `post is not a function`.
 const get = vi.fn();
-vi.mock('../../lib/apiClient', () => ({ default: { get: (...a) => get(...a) } }));
+const post = vi.fn().mockResolvedValue({ data: { token: 'guest-jwt', user: { id: 'g', isGuest: true }, deviceKey: 'dk' } });
+vi.mock('../../lib/apiClient', () => ({ default: { get: (...a) => get(...a), post: (...a) => post(...a) } }));
 
 import RecipesPage from './page';
 

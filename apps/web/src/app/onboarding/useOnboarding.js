@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, ONBOARDED_KEY } from '../../context/AuthContext';
 import { deriveTraits, DISLIKE_OPTIONS } from './steps';
 
 /**
@@ -144,6 +144,7 @@ export function useOnboarding() {
   const finish = useCallback(async () => {
     setSubmitting(true);
     await persist();
+    try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
     setSubmitting(false);
     navigate('/', { replace: true });
   }, [persist, navigate]);
@@ -168,6 +169,7 @@ export function useOnboarding() {
       return;
     }
     if (isSignup) await persist(); // consent (personalization gates the profile) + supported preferences
+    try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
     setSubmitting(false);
     navigate('/', { replace: true });
   }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, navigate]);

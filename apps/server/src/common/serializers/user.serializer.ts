@@ -17,6 +17,7 @@ export interface SafeUser {
   email?: string | null;
   avatar?: string | null;
   isAdmin?: boolean;
+  isGuest?: boolean;
   createdAt?: Date;
 }
 
@@ -28,6 +29,7 @@ const SAFE_FIELDS = [
   'email',
   'avatar',
   'isAdmin',
+  'isGuest', // first-run gate: the client routes an un-onboarded guest through onboarding (not sensitive)
   'createdAt',
 ] as const;
 
