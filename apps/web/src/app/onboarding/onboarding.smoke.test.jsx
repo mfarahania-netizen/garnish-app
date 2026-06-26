@@ -122,7 +122,7 @@ describe('OnboardingPage smoke', () => {
     expect(screen.getByText('توی روزهای هفته معمولاً چقدر وقت برای آشپزی داری؟')).toBeInTheDocument();
     expect(screen.getByText('کمتر از ۱۵ دقیقه')).toBeInTheDocument(); // a COOKTIME band
     expect(screen.getByText('چی دوست داری، چی رو نه؟')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/هر ماده‌ای رو بنویس/)).toBeInTheDocument(); // free-form search, not a fixed list
+    expect(screen.getByPlaceholderText(/هر ماده یا غذایی رو بنویس/)).toBeInTheDocument(); // free-form search (ingredients + dishes), not a fixed list
   });
 
   it('renders the goal & style step (step 4) — soft cuisine lean', () => {

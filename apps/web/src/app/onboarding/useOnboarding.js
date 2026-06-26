@@ -90,9 +90,10 @@ export function useOnboarding() {
     if (!token) return;
     let cancelled = false;
     (async () => {
-      const [prof, taste] = await Promise.all([
+      const [prof, taste, favs] = await Promise.all([
         apiClient.get('/profile').then((r) => r.data).catch(() => null),
         apiClient.get('/profile/taste').then((r) => r.data).catch(() => []),
+        apiClient.get('/favorites').then((r) => r.data).catch(() => []),
       ]);
       if (cancelled) return;
       const dims = prof?.declared?.dimensions || {};
@@ -106,8 +107,10 @@ export function useOnboarding() {
       const goalVals = val('goals.primary');
       if (Array.isArray(goalVals) && goalVals.length) next.goals = Object.fromEntries(goalVals.map((g) => [String(g), true]));
       const list = Array.isArray(taste) ? taste : [];
-      const pick = (st) => list.filter((t) => t?.stance === st && t?.ingredientId).map((t) => ({ id: t.ingredientId, name: t.name || t.ingredientId }));
-      const likes = pick('like'); const dislikes = pick('dislike');
+      const pick = (st) => list.filter((t) => t?.stance === st && t?.ingredientId).map((t) => ({ id: t.ingredientId, name: t.name || t.ingredientId, type: 'ingredient' }));
+      const dishLikes = (Array.isArray(favs) ? favs : []).map((f) => ({ id: String(f?.recipe?.id || f?.recipeId || ''), name: f?.recipe?.title || 'غذا', type: 'dish' })).filter((x) => x.id);
+      const likes = [...pick('like'), ...dishLikes];
+      const dislikes = pick('dislike'); // dish dislikes are a rejection SIGNAL (not a stored list) → not hydrated; known follow-up
       if (likes.length || dislikes.length) next.taste = { likes, dislikes };
       if (Object.keys(next).length) setAnswers((a) => ({ ...a, ...next }));
     })();
@@ -135,8 +138,9 @@ export function useOnboarding() {
   });
   const addTaste = (stance, item) => setAnswers((a) => {
     const key = stance === 'like' ? 'likes' : 'dislikes';
-    if (!item?.id || a.taste[key].some((x) => x.id === item.id)) return a;
-    return { ...a, taste: { ...a.taste, [key]: [...a.taste[key], { id: item.id, name: item.name }] } };
+    const type = item?.type === 'dish' ? 'dish' : 'ingredient';
+    if (!item?.id || a.taste[key].some((x) => x.id === item.id && (x.type || 'ingredient') === type)) return a;
+    return { ...a, taste: { ...a.taste, [key]: [...a.taste[key], { id: item.id, name: item.name, type }] } };
   });
   const removeTaste = (stance, id) => setAnswers((a) => {
     const key = stance === 'like' ? 'likes' : 'dislikes';
@@ -184,9 +188,16 @@ export function useOnboarding() {
       const writes = [apiClient.put('/users/preferences', buildPreferences())]; // diet → pool; allergies → HARD gate
       // LIKES + DISLIKES → per-ingredient soft taste (resolved id). DISLIKES also → declared hard_dislikes the chat
       // strictly avoids (cleaned base name so it matches recipe ingredient naming).
-      for (const it of answers.taste.likes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }));
-      for (const it of answers.taste.dislikes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }));
-      const dislikeNames = [...new Set(answers.taste.dislikes.flatMap((it) => dislikeTokens(it.name)))];
+      for (const it of answers.taste.likes) {
+        if (it.type === 'dish') writes.push(apiClient.post(`/favorites/${it.id}`)); // LIKE a dish → favorite (the engine reads favorites)
+        else writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }));
+      }
+      for (const it of answers.taste.dislikes) {
+        if (it.type === 'dish') writes.push(apiClient.post('/analytics/event', { type: 'recommendation_dismiss', page: '/onboarding', payload: { recipeId: it.id } })); // DISLIKE a dish → the −1.0 rejection signal
+        else writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }));
+      }
+      // hard_dislikes = INGREDIENT dislikes only (genus tokens); dish dislikes go via the dismiss signal above.
+      const dislikeNames = [...new Set(answers.taste.dislikes.filter((it) => it.type !== 'dish').flatMap((it) => dislikeTokens(it.name)))];
       if (dislikeNames.length) writes.push(apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }));
       if (answers.workdayTime) writes.push(apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime })); // → assessRecipeFit (quicker slate)
       const goalIds = Object.keys(answers.goals);
