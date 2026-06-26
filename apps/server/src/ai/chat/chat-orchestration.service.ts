@@ -44,7 +44,7 @@ export interface HandleChatResult {
   conversationId: string;
   status: AiCallStatus;
   /** 'gemini' when the reply is the live, post-guarded model output; otherwise 'deterministic'. */
-  providerMode: 'gemini' | 'deterministic';
+  providerMode: 'gemini' | 'deterministic' | 'agentic';
   /** the AICallLog row id for this turn (null if persistence failed). */
   aiCallLogId: string | null;
   /** the deterministic IntentClassifier decision for this turn — wired DARK (log/observe only; does not yet
@@ -251,7 +251,10 @@ export class ChatOrchestrationService {
     // diet) — asks ONE targeted question instead of dumping a topically-random fallback list. ANY concrete
     // signal (an ingredient/constraint, or a follow-up that carries the prior dish via short-term memory) skips
     // this and grounds normally. Safety intents (medical/§3) are already routed above and never reach here.
-    if (this.shouldClarifyAmbiguous(retrievalQuery, intentDecision)) {
+    // The deterministic vague-clarify is a pre-agentic CRUTCH. When the agentic brain is live it handles ambiguity
+    // far better (its prompt biases to ACTION — search + suggest, and ask at most ONE question only when truly
+    // needed), so a screenshot showed this firing twice for «یه غذای مجلسی». Step aside when agentic is enabled.
+    if (!this.agenticChat.isEnabled() && this.shouldClarifyAmbiguous(retrievalQuery, intentDecision)) {
       return this.respondDeterministicTurn(input, conversationId, intentDecision, t('clarify_vague', locale));
     }
 
@@ -329,7 +332,7 @@ export class ChatOrchestrationService {
     // non-empty answer, AND that output PASSES the allergy-safety OUTPUT gate. Otherwise fall back to the
     // GROUNDED, allergy-safe deterministic reply (the safe default) — never the un-filtered legacy reply.
     let reply: string;
-    let providerMode: 'gemini' | 'deterministic';
+    let providerMode: 'gemini' | 'deterministic' | 'agentic';
     if (blocked || status === 'error') {
       reply = this.safeBlockedReply(status, reasons, locale);
       providerMode = 'deterministic';
@@ -341,7 +344,7 @@ export class ChatOrchestrationService {
       const agentic = this.agenticChat.isEnabled() ? await this.agenticChat.reply(input.userId, input.prompt, snapshot) : null;
       if (agentic?.ok && agentic.text) {
         reply = agentic.text; // already passed the agentic output gate inside AgenticChatService
-        providerMode = 'gemini';
+        providerMode = 'agentic';
       } else {
         // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
         // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
@@ -744,7 +747,7 @@ export class ChatOrchestrationService {
     intent: IntentClassification,
     meta: {
       status: AiCallStatus;
-      providerMode: 'gemini' | 'deterministic';
+      providerMode: 'gemini' | 'deterministic' | 'agentic';
       model: string | null;
       aiCallLogId: string | null;
       blocked?: boolean;
