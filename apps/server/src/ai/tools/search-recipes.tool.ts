@@ -46,72 +46,59 @@ export class SearchRecipesTool implements AiTool {
     // Pull a window wider than `limit` so the relevance ranking has candidates to sort; capped small.
     const window = Math.min(Math.max(limit * 4, 24), 80);
 
-    // When there is a NEGATION / DIET / CRITERIA filter, build an AND query (positive OR + NOT(exclude) + diet IN
-    // + region IN + mealType-contains + cookingTime lte). A plain include-only query keeps the original `where.OR`
-    // shape (so existing behavior/tests are unchanged). mealType/dishType are JSON-array strings → `contains`.
-    const hasFilter = excludeOr.length || diets.length || regions.length || mealTypes.length || maxCookingTime != null;
-    const where: any = hasFilter
-      ? {
-          isPublic: true,
-          status: 'active',
-          AND: [
-            ...(includeOr.length ? [{ OR: includeOr }] : []),
-            ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
-            ...(diets.length ? [{ diet: { in: diets } }] : []),
-            ...(regions.length ? [{ region: { in: regions } }] : []),
-            ...(mealTypes.length ? [{ OR: mealTypes.map((m) => ({ mealType: { contains: m, mode: 'insensitive' as const } })) }] : []),
-            ...(maxCookingTime != null ? [{ cookingTime: { lte: maxCookingTime } }] : []),
-          ],
-        }
-      : { isPublic: true, status: 'active', OR: includeOr };
+    const sel = { id: true, title: true, description: true, ingredients: { select: { name: true } } } as const;
+    const baseAnd: any[] = [
+      ...(includeOr.length ? [{ OR: includeOr }] : []),
+      ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
+    ];
+    // PREFERENCE criteria, MOST-distinctive first; relax-on-empty drops them from the END (time → diet → meal → region).
+    const criteria: any[] = [
+      ...(regions.length ? [{ region: { in: regions } }] : []),
+      ...(mealTypes.length ? [{ OR: mealTypes.map((m) => ({ mealType: { contains: m, mode: 'insensitive' as const } })) }] : []),
+      ...(diets.length ? [{ diet: { in: diets } }] : []),
+      ...(maxCookingTime != null ? [{ cookingTime: { lte: maxCookingTime } }] : []),
+    ];
+    // a plain include-only query keeps the original top-level `OR` shape; only a NEGATION or CRITERIA filter builds
+    // the AND form (with relax-on-empty). (include alone must NOT switch shapes — existing behavior/tests.)
+    const hasFilter = excludeOr.length > 0 || criteria.length > 0;
 
-    let recipes: {
-      id: string;
-      title: string;
-      description: string | null;
-      ingredients?: { name: string | null }[];
-    }[] = [];
+    let recipes: { id: string; title: string; description: string | null; ingredients?: { name: string | null }[] }[] = [];
     try {
-      recipes = await this.prisma.recipe.findMany({
-        where,
-        take: window,
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          ingredients: { select: { name: true } },
-        },
-      });
+      if (!hasFilter) {
+        recipes = await this.prisma.recipe.findMany({ where: { isPublic: true, status: 'active', OR: includeOr }, take: window, select: sel });
+      } else {
+        // RELAX-ON-EMPTY: try the full criteria, then progressively drop the least-distinctive one, so an
+        // over-constrained query («صبحانهٔ پر پروتئین» = breakfast ∩ high_protein, nothing tagged both) returns the
+        // CLOSEST real dishes instead of «nothing». include/exclude are NEVER relaxed. (The HARD allergy/observance
+        // gate runs downstream regardless, so relaxing a PREFERENCE criterion never weakens safety.)
+        for (let n = criteria.length; n >= 0; n--) {
+          recipes = await this.prisma.recipe.findMany({ where: { isPublic: true, status: 'active', AND: [...baseAnd, ...criteria.slice(0, n)] }, take: window, select: sel });
+          if (recipes.length) break;
+        }
+      }
     } catch {
       return { tool: this.name, query, results: [], resultStatus: 'unavailable' };
     }
 
-    // RELEVANCE SAFETY NET: for a multi-term query, the broad OR window can crowd out the BEST row — e.g. «سوپ شیر»
-    // is buried because «شیر» also substring-matches dozens of «شیرازی»/«شیرین»/«شیر برنج» titles that fill the
-    // window. Pull the rows matching ALL content terms (the most relevant) separately and PREPEND them, so an
-    // exact multi-word dish is never excluded before ranking. Same filters apply.
+    // RELEVANCE SAFETY NET: ensure the BEST rows are in the window before ranking — the broad OR window can crowd
+    // them out («شیر» substring-matches dozens of «شیرازی» titles). PREPEND the rows matching (a) ALL terms — isolates
+    // «سوپ شیر» — and (b) all NON-generic terms — so «خورشت با لپه» surfaces «قیمه» (has لپه, but no «خورشت» in title).
     if (include.length >= 2) {
-      try {
-        const andRows = await this.prisma.recipe.findMany({
-          where: {
-            isPublic: true,
-            status: 'active',
-            AND: [
-              ...include.map((t) => ({ OR: clause(t) })),
-              ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
-              ...(diets.length ? [{ diet: { in: diets } }] : []),
-              ...(regions.length ? [{ region: { in: regions } }] : []),
-              ...(mealTypes.length ? [{ OR: mealTypes.map((m) => ({ mealType: { contains: m, mode: 'insensitive' as const } })) }] : []),
-              ...(maxCookingTime != null ? [{ cookingTime: { lte: maxCookingTime } }] : []),
-            ],
-          },
-          take: 12,
-          select: { id: true, title: true, description: true, ingredients: { select: { name: true } } },
-        });
-        const seen = new Set(recipes.map((r) => r.id));
-        recipes = [...andRows.filter((r) => !seen.has(r.id)), ...recipes];
-      } catch {
-        /* non-fatal — fall back to the OR window already fetched */
+      const andSets: string[][] = [include];
+      const nonGeneric = include.filter((t) => !GENERIC_DISH_WORDS.has(foldPersian(t)));
+      if (nonGeneric.length && nonGeneric.length < include.length) andSets.push(nonGeneric);
+      for (const terms of andSets) {
+        try {
+          const andRows = await this.prisma.recipe.findMany({
+            where: { isPublic: true, status: 'active', AND: [...terms.map((t) => ({ OR: clause(t) })), ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []), ...criteria] },
+            take: 12,
+            select: sel,
+          });
+          const seen = new Set(recipes.map((r) => r.id));
+          recipes = [...andRows.filter((r) => !seen.has(r.id)), ...recipes];
+        } catch {
+          /* non-fatal — fall back to the window already fetched */
+        }
       }
     }
 

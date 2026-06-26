@@ -58,6 +58,8 @@ const STOPWORDS = new Set<string>([
   // anaphoric pronouns — «همون رو بده»/«همین» refer to a PRIOR dish, not a content term; never deliver/search on them
   'همون', 'همین', 'همونو', 'همینو', 'اونو', 'اینو', 'همان', 'همین‌طور',
   'دوست', 'چند', 'چندتا', 'لطفا', 'لطفاً', 'ممنون', 'سلام', 'های', 'یا', 'بدون',
+  // meta/request words — «چند تا ایده بده» / «یه گزینه» / «چه مدلی» — not dishes; left in they over-constrain to zero
+  'ایده', 'ایده‌ها', 'ایدها', 'گزینه', 'گزینه‌ها', 'گزینها', 'مدل', 'مدلی', 'نوع', 'جور', 'جوری', 'مورد',
 ]);
 
 const ZWNJ = /‌/g;
@@ -184,6 +186,10 @@ export function isConfidentIngredientMatch(query: unknown, name: unknown): boole
 // and «غذای گیاهی ایرانی» on the diet filter, not the descriptor «ایرانی».
 const GENERIC_FOOD_WORDS = new Set([
   'غذا', 'غذای', 'چیز', 'چیزی', 'خوراکی', 'یه‌چیزی', 'ایرانی', 'سنتی', 'اصیل', 'خوشمزه', 'خوشمزه‌ای', 'محلی',
+  // OCCASION words — the corpus has NO occasion field, so left in they substring-match no title and return «nothing»
+  // («مهمونی ایرانی» → 0). Stripped, they fall back to the real filters (region/etc.) and the model frames the
+  // dishes for the occasion. (مهمونی→مهمانی via the colloquial fold; both listed for safety.)
+  'مهمونی', 'مهمانی', 'مجلسی', 'مجلس', 'پارتی', 'جشن', 'پذیرایی', 'مهمون', 'مهمان', 'دورهمی',
 ]);
 
 // CRITERIA → corpus metadata maps. Verified against the live published corpus (2026-06-26): Recipe.region is

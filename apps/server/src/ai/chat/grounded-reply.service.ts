@@ -61,6 +61,9 @@ export interface SafeRecipe {
   difficulty: string | null;
   /** 'persian' | 'international' — carried so the live model can frame a foreign dish correctly, not deny it. */
   region: string | null;
+  /** a few key ingredient names — so the model can match an INGREDIENT request («با لپه») to a dish whose TITLE
+   *  doesn't show it (e.g. «قیمه سیب‌زمینی» contains لپه). Without these the model is blind to contents. */
+  keyIngredients: string[];
   /** the non-allergen fit recommendation ('great_fit' | 'ok' | 'caution'); never 'avoid_allergen'. */
   fit: string;
 }
@@ -147,6 +150,7 @@ export class GroundedReplyService {
         cookingTime: typeof r.cookingTime === 'number' ? r.cookingTime : null,
         difficulty: typeof r.difficulty === 'string' ? r.difficulty : null,
         region: typeof r.region === 'string' ? r.region : null,
+        keyIngredients: Array.isArray(r.ingredients) ? r.ingredients.map((i: any) => String(i?.name ?? '').trim()).filter(Boolean).slice(0, 6) : [],
         fit: fit.recommendation,
       });
     }
@@ -205,7 +209,7 @@ export class GroundedReplyService {
    */
   buildLivePrompt(prompt: string, grounding: GroundingResult): string {
     const safeList = grounding.safeRecipes.length
-      ? grounding.safeRecipes.map((r, i) => `${i + 1}. ${r.title}${r.region ? ` — ${r.region}` : ''}${r.cookingTime ? ` (${r.cookingTime}m)` : ''}`).join('\n')
+      ? grounding.safeRecipes.map((r, i) => `${i + 1}. ${r.title}${r.region ? ` — ${r.region}` : ''}${r.cookingTime ? ` (${r.cookingTime}m)` : ''}${r.keyIngredients?.length ? ` — مواد: ${r.keyIngredients.join('، ')}` : ''}`).join('\n')
       : '(none)';
     return [
       'You are Garnish’s AI cooking assistant. Garnish offers BOTH Persian/Iranian AND many international recipes. Reply in Persian (fa) — warm, natural, and concise.',
@@ -217,14 +221,15 @@ export class GroundedReplyService {
       'GROUNDING (non-negotiable):',
       '- You may ONLY name or recommend recipes that appear in the SAFE RECIPES list below. NEVER invent a recipe or name a dish that is not in the list.',
       '- That list was already filtered for THIS user’s allergies server-side — treat it as the only safe options.',
+      '- The list was RETRIEVED as matches for the user’s request, and each line shows the dish’s key ingredients (مواد). TRUST it: recommend FROM the list, and USE the ingredients to match an ingredient request — e.g. for «با لپه» pick a dish whose مواد include لپه even if its title doesn’t (قیمه). If the list is non-empty, NEVER say you «don’t have» what they asked — the match is there.',
       '',
       'HOW TO ANSWER WELL (this is what makes you feel intelligent, not robotic):',
-      '- If the SAFE RECIPES genuinely fit the request, recommend the best 1–3 DECISIVELY — like a chef who knows the menu — each with a short, specific reason (and a key ingredient or the time). Don’t hedge.',
+      '- DEFAULT to offering 3–4 options (the user wants choice — do NOT give just one unless they asked for one). Recommend DECISIVELY, like a chef who knows the menu, each with a short specific reason (a key ingredient or the time). If fewer than 3 genuinely fit, give fewer — but NEVER repeat the same dish to pad the list (no duplicates). Don’t hedge.',
       '- If they only PARTLY fit (e.g. the user asked for «تند»/spicy, «سریع»/quick, «پرکالری»/«سبک», or a specific style but the list isn’t filtered that way), be HONEST: say you can’t filter exactly by that, then offer the closest options AND a concrete tip to adapt. NEVER claim a dish is spicy/quick/light/etc. when it isn’t — and NEVER present the SAME dish as matching two OPPOSITE requests (e.g. high-calorie and light).',
       '- FULL RECIPE — CRITICAL: you are given ONLY dish titles, regions, and times — NOT ingredients, amounts, or steps. You must NEVER write an ingredient list, a quantity, or a cooking step yourself: you don’t have the real data and would be INVENTING it (forbidden). Instead, the SYSTEM fetches and shows the real recipe. So when the user wants the full recipe, invite them to say «دستورِ [نام غذا] رو بده» (e.g. «بگو «دستورِ سوپ شیر رو بده» تا دستورِ کاملش برات بیاد») — naming the dish is what makes the real recipe appear. Never tell them to «open a page», never say you «don’t have it», never invent ingredients, never silently switch dishes.',
       '- The SAFE RECIPES include both Persian AND international dishes (the «— international» tag marks a foreign one). If the user asks for foreign / non-Persian food and matching dishes are in the list, recommend them directly and confidently. NEVER claim Garnish «only has Persian food» or lacks a whole cuisine — it has many international recipes. Only if the list has NOTHING fitting the request, say you couldn’t find a match for THIS specific request.',
       '- If the SAFE RECIPES list is «(none)» or none of them fit, do NOT list unrelated dishes. Say you couldn’t find a good match and ask ONE short clarifying question (an ingredient or a vibe).',
-      '- Do NOT end every message with «کدومیک؟» / a question. When you’ve recommended dishes, a natural close is to invite them to say which dish’s full recipe they want — vary it, don’t interrogate.',
+      '- VARY your wording every turn — do NOT end every message with the same «بگو دستورِ X رو بده» sentence or «کدومیک؟». Mention the «دستورِ ...» tip only OCCASIONALLY (e.g. once), not on every single reply; often just give the recommendations and stop. Reading the same closing line every turn feels robotic.',
       '- Use the earlier turns to understand follow-ups (e.g. «ایرانی باشه» after «غذای تند» = a SPICY Iranian dish). Don’t repeat the same list mechanically.',
       '- No medical, dietary, diagnosis, or nutrition claims.',
       '',
