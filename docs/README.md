@@ -5,8 +5,15 @@
 > developer overview + current status snapshot live in the repo‑root [`../README.md`](../README.md);
 > the data-layer source of truth is [`../data/README.md`](../data/README.md).
 >
-> Note: this index replaced an earlier vision/marketing draft that over-claimed (e.g. "Gemini deeply
-> integrated"); live Gemini product behavior is **not** enabled and AI Core is **not** complete.
+> **AI — current source of truth (2026-06-26):** the old aspirational AI design specs (the big "dimensions"
+> master spec + its fragments) were RETIRED — they designed a lot but didn't ship a working assistant. The live
+> plan is the rebuild into a true agentic companion, measured by an eval:
+> [`audit/AI_COMPANION_REARCHITECTURE.md`](audit/AI_COMPANION_REARCHITECTURE.md) (architecture) ·
+> [`audit/AI_WORLDCLASS_CAPABILITY_MAP.md`](audit/AI_WORLDCLASS_CAPABILITY_MAP.md) (the full capability map) ·
+> [`audit/CHAT_INTELLIGENCE_EXECUTION_PLAN.md`](audit/CHAT_INTELLIGENCE_EXECUTION_PLAN.md) (what's fixed/remaining) ·
+> [`audit/AI_PILLAR2_ADMIN_COST.md`](audit/AI_PILLAR2_ADMIN_COST.md) · [`audit/AI_WEB_GROUNDING_HEALTH_LEGAL_SPEC.md`](audit/AI_WEB_GROUNDING_HEALTH_LEGAL_SPEC.md).
+> Live Gemini chat IS enabled (grounded, behind a fail-closed allergy/observance gate); the agentic rebuild + the
+> data-capture pipelines are in progress.
 
 ## Execution (source of truth)
 - [Master Execution Constitution v1.0.1](execution/GARNISH_OS_MASTER_EXECUTION_CONSTITUTION_v1.0.1.md)

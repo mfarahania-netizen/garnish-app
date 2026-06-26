@@ -1,9 +1,11 @@
 # Chat Intelligence — URGENT Execution Plan (the "make it genuinely smart" track)
 
-> **Status:** ACTIVE / top priority (founder: the chat is «پایهٔ اصلیِ اپ» — the core foundation). Companion to
-> [`AI_MASTER_SPEC.md`](AI_MASTER_SPEC.md): the SPEC is the 9-dimension DESIGN; THIS doc is the prioritized
-> EXECUTION list to close the gap between that design and a chat that actually works. Grounded in the 2026-06-26
-> multi-agent chat audit (45 verified findings, `garnish-chat-ai-audit.workflow`) + live verification.
+> **Status:** ACTIVE / top priority (founder: the chat is «پایهٔ اصلیِ اپ» — the core foundation). The old
+> aspirational AI design spec was RETIRED 2026-06-26; the AI source of truth is now
+> [`AI_COMPANION_REARCHITECTURE.md`](AI_COMPANION_REARCHITECTURE.md) (architecture) +
+> [`AI_WORLDCLASS_CAPABILITY_MAP.md`](AI_WORLDCLASS_CAPABILITY_MAP.md) (full capability map). THIS doc is the
+> prioritized EXECUTION list of chat fixes (shipped + remaining). Grounded in the 2026-06-26 multi-agent chat
+> audit (45 verified findings) + live verification.
 > **Confidence tags:** [قطعی]/[احتمالاً]/[حدسی]/[نامطمئن].
 
 ## The brutal diagnosis (why it felt like "20-year-old tech")
