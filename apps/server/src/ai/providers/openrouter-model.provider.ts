@@ -1,4 +1,19 @@
-import { ModelProvider, ModelGenerateInput, ModelGenerateResult } from '../ai-core.types';
+import {
+  ModelProvider,
+  ModelGenerateInput,
+  ModelGenerateResult,
+  ModelUsage,
+  ToolCallingInput,
+  ToolCallingResult,
+  ChatTurn,
+} from '../ai-core.types';
+
+/** Minimal shape of the OpenRouter (OpenAI-compatible) chat-completions response we read. */
+interface OpenRouterResponse {
+  choices?: { message?: { content?: string | null; tool_calls?: { id?: string; function?: { name?: string; arguments?: string } }[] } }[];
+  usage?: Record<string, number>;
+  error?: { code?: number };
+}
 
 /**
  * Error carrying the HTTP status so the fallback chain can treat 429 (rate-limit) specially
@@ -40,12 +55,34 @@ export class OpenRouterModelProvider implements ModelProvider {
     const messages: { role: string; content: string }[] = [];
     if (input.system) messages.push({ role: 'system', content: input.system });
     messages.push({ role: 'user', content: input.prompt });
-    const body = {
-      model: this.modelName,
-      messages,
-      ...(input.maxTokens ? { max_tokens: input.maxTokens } : {}),
-    };
+    const data = await this.post({ model: this.modelName, messages, ...(input.maxTokens ? { max_tokens: input.maxTokens } : {}) });
+    const text = data?.choices?.[0]?.message?.content ?? '';
+    if (!text) throw new ModelProviderError(this.sanitize('empty completion'));
+    const promptLen = (input.system ? input.system.length : 0) + input.prompt.length;
+    return { text, model: this.modelName, usage: this.usageFrom(data?.usage, promptLen, text.length) };
+  }
 
+  /**
+   * Tool-calling round (agentic brain). Sends the running conversation + tool catalog; returns the
+   * model's final text OR the tool calls it wants run. The orchestration loop (outside this provider)
+   * executes the tools, appends the results, and calls back — the HARD safety gate wraps that loop.
+   */
+  async generateWithTools(input: ToolCallingInput): Promise<ToolCallingResult> {
+    const messages = input.messages.map((m) => this.toOpenAiMessage(m));
+    const tools = input.tools.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } }));
+    const data = await this.post({ model: this.modelName, messages, tools, tool_choice: 'auto', ...(input.maxTokens ? { max_tokens: input.maxTokens } : {}) });
+    const msg = data?.choices?.[0]?.message ?? {};
+    const toolCalls = Array.isArray(msg.tool_calls)
+      ? msg.tool_calls.map((tc) => ({ id: tc.id ?? '', name: tc.function?.name ?? '', arguments: tc.function?.arguments ?? '{}' })).filter((c) => c.name)
+      : [];
+    const text = msg.content ?? '';
+    if (!text && toolCalls.length === 0) throw new ModelProviderError(this.sanitize('empty completion (no text, no tool calls)'));
+    const promptLen = input.messages.reduce((s, m) => s + (m.content?.length ?? 0), 0);
+    return { text, toolCalls, model: this.modelName, usage: this.usageFrom(data?.usage, promptLen, text.length) };
+  }
+
+  /** POST a chat-completions body; sanitize + classify errors (429 → rateLimited) for the fallback chain. */
+  private async post(body: Record<string, unknown>): Promise<OpenRouterResponse> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
     let res: Response;
@@ -78,9 +115,9 @@ export class OpenRouterModelProvider implements ModelProvider {
       throw new ModelProviderError(this.sanitize(`http ${res.status}: ${detail}`), res.status, res.status === 429);
     }
 
-    let data: { choices?: { message?: { content?: string } }[]; usage?: Record<string, number>; error?: { code?: number } } | null = null;
+    let data: OpenRouterResponse;
     try {
-      data = await res.json();
+      data = (await res.json()) as OpenRouterResponse;
     } catch (err) {
       throw new ModelProviderError(this.sanitize(`bad json: ${err instanceof Error ? err.message : String(err)}`));
     }
@@ -89,24 +126,33 @@ export class OpenRouterModelProvider implements ModelProvider {
       const code = Number(data.error.code) || undefined;
       throw new ModelProviderError(this.sanitize(`api: ${JSON.stringify(data.error).slice(0, 200)}`), code, code === 429);
     }
-    const text = data?.choices?.[0]?.message?.content ?? '';
-    if (!text) throw new ModelProviderError(this.sanitize('empty completion'));
+    return data;
+  }
 
-    const u = data?.usage;
+  /** Map a provider-agnostic ChatTurn to an OpenAI-compatible message (incl. tool calls / tool results). */
+  private toOpenAiMessage(m: ChatTurn): Record<string, unknown> {
+    if (m.role === 'assistant' && m.toolCalls?.length) {
+      return {
+        role: 'assistant',
+        content: m.content || null,
+        tool_calls: m.toolCalls.map((tc) => ({ id: tc.id, type: 'function', function: { name: tc.name, arguments: tc.arguments } })),
+      };
+    }
+    if (m.role === 'tool') return { role: 'tool', tool_call_id: m.toolCallId, content: m.content };
+    return { role: m.role, content: m.content };
+  }
+
+  /** Build ModelUsage from the response, tagging provenance ('provider' metadata vs local 'estimated'). */
+  private usageFrom(u: Record<string, number> | undefined, promptLen: number, textLen: number): ModelUsage {
     const hasProviderUsage = !!u && (u.prompt_tokens != null || u.total_tokens != null);
-    const promptLen = (input.system ? input.system.length : 0) + input.prompt.length;
-    return {
-      text,
-      model: this.modelName,
-      usage: hasProviderUsage
-        ? { promptTokens: u!.prompt_tokens, completionTokens: u!.completion_tokens, totalTokens: u!.total_tokens, source: 'provider' }
-        : {
-            promptTokens: Math.max(1, Math.ceil(promptLen / 4)),
-            completionTokens: Math.max(0, Math.ceil(text.length / 4)),
-            totalTokens: Math.max(1, Math.ceil((promptLen + text.length) / 4)),
-            source: 'estimated',
-          },
-    };
+    return hasProviderUsage
+      ? { promptTokens: u!.prompt_tokens, completionTokens: u!.completion_tokens, totalTokens: u!.total_tokens, source: 'provider' }
+      : {
+          promptTokens: Math.max(1, Math.ceil(promptLen / 4)),
+          completionTokens: Math.max(0, Math.ceil(textLen / 4)),
+          totalTokens: Math.max(1, Math.ceil((promptLen + textLen) / 4)),
+          source: 'estimated',
+        };
   }
 
   /** Strip the API key and any key-like/bearer tokens from an error before it leaves the provider. */

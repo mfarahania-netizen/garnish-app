@@ -45,9 +45,53 @@ export interface ModelGenerateResult {
 export interface ModelProvider {
   readonly name: string;
   generate(input: ModelGenerateInput): Promise<ModelGenerateResult>;
+  /**
+   * OPTIONAL tool-calling capability (function-calling) — the substrate of the agentic brain.
+   * Given the running conversation + a tool catalog, the model returns EITHER a final `text` answer
+   * OR `toolCalls` it wants executed (the loop runs them and calls back). Providers that don't support
+   * tools simply omit this; the agentic loop only uses providers that implement it. The HARD safety gate
+   * still wraps the loop OUTSIDE the model — tool-calling never decides safety.
+   */
+  generateWithTools?(input: ToolCallingInput): Promise<ToolCallingResult>;
 }
 /** DI token for the active model provider. */
 export const AI_MODEL_PROVIDER = Symbol('AI_MODEL_PROVIDER');
+
+/* ── Tool-calling (agentic brain substrate) ── */
+/** One turn in a tool-calling conversation (OpenAI-compatible roles). */
+export interface ChatTurn {
+  role: 'system' | 'user' | 'assistant' | 'tool';
+  content: string;
+  /** assistant turn only — the tool calls the model requested on this turn. */
+  toolCalls?: ToolCallRequest[];
+  /** tool turn only — which assistant tool call this result answers. */
+  toolCallId?: string;
+}
+/** A tool the model MAY call: name + human description + JSON-Schema parameters. */
+export interface ToolSpec {
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
+/** A tool call the model emitted; `arguments` is a raw JSON string (parse at the call site). */
+export interface ToolCallRequest {
+  id: string;
+  name: string;
+  arguments: string;
+}
+export interface ToolCallingInput {
+  messages: ChatTurn[];
+  tools: ToolSpec[];
+  maxTokens?: number;
+}
+export interface ToolCallingResult {
+  /** final natural-language answer (empty when the model only asked for tools). */
+  text: string;
+  /** tools the model wants executed before it can answer (empty when it answered directly). */
+  toolCalls: ToolCallRequest[];
+  model: string;
+  usage?: ModelUsage;
+}
 
 /* ── Tools (a small, fixed, read-only set in A1) ── */
 export interface ToolContext {
