@@ -5,7 +5,7 @@ import { ToolRegistryService } from '../tools/tool-registry.service';
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
 import { looseMatch, toStringArray } from '../tools/grounding-utils';
-import { foldPersian, aliasIngredient, isConfidentIngredientMatch } from '../tools/persian-search';
+import { foldPersian, aliasIngredient, isConfidentIngredientMatch, parseSearchQuery } from '../tools/persian-search';
 import { extractStatedAllergens } from '../intent/allergen-extractor';
 import { t, Locale, resolveLocale } from '../i18n/template-registry';
 import { BehavioralContextSnapshot } from '../ai-core.types';
@@ -139,6 +139,13 @@ export class GroundedReplyService {
       return this.emptyResult('empty', ids.length);
     }
 
+    // load the user model ONCE (preference/memory — NOT safety) so it can also DROP disliked dishes + feed the prompt.
+    const userModel = await this.loadUserModel(userId);
+    // PREFERENCE filter (soft, not a safety claim): a disliked ingredient is dropped from what we SURFACE — UNLESS
+    // the user explicitly asked for it THIS turn (then keep it; the model acknowledges «معمولاً دوست نداری ولی…»).
+    const requested = new Set(parseSearchQuery(prompt).include.map((t) => foldPersian(t)));
+    const activeDislikes = userModel.dislikes.map((d) => foldPersian(d)).filter((d) => d.length >= 2 && !requested.has(d));
+
     // 4) HARD allergy gate — REUSE assessRecipeFit + analyzeRecipeIntegrity. `avoid_allergen` is NEVER
     //    surfaced. We iterate ALL retrieved candidates (so the gate provably applies to every one), in
     //    retrieval (relevance) order, then surface at most SURFACE_LIMIT safe ones.
@@ -146,6 +153,7 @@ export class GroundedReplyService {
     const safe: SafeRecipe[] = [];
     const unsafeTitles: string[] = [];
     let dropped = 0;
+    let droppedDislike = 0;
     for (const id of ids) {
       const r = byId.get(id);
       if (!r) continue;
@@ -159,6 +167,12 @@ export class GroundedReplyService {
         dropped += 1;
         if (typeof r.title === 'string' && r.title.trim()) unsafeTitles.push(r.title.trim());
         continue;
+      }
+      // PREFERENCE drop (soft): contains a DISLIKED ingredient the user did NOT explicitly ask for → don't surface.
+      // NOT pushed to unsafeTitles (it is a preference, never a safety claim — the output gate must not block on it).
+      if (activeDislikes.length) {
+        const hay = foldPersian([r.title, ...(Array.isArray(r.ingredients) ? r.ingredients.map((i: any) => i?.name) : [])].join(' '));
+        if (activeDislikes.some((d) => hay.includes(d))) { droppedDislike += 1; continue; }
       }
       safe.push({
         id: String(r.id),
@@ -182,7 +196,7 @@ export class GroundedReplyService {
       groundingStatus: safe.length ? 'ok' : 'empty',
       retrievedCount: ids.length,
       droppedForAllergy: dropped,
-      userModel: await this.loadUserModel(userId),
+      userModel,
     };
   }
 
