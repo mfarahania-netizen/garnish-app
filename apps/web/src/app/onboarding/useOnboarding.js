@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
-import { deriveTraits } from './steps';
+import { deriveTraits, DISLIKE_OPTIONS } from './steps';
 
 /**
  * useOnboarding — the first-run flow's state machine + honest persistence.
@@ -132,7 +132,14 @@ export function useOnboarding() {
     try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); try { localStorage.setItem('garnish.consent.personalization', 'true'); } catch { /* */ } } catch { /* non-blocking */ }
     try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
     try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
-  }, [buildPreferences]);
+    // DISLIKES → the declared `dietary.hard_dislikes` lever the assistant reads (consent is granted above, so the
+    // answer persists). Previously collected in flow state but never sent — so the assistant never learned them
+    // and could even invent the opposite («you love eggplant»). Send the Persian INGREDIENT names the engine matches.
+    // category dislikes («غذای دریایی») aren't a single ingredient — expand to the names the engine matches.
+    const EXPAND = { seafood: ['ماهی', 'میگو', 'صدف', 'خرچنگ', 'غذای دریایی'] };
+    const dislikeNames = [...new Set(Object.keys(answers.dislikes).flatMap((id) => EXPAND[id] || [DISLIKE_OPTIONS.find((o) => o.id === id)?.label]).filter(Boolean))];
+    if (dislikeNames.length) { try { await apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }); } catch { /* non-blocking */ } }
+  }, [buildPreferences, answers.dislikes]);
 
   const finish = useCallback(async () => {
     setSubmitting(true);
