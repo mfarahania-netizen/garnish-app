@@ -135,3 +135,22 @@ The FE pieces (guest-on-load wiring + EU-14 allergy screen + effort lever + firs
 un-bundle + NL/EN i18n) are interdependent and should ship as ONE coherent redesign, NOT bolted onto the current
 register-wall flow. DESIGN (forge) the 5-question flow + screens before building, then build screen-by-screen with
 the guardian/screenshot gate.
+
+## BUILD STATUS — Piece 3 SHIPPED (2026-06-26)
+The FE redesign was built this session, screen-by-screen + live-verified (commits c9ace5ca → a0834df6). The flow is
+now: Welcome → **S1 Allergy** (EU-14 + one-tap "None") → **S2 Taste&Time** (diet + workday cooking-time + a FREE-FORM
+TasteBuilder: search ANY ingredient OR dish → love/never) → **S3 Goal&Style** (goals.primary + a SOFT cuisine-style
+lean) → Reveal → Account.
+- **DONE + verified:** guest-on-load + first-run gate (isGuest exposed); allergy-first screen; effort lever
+  (cooking_time_workday → assessRecipeFit, busy slate ~39m vs ~78m); free-form taste (ingredient like/dislike →
+  /profile/taste/correct + genus hard_dislikes «قارچ صدفی»→«قارچ»; dish like → favorite; dish dislike →
+  recommendation_dismiss); goal → chat user-model; SOFT cuisine-style (traditional 15/1, modern 2/14 — never hides
+  the other); HYDRATE-on-re-entry (every answer + like/dislike list pre-filled from GET /profile + /profile/taste +
+  /favorites); parallel-save (button ~1s, can't hang); honest reveal ring (no fake %).
+- **DEFERRED → PHASE 2 (post-Iran, founder 2026-06-26):** NL/EN **Dutch i18n** + EU occasions/Gregorian-calendar
+  specifics. Iran/Persian is phase 1 ([[garnish-target-market]]). Do NOT build Dutch now.
+- **REMAINING (phase 1, NOT yet built):** (1) guest→registered **CLAIM** — with guest-on-load, `authed` is always
+  true so the Reveal calls finish() (enter-as-guest) and the Account/register step is never reached; a guest who
+  clears the device LOSES their data. Need a "create account / claim" path so the device-keyed guest converts to a
+  registered user, data-preserving. **This is a real launch gap.** (2) first-slate **familiarity allowlist** (the
+  founder's ~40 photographed dishes). (3) **consent un-bundle** (legal-gated).
