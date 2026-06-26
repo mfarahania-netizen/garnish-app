@@ -45,6 +45,10 @@ const FIT_SELECT = {
 const RETRIEVE_LIMIT = 12; // candidates pulled from the corpus before the HARD allergy gate
 const SURFACE_LIMIT = 5; // safe recipes actually shown
 
+// ubiquitous seasonings/condiments — filtered out of the model-visible «key ingredients» so the DISTINGUISHING
+// mains (لپه/گوشت/…) surface instead of the spice rack that opens almost every recipe's ingredient list.
+const SEASONING_RE = /نمک|فلفل|زردچوبه|روغن|آبلیمو|^آب$|^آب /;
+
 // Recipe difficulty is stored in English in the corpus; render it per locale.
 const DIFFICULTY: Record<Locale, Record<string, string>> = {
   fa: { easy: 'آسان', medium: 'متوسط', hard: 'سخت' },
@@ -150,7 +154,12 @@ export class GroundedReplyService {
         cookingTime: typeof r.cookingTime === 'number' ? r.cookingTime : null,
         difficulty: typeof r.difficulty === 'string' ? r.difficulty : null,
         region: typeof r.region === 'string' ? r.region : null,
-        keyIngredients: Array.isArray(r.ingredients) ? r.ingredients.map((i: any) => String(i?.name ?? '').trim()).filter(Boolean).slice(0, 6) : [],
+        // distinguishing ingredients only — recipes list seasonings FIRST (نمک/فلفل/روغن…), so a naive «first 6»
+        // would hide the real mains (a «با لپه» dish shows spices, not لپه). Filter the ubiquitous seasonings so the
+        // model sees what actually defines the dish.
+        keyIngredients: Array.isArray(r.ingredients)
+          ? r.ingredients.map((i: any) => String(i?.name ?? '').trim()).filter((n: string) => n && !SEASONING_RE.test(n)).slice(0, 8)
+          : [],
         fit: fit.recommendation,
       });
     }
