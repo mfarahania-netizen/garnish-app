@@ -266,7 +266,9 @@ function Reveal({ o }) {
               style={{ position: 'absolute', inlineSize: 140, blockSize: 140, borderRadius: '50%', background: 'var(--g-color-brand-400)' }}
             />
           ) : null}
-          <FoodDnaRing value={0.2} size={168} tone="forming" showValue={false} centerIcon={IconLeaf} caption="" />
+          {/* A COMPLETE decorative ring (not a 20%-filled arc that reads as a misleading progress «درصد») — purely a
+              warm frame around the leaf; the "forming" message is the chip + heading, not a progress meter. */}
+          <FoodDnaRing value={1} size={168} tone="forming" showValue={false} centerIcon={IconLeaf} caption="" />
         </Box>
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-5)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
           <IconTrendingUp size={14} stroke={1.8} aria-hidden="true" />در حال شکل‌گیری

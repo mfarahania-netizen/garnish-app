@@ -128,33 +128,41 @@ export function useOnboarding() {
     return body;
   }, [answers]);
 
-  // persist consent + every collected signal, each to its real engine consumer. All writes non-blocking.
+  // persist consent + every collected signal. Consent is granted FIRST (it gates every write); then ALL writes fire
+  // in PARALLEL so the save is ~2 round-trips, not a dozen sequential ones (the old loop made the «ذخیره» button
+  // feel stuck the more you filled in). A hard race-timeout guarantees the button is ALWAYS freed — any straggler
+  // request finishes in the background. Each write maps a collected signal to its real engine consumer.
   const persist = useCallback(async () => {
-    try { await apiClient.post('/users/consent', { type: 'personalization', granted: true }); try { localStorage.setItem('garnish.consent.personalization', 'true'); } catch { /* */ } } catch { /* non-blocking */ }
-    try { await apiClient.post('/users/consent', { type: 'core', granted: true }); } catch { /* non-blocking */ }
-    try { await apiClient.put('/users/preferences', buildPreferences()); } catch { /* non-blocking */ }
-    // LIKES + DISLIKES → per-ingredient soft taste (resolved id). DISLIKES additionally → the declared hard_dislikes
-    // the chat strictly avoids (cleaned base name so it matches recipe ingredient naming).
-    for (const it of answers.taste.likes) { try { await apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }); } catch { /* non-blocking */ } }
-    for (const it of answers.taste.dislikes) { try { await apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }); } catch { /* non-blocking */ } }
-    const dislikeNames = [...new Set(answers.taste.dislikes.map((it) => baseIngredientName(it.name)).filter(Boolean))];
-    if (dislikeNames.length) { try { await apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }); } catch { /* non-blocking */ } }
-    // EFFORT LEVER → declared cooking_time_workday band → assessRecipeFit (quicker first slate for busy users).
-    if (answers.workdayTime) { try { await apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime }); } catch { /* non-blocking */ } }
-    // GOAL → declared goals.primary (why the user is here — the profile/assistant read it). STYLE → the SOFT
-    // cuisine_style lean (boosts the chosen style in ranking, never hides the other — verified: traditional 15/1,
-    // modern 2/14 persian/international).
-    const goalIds = Object.keys(answers.goals);
-    if (goalIds.length) { try { await apiClient.post('/profile/answer', { key: 'goals.primary', value: goalIds }); } catch { /* non-blocking */ } }
-    if (answers.style) { try { await apiClient.post('/profile/answer', { key: 'context.cuisine_style', value: answers.style }); } catch { /* non-blocking */ } }
+    const work = (async () => {
+      await Promise.allSettled([
+        apiClient.post('/users/consent', { type: 'personalization', granted: true }),
+        apiClient.post('/users/consent', { type: 'core', granted: true }),
+      ]);
+      try { localStorage.setItem('garnish.consent.personalization', 'true'); } catch { /* */ }
+      const writes = [apiClient.put('/users/preferences', buildPreferences())]; // diet → pool; allergies → HARD gate
+      // LIKES + DISLIKES → per-ingredient soft taste (resolved id). DISLIKES also → declared hard_dislikes the chat
+      // strictly avoids (cleaned base name so it matches recipe ingredient naming).
+      for (const it of answers.taste.likes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'like' }));
+      for (const it of answers.taste.dislikes) writes.push(apiClient.post('/profile/taste/correct', { ingredientId: it.id, stance: 'dislike' }));
+      const dislikeNames = [...new Set(answers.taste.dislikes.map((it) => baseIngredientName(it.name)).filter(Boolean))];
+      if (dislikeNames.length) writes.push(apiClient.post('/profile/answer', { key: 'dietary.hard_dislikes', value: dislikeNames }));
+      if (answers.workdayTime) writes.push(apiClient.post('/profile/answer', { key: 'constraints.cooking_time_workday', value: answers.workdayTime })); // → assessRecipeFit (quicker slate)
+      const goalIds = Object.keys(answers.goals);
+      if (goalIds.length) writes.push(apiClient.post('/profile/answer', { key: 'goals.primary', value: goalIds })); // why the user is here
+      if (answers.style) writes.push(apiClient.post('/profile/answer', { key: 'context.cuisine_style', value: answers.style })); // SOFT cuisine lean
+      await Promise.allSettled(writes);
+    })();
+    await Promise.race([work, new Promise((res) => setTimeout(res, 7000))]);
   }, [buildPreferences, answers.taste, answers.workdayTime, answers.goals, answers.style]);
 
   const finish = useCallback(async () => {
     setSubmitting(true);
-    await persist();
-    try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
-    setSubmitting(false);
-    navigate('/', { replace: true });
+    try { await persist(); } finally {
+      // ALWAYS free the button + move on, even if persist threw — the save is best-effort, never a dead-end.
+      try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
+      setSubmitting(false);
+      navigate('/', { replace: true });
+    }
   }, [persist, navigate]);
 
   const submit = useCallback(async () => {

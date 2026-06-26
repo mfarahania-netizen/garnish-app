@@ -78,6 +78,8 @@ export interface UserModelContext {
   dislikes: string[];
   favorites: string[];
   skill: string | null;
+  /** the user's declared GOALS («سالم‌تر خوردن», «یادگیری آشپزی») from onboarding — why they're here. */
+  goals: string[];
   /** durable user-stated facts («گیاهی‌ام», «۲ بچه دارم») — the "remember this" memory. */
   facts: { key: string; value: string }[];
 }
@@ -207,7 +209,7 @@ export class GroundedReplyService {
    * any failure or empty data → an empty model (the assistant just won't personalise; it never breaks the turn).
    */
   private async loadUserModel(userId: string, profile?: any): Promise<UserModelContext> {
-    const empty: UserModelContext = { dislikes: [], favorites: [], skill: null, facts: [] };
+    const empty: UserModelContext = { dislikes: [], favorites: [], skill: null, goals: [], facts: [] };
     if (!userId) return empty;
     const arr = (s: unknown): string[] => {
       try { const a = JSON.parse(typeof s === 'string' ? s : '[]'); return Array.isArray(a) ? a.map((x) => String(x).trim()).filter(Boolean) : []; } catch { return []; }
@@ -219,6 +221,14 @@ export class GroundedReplyService {
       const v = profile?.declared?.dimensions?.['dietary.hard_dislikes']?.value;
       return Array.isArray(v) ? v.map((x: any) => String(x).trim()).filter(Boolean) : typeof v === 'string' && v.trim() ? [v.trim()] : [];
     })();
+    // DECLARED GOALS from onboarding («دنبالِ چی هستی؟» → goals.primary) — mapped to plain Persian so the assistant
+    // can gently tailor to WHY the user is here (never as a medical claim).
+    const GOAL_FA: Record<string, string> = { eat_healthier: 'سالم‌تر و سبک‌تر خوردن', learn_cooking: 'یاد گرفتنِ آشپزی', save_time: 'صرفه‌جویی در زمان', save_money: 'مدیریتِ هزینه', more_energy: 'انرژی و تعادل' };
+    const goals = (() => {
+      const v = profile?.declared?.dimensions?.['goals.primary']?.value;
+      const ids = Array.isArray(v) ? v : (typeof v === 'string' && v.trim() ? [v.trim()] : []);
+      return [...new Set(ids.map((id: any) => GOAL_FA[String(id)]).filter(Boolean))].slice(0, 4) as string[];
+    })();
     try {
       const [bp, facts] = await Promise.all([
         this.prisma.userBehaviorProfile.findFirst({ where: { userId }, select: { dislikedIngredients: true, dislikedFoods: true, favoriteFoods: true, favoriteIngredients: true, cookingSkill: true } }).catch(() => null),
@@ -228,10 +238,11 @@ export class GroundedReplyService {
         dislikes: [...new Set([...hardDislikes, ...arr(bp?.dislikedIngredients), ...arr(bp?.dislikedFoods)])].slice(0, 12),
         favorites: [...new Set([...arr(bp?.favoriteFoods), ...arr(bp?.favoriteIngredients)])].slice(0, 12),
         skill: typeof bp?.cookingSkill === 'string' && bp.cookingSkill.trim() ? bp.cookingSkill.trim() : null,
+        goals,
         facts: (facts ?? []).map((f) => ({ key: String(f.key), value: typeof f.value === 'string' ? f.value : JSON.stringify(f.value) })).filter((f) => f.key && f.value),
       };
     } catch {
-      return { ...empty, dislikes: hardDislikes.slice(0, 12) };
+      return { ...empty, dislikes: hardDislikes.slice(0, 12), goals };
     }
   }
 
@@ -289,6 +300,7 @@ export class GroundedReplyService {
     if (um?.dislikes.length) userLines.push(`- از این‌ها بدش می‌آید — پیشنهاد نده مگر خودش بخواهد: ${um.dislikes.join('، ')}`);
     if (um?.favorites.length) userLines.push(`- این‌ها را دوست دارد — در صورت تناسب اولویت بده: ${um.favorites.join('، ')}`);
     if (um?.skill) userLines.push(`- سطح آشپزی‌اش: ${um.skill} (سختی و لحن را متناسب کن)`);
+    if (um?.goals?.length) userLines.push(`- هدفش از اپ: ${um.goals.join('، ')} — هرجا طبیعی بود، انتخاب‌ها و لحنت را به این هدف نزدیک کن (مثلاً «چون دنبالِ سالم‌تر خوردنی، این سبک‌ترها رو دارم…»)، بدونِ ادعای پزشکی.`);
     const userBlock = userLines.length
       ? ['WHAT YOU KNOW ABOUT THIS USER (personalization — use it so you feel like you genuinely KNOW them; reference it naturally e.g. «چون گیاهی هستی…». Allergies are handled separately by the safety filter, do NOT mention allergy filtering here):', ...userLines, '']
       : [];
