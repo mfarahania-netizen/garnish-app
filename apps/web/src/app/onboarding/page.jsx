@@ -10,8 +10,7 @@ import { toFaDigits } from '../../components/ges/format';
 import { prefersReducedMotion } from '../../lib/motion';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import {
-  WORK_OPTIONS, HOUSEHOLD_OPTIONS, PATTERN_OPTIONS, ALLERGEN_OPTIONS,
-  DISLIKE_OPTIONS, GOAL_OPTIONS, SKILL_OPTIONS, BUDGET_OPTIONS,
+  PATTERN_OPTIONS, ALLERGEN_OPTIONS, DISLIKE_OPTIONS, COOKTIME_OPTIONS,
 } from './steps';
 
 /* ── layout ── */
@@ -352,6 +351,23 @@ function Auth({ o }) {
   );
 }
 
+/** Visually-primary one-tap "no allergies" fast-exit for the modal (no-restriction) user. */
+function NoneFastExit({ onClick }) {
+  return (
+    <UnstyledButton
+      type="button"
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 50,
+        marginBlockStart: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1.5px solid var(--g-color-brand-600)',
+        background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700,
+      }}
+    >
+      <IconCircleCheckFilled size={18} aria-hidden="true" />حساسیتی ندارم — برو ادامه
+    </UnstyledButton>
+  );
+}
+
 export default function OnboardingPage() {
   const o = useOnboarding();
   const a = o.answers;
@@ -359,59 +375,37 @@ export default function OnboardingPage() {
     <Column>
       {o.step === 1 ? <Welcome onStart={o.next} onLogin={o.goLogin} showLogin={!o.authed} /> : null}
 
-      {o.step >= 2 && o.step <= 5 ? (
+      {o.step >= 2 && o.step <= 3 ? (
         <QuestionShell o={o}>
+          {/* STEP 2 — the ONE required up-front question: allergy safety (EU-14 + a one-tap "None" fast-exit). */}
           {o.step === 2 ? (
             <>
-              <Text component="h2" style={h2}>کارِ روزمره‌ات چه شکلیه؟</Text>
-              <Text component="p" style={infoText}><IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />تا بدونیم وسطِ هفته چقدر برای آشپزی وقت داری.</Text>
-              <OptionGrid options={WORK_OPTIONS} value={a.work} onSelect={o.setWork} />
-              <Text component="h3" style={h3}>معمولاً برای کی می‌پزی؟</Text>
-              <OptionGrid options={HOUSEHOLD_OPTIONS} value={a.household} onSelect={o.setHousehold} />
-              <Text component="h3" style={h3}>معمولاً برای چند نفر؟</Text>
-              <Stepper valueFa={o.countFa} onInc={o.inc} onDec={o.dec} />
+              <Text component="h2" style={h2}>اول، ایمنی</Text>
+              <Text component="p" style={infoText}><IconShieldHalf size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0, marginBlockStart: 2 }} />به چیزی حساسیت داری؟ این‌ها رو هیچ‌وقت بهت پیشنهاد نمی‌دیم — فقط آلرژی، نه سلیقه. (اطلاع‌رسانی، نه توصیهٔ پزشکی)</Text>
+              <AllergenSelect options={ALLERGEN_OPTIONS} selected={a.allergens} onToggle={o.toggleAllergen} onSeverity={o.setSeverity} />
+              <NoneFastExit onClick={o.clearAllergensAndNext} />
             </>
           ) : null}
 
+          {/* STEP 3 — one tight "taste & time" screen: the levers that make the first slate precise (diet → pool,
+              cooking-time → assessRecipeFit, dislikes → assistant). Everything here is optional/skippable. */}
           {o.step === 3 ? (
             <>
-              <Text component="h2" style={h2}>چه‌جور غذایی دوست داری؟</Text>
-              <Text component="p" style={infoText}><IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />برای اینکه پیشنهادها از همین حالا به ذائقه‌ات نزدیک باشن.</Text>
+              <Text component="h2" style={h2}>یه کم از سلیقه‌ات</Text>
+              <Text component="p" style={infoText}><IconSparkles size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />همین چند تا، پیشنهادها رو از اولین لیست به ذائقه‌ات نزدیک می‌کنه — هر کدوم خواستی رد کن.</Text>
+              <Text component="h3" style={h3}>چه‌جور غذایی دوست داری؟</Text>
               <OptionGrid options={PATTERN_OPTIONS} value={a.pattern} onSelect={o.setPattern} />
-              <Text component="h3" style={h3}>حساسیت یا چیزی که نباید بخوری؟</Text>
-              <Text component="p" style={infoText}><IconShieldHalf size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0, marginBlockStart: 2 }} />این‌ها را به‌عنوان پرچمِ ایمنی نشان می‌دهیم — اطلاع‌رسانی، نه توصیهٔ پزشکی.</Text>
-              <AllergenSelect options={ALLERGEN_OPTIONS} selected={a.allergens} onToggle={o.toggleAllergen} onSeverity={o.setSeverity} />
+              <Text component="h3" style={h3}>وسطِ هفته معمولاً چقدر برای آشپزی وقت داری؟</Text>
+              <OptionGrid options={COOKTIME_OPTIONS} value={a.workdayTime} onSelect={o.setWorkdayTime} />
               <Text component="h3" style={h3}>چیزی هست که هیچ‌وقت نمی‌خوای؟</Text>
               <ChipSelect options={DISLIKE_OPTIONS} selectedMap={a.dislikes} onToggle={o.toggleDislike} />
-            </>
-          ) : null}
-
-          {o.step === 4 ? (
-            <>
-              <Text component="h2" style={h2}>هدفِ اصلیت با غذا چیه؟</Text>
-              <Text component="p" style={infoText}><IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 2 }} />هرچند تا که خواستی — این‌ها لحنِ پیشنهادها را تنظیم می‌کنند.</Text>
-              <OptionGrid options={GOAL_OPTIONS} multi selectedMap={a.goals} onSelect={o.toggleGoal} />
-            </>
-          ) : null}
-
-          {o.step === 5 ? (
-            <>
-              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
-                <IconSparkles size={13} stroke={1.8} aria-hidden="true" />اختیاری — رد شو هم اشکالی نداره
-              </Box>
-              <Text component="h2" style={{ ...h2, marginBlockStart: 'var(--g-space-3)' }}>چند تنظیمِ آخر</Text>
-              <Text component="h3" style={h3}>آشپزیت در چه حدیه؟</Text>
-              <OptionGrid options={SKILL_OPTIONS} value={a.skill} onSelect={o.setSkill} cols={3} />
-              <Text component="h3" style={h3}>بودجهٔ هفتگی؟</Text>
-              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-1) 0 0' }}>فقط یک بازه — هیچ عددِ دقیقی نمی‌پرسیم.</Text>
-              <OptionGrid options={BUDGET_OPTIONS} value={a.budget} onSelect={o.setBudget} cols={3} />
             </>
           ) : null}
         </QuestionShell>
       ) : null}
 
-      {o.step === 6 ? <Reveal o={o} /> : null}
-      {o.step === 7 ? <Auth o={o} /> : null}
+      {o.step === 4 ? <Reveal o={o} /> : null}
+      {o.step === 5 ? <Auth o={o} /> : null}
     </Column>
   );
 }

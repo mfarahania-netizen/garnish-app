@@ -92,6 +92,15 @@ export const BUDGET_OPTIONS = [
   { id: 'generous', label: 'دست‌ودل‌باز', Icon: IconCash },
 ];
 
+// COOKING TIME on a workday — the declared effort lever. ids MUST equal the engine bands
+// (constraints.cooking_time_workday: under_15/15_30/30_60/60_plus); under_15+15_30 = "wants quick" → quicker slate.
+export const COOKTIME_OPTIONS = [
+  { id: 'under_15', label: 'کمتر از ۱۵ دقیقه', Icon: IconClockBolt },
+  { id: '15_30', label: '۱۵ تا ۳۰ دقیقه', Icon: IconClock },
+  { id: '30_60', label: '۳۰ تا ۶۰ دقیقه', Icon: IconClock },
+  { id: '60_plus', label: 'بیشتر از یک ساعت', Icon: IconCoffee },
+];
+
 // ── Food DNA reveal traits — derived ONLY from the user's real answers (never invented) ──
 const PATTERN_TRAIT = {
   flexitarian: 'گیاه‌محور', vegetarian: 'گیاه‌خوار', vegan: 'وگن', pescatarian: 'ماهی‌محور',
@@ -102,13 +111,12 @@ export function deriveTraits(state) {
   const out = [];
   const push = (label, Icon) => { if (label && !out.some((t) => t.label === label)) out.push({ label, Icon }); };
 
+  // Derived ONLY from the v1 answers actually collected (diet · workday cooking-time · dislikes) — never invented.
   if (state.pattern && PATTERN_TRAIT[state.pattern]) push(PATTERN_TRAIT[state.pattern], IconLeaf);
-  if (state.work === 'desk' || state.work === 'shift') push('سریعِ وسط‌هفته', IconClockBolt);
-  else if (state.work === 'free' || state.work === 'home') push('وقت‌دارِ آشپزی', IconCoffee);
-  if (state.skill === 'advanced') push('حرفه‌ای', IconChefHat);
-  else if (state.skill === 'beginner') push('تازه‌کار', IconSeeding);
-  if (state.goals?.budget || state.budget === 'low') push('صرفه‌جو', IconWallet);
-  if (state.goals?.variety) push('متنوع‌پسند', IconArrowsShuffle);
+  if (state.workdayTime === 'under_15' || state.workdayTime === '15_30') push('سریعِ وسط‌هفته', IconClockBolt);
+  else if (state.workdayTime === '60_plus') push('وقت‌دارِ آشپزی', IconCoffee);
+  const dislikeCount = state.dislikes ? Object.keys(state.dislikes).length : 0;
+  if (dislikeCount) push('سلیقهٔ مشخص', IconChecks);
 
   return out.slice(0, 3);
 }
