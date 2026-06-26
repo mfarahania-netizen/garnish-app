@@ -140,7 +140,8 @@ export class GroundedReplyService {
     }
 
     // load the user model ONCE (preference/memory — NOT safety) so it can also DROP disliked dishes + feed the prompt.
-    const userModel = await this.loadUserModel(userId);
+    // pass the LIVING profile so dislikes come from the authoritative `dietary.hard_dislikes` (what onboarding writes).
+    const userModel = await this.loadUserModel(userId, profile);
     // PREFERENCE filter (soft, not a safety claim): a disliked ingredient is dropped from what we SURFACE — UNLESS
     // the user explicitly asked for it THIS turn (then keep it; the model acknowledges «معمولاً دوست نداری ولی…»).
     const requested = new Set(parseSearchQuery(prompt).include.map((t) => foldPersian(t)));
@@ -205,25 +206,32 @@ export class GroundedReplyService {
    * gate). Reads UserBehaviorProfile (dislikes/favorites/skill) + the UserFact «remember this» memory. Best-effort:
    * any failure or empty data → an empty model (the assistant just won't personalise; it never breaks the turn).
    */
-  private async loadUserModel(userId: string): Promise<UserModelContext> {
+  private async loadUserModel(userId: string, profile?: any): Promise<UserModelContext> {
     const empty: UserModelContext = { dislikes: [], favorites: [], skill: null, facts: [] };
     if (!userId) return empty;
     const arr = (s: unknown): string[] => {
       try { const a = JSON.parse(typeof s === 'string' ? s : '[]'); return Array.isArray(a) ? a.map((x) => String(x).trim()).filter(Boolean) : []; } catch { return []; }
     };
+    // AUTHORITATIVE dislike source = the living profile's declared `dietary.hard_dislikes` — what ONBOARDING writes
+    // (the «چیزی که هیچ‌وقت نمی‌خوای؟» step) and what `assessRecipeFit` reads. The UserBehaviorProfile field is a
+    // SEPARATE store onboarding does NOT populate, so reading only it made the filter inert for real users.
+    const hardDislikes = (() => {
+      const v = profile?.declared?.dimensions?.['dietary.hard_dislikes']?.value;
+      return Array.isArray(v) ? v.map((x: any) => String(x).trim()).filter(Boolean) : typeof v === 'string' && v.trim() ? [v.trim()] : [];
+    })();
     try {
       const [bp, facts] = await Promise.all([
         this.prisma.userBehaviorProfile.findFirst({ where: { userId }, select: { dislikedIngredients: true, dislikedFoods: true, favoriteFoods: true, favoriteIngredients: true, cookingSkill: true } }).catch(() => null),
         this.prisma.userFact.findMany({ where: { userId }, orderBy: { updatedAt: 'desc' }, take: 10, select: { key: true, value: true } }).catch(() => [] as { key: string; value: unknown }[]),
       ]);
       return {
-        dislikes: [...new Set([...arr(bp?.dislikedIngredients), ...arr(bp?.dislikedFoods)])].slice(0, 12),
+        dislikes: [...new Set([...hardDislikes, ...arr(bp?.dislikedIngredients), ...arr(bp?.dislikedFoods)])].slice(0, 12),
         favorites: [...new Set([...arr(bp?.favoriteFoods), ...arr(bp?.favoriteIngredients)])].slice(0, 12),
         skill: typeof bp?.cookingSkill === 'string' && bp.cookingSkill.trim() ? bp.cookingSkill.trim() : null,
         facts: (facts ?? []).map((f) => ({ key: String(f.key), value: typeof f.value === 'string' ? f.value : JSON.stringify(f.value) })).filter((f) => f.key && f.value),
       };
     } catch {
-      return empty;
+      return { ...empty, dislikes: hardDislikes.slice(0, 12) };
     }
   }
 
@@ -305,6 +313,7 @@ export class GroundedReplyService {
       '- VARY your wording every turn — do NOT end every message with the same «بگو دستورِ X رو بده» sentence or «کدومیک؟». Mention the «دستورِ ...» tip only OCCASIONALLY (e.g. once), not on every single reply; often just give the recommendations and stop. Reading the same closing line every turn feels robotic.',
       '- Use the earlier turns to understand follow-ups (e.g. «ایرانی باشه» after «غذای تند» = a SPICY Iranian dish). Don’t repeat the same list mechanically.',
       '- PERSONALIZE with WHAT YOU KNOW ABOUT THIS USER (below, if present): never suggest something they dislike, lean toward their favorites, match their cooking skill, and HONOR the remembered notes (e.g. a note «گیاهی=بله» → suggest ONLY vegetarian dishes). Reference what you remember naturally so they feel known — but don’t recite the whole profile back.',
+      '- NEVER INVENT a preference. Do NOT say the user «likes»/«loves»/«علاقه داری»/«همیشه می‌خوری» something unless it is EXPLICITLY listed above. If they ASK for an ingredient that is listed as a DISLIKE, do NOT pretend they love it — acknowledge the mismatch warmly: «معمولاً [X] دوست نداری، ولی اگه الان هوسش کردی، این‌ها رو دارم…». Inventing a taste they don’t have is a lie and breaks trust.',
       '- No medical, dietary, diagnosis, or nutrition claims.',
       '',
       ...userBlock,
