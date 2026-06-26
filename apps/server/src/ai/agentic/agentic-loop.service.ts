@@ -12,6 +12,8 @@ export interface AgenticLoopInput {
   userPrompt: string;
   tools: AgenticTool[];
   ctx: ToolContext;
+  /** prior conversation turns (user/assistant), so a follow-up like «نه اینا نه» / «اولی رو بده» has context. */
+  history?: ChatTurn[];
   /** safety cap on tool round-trips (default 5). */
   maxIterations?: number;
 }
@@ -54,6 +56,7 @@ export class AgenticLoopService {
     const specs: ToolSpec[] = input.tools.map((t) => t.spec);
     const messages: ChatTurn[] = [
       { role: 'system', content: input.systemPrompt },
+      ...(input.history ?? []), // prior turns → the model resolves «نه اینا نه» / «اولی» against real context
       { role: 'user', content: input.userPrompt },
     ];
     const trace: { name: string; arguments: string }[] = [];

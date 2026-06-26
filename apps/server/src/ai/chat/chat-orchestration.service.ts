@@ -341,7 +341,14 @@ export class ChatOrchestrationService {
       // SAME hard allergy gate (pre fail-closed + per-recipe filter + output screen). On ANY decline — flag off,
       // allergy set unavailable, output blocked, or error — fall through to the grounded reply so the safe
       // default is never lost.
-      const agentic = this.agenticChat.isEnabled() ? await this.agenticChat.reply(input.userId, input.prompt, snapshot) : null;
+      // Give the brain the recent conversation so a follow-up like «نه اینا نه» / «اولی رو بده» resolves against
+      // real context (without it the model re-greeted + asked «اینا چیه؟»). Last few user/assistant turns only.
+      const agenticHistory = recentTurns
+        .filter((m) => m.role === 'user' || m.role === 'assistant')
+        .slice(-8)
+        .map((m) => ({ role: m.role as 'user' | 'assistant', content: String(m.content ?? '') }))
+        .filter((m) => m.content.trim().length > 0);
+      const agentic = this.agenticChat.isEnabled() ? await this.agenticChat.reply(input.userId, input.prompt, snapshot, agenticHistory) : null;
       if (agentic?.ok && agentic.text) {
         reply = agentic.text; // already passed the agentic output gate inside AgenticChatService
         providerMode = 'agentic';

@@ -1,5 +1,5 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { AI_MODEL_PROVIDER, ModelProvider, ToolContext, BehavioralContextSnapshot } from '../ai-core.types';
+import { AI_MODEL_PROVIDER, ModelProvider, ToolContext, BehavioralContextSnapshot, ChatTurn } from '../ai-core.types';
 import { AgenticLoopService, AgenticTool } from '../agentic/agentic-loop.service';
 import { AgenticToolCatalogService } from '../agentic/agentic-tool-catalog.service';
 import { GroundedReplyService } from './grounded-reply.service';
@@ -51,7 +51,7 @@ export class AgenticChatService {
     return String(process.env[FLAG] ?? '').toLowerCase() === 'true' && typeof this.model.generateWithTools === 'function';
   }
 
-  async reply(userId: string, prompt: string, snapshot: BehavioralContextSnapshot): Promise<AgenticChatOutcome> {
+  async reply(userId: string, prompt: string, snapshot: BehavioralContextSnapshot, history: ChatTurn[] = []): Promise<AgenticChatOutcome> {
     if (!this.isEnabled()) return { ok: false, text: null, reason: 'disabled' };
 
     // 1) PRE gate (fail-closed): we must establish the reconciled allergy set before running the model.
@@ -70,6 +70,7 @@ export class AgenticChatService {
       result = await this.loop.run(this.model, {
         systemPrompt: this.systemPrompt(allergens),
         userPrompt: prompt,
+        history,
         tools,
         ctx,
         maxIterations: 5,
@@ -138,6 +139,7 @@ export class AgenticChatService {
       // BIAS TO ACTION: a screenshot showed it asking the category twice for «یه غذای مجلسی» even after the user said
       // «مهم نیست» — over-clarifying makes it feel dumb. Default to using the tools and SUGGESTING.
       'پیش‌فرض: عمل کن، نه سؤالِ پشتِ‌سرِ‌هم. برای هر درخواستِ کم‌وبیش روشن (حتی «یه غذای مجلسی و خوب») همان لحظه search_recipes را صدا بزن و ۳ گزینهٔ خوب پیشنهاد بده. حداکثر یک سؤالِ کوتاه، و فقط وقتی واقعاً بدونِ آن نمی‌شود جلو رفت. اگر کاربر گفت «مهم نیست/فرقی نمی‌کند»، دیگر نپرس — پیشنهاد بده.',
+      'به گفتگوی قبلی توجه کن. اگر کاربر پیشنهادهایت را رد کرد (مثلِ «نه اینا نه»)، غذاهای **متفاوت** پیشنهاد بده و همان‌هایی که قبلاً گفتی را تکرار نکن. اگر گفت «اولی/دومی» یا «همون قبلی»، منظورش همان موردِ گفتگوی قبلی است.',
       // The model searched the literal phrase «غذای مجلسی» (an OCCASION, not a dish) → no rows → "not found".
       'یک مناسبت یا حال‌وهوا (مثلِ «مجلسی»، «مهمونی»، «سریع»، «سبک»، «مقوی») نامِ غذا نیست؛ آن کلمه را جستجو نکن چون نتیجه نمی‌دهد. به‌جایش نامِ غذاهای شناخته‌شدهٔ مناسبِ آن را جستجو کن — مثلاً برای «مجلسی»: قرمه‌سبزی، فسنجان، ته‌چین، زرشک‌پلو، باقالی‌پلو. اگر یکی نبود سراغِ بعدی برو.',
       'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
