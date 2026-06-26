@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { ModelProvider, ModelGenerateInput, ModelGenerateResult } from '../ai-core.types';
+import { ModelProvider, ModelGenerateInput, ModelGenerateResult, ToolCallingInput, ToolCallingResult } from '../ai-core.types';
 import { ModelProviderError } from './openrouter-model.provider';
 
 /**
@@ -29,14 +29,33 @@ export class FallbackModelProvider implements ModelProvider {
   }
 
   async generate(input: ModelGenerateInput): Promise<ModelGenerateResult> {
+    return this.runChain(this.providers, (p) => p.generate(input));
+  }
+
+  /**
+   * Tool-calling across the chain — same fallback/cooldown behavior, but only over providers that actually
+   * implement generateWithTools (e.g. the OpenRouter models). A text-only provider in the chain is skipped
+   * for tool-calling so the agentic loop still gets a tool-capable model.
+   */
+  async generateWithTools(input: ToolCallingInput): Promise<ToolCallingResult> {
+    const capable = this.providers.filter((p) => typeof p.generateWithTools === 'function');
+    if (!capable.length) throw new Error(`no tool-calling-capable provider in chain ${this.name}`);
+    return this.runChain(capable, (p) => p.generateWithTools!(input));
+  }
+
+  /**
+   * Run an operation across the chain in order: skip cooling-down providers, switch to the next on failure,
+   * clear the cooldown on success. If everything is cooling, force one pass so the user still gets an answer.
+   */
+  private async runChain<T>(eligible: ModelProvider[], call: (p: ModelProvider) => Promise<T>): Promise<T> {
     let lastErr: unknown = null;
     let attempted = 0;
 
-    for (const p of this.providers) {
+    for (const p of eligible) {
       if ((this.cooldownUntil.get(p.name) ?? 0) > Date.now()) continue; // still cooling down → skip
       attempted++;
       try {
-        const result = await p.generate(input);
+        const result = await call(p);
         this.cooldownUntil.delete(p.name); // healthy again
         return result;
       } catch (err) {
@@ -45,12 +64,12 @@ export class FallbackModelProvider implements ModelProvider {
       }
     }
 
-    // Everything was cooling down (nothing tried) → force-try the chain once so the user still gets an
-    // answer rather than an instant deterministic fallback during a transient cool window.
+    // Everything was cooling down (nothing tried) → force one pass so the user still gets an answer
+    // rather than an instant deterministic fallback during a transient cool window.
     if (attempted === 0) {
-      for (const p of this.providers) {
+      for (const p of eligible) {
         try {
-          const result = await p.generate(input);
+          const result = await call(p);
           this.cooldownUntil.delete(p.name);
           return result;
         } catch (err) {

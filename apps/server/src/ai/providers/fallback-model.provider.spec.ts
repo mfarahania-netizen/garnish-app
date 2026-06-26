@@ -93,4 +93,43 @@ describe('FallbackModelProvider', () => {
   it('requires at least one provider', () => {
     expect(() => new FallbackModelProvider([], 60_000, silent)).toThrow();
   });
+
+  describe('generateWithTools (tool-calling across the chain)', () => {
+    const input = { messages: [{ role: 'user' as const, content: 'x' }], tools: [] };
+    const capable = (name: string, result: unknown) => {
+      const p = ok(name) as FakeProvider & { generateWithTools: jest.Mock };
+      p.generateWithTools = jest.fn(async () => {
+        if (result instanceof Error) throw result;
+        return result;
+      });
+      return p;
+    };
+
+    it('forwards to the first tool-capable provider and stops there', async () => {
+      const a = capable('a', { text: 'from-a', toolCalls: [], model: 'a' });
+      const b = capable('b', { text: 'from-b', toolCalls: [], model: 'b' });
+      const chain = new FallbackModelProvider([a, b], 60_000, silent);
+      expect((await chain.generateWithTools(input)).text).toBe('from-a');
+      expect(b.generateWithTools).not.toHaveBeenCalled();
+    });
+
+    it('skips a text-only provider and uses the next tool-capable one', async () => {
+      const textOnly = ok('text-only'); // no generateWithTools
+      const b = capable('b', { text: 'from-b', toolCalls: [], model: 'b' });
+      const chain = new FallbackModelProvider([textOnly, b], 60_000, silent);
+      expect((await chain.generateWithTools(input)).text).toBe('from-b');
+    });
+
+    it('switches to the next tool-capable provider when one rate-limits', async () => {
+      const a = capable('a', new ModelProviderError('429', 429, true));
+      const b = capable('b', { text: 'from-b', toolCalls: [], model: 'b' });
+      const chain = new FallbackModelProvider([a, b], 60_000, silent);
+      expect((await chain.generateWithTools(input)).text).toBe('from-b');
+    });
+
+    it('throws when NO provider in the chain supports tool-calling', async () => {
+      const chain = new FallbackModelProvider([ok('t1'), ok('t2')], 60_000, silent);
+      await expect(chain.generateWithTools(input)).rejects.toThrow(/tool-calling-capable/);
+    });
+  });
 });
