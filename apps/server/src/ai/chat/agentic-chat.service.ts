@@ -15,6 +15,8 @@ export interface AgenticChatOutcome {
   model?: string | null;
 }
 
+// Master kill switch (env, loaded from .env by main.ts at boot). OFF by default; when 'true' AND the model supports
+// tool-calling, the live chat routes general turns through the agentic brain (behind the same HARD allergy gate).
 const FLAG = 'AI_AGENTIC_CHAT_ENABLED';
 
 /**

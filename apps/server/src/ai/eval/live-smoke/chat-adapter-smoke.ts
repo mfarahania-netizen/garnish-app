@@ -139,6 +139,8 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
     { trackEvent: async () => ({ id: 'ev_ai_turn' }) } as any,
     // Assist stub: this smoke targets the live adapter, not substitution routing — nothing resolves.
     { substitutions: async () => ({ resultStatus: 'ingredient_not_found', substitutions: [] }) } as any,
+    // Agentic brain stub: OFF for this smoke (it exercises the grounded live adapter, not the agentic path).
+    { isEnabled: () => false, reply: async () => ({ ok: false, text: null, reason: 'disabled' }) } as any,
   );
 
   const failures: string[] = [];
