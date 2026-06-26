@@ -7,6 +7,7 @@ import { BehavioralContextSnapshotService } from '../context/behavioral-context-
 import { ChatMemoryMessage, ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
 import { GroundedReplyService, GroundingResult } from './grounded-reply.service';
+import { AgenticChatService } from './agentic-chat.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
 import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
@@ -100,6 +101,7 @@ export class ChatOrchestrationService {
     private readonly intent: IntentClassifierService,
     private readonly analytics: AnalyticsService,
     private readonly assist: AiAssistService,
+    private readonly agenticChat: AgenticChatService,
   ) {}
 
   private readonly logger = new Logger('ChatOrchestration');
@@ -332,22 +334,32 @@ export class ChatOrchestrationService {
       reply = this.safeBlockedReply(status, reasons, locale);
       providerMode = 'deterministic';
     } else {
-      // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
-      // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
-      const g = grounding ?? (await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot));
-      if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
-        // live output gate: discard model text that names a declared allergen or a HARD-dropped recipe.
-        const screen = await this.grounded.screenLiveOutput(input.userId, modelText, g);
-        if (screen.safe) {
-          reply = modelText; // passed the orchestrator's outbound guards AND the allergy-safety gate
-          providerMode = 'gemini';
+      // AGENTIC BRAIN (behind AI_AGENTIC_CHAT_ENABLED): the model drives the turn via tools, wrapped in the
+      // SAME hard allergy gate (pre fail-closed + per-recipe filter + output screen). On ANY decline — flag off,
+      // allergy set unavailable, output blocked, or error — fall through to the grounded reply so the safe
+      // default is never lost.
+      const agentic = this.agenticChat.isEnabled() ? await this.agenticChat.reply(input.userId, input.prompt, snapshot) : null;
+      if (agentic?.ok && agentic.text) {
+        reply = agentic.text; // already passed the agentic output gate inside AgenticChatService
+        providerMode = 'gemini';
+      } else {
+        // ensure the allergy-safe grounding is available: already built in live mode; built lazily here
+        // for the deterministic default (so a blocked prompt never triggers a needless retrieval).
+        const g = grounding ?? (await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot));
+        if (chatLiveEnabled && typeof modelText === 'string' && modelText.trim().length > 0) {
+          // live output gate: discard model text that names a declared allergen or a HARD-dropped recipe.
+          const screen = await this.grounded.screenLiveOutput(input.userId, modelText, g);
+          if (screen.safe) {
+            reply = modelText; // passed the orchestrator's outbound guards AND the allergy-safety gate
+            providerMode = 'gemini';
+          } else {
+            reply = (await this.composeEmptyRepair(input.prompt, retrievalQuery, g, locale)) ?? this.grounded.composeDeterministicReply(g, locale);
+            providerMode = 'deterministic';
+          }
         } else {
           reply = (await this.composeEmptyRepair(input.prompt, retrievalQuery, g, locale)) ?? this.grounded.composeDeterministicReply(g, locale);
           providerMode = 'deterministic';
         }
-      } else {
-        reply = (await this.composeEmptyRepair(input.prompt, retrievalQuery, g, locale)) ?? this.grounded.composeDeterministicReply(g, locale);
-        providerMode = 'deterministic';
       }
     }
 

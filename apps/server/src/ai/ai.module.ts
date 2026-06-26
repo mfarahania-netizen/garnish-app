@@ -6,6 +6,8 @@ import { AiCoreModule } from './ai-core.module';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { GroundedReplyService } from './chat/grounded-reply.service';
+import { AgenticChatService } from './chat/agentic-chat.service';
+import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
 
 /**
@@ -19,6 +21,13 @@ import { AnalyticsModule } from '../analytics/analytics.module';
 @Module({
   imports: [AiCoreModule, ProfileModule, AnalyticsModule],
   controllers: [AiController],
-  providers: [AiService, PersonalizationService, ChatOrchestrationService, GroundedReplyService],
+  providers: [
+    AiService,
+    PersonalizationService,
+    ChatOrchestrationService,
+    GroundedReplyService,
+    RecipeSafetyFilterService,
+    AgenticChatService,
+  ],
 })
 export class AiModule {}

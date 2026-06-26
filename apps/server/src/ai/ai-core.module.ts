@@ -82,6 +82,7 @@ import { AgenticToolCatalogService } from './agentic/agentic-tool-catalog.servic
     IntentClassifierService,
     AgenticLoopService,
     AgenticToolCatalogService,
+    AI_MODEL_PROVIDER,
   ],
 })
 export class AiCoreModule {}

@@ -53,7 +53,9 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
   const analytics = { trackEvent: jest.fn().mockResolvedValue({ id: 'ev-ai-turn' }) } as any;
   // default: nothing resolves → substitution routing falls through to the grounded path
   const assist = { substitutions: jest.fn().mockResolvedValue({ resultStatus: 'ingredient_not_found', substitutions: [] }) } as any;
-  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded, new IntentClassifierService(), analytics, assist);
+  // agentic brain OFF by default in these tests → the existing grounded/deterministic path is what's exercised
+  const agenticChat = { isEnabled: jest.fn().mockReturnValue(false), reply: jest.fn() } as any;
+  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded, new IntentClassifierService(), analytics, assist, agenticChat);
   return { svc, model, chatCreate, aiCreate, legacyAi, grounded, groundedReply, analytics, chatMessages, assist };
 }
 
@@ -446,6 +448,11 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     process.env.AI_LIVE_ENABLED = 'true';
     process.env.GEMINI_API_KEY = 'test-fake-key-not-a-real-secret';
     process.env.AI_CHAT_LIVE_ENABLED = 'true';
+    // ISOLATE from any OpenRouter chain leaked in by the loaded .env — these tests assert the GEMINI live config,
+    // and OpenRouter is now an independent liveness source (isLiveModelConfigured). Clear it for determinism.
+    delete process.env.OPENROUTER_API_KEY;
+    delete process.env.OPENROUTER_CHAIN;
+    delete process.env.OPENROUTER_MODELS;
     for (const [k, v] of Object.entries(overrides)) process.env[k] = v as string;
   }
   function setDefault() {
