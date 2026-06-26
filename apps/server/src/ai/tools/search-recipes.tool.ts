@@ -86,6 +86,35 @@ export class SearchRecipesTool implements AiTool {
       return { tool: this.name, query, results: [], resultStatus: 'unavailable' };
     }
 
+    // RELEVANCE SAFETY NET: for a multi-term query, the broad OR window can crowd out the BEST row — e.g. «سوپ شیر»
+    // is buried because «شیر» also substring-matches dozens of «شیرازی»/«شیرین»/«شیر برنج» titles that fill the
+    // window. Pull the rows matching ALL content terms (the most relevant) separately and PREPEND them, so an
+    // exact multi-word dish is never excluded before ranking. Same filters apply.
+    if (include.length >= 2) {
+      try {
+        const andRows = await this.prisma.recipe.findMany({
+          where: {
+            isPublic: true,
+            status: 'active',
+            AND: [
+              ...include.map((t) => ({ OR: clause(t) })),
+              ...(excludeOr.length ? [{ NOT: { OR: excludeOr } }] : []),
+              ...(diets.length ? [{ diet: { in: diets } }] : []),
+              ...(regions.length ? [{ region: { in: regions } }] : []),
+              ...(mealTypes.length ? [{ OR: mealTypes.map((m) => ({ mealType: { contains: m, mode: 'insensitive' as const } })) }] : []),
+              ...(maxCookingTime != null ? [{ cookingTime: { lte: maxCookingTime } }] : []),
+            ],
+          },
+          take: 12,
+          select: { id: true, title: true, description: true, ingredients: { select: { name: true } } },
+        });
+        const seen = new Set(recipes.map((r) => r.id));
+        recipes = [...andRows.filter((r) => !seen.has(r.id)), ...recipes];
+      } catch {
+        /* non-fatal — fall back to the OR window already fetched */
+      }
+    }
+
     const ranked = recipes
       .map((r) => ({ r, ...scoreRecipe(r, include) }))
       // STABLE sort by score desc; never drops rows (the WHERE clause already guaranteed a match in

@@ -12,7 +12,7 @@ import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { EventType } from '../../analytics/event-taxonomy';
 import { AiAssistService } from '../assist/ai-assist.service';
-import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets, parseSearchQuery } from '../tools/persian-search';
+import { extractSubstitutionTargets, isConfidentIngredientMatch, aliasIngredient, extractNutritionTargets, parseSearchQuery, foldPersian } from '../tools/persian-search';
 import { matchTroubleshooting } from './cooking-troubleshooting';
 import { t, Locale } from '../i18n/template-registry';
 
@@ -62,6 +62,10 @@ const MEMORY_TURN_CHAR_BUDGET = 500;
 const RETRIEVAL_MEMORY_USER_TURNS = 3;
 // How many extracted ingredient candidates we try to resolve for a substitution turn (caps tool calls).
 const SUBSTITUTION_MAX_CANDIDATES = 3;
+
+// Generic dish-CLASS words: when the user names ONLY one of these (e.g. «دستورِ سوپ»), there are many — LIST them,
+// never dump one arbitrary recipe. A specific dish name («کتلت»/«قورمه») or a 2-word name («سوپ شیر») delivers.
+const DELIVER_GENERIC_DISH = new Set(['سوپ', 'خورش', 'خورشت', 'اش', 'آش', 'پلو', 'کباب', 'خوراک', 'دمپخت', 'دمی', 'سالاد', 'دسر', 'نوشیدنی', 'غذا', 'املت', 'کوکو']);
 
 /**
  * Chat Orchestration (E47-A3).
@@ -186,8 +190,16 @@ export class ChatOrchestrationService {
 
     // Nutrition: answer «کالریِ برنج چقدره؟» with the FACTUAL per-100g USDA data from the ingredient dictionary
     // (numbers, not health claims), or an honest fallback. Never medical/diet advice.
+    // GUARD: «صبحانهٔ پر پروتئین چی بپزم؟» carries «پروتئین» so the classifier calls it nutrition — but it is a
+    // DISCOVERY turn (a meal/diet/region/time criterion is present). Routing it to the ingredient-nutrition path
+    // produced absurd answers (espresso calories for "high-protein breakfast"). If the query carries ANY discovery
+    // criterion, fall THROUGH to the grounded recipe path; only a criterion-less «X چقدر پروتئین داره» stays here.
     if (intentDecision.intent === 'nutrition_query') {
-      return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt, locale));
+      const pq = parseSearchQuery(input.prompt);
+      const isDiscovery = pq.mealTypes.length > 0 || pq.diets.length > 0 || pq.regions.length > 0 || pq.maxCookingTime != null;
+      if (!isDiscovery) {
+        return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt, locale));
+      }
     }
 
     // INTENT-AWARE ROUTING (deterministic): a during-cook problem ("چرا برنجم شفته شد؟") wants TROUBLESHOOTING,
@@ -209,14 +221,22 @@ export class ChatOrchestrationService {
       if (handled) return handled;
     }
 
-    // RECIPE DELIVERY: «دستور پختِ X رو بده» / «طرز تهیه» / «کاملش» — the chat must DELIVER the real recipe, not
-    // «برو صفحه‌اش». Find the best allergy-SAFE recipe for the (memory-enriched) query, then present its actual
-    // ingredients + steps from the DB (deterministic — quantities never come from the model). Falls through if no
-    // safe recipe / no content (then the normal path stays honest).
+    // RECIPE DELIVERY: «دستورِ سوپ شیر» / «سوپ شیر رو کامل بده» / a bare exact dish name — the chat DELIVERS the
+    // real recipe inline, never «برو صفحه‌اش». We deliver ONLY a recipe the user CONFIDENTLY NAMED (its title is
+    // covered by this turn's content tokens) — so a vague «همون رو بده» (no dish named) never confidently delivers
+    // the WRONG recipe (it falls through and the assistant asks them to name the dish). Quantities/steps come from
+    // the DB, never the model. (Pronoun «همون»→prior-dish resolution needs persisted recommend-state — task #22.)
     if (this.wantsRecipeDetail(input.prompt)) {
       const g = await this.grounded.buildGrounding(input.userId, retrievalQuery, snapshot);
-      if (g.safeRecipes.length) {
-        const detail = await this.grounded.getRecipeContent(g.safeRecipes[0].id);
+      // The dish named in THIS turn («دستورِ سوپ شیر») wins; for a bare «دستورش رو بده» fall back to the
+      // memory-enriched query so a dish named a turn ago still resolves. The specificity guard in pickDeliverTarget
+      // means a pronoun/generic that names nothing delivers NOTHING (→ falls through, the assistant asks the name).
+      const current = parseSearchQuery(input.prompt).include;
+      const tokens = current.length ? current : parseSearchQuery(retrievalQuery).include;
+      // try EVERY confidently-named match until one yields real DB content (guards against a same-titled recipe
+      // that has no GRIS steps shadowing the one that does).
+      for (const target of this.deliverCandidates(tokens, g.safeRecipes)) {
+        const detail = await this.grounded.getRecipeContent(target.id);
         if (detail) {
           return this.respondDeterministicTurn(input, conversationId, intentDecision, this.composeRecipeDetailReply(detail, locale));
         }
@@ -520,7 +540,31 @@ export class ChatOrchestrationService {
   /** Does this turn want the FULL recipe (ingredients + steps), not just a recommendation? */
   private wantsRecipeDetail(prompt: string): boolean {
     const x = normalizeText(prompt);
-    return /دستور ?پخت|طرز ?(تهیه|پخت)|مراحل ?(پخت|رو|اش|شو)|کاملش|کامل ?بده|چطور ?(درست|بپزم|بپزه|درستش|می ?پزن)|دستورش|رسپیش|رسپی ?کامل/.test(x);
+    // (a) explicit recipe-detail phrasing, OR (b) a "deliver the one we're talking about" pick — «همون/اون/این یکی
+    // رو بده/می‌خوام/کامل/بپز». Both DELIVER the real DB recipe inline. Note: bare «بده» is intentionally NOT here —
+    // «یه غذای تند بده» wants a LIST, not one full recipe; only an explicit detail/pick phrase delivers.
+    // «دستورِ سوپ شیر» normalizes to «دستور سوپ شیر» (ezafe stripped) — so «دستور پخت» wouldn't match. Trigger on the
+    // bare recipe nouns «دستور/طرز/رسپی/مراحل» (+ «کاملش»/«چطور درست») — delivery is still GATED by a confidently
+    // named dish (deliverCandidates), so a recipe-less «یه دستور بده» just falls through to discovery.
+    return /دستور|طرز|رسپی|مراحل|کاملش|کامل ?بده|چطور ?(درست|بپزم|بپزه|درستش|می ?پزن)/.test(x)
+      || /(همون|همونو|اون|اونو|این یکی|همین)\s*(رو|و)?\s*(بده|بنویس|می ?خوام|کامل|بپز|دستور|طرز)/.test(x);
+  }
+
+  /**
+   * The recipe to DELIVER inline, or null. Returns a safe recipe ONLY when the user CONFIDENTLY named it — every
+   * content token of this turn appears in the recipe title, AND the match is specific (≥2 tokens, or the single
+   * token IS the whole title). A lone generic dish-class word («سوپ»/«کباب») never delivers — that lists. This is
+   * what stops a vague «همون رو بده» or a loose category from confidently delivering the WRONG recipe.
+   */
+  private deliverCandidates(namedTokens: string[], safe: { id: string; title: string }[]): { id: string; title: string }[] {
+    const tokens = namedTokens.map((t) => foldPersian(t)).filter((t) => t.length >= 2);
+    if (!tokens.length) return [];
+    // every named token is in the title, AND the match is specific: ≥2 tokens, OR the single token is a real dish
+    // name (not a generic class word like «سوپ»/«کباب», which must LIST its options rather than dump one recipe).
+    return safe.filter((r) => {
+      const title = foldPersian(r.title);
+      return tokens.every((t) => title.includes(t)) && (tokens.length >= 2 || !DELIVER_GENERIC_DISH.has(tokens[0]));
+    });
   }
 
   /** Present a recipe’s ACTUAL ingredients + steps (from the DB, deterministic) — the chat DELIVERS the recipe. */

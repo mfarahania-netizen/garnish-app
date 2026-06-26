@@ -45,6 +45,8 @@ const STOPWORDS = new Set<string>([
   'با', 'و', 'یا', 'از', 'به', 'در', 'که', 'را', 'رو', 'این', 'اون', 'آن', 'یه', 'یک', 'یکم',
   'چی', 'چه', 'چیه', 'چیست', 'چیزی', 'چطور', 'چطوری', 'چگونه', 'چرا', 'کجا', 'کی', 'کدوم', 'کدام', 'آیا', 'ایا',
   'میخوام', 'میخواهم', 'میخوای', 'بپزم', 'بپز', 'بپزیم', 'بخورم', 'بخوریم', 'درست', 'بسازم',
+  // recipe-detail words — not dish names; left in, «کامل» in «دستورِ کتلت رو کامل بده» wrongly demands «کامل» in the title
+  'دستور', 'دستورش', 'دستورشو', 'پخت', 'طرز', 'تهیه', 'مراحل', 'کامل', 'کاملش', 'رسپی', 'رسپیش',
   // command/filler verbs — NOT content. CRITICAL: «بگو» is a substring of «آبگوشت» (آ-بگو-شت), so without this
   // a query like «یه غذای تند بگو» matched ALL abgoosht recipes. Same class for «باشه»/«نشونم»/«معرفی».
   'بگو', 'بگم', 'بگید', 'بگین', 'بگو بهم', 'بهم', 'باشه', 'باشد', 'نشونم', 'نشون', 'نشان', 'معرفی', 'معرفیکن',
@@ -53,6 +55,8 @@ const STOPWORDS = new Set<string>([
   // 2nd/3rd-person verb endings that aren't content — left in, they over-constrain a criteria query to ~zero
   // («برای شام چی پیشنهاد میدی» → stray «میدی» AND dinner = empty; «دسر چی داری» → stray «داری»). Whole-token only.
   'میدی', 'میدید', 'میدن', 'بدم', 'بدن', 'داری', 'دارید', 'داره', 'داشته', 'میگی', 'میگیری',
+  // anaphoric pronouns — «همون رو بده»/«همین» refer to a PRIOR dish, not a content term; never deliver/search on them
+  'همون', 'همین', 'همونو', 'همینو', 'اونو', 'اینو', 'همان', 'همین‌طور',
   'دوست', 'چند', 'چندتا', 'لطفا', 'لطفاً', 'ممنون', 'سلام', 'های', 'یا', 'بدون',
 ]);
 
@@ -67,6 +71,7 @@ const COLLOQUIAL_MAP = new Map<string, string>([
   ['بادمجون', 'بادمجان'], ['نون', 'نان'], ['خونه', 'خانه'], ['آشپزخونه', 'آشپزخانه'],
   ['ارزون', 'ارزان'], ['آسون', 'آسان'], ['مهمون', 'مهمان'], ['مهمونی', 'مهمانی'],
   ['لیمون', 'لیمو'], ['زمستون', 'زمستان'], ['تابستون', 'تابستان'], ['قیموه', 'قیمه'],
+  ['قورمه', 'قرمه'], ['قورمهسبزی', 'قرمهسبزی'],
   // common typos of the substitution head-word (NOT ingredient names — safe to canonicalize)
   ['جیگزین', 'جایگزین'], ['جاگزین', 'جایگزین'], ['جایگرین', 'جایگزین'], ['جانیشن', 'جانشین'],
 ]);
@@ -242,10 +247,10 @@ export function parseSearchQuery(raw: unknown): ParsedSearchQuery {
     ? ['vegan']
     : /گیاهی|vegetar/i.test(folded)
       ? ['vegetarian', 'vegan']
-      : /پرپروتئین|پروتئین بالا|high.?protein/i.test(folded)
+      : /پر ?پروتئین|پروتئین ?(بالا|زیاد)|high.?protein/i.test(folded)
         ? ['high_protein']
         : [];
-  stripped = stripped.replace(/گیاهی|وگان|vegan|vegetar\w*|پرپروتئین|high.?protein/gi, ' ');
+  stripped = stripped.replace(/پر ?پروتئین|پروتئین ?(بالا|زیاد)|گیاهی|وگان|vegan|vegetar\w*|high.?protein/gi, ' ');
 
   // CRITERIA extraction (region/mealType, TOKEN-exact) + cookingTime (phrase). Matched words are removed from
   // `stripped` so they never become positive include terms (a criteria word substring-matches almost no title,

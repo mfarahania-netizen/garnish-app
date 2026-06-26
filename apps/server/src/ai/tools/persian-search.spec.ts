@@ -249,6 +249,12 @@ describe('colloquial/typo fold (curated, NOT fuzzy)', () => {
   it('folds a colloquial vowel spelling to canonical so retrieval matches («بادمجون»→«بادمجان»)', () => {
     expect(tokenizeQuery('با بادمجون چی بپزم').terms).toContain('بادمجان');
     expect(tokenizeQuery('نون').terms).toContain('نان');
+    expect(tokenizeQuery('قورمه سبزی').terms).toContain('قرمه'); // DB spelling is «قرمه‌سبزی»
+  });
+
+  it('maps «پر پروتئین» (with a space) to the high_protein diet — NOT a nutrition lookup (the «espresso» misroute)', () => {
+    expect(parseSearchQuery('صبحانه پر پروتئین').diets).toEqual(['high_protein']);
+    expect(parseSearchQuery('صبحانه پر پروتئین').mealTypes).toContain('breakfast');
   });
 
   it('folds a substitution head-word typo so the target is extracted («جیگزین ماست»)', () => {
