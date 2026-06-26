@@ -30,9 +30,16 @@ async function guest() {
 }
 const addAllergies = (token, allergies) => fetch(`${BASE}/users/allergies`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: j({ allergies }) }).catch(() => {});
 async function seed(token, userId, { dislikes, facts }) {
-  // dislikes via the REAL write path the app uses (onboarding «هیچ‌وقت نمی‌خوای» → dietary.hard_dislikes), NOT a
-  // direct table write — so the eval exercises the SAME data the chat reads (this is what caught the field mismatch).
-  if (dislikes) await fetch(`${BASE}/profile/answer`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: j({ key: 'dietary.hard_dislikes', value: dislikes }) }).catch(() => {});
+  const H = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  // dislikes via the REAL write path the app uses (onboarding «هیچ‌وقت نمی‌خوای» → dietary.hard_dislikes). It is
+  // consent-gated on `personalization` — WITHOUT the grant, /profile/answer SILENTLY rejects it (consent_required)
+  // and the dislike never reaches the chat. The eval must grant consent first, exactly as a real onboarding must,
+  // or it tests a user whose preference was dropped (the false-100% trap that hid the real app bug).
+  if (dislikes) {
+    const c = await fetch(`${BASE}/users/consent`, { method: 'POST', headers: H, body: j({ type: 'personalization', granted: true }) }).catch(() => null);
+    const a = await fetch(`${BASE}/profile/answer`, { method: 'POST', headers: H, body: j({ key: 'dietary.hard_dislikes', value: dislikes }) }).then((r) => r.json()).catch(() => ({}));
+    if (a.status !== 'persisted') console.log(`  ! dislike seed NOT persisted (${a.status}) — consent: ${c ? 'sent' : 'failed'}`);
+  }
   for (const f of facts || []) await prisma.userFact.create({ data: { userId, key: f.key, value: f.value, source: 'eval' } }).catch(() => {});
 }
 const ask = (token, prompt, cid) => fetch(`${BASE}/ai/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: j({ prompt, conversationId: cid }) }).then((r) => r.json());
