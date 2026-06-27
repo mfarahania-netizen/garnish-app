@@ -50,6 +50,12 @@ export class ErasureService {
       const recipePrior =
         (await (tx as any).recipePrior?.deleteMany?.({ where: { scope: 'person', scopeKey: userId } })) ?? { count: 0 };
 
+      // 1c. RecommendationServedItem is ALSO keyed by userId with NO foreign key (same lean hot-path choice) → it
+      //     does NOT cascade on user delete and was being left behind after Right-to-be-Forgotten (audit P1, GDPR
+      //     Art.17 — re-identifiable rows survived). Erase it explicitly. Defensive: tolerate a missing table/client.
+      const servedItems =
+        (await (tx as any).recommendationServedItem?.deleteMany?.({ where: { userId } })) ?? { count: 0 };
+
       // 2. scrub residual PII in audit-long records WHILE the userId link still exists
       //    (SetNull nulls userId on delete but does NOT scrub these fields)
       const consent = await tx.consentLog.updateMany({ where: { userId }, data: { ip: null } });
@@ -71,6 +77,7 @@ export class ErasureService {
             auditScrubbed: audit.count,
             accessScrubbed: access.count,
             recipePriorRowsDeleted: recipePrior.count,
+            servedItemRowsDeleted: servedItems.count,
           } as unknown as object,
         },
         select: { id: true },
@@ -87,6 +94,7 @@ export class ErasureService {
         auditScrubbed: audit.count,
         accessScrubbed: access.count,
         recipePriorRowsDeleted: recipePrior.count,
+        servedItemRowsDeleted: servedItems.count,
       };
     });
 

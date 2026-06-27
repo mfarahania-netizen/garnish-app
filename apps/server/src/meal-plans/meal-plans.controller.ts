@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Req, UseGuards, Delete, Param } from '@nes
 import { AuthGuard } from '@nestjs/passport';
 import { MealPlansService } from './meal-plans.service';
 import { MealPlanPlannerService } from './planner/meal-plan-planner.service';
+import { AddMealSlotDto, SavePlanDto } from './dto/meal-plan.dto';
 
 @Controller('meal-plans')
 @UseGuards(AuthGuard('jwt'))
@@ -18,13 +19,13 @@ export class MealPlansController {
 
   // حذف نمی‌شود، اما استفاده از آن در هوک جدید کم می‌شود
   @Post()
-  savePlan(@Req() req, @Body() body: { weekStart: string; slots: any[] }) {
+  savePlan(@Req() req, @Body() body: SavePlanDto) {
     return this.mealPlansService.savePlan(req.user.userId, body.weekStart, body.slots);
   }
 
   // ✅ جدید: افزودن یک وعده
   @Post('slots')
-  addMealSlot(@Req() req, @Body() body: { dayOfWeek: number; mealType: string; recipeId: string }) {
+  addMealSlot(@Req() req, @Body() body: AddMealSlotDto) {
     return this.mealPlansService.addMealSlot(req.user.userId, body.dayOfWeek, body.mealType, body.recipeId);
   }
 

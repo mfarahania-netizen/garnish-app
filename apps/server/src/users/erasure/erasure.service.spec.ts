@@ -92,6 +92,7 @@ describe('ErasureService (E39-1C)', () => {
       auditScrubbed: 4,
       accessScrubbed: 5,
       recipePriorRowsDeleted: 7,
+      servedItemRowsDeleted: 0,
     });
   });
 
