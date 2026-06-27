@@ -42,8 +42,9 @@ function make(opts: MakeOpts) {
     safeIds: opts.safeIds ?? jest.fn(async (_u: string, ids: string[]) => ids),
   };
   const catalog = catalogWith(opts.searchExec ?? jest.fn(async () => ({ results: [] })));
+  const writeTools = { build: () => [] }; // brain phase B — no write tools exercised in these gate tests
   const model = opts.model ?? scriptModel([{ text: 'سلام', toolCalls: [], model: 'm' }]);
-  const svc = new AgenticChatService(model as never, new AgenticLoopService(), catalog as never, grounded as never, safety as never);
+  const svc = new AgenticChatService(model as never, new AgenticLoopService(), catalog as never, writeTools as never, grounded as never, safety as never);
   return { svc, grounded, safety, model };
 }
 

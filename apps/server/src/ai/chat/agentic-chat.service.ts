@@ -2,6 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { AI_MODEL_PROVIDER, ModelProvider, ToolContext, BehavioralContextSnapshot, ChatTurn } from '../ai-core.types';
 import { AgenticLoopService, AgenticTool } from '../agentic/agentic-loop.service';
 import { AgenticToolCatalogService } from '../agentic/agentic-tool-catalog.service';
+import { AgenticWriteToolsService } from '../agentic/agentic-write-tools.service';
 import { GroundedReplyService } from './grounded-reply.service';
 import { RecipeSafetyFilterService } from '../../recipes/intelligence/recipe-safety-filter.service';
 
@@ -42,6 +43,7 @@ export class AgenticChatService {
     @Inject(AI_MODEL_PROVIDER) private readonly model: ModelProvider,
     private readonly loop: AgenticLoopService,
     private readonly catalog: AgenticToolCatalogService,
+    private readonly writeTools: AgenticWriteToolsService,
     private readonly grounded: GroundedReplyService,
     private readonly safety: RecipeSafetyFilterService,
   ) {}
@@ -62,7 +64,9 @@ export class AgenticChatService {
     }
 
     const unsafeTitles: string[] = [];
-    const tools = this.gatedTools(userId, unsafeTitles);
+    // read-only tools pass through the allergy gate; reversible WRITE-actions (favorite, shopping-list) act only
+    // on the user's own data and auto-execute (no allergy filtering needed — they're user-initiated, not recs).
+    const tools = [...this.gatedTools(userId, unsafeTitles), ...this.writeTools.build()];
     const ctx: ToolContext = { userId, snapshot };
 
     let result;
@@ -143,6 +147,8 @@ export class AgenticChatService {
       // The model searched the literal phrase «غذای مجلسی» (an OCCASION, not a dish) → no rows → "not found".
       'یک مناسبت یا حال‌وهوا (مثلِ «مجلسی»، «مهمونی»، «سریع»، «سبک»، «مقوی») نامِ غذا نیست؛ آن کلمه را جستجو نکن چون نتیجه نمی‌دهد. به‌جایش نامِ غذاهای شناخته‌شدهٔ مناسبِ آن را جستجو کن — مثلاً برای «مجلسی»: قرمه‌سبزی، فسنجان، ته‌چین، زرشک‌پلو، باقالی‌پلو. اگر یکی نبود سراغِ بعدی برو.',
       'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
+      // brain phase B — the assistant can now DO things (reversible write-actions), not just talk.
+      'کارها: می‌توانی برای کاربر کار هم انجام بدهی — «این رو ذخیره کن»/«به علاقه‌مندی‌هام اضافه کن» → add_favorite؛ «موادشو بریز تو لیستِ خرید» → add_recipe_to_shopping_list (با همان id رسپی). این‌ها را فقط وقتی کاربر صریحاً خواست انجام بده، و بعد کوتاه تأیید کن که انجام شد.',
       'هیچ رسپی، ماده، یا عددی از خودت نساز. مقادیر و مواد و نام‌ها را عیناً از خروجیِ ابزار بنویس — هیچ عددی را تغییر نده.',
       // NO transliteration leaps: it read «لینکشو» (= "its link") as the pasta «Linguine» and searched for it.
       'هرگز یک واژهٔ فارسی را به یک غذای خارجی ترجمه یا تبدیل نکن. واژه‌هایی مثلِ «لینک»، «لینکشو»، «صفحه‌اش»، «توی اپ ببینم» نامِ غذا نیستند — یعنی کاربر می‌خواهد همان رسپی را در صفحهٔ خودش در اپ ببیند؛ بگو رسپی در اپ روی صفحهٔ خودش هست و آن را به‌عنوانِ نامِ غذا جستجو نکن.',

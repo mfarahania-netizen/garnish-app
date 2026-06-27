@@ -7,8 +7,11 @@ import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { GroundedReplyService } from './chat/grounded-reply.service';
 import { AgenticChatService } from './chat/agentic-chat.service';
+import { AgenticWriteToolsService } from './agentic/agentic-write-tools.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { FavoritesModule } from '../favorites/favorites.module';
+import { ShoppingListModule } from '../shopping-list/shopping-list.module';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
@@ -19,7 +22,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
  * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule, ProfileModule, AnalyticsModule],
+  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule],
   controllers: [AiController],
   providers: [
     AiService,
@@ -28,6 +31,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     GroundedReplyService,
     RecipeSafetyFilterService,
     AgenticChatService,
+    AgenticWriteToolsService,
   ],
 })
 export class AiModule {}
