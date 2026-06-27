@@ -4,13 +4,14 @@ const ctx = { userId: 'u1', snapshot: {} } as any;
 const toolByName = (svc: AgenticWriteToolsService, name: string) => svc.build().find((t) => t.spec.name === name)!;
 
 /** Construct the service with only the deps a given test exercises mocked; the rest are inert. */
-const make = (deps: { buildFromPlan?: jest.Mock; findIngredients?: jest.Mock; correctTaste?: jest.Mock; generateSmartPlan?: jest.Mock } = {}) =>
+const make = (deps: { buildFromPlan?: jest.Mock; findIngredients?: jest.Mock; correctTaste?: jest.Mock; generateSmartPlan?: jest.Mock; safeIds?: jest.Mock; addFavorite?: jest.Mock } = {}) =>
   new AgenticWriteToolsService(
     { ingredient: { findMany: deps.findIngredients ?? jest.fn().mockResolvedValue([]) } } as any, // prisma
-    {} as any, // favorites
+    { addFavorite: deps.addFavorite ?? jest.fn() } as any, // favorites
     { buildFromPlan: deps.buildFromPlan ?? jest.fn() } as any, // shoppingList
     { generateSmartPlan: deps.generateSmartPlan ?? jest.fn() } as any, // mealPlans
     { correctTastePreference: deps.correctTaste ?? jest.fn().mockResolvedValue({ ok: true }) } as any, // taste
+    { safeIds: deps.safeIds ?? jest.fn().mockResolvedValue(['safe']) } as any, // safety (non-empty = recipe is safe)
   );
 
 /**
@@ -114,5 +115,43 @@ describe('AgenticWriteToolsService — fill_week_plan', () => {
     const res: any = await toolByName(make({ generateSmartPlan }), 'fill_week_plan').execute({}, ctx);
     expect(res.error).toBeDefined();
     expect(res.ok).toBeUndefined();
+  });
+});
+
+/**
+ * AUDIT P1 — the HARD allergy/pork gate must wrap WRITE-actions, not just the read tools: a recipe the safety
+ * filter drops must NEVER be persisted into the user's plan/favorites/shopping-list. safeIds is fail-closed.
+ */
+describe('AgenticWriteToolsService — write-action allergy gate', () => {
+  it('add_favorite REFUSES and never persists a recipe the safety filter drops', async () => {
+    const safeIds = jest.fn().mockResolvedValue([]); // unsafe (allergen/pork) OR fail-closed
+    const addFavorite = jest.fn();
+    const res: any = await toolByName(make({ safeIds, addFavorite }), 'add_favorite').execute({ recipeId: 'r1' }, ctx);
+    expect(safeIds).toHaveBeenCalledWith('u1', ['r1']);
+    expect(addFavorite).not.toHaveBeenCalled();
+    expect(String(res.error)).toContain('آلرژی');
+    expect(res.ok).toBeUndefined();
+  });
+
+  it('add_to_meal_plan REFUSES an unsafe recipe before writing the slot', async () => {
+    const res: any = await toolByName(make({ safeIds: jest.fn().mockResolvedValue([]) }), 'add_to_meal_plan')
+      .execute({ recipeId: 'r1', day: 'شنبه', mealType: 'شام' }, ctx);
+    expect(res.error).toBeDefined();
+    expect(res.ok).toBeUndefined();
+  });
+
+  it('add_recipe_to_shopping_list REFUSES an unsafe recipe (no ingredients leaked to the list)', async () => {
+    const res: any = await toolByName(make({ safeIds: jest.fn().mockResolvedValue([]) }), 'add_recipe_to_shopping_list')
+      .execute({ recipeId: 'r1' }, ctx);
+    expect(res.error).toBeDefined();
+    expect(res.ok).toBeUndefined();
+  });
+
+  it('fails CLOSED — a safeIds error treats the recipe as unsafe (never persists)', async () => {
+    const addFavorite = jest.fn();
+    const res: any = await toolByName(make({ safeIds: jest.fn().mockRejectedValue(new Error('db down')), addFavorite }), 'add_favorite')
+      .execute({ recipeId: 'r1' }, ctx);
+    expect(addFavorite).not.toHaveBeenCalled();
+    expect(res.error).toBeDefined();
   });
 });

@@ -5,6 +5,7 @@ import { FavoritesService } from '../../favorites/favorites.service';
 import { ShoppingListService } from '../../shopping-list/shopping-list.service';
 import { MealPlansService } from '../../meal-plans/meal-plans.service';
 import { TasteCorrectionService, TasteStance } from '../../behavior-engine/signals/taste-correction.service';
+import { RecipeSafetyFilterService } from '../../recipes/intelligence/recipe-safety-filter.service';
 import { AgenticTool } from './agentic-loop.service';
 
 const fold = (s: unknown) => String(s ?? '').replace(/‌/g, '').replace(/\s+/g, '').trim();
@@ -43,7 +44,23 @@ export class AgenticWriteToolsService {
     private readonly shoppingList: ShoppingListService,
     private readonly mealPlans: MealPlansService,
     private readonly taste: TasteCorrectionService,
+    private readonly safety: RecipeSafetyFilterService,
   ) {}
+
+  /**
+   * HARD allergy/pork gate for WRITE-actions (audit P1): a recipe the safety filter would DROP must never be
+   * persisted into the user's plan/favorites/shopping-list — the gate has to wrap WRITES, not just the read tools.
+   * safeIds is the SAME audited primitive the read path uses and is fail-closed (recipe unsafe OR profile unloadable
+   * → []), satisfying the non-negotiable invariant.
+   */
+  private async recipeIsSafe(userId: string, recipeId: string): Promise<boolean> {
+    try {
+      const safe = await this.safety.safeIds(userId, [recipeId]);
+      return safe.length > 0;
+    } catch {
+      return false; // fail-closed: any error → treat as unsafe, never persist
+    }
+  }
 
   build(): AgenticTool[] {
     return [
@@ -276,6 +293,7 @@ export class AgenticWriteToolsService {
         if (!recipeId) return { error: 'recipeId لازم است' };
         if (dayNum === null) return { error: 'روزِ هفته مشخص نیست؛ از کاربر بپرس کدام روز (شنبه تا جمعه).' };
         if (!meal) return { error: 'وعده مشخص نیست؛ از کاربر بپرس صبحانه، ناهار یا شام.' };
+        if (!(await this.recipeIsSafe(ctx.userId, recipeId))) return { error: 'این رسپی با محدودیتِ غذاییت (آلرژی) سازگار نیست؛ نمی‌تونم در برنامه بذارمش.' };
         try {
           await this.mealPlans.addMealSlot(ctx.userId, dayNum, meal, recipeId); // publish-gated inside the service
           const r = await this.prisma.recipe.findFirst({ where: { id: recipeId, ...PUBLISHED_RECIPE_WHERE }, select: { title: true } });
@@ -302,6 +320,7 @@ export class AgenticWriteToolsService {
       execute: async (args, ctx) => {
         const recipeId = String(args?.recipeId ?? '').trim();
         if (!recipeId) return { error: 'recipeId لازم است' };
+        if (!(await this.recipeIsSafe(ctx.userId, recipeId))) return { error: 'این رسپی با محدودیتِ غذاییت (آلرژی) سازگار نیست؛ نمی‌تونم ذخیره‌اش کنم.' };
         try {
           await this.favorites.addFavorite(ctx.userId, recipeId); // idempotent + publish-gated inside the service
           const r = await this.prisma.recipe.findFirst({ where: { id: recipeId, ...PUBLISHED_RECIPE_WHERE }, select: { title: true } });
@@ -328,6 +347,7 @@ export class AgenticWriteToolsService {
       execute: async (args, ctx) => {
         const recipeId = String(args?.recipeId ?? '').trim();
         if (!recipeId) return { error: 'recipeId لازم است' };
+        if (!(await this.recipeIsSafe(ctx.userId, recipeId))) return { error: 'این رسپی با محدودیتِ غذاییت (آلرژی) سازگار نیست؛ موادشو به لیست اضافه نمی‌کنم.' };
         const r = await this.prisma.recipe.findFirst({
           where: { id: recipeId, ...PUBLISHED_RECIPE_WHERE }, // publish-gate — never pull a private/pending recipe
           select: { title: true, ingredients: { select: { name: true, amount: true, unit: true }, orderBy: { order: 'asc' } } },
