@@ -44,7 +44,68 @@ export class AgenticWriteToolsService {
   ) {}
 
   build(): AgenticTool[] {
-    return [this.addFavorite(), this.addRecipeToShoppingList(), this.addToMealPlan()];
+    return [
+      this.addFavorite(),
+      this.removeFavorite(),
+      this.addRecipeToShoppingList(),
+      this.addToMealPlan(),
+      this.removeFromMealPlan(),
+    ];
+  }
+
+  private removeFromMealPlan(): AgenticTool {
+    return {
+      spec: {
+        name: 'remove_from_meal_plan',
+        description: 'برداشتنِ غذای یک روز و وعده از برنامهٔ غذاییِ کاربر (هرچه در آن خانه باشد). وقتی گفت «دوشنبه نهار رو حذف کن». برای «جابه‌جا کردن» اول این را برای روزِ قدیم صدا بزن، بعد add_to_meal_plan را برای روزِ جدید.',
+        parameters: {
+          type: 'object',
+          properties: {
+            day: { type: 'string', description: 'روزِ هفته: شنبه … جمعه' },
+            mealType: { type: 'string', description: 'وعده: صبحانه، ناهار، یا شام' },
+          },
+          required: ['day', 'mealType'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const dayNum = normalizeDay(args?.day);
+        const meal = normalizeMeal(args?.mealType);
+        if (dayNum === null) return { error: 'روزِ هفته مشخص نیست؛ از کاربر بپرس کدام روز.' };
+        if (!meal) return { error: 'وعده مشخص نیست؛ از کاربر بپرس صبحانه، ناهار یا شام.' };
+        try {
+          await this.mealPlans.removeMealSlot(ctx.userId, dayNum, meal);
+          return { ok: true, action: 'remove_from_meal_plan', day: String(args?.day ?? ''), mealType: meal };
+        } catch (e) {
+          this.logger.warn(`remove_from_meal_plan failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'برداشتن از برنامهٔ غذایی الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  private removeFavorite(): AgenticTool {
+    return {
+      spec: {
+        name: 'remove_favorite',
+        description: 'برداشتنِ یک رسپی از علاقه‌مندی‌های کاربر. وقتی گفت «این رو از علاقه‌مندی‌هام بردار». recipeId را از نتایجِ search_recipes بردار.',
+        parameters: {
+          type: 'object',
+          properties: { recipeId: { type: 'string', description: 'id رسپی' } },
+          required: ['recipeId'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const recipeId = String(args?.recipeId ?? '').trim();
+        if (!recipeId) return { error: 'recipeId لازم است' };
+        try {
+          await this.favorites.removeFavorite(ctx.userId, recipeId);
+          return { ok: true, action: 'remove_favorite', recipeId };
+        } catch (e) {
+          this.logger.warn(`remove_favorite failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'برداشتن از علاقه‌مندی‌ها الان ممکن نشد.' };
+        }
+      },
+    };
   }
 
   private addToMealPlan(): AgenticTool {
