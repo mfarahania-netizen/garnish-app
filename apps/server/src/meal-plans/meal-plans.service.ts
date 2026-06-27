@@ -103,7 +103,7 @@ export class MealPlansService {
     let allRecipes = await this.prisma.recipe.findMany({
       where,
       include: { ingredients: true },
-      take: 200,
+      take: 500, // fully populate the meal-type pools so the variety picker isn't starved (esp. the breakfast subset)
     });
 
     // HARD safety gate — the ONE reusable filter (derived allergens + looseMatch + pork/observance,
@@ -117,30 +117,36 @@ export class MealPlansService {
     if (allRecipes.length < 14) {
       const relaxedWhere: any = { status: 'active', isPublic: true };
       if (userDiet === 'vegetarian' || userDiet === 'vegan') relaxedWhere.diet = { in: ['vegetarian', 'vegan'] };
-      let relaxed = await this.prisma.recipe.findMany({ where: relaxedWhere, include: { ingredients: true }, take: 200 });
+      let relaxed = await this.prisma.recipe.findMany({ where: relaxedWhere, include: { ingredients: true }, take: 500 });
       relaxed = await this.safety.filter(userId, relaxed); // never relax the allergy/pork gate
       if (relaxed.length > allRecipes.length) allRecipes = relaxed;
     }
 
-    const breakfastOptions = allRecipes.filter(r => r.mealType?.includes('breakfast'));
-    const lunchOptions = allRecipes.filter(r => r.mealType?.includes('lunch'));
-    const dinnerOptions = allRecipes.filter(r => r.mealType?.includes('dinner'));
+    // VARIETY (founder hit: breakfast repeated the same 3 dishes all week; lunch == dinner the same day). The old
+    // `pool[i % len]` walked the SAME pool order every time → heavy repeats. Now: shuffle each meal pool, then give
+    // each day the next DISTINCT recipe (resetting the "used" set only when the pool is exhausted, so repeats are
+    // SPREAD, never back-to-back), and never place the same dish in lunch AND dinner of one day.
+    const shuffle = <X>(arr: X[]): X[] => { const a = [...arr]; for (let k = a.length - 1; k > 0; k--) { const m = Math.floor(Math.random() * (k + 1)); [a[k], a[m]] = [a[m], a[k]]; } return a; };
+    const breakfastOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('breakfast')));
+    const lunchOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('lunch')));
+    const dinnerOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('dinner')));
 
     const planSlots: { dayOfWeek: number; mealType: string; recipeId: string; notes: string }[] = [];
-
+    const pickDistinct = (pool: any[], used: Set<string>, forbidId: string | null) => {
+      if (!pool.length) return null;
+      let r = pool.find((x) => !used.has(x.id) && x.id !== forbidId);
+      if (!r) { used.clear(); r = pool.find((x) => x.id !== forbidId) || pool[0]; } // pool exhausted → start a fresh cycle
+      used.add(r.id);
+      return r;
+    };
+    const usedB = new Set<string>(), usedL = new Set<string>(), usedD = new Set<string>();
     for (let i = 0; i < 7; i++) {
-      if (lunchOptions.length > 0) {
-        const lunch = lunchOptions[i % lunchOptions.length];
-        planSlots.push({ dayOfWeek: i, mealType: 'ناهار', recipeId: lunch.id, notes: '' });
-      }
-      if (dinnerOptions.length > 0) {
-        const dinner = dinnerOptions[i % dinnerOptions.length];
-        planSlots.push({ dayOfWeek: i, mealType: 'شام', recipeId: dinner.id, notes: '' });
-      }
-      if (breakfastOptions.length > 0) {
-        const breakfast = breakfastOptions[i % breakfastOptions.length];
-        planSlots.push({ dayOfWeek: i, mealType: 'صبحانه', recipeId: breakfast.id, notes: '' });
-      }
+      const lunch = pickDistinct(lunchOptions, usedL, null);
+      if (lunch) planSlots.push({ dayOfWeek: i, mealType: 'ناهار', recipeId: lunch.id, notes: '' });
+      const dinner = pickDistinct(dinnerOptions, usedD, lunch?.id ?? null); // lunch != dinner same day
+      if (dinner) planSlots.push({ dayOfWeek: i, mealType: 'شام', recipeId: dinner.id, notes: '' });
+      const breakfast = pickDistinct(breakfastOptions, usedB, null);
+      if (breakfast) planSlots.push({ dayOfWeek: i, mealType: 'صبحانه', recipeId: breakfast.id, notes: '' });
     }
 
     if (planSlots.length === 0) {
