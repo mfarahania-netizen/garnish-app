@@ -48,9 +48,49 @@ export class AgenticWriteToolsService {
       this.addFavorite(),
       this.removeFavorite(),
       this.addRecipeToShoppingList(),
+      this.addWeekToShoppingList(),
       this.addToMealPlan(),
       this.removeFromMealPlan(),
     ];
+  }
+
+  /**
+   * FLAGSHIP WORKFLOW (the ChatGPT-can't-do moment): build the shopping list from the user's WHOLE current-week
+   * meal plan in one shot. Delegates to ShoppingListService.buildFromPlan — which aggregates ingredients across
+   * every planned recipe, merges duplicates by dictionary id, scales by household size, categorizes, and de-dupes
+   * against what's already listed (idempotent; manual/checked items preserved). No per-recipe LLM chaining → no
+   * dropped items. Reads the same Saturday-first week as add_to_meal_plan, so a just-placed plan is included.
+   */
+  private addWeekToShoppingList(): AgenticTool {
+    return {
+      spec: {
+        name: 'add_week_to_shopping_list',
+        description: 'ساختنِ لیستِ خرید از کلِ برنامهٔ غذاییِ این هفتهٔ کاربر — موادِ همهٔ غذاهای برنامه را یک‌جا (با ادغامِ تکراری‌ها و اندازه به تعدادِ نفرات) به لیستِ خرید اضافه می‌کند. وقتی کاربر گفت «لیستِ خریدِ هفته رو بساز» یا بعد از چیدنِ برنامه پیشنهادِ ساختِ لیست را پذیرفت. با برنامهٔ فعلی کار می‌کند و آرگومان لازم ندارد؛ تک‌تکِ رسپی‌ها را جدا اضافه نکن.',
+        parameters: { type: 'object', properties: {} },
+      },
+      execute: async (_args, ctx) => {
+        try {
+          const res = await this.shoppingList.buildFromPlan(ctx.userId);
+          if (res.resultStatus === 'no_plan') {
+            return { error: 'برنامهٔ غذاییِ این هفته خالی است؛ اول چند غذا در برنامه بگذار، بعد لیستِ خرید را می‌سازم.' };
+          }
+          if (res.added === 0) {
+            return { ok: true, action: 'add_week_to_shopping_list', added: 0, note: 'همهٔ موادِ برنامه از قبل در لیستِ خرید بود؛ چیزِ تازه‌ای اضافه نشد.' };
+          }
+          return {
+            ok: true,
+            action: 'add_week_to_shopping_list',
+            added: res.added,
+            merged: res.merged,
+            householdSize: res.householdSize,
+            undoHint: 'از صفحهٔ لیستِ خرید قابلِ تغییر/حذف است.',
+          };
+        } catch (e) {
+          this.logger.warn(`add_week_to_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'ساختنِ لیستِ خرید از برنامه الان ممکن نشد.' };
+        }
+      },
+    };
   }
 
   private removeFromMealPlan(): AgenticTool {
