@@ -10,6 +10,7 @@ import { ConversationsService } from './chat/conversations.service';
 import { AgenticChatService } from './chat/agentic-chat.service';
 import { AgenticWriteToolsService } from './agentic/agentic-write-tools.service';
 import { ChatOpenerService } from './chat/chat-opener.service';
+import { ChatRateLimitService } from './chat/chat-rate-limit.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { FavoritesModule } from '../favorites/favorites.module';
@@ -38,6 +39,7 @@ import { BriefingModule } from '../briefing/briefing.module';
     AgenticChatService,
     AgenticWriteToolsService,
     ChatOpenerService,
+    ChatRateLimitService,
   ],
 })
 export class AiModule {}

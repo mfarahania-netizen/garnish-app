@@ -5,6 +5,7 @@ import { Throttle } from '@nestjs/throttler';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { ConversationsService } from './chat/conversations.service';
 import { ChatOpenerService } from './chat/chat-opener.service';
+import { ChatRateLimitService } from './chat/chat-rate-limit.service';
 import { AiAssistService } from './assist/ai-assist.service';
 import { MissingBehavioralContextError } from './ai-core.types';
 
@@ -14,6 +15,7 @@ export class AiController {
     private readonly chatOrchestration: ChatOrchestrationService,
     private readonly conversations: ConversationsService,
     private readonly opener: ChatOpenerService,
+    private readonly rateLimit: ChatRateLimitService,
     private readonly assist: AiAssistService,
   ) {}
 
@@ -36,6 +38,12 @@ export class AiController {
     @Body() body: { prompt: string; conversationId?: string; context?: { currentScreen?: string; recipeId?: string; stepIndex?: number } },
   ) {
     const userId = req.user.userId;
+    // FREE-TIER message budget (5h / daily / weekly) — block BEFORE any model call and surface a kind reply, so a
+    // rate-limited turn never burns the shared free-model quota. Fail-open inside the service (never denies on error).
+    const limit = await this.rateLimit.check(userId);
+    if (!limit.allowed) {
+      return { reply: limit.message, conversationId: body.conversationId ?? null, providerMode: 'rate_limited', safetyStatus: 'rate_limited', rateLimited: true, resetAt: limit.resetAt };
+    }
     // E47-A3/A8: every chat request routes THROUGH the AI Orchestrator (mandatory snapshot, guards,
     // cost, AICallLog). The reply is the LIVE post-guarded model output only when chat-live is
     // explicitly enabled by env; otherwise it is the deterministic recipe reply (safe default).
