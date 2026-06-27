@@ -63,6 +63,7 @@ export class AgenticChatService {
       return { ok: false, text: null, reason: 'allergy_unavailable' };
     }
 
+    const dietLine = await this.grounded.getDietConstraint(userId).catch(() => null); // diet = preference (non-fatal)
     const unsafeTitles: string[] = [];
     // read-only tools pass through the allergy gate; reversible WRITE-actions (favorite, shopping-list) act only
     // on the user's own data and auto-execute (no allergy filtering needed — they're user-initiated, not recs).
@@ -76,7 +77,7 @@ export class AgenticChatService {
     for (let attempt = 1; attempt <= 2; attempt++) {
       try {
         result = await this.loop.run(this.model, {
-          systemPrompt: this.systemPrompt(allergens),
+          systemPrompt: this.systemPrompt(allergens, dietLine),
           userPrompt: prompt,
           history,
           tools,
@@ -140,7 +141,7 @@ export class AgenticChatService {
     };
   }
 
-  private systemPrompt(allergens: string[]): string {
+  private systemPrompt(allergens: string[], dietLine?: string | null): string {
     const allergyLine = allergens.length
       ? `هشدارِ ایمنی: کاربر به این‌ها حساسیت/آلرژی دارد و تو هرگز نباید هیچ‌کدام را پیشنهاد دهی، در غذا بیاوری، یا در دستور ذکر کنی: ${allergens.join('، ')}.`
       : 'کاربر آلرژیِ ثبت‌شده‌ای ندارد.';
@@ -176,6 +177,7 @@ export class AgenticChatService {
       // NO transliteration leaps: it read «لینکشو» (= "its link") as the pasta «Linguine» and searched for it.
       'هرگز یک واژهٔ فارسی را به یک غذای خارجی ترجمه یا تبدیل نکن. واژه‌هایی مثلِ «لینک»، «لینکشو»، «صفحه‌اش»، «توی اپ ببینم» نامِ غذا نیستند — یعنی کاربر می‌خواهد همان رسپی را در صفحهٔ خودش در اپ ببیند؛ بگو رسپی در اپ روی صفحهٔ خودش هست و آن را به‌عنوانِ نامِ غذا جستجو نکن.',
       'اگر ابزارها چیزی پیدا نکردند، صادقانه بگو نداری؛ چیزی از خودت اختراع نکن.',
+      ...(dietLine ? [dietLine] : []), // honor vegetarian/vegan exactly like the grounded path (regression fix)
       allergyLine,
       'کوتاه، گرم و به فارسیِ روان جواب بده.',
     ].join('\n');

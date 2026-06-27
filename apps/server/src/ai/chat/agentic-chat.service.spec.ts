@@ -35,6 +35,7 @@ interface MakeOpts {
 function make(opts: MakeOpts) {
   const grounded = {
     getDeclaredAllergens: jest.fn().mockResolvedValue(opts.allergens === undefined ? [] : opts.allergens),
+    getDietConstraint: jest.fn().mockResolvedValue(null),
     screenLiveOutput: jest.fn().mockResolvedValue({ safe: opts.screenSafe ?? true, reason: opts.screenReason ?? null }),
   };
   const safety = {

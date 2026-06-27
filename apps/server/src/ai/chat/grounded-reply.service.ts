@@ -396,6 +396,24 @@ export class GroundedReplyService {
   }
 
   /**
+   * The user's structured DIET as an agentic-prompt constraint line (the same UserPreference.diet the planner +
+   * assessRecipeFit use). Reuses one read so the agentic path honors vegetarian/vegan exactly like the grounded
+   * path did — fixes the regression where turning on the agentic brain dropped diet personalization (a vegetarian
+   * user got قرمه‌سبزی/مرغ). null for omnivore/unset. Best-effort: a read error never blocks the turn.
+   */
+  async getDietConstraint(userId: string): Promise<string | null> {
+    try {
+      const pref = await this.prisma.userPreference.findUnique({ where: { userId }, select: { diet: true } });
+      const diet = String(pref?.diet ?? '').toLowerCase();
+      if (diet === 'vegetarian') return 'محدودیتِ غذایی: کاربر گیاه‌خوار (vegetarian) است — هرگز غذای حاویِ گوشت، مرغ، ماهی یا میگو پیشنهاد نده، در غذا نیاور یا در دستور نذار؛ فقط غذای گیاهی.';
+      if (diet === 'vegan') return 'محدودیتِ غذایی: کاربر وگان (vegan) است — هرگز غذای حاویِ گوشت، مرغ، ماهی، تخم‌مرغ، لبنیات یا عسل پیشنهاد نده؛ فقط غذای کاملاً گیاهی.';
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * DELIVER the recipe: fetch a recipe's ACTUAL ingredients (with amounts) + ordered cooking steps from the GRIS
    * blob, so the chat can give the real recipe inline instead of «go to the page». PUBLISHED-gated (isPublic +
    * active). The recipe is already allergy-safe (the caller passes an id from `buildGrounding`'s filtered set).
