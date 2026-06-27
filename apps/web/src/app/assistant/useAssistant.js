@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
@@ -24,6 +25,7 @@ const toMsg = (m) => ({ role: m.role === 'assistant' ? 'ai' : 'user', text: m.co
 
 export function useAssistant() {
   const { trackEvent } = useAnalytics();
+  const queryClient = useQueryClient();
   const [messages, setMessages] = useState([]); // { role:'user'|'ai', text }
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState(false);
@@ -40,6 +42,16 @@ export function useAssistant() {
     try { if (id) localStorage.setItem(CONVID_KEY, id); else localStorage.removeItem(CONVID_KEY); } catch { /* private mode */ }
     setConvId(id);
   }, []);
+
+  // The assistant can DO things — build the week plan, add to the shopping list, save a favorite, set taste/allergy.
+  // Those writes land server-side, but each target screen owns its OWN React-Query cache. Without this, the user
+  // builds a plan in the chat, the 21 slots ARE saved, yet the برنامه‌غذایی screen keeps serving its stale cache and
+  // looks unchanged — the founder's "it shows a table in chat but never goes into the meal-plan section" bug. Marking
+  // these stale makes the change appear the instant the user opens that screen. Prefix keys match their sub-keys
+  // (['plan'] → ['plan','current'], etc.).
+  const refreshActionSurfaces = useCallback(() => {
+    ['plan', 'shopping', 'favorites', 'home', 'profile'].forEach((k) => queryClient.invalidateQueries({ queryKey: [k] }));
+  }, [queryClient]);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -92,13 +104,14 @@ export function useAssistant() {
       const suggestedAction =
         sa && sa.type === 'add_allergy' && Array.isArray(sa.allergens) && sa.allergens.length ? sa : undefined;
       setMessages((m) => [...m, { role: 'ai', text: reply, suggestedAction }]);
+      refreshActionSurfaces(); // the turn may have written a plan / shopping item / favorite — let those screens refetch
       if (wasNew) loadConversations(); // a fresh thread was just created → show it in the sidebar
     } catch {
       if (sendSeq.current === mySeq) setError(true);
     } finally {
       if (sendSeq.current === mySeq) setThinking(false);
     }
-  }, [thinking, convId, persistConv, loadConversations]);
+  }, [thinking, convId, persistConv, loadConversations, refreshActionSurfaces]);
 
   // §3 confirm: write the offered allergens to the declared set (POST /users/allergies). The deterministic hard
   // gate then filters them from every recipe. Optimistic-safe: we only mark "added" after the server confirms.
@@ -111,6 +124,7 @@ export function useAssistant() {
       const addedTokens = Array.isArray(res?.data?.added) ? res.data.added : [];
       const missing = tokens.filter((t) => !addedTokens.includes(t));
       setAdded((s) => ({ ...s, [index]: true }));
+      refreshActionSurfaces(); // a new allergy re-filters every recipe surface — refetch them
       const text = missing.length === 0
         ? 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.'
         : 'بعضی موارد رو نتونستم ذخیره کنم — لطفاً از پروفایلت دستی اضافه‌شون کن.';
@@ -120,7 +134,7 @@ export function useAssistant() {
     } finally {
       inFlight.current.delete(index);
     }
-  }, [added]);
+  }, [added, refreshActionSurfaces]);
 
   const retry = useCallback(() => { if (lastPrompt.current) { setError(false); send(lastPrompt.current); } }, [send]);
   const rate = useCallback((index, vote) => {
