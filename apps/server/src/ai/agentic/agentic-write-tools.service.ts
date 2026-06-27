@@ -3,7 +3,25 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { PUBLISHED_RECIPE_WHERE } from '../../recipes/recipe-visibility';
 import { FavoritesService } from '../../favorites/favorites.service';
 import { ShoppingListService } from '../../shopping-list/shopping-list.service';
+import { MealPlansService } from '../../meal-plans/meal-plans.service';
 import { AgenticTool } from './agentic-loop.service';
+
+const fold = (s: unknown) => String(s ?? '').replace(/‌/g, '').replace(/\s+/g, '').trim();
+// Week starts SATURDAY (date.utils.getStartOfWeek) → dayOfWeek 0=شنبه … 6=جمعه (standard Iranian week).
+const DAY_MAP: Record<string, number> = { شنبه: 0, یکشنبه: 1, دوشنبه: 2, سهشنبه: 3, چهارشنبه: 4, پنجشنبه: 5, جمعه: 6 };
+const MEAL_MAP: Record<string, string> = { صبحانه: 'breakfast', صبحونه: 'breakfast', ناهار: 'lunch', نهار: 'lunch', شام: 'dinner', میانوعده: 'snack', عصرانه: 'snack' };
+/** «جمعه» or a 0-6 number → dayOfWeek; null when unrecognized. */
+function normalizeDay(raw: unknown): number | null {
+  const n = Number(raw);
+  if (Number.isInteger(n) && n >= 0 && n <= 6) return n;
+  return DAY_MAP[fold(raw)] ?? null;
+}
+/** «شام»/«dinner» → mealType enum; null when unrecognized. */
+function normalizeMeal(raw: unknown): string | null {
+  const f = fold(raw);
+  if (['breakfast', 'lunch', 'dinner', 'snack'].includes(f.toLowerCase())) return f.toLowerCase();
+  return MEAL_MAP[f] ?? null;
+}
 
 /**
  * Agentic WRITE-ACTION tools (brain phase B) — the assistant DOES things, not just talks.
@@ -22,10 +40,45 @@ export class AgenticWriteToolsService {
     private readonly prisma: PrismaService,
     private readonly favorites: FavoritesService,
     private readonly shoppingList: ShoppingListService,
+    private readonly mealPlans: MealPlansService,
   ) {}
 
   build(): AgenticTool[] {
-    return [this.addFavorite(), this.addRecipeToShoppingList()];
+    return [this.addFavorite(), this.addRecipeToShoppingList(), this.addToMealPlan()];
+  }
+
+  private addToMealPlan(): AgenticTool {
+    return {
+      spec: {
+        name: 'add_to_meal_plan',
+        description: 'گذاشتنِ یک رسپی در برنامهٔ غذاییِ هفتهٔ کاربر، برای یک روز و وعدهٔ مشخص. وقتی کاربر گفت «جمعه شام ته‌چین بذار». recipeId را از نتایجِ search_recipes بردار.',
+        parameters: {
+          type: 'object',
+          properties: {
+            recipeId: { type: 'string', description: 'id رسپی از نتایجِ جستجو' },
+            day: { type: 'string', description: 'روزِ هفته به فارسی: شنبه، یکشنبه، دوشنبه، سه‌شنبه، چهارشنبه، پنجشنبه، یا جمعه' },
+            mealType: { type: 'string', description: 'وعده: صبحانه، ناهار، یا شام' },
+          },
+          required: ['recipeId', 'day', 'mealType'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const recipeId = String(args?.recipeId ?? '').trim();
+        const dayNum = normalizeDay(args?.day);
+        const meal = normalizeMeal(args?.mealType);
+        if (!recipeId) return { error: 'recipeId لازم است' };
+        if (dayNum === null) return { error: 'روزِ هفته مشخص نیست؛ از کاربر بپرس کدام روز (شنبه تا جمعه).' };
+        if (!meal) return { error: 'وعده مشخص نیست؛ از کاربر بپرس صبحانه، ناهار یا شام.' };
+        try {
+          await this.mealPlans.addMealSlot(ctx.userId, dayNum, meal, recipeId); // publish-gated inside the service
+          const r = await this.prisma.recipe.findFirst({ where: { id: recipeId, ...PUBLISHED_RECIPE_WHERE }, select: { title: true } });
+          return { ok: true, action: 'add_to_meal_plan', recipe: r?.title ?? recipeId, day: String(args?.day ?? ''), mealType: meal, undoHint: 'از صفحهٔ برنامهٔ غذایی قابلِ تغییر/حذف است.' };
+        } catch (e) {
+          this.logger.warn(`add_to_meal_plan failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'گذاشتن در برنامهٔ غذایی الان ممکن نشد.' };
+        }
+      },
+    };
   }
 
   private addFavorite(): AgenticTool {

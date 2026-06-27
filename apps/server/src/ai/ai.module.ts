@@ -12,6 +12,7 @@ import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { FavoritesModule } from '../favorites/favorites.module';
 import { ShoppingListModule } from '../shopping-list/shopping-list.module';
+import { MealPlansModule } from '../meal-plans/meal-plans.module';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
@@ -22,7 +23,7 @@ import { ShoppingListModule } from '../shopping-list/shopping-list.module';
  * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule],
+  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule, MealPlansModule],
   controllers: [AiController],
   providers: [
     AiService,
