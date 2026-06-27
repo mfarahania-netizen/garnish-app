@@ -16,6 +16,6 @@ import { TasteCorrectionService } from '../signals/taste-correction.service';
   imports: [PrismaModule, AiCoreModule],
   controllers: [ProfileController],
   providers: [QuestionSelectionService, ProfileReadService, TasteCorrectionService],
-  exports: [ProfileReadService, QuestionSelectionService],
+  exports: [ProfileReadService, QuestionSelectionService, TasteCorrectionService],
 })
 export class ProfileModule {}

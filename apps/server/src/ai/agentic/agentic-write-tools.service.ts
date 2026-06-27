@@ -4,6 +4,7 @@ import { PUBLISHED_RECIPE_WHERE } from '../../recipes/recipe-visibility';
 import { FavoritesService } from '../../favorites/favorites.service';
 import { ShoppingListService } from '../../shopping-list/shopping-list.service';
 import { MealPlansService } from '../../meal-plans/meal-plans.service';
+import { TasteCorrectionService, TasteStance } from '../../behavior-engine/signals/taste-correction.service';
 import { AgenticTool } from './agentic-loop.service';
 
 const fold = (s: unknown) => String(s ?? '').replace(/‌/g, '').replace(/\s+/g, '').trim();
@@ -41,6 +42,7 @@ export class AgenticWriteToolsService {
     private readonly favorites: FavoritesService,
     private readonly shoppingList: ShoppingListService,
     private readonly mealPlans: MealPlansService,
+    private readonly taste: TasteCorrectionService,
   ) {}
 
   build(): AgenticTool[] {
@@ -51,7 +53,76 @@ export class AgenticWriteToolsService {
       this.addWeekToShoppingList(),
       this.addToMealPlan(),
       this.removeFromMealPlan(),
+      this.setIngredientTaste(),
     ];
+  }
+
+  /**
+   * USER-MODEL write (the "feeling-known" pillar) — record the user's stated taste for one ingredient so the
+   * recommender reflects it. Delegates to the audited TasteCorrectionService: a SOFT, signed signal the FI-2.3
+   * ranker already reads (re-ranks, NEVER excludes) — explicitly NOT the allergy hard gate. Fully reversible
+   * (stance='neutral' clears it). The free name is resolved to a REAL dictionary ingredient first (the service
+   * also rejects an unknown id), so the model can never write a taste signal for a non-existent ingredient.
+   * Allergy is deliberately NOT here — allergy statements are owned by the deterministic §3 confirm-then-write
+   * flow (a safer explicit-confirm path), so routing them here would be redundant and less safe.
+   */
+  private setIngredientTaste(): AgenticTool {
+    return {
+      spec: {
+        name: 'set_ingredient_taste',
+        description: 'ثبتِ سلیقهٔ کاربر دربارهٔ یک ماده تا در پیشنهادها لحاظ شود. stance=dislike وقتی گفت «X دوست ندارم/خوشم نمیاد»؛ stance=like وقتی گفت «عاشقِ Xم/X دوست دارم»؛ stance=neutral وقتی گفت «دیگه برام مهم نیست». این سلیقهٔ نرم است (رتبه‌بندی را جابه‌جا می‌کند، چیزی را حذف نمی‌کند) و ربطی به آلرژی ندارد — برای آلرژی این را صدا نزن.',
+        parameters: {
+          type: 'object',
+          properties: {
+            ingredient: { type: 'string', description: 'نامِ ماده، مثلِ «بادمجان»، «گردو»، «عدس»' },
+            stance: { type: 'string', enum: ['like', 'dislike', 'neutral'], description: 'like=دوست دارد، dislike=دوست ندارد، neutral=بی‌تفاوت/پاک‌کردنِ نظرِ قبلی' },
+          },
+          required: ['ingredient', 'stance'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const name = String(args?.ingredient ?? '').trim();
+        const stance = String(args?.stance ?? '').trim().toLowerCase();
+        if (!name) return { error: 'نامِ ماده مشخص نیست؛ از کاربر بپرس کدام ماده.' };
+        if (!['like', 'dislike', 'neutral'].includes(stance)) return { error: 'نظر باید like، dislike یا neutral باشد.' };
+        const ing = await this.resolveIngredientByName(name);
+        if (!ing) return { error: `«${name}» را در فهرستِ موادِ ما پیدا نکردم؛ نتونستم سلیقه‌اش رو ثبت کنم.` };
+        try {
+          const res = await this.taste.correctTastePreference(ctx.userId, ing.id, stance as TasteStance);
+          if (!res?.ok) return { error: 'ثبتِ سلیقه ممکن نشد.' };
+          const verb = stance === 'like' ? 'دوست داری' : stance === 'dislike' ? 'دوست نداری' : 'برات بی‌تفاوت شد';
+          return {
+            ok: true,
+            action: 'set_ingredient_taste',
+            ingredient: ing.name,
+            stance,
+            note: `یادم می‌مونه که «${ing.name}» رو ${verb}؛ از این به بعد توی پیشنهادها لحاظش می‌کنم.`,
+            undoHint: 'هر وقت نظرت عوض شد بهم بگو.',
+          };
+        } catch (e) {
+          this.logger.warn(`set_ingredient_taste failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'ثبتِ سلیقه الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  /** Resolve a free Persian/English ingredient mention to a REAL dictionary ingredient (exact → prefix → shortest). */
+  private async resolveIngredientByName(name: string): Promise<{ id: string; name: string } | null> {
+    const n = name.trim();
+    if (!n) return null;
+    const rows = await this.prisma.ingredient.findMany({
+      where: { OR: [{ nameFa: { contains: n } }, { nameEn: { contains: n } }] },
+      take: 15,
+      select: { id: true, nameFa: true, nameEn: true },
+    });
+    if (!rows.length) return null;
+    const byLen = [...rows].sort((a, b) => (fold(a.nameFa).length || 9999) - (fold(b.nameFa).length || 9999));
+    // exact fold-match wins; else the SHORTEST name containing the term — the most generic base ingredient
+    // («گردو» → «گردو خام», not «گردوی پکان خام»). First-prefix was order-dependent and picked variants.
+    const exact = byLen.find((r) => fold(r.nameFa) === fold(n) || (r.nameEn && r.nameEn.trim().toLowerCase() === n.toLowerCase()));
+    const best = exact || byLen[0];
+    return { id: best.id, name: best.nameFa || best.nameEn || best.id };
   }
 
   /**
