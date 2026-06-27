@@ -4,12 +4,12 @@ const ctx = { userId: 'u1', snapshot: {} } as any;
 const toolByName = (svc: AgenticWriteToolsService, name: string) => svc.build().find((t) => t.spec.name === name)!;
 
 /** Construct the service with only the deps a given test exercises mocked; the rest are inert. */
-const make = (deps: { buildFromPlan?: jest.Mock; findIngredients?: jest.Mock; correctTaste?: jest.Mock } = {}) =>
+const make = (deps: { buildFromPlan?: jest.Mock; findIngredients?: jest.Mock; correctTaste?: jest.Mock; generateSmartPlan?: jest.Mock } = {}) =>
   new AgenticWriteToolsService(
     { ingredient: { findMany: deps.findIngredients ?? jest.fn().mockResolvedValue([]) } } as any, // prisma
     {} as any, // favorites
     { buildFromPlan: deps.buildFromPlan ?? jest.fn() } as any, // shoppingList
-    {} as any, // mealPlans
+    { generateSmartPlan: deps.generateSmartPlan ?? jest.fn() } as any, // mealPlans
     { correctTastePreference: deps.correctTaste ?? jest.fn().mockResolvedValue({ ok: true }) } as any, // taste
   );
 
@@ -82,5 +82,37 @@ describe('AgenticWriteToolsService — set_ingredient_taste', () => {
     const res: any = await toolByName(make({ findIngredients }), 'set_ingredient_taste').execute({ ingredient: 'گردو', stance: 'maybe' }, ctx);
     expect(findIngredients).not.toHaveBeenCalled();
     expect(res.error).toBeDefined();
+  });
+});
+
+/**
+ * fill_week_plan — fills + SAVES the whole week in one deterministic call (fixes the over-clarify + fake-table bug).
+ * Thin wrapper over MealPlansService.generateSmartPlan (diet/allergy-aware); returns a per-day summary to render.
+ */
+describe('AgenticWriteToolsService — fill_week_plan', () => {
+  it('is registered in build()', () => {
+    expect(make().build().map((t) => t.spec.name)).toContain('fill_week_plan');
+  });
+
+  it('fills the whole week via generateSmartPlan and returns a per-day summary (Saturday first)', async () => {
+    const generateSmartPlan = jest.fn().mockResolvedValue({
+      slots: [
+        { dayOfWeek: 0, mealType: 'ناهار', recipe: { title: 'قرمه‌سبزی' } },
+        { dayOfWeek: 0, mealType: 'شام', recipe: { title: 'فسنجان' } },
+        { dayOfWeek: 1, mealType: 'ناهار', recipe: { title: 'قیمه' } },
+      ],
+    });
+    const res: any = await toolByName(make({ generateSmartPlan }), 'fill_week_plan').execute({}, ctx);
+    expect(generateSmartPlan).toHaveBeenCalledWith('u1'); // owner-scoped, audited generator (allergy-filtered)
+    expect(res).toMatchObject({ ok: true, action: 'fill_week_plan', placed: 3 });
+    expect(res.week[0].day).toBe('شنبه');
+    expect(res.week[0].meals).toHaveLength(2);
+  });
+
+  it('errors (not ok) when the generator places nothing — never claims a plan it did not save', async () => {
+    const generateSmartPlan = jest.fn().mockResolvedValue({ slots: [] });
+    const res: any = await toolByName(make({ generateSmartPlan }), 'fill_week_plan').execute({}, ctx);
+    expect(res.error).toBeDefined();
+    expect(res.ok).toBeUndefined();
   });
 });

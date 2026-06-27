@@ -89,6 +89,28 @@ function FeedbackRow({ value, onUp, onDown }) {
   );
 }
 
+// While the assistant works, cycle a changing status so a slow turn FEELS like active effort (not a frozen spinner).
+// Escalating, not looping — the later lines acknowledge the wait. (A future version can stream the real tool steps.)
+const THINKING_STEPS = [
+  'در حال فکر کردن…',
+  'دارم بینِ غذاها و دستورها می‌گردم…',
+  'دارم گزینه‌های خوب رو برات جمع می‌کنم…',
+  'یه کم طول می‌کشه — دارم با دقت آماده‌اش می‌کنم…',
+  'ممنون که صبر می‌کنی، کارهای بیشتری دارم انجام می‌دم…',
+  'تقریباً آماده‌ست، یه لحظهٔ دیگه…',
+];
+
+function ThinkingStatus() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((x) => Math.min(x + 1, THINKING_STEPS.length - 1)), 3500);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <Text component="span" style={{ display: 'block', marginBlockStart: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', transition: 'opacity 0.2s' }}>{THINKING_STEPS[i]}</Text>
+  );
+}
+
 export default function AssistantPage() {
   const a = useAssistant();
   const [draft, setDraft] = useState('');
@@ -180,7 +202,7 @@ export default function AssistantPage() {
                 <AiGlyph small />
                 <Box className="g-skeleton" style={{ blockSize: 11, inlineSize: '88%', borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} />
                 <Box className="g-skeleton" style={{ blockSize: 11, inlineSize: '64%', borderRadius: 'var(--g-radius-input)' }} />
-                <Text component="span" style={{ display: 'block', marginBlockStart: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>در حال فکر…</Text>
+                <ThinkingStatus />
               </Box>
             ) : null}
             {a.error ? (

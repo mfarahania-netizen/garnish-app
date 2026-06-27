@@ -69,20 +69,26 @@ export class AgenticChatService {
     const tools = [...this.gatedTools(userId, unsafeTitles), ...this.writeTools.build()];
     const ctx: ToolContext = { userId, snapshot };
 
+    // RETRY ONCE on a thrown loop error — the free OpenRouter tool models intermittently return an empty completion
+    // (no text, no tool calls); a single retry gives the flake a second chance to actually call the tool (e.g.
+    // fill_week_plan) instead of falling back to the grounded reply (which, for a plan request, fakes an unsaved table).
     let result;
-    try {
-      result = await this.loop.run(this.model, {
-        systemPrompt: this.systemPrompt(allergens),
-        userPrompt: prompt,
-        history,
-        tools,
-        ctx,
-        maxIterations: 5,
-      });
-    } catch (e) {
-      this.logger.warn(`agentic loop failed: ${e instanceof Error ? e.message : String(e)}`);
-      return { ok: false, text: null, reason: 'error' };
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        result = await this.loop.run(this.model, {
+          systemPrompt: this.systemPrompt(allergens),
+          userPrompt: prompt,
+          history,
+          tools,
+          ctx,
+          maxIterations: 5,
+        });
+        break;
+      } catch (e) {
+        this.logger.warn(`agentic loop attempt ${attempt}/2 failed: ${e instanceof Error ? e.message : String(e)}`);
+      }
     }
+    if (!result) return { ok: false, text: null, reason: 'error' };
 
     // 3) OUTPUT gate (fail-closed): screen the final answer; only `unsafeTitles` is read by the screen.
     const verdict = await this.grounded.screenLiveOutput(userId, result.text, { unsafeTitles } as never);
@@ -155,12 +161,15 @@ export class AgenticChatService {
       'یک مناسبت یا حال‌وهوا (مثلِ «مجلسی»، «مهمونی»، «سریع»، «سبک»، «مقوی») نامِ غذا نیست؛ آن کلمه را جستجو نکن چون نتیجه نمی‌دهد. به‌جایش نامِ غذاهای شناخته‌شدهٔ مناسبِ آن را جستجو کن — مثلاً برای «مجلسی»: قرمه‌سبزی، فسنجان، ته‌چین، زرشک‌پلو، باقالی‌پلو. اگر یکی نبود سراغِ بعدی برو.',
       'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
       // brain phase B — the assistant can now DO things (reversible write-actions), not just talk.
-      'کارها (فقط وقتی کاربر صریحاً خواست، و بعد کوتاه تأیید کن): «ذخیره کن»→add_favorite · «از علاقه‌مندی‌ها بردار»→remove_favorite · «موادِ این غذا رو بریز تو لیستِ خرید»→add_recipe_to_shopping_list · «لیستِ خریدِ هفته رو بساز»→add_week_to_shopping_list · «فلان روز فلان وعده فلان غذا بذار»→add_to_meal_plan · «فلان روز فلان وعده رو حذف کن»→remove_from_meal_plan · «فلان ماده رو دوست ندارم/عاشقِ فلان ماده‌ام»→set_ingredient_taste (سلیقهٔ نرم، نه آلرژی). «جابه‌جا کن از روزِ X به روزِ Y» = اول remove_from_meal_plan برای X، بعد add_to_meal_plan برای Y (اگر id رسپی را نداری، اول search_recipes). همهٔ این‌ها برگشت‌پذیرند، خودت انجامشان بده و نگو «نمی‌توانم».',
+      'کارها (فقط وقتی کاربر صریحاً خواست، و بعد کوتاه تأیید کن): «ذخیره کن»→add_favorite · «از علاقه‌مندی‌ها بردار»→remove_favorite · «موادِ این غذا رو بریز تو لیستِ خرید»→add_recipe_to_shopping_list · «لیستِ خریدِ هفته رو بساز»→add_week_to_shopping_list · «فلان روز فلان وعده فلان غذا بذار»→add_to_meal_plan · «کلِ برنامهٔ هفته رو بچین/کامل کن»→fill_week_plan · «فلان روز فلان وعده رو حذف کن»→remove_from_meal_plan · «فلان ماده رو دوست ندارم/عاشقِ فلان ماده‌ام»→set_ingredient_taste (سلیقهٔ نرم، نه آلرژی). «جابه‌جا کن از روزِ X به روزِ Y» = اول remove_from_meal_plan برای X، بعد add_to_meal_plan برای Y (اگر id رسپی را نداری، اول search_recipes). همهٔ این‌ها برگشت‌پذیرند، خودت انجامشان بده و نگو «نمی‌توانم».',
       // narrate-instead-of-act: a weak model says "I'll remember that" without firing the tool. Force the call.
       'مهم: وقتی کاربر کاری خواست یا علاقه/بیزاری‌اش را گفت، **عملاً همان لحظه ابزارِ مربوط را صدا بزن** — فقط نگو «لحاظ می‌کنم/یادم می‌مونه/اضافه کردم». تا ابزار را واقعاً اجرا نکرده‌ای، نگو انجام شد. مثلاً «گردو دوست دارم» = همین حالا set_ingredient_taste با stance=like.',
       // founder hit: asked for 3 dishes across 3 days, only 2 were placed (قیمه dropped); then «قیمه چی شد؟» got a
       // description instead of a fix. Place EVERY item; treat a follow-up «X چی شد؟» as "did I add X?".
       'اگر کاربر چند غذا برای چند روز/وعده خواست، برای **هر کدام جداگانه** add_to_meal_plan را صدا بزن و **هیچ‌کدام را جا ننداز** (یک رسپی در یک خانه فقط؛ دو غذا را در یک خانه با هم قاطی نکن). اگر بعد پرسید «فلان غذا چی شد؟» یعنی احتمالاً جا انداختی — همان لحظه آن را به برنامه اضافه کن، نه اینکه فقط درباره‌اش توضیح بدهی.',
+      // founder hit live: «برنامهٔ هفته رو بچین» → the model over-clarified «چند وعده؟» forever then faked an UNSAVED
+      // markdown table. The WHOLE-week request has ONE tool that fills + saves everything; never stall on it.
+      'برای «برنامهٔ هفته رو بچین»/«یه برنامهٔ هفتگی بساز»/«برنامهٔ این هفته رو کامل کن»/«همهٔ وعده‌ها رو بچین» **هرگز نپرس چند وعده** — همان لحظه fill_week_plan را صدا بزن (خودش همهٔ روزها و وعده‌ها را خودکار، امن و ذخیره‌شده پر می‌کند). بعد برنامه را از خروجیِ همان ابزار در یک جدولِ تمیز (روز × صبحانه/ناهار/شام) نشان بده و بپرس «لیستِ خریدش رو بسازم؟». جدولِ متنیِ من‌درآوردی نساز و بعد از چیدن، همان سؤال‌ها را تکرار نکن.',
       // FLAGSHIP WORKFLOW (the moat moment): plan → proactively offer the shopping list → one deterministic call.
       'گردشِ‌کارِ برنامهٔ هفته: بعد از اینکه چند وعده را در برنامه گذاشتی، در یک جملهٔ کوتاه پیشنهاد بده «لیستِ خریدش را هم برات بسازم؟». اگر کاربر پذیرفت (مثلِ «آره»، «بله»، «بساز»، «لطفاً»)، add_week_to_shopping_list را صدا بزن — این موادِ همهٔ غذاهای برنامهٔ هفته را یک‌جا، ادغام‌شده و به‌اندازهٔ نفرات، اضافه می‌کند؛ برای این کار تک‌تکِ رسپی‌ها را با add_recipe_to_shopping_list جدا نریز.',
       'هیچ رسپی، ماده، یا عددی از خودت نساز. مقادیر و مواد و نام‌ها را عیناً از خروجیِ ابزار بنویس — هیچ عددی را تغییر نده.',

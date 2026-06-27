@@ -34,6 +34,7 @@ export function useAssistant() {
   const [opener, setOpener] = useState(null); // { greeting, suggestion: { text, prompt } | null } — proactive entry
   const lastPrompt = useRef('');
   const inFlight = useRef(new Set()); // message indexes whose allergy write is in flight (sync double-tap guard)
+  const sendSeq = useRef(0); // monotonic turn token — switching/clearing a thread bumps it, invalidating any in-flight reply
 
   const persistConv = useCallback((id) => {
     try { if (id) localStorage.setItem(CONVID_KEY, id); else localStorage.removeItem(CONVID_KEY); } catch { /* private mode */ }
@@ -71,6 +72,7 @@ export function useAssistant() {
   const send = useCallback(async (raw) => {
     const prompt = String(raw || '').trim();
     if (!prompt || thinking) return;
+    const mySeq = ++sendSeq.current; // claim this turn; a thread switch/new-chat bumps the ref and invalidates us
     lastPrompt.current = prompt;
     setError(false);
     const wasNew = !convId;
@@ -78,6 +80,10 @@ export function useAssistant() {
     setThinking(true);
     try {
       const data = await apiClient.post('/ai/chat', { prompt, conversationId: convId }).then((r) => r.data);
+      // RACE GUARD: if the user switched/started a thread mid-flight, the backend already saved this reply to ITS
+      // own thread — don't splice it into the now-current view (it'll load from history on return). Fixes the
+      // founder's "switching chats stops/loses the previous one" + a reply landing in the wrong conversation.
+      if (sendSeq.current !== mySeq) return;
       if (data?.conversationId && data.conversationId !== convId) persistConv(data.conversationId);
       const reply = (typeof data?.reply === 'string' && data.reply.trim()) ? data.reply.trim() : 'الان نتونستم جوابِ روشنی بدم — یه‌جور دیگه بپرس.';
       // §3 conversational-allergy: a confirm-then-write offer rides on the turn. The user must tap to write it
@@ -88,9 +94,9 @@ export function useAssistant() {
       setMessages((m) => [...m, { role: 'ai', text: reply, suggestedAction }]);
       if (wasNew) loadConversations(); // a fresh thread was just created → show it in the sidebar
     } catch {
-      setError(true);
+      if (sendSeq.current === mySeq) setError(true);
     } finally {
-      setThinking(false);
+      if (sendSeq.current === mySeq) setThinking(false);
     }
   }, [thinking, convId, persistConv, loadConversations]);
 
@@ -124,6 +130,7 @@ export function useAssistant() {
 
   // ── thread management ──
   const newChat = useCallback(() => {
+    sendSeq.current += 1; // invalidate any in-flight reply so it can't land in the fresh thread
     setMessages([]); setThinking(false); setError(false); setFeedback({}); setAdded({}); inFlight.current.clear();
     persistConv(undefined);
     loadOpener(); // refresh the proactive suggestion for the fresh empty state
@@ -131,7 +138,8 @@ export function useAssistant() {
 
   const openConversation = useCallback(async (id) => {
     if (!id || id === convId) return;
-    setError(false); setFeedback({}); setAdded({}); inFlight.current.clear();
+    sendSeq.current += 1; // invalidate any in-flight reply from the thread we're leaving (it's saved server-side)
+    setError(false); setThinking(false); setFeedback({}); setAdded({}); inFlight.current.clear();
     try {
       const { data } = await apiClient.get(`/ai/conversations/${id}`);
       setMessages((data?.messages || []).map(toMsg));

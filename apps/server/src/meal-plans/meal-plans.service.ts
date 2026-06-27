@@ -110,6 +110,18 @@ export class MealPlansService {
     // fail-closed). Replaces a weaker declared-only exact-match filter that leaked (guardian H1/H2 rework).
     allRecipes = await this.safety.filter(userId, allRecipes);
 
+    // ROBUSTNESS (bug: a fresh/default user has budget='low' → cost='کم‌هزینه', which matched ~0 curated recipes →
+    // the generator saved an EMPTY plan; the AI's fill_week_plan and the FE "auto-generate" button both got nothing).
+    // If the strict set is too thin for a varied week, relax to diet + safety only (the user-meaningful, safety-critical
+    // filters) so a real plan always lands. Soft prefs (budget/skill) shouldn't be able to empty the whole week.
+    if (allRecipes.length < 14) {
+      const relaxedWhere: any = { status: 'active', isPublic: true };
+      if (userDiet === 'vegetarian' || userDiet === 'vegan') relaxedWhere.diet = { in: ['vegetarian', 'vegan'] };
+      let relaxed = await this.prisma.recipe.findMany({ where: relaxedWhere, include: { ingredients: true }, take: 200 });
+      relaxed = await this.safety.filter(userId, relaxed); // never relax the allergy/pork gate
+      if (relaxed.length > allRecipes.length) allRecipes = relaxed;
+    }
+
     const breakfastOptions = allRecipes.filter(r => r.mealType?.includes('breakfast'));
     const lunchOptions = allRecipes.filter(r => r.mealType?.includes('lunch'));
     const dinnerOptions = allRecipes.filter(r => r.mealType?.includes('dinner'));

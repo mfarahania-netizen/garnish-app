@@ -53,8 +53,43 @@ export class AgenticWriteToolsService {
       this.addWeekToShoppingList(),
       this.addToMealPlan(),
       this.removeFromMealPlan(),
+      this.fillWeekPlan(),
       this.setIngredientTaste(),
     ];
+  }
+
+  /**
+   * Fill the WHOLE week's plan in ONE deterministic call (founder hit: "برنامهٔ هفته رو بچین" made the model
+   * over-clarify «چند وعده؟» forever then emit a FAKE markdown table that was never saved — because the only
+   * meal-plan tool placed ONE slot and 7×3 slots can't be done in the loop's iteration budget). Delegates to the
+   * audited MealPlansService.generateSmartPlan (diet/skill/budget aware + the HARD allergy/pork safety filter),
+   * which REPLACES the week with real, saved slots. The model then renders the returned week + offers the list.
+   */
+  private fillWeekPlan(): AgenticTool {
+    return {
+      spec: {
+        name: 'fill_week_plan',
+        description: 'چیدنِ یک‌بارهٔ کلِ برنامهٔ غذاییِ هفته — همهٔ روزها و وعده‌ها — به‌صورتِ خودکار و متناسب با رژیم/مهارت/بودجه و آلرژیِ کاربر. وقتی گفت «برنامهٔ هفته‌ام رو بچین»، «یه برنامهٔ هفتگی بساز»، «همه‌ی وعده‌ها رو بچین»، یا «برنامهٔ این هفته‌ام رو کامل کن». تعدادِ وعده را هرگز نپرس — همه را پر می‌کند و کاربر بعداً می‌تواند هر وعده را با add/remove جابه‌جا کند. آرگومان لازم ندارد.',
+        parameters: { type: 'object', properties: {} },
+      },
+      execute: async (_args, ctx) => {
+        try {
+          const plan = await this.mealPlans.generateSmartPlan(ctx.userId);
+          const slots = (plan?.slots ?? []) as Array<{ dayOfWeek: number; mealType: string; recipe?: { title?: string } | null }>;
+          const placed = slots.filter((s) => s.recipe?.title).length;
+          if (!placed) return { error: 'الان نتونستم برنامه رو بچینم (شاید با محدودیت‌های غذاییت گزینهٔ کافی نبود). می‌تونی چند غذا رو دستی بذاری.' };
+          const DAY = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
+          const week = DAY.map((day, d) => ({
+            day,
+            meals: slots.filter((s) => s.dayOfWeek === d && s.recipe?.title).map((s) => ({ meal: s.mealType, dish: s.recipe!.title })),
+          })).filter((x) => x.meals.length);
+          return { ok: true, action: 'fill_week_plan', placed, week, note: 'کلِ برنامهٔ هفته چیده و ذخیره شد. می‌تونی هر وعده رو جابه‌جا/عوض کنی، یا بگو لیستِ خریدش رو بسازم.' };
+        } catch (e) {
+          this.logger.warn(`fill_week_plan failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'چیدنِ برنامهٔ هفته الان ممکن نشد.' };
+        }
+      },
+    };
   }
 
   /**

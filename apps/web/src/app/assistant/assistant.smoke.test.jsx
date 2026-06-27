@@ -154,7 +154,8 @@ describe('AssistantPage smoke', () => {
     );
     renderWithProviders(<AssistantPage />);
 
-    expect(screen.getByText('در حال فکر…')).toBeInTheDocument();
+    // the thinking indicator now cycles status lines (so a slow turn feels like active effort); assert the first.
+    expect(screen.getByText('در حال فکر کردن…')).toBeInTheDocument();
   });
 
   it('renders the error state with a retry affordance', () => {
