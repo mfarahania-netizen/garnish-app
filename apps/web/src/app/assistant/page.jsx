@@ -1,10 +1,71 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Text, UnstyledButton } from '@mantine/core';
+import { Box, Text, UnstyledButton, Drawer } from '@mantine/core';
 import {
   IconSparkles, IconEdit, IconArrowUp, IconChevronLeft, IconInfoCircle, IconArrowsExchange,
   IconFridge, IconSalad, IconThumbUp, IconThumbDown, IconCloudOff, IconRefresh, IconShieldCheck, IconCheck,
+  IconMessages, IconTrash, IconPencil, IconPlus, IconX,
 } from '@tabler/icons-react';
 import { useAssistant } from './useAssistant';
+
+const drawerIconBtn = { flexShrink: 0, inlineSize: 36, blockSize: 36, display: 'grid', placeItems: 'center', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' };
+
+/** The conversation threads sidebar — list / new / open / inline-rename / confirm-delete. */
+function ConversationsDrawer({ a, opened, onClose }) {
+  const [editingId, setEditingId] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [confirmDelId, setConfirmDelId] = useState(null);
+  return (
+    <Drawer
+      opened={opened}
+      onClose={onClose}
+      position="right"
+      size={300}
+      title="گفتگوها"
+      styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }, body: { padding: 'var(--g-space-3)' } }}
+    >
+      <UnstyledButton type="button" onClick={() => { a.newChat(); onClose(); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 46, paddingInline: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-3)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 700, fontSize: 'var(--g-font-size-14)' }}>
+        <IconPlus size={18} stroke={2} aria-hidden="true" />گفتگوی تازه
+      </UnstyledButton>
+      {a.conversations.length === 0 ? (
+        <Text style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-muted)', textAlign: 'center', paddingBlock: 'var(--g-space-4)' }}>هنوز گفتگویی نداری.</Text>
+      ) : (
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+          {a.conversations.map((c) => {
+            const active = c.id === a.convId;
+            if (editingId === c.id) {
+              const save = () => { a.renameConversation(c.id, editTitle); setEditingId(null); };
+              return (
+                <Box key={c.id} style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'center' }}>
+                  <Box component="input" autoFocus value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') save(); if (e.key === 'Escape') setEditingId(null); }} aria-label="نام گفتگو" style={{ flex: 1, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-brand-400)', outline: 'none', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', color: 'var(--g-color-text-primary)' }} />
+                  <UnstyledButton type="button" onClick={save} aria-label="ذخیرهٔ نام" style={drawerIconBtn}><IconCheck size={16} stroke={2} /></UnstyledButton>
+                </Box>
+              );
+            }
+            return (
+              <Box key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', borderRadius: 'var(--g-radius-card)', background: active ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', border: `1px solid ${active ? 'var(--g-color-brand-200)' : 'var(--g-color-border-subtle)'}`, paddingInline: 'var(--g-space-2)' }}>
+                <UnstyledButton type="button" onClick={() => { a.openConversation(c.id); onClose(); }} style={{ flex: 1, minInlineSize: 0, textAlign: 'start', paddingBlock: 'var(--g-space-2)' }}>
+                  <Text style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title || 'گفتگوی بی‌نام'}</Text>
+                  {c.preview ? <Text style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBlockStart: 2 }}>{c.preview}</Text> : null}
+                </UnstyledButton>
+                {confirmDelId === c.id ? (
+                  <>
+                    <UnstyledButton type="button" onClick={() => { a.deleteConversation(c.id); setConfirmDelId(null); }} aria-label="تأیید حذف" style={{ ...drawerIconBtn, color: 'var(--g-color-state-danger-fg)', borderColor: 'var(--g-color-state-danger-fg)' }}><IconCheck size={16} stroke={2} /></UnstyledButton>
+                    <UnstyledButton type="button" onClick={() => setConfirmDelId(null)} aria-label="انصراف" style={drawerIconBtn}><IconX size={16} stroke={2} /></UnstyledButton>
+                  </>
+                ) : (
+                  <>
+                    <UnstyledButton type="button" onClick={() => { setEditingId(c.id); setEditTitle(c.title || ''); }} aria-label="تغییر نام" style={drawerIconBtn}><IconPencil size={15} stroke={1.8} /></UnstyledButton>
+                    <UnstyledButton type="button" onClick={() => setConfirmDelId(c.id)} aria-label="حذف گفتگو" style={drawerIconBtn}><IconTrash size={15} stroke={1.8} /></UnstyledButton>
+                  </>
+                )}
+              </Box>
+            );
+          })}
+        </Box>
+      )}
+    </Drawer>
+  );
+}
 
 const STARTER_ICONS = { sub: IconArrowsExchange, cook: IconFridge, light: IconSalad };
 
@@ -31,6 +92,7 @@ function FeedbackRow({ value, onUp, onDown }) {
 export default function AssistantPage() {
   const a = useAssistant();
   const [draft, setDraft] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const mainRef = useRef(null);
   useEffect(() => { const el = mainRef.current; if (el) el.scrollTop = el.scrollHeight; }, [a.messages, a.thinking, a.error]);
 
@@ -38,6 +100,7 @@ export default function AssistantPage() {
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', flex: 1, minBlockSize: 0 }}>
+      <ConversationsDrawer a={a} opened={drawerOpen} onClose={() => setDrawerOpen(false)} />
       {/* disclosure header */}
       <Box style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <AiGlyph />
@@ -48,7 +111,8 @@ export default function AssistantPage() {
           </Box>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>ممکنه اشتباه کنه — برای ایده و کمک، نه توصیهٔ پزشکی</Text>
         </Box>
-        <UnstyledButton type="button" onClick={a.reset} aria-label="گفتگوی تازه" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconEdit size={18} stroke={1.8} /></UnstyledButton>
+        <UnstyledButton type="button" onClick={() => setDrawerOpen(true)} aria-label="گفتگوها" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconMessages size={18} stroke={1.8} /></UnstyledButton>
+        <UnstyledButton type="button" onClick={a.newChat} aria-label="گفتگوی تازه" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconEdit size={18} stroke={1.8} /></UnstyledButton>
       </Box>
 
       {/* thread / starter — live region so a screen-reader hears the assistant's reply + thinking state */}

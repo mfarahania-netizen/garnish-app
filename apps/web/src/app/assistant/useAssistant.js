@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import apiClient from '../../lib/apiClient';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
@@ -6,8 +6,9 @@ import { useAnalytics } from '../../hooks/useAnalytics';
  * useAssistant — the L3 AI surface. Every turn routes through the REAL POST /ai/chat orchestrator, which
  * is itself guarded server-side (prompt-injection / medical / vision → a safe, kind, non-medical reply).
  * The FE renders the guarded `reply` string with mandatory disclosure + hedge; it never fabricates an
- * answer, never claims certainty, and keeps the conversationId for thread continuity. 👍/👎 is recorded
- * as a real analytics event.
+ * answer, never claims certainty. THREADS: the conversation is persisted server-side; on entry we resume the
+ * saved thread's history (no more "cleared" chat) and expose list/open/new/rename/delete so the user can keep
+ * separate threads (questions vs the weekly plan). The convId is kept in localStorage for re-entry continuity.
  */
 
 const STARTERS = [
@@ -17,6 +18,10 @@ const STARTERS = [
   { id: 'light', text: 'یه غذای سبک و مقوی چی بپزم؟' },
 ];
 
+const CONVID_KEY = 'garnish_assistant_convid';
+const readSavedConv = () => { try { return localStorage.getItem(CONVID_KEY) || undefined; } catch { return undefined; } };
+const toMsg = (m) => ({ role: m.role === 'assistant' ? 'ai' : 'user', text: m.content });
+
 export function useAssistant() {
   const { trackEvent } = useAnalytics();
   const [messages, setMessages] = useState([]); // { role:'user'|'ai', text }
@@ -24,20 +29,49 @@ export function useAssistant() {
   const [error, setError] = useState(false);
   const [feedback, setFeedback] = useState({}); // index → 'up'|'down'
   const [added, setAdded] = useState({}); // message index → true once its allergens were added
-  const convId = useRef(undefined);
+  const [conversations, setConversations] = useState([]); // [{ id, title, preview, updatedAt }]
+  const [convId, setConvId] = useState(readSavedConv);
   const lastPrompt = useRef('');
   const inFlight = useRef(new Set()); // message indexes whose allergy write is in flight (sync double-tap guard)
+
+  const persistConv = useCallback((id) => {
+    try { if (id) localStorage.setItem(CONVID_KEY, id); else localStorage.removeItem(CONVID_KEY); } catch { /* private mode */ }
+    setConvId(id);
+  }, []);
+
+  const loadConversations = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/ai/conversations');
+      setConversations(Array.isArray(data?.conversations) ? data.conversations : []);
+    } catch { /* non-blocking */ }
+  }, []);
+
+  // On entry: list the threads + RESUME the saved thread's history (instead of starting fresh every time).
+  useEffect(() => {
+    loadConversations();
+    const saved = readSavedConv();
+    if (!saved) return;
+    apiClient.get(`/ai/conversations/${saved}`)
+      .then(({ data }) => {
+        const msgs = (data?.messages || []).map(toMsg);
+        if (msgs.length) setMessages(msgs);
+        else persistConv(undefined); // stale/empty id → start clean
+      })
+      .catch(() => persistConv(undefined));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const send = useCallback(async (raw) => {
     const prompt = String(raw || '').trim();
     if (!prompt || thinking) return;
     lastPrompt.current = prompt;
     setError(false);
+    const wasNew = !convId;
     setMessages((m) => [...m, { role: 'user', text: prompt }]);
     setThinking(true);
     try {
-      const data = await apiClient.post('/ai/chat', { prompt, conversationId: convId.current }).then((r) => r.data);
-      if (data?.conversationId) convId.current = data.conversationId;
+      const data = await apiClient.post('/ai/chat', { prompt, conversationId: convId }).then((r) => r.data);
+      if (data?.conversationId && data.conversationId !== convId) persistConv(data.conversationId);
       const reply = (typeof data?.reply === 'string' && data.reply.trim()) ? data.reply.trim() : 'الان نتونستم جوابِ روشنی بدم — یه‌جور دیگه بپرس.';
       // §3 conversational-allergy: a confirm-then-write offer rides on the turn. The user must tap to write it
       // (decision D2); nothing is auto-saved. Only honor the recognized shape.
@@ -45,27 +79,24 @@ export function useAssistant() {
       const suggestedAction =
         sa && sa.type === 'add_allergy' && Array.isArray(sa.allergens) && sa.allergens.length ? sa : undefined;
       setMessages((m) => [...m, { role: 'ai', text: reply, suggestedAction }]);
+      if (wasNew) loadConversations(); // a fresh thread was just created → show it in the sidebar
     } catch {
       setError(true);
     } finally {
       setThinking(false);
     }
-  }, [thinking]);
+  }, [thinking, convId, persistConv, loadConversations]);
 
   // §3 confirm: write the offered allergens to the declared set (POST /users/allergies). The deterministic hard
   // gate then filters them from every recipe. Optimistic-safe: we only mark "added" after the server confirms.
   const confirmAllergens = useCallback(async (index, allergens) => {
     const tokens = [...new Set((allergens || []).map((a) => a && a.token).filter(Boolean))];
-    // SYNC double-tap guard via a ref: setAdded only commits AFTER the await, so a second rapid tap would slip past
-    // an `added[index]` check and double-POST. The ref is checked + set synchronously, before the network call.
     if (!tokens.length || added[index] || inFlight.current.has(index)) return;
     inFlight.current.add(index);
     try {
-      // Trust the SERVER's authoritative {added} set, not the HTTP status: addAllergies silently drops any
-      // off-allowlist token (still 200), so never claim an allergy was saved when it wasn't.
       const res = await apiClient.post('/users/allergies', { allergies: tokens });
-      const added = Array.isArray(res?.data?.added) ? res.data.added : [];
-      const missing = tokens.filter((t) => !added.includes(t));
+      const addedTokens = Array.isArray(res?.data?.added) ? res.data.added : [];
+      const missing = tokens.filter((t) => !addedTokens.includes(t));
       setAdded((s) => ({ ...s, [index]: true }));
       const text = missing.length === 0
         ? 'انجام شد ✓ این مواد رو به آلرژی‌هات اضافه کردم و از این به بعد از غذاهات حذفشون می‌کنم.'
@@ -79,11 +110,45 @@ export function useAssistant() {
   }, [added]);
 
   const retry = useCallback(() => { if (lastPrompt.current) { setError(false); send(lastPrompt.current); } }, [send]);
-  const reset = useCallback(() => { setMessages([]); setThinking(false); setError(false); setFeedback({}); setAdded({}); inFlight.current.clear(); convId.current = undefined; }, []);
   const rate = useCallback((index, vote) => {
     setFeedback((f) => ({ ...f, [index]: vote }));
     try { trackEvent('ai_feedback', { vote }); } catch { /* non-blocking */ }
   }, [trackEvent]);
 
-  return { messages, thinking, error, feedback, added, starters: STARTERS, send, retry, reset, rate, confirmAllergens, isEmpty: messages.length === 0 };
+  // ── thread management ──
+  const newChat = useCallback(() => {
+    setMessages([]); setThinking(false); setError(false); setFeedback({}); setAdded({}); inFlight.current.clear();
+    persistConv(undefined);
+  }, [persistConv]);
+
+  const openConversation = useCallback(async (id) => {
+    if (!id || id === convId) return;
+    setError(false); setFeedback({}); setAdded({}); inFlight.current.clear();
+    try {
+      const { data } = await apiClient.get(`/ai/conversations/${id}`);
+      setMessages((data?.messages || []).map(toMsg));
+      persistConv(id);
+    } catch { /* non-blocking */ }
+  }, [convId, persistConv]);
+
+  const renameConversation = useCallback(async (id, title) => {
+    const t = String(title || '').trim();
+    if (!t) return;
+    try { await apiClient.patch(`/ai/conversations/${id}`, { title: t }); await loadConversations(); } catch { /* non-blocking */ }
+  }, [loadConversations]);
+
+  const deleteConversation = useCallback(async (id) => {
+    try {
+      await apiClient.delete(`/ai/conversations/${id}`);
+      if (id === convId) newChat();
+      await loadConversations();
+    } catch { /* non-blocking */ }
+  }, [convId, newChat, loadConversations]);
+
+  return {
+    messages, thinking, error, feedback, added, starters: STARTERS, isEmpty: messages.length === 0,
+    conversations, convId,
+    send, retry, rate, confirmAllergens,
+    newChat, openConversation, renameConversation, deleteConversation, loadConversations,
+  };
 }
