@@ -6,6 +6,7 @@ import { AiCoreModule } from './ai-core.module';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { GroundedReplyService } from './chat/grounded-reply.service';
+import { ConversationsService } from './chat/conversations.service';
 import { AgenticChatService } from './chat/agentic-chat.service';
 import { AgenticWriteToolsService } from './agentic/agentic-write-tools.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
@@ -30,6 +31,7 @@ import { MealPlansModule } from '../meal-plans/meal-plans.module';
     PersonalizationService,
     ChatOrchestrationService,
     GroundedReplyService,
+    ConversationsService,
     RecipeSafetyFilterService,
     AgenticChatService,
     AgenticWriteToolsService,

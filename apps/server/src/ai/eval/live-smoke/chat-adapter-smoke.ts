@@ -141,6 +141,8 @@ export async function runChatAdapterSmoke(env: NodeJS.ProcessEnv = process.env):
     { substitutions: async () => ({ resultStatus: 'ingredient_not_found', substitutions: [] }) } as any,
     // Agentic brain stub: OFF for this smoke (it exercises the grounded live adapter, not the agentic path).
     { isEnabled: () => false, reply: async () => ({ ok: false, text: null, reason: 'disabled' }) } as any,
+    // Conversations stub: thread tracking is non-fatal + irrelevant to the adapter smoke.
+    { touch: async () => undefined } as any,
   );
 
   const failures: string[] = [];

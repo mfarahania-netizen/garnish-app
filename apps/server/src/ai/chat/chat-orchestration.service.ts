@@ -8,6 +8,7 @@ import { ChatMemoryMessage, ChatMessageService } from './chat-message.service';
 import { AiService } from '../ai.service';
 import { GroundedReplyService, GroundingResult } from './grounded-reply.service';
 import { AgenticChatService } from './agentic-chat.service';
+import { ConversationsService } from './conversations.service';
 import { AiCallStatus, MissingBehavioralContextError } from '../ai-core.types';
 import { resolveChatLiveEnabled } from '../providers/model-provider.factory';
 import { AnalyticsService } from '../../analytics/analytics.service';
@@ -102,12 +103,15 @@ export class ChatOrchestrationService {
     private readonly analytics: AnalyticsService,
     private readonly assist: AiAssistService,
     private readonly agenticChat: AgenticChatService,
+    private readonly conversations: ConversationsService,
   ) {}
 
   private readonly logger = new Logger('ChatOrchestration');
 
   async handleChat(input: HandleChatInput): Promise<HandleChatResult> {
     const conversationId = input.conversationId ?? randomUUID();
+    // track the thread (create on first turn with an auto-title, else bump activity) — non-fatal for the chat.
+    await this.conversations.touch(input.userId, conversationId, input.prompt);
     // D1 live per-request context — sanitized + DARK-captured on the turn event (no routing/grounding change yet).
     const turnContext = this.sanitizeTurnContext(input.context);
 

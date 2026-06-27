@@ -988,6 +988,19 @@ model ChatMessage {
   @@index([conversationId, createdAt])
 }
 
+// A named chat thread. ChatMessage.conversationId points here (loose link — kept as String for back-compat with
+// pre-existing messages). Title auto-derives from the first user turn; the user can rename. Soft-delete via archived.
+model Conversation {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String?
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, updatedAt])
+}
+
 // Safe, non-sensitive user memory/facts. Sensitive health/medical facts are rejected by the service.
 model UserFact {
   id         String    @id @default(uuid())

@@ -55,7 +55,8 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
   const assist = { substitutions: jest.fn().mockResolvedValue({ resultStatus: 'ingredient_not_found', substitutions: [] }) } as any;
   // agentic brain OFF by default in these tests → the existing grounded/deterministic path is what's exercised
   const agenticChat = { isEnabled: jest.fn().mockReturnValue(false), reply: jest.fn() } as any;
-  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded, new IntentClassifierService(), analytics, assist, agenticChat);
+  const conversations = { touch: jest.fn().mockResolvedValue(undefined) } as any; // thread tracking (non-fatal)
+  const svc = new ChatOrchestrationService(orchestrator, snapshots, chatMessages, legacyAi, grounded, new IntentClassifierService(), analytics, assist, agenticChat, conversations);
   return { svc, model, chatCreate, aiCreate, legacyAi, grounded, groundedReply, analytics, chatMessages, assist };
 }
 

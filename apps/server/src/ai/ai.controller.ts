@@ -1,8 +1,9 @@
 // apps/server/src/ai/ai.controller.ts
-import { Controller, Post, Get, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
+import { ConversationsService } from './chat/conversations.service';
 import { AiAssistService } from './assist/ai-assist.service';
 import { MissingBehavioralContextError } from './ai-core.types';
 
@@ -10,6 +11,7 @@ import { MissingBehavioralContextError } from './ai-core.types';
 export class AiController {
   constructor(
     private readonly chatOrchestration: ChatOrchestrationService,
+    private readonly conversations: ConversationsService,
     private readonly assist: AiAssistService,
   ) {}
 
@@ -35,6 +37,49 @@ export class AiController {
     // §3 confirm-then-write: surface the allergy-add OFFER so the client can render the one-tap confirm. This is
     // an OFFER only — the safe set is written solely by the user's explicit POST /users/allergies, never here.
     return { reply, conversationId, providerMode, safetyStatus: status, aiCallLogId, ...(suggestedAction ? { suggestedAction } : {}) };
+  }
+
+  // ── Chat conversation management (the threads sidebar) ──────────────────────────────────────────────
+  /** List the user's chat threads (newest first, with a preview), so the FE can show a sidebar + resume history. */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @Get('conversations')
+  async listConversations(@Req() req) {
+    return { conversations: await this.conversations.list(req.user.userId) };
+  }
+
+  /** Start a fresh empty thread; the client sends its id as conversationId on the next turn. */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('conversations')
+  async newConversation(@Req() req, @Body() body: { title?: string }) {
+    return this.conversations.create(req.user.userId, body?.title);
+  }
+
+  /** Load a thread's messages (owner-checked) so the FE can RESUME the history on re-entry. */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @Get('conversations/:id')
+  async conversationMessages(@Req() req, @Param('id') id: string) {
+    const messages = await this.conversations.messages(req.user.userId, id);
+    return messages === null ? { resultStatus: 'not_found', messages: [] } : { messages };
+  }
+
+  /** Rename a thread (owner-checked). */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Patch('conversations/:id')
+  async renameConversation(@Req() req, @Param('id') id: string, @Body() body: { title: string }) {
+    const updated = await this.conversations.rename(req.user.userId, id, body?.title ?? '');
+    return updated === null ? { resultStatus: 'not_found' } : updated;
+  }
+
+  /** Delete a thread + its messages (owner-checked). */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Delete('conversations/:id')
+  async deleteConversation(@Req() req, @Param('id') id: string) {
+    return { ok: await this.conversations.remove(req.user.userId, id) };
   }
 
   /**
