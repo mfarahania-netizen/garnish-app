@@ -127,9 +127,15 @@ export class MealPlansService {
     // each day the next DISTINCT recipe (resetting the "used" set only when the pool is exhausted, so repeats are
     // SPREAD, never back-to-back), and never place the same dish in lunch AND dinner of one day.
     const shuffle = <X>(arr: X[]): X[] => { const a = [...arr]; for (let k = a.length - 1; k > 0; k--) { const m = Math.floor(Math.random() * (k + 1)); [a[k], a[m]] = [a[m], a[k]]; } return a; };
-    const breakfastOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('breakfast')));
-    const lunchOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('lunch')));
-    const dinnerOptions = shuffle(allRecipes.filter((r) => r.mealType?.includes('dinner')));
+    // PERSIAN-FIRST: this is a Persian-cuisine app — a generated week should showcase Persian dishes, not Welsh rarebit.
+    // Shuffle the Persian and the international sets SEPARATELY and put Persian first, so the variety picker exhausts
+    // the Persian pool (14 breakfasts / 100+ mains — plenty for 7 distinct days) before it ever reaches international,
+    // which only fills in if a meal-type's Persian pool is too thin to fill the week.
+    const isPersian = (r: any) => /persian|iran|ایران/i.test(r.region || '');
+    const persianFirst = (pool: any[]) => [...shuffle(pool.filter(isPersian)), ...shuffle(pool.filter((r) => !isPersian(r)))];
+    const breakfastOptions = persianFirst(allRecipes.filter((r) => r.mealType?.includes('breakfast')));
+    const lunchOptions = persianFirst(allRecipes.filter((r) => r.mealType?.includes('lunch')));
+    const dinnerOptions = persianFirst(allRecipes.filter((r) => r.mealType?.includes('dinner')));
 
     const planSlots: { dayOfWeek: number; mealType: string; recipeId: string; notes: string }[] = [];
     const pickDistinct = (pool: any[], used: Set<string>, forbidId: string | null) => {
