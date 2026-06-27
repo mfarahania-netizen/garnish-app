@@ -49,7 +49,9 @@ export function useMealPlan() {
     const slots = plan.data?.slots || [];
     for (const s of slots) {
       if (!s?.recipeId || !s?.recipe) continue;
-      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime) };
+      // no-cook dishes (salads/smoothies/دویماج) have cookingTime 0 but a real totalTime — fall back so the card
+      // isn't blank (20 recipes were showing no time).
+      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime || Number(s.recipe.totalTime) || 0) };
     }
     return map;
   }, [plan.data]);
