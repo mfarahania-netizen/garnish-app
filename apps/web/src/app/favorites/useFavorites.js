@@ -1,5 +1,5 @@
-import { useMemo, useState, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState, useCallback, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { faDuration, faDifficulty } from '../../components/ges/format';
 
@@ -12,8 +12,13 @@ import { faDuration, faDifficulty } from '../../components/ges/format';
 const seed = (id) => { const s = String(id ?? ''); let h = 0; for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
 
 export function useFavorites() {
+  const queryClient = useQueryClient();
   const favs = useQuery({ queryKey: ['favorites', 'list'], queryFn: () => apiClient.get('/favorites').then((r) => r.data) });
   const [removed, setRemoved] = useState({}); // optimistic unsave overlay
+  const inFlight = useRef(new Set()); // recipeIds whose save is in flight (double-tap guard)
+  // sync BOTH favorites cache keys (the Home/Detail `['favorites']` AND this screen's `['favorites','list']`) so a
+  // save/unsave here doesn't leave the other surface's bookmark icons stale (audit P1). Prefix-match hits both.
+  const syncFavorites = useCallback(() => queryClient.invalidateQueries({ queryKey: ['favorites'] }), [queryClient]);
 
   const saved = useMemo(() => {
     const arr = Array.isArray(favs.data) ? favs.data : [];
@@ -40,23 +45,27 @@ export function useFavorites() {
     setRemoved((m) => ({ ...m, [recipeId]: true }));
     try {
       await apiClient.delete(`/favorites/${recipeId}`);
-      await favs.refetch();
+      await syncFavorites();
     } catch {
       setRemoved((m) => { const n = { ...m }; delete n[recipeId]; return n; }); // revert on failure
       return false;
     }
     return true;
-  }, [favs]);
+  }, [syncFavorites]);
 
   const save = useCallback(async (recipeId) => {
+    if (inFlight.current.has(recipeId)) return false; // ignore a double-tap while the save is in flight
+    inFlight.current.add(recipeId);
     try {
       await apiClient.post(`/favorites/${recipeId}`);
-      await favs.refetch();
+      await syncFavorites();
       return true;
     } catch {
       return false;
+    } finally {
+      inFlight.current.delete(recipeId);
     }
-  }, [favs]);
+  }, [syncFavorites]);
 
   let status = 'ready';
   if (favs.isLoading) status = 'loading';

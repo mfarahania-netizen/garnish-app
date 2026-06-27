@@ -236,10 +236,17 @@ export function useOnboarding() {
       return;
     }
     if (isSignup) await persist();
+    else {
+      // EDIT-THEN-LOGIN (audit P1): a returning user keeps their existing profile, but a safety-critical allergy
+      // they just declared on the way in must NOT be silently dropped. Save it ADDITIVELY (POST /users/allergies is
+      // additive) — never the full set-replacing persist(), which would clobber the returning user's other prefs.
+      const allergyIds = Object.keys(answers.allergens);
+      if (allergyIds.length) await apiClient.post('/users/allergies', { allergies: allergyIds }).catch(() => {});
+    }
     try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
     setSubmitting(false);
     navigate('/', { replace: true });
-  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, navigate]);
+  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, navigate, answers.allergens]);
 
   return {
     step, go, next, back, skip,
