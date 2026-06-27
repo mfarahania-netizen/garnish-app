@@ -9,11 +9,13 @@ import { GroundedReplyService } from './chat/grounded-reply.service';
 import { ConversationsService } from './chat/conversations.service';
 import { AgenticChatService } from './chat/agentic-chat.service';
 import { AgenticWriteToolsService } from './agentic/agentic-write-tools.service';
+import { ChatOpenerService } from './chat/chat-opener.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { FavoritesModule } from '../favorites/favorites.module';
 import { ShoppingListModule } from '../shopping-list/shopping-list.module';
 import { MealPlansModule } from '../meal-plans/meal-plans.module';
+import { BriefingModule } from '../briefing/briefing.module';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
@@ -24,7 +26,7 @@ import { MealPlansModule } from '../meal-plans/meal-plans.module';
  * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule, MealPlansModule],
+  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule, MealPlansModule, BriefingModule],
   controllers: [AiController],
   providers: [
     AiService,
@@ -35,6 +37,7 @@ import { MealPlansModule } from '../meal-plans/meal-plans.module';
     RecipeSafetyFilterService,
     AgenticChatService,
     AgenticWriteToolsService,
+    ChatOpenerService,
   ],
 })
 export class AiModule {}

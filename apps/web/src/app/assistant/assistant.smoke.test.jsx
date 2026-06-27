@@ -43,6 +43,7 @@ function makeState(overrides = {}) {
     starters: STARTERS,
     conversations: [],
     convId: undefined,
+    opener: null,
     send: vi.fn(),
     retry: vi.fn(),
     rate: vi.fn(),
@@ -52,6 +53,7 @@ function makeState(overrides = {}) {
     renameConversation: vi.fn(),
     deleteConversation: vi.fn(),
     loadConversations: vi.fn(),
+    loadOpener: vi.fn(),
     isEmpty: true,
     ...overrides,
   };
@@ -67,6 +69,21 @@ describe('AssistantPage smoke', () => {
     // Empty-state prompt + a starter card copied verbatim from STARTERS.
     expect(screen.getByRole('heading', { name: 'چطور کمکت کنم؟' })).toBeInTheDocument();
     expect(screen.getByText('جایگزینِ ماست چی بزنم؟')).toBeInTheDocument();
+  });
+
+  it('surfaces the proactive opener (greeting + suggestion) on the empty state when the backend offers one', () => {
+    useAssistant.mockReturnValue(
+      makeState({
+        isEmpty: true,
+        opener: { greeting: 'سلام، عصرت بخیر! 🌆', suggestion: { text: 'برنامهٔ این هفته‌ات نصفه‌ست.', prompt: 'برنامهٔ غذایی این هفته‌ام رو کامل کن' } },
+      }),
+    );
+    renderWithProviders(<AssistantPage />);
+
+    // the greeting replaces the generic heading, and the data-grounded suggestion shows as its own card.
+    expect(screen.getByRole('heading', { name: 'سلام، عصرت بخیر! 🌆' })).toBeInTheDocument();
+    expect(screen.getByText('پیشنهادِ من برات')).toBeInTheDocument();
+    expect(screen.getByText('برنامهٔ این هفته‌ات نصفه‌ست.')).toBeInTheDocument();
   });
 
   it('renders the ready/thread state with messages and feedback affordances', () => {

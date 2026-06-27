@@ -71,6 +71,14 @@ export class BriefingService {
     return briefing;
   }
 
+  /**
+   * The single highest-priority proactive nudge — REUSED by the chat opener (ai/chat/chat-opener.service) so the
+   * assistant greets you with the SAME honest, consent-respecting signal the daily briefing uses (no parallel logic).
+   */
+  async getProactiveNudge(userId: string, now: Date = new Date()): Promise<BriefingNudgeInput> {
+    return this.resolveNudge(userId, now);
+  }
+
   /** One relevant nudge by priority: plan gap → shopping → saved-but-not-cooked. */
   private async resolveNudge(userId: string, now: Date): Promise<BriefingNudgeInput> {
     try {
@@ -88,7 +96,10 @@ export class BriefingService {
       if (saved.length > 0) {
         const cookedIds = await this.cookedRecipeIds(userId);
         const notCooked = saved.find((f) => !cookedIds.has(f.recipeId));
-        if (notCooked) return { kind: 'saved_not_cooked', reason: `«${(notCooked as any).recipe?.title ?? 'یه رسپی'}» رو ذخیره کردی ولی هنوز نپختی.`, data: { recipeId: notCooked.recipeId } };
+        if (notCooked) {
+          const title = (notCooked as any).recipe?.title ?? 'یه رسپی';
+          return { kind: 'saved_not_cooked', reason: `«${title}» رو ذخیره کردی ولی هنوز نپختی.`, data: { recipeId: notCooked.recipeId, title } };
+        }
       }
     } catch { /* fall through */ }
     return { kind: null, reason: '' };

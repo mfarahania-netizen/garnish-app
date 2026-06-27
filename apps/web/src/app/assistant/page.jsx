@@ -121,9 +121,20 @@ export default function AssistantPage() {
           <>
             <Box style={{ textAlign: 'center', paddingBlock: 'var(--g-space-5)' }}>
               <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, margin: '0 auto', borderRadius: 'var(--g-radius-card)', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1px solid var(--g-color-brand-200)' }}><IconSparkles size={28} stroke={1.8} /></Box>
-              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-3) 0 0' }}>چطور کمکت کنم؟</Text>
+              <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-3) 0 0' }}>{a.opener?.greeting || 'چطور کمکت کنم؟'}</Text>
               <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-1) 0 0' }}>جایگزین، تنظیمِ دستور، ایدهٔ شام یا برنامهٔ هفته.</Text>
             </Box>
+            {/* PROACTIVE opener — a data-grounded suggestion surfaced on entry; tap sends its prompt to the assistant. */}
+            {a.opener?.suggestion ? (
+              <UnstyledButton type="button" onClick={() => a.send(a.opener.suggestion.prompt)} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 60, paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-3)', background: 'var(--g-color-ai-glow, var(--g-color-brand-50))', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-card)', boxShadow: 'var(--g-shadow-1)' }}>
+                <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 32, blockSize: 32, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconSparkles size={17} stroke={1.8} /></Box>
+                <Box style={{ flex: 1, minInlineSize: 0, textAlign: 'start' }}>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 700, color: 'var(--g-color-brand-700)', marginBlockEnd: 2 }}>پیشنهادِ من برات</Text>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)', lineHeight: 'var(--g-leading-body)' }}>{a.opener.suggestion.text}</Text>
+                </Box>
+                <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ flexShrink: 0, color: 'var(--g-color-brand-600)' }} />
+              </UnstyledButton>
+            ) : null}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)' }}>
               {a.starters.map((s) => {
                 const Icon = STARTER_ICONS[s.id] || IconSparkles;

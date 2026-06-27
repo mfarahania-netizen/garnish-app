@@ -31,6 +31,7 @@ export function useAssistant() {
   const [added, setAdded] = useState({}); // message index → true once its allergens were added
   const [conversations, setConversations] = useState([]); // [{ id, title, preview, updatedAt }]
   const [convId, setConvId] = useState(readSavedConv);
+  const [opener, setOpener] = useState(null); // { greeting, suggestion: { text, prompt } | null } — proactive entry
   const lastPrompt = useRef('');
   const inFlight = useRef(new Set()); // message indexes whose allergy write is in flight (sync double-tap guard)
 
@@ -46,9 +47,15 @@ export function useAssistant() {
     } catch { /* non-blocking */ }
   }, []);
 
-  // On entry: list the threads + RESUME the saved thread's history (instead of starting fresh every time).
+  // PROACTIVE opener — a greeting + one data-grounded suggestion for the empty state (the assistant "knows you" on entry).
+  const loadOpener = useCallback(async () => {
+    try { const { data } = await apiClient.get('/ai/opener'); setOpener(data && typeof data === 'object' ? data : null); } catch { /* non-blocking */ }
+  }, []);
+
+  // On entry: list the threads + load the proactive opener + RESUME the saved thread's history.
   useEffect(() => {
     loadConversations();
+    loadOpener();
     const saved = readSavedConv();
     if (!saved) return;
     apiClient.get(`/ai/conversations/${saved}`)
@@ -119,7 +126,8 @@ export function useAssistant() {
   const newChat = useCallback(() => {
     setMessages([]); setThinking(false); setError(false); setFeedback({}); setAdded({}); inFlight.current.clear();
     persistConv(undefined);
-  }, [persistConv]);
+    loadOpener(); // refresh the proactive suggestion for the fresh empty state
+  }, [persistConv, loadOpener]);
 
   const openConversation = useCallback(async (id) => {
     if (!id || id === convId) return;
@@ -147,7 +155,7 @@ export function useAssistant() {
 
   return {
     messages, thinking, error, feedback, added, starters: STARTERS, isEmpty: messages.length === 0,
-    conversations, convId,
+    conversations, convId, opener,
     send, retry, rate, confirmAllergens,
     newChat, openConversation, renameConversation, deleteConversation, loadConversations,
   };

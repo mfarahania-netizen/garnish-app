@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { ChatOrchestrationService } from './chat/chat-orchestration.service';
 import { ConversationsService } from './chat/conversations.service';
+import { ChatOpenerService } from './chat/chat-opener.service';
 import { AiAssistService } from './assist/ai-assist.service';
 import { MissingBehavioralContextError } from './ai-core.types';
 
@@ -12,8 +13,20 @@ export class AiController {
   constructor(
     private readonly chatOrchestration: ChatOrchestrationService,
     private readonly conversations: ConversationsService,
+    private readonly opener: ChatOpenerService,
     private readonly assist: AiAssistService,
   ) {}
+
+  /**
+   * PROACTIVE chat opener — a time-aware greeting + ONE data-grounded, tappable suggestion (reused from the
+   * briefing nudge). The FE shows this on the assistant's empty state so it feels alive and "knows you" on entry.
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
+  @Get('opener')
+  async getOpener(@Req() req) {
+    return this.opener.getOpener(req.user.userId);
+  }
 
   @UseGuards(AuthGuard('jwt'))
   @Throttle({ default: { limit: 20, ttl: 60000 } }) // افزایش محدودیت مخصوص چت
