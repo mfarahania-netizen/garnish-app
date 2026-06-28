@@ -292,6 +292,14 @@ export class MealPlansService {
     recipes = await this.safety.filter(userId, recipes); // HARD allergy/pork gate, fail-closed — never bypass
     const isPersian = (r: any) => /persian|iran|ایران/i.test(r.region || '');
     const mt = mealType ? this.canonMeal(mealType) : null;
+    // FIRST GLANCE (no search): show ONLY dishes appropriate to THIS meal — a breakfast picker must show breakfast food,
+    // a lunch/dinner picker must NOT surface breakfast (founder). Search (q) still spans the whole corpus. Snack is thin
+    // in the corpus, so it falls back to breakfast-tagged light dishes; the filter never empties a non-empty list to zero.
+    if (!query && mt) {
+      let pool = recipes.filter((r: any) => r.mealType?.includes(mt));
+      if (pool.length < 6 && mt === 'snack') pool = recipes.filter((r: any) => r.mealType?.includes('snack') || r.mealType?.includes('breakfast'));
+      if (pool.length > 0) recipes = pool;
+    }
     const nq = norm(query);
     const titleHit = (r: any) => (query && norm(r.title).includes(nq) ? 0 : 1); // a title match outranks a desc/ingredient match
     const rank = (r: any) => titleHit(r) * 6 + (mt && r.mealType?.includes(mt) ? 0 : 2) + (isPersian(r) ? 0 : 1); // title → meal-fit → Persian

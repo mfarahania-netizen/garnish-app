@@ -45,9 +45,13 @@ describe('generateMealPlan (PLANNER-L4-09)', () => {
     expect(p.slots[1].why).toMatch(/reuses/);
   });
 
-  it('honest sparse: too few candidates → leaves slots empty (no repeat/fabrication)', () => {
+  it('sparse pool: REPEATS to fill eligible slots rather than leave them blank (founder: breakfast must not be empty), but never crosses the meal gate or fabricates', () => {
     const p = generateMealPlan([mk('only', { mealTypes: ['lunch'] })], { days: 3, meals: ['lunch', 'dinner'] });
-    expect(p.slots.length).toBe(1); // only one safe recipe, lunch-only
-    expect(p.limitations.length).toBeGreaterThan(0);
+    const lunches = p.slots.filter((s) => s.mealType === 'lunch');
+    const dinners = p.slots.filter((s) => s.mealType === 'dinner');
+    expect(lunches.length).toBe(3); // all 3 lunches filled by repeating the only lunch-eligible recipe (no empty breakfasts!)
+    expect(lunches.every((s) => s.recipeId === 'only')).toBe(true);
+    expect(dinners.length).toBe(0); // a lunch-only recipe is NEVER placed as dinner — the meal/course gate still holds
+    expect(p.limitations.length).toBeGreaterThan(0); // and it still honestly reports the dinners it couldn't fill
   });
 });

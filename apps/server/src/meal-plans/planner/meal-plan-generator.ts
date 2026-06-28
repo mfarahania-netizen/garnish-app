@@ -69,6 +69,7 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
 
   const slots: ProposedSlot[] = [];
   const usedRecipeIds = new Set<string>();
+  const useCount = new Map<string, number>(); // how many times each recipe is placed → spread week-repeats evenly when a meal's distinct pool is thin
   const plannedIngredients = new Set<string>();
   const cuisineByDay: Record<number, Set<string>> = {};
   let requested = 0;
@@ -80,30 +81,37 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
       const weekend = isWeekend(day);
 
       const mainSlot = isMainMealSlot(meal);
-      const scored = candidates
-        // S5 COURSE GATE: a main meal slot (breakfast/lunch/dinner) only accepts a main-eligible recipe —
-        // a sauce/condiment/side/dessert/drink can NEVER be placed AS a main. (undefined → allowed, so
-        // callers that don't derive course are unaffected.) Applied DOWNSTREAM of the allergy HARD-filter.
-        .filter((c) => c.mealTypes.includes(meal) && !usedRecipeIds.has(c.recipeId) && !excludeRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false))
-        .map((c) => {
-          let score = c.fitScore;
-          const reasons: string[] = [];
-          // effort fit: weekday prefers quick, weekend tolerates longer
-          if (c.cookingTime != null) {
-            if (!weekend && c.cookingTime <= weekdayQuickMax) { score += 0.15; reasons.push('quick for a workday'); }
-            else if (!weekend && c.cookingTime > weekdayQuickMax) { score -= 0.1; }
-            else if (weekend && c.cookingTime > weekdayQuickMax) { score += 0.05; reasons.push('a more involved weekend cook'); }
-          }
-          // pantry/leftover reuse: shares ingredients already planned
-          const reused = c.ingredients.filter((i) => plannedIngredients.has(i));
-          if (reused.length) { score += Math.min(0.2, reused.length * 0.05); reasons.push(`reuses ${reused.slice(0, 2).join(', ')}`); }
-          // variety: penalize same cuisine on the same day
-          if (c.cuisine && cuisineByDay[day].has(c.cuisine)) score -= 0.15;
-          return { c, score, reasons };
-        })
-        .sort((a, b) => b.score - a.score || a.c.recipeId.localeCompare(b.c.recipeId));
-
-      if (scored.length === 0) continue; // honest: leave the slot empty rather than repeat/fabricate
+      const scoreOne = (c: PlanCandidate) => {
+        let score = c.fitScore;
+        const reasons: string[] = [];
+        // effort fit: weekday prefers quick, weekend tolerates longer
+        if (c.cookingTime != null) {
+          if (!weekend && c.cookingTime <= weekdayQuickMax) { score += 0.15; reasons.push('quick for a workday'); }
+          else if (!weekend && c.cookingTime > weekdayQuickMax) { score -= 0.1; }
+          else if (weekend && c.cookingTime > weekdayQuickMax) { score += 0.05; reasons.push('a more involved weekend cook'); }
+        }
+        // pantry/leftover reuse: shares ingredients already planned
+        const reused = c.ingredients.filter((i) => plannedIngredients.has(i));
+        if (reused.length) { score += Math.min(0.2, reused.length * 0.05); reasons.push(`reuses ${reused.slice(0, 2).join(', ')}`); }
+        // variety: penalize same cuisine on the same day
+        if (c.cuisine && cuisineByDay[day].has(c.cuisine)) score -= 0.15;
+        return { c, score, reasons };
+      };
+      const sortByScore = (a: { c: PlanCandidate; score: number }, b: { c: PlanCandidate; score: number }) => b.score - a.score || a.c.recipeId.localeCompare(b.c.recipeId);
+      // S5 COURSE GATE (downstream of the allergy HARD-filter): a main slot only accepts a main-eligible recipe —
+      // a sauce/condiment/side/dessert/drink can NEVER be placed AS a main. (undefined → allowed.)
+      const baseOk = (c: PlanCandidate) => c.mealTypes.includes(meal) && !excludeRecipeIds.has(c.recipeId) && (!mainSlot || c.mainMealEligible !== false);
+      // PASS 1 — distinct (no repeat anywhere in the week).
+      let scored = candidates.filter((c) => baseOk(c) && !usedRecipeIds.has(c.recipeId)).map(scoreOne).sort(sortByScore);
+      // PASS 2 — the meal's DISTINCT pool is exhausted (e.g. the corpus has only a few breakfasts). Allow a WEEK-repeat
+      // rather than leave the slot blank (founder bug: 3 breakfasts came back empty). Never repeat the SAME dish in one
+      // day, and spread repeats least-used-first so the small pool cycles evenly instead of hammering one dish.
+      if (scored.length === 0) {
+        const sameDayIds = new Set(slots.filter((s) => s.dayOfWeek === day).map((s) => s.recipeId));
+        scored = candidates.filter((c) => baseOk(c) && !sameDayIds.has(c.recipeId)).map(scoreOne)
+          .sort((a, b) => ((useCount.get(a.c.recipeId) || 0) - (useCount.get(b.c.recipeId) || 0)) || sortByScore(a, b));
+      }
+      if (scored.length === 0) continue; // truly nothing eligible for this meal → honest empty
       const pick = scored[0];
       const why = [
         ...pick.c.fitReasons.slice(0, 2),
@@ -111,6 +119,7 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
       ].filter(Boolean).join('; ') || 'best available fit';
       slots.push({ dayOfWeek: day, mealType: meal, recipeId: pick.c.recipeId, title: pick.c.title, fitScore: Number(pick.score.toFixed(3)), why });
       usedRecipeIds.add(pick.c.recipeId);
+      useCount.set(pick.c.recipeId, (useCount.get(pick.c.recipeId) || 0) + 1);
       for (const ing of pick.c.ingredients) plannedIngredients.add(ing);
       if (pick.c.cuisine) cuisineByDay[day].add(pick.c.cuisine);
     }
