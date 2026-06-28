@@ -20,7 +20,7 @@ export class MealPlansService {
         userId,
         weekStart: startOfWeek,
       },
-      include: { slots: { include: { recipe: true } } },
+      include: { slots: { include: { recipe: { include: { nutrition: true } } } } }, // nutrition → the per-day calorie/protein line
     });
     await this.hydrateSlotExtras(plan);
     return this.sanitizePlan(plan, userId);

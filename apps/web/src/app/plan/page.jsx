@@ -7,7 +7,7 @@ import {
   IconArrowsExchange, IconFlame, IconChevronRight, IconCopy,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
-import { faDuration } from '../../components/ges/format';
+import { faDuration, toFaDigits } from '../../components/ges/format';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
@@ -252,6 +252,17 @@ export default function PlanPage() {
   const heroMealKey = nextMealKey();
   const heroMeal = m.meals.find((x) => x.key === heroMealKey);
   const heroFilled = isTodaySelected && heroMeal ? m.filled[`${day.dayOfWeek}:${heroMeal.key}`] : null;
+  // the day's nutrition — sum of this day's filled dishes (per serving). ACCURACY GUARD: ~47% of Persian dishes have no
+  // nutrition data yet, so the line shows ONLY when EVERY filled dish that day has it — never a wrong/under-counted total.
+  const dayNut = day ? m.meals.reduce((a, meal) => {
+    const f = m.filled[`${day.dayOfWeek}:${meal.key}`];
+    if (!f) return a;
+    a.filled += 1;
+    const n = f.nutrition;
+    if (n && n.calories != null) { a.cal += Number(n.calories) || 0; a.pro += Number(n.protein) || 0; a.n += 1; }
+    return a;
+  }, { cal: 0, pro: 0, n: 0, filled: 0 }) : { cal: 0, pro: 0, n: 0, filled: 0 };
+  const showNut = dayNut.filled > 0 && dayNut.n === dayNut.filled; // complete-only → always accurate
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
@@ -280,7 +291,10 @@ export default function PlanPage() {
 
           <Box key={selectedDay} className="g-fade-up" style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)' }}>
             {/* selected-day header */}
-            <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-3)' }}>{isTodaySelected ? 'امروز' : day?.label} · {day?.dayFa} {day?.monthFa}</Text>
+            <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: showNut ? 0 : '0 0 var(--g-space-3)' }}>{isTodaySelected ? 'امروز' : day?.label} · {day?.dayFa} {day?.monthFa}</Text>
+            {showNut ? (
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 var(--g-space-3)' }}>≈ {toFaDigits(Math.round(dayNut.cal / 10) * 10)} کالری · پروتئین {toFaDigits(Math.round(dayNut.pro))}g</Text>
+            ) : null}
 
             {/* "now/tonight" hero — only for today: answers "what am I cooking now?" in one glance */}
             {isTodaySelected && heroMeal ? (
