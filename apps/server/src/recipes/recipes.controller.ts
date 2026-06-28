@@ -9,6 +9,12 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
 
+// Fold common Persian spelling variants so a famous dish is found by its most-typed spelling: قورمه↔قرمه (Iran's most
+// famous stew — the corpus indexes «قرمه‌سبزی»), plus the Arabic→Persian letter folds. Applied to every search query.
+function normalizeSearchQuery(q?: string): string {
+  return String(q ?? '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ة/g, 'ه').replace(/قورمه/g, 'قرمه').trim();
+}
+
 @Controller('recipes')
 export class RecipesController {
   constructor(
@@ -28,8 +34,8 @@ export class RecipesController {
     @Query('limit') limit = '20',
     @Query('category') category?: string,
   ) {
-    const pageNum = parseInt(page, 10) || 1;
-    const limitNum = parseInt(limit, 10) || 20;
+    const pageNum = Math.max(1, parseInt(page, 10) || 1); // clamp ≥1 — a negative page made skip negative → Prisma 500
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
     const result = await this.recipesService.findAll(skip, limitNum, category);
     const data = await this.safety.filter(req.user?.userId, result.data);
@@ -46,10 +52,11 @@ export class RecipesController {
   async search(@Req() req, @Query() query: SearchRecipesDto) {
     const limitNum = parseInt(query.limit, 10) || 10;
     const userId = req.user?.userId;
-    const ranked = await this.searchService.search(query.q, { limit: limitNum });
+    const q = normalizeSearchQuery(query.q); // قورمه→قرمه + Arabic folds so famous dishes are found by their common spelling
+    const ranked = await this.searchService.search(q, { limit: limitNum });
     if (ranked.resultStatus !== 'ok') {
       // legacy fallback keeps behavior for empty_query and lets contains catch anything the index missed
-      return this.safety.filter(userId, await this.recipesService.search(query.q, limitNum));
+      return this.safety.filter(userId, await this.recipesService.search(q, limitNum));
     }
     const ordered = await this.recipesService.findByIdsOrdered(ranked.results.map((r) => r.recipeId));
     const whyById = new Map(ranked.results.map((r) => [r.recipeId, { score: r.score, matchedTerms: r.why.matchedTerms }]));

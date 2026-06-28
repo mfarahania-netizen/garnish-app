@@ -114,17 +114,19 @@ export class UsersService {
       },
     });
 
-    if (!user || !user.preferences) return null;
+    if (!user) return null;
 
+    // Return declared allergies/cuisines/goals even when no diet row exists yet — a user who only declared an allergy
+    // (e.g. via chat) must still be able to SEE/manage it (was returning null until a UserPreference existed). [P2 fix]
     return {
-      id: user.preferences.id,
-      diet: user.preferences.diet,
-      skillLevel: user.preferences.skillLevel,
-      budget: user.preferences.budget,
+      id: user.preferences?.id ?? null,
+      diet: user.preferences?.diet ?? null,
+      skillLevel: user.preferences?.skillLevel ?? null,
+      budget: user.preferences?.budget ?? null,
       allergies: user.allergies.map(ua => ua.allergy.name),
       cuisine: user.cuisines.map(uc => uc.cuisine.name),
       healthGoals: user.healthGoals.map(uhg => uhg.healthGoal.name),
-      updatedAt: user.preferences.updatedAt,
+      updatedAt: user.preferences?.updatedAt ?? null,
     };
   }
 
@@ -166,7 +168,9 @@ export class UsersService {
         update: { diet: dto.diet, skillLevel: dto.skillLevel, budget: dto.budget },
       });
 
-      if (allergies !== undefined) {
+      if (dto.allergies !== undefined) { // ONLY touch allergies when the request actually sent them — a diet-only save must
+        // NOT wipe chat-declared allergies (safeParseArray returns [] for an omitted field, so the old `allergies !== undefined`
+        // guard was ALWAYS true and silently cleared the set → re-exposed an allergic user). [P1 allergy-safety fix]
         await tx.userAllergy.deleteMany({ where: { userId } });
         if (allergies.length > 0) {
           for (const name of allergies) await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });
@@ -175,7 +179,7 @@ export class UsersService {
         }
       }
 
-      if (cuisine !== undefined) {
+      if (dto.cuisine !== undefined) { // partial update — don't wipe cuisines a diet-only save omitted
         await tx.userCuisine.deleteMany({ where: { userId } });
         if (cuisine.length > 0) {
           for (const name of cuisine) await tx.cuisine.upsert({ where: { name }, create: { name }, update: {} });
@@ -184,7 +188,7 @@ export class UsersService {
         }
       }
 
-      if (healthGoals !== undefined) {
+      if (dto.healthGoals !== undefined) { // partial update — don't wipe health goals a diet-only save omitted
         await tx.userHealthGoal.deleteMany({ where: { userId } });
         if (healthGoals.length > 0) {
           for (const name of healthGoals) await tx.healthGoal.upsert({ where: { name }, create: { name }, update: {} });

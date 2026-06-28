@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileReadService } from '../behavior-engine/profile/read/profile-read.service';
+import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { getStartOfWeek } from '../utils/date.utils';
 import { aggregateShoppingList, PlannedIngredient } from './aggregation/shopping-aggregator';
 import { splitQuantity } from './aggregation/parse-quantity';
@@ -13,6 +14,7 @@ export class ShoppingListService {
   constructor(
     private prisma: PrismaService,
     private readonly profiles: ProfileReadService,
+    private readonly safety: RecipeSafetyFilterService,
   ) {}
 
   async getList(userId: string) {
@@ -78,6 +80,13 @@ export class ShoppingListService {
       return { resultStatus: 'no_plan', added: 0, merged: 0, flagged: 0, items: [] };
     }
 
+    // HARD allergy/pork gate on the OUTPUT (guardian audit): a dish planned while safe but now conflicting (the user added
+    // an allergy AFTER planning) must NOT have its ingredients itemized onto the list. Re-filter every slot recipe here —
+    // the gate must hold at the result of build-from-plan, not only when the dish was placed. Fail-closed, never bypassed.
+    const safe = await this.safety.filter(userId, slots.map((s) => s.recipe) as any[]); // slots already filtered to s.recipe non-null
+    const safeIds = new Set((safe as any[]).map((r) => r.id));
+    const safeSlots = (slots as any[]).filter((s) => safeIds.has(s.recipe.id));
+
     // per-slot servings (new MealSlot column the generated client may not know yet → raw read, the GRIS pattern)
     const servingsById = new Map<string, number>();
     try {
@@ -91,12 +100,13 @@ export class ShoppingListService {
     // a dinner you set to 8 people pulls 2× a recipe written for 4, while the rest stay as written. This REPLACES the
     // old flat ×householdSize multiplier, which was wrong — it ignored the recipe's own base servings and over-bought.
     const planned: PlannedIngredient[] = [];
-    for (const slot of slots as any[]) {
+    for (const slot of safeSlots) {
       const r = slot.recipe;
       const base = r.servings && r.servings > 0 ? r.servings : 4; // fallback when a recipe lacks a base count
       // ONE «for N people» chosen at build time scales every dish (targetServings); else a per-slot override; else the
       // recipe as written. So the list always matches how many you're actually cooking for.
-      const want = targetServings && targetServings > 0 ? targetServings : (servingsById.get(slot.id) ?? base);
+      const wantRaw = targetServings && targetServings > 0 ? targetServings : (servingsById.get(slot.id) ?? base);
+      const want = Math.min(20, Math.max(1, wantRaw)); // clamp where CONSUMED (the per-slot column is only clamped at write)
       const scale = want / base;
       for (const ing of r.ingredients ?? []) {
         planned.push({

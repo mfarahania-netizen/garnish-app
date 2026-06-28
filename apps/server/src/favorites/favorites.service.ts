@@ -37,8 +37,9 @@ export class FavoritesService {
   }
 
   async removeFavorite(userId: string, recipeId: string) {
-    return this.prisma.favoriteRecipe.delete({
-      where: { userId_recipeId: { userId, recipeId } },
-    });
+    // deleteMany (not delete) → idempotent + owner-scoped: un-favoriting a recipe that isn't favorited (double-tap, stale
+    // client) is a no-op, never a 500 (Prisma `delete` throws P2025 when the row is missing). [P1 fix]
+    const res = await this.prisma.favoriteRecipe.deleteMany({ where: { userId, recipeId } });
+    return { ok: true, removed: res.count };
   }
 }

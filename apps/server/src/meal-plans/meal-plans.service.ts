@@ -54,13 +54,20 @@ export class MealPlansService {
     const src = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: fromStart }, include: { slots: true } });
     const srcSlots = (src?.slots ?? []).filter((s) => s.recipeId);
     if (!srcSlots.length) return { ok: false, copied: 0 };
+    // RE-VALIDATE visibility (a recipe may have been unpublished since it was planned) — mirror addMealSlot/savePlan so a
+    // copy never propagates a stale/unpublished reference into another week (would render as a ghost slot).
+    const recIds = [...new Set(srcSlots.map((s) => s.recipeId).filter(Boolean))] as string[];
+    const recs = await this.prisma.recipe.findMany({ where: { id: { in: recIds } }, select: { id: true, status: true, isPublic: true, authorId: true } });
+    const visible = new Set(recs.filter((r) => isRecipeVisibleTo(r as any, userId)).map((r) => r.id));
+    const copySlots = srcSlots.filter((s) => visible.has(s.recipeId as string));
+    if (!copySlots.length) return { ok: false, copied: 0 };
     await this.prisma.$transaction(async (tx) => {
       await tx.mealSlot.deleteMany({ where: { mealPlan: { userId, weekStart: toStart } } });
       let dest = await tx.mealPlan.findFirst({ where: { userId, weekStart: toStart } });
       if (!dest) dest = await tx.mealPlan.create({ data: { userId, weekStart: toStart } });
-      await tx.mealSlot.createMany({ data: srcSlots.map((s) => ({ mealPlanId: dest.id, dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId, notes: s.notes ?? '' })) });
+      await tx.mealSlot.createMany({ data: copySlots.map((s) => ({ mealPlanId: dest.id, dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId, notes: s.notes ?? '' })) });
     });
-    return { ok: true, copied: srcSlots.length };
+    return { ok: true, copied: copySlots.length };
   }
 
   /** Clear every slot of one week (the «پاک‌کردنِ این هفته» action). Owner-scoped via the user's own plan. */
@@ -74,6 +81,7 @@ export class MealPlansService {
 
   /** Mark a slot cooked / un-cooked (the "پختم" signature interaction). Owner-scoped via the user's own plan. */
   async markCooked(userId: string, dayOfWeek: number, mealType: string, cooked: boolean, weekOffset = 0) {
+    if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) return { ok: false }; // reject NaN/out-of-range :dayOfWeek (was a raw 500 from the bound int param)
     const mt = this.canonMeal(mealType);
     const startOfWeek = getStartOfWeekOffset(weekOffset);
     const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
@@ -85,6 +93,7 @@ export class MealPlansService {
 
   /** Set how many people a slot is cooked for (scales the shopping list). null/0 → reset to the recipe's base servings. */
   async setServings(userId: string, dayOfWeek: number, mealType: string, servings: number, weekOffset = 0) {
+    if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) return { ok: false }; // reject NaN/out-of-range :dayOfWeek (was a raw 500 from the bound int param)
     const mt = this.canonMeal(mealType);
     const startOfWeek = getStartOfWeekOffset(weekOffset);
     const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
