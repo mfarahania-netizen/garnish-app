@@ -234,6 +234,44 @@ export class MealPlansService {
     return filled;
   }
 
+  /**
+   * Dishes a user can MANUALLY drop into a slot (powers the empty-slot picker — founder: «غذا دستی اضافه نمی‌شه»).
+   * Always behind the HARD allergy/pork gate (this.safety.filter) just like propose/generate, so the picker can NEVER
+   * surface an unsafe dish. Meal-type-appropriate + Persian-first dishes rank first; an optional `q` searches titles
+   * (ZWNJ/space-insensitive). Published-only.
+   */
+  async dishOptions(userId: string, mealType?: string, q?: string, limit = 16) {
+    const query = String(q ?? '').trim();
+    const where: any = { status: 'active', isPublic: true };
+    const pref = await this.prisma.userPreference.findUnique({ where: { userId }, select: { diet: true } }).catch(() => null);
+    if (pref?.diet === 'vegetarian' || pref?.diet === 'vegan') where.diet = { in: ['vegetarian', 'vegan'] };
+    const norm = (x: unknown) => String(x ?? '').replace(/[‌\s]/g, '').trim();
+    let recipes: any[];
+    if (query) {
+      // Search title + description + ingredients over the WHOLE corpus (like /recipes/search), so colloquial spellings
+      // still hit: «قورمه» finds «خورشت قرمه‌سبزی» — the title is قـرمه, but قورمه appears in its description. Title
+      // matches are ranked first below so the obvious dish leads.
+      recipes = await this.prisma.recipe.findMany({
+        where: { ...where, OR: [
+          { title: { contains: query } },
+          { description: { contains: query } },
+          { ingredients: { some: { name: { contains: query } } } },
+        ] },
+        include: { ingredients: true }, take: 60,
+      });
+    } else {
+      recipes = await this.prisma.recipe.findMany({ where, include: { ingredients: true }, take: 500 });
+    }
+    recipes = await this.safety.filter(userId, recipes); // HARD allergy/pork gate, fail-closed — never bypass
+    const isPersian = (r: any) => /persian|iran|ایران/i.test(r.region || '');
+    const mt = mealType ? this.canonMeal(mealType) : null;
+    const nq = norm(query);
+    const titleHit = (r: any) => (query && norm(r.title).includes(nq) ? 0 : 1); // a title match outranks a desc/ingredient match
+    const rank = (r: any) => titleHit(r) * 6 + (mt && r.mealType?.includes(mt) ? 0 : 2) + (isPersian(r) ? 0 : 1); // title → meal-fit → Persian
+    recipes.sort((a: any, b: any) => rank(a) - rank(b) || String(a.title).localeCompare(String(b.title), 'fa'));
+    return recipes.slice(0, limit).map((r: any) => ({ recipeId: r.id, title: r.title, cookingTime: r.cookingTime ?? null, totalTime: r.totalTime ?? null }));
+  }
+
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====
   /**
    * Canonical meal-type is ENGLISH («breakfast/lunch/dinner») — that is what the meal-plan SCREEN keys its grid by

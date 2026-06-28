@@ -143,6 +143,31 @@ export function useMealPlan() {
     }
   }, [plan]);
 
+  // MANUAL add — drop a user-chosen dish into a slot (the empty-slot picker). Same real apply path as accept; refetch
+  // so the slot moves to `filled`. Founder bug: empty slots were dead «—» with no way to add a dish by hand.
+  const addDish = useCallback(async (dayOfWeek, mealType, recipeId) => {
+    try {
+      await apiClient.post('/meal-plans/slots', { dayOfWeek, mealType, recipeId });
+      await plan.refetch();
+      return true;
+    } catch {
+      return false;
+    }
+  }, [plan]);
+
+  // safe, meal-appropriate dishes for the picker (GET /meal-plans/dish-options — allergy-gated server-side). q searches.
+  const fetchDishOptions = useCallback(async (mealType, q) => {
+    try {
+      const params = new URLSearchParams();
+      if (mealType) params.set('meal', mealType);
+      if (q && q.trim()) params.set('q', q.trim());
+      const data = await apiClient.get('/meal-plans/dish-options?' + params.toString()).then((r) => r.data);
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
   // each slot via the real apply path; one failure never aborts the rest, and the result is reported honestly.
   // `suggested` already excludes any key that is now `filled` (line: skip filled), so no separate accepted set.
   const acceptAll = useCallback(async () => {
@@ -174,6 +199,6 @@ export function useMealPlan() {
     hasPlan,
     proposalActive: !!proposal,
     proposing, proposeError, applying,
-    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot,
+    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot, addDish, fetchDishOptions,
   };
 }

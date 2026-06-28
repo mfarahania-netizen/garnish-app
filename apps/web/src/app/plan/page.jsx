@@ -3,9 +3,10 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
-  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash,
+  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
+import { faDuration } from '../../components/ges/format';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
@@ -20,7 +21,7 @@ function Tile({ title }) {
   );
 }
 
-function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove }) {
+function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove, onAdd }) {
   // FILLED — a real, saved dish. One clean state: show the dish + a working remove (no dead "اضافه شد" state).
   if (slot?.kind === 'filled') {
     return (
@@ -60,9 +61,12 @@ function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove }) {
       </Box>
     );
   }
-  // EMPTY — non-interactive placeholder (manual-add removed; no stub button ships). Fill via «بچین» / accept.
+  // EMPTY — tappable: opens the dish picker for this (day, meal) so a dish can be added BY HAND (the founder's bug).
   return (
-    <Box aria-hidden="true" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 92, border: '1.5px dashed var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)' }}>—</Box>
+    <UnstyledButton type="button" onClick={onAdd} aria-label="افزودنِ غذا به این وعده" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 92, border: '1.5px dashed var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-muted)', background: 'transparent' }}>
+      <IconPlus size={20} stroke={1.8} aria-hidden="true" />
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>افزودن</Text>
+    </UnstyledButton>
   );
 }
 
@@ -93,13 +97,75 @@ function PlanError({ onRetry }) {
   );
 }
 
-function EmptyWeek({ onPropose, proposing }) {
+function EmptyWeek({ onPropose, proposing, onManual }) {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-2)' }}>
       <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-2)' }}><IconCalendarPlus size={28} stroke={1.6} /></Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>بیا هفته‌ات رو با هم بچینیم</Text>
       <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 0 }}>با یک پیشنهادِ هماهنگ با ذائقه‌ات شروع کن.</Text>
       <UnstyledButton type="button" onClick={onPropose} disabled={proposing} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{proposing ? 'در حال چیدن…' : 'پیشنهاد بده'}</UnstyledButton>
+      <UnstyledButton type="button" onClick={onManual} style={{ marginBlockStart: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>یا خودم دستی می‌چینم</UnstyledButton>
+    </Box>
+  );
+}
+
+/**
+ * DishPicker — the manual add-a-dish-to-a-slot sheet (founder bug: empty slots were dead «—»). Opens for a (day, meal),
+ * shows safe + meal-appropriate suggestions immediately, and searches the whole corpus as you type. Every dish here is
+ * already allergy-gated server-side (GET /meal-plans/dish-options). Pick → POST /meal-plans/slots → the slot fills.
+ */
+function DishPicker({ open, day, meal, onClose, onPick, fetchOptions }) {
+  const [q, setQ] = useState('');
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [busyId, setBusyId] = useState(null);
+
+  useEffect(() => { if (open) { setQ(''); setBusyId(null); } }, [open, day, meal]);
+  useEffect(() => {
+    if (!open || !meal) return undefined;
+    let alive = true; setLoading(true);
+    const t = setTimeout(async () => {
+      const opts = await fetchOptions(meal.key, q);
+      if (alive) { setOptions(opts); setLoading(false); }
+    }, q ? 280 : 0); // debounce typing; instant for the initial suggestions
+    return () => { alive = false; clearTimeout(t); };
+  }, [open, q, meal, fetchOptions]);
+
+  if (!open) return null;
+  return (
+    <Box style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <Box onClick={onClose} aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+      <Box role="dialog" aria-modal="true" aria-label="انتخاب غذا" style={{ position: 'relative', background: 'var(--g-color-bg-surface-raised)', borderStartStartRadius: 'var(--g-radius-card)', borderStartEndRadius: 'var(--g-radius-card)', maxBlockSize: '82dvh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--g-shadow-3)' }}>
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{`${meal?.label} ${day?.label}`}</Text>
+          <UnstyledButton type="button" onClick={onClose} aria-label="بستن" style={{ flexShrink: 0, inlineSize: 36, blockSize: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', color: 'var(--g-color-text-muted)', background: 'var(--g-color-bg-surface)' }}><IconX size={18} stroke={1.8} /></UnstyledButton>
+        </Box>
+        <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)' }}>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', blockSize: 46, paddingInline: 'var(--g-space-3)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
+            <IconSearch size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+            <Box component="input" type="text" value={q} onChange={(e) => setQ(e.target.value)} placeholder="جست‌وجوی غذا… (مثلاً قورمه)" aria-label="جست‌وجوی غذا" autoFocus style={{ flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
+          </Box>
+        </Box>
+        <Box style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))' }}>
+          {loading ? (
+            [0, 1, 2, 3].map((i) => <Box key={i} className="g-skeleton" style={{ blockSize: 56, borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} />)
+          ) : options.length === 0 ? (
+            <Text component="p" style={{ textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-muted)', paddingBlock: 'var(--g-space-6)' }}>{q ? 'غذایی پیدا نشد — یه اسمِ دیگه امتحان کن' : 'در حال آماده‌سازی…'}</Text>
+          ) : options.map((o) => {
+            const time = faDuration(o.cookingTime || Number(o.totalTime) || 0);
+            return (
+              <UnstyledButton key={o.recipeId} type="button" disabled={!!busyId} onClick={async () => { setBusyId(o.recipeId); const ok = await onPick(o.recipeId); if (!ok) setBusyId(null); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', minBlockSize: 56, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
+                <Box style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}><PlatePlaceholder label={o.title} seed={seed(o.title)} glyphSize={18} /></Box>
+                <Box style={{ flex: 1, minInlineSize: 0 }}>
+                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.title}</Text>
+                  {time ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{time}</Box> : null}
+                </Box>
+                <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: busyId === o.recipeId ? 'var(--g-color-brand-200)' : 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}>{busyId === o.recipeId ? <IconCheck size={16} stroke={2.2} /> : <IconPlus size={16} stroke={2} />}</Box>
+              </UnstyledButton>
+            );
+          })}
+        </Box>
+      </Box>
     </Box>
   );
 }
@@ -113,6 +179,15 @@ export default function PlanPage() {
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   const showToast = useCallback((message, Icon) => { clearTimeout(toastTimer.current); setToast({ message, Icon }); toastTimer.current = setTimeout(() => setToast(null), 2200); }, []);
   const openRecipe = (id) => { if (id) navigate(`/recipe/${id}`); };
+  const [picker, setPicker] = useState(null); // {day, meal} | null — the manual dish picker target
+  const [manualMode, setManualMode] = useState(false); // show the grid (to hand-pick) even on a brand-new empty week
+  const onPickDish = async (recipeId) => {
+    if (!picker) return false;
+    const ok = await m.addDish(picker.day.dayOfWeek, picker.meal.key, recipeId);
+    if (ok) { setPicker(null); showToast('به برنامه اضافه شد', IconCheck); trackEvent('mealplan_add', { dayOfWeek: picker.day.dayOfWeek, mealType: picker.meal.key, recipeId }); }
+    else showToast('اضافه نشد — دوباره امتحان کن', IconCloudOff);
+    return ok;
+  };
 
   const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
   const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
@@ -142,7 +217,7 @@ export default function PlanPage() {
         <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
       </Box>
 
-      {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} /> : (
+      {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive && !manualMode) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} onManual={() => setManualMode(true)} /> : (
         <>
           {/* week columns (RTL: first day at the inline-start/right). g-weekscroll = thin visible
               scrollbar so all 7 days are reachable with a mouse on desktop (FE-PLAN-AND-MODALS FIX 3). */}
@@ -172,6 +247,7 @@ export default function PlanPage() {
                           onAccept={() => onAcceptSlot(sugg)}
                           onSwap={() => onSwapSlot(sugg)}
                           onRemove={filled ? () => onRemoveSlot(day.dayOfWeek, meal.key, filled.recipeId) : undefined}
+                          onAdd={() => setPicker({ day, meal })}
                         />
                       </Box>
                     );
@@ -216,6 +292,7 @@ export default function PlanPage() {
         </Box>
       ) : null}
 
+      <DishPicker open={!!picker} day={picker?.day} meal={picker?.meal} onClose={() => setPicker(null)} onPick={onPickDish} fetchOptions={m.fetchDishOptions} />
       <Toast toast={toast} />
     </Box>
   );

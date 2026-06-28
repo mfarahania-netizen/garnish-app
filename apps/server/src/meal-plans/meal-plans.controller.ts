@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, UseGuards, Delete, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Delete, Param, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MealPlansService } from './meal-plans.service';
 import { MealPlanPlannerService } from './planner/meal-plan-planner.service';
@@ -27,6 +27,12 @@ export class MealPlansController {
   @Post('slots')
   addMealSlot(@Req() req, @Body() body: AddMealSlotDto) {
     return this.mealPlansService.addMealSlot(req.user.userId, body.dayOfWeek, body.mealType, body.recipeId);
+  }
+
+  // Safe dishes to MANUALLY drop into a slot (empty-slot picker). Allergy-gated; meal-fit + Persian-first; optional q.
+  @Get('dish-options')
+  dishOptions(@Req() req, @Query('meal') meal?: string, @Query('q') q?: string) {
+    return this.mealPlansService.dishOptions(req.user.userId, meal, q);
   }
 
   // ✅ جدید: حذف یک وعده
