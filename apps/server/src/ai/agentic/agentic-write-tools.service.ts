@@ -493,7 +493,9 @@ export class AgenticWriteToolsService {
           const removed: string[] = [];
           for (const it of (list?.items ?? []) as { id: string; name: string }[]) {
             const itName = fold(it.name);
-            if (itName && names.some((n) => itName.includes(n) || n.includes(itName))) {
+            // EXACT folded match only (B4): bidirectional substring over-deleted — «نون» wiped «نون خامه‌ای». Precise
+            // beats greedy for a destructive op; if nothing matches, the tool honestly says so and the user can refine.
+            if (itName && names.some((n) => itName === n)) {
               await this.shoppingList.removeItem(it.id, ctx.userId); // owner-checked inside the service
               removed.push(it.name);
             }

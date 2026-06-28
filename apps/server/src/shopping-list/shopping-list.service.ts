@@ -144,4 +144,25 @@ export class ShoppingListService {
 
     return this.prisma.shoppingItem.delete({ where: { id: itemId } });
   }
+
+  /** Bulk: remove every CHECKED item (the "shopping trip done" reset). Owner-scoped via the user's own list. */
+  async clearChecked(userId: string) {
+    const list = await this.getList(userId);
+    const res = await this.prisma.shoppingItem.deleteMany({ where: { shoppingListId: list.id, isChecked: true } });
+    return { removed: res.count };
+  }
+
+  /** Bulk: empty the whole list. */
+  async clearAll(userId: string) {
+    const list = await this.getList(userId);
+    const res = await this.prisma.shoppingItem.deleteMany({ where: { shoppingListId: list.id } });
+    return { removed: res.count };
+  }
+
+  /** Bulk: uncheck everything (start a fresh trip without losing the list). */
+  async uncheckAll(userId: string) {
+    const list = await this.getList(userId);
+    const res = await this.prisma.shoppingItem.updateMany({ where: { shoppingListId: list.id, isChecked: true }, data: { isChecked: false, checkedAt: null } });
+    return { unchecked: res.count };
+  }
 }

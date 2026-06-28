@@ -38,4 +38,19 @@ export class ShoppingListController {
   removeItem(@Param('id') id: string, @Req() req) {
     return this.shoppingListService.removeItem(id, req.user.userId);
   }
+
+  @Post('clear-checked')
+  clearChecked(@Req() req) {
+    return this.shoppingListService.clearChecked(req.user.userId);
+  }
+
+  @Post('clear-all')
+  clearAll(@Req() req) {
+    return this.shoppingListService.clearAll(req.user.userId);
+  }
+
+  @Post('uncheck-all')
+  uncheckAll(@Req() req) {
+    return this.shoppingListService.uncheckAll(req.user.userId);
+  }
 }
