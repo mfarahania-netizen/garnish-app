@@ -88,6 +88,22 @@ export class AgenticChatService {
       return { ok: true, text: 'الان نتونستم کلِ برنامهٔ هفته رو بچینم. می‌تونی چند غذا رو دستی بگی بذارم، یا یه‌بارِ دیگه امتحان کن.', reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'deterministic:fill_week_plan' };
     }
 
+    // DETERMINISTIC dish suggestions — founder hit live: «برای چهارشنبه چی پیشنهاد میدی؟» got THREE invented dishes
+    // («کوفتهٔ تره‌دیگی» etc.) that don't exist in the DB. The free model fabricates dishes instead of searching the
+    // real corpus. So for a clear "suggest me a dish" ask, we retrieve REAL recipes ourselves (grounded + safety
+    // filtered) and present only those — the model can't invent a dish that isn't in our catalog.
+    if (this.wantsDishSuggestion(prompt)) {
+      const dishes = await this.realDishSuggestions(ctx, prompt).catch(() => [] as { id: string; title: string }[]);
+      if (dishes.length) {
+        const text = this.formatSuggestions(dishes);
+        const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
+        if (verdict.safe) {
+          return { ok: true, text, reason: null, toolCalls: [{ name: 'search_recipes', arguments: JSON.stringify({ for: 'suggestion' }) }], model: 'deterministic:suggest' };
+        }
+      }
+      // no real match → fall through to the model loop (which still has the grounded search tool + the no-invent rule)
+    }
+
     const unsafeTitles: string[] = [];
     // read-only tools pass through the allergy gate; reversible WRITE-actions (favorite, shopping-list) act only
     // on the user's own data and auto-execute (no allergy filtering needed — they're user-initiated, not recs).
@@ -153,6 +169,56 @@ export class AgenticChatService {
       ...rows,
       '',
       'هر وعده‌ای خواستی، بگو عوضش کنم. می‌خوای **لیستِ خریدش** رو هم برات بسازم؟',
+    ].join('\n');
+  }
+
+  // Well-known Persian dishes used as the fallback search basis when the ask has no dish term («برای چهارشنبه چی
+  // پیشنهاد میدی؟»). search_recipes is grounded, so only the ones that REALLY exist come back.
+  private readonly FAMOUS = ['قورمه سبزی', 'قیمه', 'فسنجان', 'زرشک پلو با مرغ', 'باقالی پلو', 'ته چین', 'کباب کوبیده', 'آبگوشت', 'کتلت', 'املت'];
+
+  /** Is this a clear "suggest me a dish / what should I cook" ask? Conservative — never hijacks an action or a recipe-detail request. */
+  private wantsDishSuggestion(prompt: string): boolean {
+    const p = String(prompt || '').replace(/‌/g, '');
+    const cue = /پیشنهاد|چی\s*(بپزم|بپزیم|بخورم|درست\s*کنم|بزنم|سفارش)|چه\s*غذای?ی?|یه\s*غذا|یک\s*غذا/.test(p);
+    // don't steal write-actions / plan / shopping / recipe-detail / substitution turns — those have their own paths
+    const other = /اضافه\s*کن|بذار|بریز|ذخیره\s*کن|حذف\s*کن|برنامه|لیستِ?\s*خرید|دستور|طرزِ?\s*تهیه|مراحل|جایگزین|چطور\s*(بپزم|درست)/.test(p);
+    return cue && !other;
+  }
+
+  /** Pull a dish/criteria term out of the ask; '' when it's a generic "what do you suggest" (→ famous fallback). */
+  private deriveSuggestQuery(prompt: string): string {
+    const stop = /برای|چی|چه|چیزی|غذای?ی?|پیشنهادی?|می‌?دی|بده|بهم|داری|بگو|معرفی|کن|یه|یک|خوب|خوشمزه|عالی|بپزم|بپزیم|بخورم|روزِ?|امروز|فردا|پس‌?فردا|شنبه|یکشنبه|دوشنبه|سه‌?شنبه|چهارشنبه|پنج‌?شنبه|جمعه|صبحانه|نهار|ناهار|شام|وعده|الان|واسه|می‌?خوام|دارم/g;
+    const q = String(prompt || '').replace(/‌/g, '').replace(stop, ' ').replace(/[؟?.!،,]/g, ' ').replace(/\s+/g, ' ').trim();
+    return q.length >= 2 ? q : '';
+  }
+
+  /** Retrieve up to 3 REAL, safety-filtered dishes for a suggestion ask — grounded in the catalog, never invented. */
+  private async realDishSuggestions(ctx: ToolContext, prompt: string): Promise<{ id: string; title: string }[]> {
+    const search = this.catalog.build().find((t) => t.spec.name === 'search_recipes');
+    if (!search) return [];
+    const derived = this.deriveSuggestQuery(prompt);
+    const queries = derived ? [derived] : this.FAMOUS;
+    const seen = new Set<string>();
+    const found: { id: string; title: string }[] = [];
+    for (const query of queries) {
+      if (found.length >= 8) break;
+      const res = (await search.execute({ query, limit: 6 }, ctx).catch(() => null)) as { results?: { id?: string; title?: string }[] } | null;
+      for (const r of res?.results ?? []) {
+        if (r?.id && r?.title && !seen.has(r.id)) { seen.add(r.id); found.push({ id: r.id, title: r.title }); }
+      }
+    }
+    const safe = (await this.safety.filter(ctx.userId, found, 'id')) as { id: string; title: string }[]; // fail-closed
+    return safe.slice(0, 3);
+  }
+
+  /** Render REAL retrieved dishes as suggestions — only titles that exist in the catalog. */
+  private formatSuggestions(dishes: { id: string; title: string }[]): string {
+    return [
+      'چند تا پیشنهادِ خوب از رسپی‌های گارنیش:',
+      '',
+      ...dishes.map((d, i) => `${i + 1}. **${d.title}**`),
+      '',
+      'کدومش رو دوست داری؟ بگو تا دستورِ کاملش رو برات بیارم.',
     ].join('\n');
   }
 
