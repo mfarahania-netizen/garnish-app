@@ -1,26 +1,34 @@
 import { Box } from '@mantine/core';
-import { IconSoup, IconSalad, IconMeat, IconChefHat, IconBread, IconLeaf } from '@tabler/icons-react';
+import { IconSoup, IconSalad, IconMeat, IconChefHat, IconBread, IconLeaf, IconBowl } from '@tabler/icons-react';
 
 /**
- * PlatePlaceholder — honest branded stand-in for a missing food photo.
- *
- * A warm saffron-tinted tile with a SMALL, low-opacity dish glyph — never a gray gradient,
- * never a big plate/circle filling the box, never an empty box. The glyph is a FIXED square
- * size (`glyphSize`, px) so it stays small and undistorted at any card size (caller picks the
- * size for its slot). Fills its host media slot (16:9 / 1:1 / hero). Token-pure; decorative
- * (the dish name is the card title).
+ * PlatePlaceholder — premium branded stand-in for a missing food photo (real photos are the eventual ceiling; this is the
+ * intentional bridge, never a bare glyph). A soft, per-dish-varied warm gradient (theme-aware brand tokens, varied angle so
+ * each dish looks distinct) + a CATEGORY glyph inferred from the dish name (rice → bowl, kebab → meat, خورش/آش → soup,
+ * salad, bread/breakfast, herb/kuku → leaf). Fills its host media slot; token-pure; decorative (the dish name is the title).
  */
-const GLYPHS = [IconSoup, IconSalad, IconMeat, IconChefHat, IconBread, IconLeaf];
+const pickGlyph = (label) => {
+  const s = String(label || '');
+  if (/کباب|جوجه|کوبیده|برگ|شیشلیک|بختیاری|گوشت|ماهی|میگو|مرغ|بوقلمون/.test(s)) return IconMeat;
+  if (/پلو|برنج|چلو|دمی|کته|پلوی|ته‌چین|تهچین|باقالی/.test(s)) return IconBowl;
+  if (/خورش|آبگوشت|سوپ|آش|دیزی|اشکنه|حلیم|عدسی|آبدوغ/.test(s)) return IconSoup;
+  if (/سالاد|کاهو|بورانی|ماست‌و|سبزی خوردن|شیرازی/.test(s)) return IconSalad;
+  if (/نان|املت|نیمرو|پنیر|صبحانه|عسل|مربا|کره|تخم‌مرغ|حلوا|شیرینی|کیک|دسر/.test(s)) return IconBread;
+  if (/کوکو|سبزی|دلمه|کدو|بادمجان|کشک|میرزا/.test(s)) return IconLeaf;
+  return IconChefHat;
+};
 
 export default function PlatePlaceholder({ label = '', seed = 0, glyphSize = 40 }) {
-  const base = Number.isFinite(Number(seed)) ? Number(seed) : label.length;
-  const idx = ((base % GLYPHS.length) + GLYPHS.length) % GLYPHS.length;
-  const Glyph = GLYPHS[idx];
-  const warm = idx % 2 === 0 ? 'var(--g-color-brand-50)' : 'var(--g-color-brand-100)';
+  const base = Number.isFinite(Number(seed)) ? Math.abs(Number(seed)) : label.length;
+  const Glyph = pickGlyph(label);
+  const angle = 110 + (base % 9) * 16; // 110..238deg — each dish gets a distinct gradient sweep (still calm, on-brand)
+  const flip = base % 2 === 0;
+  const c1 = flip ? 'var(--g-color-brand-50)' : 'var(--g-color-brand-100)';
+  const c2 = flip ? 'var(--g-color-brand-100)' : 'var(--g-color-brand-50)';
 
   return (
-    <Box role="img" aria-label={label || 'تصویر غذا'} style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', background: warm }}>
-      <Glyph size={glyphSize} stroke={1.5} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', opacity: 0.4 }} />
+    <Box role="img" aria-label={label || 'تصویر غذا'} style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', background: `linear-gradient(${angle}deg, ${c1}, ${c2})` }}>
+      <Glyph size={glyphSize} stroke={1.5} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', opacity: 0.42 }} />
     </Box>
   );
 }

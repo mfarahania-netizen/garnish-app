@@ -11,7 +11,7 @@ import { faDuration } from '../../components/ges/format';
  * The proposal's English `why` is NEVER rendered; only the real fitScore drives a localized confidence.
  */
 
-const MEALS = [{ key: 'breakfast', label: 'صبحانه' }, { key: 'lunch', label: 'ناهار' }, { key: 'dinner', label: 'شام' }];
+const MEALS = [{ key: 'breakfast', label: 'صبحانه' }, { key: 'lunch', label: 'ناهار' }, { key: 'dinner', label: 'شام' }, { key: 'snack', label: 'میان‌وعده' }];
 const DAY_LABELS = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
 
 const faDay = (d) => { try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' }).format(d); } catch { return ''; } };

@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
-  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch, IconArrowsExchange,
+  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
+  IconArrowsExchange, IconFlame,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
 import { faDuration } from '../../components/ges/format';
@@ -12,81 +13,152 @@ import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
 
 const seed = (id) => { const s = String(id ?? ''); let h = 0; for (let i = 0; i < s.length; i += 1) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
+const SHORT_DAY = ['شنبه', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'جمعه'];
+// the meal the user most likely cares about right now (drives the "امروز" hero)
+const nextMealKey = () => { const h = new Date().getHours(); if (h < 10) return 'breakfast'; if (h < 15) return 'lunch'; if (h < 18) return 'snack'; return 'dinner'; };
 
-function Tile({ title }) {
+function Thumb({ title, size = 56 }) {
   return (
-    <Box style={{ position: 'relative', blockSize: 52, borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}>
-      <PlatePlaceholder label={title} seed={seed(title)} glyphSize={22} />
+    <Box style={{ position: 'relative', flexShrink: 0, inlineSize: size, blockSize: size, borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}>
+      <PlatePlaceholder label={title} seed={seed(title)} glyphSize={Math.round(size * 0.42)} />
     </Box>
   );
 }
 
-function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove, onAdd }) {
-  // FILLED — a real, saved dish. One clean state: show the dish + a working remove (no dead "اضافه شد" state).
+/**
+ * SlotRow — a full-width meal slot for the single-day view. Three states: FILLED (dish + swap/remove, tap → recipe),
+ * SUGGESTED (AI proposal: accept / یکی دیگه), EMPTY (an inviting «+ افزودن {meal}» that opens the picker).
+ */
+function SlotRow({ meal, slot, onOpen, onAccept, onSwap, onRemove, onAdd }) {
   if (slot?.kind === 'filled') {
     return (
-      <Box style={{ position: 'relative' }}>
-        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)' }}>
-          <Tile title={slot.title} />
-          <Box style={{ padding: 'var(--g-space-2)' }}>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{slot.title}</Text>
-            {slot.cookTimeText ? (
-              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box>
-            ) : null}
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)', boxShadow: 'var(--g-shadow-1)' }}>
+        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', textAlign: 'start' }}>
+          <Thumb title={slot.title} />
+          <Box style={{ flex: 1, minInlineSize: 0 }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7 }}>{slot.title}</Text>
+            {slot.cookTimeText ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={12} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box> : null}
           </Box>
         </UnstyledButton>
-        {onAdd ? (
-          <UnstyledButton type="button" onClick={onAdd} aria-label="تغییرِ غذای این وعده" style={{ position: 'absolute', insetBlockStart: 6, insetInlineStart: 6, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--g-color-bg-surface) 88%, transparent)', color: 'var(--g-color-text-muted)' }}>
-            <IconArrowsExchange size={14} stroke={1.8} />
-          </UnstyledButton>
-        ) : null}
-        {onRemove ? (
-          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--g-color-bg-surface) 88%, transparent)', color: 'var(--g-color-text-muted)' }}>
-            <IconTrash size={14} stroke={1.6} />
-          </UnstyledButton>
-        ) : null}
-      </Box>
-    );
-  }
-  // SUGGESTED — AI proposal. Accept (primary) or «یکی دیگه» (swap for the next-best). No always-"high" chip.
-  if (slot?.kind === 'suggested') {
-    return (
-      <Box style={{ background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}>
-        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — پیشنهاد، مشاهدهٔ دستور`} style={{ display: 'block', inlineSize: '100%', textAlign: 'start' }}>
-          <Tile title={slot.title} />
-          <Box style={{ paddingInline: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
-            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><IconSparkles size={11} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--g-color-brand-700)' }}>پیشنهادِ AI</Text></Box>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBlockStart: 3 }}>{slot.title}</Text>
-          </Box>
-        </UnstyledButton>
-        <Box style={{ display: 'flex', gap: 1, marginBlockStart: 'var(--g-space-2)' }}>
-          <UnstyledButton type="button" onClick={onSwap} aria-label={`یکی دیگه به‌جای «${slot.title}»`} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 3, minBlockSize: 44, paddingInline: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconRefresh size={13} stroke={1.8} aria-hidden="true" />یکی دیگه</UnstyledButton>
-          <UnstyledButton type="button" onClick={onAccept} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4, minBlockSize: 44, background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}><IconCheck size={13} stroke={2} aria-hidden="true" />بپذیر</UnstyledButton>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+          <UnstyledButton type="button" onClick={onAdd} aria-label="تغییرِ غذا" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconArrowsExchange size={16} stroke={1.8} /></UnstyledButton>
+          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconTrash size={16} stroke={1.7} /></UnstyledButton>
         </Box>
       </Box>
     );
   }
-  // EMPTY — tappable: opens the dish picker for this (day, meal) so a dish can be added BY HAND (the founder's bug).
+  if (slot?.kind === 'suggested') {
+    return (
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)' }}>
+        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — پیشنهاد`} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', textAlign: 'start' }}>
+          <Thumb title={slot.title} />
+          <Box style={{ flex: 1, minInlineSize: 0 }}>
+            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><IconSparkles size={11} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>پیشنهادِ AI</Text></Box>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7 }}>{slot.title}</Text>
+          </Box>
+        </UnstyledButton>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', flexShrink: 0 }}>
+          <UnstyledButton type="button" onClick={onSwap} aria-label="یکی دیگه" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-brand-700)' }}><IconRefresh size={16} stroke={1.8} /></UnstyledButton>
+          <UnstyledButton type="button" onClick={onAccept} aria-label="بپذیر" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconCheck size={17} stroke={2.2} /></UnstyledButton>
+        </Box>
+      </Box>
+    );
+  }
+  // EMPTY — inviting, never a dead dash
   return (
-    <UnstyledButton type="button" onClick={onAdd} aria-label="افزودنِ غذا به این وعده" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, inlineSize: '100%', minBlockSize: 92, border: '1.5px dashed var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-muted)', background: 'transparent' }}>
-      <IconPlus size={20} stroke={1.8} aria-hidden="true" />
-      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>افزودن</Text>
+    <UnstyledButton type="button" onClick={onAdd} aria-label={`افزودنِ ${meal.label}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 56, paddingInline: 'var(--g-space-4)', border: '1.5px dashed var(--g-color-border-strong)', borderRadius: 'var(--g-radius-card)', color: 'var(--g-color-text-muted)', background: 'transparent' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 26, blockSize: 26, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}><IconPlus size={16} stroke={2} /></Box>
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>{`افزودنِ ${meal.label}`}</Text>
     </UnstyledButton>
+  );
+}
+
+/** The compressed 7-day RTL week strip (Sat rightmost). Density dots show which slots are filled — the glance layer. */
+function WeekStrip({ days, meals, filled, suggested, selectedDay, onSelect }) {
+  return (
+    <Box className="g-glass-chrome" style={{ position: 'sticky', insetBlockStart: 0, zIndex: 5, display: 'flex', gap: 2, paddingInline: 'var(--g-space-2)', paddingBlock: 'var(--g-space-2)', background: 'var(--g-color-bg-surface-raised)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+      {days.map((day) => {
+        const isSel = day.dayOfWeek === selectedDay;
+        const dots = meals.map((m) => !!(filled[`${day.dayOfWeek}:${m.key}`] || suggested[`${day.dayOfWeek}:${m.key}`]));
+        return (
+          <UnstyledButton key={day.dayOfWeek} type="button" onClick={() => onSelect(day.dayOfWeek)} aria-label={day.label} aria-pressed={isSel} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, paddingBlock: 'var(--g-space-2)', paddingInline: 1, borderRadius: 'var(--g-radius-input)', background: isSel ? 'var(--g-color-brand-50)' : 'transparent', border: isSel ? '1px solid var(--g-color-brand-200)' : '1px solid transparent', transition: 'background 160ms var(--g-ease-standard)' }}>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: day.isToday || isSel ? 800 : 600, color: day.isToday ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)' }}>{SHORT_DAY[day.dayOfWeek]}</Text>
+            <Box aria-hidden="true" style={{ inlineSize: 26, blockSize: 26, borderRadius: '50%', display: 'grid', placeItems: 'center', background: day.isToday ? 'var(--g-color-brand-600)' : 'transparent', color: day.isToday ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>{day.dayFa}</Box>
+            <Box aria-hidden="true" style={{ display: 'flex', gap: 2, blockSize: 5 }}>
+              {dots.map((on, i) => <Box key={i} style={{ inlineSize: 5, blockSize: 5, borderRadius: '50%', background: on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)', transition: 'background 150ms var(--g-ease-standard)' }} />)}
+            </Box>
+          </UnstyledButton>
+        );
+      })}
+    </Box>
+  );
+}
+
+/**
+ * DishPicker — the manual add-a-dish-to-a-slot sheet. Opens for a (day, meal), shows safe + meal-appropriate suggestions
+ * immediately, searches the whole corpus as you type. Allergy-gated server-side. Pick → POST /meal-plans/slots.
+ */
+function DishPicker({ open, day, meal, onClose, onPick, fetchOptions }) {
+  const [q, setQ] = useState('');
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [busyId, setBusyId] = useState(null);
+
+  useEffect(() => { if (open) { setQ(''); setBusyId(null); } }, [open, day, meal]);
+  useEffect(() => {
+    if (!open || !meal) return undefined;
+    let alive = true; setLoading(true);
+    const t = setTimeout(async () => {
+      const opts = await fetchOptions(meal.key, q);
+      if (alive) { setOptions(opts); setLoading(false); }
+    }, q ? 280 : 0);
+    return () => { alive = false; clearTimeout(t); };
+  }, [open, q, meal, fetchOptions]);
+
+  if (!open) return null;
+  return (
+    <Box style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <Box onClick={onClose} aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+      <Box role="dialog" aria-modal="true" aria-label="انتخاب غذا" style={{ position: 'relative', background: 'var(--g-color-bg-surface-raised)', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', maxBlockSize: '82dvh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--g-shadow-3)' }}>
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{`${meal?.label} ${day?.label}`}</Text>
+          <UnstyledButton type="button" onClick={onClose} aria-label="بستن" style={{ flexShrink: 0, inlineSize: 36, blockSize: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', color: 'var(--g-color-text-muted)', background: 'var(--g-color-bg-surface)' }}><IconX size={18} stroke={1.8} /></UnstyledButton>
+        </Box>
+        <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)' }}>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', blockSize: 46, paddingInline: 'var(--g-space-3)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
+            <IconSearch size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+            <Box component="input" type="text" value={q} onChange={(e) => setQ(e.target.value)} placeholder="جست‌وجوی غذا… (مثلاً قورمه)" aria-label="جست‌وجوی غذا" autoFocus style={{ flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
+          </Box>
+        </Box>
+        <Box style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))' }}>
+          {loading ? (
+            [0, 1, 2, 3].map((i) => <Box key={i} className="g-skeleton" style={{ blockSize: 56, borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} />)
+          ) : options.length === 0 ? (
+            <Text component="p" style={{ textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-muted)', paddingBlock: 'var(--g-space-6)' }}>{q ? 'غذایی پیدا نشد — یه اسمِ دیگه امتحان کن' : 'در حال آماده‌سازی…'}</Text>
+          ) : options.map((o) => {
+            const time = faDuration(o.cookingTime || Number(o.totalTime) || 0);
+            return (
+              <UnstyledButton key={o.recipeId} type="button" disabled={!!busyId} onClick={async () => { setBusyId(o.recipeId); const ok = await onPick(o.recipeId); if (!ok) setBusyId(null); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', minBlockSize: 56, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
+                <Thumb title={o.title} size={40} />
+                <Box style={{ flex: 1, minInlineSize: 0 }}>
+                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.title}</Text>
+                  {time ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{time}</Box> : null}
+                </Box>
+                <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: busyId === o.recipeId ? 'var(--g-color-brand-200)' : 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}>{busyId === o.recipeId ? <IconCheck size={16} stroke={2.2} /> : <IconPlus size={16} stroke={2} />}</Box>
+              </UnstyledButton>
+            );
+          })}
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
 function PlanLoading() {
   return (
     <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
-      <Box style={{ display: 'flex', gap: 'var(--g-space-3)', overflow: 'hidden' }}>
-        {[0, 1, 2].map((i) => (
-          <Box key={i} style={{ flex: '0 0 140px' }}>
-            <Box className="g-skeleton" style={{ blockSize: 14, inlineSize: '60%', margin: '0 auto var(--g-space-3)' }} />
-            <Box className="g-skeleton" style={{ blockSize: 74, borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} />
-            <Box className="g-skeleton" style={{ blockSize: 74, borderRadius: 'var(--g-radius-input)' }} />
-          </Box>
-        ))}
-      </Box>
+      <Box className="g-skeleton" style={{ blockSize: 56, borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-3)' }} />
+      {[0, 1, 2, 3].map((i) => <Box key={i} className="g-skeleton" style={{ blockSize: 72, borderRadius: 'var(--g-radius-card)', marginBlockEnd: 'var(--g-space-2)' }} />)}
     </Box>
   );
 }
@@ -114,67 +186,6 @@ function EmptyWeek({ onPropose, proposing, onManual }) {
   );
 }
 
-/**
- * DishPicker — the manual add-a-dish-to-a-slot sheet (founder bug: empty slots were dead «—»). Opens for a (day, meal),
- * shows safe + meal-appropriate suggestions immediately, and searches the whole corpus as you type. Every dish here is
- * already allergy-gated server-side (GET /meal-plans/dish-options). Pick → POST /meal-plans/slots → the slot fills.
- */
-function DishPicker({ open, day, meal, onClose, onPick, fetchOptions }) {
-  const [q, setQ] = useState('');
-  const [options, setOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [busyId, setBusyId] = useState(null);
-
-  useEffect(() => { if (open) { setQ(''); setBusyId(null); } }, [open, day, meal]);
-  useEffect(() => {
-    if (!open || !meal) return undefined;
-    let alive = true; setLoading(true);
-    const t = setTimeout(async () => {
-      const opts = await fetchOptions(meal.key, q);
-      if (alive) { setOptions(opts); setLoading(false); }
-    }, q ? 280 : 0); // debounce typing; instant for the initial suggestions
-    return () => { alive = false; clearTimeout(t); };
-  }, [open, q, meal, fetchOptions]);
-
-  if (!open) return null;
-  return (
-    <Box style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-      <Box onClick={onClose} aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
-      <Box role="dialog" aria-modal="true" aria-label="انتخاب غذا" style={{ position: 'relative', background: 'var(--g-color-bg-surface-raised)', borderStartStartRadius: 'var(--g-radius-card)', borderStartEndRadius: 'var(--g-radius-card)', maxBlockSize: '82dvh', display: 'flex', flexDirection: 'column', boxShadow: 'var(--g-shadow-3)' }}>
-        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
-          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{`${meal?.label} ${day?.label}`}</Text>
-          <UnstyledButton type="button" onClick={onClose} aria-label="بستن" style={{ flexShrink: 0, inlineSize: 36, blockSize: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', color: 'var(--g-color-text-muted)', background: 'var(--g-color-bg-surface)' }}><IconX size={18} stroke={1.8} /></UnstyledButton>
-        </Box>
-        <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)' }}>
-          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', blockSize: 46, paddingInline: 'var(--g-space-3)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
-            <IconSearch size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
-            <Box component="input" type="text" value={q} onChange={(e) => setQ(e.target.value)} placeholder="جست‌وجوی غذا… (مثلاً قورمه)" aria-label="جست‌وجوی غذا" autoFocus style={{ flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
-          </Box>
-        </Box>
-        <Box style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))' }}>
-          {loading ? (
-            [0, 1, 2, 3].map((i) => <Box key={i} className="g-skeleton" style={{ blockSize: 56, borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} />)
-          ) : options.length === 0 ? (
-            <Text component="p" style={{ textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-muted)', paddingBlock: 'var(--g-space-6)' }}>{q ? 'غذایی پیدا نشد — یه اسمِ دیگه امتحان کن' : 'در حال آماده‌سازی…'}</Text>
-          ) : options.map((o) => {
-            const time = faDuration(o.cookingTime || Number(o.totalTime) || 0);
-            return (
-              <UnstyledButton key={o.recipeId} type="button" disabled={!!busyId} onClick={async () => { setBusyId(o.recipeId); const ok = await onPick(o.recipeId); if (!ok) setBusyId(null); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', minBlockSize: 56, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
-                <Box style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)', overflow: 'hidden' }}><PlatePlaceholder label={o.title} seed={seed(o.title)} glyphSize={18} /></Box>
-                <Box style={{ flex: 1, minInlineSize: 0 }}>
-                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.title}</Text>
-                  {time ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={11} stroke={1.8} aria-hidden="true" />{time}</Box> : null}
-                </Box>
-                <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: busyId === o.recipeId ? 'var(--g-color-brand-200)' : 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}>{busyId === o.recipeId ? <IconCheck size={16} stroke={2.2} /> : <IconPlus size={16} stroke={2} />}</Box>
-              </UnstyledButton>
-            );
-          })}
-        </Box>
-      </Box>
-    </Box>
-  );
-}
-
 export default function PlanPage() {
   const navigate = useNavigate();
   const m = useMealPlan();
@@ -184,8 +195,26 @@ export default function PlanPage() {
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   const showToast = useCallback((message, Icon) => { clearTimeout(toastTimer.current); setToast({ message, Icon }); toastTimer.current = setTimeout(() => setToast(null), 2200); }, []);
   const openRecipe = (id) => { if (id) navigate(`/recipe/${id}`); };
-  const [picker, setPicker] = useState(null); // {day, meal} | null — the manual dish picker target
-  const [manualMode, setManualMode] = useState(false); // show the grid (to hand-pick) even on a brand-new empty week
+
+  const todayIdx = useMemo(() => { const i = m.week.days.findIndex((d) => d.isToday); return i >= 0 ? i : 0; }, [m.week.days]);
+  const [selectedDay, setSelectedDay] = useState(todayIdx);
+  useEffect(() => { setSelectedDay(todayIdx); }, [todayIdx]);
+  const [picker, setPicker] = useState(null); // {day, meal} | null
+  const [manualMode, setManualMode] = useState(false);
+
+  const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
+  const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
+  const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
+  const onSwapSlot = async (s) => {
+    const r = await m.swapSlot(s);
+    if (r.ok) { showToast('یکی دیگه پیشنهاد شد', IconRefresh); trackEvent('recommendation_dismiss', { recipeId: r.swappedOut }); }
+    else showToast(r.error ? 'نشد — دوباره امتحان کن' : 'گزینهٔ دیگه‌ای برای این وعده نمونده', r.error ? IconCloudOff : IconRefresh);
+  };
+  const onRemoveSlot = async (dayOfWeek, mealType, recipeId) => {
+    const ok = await m.removeSlot(dayOfWeek, mealType);
+    if (ok) { showToast('از برنامه حذف شد', IconTrash); trackEvent('mealplan_remove', { dayOfWeek, mealType, recipeId }); }
+    else showToast('حذف نشد، دوباره تلاش کن', IconCloudOff);
+  };
   const onPickDish = async (recipeId) => {
     if (!picker) return false;
     const ok = await m.addDish(picker.day.dayOfWeek, picker.meal.key, recipeId);
@@ -194,80 +223,84 @@ export default function PlanPage() {
     return ok;
   };
 
-  const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
-  const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
-  const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
-  // FI-STEP-1.3: «یکی دیگه» — swap THIS slot for the next-best safe pick; record the swapped-out as declined
-  // (recommendation_dismiss) so it down-weights + won't return in the next propose.
-  const onSwapSlot = async (s) => {
-    const r = await m.swapSlot(s);
-    if (r.ok) { showToast('یکی دیگه پیشنهاد شد', IconRefresh); trackEvent('recommendation_dismiss', { recipeId: r.swappedOut }); }
-    else showToast(r.error ? 'نشد — دوباره امتحان کن' : 'گزینهٔ دیگه‌ای برای این وعده نمونده', r.error ? IconCloudOff : IconRefresh);
-  };
-  // real delete: honest toast + the mealplan_remove signal fire ONLY on a successful DELETE
-  const onRemoveSlot = async (dayOfWeek, mealType, recipeId) => {
-    const ok = await m.removeSlot(dayOfWeek, mealType);
-    if (ok) { showToast('از برنامه حذف شد', IconTrash); trackEvent('mealplan_remove', { dayOfWeek, mealType, recipeId }); }
-    else showToast('حذف نشد، دوباره تلاش کن', IconCloudOff);
-  };
-
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
+
+  const day = m.week.days[selectedDay] || m.week.days[0];
+  const isTodaySelected = day?.isToday;
+  // the "tonight/now" hero meal for today
+  const heroMealKey = nextMealKey();
+  const heroMeal = m.meals.find((x) => x.key === heroMealKey);
+  const heroFilled = isTodaySelected && heroMeal ? m.filled[`${day.dayOfWeek}:${heroMeal.key}`] : null;
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* header — single clear plan-generation entry point lives below («برنامهٔ هفته رو بچین»);
-          the redundant dead "دستیار" button was removed (FE-PLAN-AND-MODALS FIX 4). */}
-      <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+      <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)' }}>
         <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برنامهٔ هفته</Text>
         <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
       </Box>
 
       {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive && !manualMode) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} onManual={() => setManualMode(true)} /> : (
         <>
-          {/* week columns (RTL: first day at the inline-start/right). g-weekscroll = thin visible
-              scrollbar so all 7 days are reachable with a mouse on desktop (FE-PLAN-AND-MODALS FIX 3). */}
-          <Box className="g-weekscroll" style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', alignItems: 'flex-start' }}>
-            {m.week.days.map((day) => (
-              <Box key={day.dayOfWeek} style={{ flex: '0 0 140px' }}>
-                <Box style={{ textAlign: 'center', marginBlockEnd: 'var(--g-space-3)' }}>
-                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: day.isToday ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{day.label}</Text>
-                  {day.isToday ? (
-                    <Box style={{ display: 'inline-block', marginBlockStart: 3, paddingInline: 8, paddingBlock: 1, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>امروز</Box>
-                  ) : (
-                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 3 }}>{day.monthFa} {day.dayFa}</Text>
-                  )}
-                </Box>
-                <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
-                  {m.meals.map((meal) => {
-                    const key = `${day.dayOfWeek}:${meal.key}`;
-                    const filled = m.filled[key];
-                    const sugg = m.suggested[key];
-                    const slot = filled ? { kind: 'filled', ...filled } : sugg ? { kind: 'suggested', ...sugg } : null;
-                    return (
-                      <Box key={meal.key}>
-                        <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)', marginBlockEnd: 4 }}>{meal.label}</Text>
-                        <SlotCard
-                          slot={slot}
-                          onOpen={() => openRecipe((filled || sugg)?.recipeId)}
-                          onAccept={() => onAcceptSlot(sugg)}
-                          onSwap={() => onSwapSlot(sugg)}
-                          onRemove={filled ? () => onRemoveSlot(day.dayOfWeek, meal.key, filled.recipeId) : undefined}
-                          onAdd={() => setPicker({ day, meal })}
-                        />
-                      </Box>
-                    );
-                  })}
-                </Box>
-              </Box>
-            ))}
+          <WeekStrip days={m.week.days} meals={m.meals} filled={m.filled} suggested={m.suggested} selectedDay={selectedDay} onSelect={setSelectedDay} />
+
+          <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)' }}>
+            {/* selected-day header */}
+            <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-3)' }}>{isTodaySelected ? 'امروز' : day?.label} · {day?.dayFa} {day?.monthFa}</Text>
+
+            {/* "now/tonight" hero — only for today: answers "what am I cooking now?" in one glance */}
+            {isTodaySelected && heroMeal ? (
+              heroFilled ? (
+                <UnstyledButton type="button" onClick={() => openRecipe(heroFilled.recipeId)} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', background: 'linear-gradient(135deg, var(--g-color-brand-600), var(--g-color-brand-700))', color: 'var(--g-color-text-inverse)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-4)', boxShadow: 'var(--g-shadow-2)' }}>
+                  <Box style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'rgba(255,255,255,0.18)' }}><IconFlame size={17} stroke={1.8} /></Box>
+                  <Box style={{ flex: 1, minInlineSize: 0 }}>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, opacity: 0.9 }}>{`${heroMeal.label}ِ امروز`}</Text>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7 }}>{heroFilled.title}</Text>
+                  </Box>
+                  <Text component="span" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>بپز<IconChevronLeft size={16} stroke={2} /></Text>
+                </UnstyledButton>
+              ) : (
+                <UnstyledButton type="button" onClick={() => setPicker({ day, meal: heroMeal })} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-4)' }}>
+                  <Box style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}><IconFlame size={17} stroke={1.8} /></Box>
+                  <Box style={{ flex: 1, minInlineSize: 0 }}>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{`برای ${heroMeal.label}ِ امروز چی بپزیم؟`}</Text>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-secondary)', marginBlockStart: 2 }}>یه غذا انتخاب کن</Text>
+                  </Box>
+                  <IconPlus size={18} stroke={2} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+                </UnstyledButton>
+              )
+            ) : null}
+
+            {/* the day's meal rows */}
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
+              {m.meals.map((meal) => {
+                const key = `${day.dayOfWeek}:${meal.key}`;
+                const filled = m.filled[key];
+                const sugg = m.suggested[key];
+                const slot = filled ? { kind: 'filled', ...filled } : sugg ? { kind: 'suggested', ...sugg } : null;
+                return (
+                  <Box key={meal.key}>
+                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-text-muted)', marginBlockEnd: 'var(--g-space-1)', marginInlineStart: 2 }}>{meal.label}</Text>
+                    <SlotRow
+                      meal={meal}
+                      slot={slot}
+                      onOpen={() => openRecipe((filled || sugg)?.recipeId)}
+                      onAccept={() => onAcceptSlot(sugg)}
+                      onSwap={() => onSwapSlot(sugg)}
+                      onRemove={() => onRemoveSlot(day.dayOfWeek, meal.key, filled?.recipeId)}
+                      onAdd={() => setPicker({ day, meal })}
+                    />
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
 
           {/* invite / to-shopping */}
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-2)', paddingBlockEnd: 'var(--g-space-6)' }}>
+          <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' }}>
             {!m.proposalActive ? (
               <Box style={{ background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
                 <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}><Box aria-hidden="true" style={{ inlineSize: 22, blockSize: 22, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}><IconSparkles size={12} stroke={1.8} /></Box><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text></Box>
-                <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', margin: 'var(--g-space-2) 0 0', color: 'var(--g-color-text-primary)' }}>بقیهٔ هفته رو برات پیشنهاد بدم؟</Text>
+                <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', margin: 'var(--g-space-2) 0 0', color: 'var(--g-color-text-primary)' }}>{m.hasPlan ? 'جاهای خالیِ هفته رو برات پیشنهاد بدم؟' : 'کلِ هفته رو برات پیشنهاد بدم؟'}</Text>
                 <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-1) 0 0' }}>با ذائقه، حساسیت‌ها و موادِ موجودت هماهنگ — بعد می‌تونی بپذیری یا عوض کنی.</Text>
                 <UnstyledButton type="button" onClick={onPropose} disabled={m.proposing} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 44, marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{m.proposing ? 'در حال چیدن…' : 'برنامهٔ هفته رو بچین'}</UnstyledButton>
               </Box>
@@ -286,7 +319,6 @@ export default function PlanPage() {
         </>
       )}
 
-      {/* review bar — proposes-not-auto */}
       {m.proposalActive ? (
         <Box style={{ position: 'sticky', insetBlockEnd: 0, background: 'var(--g-color-bg-surface-raised)', borderBlockStart: '1px solid var(--g-color-border-subtle)', boxShadow: 'var(--g-shadow-2)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-3) + env(safe-area-inset-bottom))' }}>
         <Text component="p" style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-secondary)', margin: '0 0 var(--g-space-2)' }}><IconEyeCheck size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />این یک پیشنهاد است — بازبینی کن و بپذیر</Text>

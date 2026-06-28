@@ -26,10 +26,11 @@ beforeEach(() => {
 });
 
 describe('useMealPlan — breakfast + delete (real hook)', () => {
-  it('exposes a breakfast meal row first, then lunch + dinner', async () => {
+  it('exposes the four meal rows: breakfast, lunch, dinner, snack', async () => {
     const { result } = renderHook(() => useMealPlan(), { wrapper });
     await waitFor(() => expect(result.current.status).toBe('ready'));
-    expect(result.current.meals.map((m) => m.key)).toEqual(['breakfast', 'lunch', 'dinner']);
+    // میان‌وعده (snack) is now a first-class row — the universal 4-meal floor (research-backed).
+    expect(result.current.meals.map((m) => m.key)).toEqual(['breakfast', 'lunch', 'dinner', 'snack']);
   });
 
   it('propose() asks the planner for breakfast, lunch AND dinner', async () => {
