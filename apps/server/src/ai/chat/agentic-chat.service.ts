@@ -174,6 +174,25 @@ export class AgenticChatService {
   // Well-known Persian dishes used as the fallback search basis when the ask has no dish term («برای چهارشنبه چی
   // پیشنهاد میدی؟»). search_recipes is grounded, so only the ones that REALLY exist come back.
   private readonly FAMOUS = ['قورمه سبزی', 'قیمه', 'فسنجان', 'زرشک پلو با مرغ', 'باقالی پلو', 'ته چین', 'کباب کوبیده', 'آبگوشت', 'کتلت', 'املت'];
+  // MEAL-AWARE famous lists — «صبحانه چی بخورم» must NOT return شام stews (founder live-QA finding). The meal word is
+  // a stop-word in deriveSuggestQuery (so the derived term is empty), so we detect the meal here and top up from the
+  // RIGHT list. «امشب» ⇒ dinner. Each is a real, famous, beloved dish so a new user gets sensible picks.
+  private readonly FAMOUS_BY_MEAL: Record<string, string[]> = {
+    breakfast: ['املت', 'نیمرو', 'نان و پنیر', 'عدسی', 'حلیم', 'فرنی', 'شیر برنج', 'خاگینه', 'املت گوجه فرنگی', 'نان و مربا'],
+    lunch: ['قورمه سبزی', 'قیمه', 'فسنجان', 'زرشک پلو با مرغ', 'باقالی پلو', 'ته چین', 'کباب کوبیده', 'استانبولی پلو', 'کتلت', 'آبگوشت'],
+    dinner: ['قورمه سبزی', 'قیمه', 'کباب کوبیده', 'جوجه کباب', 'ته چین', 'کتلت', 'آش رشته', 'لوبیا پلو', 'فسنجان', 'املت'],
+    snack: ['اسموتی', 'سالاد شیرازی', 'کوکو سبزی', 'نان و پنیر', 'فرنی', 'حلوا', 'بستنی', 'میوه', 'دلمه', 'شیر برنج'],
+  };
+
+  /** Which meal is the user asking about? Used to bias suggestions to meal-appropriate dishes («امشب» ⇒ dinner). */
+  private detectMeal(prompt: string): string | null {
+    const p = String(prompt || '').replace(/‌/g, '');
+    if (/صبحانه|صبحونه|صبح/.test(p)) return 'breakfast';
+    if (/میان\s?وعده|میانوعده|عصرانه/.test(p)) return 'snack';
+    if (/نهار|ناهار|ظهر/.test(p)) return 'lunch';
+    if (/شام|امشب/.test(p)) return 'dinner';
+    return null;
+  }
 
   /** Is this a clear "suggest me a dish / what should I cook" ask? Conservative — never hijacks an action or a recipe-detail request. */
   private wantsDishSuggestion(prompt: string): boolean {
@@ -196,9 +215,11 @@ export class AgenticChatService {
     const search = this.catalog.build().find((t) => t.spec.name === 'search_recipes');
     if (!search) return [];
     const derived = this.deriveSuggestQuery(prompt);
-    // search the derived term first, then top up from famous dishes — so an occasion/vibe word that is NOT itself a
-    // recipe («مجلسی», «محلی») still yields REAL dishes instead of returning nothing and falling through to the model.
-    const queries = derived ? [derived, ...this.FAMOUS] : [...this.FAMOUS];
+    const meal = this.detectMeal(prompt); // «صبحانه»→breakfast, «امشب/شام»→dinner … so we top up from the RIGHT meal's famous list
+    const famousList = meal ? this.FAMOUS_BY_MEAL[meal] : this.FAMOUS;
+    // search the derived term first, then top up from the MEAL-APPROPRIATE famous dishes — so an occasion/vibe word that
+    // is NOT itself a recipe («مجلسی», «محلی») still yields REAL, meal-correct dishes instead of falling through to the model.
+    const queries = derived ? [derived, ...famousList] : [...famousList];
     const seen = new Set<string>();
     const found: { id: string; title: string }[] = [];
     for (const query of queries) {
