@@ -53,7 +53,7 @@ export function useMealPlan() {
       if (!s?.recipeId || !s?.recipe) continue;
       // no-cook dishes (salads/smoothies/دویماج) have cookingTime 0 but a real totalTime — fall back so the card
       // isn't blank (20 recipes were showing no time).
-      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime || Number(s.recipe.totalTime) || 0), cookedAt: s.cookedAt || null };
+      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime || Number(s.recipe.totalTime) || 0), cookedAt: s.cookedAt || null, servings: s.servings ?? null, baseServings: s.recipe.servings ?? null };
     }
     return map;
   }, [plan.data]);
@@ -173,6 +173,22 @@ export function useMealPlan() {
     }
   }, [queryClient]);
 
+  // set how many people a slot is cooked for (scales the shopping list). Optimistic; reverts on failure.
+  const setServings = useCallback(async (dayOfWeek, mealType, servings) => {
+    const key = ['plan', offsetRef.current];
+    const prev = queryClient.getQueryData(key);
+    queryClient.setQueryData(key, (old) => (
+      old?.slots ? { ...old, slots: old.slots.map((s) => (s.dayOfWeek === dayOfWeek && s.mealType === mealType ? { ...s, servings } : s)) } : old
+    ));
+    try {
+      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/servings?offset=${offsetRef.current}`, { servings });
+      return true;
+    } catch {
+      queryClient.setQueryData(key, prev);
+      return false;
+    }
+  }, [queryClient]);
+
   // safe, meal-appropriate dishes for the picker (GET /meal-plans/dish-options — allergy-gated server-side). q searches.
   const fetchDishOptions = useCallback(async (mealType, q) => {
     try {
@@ -234,6 +250,6 @@ export function useMealPlan() {
     hasPlan,
     proposalActive: !!proposal,
     proposing, proposeError, applying,
-    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot, addDish, fetchDishOptions, markCooked,
+    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot, addDish, fetchDishOptions, markCooked, setServings,
   };
 }

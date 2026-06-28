@@ -54,6 +54,12 @@ export class MealPlansController {
     return this.mealPlansService.copyWeek(req.user.userId, weekOffset(from), weekOffset(to));
   }
 
+  // Set how many people a slot is cooked for (scales the shopping list). Body { servings: number } (0/absent → recipe base).
+  @Post('slots/:dayOfWeek/:mealType/servings')
+  setServings(@Req() req, @Param('dayOfWeek') dayOfWeek: string, @Param('mealType') mealType: string, @Body() body: { servings?: number }, @Query('offset') offset?: string) {
+    return this.mealPlansService.setServings(req.user.userId, parseInt(dayOfWeek), mealType, Number(body?.servings), weekOffset(offset));
+  }
+
   // ✅ جدید: حذف یک وعده
   @Delete('slots/:dayOfWeek/:mealType')
   removeMealSlot(

@@ -21,22 +21,22 @@ export class MealPlansService {
       },
       include: { slots: { include: { recipe: true } } },
     });
-    await this.hydrateCookedAt(plan);
+    await this.hydrateSlotExtras(plan);
     return this.sanitizePlan(plan, userId);
   }
 
   /**
-   * Merge each slot's `cookedAt` via raw SQL (the GRIS pattern) so this works even when the generated Prisma client
-   * predates the column — no `prisma generate` / server restart needed. Purely additive.
+   * Merge each slot's `cookedAt` + `servings` via raw SQL (the GRIS pattern) so this works even when the generated Prisma
+   * client predates the columns — no `prisma generate` / server restart needed. Purely additive.
    */
-  private async hydrateCookedAt(plan: any): Promise<void> {
+  private async hydrateSlotExtras(plan: any): Promise<void> {
     if (!plan?.slots?.length) return;
     try {
-      const rows: any[] = await this.prisma.$queryRawUnsafe('SELECT id, "cookedAt" FROM "MealSlot" WHERE "mealPlanId" = $1', plan.id);
-      const byId = new Map(rows.map((r) => [r.id, r.cookedAt]));
-      for (const s of plan.slots) s.cookedAt = byId.get(s.id) ?? null;
+      const rows: any[] = await this.prisma.$queryRawUnsafe('SELECT id, "cookedAt", servings FROM "MealSlot" WHERE "mealPlanId" = $1', plan.id);
+      const byId = new Map(rows.map((r) => [r.id, r]));
+      for (const s of plan.slots) { const x: any = byId.get(s.id); s.cookedAt = x?.cookedAt ?? null; s.servings = x?.servings ?? null; }
     } catch {
-      /* column absent (older env) → cookedAt stays undefined; UI treats it as not-cooked */
+      /* columns absent (older env) → cookedAt/servings stay null; UI falls back to defaults */
     }
   }
 
@@ -71,6 +71,17 @@ export class MealPlansService {
     const val = cooked ? new Date() : null;
     await this.prisma.$executeRawUnsafe('UPDATE "MealSlot" SET "cookedAt" = $1 WHERE "mealPlanId" = $2 AND "dayOfWeek" = $3 AND "mealType" = $4', val, plan.id, dayOfWeek, mt);
     return { ok: true, cooked };
+  }
+
+  /** Set how many people a slot is cooked for (scales the shopping list). null/0 → reset to the recipe's base servings. */
+  async setServings(userId: string, dayOfWeek: number, mealType: string, servings: number, weekOffset = 0) {
+    const mt = this.canonMeal(mealType);
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
+    const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
+    if (!plan) return { ok: false };
+    const val = Number.isFinite(servings) && servings > 0 ? Math.min(20, Math.round(servings)) : null; // clamp 1..20; null = recipe base
+    await this.prisma.$executeRawUnsafe('UPDATE "MealSlot" SET servings = $1 WHERE "mealPlanId" = $2 AND "dayOfWeek" = $3 AND "mealType" = $4', val, plan.id, dayOfWeek, mt);
+    return { ok: true, servings: val };
   }
 
   /**

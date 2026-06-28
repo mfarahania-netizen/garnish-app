@@ -18,6 +18,7 @@ export interface PlannedIngredient {
   unit?: string | null;
   category?: string | null; // from the resolved dictionary entry when available
   ingredientId?: string | null; // resolved dictionary id (the merge key when present)
+  scale?: number; // PER-LINE multiplier (this slot's servings ÷ the recipe's base servings) — so each planned dish scales independently
 }
 
 export interface AggregatedItem {
@@ -62,12 +63,13 @@ export function aggregateShoppingList(items: PlannedIngredient[], opts: Aggregat
     const g = groups.get(key) ?? { name, category: raw.category || 'other', ingredientId: raw.ingredientId ?? null, byUnit: new Map(), sources: 0 as number, hadUnparseable: false };
     g.sources += 1;
     if (raw.category && g.category === 'other') g.category = raw.category;
+    const lineScale = typeof raw.scale === 'number' && raw.scale > 0 ? raw.scale : 1; // this dish's servings ÷ its base servings
     if (amount == null) {
       g.hadUnparseable = true;
       if (!g.byUnit.has(unit)) g.byUnit.set(unit, null);
     } else {
       const prev = g.byUnit.get(unit);
-      g.byUnit.set(unit, (typeof prev === 'number' ? prev : 0) + amount);
+      g.byUnit.set(unit, (typeof prev === 'number' ? prev : 0) + amount * lineScale);
     }
     groups.set(key, g);
   }

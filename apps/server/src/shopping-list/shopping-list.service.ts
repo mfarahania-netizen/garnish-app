@@ -73,13 +73,29 @@ export class ShoppingListService {
       include: { slots: { include: { recipe: { include: { ingredients: { include: { ingredient: { select: { id: true, category: true } } } } } } } } },
     });
 
-    const recipes = (plan?.slots ?? []).map((s) => s.recipe).filter(Boolean);
-    if (recipes.length === 0) {
+    const slots = (plan?.slots ?? []).filter((s) => s.recipe);
+    if (slots.length === 0) {
       return { resultStatus: 'no_plan', added: 0, merged: 0, flagged: 0, items: [] };
     }
 
+    // per-slot servings (new MealSlot column the generated client may not know yet → raw read, the GRIS pattern)
+    const servingsById = new Map<string, number>();
+    try {
+      const rows: any[] = await this.prisma.$queryRawUnsafe('SELECT id, servings FROM "MealSlot" WHERE "mealPlanId" = $1', plan!.id);
+      for (const r of rows) if (r.servings != null) servingsById.set(r.id, Number(r.servings));
+    } catch {
+      /* column absent (older env) → every slot just uses its recipe's base servings (scale 1) */
+    }
+
+    // SCALE PER SLOT: each dish's ingredients are multiplied by (this slot's servings ÷ the recipe's base servings), so
+    // a dinner you set to 8 people pulls 2× a recipe written for 4, while the rest stay as written. This REPLACES the
+    // old flat ×householdSize multiplier, which was wrong — it ignored the recipe's own base servings and over-bought.
     const planned: PlannedIngredient[] = [];
-    for (const r of recipes as any[]) {
+    for (const slot of slots as any[]) {
+      const r = slot.recipe;
+      const base = r.servings && r.servings > 0 ? r.servings : 4; // fallback when a recipe lacks a base count
+      const want = servingsById.get(slot.id) ?? base; // explicit per-slot servings, else cook the recipe as written
+      const scale = want / base;
       for (const ing of r.ingredients ?? []) {
         planned.push({
           name: ing.name,
@@ -87,6 +103,7 @@ export class ShoppingListService {
           unit: ing.unit ?? null,
           category: ing.ingredient?.category ?? null,
           ingredientId: ing.ingredient?.id ?? ing.ingredientId ?? null,
+          scale,
         });
       }
     }
@@ -96,7 +113,7 @@ export class ShoppingListService {
     // subtract BOTH what's already on the list AND the user's "always have" staples (pantry) — so a planned «برنج» the
     // user always keeps never lands on the list. This is the "it knows I already have rice" delight.
     const existingNames = [...(list.items ?? []).map((i) => i.name), ...pantry.map((p) => p.name)];
-    const agg = aggregateShoppingList(planned, { scale: householdSize, ownedNames: existingNames });
+    const agg = aggregateShoppingList(planned, { scale: 1, ownedNames: existingNames }); // per-line scale already encodes servings
 
     if (agg.items.length > 0) {
       await this.prisma.shoppingItem.createMany({
