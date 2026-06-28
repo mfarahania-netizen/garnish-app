@@ -59,4 +59,19 @@ describe('useMealPlan — breakfast + delete (real hook)', () => {
     expect(del).toHaveBeenCalledWith('/meal-plans/slots/0/lunch');
     expect(ok).toBe(false);
   });
+
+  // REGRESSION (founder bug): the grid renders by `${day.dayOfWeek}:${meal.key}` with meal.key ∈ {breakfast,lunch,dinner}
+  // (English). A backend that stored a Persian mealType («ناهار») would key `filled` as «2:ناهار», the grid would look up
+  // «2:lunch», find nothing, and show EVERY slot EMPTY — and with no filled slot there's no remove button either. This
+  // pins the backend/frontend mealType convention together.
+  it('maps a saved slot to the SAME english meal key the grid looks up (mealType must be english)', async () => {
+    get.mockResolvedValue({ data: { slots: [
+      { dayOfWeek: 2, mealType: 'lunch', recipeId: 'r1', recipe: { title: 'قورمه‌سبزی', cookingTime: 90 } },
+    ] } });
+    const { result } = renderHook(() => useMealPlan(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(result.current.filled['2:lunch']).toBeTruthy();
+    expect(result.current.filled['2:lunch'].title).toBe('قورمه‌سبزی');
+    expect(result.current.hasPlan).toBe(true);
+  });
 });

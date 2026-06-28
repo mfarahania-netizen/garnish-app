@@ -148,21 +148,21 @@ export class MealPlansService {
     const usedB = new Set<string>(), usedL = new Set<string>(), usedD = new Set<string>();
     for (let i = 0; i < 7; i++) {
       const lunch = pickDistinct(lunchOptions, usedL, null);
-      if (lunch) planSlots.push({ dayOfWeek: i, mealType: 'ناهار', recipeId: lunch.id, notes: '' });
+      if (lunch) planSlots.push({ dayOfWeek: i, mealType: 'lunch', recipeId: lunch.id, notes: '' });
       const dinner = pickDistinct(dinnerOptions, usedD, lunch?.id ?? null); // lunch != dinner same day
-      if (dinner) planSlots.push({ dayOfWeek: i, mealType: 'شام', recipeId: dinner.id, notes: '' });
+      if (dinner) planSlots.push({ dayOfWeek: i, mealType: 'dinner', recipeId: dinner.id, notes: '' });
       const breakfast = pickDistinct(breakfastOptions, usedB, null);
-      if (breakfast) planSlots.push({ dayOfWeek: i, mealType: 'صبحانه', recipeId: breakfast.id, notes: '' });
+      if (breakfast) planSlots.push({ dayOfWeek: i, mealType: 'breakfast', recipeId: breakfast.id, notes: '' });
     }
 
     if (planSlots.length === 0) {
       for (let i = 0; i < 7; i++) {
         if (allRecipes.length > 0) {
           const recipe = allRecipes[i % allRecipes.length];
-          planSlots.push({ dayOfWeek: i, mealType: 'ناهار', recipeId: recipe.id, notes: '' });
+          planSlots.push({ dayOfWeek: i, mealType: 'lunch', recipeId: recipe.id, notes: '' });
           if (allRecipes.length > 1) {
             const dinnerRecipe = allRecipes[(i + 1) % allRecipes.length];
-            planSlots.push({ dayOfWeek: i, mealType: 'شام', recipeId: dinnerRecipe.id, notes: '' });
+            planSlots.push({ dayOfWeek: i, mealType: 'dinner', recipeId: dinnerRecipe.id, notes: '' });
           }
         }
       }
@@ -195,17 +195,18 @@ export class MealPlansService {
 
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====
   /**
-   * Canonical meal-type is PERSIAN — generateSmartPlan + the meal-plan screen use «صبحانه/ناهار/شام». The agentic
-   * tools speak «lunch/dinner», so without this a slot added/removed via chat stores/queries a DIFFERENT string than a
-   * week-filled slot. The battery caught «یکشنبه ناهار رو حذف کن» doing nothing because the stored «ناهار» ≠ queried
-   * «lunch». Canonicalizing at the service boundary makes EVERY caller consistent.
+   * Canonical meal-type is ENGLISH («breakfast/lunch/dinner») — that is what the meal-plan SCREEN keys its grid by
+   * (useMealPlan MEALS[].key + page `${day}:${meal.key}`). The agentic tools + generateSmartPlan must store the SAME
+   * string or the screen can't find the slot and shows it EMPTY (founder: nothing appeared, manual add/remove dead).
+   * Canonicalizing at the service write/remove boundary makes EVERY caller agree with the frontend.
    */
   private canonMeal(mealType: string): string {
-    const en: Record<string, string> = { breakfast: 'صبحانه', lunch: 'ناهار', dinner: 'شام', snack: 'میان‌وعده', brunch: 'ناهار' };
     const m = String(mealType ?? '').trim();
-    if (en[m.toLowerCase()]) return en[m.toLowerCase()];
-    const fa: Record<string, string> = { 'صبحانه': 'صبحانه', 'صبحونه': 'صبحانه', 'ناهار': 'ناهار', 'نهار': 'ناهار', 'شام': 'شام', 'عصرانه': 'میان‌وعده', 'میان‌وعده': 'میان‌وعده', 'میانوعده': 'میان‌وعده' };
-    return fa[m] ?? m;
+    const map: Record<string, string> = {
+      breakfast: 'breakfast', lunch: 'lunch', dinner: 'dinner', snack: 'snack', brunch: 'lunch',
+      'صبحانه': 'breakfast', 'صبحونه': 'breakfast', 'ناهار': 'lunch', 'نهار': 'lunch', 'شام': 'dinner', 'عصرانه': 'snack', 'میان‌وعده': 'snack', 'میانوعده': 'snack',
+    };
+    return map[m] ?? map[m.toLowerCase()] ?? m;
   }
 
   async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
