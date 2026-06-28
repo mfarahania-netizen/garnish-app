@@ -122,17 +122,21 @@ async function main() {
     for (const r of divergent) {
       const top = r.bd[0];
       const topShare = top && r.bd.reduce((s, x) => s + x.kcal, 0) > 0 ? top.kcal / r.bd.reduce((s, x) => s + x.kcal, 0) : 0;
-      const allGrounded = r.bd.every((x) => x.grounded);
-      // DEFAULT verdict: the live sum is faithful to the authored ingredients → adopt it, UNLESS one big ingredient
-      // dominates with a large per-serving weight (then the authored AMOUNT is the likely culprit → verify first).
       const bigSingle = top && topShare > 0.6 && top.grams / r.servings > 200;
-      const verdict = bigSingle ? 'REVIEW_AMOUNT' : (allGrounded ? 'TRUST_LIVE' : 'REVIEW');
-      const dir = r.live > r.stored ? 'stored UNDER-counts' : 'stored OVER-counts';
+      // CALIBRATION (external check 2026-06-29 vs USDA/Voedingscentrum on egg-fried-rice/khao-soi/bitterballen):
+      // the live sum is mathematically FAITHFUL to the authored amounts, but where live > stored the STORED value
+      // matched the authoritative per-serving range and live ran ~1.5–2.5× — i.e. the recipe over-portions
+      // (generous amount ÷ optimistic servings), NOT a stored under-count. So the default is KEEP the stored value;
+      // only the rarer live < stored case (stored may over-count) is a candidate to adopt live, and even then: review.
+      const overPortioned = r.live > r.stored;
+      const verdict = bigSingle ? 'REVIEW_AMOUNT' : overPortioned ? 'KEEP_STORED' : 'REVIEW_STORED';
+      const dir = overPortioned ? 'live runs high — likely over-portioned recipe' : 'live LOWER — stored may over-count';
       console.log(`\n  • ${r.title}  [${r.region || '—'}]  ${r.servings} servings`);
-      console.log(`      stored ${r0(r.stored)} kcal  vs  live ${r0(r.live)} kcal   (${pct(r.div)} ${dir})  → ${verdict}`);
+      console.log(`      stored ${r0(r.stored)} kcal  vs  live ${r0(r.live)} kcal   (${pct(r.div)} — ${dir})  → ${verdict}`);
       console.log(`      top contributors/serv: ${r.bd.slice(0, 4).map((x) => `${x.name} ${r0(x.grams / r.servings)}g=${r0(x.kcal / r.servings)}kcal[${x.source}${x.grounded ? '' : '*'}]`).join('  ')}`);
-      if (bigSingle) console.log(`      ⚠ one ingredient «${top.name}» is ${pct(topShare)} of calories at ${r0(top.grams / r.servings)}g/serv — verify the authored amount before trusting either number.`);
-      proposals.push({ id: r.id, title: r.title, servings: r.servings, storedKcal: r0(r.stored), liveKcal: r0(r.live), divergence: Number(r.div.toFixed(2)), verdict, proposed: verdict === 'TRUST_LIVE' ? { calories: r0(r.live), protein: r.liveProtein, source: 'estimated_ingredient_gris_v1' } : null });
+      if (bigSingle) console.log(`      ⚠ one ingredient «${top.name}» is ${pct(topShare)} of calories at ${r0(top.grams / r.servings)}g/serv — verify the authored amount/servings.`);
+      // propose adopting live ONLY in the rarer live<stored case (and flagged for review); never auto-overwrite a plausible stored value.
+      proposals.push({ id: r.id, title: r.title, servings: r.servings, storedKcal: r0(r.stored), liveKcal: r0(r.live), divergence: Number(r.div.toFixed(2)), verdict, proposed: verdict === 'REVIEW_STORED' ? { calories: r0(r.live), protein: r.liveProtein, source: 'estimated_ingredient_gris_v1', needsReview: true } : null });
     }
 
     if (notComputable.length) {
@@ -144,13 +148,14 @@ async function main() {
       for (const r of consistent.sort((a, b) => b.div - a.div)) console.log(`  • ${r.title}: stored ${r0(r.stored)} ~ live ${r0(r.live)} (${pct(r.div)})`);
     }
 
-    const trust = proposals.filter((p) => p.verdict === 'TRUST_LIVE').length;
-    const review = proposals.length - trust;
+    const keepStored = proposals.filter((p) => p.verdict === 'KEEP_STORED').length;
+    const reviewAmount = proposals.filter((p) => p.verdict === 'REVIEW_AMOUNT').length;
+    const reviewStored = proposals.filter((p) => p.verdict === 'REVIEW_STORED').length;
     const outDir = path.resolve(__dirname, '_audit');
     fs.mkdirSync(outDir, { recursive: true });
     const outFile = path.join(outDir, 'legacy-nutrition-proposals.json');
-    fs.writeFileSync(outFile, JSON.stringify({ generatedFrom: 'audit-legacy-nutrition.cjs', threshold: THRESHOLD, counts: { legacy: legacy.length, divergent: divergent.length, trustLive: trust, review, notComputable: notComputable.length }, proposals }, null, 2));
-    console.log(`\n[summary] of ${divergent.length} divergent: ${trust} → TRUST_LIVE (propose adopt live), ${review} → need human review (amount/edge).`);
+    fs.writeFileSync(outFile, JSON.stringify({ generatedFrom: 'audit-legacy-nutrition.cjs', threshold: THRESHOLD, calibration: 'external check (USDA/Voedingscentrum) shows stored≈realistic serving; live>stored ⇒ over-portioned recipe, keep stored', counts: { legacy: legacy.length, divergent: divergent.length, keepStored, reviewAmount, reviewStored, notComputable: notComputable.length }, proposals }, null, 2));
+    console.log(`\n[summary] of ${divergent.length} divergent: ${keepStored} → KEEP_STORED (live over-portions), ${reviewAmount} → REVIEW_AMOUNT (dominant ingredient), ${reviewStored} → REVIEW_STORED (live lower — stored may over-count).`);
     console.log(`[written] proposals for review: ${path.relative(process.cwd(), outFile)}  (NO DB writes — propose only)`);
   } finally {
     await prisma.$disconnect();
