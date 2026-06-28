@@ -30,8 +30,8 @@ export class ShoppingListController {
   }
 
   @Patch('items/:id')
-  toggleItem(@Param('id') id: string, @Req() req, @Body() updateDto: UpdateShoppingItemDto) {
-    return this.shoppingListService.toggleItem(id, req.user.userId);
+  updateItem(@Param('id') id: string, @Req() req, @Body() updateDto: UpdateShoppingItemDto) {
+    return this.shoppingListService.updateItem(id, req.user.userId, updateDto);
   }
 
   @Delete('items/:id')

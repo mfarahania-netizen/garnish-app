@@ -15,30 +15,38 @@ export class ShoppingListService {
   ) {}
 
   async getList(userId: string) {
-    let list = await this.prisma.shoppingList.findFirst({
+    // upsert on the now-unique userId → kills the multi-list race (two concurrent first-requests could create two
+    // lists, then findFirst returned a non-deterministic one and items "vanished"). Items ordered: unchecked first,
+    // then by manual sortOrder, then oldest-first — a stable, sensible default for the UI.
+    return this.prisma.shoppingList.upsert({
       where: { userId },
-      include: { items: true },
+      update: {},
+      create: { userId },
+      include: { items: { orderBy: [{ isChecked: 'asc' }, { sortOrder: 'asc' }, { addedAt: 'asc' }] } },
     });
-    if (!list) {
-      list = await this.prisma.shoppingList.create({
-        data: { userId },
-        include: { items: true },
-      });
-    }
-    return list;
   }
 
-  async addItems(userId: string, items: { name: string; amount?: string; unit?: string; category?: string }[]) {
+  /**
+   * Add items, DEDUPED. Founder bug: «خیار اضافه کن» twice made two rows; a recipe added twice duplicated every
+   * ingredient. Now we skip anything already on the list (unchecked) or repeated within the same batch, keyed by
+   * dictionary ingredientId when known, else the folded name. `source` tags provenance ('manual'|'recipe:<id>'|'plan').
+   */
+  async addItems(userId: string, items: { name: string; amount?: string; unit?: string; category?: string; ingredientId?: string; source?: string }[]) {
     const list = await this.getList(userId);
-    return this.prisma.shoppingItem.createMany({
-      data: items.map(item => ({
-        shoppingListId: list.id,
-        name: item.name,
-        amount: item.amount || null,
-        unit: item.unit || null,
-        category: item.category || null,
-      })),
-    });
+    const key = (name: string, ingredientId?: string | null) => (ingredientId ? `id:${ingredientId}` : `n:${norm(name)}`);
+    const seen = new Set<string>();
+    for (const it of list.items ?? []) if (!it.isChecked) seen.add(key(it.name, it.ingredientId));
+    const fresh = [] as { shoppingListId: string; name: string; amount: string | null; unit: string | null; category: string | null; ingredientId: string | null; source: string }[];
+    for (const item of items) {
+      const name = String(item.name ?? '').trim();
+      if (!name) continue;
+      const k = key(name, item.ingredientId);
+      if (seen.has(k)) continue; // already on the list / repeated in this batch → don't duplicate
+      seen.add(k);
+      fresh.push({ shoppingListId: list.id, name, amount: item.amount || null, unit: item.unit || null, category: item.category || null, ingredientId: item.ingredientId || null, source: item.source || 'manual' });
+    }
+    if (fresh.length) await this.prisma.shoppingItem.createMany({ data: fresh });
+    return { added: fresh.length };
   }
 
   /**
@@ -92,6 +100,8 @@ export class ShoppingListService {
           amount: item.display || null,
           unit: null,
           category: item.category,
+          ingredientId: item.ingredientId, // persist the resolved dictionary id (was computed then thrown away)
+          source: 'plan',
         })),
       });
     }
@@ -99,20 +109,28 @@ export class ShoppingListService {
     return { resultStatus: 'ok', added: agg.items.length, merged: agg.merged, flagged: agg.flagged, householdSize, items: agg.items };
   }
 
-  async toggleItem(itemId: string, userId: string) {
-    // مالکیت را از طریق ShoppingList چک کن
+  /**
+   * Update an item — a REAL edit, not just a flip (founder bug: PATCH ignored the body, so name/amount/unit/category
+   * could never be edited and check was non-idempotent). Honors any subset of fields; sets checkedAt when checking.
+   * Back-compat: an empty body still toggles isChecked (the current FE sends no payload).
+   */
+  async updateItem(itemId: string, userId: string, patch: { name?: string; amount?: string; unit?: string; category?: string; isChecked?: boolean } = {}) {
     const item = await this.prisma.shoppingItem.findUnique({
       where: { id: itemId },
       include: { shoppingList: { select: { userId: true } } },
     });
-
     if (!item) throw new NotFoundException('آیتم یافت نشد');
     if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به تغییر این آیتم نیستید');
 
-    return this.prisma.shoppingItem.update({
-      where: { id: itemId },
-      data: { isChecked: !item.isChecked },
-    });
+    const data: { name?: string; amount?: string | null; unit?: string | null; category?: string | null; isChecked?: boolean; checkedAt?: Date | null } = {};
+    if (patch.name !== undefined) data.name = String(patch.name).trim();
+    if (patch.amount !== undefined) data.amount = patch.amount || null;
+    if (patch.unit !== undefined) data.unit = patch.unit || null;
+    if (patch.category !== undefined) data.category = patch.category || null;
+    if (patch.isChecked !== undefined) { data.isChecked = patch.isChecked; data.checkedAt = patch.isChecked ? new Date() : null; }
+    else if (Object.keys(data).length === 0) { const next = !item.isChecked; data.isChecked = next; data.checkedAt = next ? new Date() : null; } // legacy empty-body toggle
+
+    return this.prisma.shoppingItem.update({ where: { id: itemId }, data });
   }
 
   async removeItem(itemId: string, userId: string) {

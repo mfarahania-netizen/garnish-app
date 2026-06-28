@@ -325,7 +325,7 @@ model MealSlot {
 
 model ShoppingList {
   id        String   @id @default(uuid())
-  userId    String
+  userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String?
   createdAt DateTime @default(now())
@@ -342,8 +342,14 @@ model ShoppingItem {
   amount         String?
   unit           String?
   isChecked      Boolean      @default(false)
+  checkedAt      DateTime?
   category       String?
+  ingredientId   String? // soft ref to the dictionary Ingredient (enables merge / pantry-subtraction / aisle)
+  source         String? // 'manual' | 'recipe:<id>' | 'plan' — re-sync can replace plan items without nuking manual
+  sortOrder      Int          @default(0)
   addedAt        DateTime     @default(now())
+
+  @@index([shoppingListId])
 }
 
 model Notification {
