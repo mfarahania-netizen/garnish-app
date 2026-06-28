@@ -279,6 +279,10 @@ model Nutrition {
   carbs    Float?
   fat      Float?
   fiber    Float?
+  // Provenance of the macro values (nullable → legacy rows stay unknown). 'estimated_ingredient_gris_v1' =
+  // deterministically computed (GRIS weightG × source-locked per-100g ÷ servings) by the Persian backfill,
+  // flagged ESTIMATED until USDA source-locked. Lets a later USDA pass distinguish estimates from locked data.
+  source   String?
 }
 
 model SearchTerm {
