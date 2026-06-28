@@ -11,6 +11,7 @@
  * PROPOSES ONLY — it returns a proposal and writes nothing. The user accepts via the existing slot CRUD.
  */
 import { isMainMealSlot } from './course';
+import { isFamiliarDish } from './familiarity';
 
 export interface PlanCandidate {
   recipeId: string;
@@ -84,6 +85,9 @@ export function generateMealPlan(candidates: PlanCandidate[], constraints: PlanC
       const scoreOne = (c: PlanCandidate) => {
         let score = c.fitScore;
         const reasons: string[] = [];
+        // familiarity: a well-known/beloved dish leads over an obscure regional one — matters most for a new user with
+        // no taste history (where every fitScore is ~neutral, so this is what makes the plan feel sensible, not random).
+        if (isFamiliarDish(c.title)) { score += 0.4; reasons.push('a familiar favourite'); }
         // effort fit: weekday prefers quick, weekend tolerates longer
         if (c.cookingTime != null) {
           if (!weekend && c.cookingTime <= weekdayQuickMax) { score += 0.15; reasons.push('quick for a workday'); }

@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { isRecipeVisibleTo } from '../recipes/recipe-visibility';
 import { getStartOfWeek, getStartOfWeekOffset } from '../utils/date.utils';
+import { isFamiliarDish } from './planner/familiarity';
 
 @Injectable()
 export class MealPlansService {
@@ -60,6 +61,15 @@ export class MealPlansService {
       await tx.mealSlot.createMany({ data: srcSlots.map((s) => ({ mealPlanId: dest.id, dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId, notes: s.notes ?? '' })) });
     });
     return { ok: true, copied: srcSlots.length };
+  }
+
+  /** Clear every slot of one week (the «پاک‌کردنِ این هفته» action). Owner-scoped via the user's own plan. */
+  async clearWeek(userId: string, weekOffset = 0) {
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
+    const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
+    if (!plan) return { ok: true, removed: 0 };
+    const res = await this.prisma.mealSlot.deleteMany({ where: { mealPlanId: plan.id } });
+    return { ok: true, removed: res.count };
   }
 
   /** Mark a slot cooked / un-cooked (the "پختم" signature interaction). Owner-scoped via the user's own plan. */
@@ -335,7 +345,9 @@ export class MealPlansService {
     }
     const nq = norm(query);
     const titleHit = (r: any) => (query && norm(r.title).includes(nq) ? 0 : 1); // a title match outranks a desc/ingredient match
-    const rank = (r: any) => titleHit(r) * 6 + (mt && r.mealType?.includes(mt) ? 0 : 2) + (isPersian(r) ? 0 : 1); // title → meal-fit → Persian
+    // title-match (when searching) → meal-fit → FAMILIAR/beloved dish → Persian. The familiarity tier is what makes the
+    // first-glance picker lead with قرمه‌سبزی/کباب instead of obscure regional stews.
+    const rank = (r: any) => titleHit(r) * 8 + (mt && r.mealType?.includes(mt) ? 0 : 4) + (isFamiliarDish(r.title) ? 0 : 2) + (isPersian(r) ? 0 : 1);
     recipes.sort((a: any, b: any) => rank(a) - rank(b) || String(a.title).localeCompare(String(b.title), 'fa'));
     return recipes.slice(0, limit).map((r: any) => ({ recipeId: r.id, title: r.title, cookingTime: r.cookingTime ?? null, totalTime: r.totalTime ?? null }));
   }

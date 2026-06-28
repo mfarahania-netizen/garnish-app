@@ -209,6 +209,7 @@ export default function PlanPage() {
   useEffect(() => { setSelectedDay(todayIdx); }, [todayIdx]);
   const [picker, setPicker] = useState(null); // {day, meal} | null
   const [manualMode, setManualMode] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false); // 2-tap confirm for the destructive «clear week»
 
   const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
   const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
@@ -236,6 +237,12 @@ export default function PlanPage() {
     else if (!ok) showToast('نشد — دوباره امتحان کن', IconCloudOff);
   };
   const onCopyPrev = async () => { const r = await m.copyPrevWeek(); showToast(r.ok ? 'هفتهٔ قبل کپی شد — حالا ویرایشش کن' : 'هفتهٔ قبل خالیه', r.ok ? IconCheck : IconCloudOff); };
+  const onClearWeek = async () => {
+    if (!confirmClear) { setConfirmClear(true); setTimeout(() => setConfirmClear(false), 3000); return; } // destructive → confirm
+    setConfirmClear(false);
+    const ok = await m.clearWeek();
+    showToast(ok ? 'هفته پاک شد' : 'نشد — دوباره امتحان کن', ok ? IconTrash : IconCloudOff);
+  };
 
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
 
@@ -340,10 +347,13 @@ export default function PlanPage() {
                 <Box aria-hidden="true" style={{ inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center' }}><IconShoppingCart size={20} stroke={1.8} /></Box>
                 <Box style={{ flex: 1, textAlign: 'start' }}>
                   <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>از این برنامه، لیست خرید بساز</Text>
-                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>مقدارها برای «تعدادِ نفرِ» هر غذا حساب می‌شه</Text>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>ادغام و دسته‌بندیِ خودکارِ مواد</Text>
                 </Box>
                 <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
               </UnstyledButton>
+            ) : null}
+            {!m.proposalActive && m.hasPlan ? (
+              <UnstyledButton type="button" onClick={onClearWeek} style={{ alignSelf: 'center', minBlockSize: 40, paddingInline: 'var(--g-space-4)', color: confirmClear ? 'var(--g-color-state-danger-fg, #c0392b)' : 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>{confirmClear ? 'مطمئنی؟ دوباره بزن' : 'پاک‌کردنِ این هفته'}</UnstyledButton>
             ) : null}
           </Box>
         </>

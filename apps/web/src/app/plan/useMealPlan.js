@@ -226,6 +226,17 @@ export function useMealPlan() {
   const prevWeek = useCallback(() => setWeekOffset((o) => Math.max(-8, o - 1)), []);
   const goToToday = useCallback(() => setWeekOffset(0), []);
 
+  // clear every meal of the week being viewed (the «پاک‌کردنِ این هفته» action). Returns true on success.
+  const clearWeek = useCallback(async () => {
+    try {
+      await apiClient.post(`/meal-plans/clear-week?offset=${offsetRef.current}`);
+      await plan.refetch();
+      return true;
+    } catch {
+      return false;
+    }
+  }, [plan]);
+
   // copy the PREVIOUS week's plan into the week being viewed (the repeat-use lever). Returns {ok, copied}.
   const copyPrevWeek = useCallback(async () => {
     try {
@@ -245,7 +256,7 @@ export function useMealPlan() {
     status,
     refetch: () => plan.refetch(),
     week, meals: MEALS,
-    weekOffset, nextWeek, prevWeek, goToToday, copyPrevWeek,
+    weekOffset, nextWeek, prevWeek, goToToday, copyPrevWeek, clearWeek,
     filled, suggested,
     hasPlan,
     proposalActive: !!proposal,

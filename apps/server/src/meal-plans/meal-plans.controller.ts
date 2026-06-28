@@ -60,6 +60,12 @@ export class MealPlansController {
     return this.mealPlansService.setServings(req.user.userId, parseInt(dayOfWeek), mealType, Number(body?.servings), weekOffset(offset));
   }
 
+  // Clear every meal of the viewed week (?offset). The «پاک‌کردنِ این هفته» action.
+  @Post('clear-week')
+  clearWeek(@Req() req, @Query('offset') offset?: string) {
+    return this.mealPlansService.clearWeek(req.user.userId, weekOffset(offset));
+  }
+
   // ✅ جدید: حذف یک وعده
   @Delete('slots/:dayOfWeek/:mealType')
   removeMealSlot(
