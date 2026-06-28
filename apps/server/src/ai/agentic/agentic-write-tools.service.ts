@@ -66,6 +66,7 @@ export class AgenticWriteToolsService {
     return [
       this.addFavorite(),
       this.removeFavorite(),
+      this.addItemsToShoppingList(),
       this.addRecipeToShoppingList(),
       this.addWeekToShoppingList(),
       this.addToMealPlan(),
@@ -362,6 +363,43 @@ export class AgenticWriteToolsService {
           return { ok: true, action: 'add_recipe_to_shopping_list', recipe: r.title, added: items.length, undoHint: 'کاربر می‌تواند از صفحهٔ لیستِ خرید آیتم‌ها را بردارد.' };
         } catch (e) {
           this.logger.warn(`add_recipe_to_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'افزودن به لیستِ خرید الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  /**
+   * Add one or more FREE, standalone items to the shopping list (founder hit live: «خیار رو به لیست خرید اضافه کن»
+   * was refused because the only shopping tools added a whole RECIPE's ingredients — there was no plain "add this
+   * item" path, which is the most basic shopping-list operation). No recipe + no allergy gate: it's a user-initiated
+   * note on their own list (they may buy anything), not a recommendation. Reuses the audited ShoppingListService.addItems
+   * (dedupe/merge/categorize live in the service).
+   */
+  private addItemsToShoppingList(): AgenticTool {
+    return {
+      spec: {
+        name: 'add_items_to_shopping_list',
+        description: 'افزودنِ یک یا چند مادهٔ مشخص (دلخواه) به لیستِ خریدِ کاربر — وقتی گفت «خیار رو به لیستِ خرید اضافه کن» یا «ماست و نون و تخم‌مرغ بذار تو لیستِ خرید». این برای موادِ تکیِ آزاد است، نه موادِ یک رسپی (برای آن add_recipe_to_shopping_list). نامِ مواد را همان‌طور که کاربر گفت بنویس؛ خودت رسپی پیدا نکن.',
+        parameters: {
+          type: 'object',
+          properties: {
+            items: { type: 'array', items: { type: 'string' }, description: 'فهرستِ نامِ مواد، مثلاً ["خیار"] یا ["ماست","نون","تخم‌مرغ"]' },
+          },
+          required: ['items'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const src = (args as { items?: unknown; item?: unknown })?.items ?? (args as { item?: unknown })?.item ?? [];
+        const rawList = Array.isArray(src) ? src : [src];
+        const items = rawList.map((s) => ({ name: String(s ?? '').trim() })).filter((i) => i.name);
+        if (!items.length) return { error: 'هیچ ماده‌ای مشخص نشد؛ از کاربر بپرس چی به لیست اضافه کنه.' };
+        try {
+          await this.shoppingList.addItems(ctx.userId, items);
+          const names = items.map((i) => i.name);
+          return { ok: true, action: 'add_items_to_shopping_list', added: names, note: `به لیستِ خرید اضافه شد: ${names.join('، ')}.`, undoHint: 'از صفحهٔ لیستِ خرید قابلِ حذف است.' };
+        } catch (e) {
+          this.logger.warn(`add_items_to_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
           return { error: 'افزودن به لیستِ خرید الان ممکن نشد.' };
         }
       },
