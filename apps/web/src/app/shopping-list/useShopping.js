@@ -139,6 +139,32 @@ export function useShopping() {
     }
   }, [list]);
 
+  // PANTRY ("از قبل دارم" staples) — build-from-plan subtracts these so a thing you always keep never re-appears.
+  const pantry = useQuery({ queryKey: ['shopping', 'pantry'], queryFn: () => apiClient.get('/shopping-list/pantry').then((r) => r.data) });
+  const pantryItems = useMemo(() => (Array.isArray(pantry.data) ? pantry.data : []), [pantry.data]);
+
+  const addToPantry = useCallback(async (it) => {
+    setRemoved((r) => ({ ...r, [it.id]: true })); // optimistic remove from the list
+    try {
+      await apiClient.post(`/shopping-list/items/${it.id}/to-pantry`);
+      await Promise.all([list.refetch(), pantry.refetch()]);
+      return true;
+    } catch {
+      setRemoved((r) => { const n = { ...r }; delete n[it.id]; return n; });
+      return false;
+    }
+  }, [list, pantry]);
+
+  const addPantryName = useCallback(async (name) => {
+    const n = String(name || '').trim();
+    if (!n) return false;
+    try { await apiClient.post('/shopping-list/pantry', { name: n }); await pantry.refetch(); return true; } catch { return false; }
+  }, [pantry]);
+
+  const removeFromPantry = useCallback(async (p) => {
+    try { await apiClient.delete(`/shopping-list/pantry/${p.id}`); await pantry.refetch(); return true; } catch { return false; }
+  }, [pantry]);
+
   const remove = useCallback(async (it) => {
     setRemoved((r) => ({ ...r, [it.id]: true })); // optimistic
     try {
@@ -183,5 +209,5 @@ export function useShopping() {
   else if (list.isError) status = 'error';
   else if (total === 0) status = 'empty';
 
-  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, clearChecked, clearAll, updateItem, busy };
+  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, clearChecked, clearAll, updateItem, pantryItems, addToPantry, addPantryName, removeFromPantry, busy };
 }

@@ -27,6 +27,13 @@ function baseHook(overrides = {}) {
     remove: vi.fn(),
     addManual: vi.fn(),
     buildFromPlan: vi.fn(),
+    clearChecked: vi.fn(),
+    clearAll: vi.fn(),
+    updateItem: vi.fn(),
+    pantryItems: [],
+    addToPantry: vi.fn(),
+    addPantryName: vi.fn(),
+    removeFromPantry: vi.fn(),
     busy: false,
     ...overrides,
   };

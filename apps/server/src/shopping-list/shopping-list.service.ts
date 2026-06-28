@@ -92,7 +92,10 @@ export class ShoppingListService {
     }
 
     const list = await this.getList(userId);
-    const existingNames = (list.items ?? []).map((i) => i.name); // de-dupe against what's already listed (preserve manual/checked)
+    const pantry = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
+    // subtract BOTH what's already on the list AND the user's "always have" staples (pantry) — so a planned «برنج» the
+    // user always keeps never lands on the list. This is the "it knows I already have rice" delight.
+    const existingNames = [...(list.items ?? []).map((i) => i.name), ...pantry.map((p) => p.name)];
     const agg = aggregateShoppingList(planned, { scale: householdSize, ownedNames: existingNames });
 
     if (agg.items.length > 0) {
@@ -167,5 +170,43 @@ export class ShoppingListService {
     const list = await this.getList(userId);
     const res = await this.prisma.shoppingItem.updateMany({ where: { shoppingListId: list.id, isChecked: true }, data: { isChecked: false, checkedAt: null } });
     return { unchecked: res.count };
+  }
+
+  // ── PANTRY ("از قبل دارم" staples) — wired into buildFromPlan so the user's always-have items never re-appear ──
+
+  async getPantry(userId: string) {
+    return this.prisma.pantryItem.findMany({ where: { userId }, orderBy: { addedAt: 'desc' } });
+  }
+
+  /** Move a shopping item into the pantry (mark it "always have") and remove it from the list. Owner-checked, deduped. */
+  async addToPantry(itemId: string, userId: string) {
+    const item = await this.prisma.shoppingItem.findUnique({
+      where: { id: itemId },
+      include: { shoppingList: { select: { userId: true } } },
+    });
+    if (!item) throw new NotFoundException('آیتم یافت نشد');
+    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به این کار نیستید');
+    const existing = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
+    if (!existing.some((p) => norm(p.name) === norm(item.name))) {
+      await this.prisma.pantryItem.create({ data: { userId, name: item.name, ingredientId: item.ingredientId, amount: item.amount, unit: item.unit } });
+    }
+    await this.prisma.shoppingItem.delete({ where: { id: itemId } });
+    return { ok: true };
+  }
+
+  /** Add a staple to the pantry by free name (typed in the "موادِ همیشگی" section). */
+  async addPantryName(userId: string, name: string) {
+    const n = String(name ?? '').trim();
+    if (!n) return { ok: false };
+    const existing = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
+    if (existing.some((p) => norm(p.name) === norm(n))) return { ok: true };
+    return this.prisma.pantryItem.create({ data: { userId, name: n } });
+  }
+
+  async removeFromPantry(pantryId: string, userId: string) {
+    const p = await this.prisma.pantryItem.findUnique({ where: { id: pantryId }, select: { userId: true } });
+    if (!p) throw new NotFoundException('یافت نشد');
+    if (p.userId !== userId) throw new ForbiddenException('شما مجاز به این کار نیستید');
+    return this.prisma.pantryItem.delete({ where: { id: pantryId } });
   }
 }

@@ -53,4 +53,24 @@ export class ShoppingListController {
   uncheckAll(@Req() req) {
     return this.shoppingListService.uncheckAll(req.user.userId);
   }
+
+  @Get('pantry')
+  getPantry(@Req() req) {
+    return this.shoppingListService.getPantry(req.user.userId);
+  }
+
+  @Post('pantry')
+  addPantry(@Req() req, @Body() body: { name?: string }) {
+    return this.shoppingListService.addPantryName(req.user.userId, body?.name ?? '');
+  }
+
+  @Post('items/:id/to-pantry')
+  toPantry(@Param('id') id: string, @Req() req) {
+    return this.shoppingListService.addToPantry(id, req.user.userId);
+  }
+
+  @Delete('pantry/:id')
+  removeFromPantry(@Param('id') id: string, @Req() req) {
+    return this.shoppingListService.removeFromPantry(id, req.user.userId);
+  }
 }

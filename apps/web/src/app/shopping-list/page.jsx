@@ -1,28 +1,31 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX } from '@tabler/icons-react';
+import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX, IconHome, IconArchive } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
 import { emojiFor } from './ingredient-emoji';
 import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
-function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, first }) {
+function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, first }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(item.name);
   const [amount, setAmount] = useState(item.amount || '');
   const border = first ? 'none' : '1px solid var(--g-color-border-subtle)';
 
-  // EDIT MODE — name + amount inputs + save/cancel (founder: «چرا قابل ادیت نیست؟»).
+  // EDIT MODE — name + amount inputs + save/cancel (founder: «چرا قابل ادیت نیست؟»), plus a «از قبل دارم» shortcut.
   if (editing) {
     const save = async () => { const n = name.trim(); if (!n) return; await onUpdate({ name: n, amount: amount.trim() }); setEditing(false); };
     return (
-      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', borderBlockStart: border, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)' }}>
-        <Box component="input" value={name} onChange={(e) => setName(e.target.value)} aria-label="نام" style={{ flex: 2, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }} />
-        <Box component="input" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="مقدار" placeholder="مقدار" onKeyDown={(e) => { if (e.key === 'Enter') save(); }} style={{ flex: 1, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }} />
-        <UnstyledButton type="button" onClick={save} aria-label="ذخیره" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconCheck size={17} stroke={2.2} /></UnstyledButton>
-        <UnstyledButton type="button" onClick={() => setEditing(false)} aria-label="انصراف" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={17} stroke={1.8} /></UnstyledButton>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-1)', borderBlockStart: border, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)' }}>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+          <Box component="input" value={name} onChange={(e) => setName(e.target.value)} aria-label="نام" style={{ flex: 2, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }} />
+          <Box component="input" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="مقدار" placeholder="مقدار" onKeyDown={(e) => { if (e.key === 'Enter') save(); }} style={{ flex: 1, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }} />
+          <UnstyledButton type="button" onClick={save} aria-label="ذخیره" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconCheck size={17} stroke={2.2} /></UnstyledButton>
+          <UnstyledButton type="button" onClick={() => setEditing(false)} aria-label="انصراف" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={17} stroke={1.8} /></UnstyledButton>
+        </Box>
+        <UnstyledButton type="button" onClick={() => { setEditing(false); onPantry(); }} style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4, minBlockSize: 32, paddingInline: 'var(--g-space-2)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconHome size={13} stroke={1.8} aria-hidden="true" />از قبل دارم — به «موادِ همیشگی» ببر</UnstyledButton>
       </Box>
     );
   }
@@ -148,7 +151,7 @@ export default function ShoppingListPage() {
                       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{g.label}</Text>
                     </Box>
                     <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', overflow: 'hidden' }}>
-                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} onUpdate={(patch) => s.updateItem(it, patch)} first={i === 0} />)}
+                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} onUpdate={(patch) => s.updateItem(it, patch)} onPantry={() => s.addToPantry(it)} first={i === 0} />)}
                     </Box>
                   </Box>
                 ))}
@@ -158,6 +161,24 @@ export default function ShoppingListPage() {
                     <IconTrash size={13} stroke={1.8} aria-hidden="true" />{confirmClear ? 'مطمئنی؟ دوباره بزن' : 'پاک‌کردنِ کلِ لیست'}
                   </UnstyledButton>
                 </Box>
+                {/* PANTRY — "always have" staples; build-from-plan subtracts these. Seeded via a row's «از قبل دارم». */}
+                {(s.pantryItems?.length ?? 0) > 0 ? (
+                  <Box style={{ marginBlockStart: 'var(--g-space-6)', paddingBlockStart: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
+                    <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-1)' }}>
+                      <IconArchive size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
+                      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-secondary)', margin: 0 }}>موادِ همیشگی (از قبل دارم)</Text>
+                    </Box>
+                    <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '0 0 var(--g-space-2)' }}>اینا رو همیشه داری، پس موقعِ ساختن از برنامه دیگه به لیست اضافه نمی‌شن.</Text>
+                    <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                      {s.pantryItems.map((p) => (
+                        <Box key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInlineStart: 'var(--g-space-2)', paddingInlineEnd: 2, paddingBlock: 3, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)' }}>
+                          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-primary)' }}>{`${emojiFor(p.name)} ${p.name}`.trim()}</Text>
+                          <UnstyledButton type="button" onClick={() => s.removeFromPantry(p)} aria-label={`حذفِ ${p.name} از موادِ همیشگی`} style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={13} stroke={1.8} aria-hidden="true" /></UnstyledButton>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                ) : null}
               </Box>
             )}
       </Box>
