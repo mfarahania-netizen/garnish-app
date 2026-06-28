@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX, IconHome, IconArchive } from '@tabler/icons-react';
+import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX, IconHome, IconArchive, IconUsers, IconMinus } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
 import { emojiFor } from './ingredient-emoji';
 import { toFaDigits } from '../../components/ges/format';
@@ -57,12 +57,30 @@ function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, ais
   );
 }
 
-function ShoppingEmpty({ onFromPlan, busy }) {
+// the «for how many people» picker lives RIGHT HERE at the build moment — one place, self-explanatory; it scales the
+// list's quantities (a recipe written for 4, built «for 8», buys double). No per-dish clutter on the plan.
+function ServingsPick({ value, onChange }) {
+  const v = value || 4;
+  const btn = { flexShrink: 0, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)' };
+  return (
+    <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-1)' }}>
+      <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><IconUsers size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)' }}>برای چند نفر؟</Text></Box>
+      <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}>
+        <UnstyledButton type="button" onClick={() => onChange(Math.max(1, v - 1))} aria-label="نفرِ کمتر" style={btn}><IconMinus size={14} stroke={2.2} /></UnstyledButton>
+        <Text component="span" aria-label={`${v} نفر`} style={{ minInlineSize: 44, textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>{toFaDigits(v)} نفر</Text>
+        <UnstyledButton type="button" onClick={() => onChange(Math.min(20, v + 1))} aria-label="نفرِ بیشتر" style={btn}><IconPlus size={14} stroke={2.2} /></UnstyledButton>
+      </Box>
+    </Box>
+  );
+}
+
+function ShoppingEmpty({ onFromPlan, busy, servings, onServings }) {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-2)' }}>
       <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-2)' }}><IconShoppingCart size={28} stroke={1.6} /></Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>لیستت خالیه</Text>
-      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 0 }}>از روی برنامهٔ هفته بسازش؟</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 0 }}>از روی برنامهٔ هفته بسازش؟ مقدارها برای تعدادِ نفری که می‌گی حساب می‌شه.</Text>
+      <ServingsPick value={servings} onChange={onServings} />
       <UnstyledButton type="button" onClick={onFromPlan} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{busy ? 'در حال ساختن…' : 'ساختن از برنامه'}</UnstyledButton>
     </Box>
   );
@@ -84,13 +102,14 @@ export default function ShoppingListPage() {
   const s = useShopping();
   const [draft, setDraft] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
+  const [servings, setServings] = useState(4); // «for how many people» the build-from-plan scales the list to
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
   const showToast = useCallback((message, Icon) => { clearTimeout(toastTimer.current); setToast({ message, Icon }); toastTimer.current = setTimeout(() => setToast(null), 2200); }, []);
 
   const onFromPlan = async () => {
-    const r = await s.buildFromPlan();
+    const r = await s.buildFromPlan(servings);
     if (!r.ok) { showToast('الان نشد — دوباره امتحان کن', IconCloudOff); return; }
     if (r.noPlan) { showToast('اول یک برنامهٔ هفته بچین', IconWand); navigate('/plan'); return; }
     if (!r.added && !r.merged) { showToast('همه‌چیز از قبل توی لیسته', IconCheck); return; }
@@ -128,7 +147,7 @@ export default function ShoppingListPage() {
             </Box>
           </Box>
         ) : s.status === 'error' ? <ShoppingError onRetry={s.refetch} />
-          : s.status === 'empty' ? <ShoppingEmpty onFromPlan={onFromPlan} busy={s.busy} />
+          : s.status === 'empty' ? <ShoppingEmpty onFromPlan={onFromPlan} busy={s.busy} servings={servings} onServings={setServings} />
             : (
               <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-4)' }}>
                 {/* trip progress: a completion moment when everything's got, else a quiet "clear what's got" affordance */}

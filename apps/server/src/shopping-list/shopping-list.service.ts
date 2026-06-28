@@ -58,7 +58,7 @@ export class ShoppingListService {
    * getLivingUserProfile), categorizes, and de-dupes against items already on the list. ADDS only NEW items
    * — manual/checked items are preserved (re-sync is idempotent). Never fabricates ids/quantities.
    */
-  async buildFromPlan(userId: string) {
+  async buildFromPlan(userId: string, targetServings?: number) {
     let householdSize = 1;
     try {
       const profile = await this.profiles.getLivingUserProfile(userId);
@@ -94,7 +94,9 @@ export class ShoppingListService {
     for (const slot of slots as any[]) {
       const r = slot.recipe;
       const base = r.servings && r.servings > 0 ? r.servings : 4; // fallback when a recipe lacks a base count
-      const want = servingsById.get(slot.id) ?? base; // explicit per-slot servings, else cook the recipe as written
+      // ONE «for N people» chosen at build time scales every dish (targetServings); else a per-slot override; else the
+      // recipe as written. So the list always matches how many you're actually cooking for.
+      const want = targetServings && targetServings > 0 ? targetServings : (servingsById.get(slot.id) ?? base);
       const scale = want / base;
       for (const ing of r.ingredients ?? []) {
         planned.push({

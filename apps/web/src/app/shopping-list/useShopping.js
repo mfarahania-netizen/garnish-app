@@ -189,10 +189,11 @@ export function useShopping() {
     }
   }, [list]);
 
-  const buildFromPlan = useCallback(async () => {
+  const buildFromPlan = useCallback(async (servings) => {
     setBusy(true);
     try {
-      const res = await apiClient.post('/shopping-list/from-plan').then((r) => r.data);
+      const qs = servings && servings > 0 ? `?servings=${servings}` : ''; // «for N people» → scales the list
+      const res = await apiClient.post(`/shopping-list/from-plan${qs}`).then((r) => r.data);
       setOverrides({});
       setRemoved({});
       await list.refetch();

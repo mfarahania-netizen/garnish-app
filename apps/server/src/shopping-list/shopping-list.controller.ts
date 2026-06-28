@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ShoppingListService } from './shopping-list.service';
 import { AddShoppingItemsDto } from './dto/add-shopping-items.dto';
@@ -25,8 +25,9 @@ export class ShoppingListController {
    * add/edit/check stays intact (only NEW items are added).
    */
   @Post('from-plan')
-  buildFromPlan(@Req() req) {
-    return this.shoppingListService.buildFromPlan(req.user.userId);
+  buildFromPlan(@Req() req, @Query('servings') servings?: string) {
+    const n = parseInt(servings ?? '', 10);
+    return this.shoppingListService.buildFromPlan(req.user.userId, Number.isFinite(n) && n > 0 ? Math.min(20, n) : undefined);
   }
 
   @Patch('items/:id')
