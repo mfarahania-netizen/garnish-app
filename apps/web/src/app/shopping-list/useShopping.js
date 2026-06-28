@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
-import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart } from '@tabler/icons-react';
+import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart, IconLeaf } from '@tabler/icons-react';
 
 /**
  * useShopping — the grocery list (GET /shopping-list), grouped by aisle/category. Check-off toggles
@@ -11,19 +11,22 @@ import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart } from '@tab
  * summary from from-plan is surfaced instead.
  */
 
-// category token (en/fa) → aisle group (label + icon + order); unknown → «سایر»
+// category token (en/fa) → aisle group (label + icon + order); unknown → «سایر». Persian-authored order: سبزیِ تازه (the
+// herb bunches central to ghormeh/ash/kuku) is its OWN top aisle, then produce, protein, grains, dairy, other.
 const GROUPS = {
-  vegetable: 'produce', vegetables: 'produce', produce: 'produce', fruit: 'produce', herb: 'produce', herbs: 'produce',
+  herb: 'herbs', herbs: 'herbs',
+  vegetable: 'produce', vegetables: 'produce', produce: 'produce', fruit: 'produce',
   protein: 'protein', meat: 'protein', poultry: 'protein', fish: 'protein', seafood: 'protein', egg: 'protein', eggs: 'protein',
   grain: 'grain', grains: 'grain', legume: 'grain', legumes: 'grain', pantry: 'grain', rice: 'grain', pasta: 'grain', bread: 'grain',
   dairy: 'dairy', milk: 'dairy', cheese: 'dairy',
 };
 const GROUP_META = {
-  produce: { label: 'میوه و سبزی', Icon: IconSalad, order: 1 },
-  protein: { label: 'گوشت و پروتئین', Icon: IconMeat, order: 2 },
-  grain: { label: 'غلات و حبوبات', Icon: IconWheat, order: 3 },
-  dairy: { label: 'لبنیات', Icon: IconMilk, order: 4 },
-  other: { label: 'سایر', Icon: IconShoppingCart, order: 5 },
+  herbs: { label: 'سبزی و سبزیجاتِ معطر', Icon: IconLeaf, order: 1 },
+  produce: { label: 'میوه و سبزیجات', Icon: IconSalad, order: 2 },
+  protein: { label: 'گوشت و پروتئین', Icon: IconMeat, order: 3 },
+  grain: { label: 'غلات و حبوبات', Icon: IconWheat, order: 4 },
+  dairy: { label: 'لبنیات', Icon: IconMilk, order: 5 },
+  other: { label: 'سایر', Icon: IconShoppingCart, order: 6 },
 };
 const groupKey = (category) => {
   const c = String(category || '').trim().toLowerCase();
@@ -35,6 +38,7 @@ const groupKey = (category) => {
 // category is missing/unknown, infer the aisle from the (Persian) item name so the list groups by aisle
 // like the mockup. Order matters: dairy/protein before grain so e.g. «کره» → dairy, «مرغ» → protein.
 const NAME_AISLES = [
+  ['herbs', ['سبزی', 'جعفری', 'گشنیز', 'نعنا', 'نعناع', 'ریحان', 'شوید', 'ترخون', 'تره', 'مرزه', 'شنبلیله']],
   ['dairy', ['شیر', 'ماست', 'پنیر', 'خامه', 'کره', 'دوغ', 'کشک', 'بستنی']],
   ['protein', ['مرغ', 'گوشت', 'ماهی', 'میگو', 'گوساله', 'گوسفند', 'بوقلمون', 'کالباس', 'سوسیس', 'تخم‌مرغ', 'تخم مرغ', 'تخم‌ مرغ', 'ژامبون']],
   ['grain', ['برنج', 'نان', 'ماکارونی', 'اسپاگتی', 'رشته', 'عدس', 'لوبیا', 'نخود', 'ماش', 'لپه', 'آرد', 'جو', 'بلغور', 'گندم', 'کینوا', 'بیسکویت', 'بلغور']],

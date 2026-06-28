@@ -3,6 +3,7 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
+import { emojiFor } from './ingredient-emoji';
 import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
@@ -33,6 +34,7 @@ function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, first }) {
         <Box aria-hidden="true" className={checked ? 'g-check-pop' : undefined} style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 140ms ease, border-color 140ms ease' }}>
           {checked ? <IconCheck size={14} stroke={2.4} /> : null}
         </Box>
+        {emojiFor(item.name) ? <Box component="span" aria-hidden="true" style={{ flexShrink: 0, fontSize: 18, lineHeight: 1, marginInlineStart: -2, opacity: checked ? 0.5 : 1 }}>{emojiFor(item.name)}</Box> : null}
         <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: checked ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)', textDecoration: checked ? 'line-through' : 'none' }}>{item.name}</Text>
         {checked ? (
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', whiteSpace: 'nowrap' }}>گرفتم</Text>
