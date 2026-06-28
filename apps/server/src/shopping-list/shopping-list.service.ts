@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProfileReadService } from '../behavior-engine/profile/read/profile-read.service';
 import { getStartOfWeek } from '../utils/date.utils';
 import { aggregateShoppingList, PlannedIngredient } from './aggregation/shopping-aggregator';
+import { splitQuantity } from './aggregation/parse-quantity';
 import { norm } from '../ai/tools/grounding-utils';
 
 const COOKS_FOR_TO_SIZE: Record<string, number> = { '1': 1, '2': 2, '3_4': 3, '5_plus': 5 };
@@ -38,12 +39,14 @@ export class ShoppingListService {
     for (const it of list.items ?? []) if (!it.isChecked) seen.add(key(it.name, it.ingredientId));
     const fresh = [] as { shoppingListId: string; name: string; amount: string | null; unit: string | null; category: string | null; ingredientId: string | null; source: string }[];
     for (const item of items) {
-      const name = String(item.name ?? '').trim();
+      const parsed = splitQuantity(String(item.name ?? '')); // «خیار دو کیلو» (typed manually) → name «خیار» + amount «دو کیلو»
+      const name = parsed.name.trim();
       if (!name) continue;
+      const amount = item.amount || parsed.amount || null; // honor an explicit amount; else use the one peeled off the name
       const k = key(name, item.ingredientId);
       if (seen.has(k)) continue; // already on the list / repeated in this batch → don't duplicate
       seen.add(k);
-      fresh.push({ shoppingListId: list.id, name, amount: item.amount || null, unit: item.unit || null, category: item.category || null, ingredientId: item.ingredientId || null, source: item.source || 'manual' });
+      fresh.push({ shoppingListId: list.id, name, amount, unit: item.unit || null, category: item.category || null, ingredientId: item.ingredientId || null, source: item.source || 'manual' });
     }
     if (fresh.length) await this.prisma.shoppingItem.createMany({ data: fresh });
     return { added: fresh.length };

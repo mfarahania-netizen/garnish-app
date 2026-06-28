@@ -108,6 +108,33 @@ export function useShopping() {
     }
   }, [list]);
 
+  // bulk: empty the whole list.
+  const clearAll = useCallback(async () => {
+    setBusy(true);
+    try {
+      await apiClient.post('/shopping-list/clear-all');
+      setOverrides({});
+      setRemoved({});
+      await list.refetch();
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }, [list]);
+
+  // edit a single item (name/amount) — the real PATCH (backend now honors the body); refetch to show the saved value.
+  const updateItem = useCallback(async (it, patch) => {
+    try {
+      await apiClient.patch(`/shopping-list/items/${it.id}`, patch);
+      await list.refetch();
+      return true;
+    } catch {
+      return false;
+    }
+  }, [list]);
+
   const remove = useCallback(async (it) => {
     setRemoved((r) => ({ ...r, [it.id]: true })); // optimistic
     try {
@@ -152,5 +179,5 @@ export function useShopping() {
   else if (list.isError) status = 'error';
   else if (total === 0) status = 'empty';
 
-  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, clearChecked, busy };
+  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, clearChecked, clearAll, updateItem, busy };
 }

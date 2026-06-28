@@ -1,15 +1,33 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash } from '@tabler/icons-react';
+import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
 import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
-function GroceryRow({ item, checked, onToggle, onRemove, first }) {
+function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, first }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(item.name);
+  const [amount, setAmount] = useState(item.amount || '');
+  const border = first ? 'none' : '1px solid var(--g-color-border-subtle)';
+
+  // EDIT MODE — name + amount inputs + save/cancel (founder: «چرا قابل ادیت نیست؟»).
+  if (editing) {
+    const save = async () => { const n = name.trim(); if (!n) return; await onUpdate({ name: n, amount: amount.trim() }); setEditing(false); };
+    return (
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', borderBlockStart: border, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)' }}>
+        <Box component="input" value={name} onChange={(e) => setName(e.target.value)} aria-label="نام" style={{ flex: 2, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: 'var(--g-color-text-primary)' }} />
+        <Box component="input" value={amount} onChange={(e) => setAmount(e.target.value)} aria-label="مقدار" placeholder="مقدار" onKeyDown={(e) => { if (e.key === 'Enter') save(); }} style={{ flex: 1, minInlineSize: 0, blockSize: 40, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', outline: 'none', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }} />
+        <UnstyledButton type="button" onClick={save} aria-label="ذخیره" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconCheck size={17} stroke={2.2} /></UnstyledButton>
+        <UnstyledButton type="button" onClick={() => setEditing(false)} aria-label="انصراف" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={17} stroke={1.8} /></UnstyledButton>
+      </Box>
+    );
+  }
+
   return (
-    <Box style={{ display: 'flex', alignItems: 'center', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)', opacity: checked ? 0.55 : 1, transition: 'opacity 200ms ease' }}>
+    <Box style={{ display: 'flex', alignItems: 'center', borderBlockStart: border, opacity: checked ? 0.55 : 1, transition: 'opacity 200ms ease' }}>
       {/* the row body toggles the no-shame checked state (accessible name = the item) */}
       <UnstyledButton type="button" onClick={onToggle} aria-pressed={checked} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minBlockSize: 48, paddingInlineStart: 'var(--g-space-4)', paddingInlineEnd: 'var(--g-space-2)', paddingBlock: 'var(--g-space-3)' }}>
         <Box aria-hidden="true" className={checked ? 'g-check-pop' : undefined} style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 140ms ease, border-color 140ms ease' }}>
@@ -21,6 +39,10 @@ function GroceryRow({ item, checked, onToggle, onRemove, first }) {
         ) : item.amount || item.unit ? (
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{toFaDigits([item.amount, item.unit].filter(Boolean).join(' '))}</Text>
         ) : null}
+      </UnstyledButton>
+      {/* edit — inline name/amount */}
+      <UnstyledButton type="button" onClick={() => { setName(item.name); setAmount(item.amount || ''); setEditing(true); }} aria-label="ویرایش" style={{ flexShrink: 0, inlineSize: 40, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}>
+        <IconPencil size={16} stroke={1.8} aria-hidden="true" />
       </UnstyledButton>
       {/* delete — removes the item from the real list (optimistic) */}
       <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از لیست" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}>
@@ -56,6 +78,7 @@ export default function ShoppingListPage() {
   const navigate = useNavigate();
   const s = useShopping();
   const [draft, setDraft] = useState('');
+  const [confirmClear, setConfirmClear] = useState(false);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
@@ -71,9 +94,15 @@ export default function ShoppingListPage() {
   };
   const onAdd = async () => { const ok = await s.addManual(draft); if (ok) { setDraft(''); showToast('به لیست اضافه شد', IconPlus); } else showToast('اضافه نشد — دوباره امتحان کن', IconCloudOff); };
   const onClearChecked = async () => { const n = s.done; const ok = await s.clearChecked(); showToast(ok ? `${toFaDigits(n)} مورد پاک شد` : 'الان نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
+  const onClearAll = async () => {
+    if (!confirmClear) { setConfirmClear(true); setTimeout(() => setConfirmClear(false), 3000); return; } // 2-tap confirm (destructive)
+    setConfirmClear(false);
+    const ok = await s.clearAll();
+    showToast(ok ? 'کلِ لیست پاک شد' : 'الان نشد — دوباره امتحان کن', ok ? IconTrash : IconCloudOff);
+  };
 
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '70dvh' }}>
+    <Box style={{ flex: 1, minBlockSize: 0, display: 'flex', flexDirection: 'column' }}>
       {/* header */}
       <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <Box>
@@ -85,7 +114,7 @@ export default function ShoppingListPage() {
         <UnstyledButton type="button" onClick={onFromPlan} disabled={s.busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconRefresh size={14} stroke={1.8} aria-hidden="true" />از روی برنامه</UnstyledButton>
       </Box>
 
-      <Box style={{ flex: 1 }}>
+      <Box style={{ flex: 1, minBlockSize: 0, overflowY: 'auto' }}>
         {s.status === 'loading' ? (
           <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
             <SkeletonLine w="40%" h={14} />
@@ -117,10 +146,16 @@ export default function ShoppingListPage() {
                       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{g.label}</Text>
                     </Box>
                     <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', overflow: 'hidden' }}>
-                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} first={i === 0} />)}
+                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} onUpdate={(patch) => s.updateItem(it, patch)} first={i === 0} />)}
                     </Box>
                   </Box>
                 ))}
+                {/* clear the WHOLE list — quiet, destructive, 2-tap confirm (founder: «پاک کردن کل لیست خرید نداره؟») */}
+                <Box style={{ display: 'flex', justifyContent: 'center', marginBlockStart: 'var(--g-space-2)' }}>
+                  <UnstyledButton type="button" onClick={onClearAll} disabled={s.busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', color: confirmClear ? 'var(--g-color-state-danger-fg, var(--g-color-brand-700))' : 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
+                    <IconTrash size={13} stroke={1.8} aria-hidden="true" />{confirmClear ? 'مطمئنی؟ دوباره بزن' : 'پاک‌کردنِ کلِ لیست'}
+                  </UnstyledButton>
+                </Box>
               </Box>
             )}
       </Box>
