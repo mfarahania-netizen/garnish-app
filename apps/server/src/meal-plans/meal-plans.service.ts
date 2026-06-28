@@ -42,7 +42,7 @@ export class MealPlansService {
     const start = new Date(weekStart);
     const cleanSlots = slots.map(slot => ({
       dayOfWeek: slot.dayOfWeek,
-      mealType: slot.mealType,
+      mealType: this.canonMeal(slot.mealType), // ENGLISH canonical — same as addMealSlot/generate, so the grid finds it
       recipeId: slot.recipeId || null,
       notes: slot.notes || '',
     }));

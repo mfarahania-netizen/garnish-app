@@ -3,7 +3,7 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
-  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
+  IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch, IconArrowsExchange,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
 import { faDuration } from '../../components/ges/format';
@@ -35,6 +35,11 @@ function SlotCard({ slot, onOpen, onAccept, onSwap, onRemove, onAdd }) {
             ) : null}
           </Box>
         </UnstyledButton>
+        {onAdd ? (
+          <UnstyledButton type="button" onClick={onAdd} aria-label="تغییرِ غذای این وعده" style={{ position: 'absolute', insetBlockStart: 6, insetInlineStart: 6, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--g-color-bg-surface) 88%, transparent)', color: 'var(--g-color-text-muted)' }}>
+            <IconArrowsExchange size={14} stroke={1.8} />
+          </UnstyledButton>
+        ) : null}
         {onRemove ? (
           <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ position: 'absolute', insetBlockStart: 6, insetInlineEnd: 6, inlineSize: 28, blockSize: 28, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in srgb, var(--g-color-bg-surface) 88%, transparent)', color: 'var(--g-color-text-muted)' }}>
             <IconTrash size={14} stroke={1.6} />
