@@ -9,3 +9,4 @@ node_modules/
 dist/
 *.zip
 apps/server/prisma/dev.db
+scripts/data/_audit/

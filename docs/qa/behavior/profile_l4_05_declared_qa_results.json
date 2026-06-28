@@ -7,7 +7,7 @@
   "totalChecks": 16,
   "passedChecks": 16,
   "failedChecks": 0,
-  "declaredDimensions": 23,
+  "declaredDimensions": 22,
   "sensitiveDimensions": 10,
   "categories": [
     "integrity",
