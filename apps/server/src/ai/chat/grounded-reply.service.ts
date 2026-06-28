@@ -499,14 +499,14 @@ export class GroundedReplyService {
    * — so the caller stays honest (it never surfaces a partial/guessed dish total). NO allergy decision here
    * (informational readout of a dish the user named); the safety gate elsewhere governs what is RECOMMENDED.
    */
-  async getDishNutrition(term: string): Promise<{ title: string; perServing: Record<string, number>; servings: number; source: 'stored' | 'computed_live' } | null> {
+  async getDishNutrition(term: string, userId?: string): Promise<{ title: string; perServing: Record<string, number>; servings: number; source: 'stored' | 'computed_live' } | null> {
     const cleaned = this.cleanDishTerm(term);
     if (cleaned.length < 2) return null;
     // If the WHOLE cleaned term is itself a dictionary INGREDIENT («برنج»، «عدس»), this is a per-100g question —
     // defer to the ingredient path so we don't compute a same-named DISH («برنج کته») for «کالریِ برنج». A compound
     // DISH name («قورمه سبزی»، «قیمه») does not confidently match a single ingredient, so it proceeds to the dish.
     if (await this.isConfidentIngredientTerm(cleaned)) return null;
-    const recipe = await this.resolvePublishedRecipe(cleaned);
+    const recipe = await this.resolvePublishedRecipe(cleaned, userId);
     if (!recipe) return null;
 
     const macros = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
@@ -545,34 +545,38 @@ export class GroundedReplyService {
     return String(prompt || '').replace(/‌/g, ' ').replace(stop, ' ').replace(/[؟?.!،,()]/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  /** Resolve a published recipe by name (best title match), loading what dish-nutrition needs. */
-  private async resolvePublishedRecipe(cleaned: string) {
-    const select = {
-      id: true, title: true, servings: true, gris: true,
-      nutrition: { select: { calories: true, protein: true, carbs: true, fat: true, fiber: true } },
-      ingredients: { select: { name: true, ingredientId: true, amount: true, unit: true } },
-    } as const;
-    const rank = <T extends { title: string }>(rows: T[]): T => {
-      const f = foldPersian(cleaned);
-      return [...rows].sort((a, b) => {
-        const ax = foldPersian(a.title) === f ? 0 : foldPersian(a.title).startsWith(f) ? 1 : 2;
-        const bx = foldPersian(b.title) === f ? 0 : foldPersian(b.title).startsWith(f) ? 1 : 2;
-        return ax - bx || a.title.length - b.title.length; // best match, then shortest (most specific) title
-      })[0];
-    };
-    try {
-      const direct = await this.prisma.recipe.findMany({ where: { ...PUBLISHED_RECIPE_WHERE, title: { contains: cleaned } }, select, take: 8 });
-      if (direct.length) return rank(direct);
-      // fall back to the longest content token (handles «خورش قیمه» when the title is «قیمه نثار»)
-      const token = cleaned.split(/\s+/).filter((t) => t.length >= 2).sort((a, b) => b.length - a.length)[0];
-      if (token && token !== cleaned) {
-        const byToken = await this.prisma.recipe.findMany({ where: { ...PUBLISHED_RECIPE_WHERE, title: { contains: token } }, select, take: 8 });
-        if (byToken.length) return rank(byToken);
+  /**
+   * Resolve a published recipe for a named dish, REUSING the chat's Persian-aware search_recipes retrieval
+   * (folding + typo map «قورمه»→«قرمه» + ZWNJ + relevance ranking) — so dish-nutrition resolution is exactly
+   * as good as recipe discovery, not a brittle literal `contains`. Returns the top hit's full row (publish-gated)
+   * for the nutrition compute, or null when nothing relevant is found.
+   */
+  private async resolvePublishedRecipe(cleaned: string, userId?: string) {
+    const tool = this.tools.getTool('search_recipes');
+    let id: string | null = null;
+    if (tool) {
+      try {
+        const ctx = { userId: userId ?? 'dish-nutrition', snapshot: {} as BehavioralContextSnapshot };
+        const out: any = await tool.handler({ query: cleaned, limit: 3 }, ctx);
+        const top = Array.isArray(out?.results) ? out.results[0] : null;
+        id = top?.id ? String(top.id) : null;
+      } catch {
+        /* search unavailable → honest null */
       }
-    } catch {
-      /* DB error → honest null */
     }
-    return null;
+    if (!id) return null;
+    try {
+      return await this.prisma.recipe.findFirst({
+        where: { id, ...PUBLISHED_RECIPE_WHERE },
+        select: {
+          id: true, title: true, servings: true, gris: true,
+          nutrition: { select: { calories: true, protein: true, carbs: true, fat: true, fiber: true } },
+          ingredients: { select: { name: true, ingredientId: true, amount: true, unit: true } },
+        },
+      });
+    } catch {
+      return null;
+    }
   }
 
   private async retrieveCandidateIds(userId: string, prompt: string, snapshot?: BehavioralContextSnapshot): Promise<string[]> {

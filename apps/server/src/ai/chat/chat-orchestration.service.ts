@@ -205,7 +205,7 @@ export class ChatOrchestrationService {
       const pq = parseSearchQuery(input.prompt);
       const isDiscovery = pq.mealTypes.length > 0 || pq.diets.length > 0 || pq.regions.length > 0 || pq.maxCookingTime != null;
       if (!isDiscovery) {
-        return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReplyDishAware(input.prompt, locale));
+        return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReplyDishAware(input.prompt, locale, input.userId));
       }
     }
 
@@ -673,11 +673,11 @@ export class ChatOrchestrationService {
    * ingredients via the gram-conversion layer (never the model; surfaced ONLY when fully grounded). Falls back
    * to an honest ask. No health/medical claims — same discipline as the per-100g path.
    */
-  private async composeNutritionReplyDishAware(prompt: string, locale: Locale): Promise<string> {
+  private async composeNutritionReplyDishAware(prompt: string, locale: Locale, userId?: string): Promise<string> {
     const header = t('assistant_header', locale);
     // DISH first — getDishNutrition itself defers (returns null) when the term is a bare dictionary ingredient,
     // so «کالریِ برنج» still falls to the per-100g path while «قورمه سبزی چند کالری» computes the whole dish.
-    const dish = await this.grounded.getDishNutrition(prompt).catch(() => null);
+    const dish = await this.grounded.getDishNutrition(prompt, userId).catch(() => null);
     if (dish && dish.perServing && dish.perServing.calories != null) {
       const parts = this.macroParts(dish.perServing, locale);
       const line = t('dish_nutrition_line', locale, { name: dish.title, parts });
