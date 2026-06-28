@@ -94,7 +94,9 @@ describe('AgenticChatService — HARD safety gate', () => {
       { text: 'قورمه‌سبزی پیدا کردم', toolCalls: [], model: 'm' },
     ]);
     const { svc, safety } = make({ model, searchExec, filter });
-    const r = await svc.reply('u1', 'غذا بده', snapshot);
+    // prompt must route through the MODEL loop (this test targets the input gate on search_recipes), so avoid the
+    // deterministic suggestion/plan short-circuits — «قورمه‌سبزی پیدا کن» is a plain search, not a "suggest"/"plan" ask.
+    const r = await svc.reply('u1', 'قورمه‌سبزی پیدا کن', snapshot);
     expect(safety.filter).toHaveBeenCalled();
     // the tool result the model got back on the 2nd turn must contain only the safe recipe
     const secondCallMessages = model.generateWithTools.mock.calls[1][0].messages;

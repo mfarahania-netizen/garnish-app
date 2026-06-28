@@ -25,6 +25,23 @@ function normalizeMeal(raw: unknown): string | null {
   return MEAL_MAP[f] ?? null;
 }
 
+// Peel a quantity off a free shopping item (founder hit: «دو کیلو سبزی خوردن» was stored as the literal name
+// «سبزی خوردن دو کیلو» — the model treated the amount as part of the name). Deterministic, so it doesn't depend on
+// the weak model parsing it. «دو کیلو سبزی خوردن» → {name:'سبزی خوردن', amount:'دو کیلو'}; «خیار» → {name:'خیار'}.
+const QTY_WORDS = 'یک|یه|دو|سه|چهار|پنج|شش|شیش|هفت|هشت|نه|ده|نیم|ربع|چند|چندتا';
+const QTY_UNITS = 'کیلوگرمی|کیلوگرم|کیلو|گرمی|گرم|تایی|تا|عددی|عدد|دونه|دانه|بسته‌ای|بسته|شیشه|قوطی|حلب|لیتری|لیتر|بطری|فنجان|قاشق|پیمانه|کیسه|پاکت|بند|کله|سیر|مثقال';
+function splitQuantity(raw: string): { name: string; amount?: string } {
+  const s = String(raw ?? '').trim();
+  if (!s) return { name: s };
+  const digit = '[\\d۰-۹]+(?:[.,٫][\\d۰-۹]+)?';
+  const qty = `(?:${digit}|${QTY_WORDS})(?:\\s*(?:${QTY_UNITS}))?`;
+  let m = s.match(new RegExp(`^(${qty})\\s+(.{2,})$`)); // leading: «۵۰۰ گرم گوشت چرخ‌کرده»
+  if (m) return { name: m[2].trim(), amount: m[1].trim() };
+  m = s.match(new RegExp(`^(.{2,}?)\\s+(${qty})$`)); // trailing: «سبزی خوردن دو کیلو»
+  if (m && new RegExp(`${digit}|${QTY_UNITS}`).test(m[2])) return { name: m[1].trim(), amount: m[2].trim() };
+  return { name: s };
+}
+
 /**
  * Agentic WRITE-ACTION tools (brain phase B) — the assistant DOES things, not just talks.
  *
@@ -67,6 +84,8 @@ export class AgenticWriteToolsService {
       this.addFavorite(),
       this.removeFavorite(),
       this.addItemsToShoppingList(),
+      this.removeItemsFromShoppingList(),
+      this.getShoppingList(),
       this.addRecipeToShoppingList(),
       this.addWeekToShoppingList(),
       this.addToMealPlan(),
@@ -392,15 +411,78 @@ export class AgenticWriteToolsService {
       execute: async (args, ctx) => {
         const src = (args as { items?: unknown; item?: unknown })?.items ?? (args as { item?: unknown })?.item ?? [];
         const rawList = Array.isArray(src) ? src : [src];
-        const items = rawList.map((s) => ({ name: String(s ?? '').trim() })).filter((i) => i.name);
+        const items = rawList.map((s) => splitQuantity(String(s ?? ''))).filter((i) => i.name); // peel «دو کیلو» off the name
         if (!items.length) return { error: 'هیچ ماده‌ای مشخص نشد؛ از کاربر بپرس چی به لیست اضافه کنه.' };
         try {
           await this.shoppingList.addItems(ctx.userId, items);
-          const names = items.map((i) => i.name);
+          const names = items.map((i) => (i.amount ? `${i.name} (${i.amount})` : i.name));
           return { ok: true, action: 'add_items_to_shopping_list', added: names, note: `به لیستِ خرید اضافه شد: ${names.join('، ')}.`, undoHint: 'از صفحهٔ لیستِ خرید قابلِ حذف است.' };
         } catch (e) {
           this.logger.warn(`add_items_to_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
           return { error: 'افزودن به لیستِ خرید الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  /**
+   * Remove item(s) from the shopping list by name (founder battery: «خیار رو از لیست خرید حذف کن» did nothing — there
+   * was an add tool but NO remove tool). Reads the user's list, matches by folded contains (so «خیار» hits the stored
+   * «خیار»), and removes via the audited ShoppingListService.removeItem (owner-checked by userId).
+   */
+  private removeItemsFromShoppingList(): AgenticTool {
+    return {
+      spec: {
+        name: 'remove_items_from_shopping_list',
+        description: 'برداشتنِ یک یا چند ماده از لیستِ خریدِ کاربر — وقتی گفت «خیار رو از لیستِ خرید بردار/حذف کن» یا «ماست و نون رو از لیست پاک کن». نامِ مواد را همان‌طور که گفت بنویس.',
+        parameters: {
+          type: 'object',
+          properties: { items: { type: 'array', items: { type: 'string' }, description: 'نامِ موادی که باید از لیست حذف شوند' } },
+          required: ['items'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const src = (args as { items?: unknown; item?: unknown })?.items ?? (args as { item?: unknown })?.item ?? [];
+        const names = (Array.isArray(src) ? src : [src]).map((s) => fold(s)).filter(Boolean);
+        if (!names.length) return { error: 'مشخص نشد چی رو از لیست حذف کنم.' };
+        try {
+          const list = await this.shoppingList.getList(ctx.userId);
+          const removed: string[] = [];
+          for (const it of (list?.items ?? []) as { id: string; name: string }[]) {
+            const itName = fold(it.name);
+            if (itName && names.some((n) => itName.includes(n) || n.includes(itName))) {
+              await this.shoppingList.removeItem(it.id, ctx.userId); // owner-checked inside the service
+              removed.push(it.name);
+            }
+          }
+          if (!removed.length) return { ok: true, action: 'remove_items_from_shopping_list', removed: [], note: 'چیزی با این نام تو لیستِ خرید نبود.' };
+          return { ok: true, action: 'remove_items_from_shopping_list', removed, note: `از لیستِ خرید حذف شد: ${removed.join('، ')}.` };
+        } catch (e) {
+          this.logger.warn(`remove_items_from_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'حذف از لیستِ خرید الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  /** Read the user's current shopping list (founder battery: «تو لیست خریدم چی هست؟» → «دسترسی ندارم»; there was no read tool). */
+  private getShoppingList(): AgenticTool {
+    return {
+      spec: {
+        name: 'get_shopping_list',
+        description: 'خواندنِ لیستِ خریدِ فعلیِ کاربر و گفتنِ محتویاتش — وقتی پرسید «تو لیستِ خریدم چی هست؟»، «لیستِ خریدمو نشون بده»، «چی باید بخرم؟». آرگومان لازم ندارد.',
+        parameters: { type: 'object', properties: {} },
+      },
+      execute: async (_args, ctx) => {
+        try {
+          const list = await this.shoppingList.getList(ctx.userId);
+          const items = ((list?.items ?? []) as { name: string; amount?: string | null }[])
+            .map((i) => ({ name: i.name, amount: i.amount ?? undefined }))
+            .filter((i) => i.name);
+          return { ok: true, action: 'get_shopping_list', count: items.length, items, note: items.length ? '' : 'لیستِ خرید فعلاً خالیه.' };
+        } catch (e) {
+          this.logger.warn(`get_shopping_list failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'خواندنِ لیستِ خرید الان ممکن نشد.' };
         }
       },
     };

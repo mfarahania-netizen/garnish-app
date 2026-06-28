@@ -194,7 +194,22 @@ export class MealPlansService {
   }
 
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====
+  /**
+   * Canonical meal-type is PERSIAN — generateSmartPlan + the meal-plan screen use «صبحانه/ناهار/شام». The agentic
+   * tools speak «lunch/dinner», so without this a slot added/removed via chat stores/queries a DIFFERENT string than a
+   * week-filled slot. The battery caught «یکشنبه ناهار رو حذف کن» doing nothing because the stored «ناهار» ≠ queried
+   * «lunch». Canonicalizing at the service boundary makes EVERY caller consistent.
+   */
+  private canonMeal(mealType: string): string {
+    const en: Record<string, string> = { breakfast: 'صبحانه', lunch: 'ناهار', dinner: 'شام', snack: 'میان‌وعده', brunch: 'ناهار' };
+    const m = String(mealType ?? '').trim();
+    if (en[m.toLowerCase()]) return en[m.toLowerCase()];
+    const fa: Record<string, string> = { 'صبحانه': 'صبحانه', 'صبحونه': 'صبحانه', 'ناهار': 'ناهار', 'نهار': 'ناهار', 'شام': 'شام', 'عصرانه': 'میان‌وعده', 'میان‌وعده': 'میان‌وعده', 'میانوعده': 'میان‌وعده' };
+    return fa[m] ?? m;
+  }
+
   async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
+    mealType = this.canonMeal(mealType); // store the Persian canonical form (matches generateSmartPlan + the screen)
     const startOfWeek = getStartOfWeek();
 
     // SECURITY (advisor audit): this is the PRIMARY apply path (POST /meal-plans/slots). Only a published recipe
@@ -240,6 +255,7 @@ export class MealPlansService {
   }
 
   async removeMealSlot(userId: string, dayOfWeek: number, mealType: string) {
+    mealType = this.canonMeal(mealType); // match the Persian canonical form a week-filled slot was stored with
     const startOfWeek = getStartOfWeek();
 
     const plan = await this.prisma.mealPlan.findFirst({

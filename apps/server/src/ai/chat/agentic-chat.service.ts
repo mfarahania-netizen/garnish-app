@@ -104,6 +104,35 @@ export class AgenticChatService {
       // no real match → fall through to the model loop (which still has the grounded search tool + the no-invent rule)
     }
 
+    // DETERMINISTIC single-slot meal-plan add / remove (battery: «شنبه شام قورمه بذار» didn't save and «یکشنبه ناهار رو
+    // حذف کن» didn't remove — the weak model flaked on the search→add chain and the remove call). When the turn names
+    // exactly ONE day + a meal + an add/remove verb (not a whole-week build, not a move), we do it ourselves.
+    {
+      const pNorm = prompt.replace(/‌/g, '');
+      const dm = this.detectDayMeal(prompt);
+      const moving = /جابه\s*جا|جا به جا|منتقل|عوض\s*کن/.test(pNorm);
+      if (dm && !moving) {
+        const remove = /حذف|بردار|پاک|خالی\s*کن/.test(pNorm);
+        const add = /بذار|بزار|قرار\s*بده|اضافه/.test(pNorm);
+        const dayName = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'][dm.day];
+        const mealName = ({ breakfast: 'صبحانه', lunch: 'ناهار', dinner: 'شام' } as Record<string, string>)[dm.meal] ?? dm.meal;
+        if (remove && !add) {
+          const tool = this.writeTools.build().find((t) => t.spec.name === 'remove_from_meal_plan');
+          const res = tool ? ((await tool.execute({ day: dm.day, mealType: dm.meal }, ctx).catch(() => null)) as { ok?: boolean } | null) : null;
+          if (res?.ok) return { ok: true, text: `${dayName} ${mealName} رو از برنامه‌ات برداشتم ✅`, reason: null, toolCalls: [{ name: 'remove_from_meal_plan', arguments: '{}' }], model: 'deterministic:remove_slot' };
+        } else if (add) {
+          const dish = this.extractDish(prompt);
+          const recipe = dish ? await this.findOneSafeRecipe(ctx, dish) : null;
+          if (recipe) {
+            const tool = this.writeTools.build().find((t) => t.spec.name === 'add_to_meal_plan');
+            const res = tool ? ((await tool.execute({ recipeId: recipe.id, day: dm.day, mealType: dm.meal }, ctx).catch(() => null)) as { ok?: boolean } | null) : null;
+            if (res?.ok) return { ok: true, text: `گذاشتم: **${recipe.title}** برای ${dayName} ${mealName} ✅ — توی تبِ «برنامه» می‌بینیش.`, reason: null, toolCalls: [{ name: 'add_to_meal_plan', arguments: '{}' }], model: 'deterministic:add_slot' };
+          }
+          // dish not found by deterministic search → fall through to the model (it can try variants); never fake a save
+        }
+      }
+    }
+
     const unsafeTitles: string[] = [];
     // read-only tools pass through the allergy gate; reversible WRITE-actions (favorite, shopping-list) act only
     // on the user's own data and auto-execute (no allergy filtering needed — they're user-initiated, not recs).
@@ -129,6 +158,7 @@ export class AgenticChatService {
       }
     }
     if (!result) return { ok: false, text: null, reason: 'error' };
+    result.text = this.sanitize(result.text); // strip the garbage a weak model emits (founder saw «常务会» / «ته‌چی­n»)
 
     // 3) OUTPUT gate (fail-closed): screen the final answer; only `unsafeTitles` is read by the screen.
     const verdict = await this.grounded.screenLiveOutput(userId, result.text, { unsafeTitles } as never);
@@ -179,7 +209,7 @@ export class AgenticChatService {
   /** Is this a clear "suggest me a dish / what should I cook" ask? Conservative — never hijacks an action or a recipe-detail request. */
   private wantsDishSuggestion(prompt: string): boolean {
     const p = String(prompt || '').replace(/‌/g, '');
-    const cue = /پیشنهاد|چی\s*(بپزم|بپزیم|بخورم|درست\s*کنم|بزنم|سفارش)|چه\s*غذای?ی?|یه\s*غذا|یک\s*غذا/.test(p);
+    const cue = /پیشنهاد|چی\s*(بپزم|بپزیم|بخورم|درست\s*کنم|بزنم|سفارش)|چه\s*غذای?ی?|یه\s*غذا|یک\s*غذا|(غذا|خوراک)\s*.{0,8}(بگو|معرفی|بده)|(چند|چن|[\d۰-۹]+)\s*تا\s*غذا|غذای?\s*(محلی|سنتی|ایرانی|مجلسی|سبک|خوب)/.test(p);
     // don't steal write-actions / plan / shopping / recipe-detail / substitution turns — those have their own paths
     const other = /اضافه\s*کن|بذار|بریز|ذخیره\s*کن|حذف\s*کن|برنامه|لیستِ?\s*خرید|دستور|طرزِ?\s*تهیه|مراحل|جایگزین|چطور\s*(بپزم|درست)/.test(p);
     return cue && !other;
@@ -197,7 +227,9 @@ export class AgenticChatService {
     const search = this.catalog.build().find((t) => t.spec.name === 'search_recipes');
     if (!search) return [];
     const derived = this.deriveSuggestQuery(prompt);
-    const queries = derived ? [derived] : this.FAMOUS;
+    // search the derived term first, then top up from famous dishes — so an occasion/vibe word that is NOT itself a
+    // recipe («مجلسی», «محلی») still yields REAL dishes instead of returning nothing and falling through to the model.
+    const queries = derived ? [derived, ...this.FAMOUS] : [...this.FAMOUS];
     const seen = new Set<string>();
     const found: { id: string; title: string }[] = [];
     for (const query of queries) {
@@ -211,6 +243,15 @@ export class AgenticChatService {
     return safe.slice(0, 3);
   }
 
+  /** Strip garbage tokens a weak model occasionally emits (CJK runs «常务会», soft-hyphen splits «ته‌چی­n», zero-widths). Keeps ZWNJ. */
+  private sanitize(text: string): string {
+    return String(text ?? '')
+      .replace(/[\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uac00-\ud7af\u0e00-\u0e7f]/g, '') // CJK / Hangul / Thai
+      .replace(/[\u00ad\u200b\ufeff\ufffd]/g, '') // soft-hyphen, ZWSP, BOM, replacement (NOT \u200c ZWNJ)
+      .replace(/[ \t]{3,}/g, ' ')
+      .trim();
+  }
+
   /** Render REAL retrieved dishes as suggestions — only titles that exist in the catalog. */
   private formatSuggestions(dishes: { id: string; title: string }[]): string {
     return [
@@ -220,6 +261,37 @@ export class AgenticChatService {
       '',
       'کدومش رو دوست داری؟ بگو تا دستورِ کاملش رو برات بیارم.',
     ].join('\n');
+  }
+
+  /** Detect a SINGLE day + meal in the turn (for deterministic single-slot add/remove). Returns null if zero or 2+ days. */
+  private detectDayMeal(prompt: string): { day: number; meal: string } | null {
+    const p = String(prompt || '').replace(/‌/g, '');
+    const DAYS: [RegExp, number][] = [[/یکشنبه/, 1], [/دوشنبه/, 2], [/سهشنبه/, 3], [/چهارشنبه/, 4], [/پنجشنبه/, 5], [/جمعه/, 6], [/شنبه/, 0]];
+    const MEALS: [RegExp, string][] = [[/صبح(انه|ونه)/, 'breakfast'], [/ناهار|نهار/, 'lunch'], [/شام/, 'dinner']];
+    let day: number | null = null; let matched: RegExp | null = null;
+    for (const [re, d] of DAYS) if (re.test(p)) { day = d; matched = re; break; }
+    if (day === null || !matched) return null;
+    const rest = p.replace(matched, ''); // a 2nd day word remaining → multi-day request, let the model loop it
+    for (const [re] of DAYS) if (re.test(rest)) return null;
+    let meal: string | null = null;
+    for (const [re, m] of MEALS) if (re.test(p)) { meal = m; break; }
+    return meal ? { day, meal } : null;
+  }
+
+  /** Strip the day/meal/verb/filler words off an add request, leaving the dish term («شنبه شام قورمه سبزی بذار» → «قورمه سبزی»). */
+  private extractDish(prompt: string): string {
+    const stop = /شنبه|یکشنبه|دوشنبه|سهشنبه|چهارشنبه|پنجشنبه|جمعه|صبحانه|صبحونه|ناهار|نهار|شام|عصرانه|میانوعده|رو|را|برای|بذار|بزار|قرار|بده|اضافه|کن|حذف|بردار|پاک|توی|تو|برنامه|غذای?ی?|وعده|یه|یک|لطفا|می‌?خوام/g;
+    return String(prompt || '').replace(/‌/g, '').replace(stop, ' ').replace(/[؟?.!،,]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /** Find the single best REAL, safety-filtered recipe for a dish term — grounded, for the deterministic single-slot add. */
+  private async findOneSafeRecipe(ctx: ToolContext, dishName: string): Promise<{ id: string; title: string } | null> {
+    const search = this.catalog.build().find((t) => t.spec.name === 'search_recipes');
+    if (!search || dishName.length < 2) return null;
+    const res = (await search.execute({ query: dishName, limit: 6 }, ctx).catch(() => null)) as { results?: { id?: string; title?: string }[] } | null;
+    const rows = (res?.results ?? []).filter((r): r is { id: string; title: string } => !!(r?.id && r?.title));
+    const safe = (await this.safety.filter(ctx.userId, rows, 'id')) as { id: string; title: string }[];
+    return safe[0] ?? null;
   }
 
   /** Wrap the recipe-surfacing tools with the INPUT safety filter; pass the rest through unchanged. */
@@ -283,7 +355,7 @@ export class AgenticChatService {
       'یک مناسبت یا حال‌وهوا (مثلِ «مجلسی»، «مهمونی»، «سریع»، «سبک»، «مقوی») نامِ غذا نیست؛ آن کلمه را جستجو نکن چون نتیجه نمی‌دهد. به‌جایش نامِ غذاهای شناخته‌شدهٔ مناسبِ آن را جستجو کن — مثلاً برای «مجلسی»: قرمه‌سبزی، فسنجان، ته‌چین، زرشک‌پلو، باقالی‌پلو. اگر یکی نبود سراغِ بعدی برو.',
       'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
       // brain phase B — the assistant can now DO things (reversible write-actions), not just talk.
-      'کارها (فقط وقتی کاربر صریحاً خواست، و بعد کوتاه تأیید کن): «ذخیره کن»→add_favorite · «از علاقه‌مندی‌ها بردار»→remove_favorite · «فلان ماده/مواد رو به لیستِ خرید اضافه کن» (مثلِ «خیار رو اضافه کن»، «ماست و نون بذار»)→add_items_to_shopping_list · «موادِ این غذا رو بریز تو لیستِ خرید»→add_recipe_to_shopping_list · «لیستِ خریدِ هفته رو بساز»→add_week_to_shopping_list · «فلان روز فلان وعده فلان غذا بذار»→add_to_meal_plan · «کلِ برنامهٔ هفته رو بچین/کامل کن»→fill_week_plan · «فلان روز فلان وعده رو حذف کن»→remove_from_meal_plan · «فلان ماده رو دوست ندارم/عاشقِ فلان ماده‌ام»→set_ingredient_taste (سلیقهٔ نرم، نه آلرژی). «جابه‌جا کن از روزِ X به روزِ Y» = اول remove_from_meal_plan برای X، بعد add_to_meal_plan برای Y (اگر id رسپی را نداری، اول search_recipes). همهٔ این‌ها برگشت‌پذیرند، خودت انجامشان بده و نگو «نمی‌توانم».',
+      'کارها (فقط وقتی کاربر صریحاً خواست، و بعد کوتاه تأیید کن): «ذخیره کن»→add_favorite · «از علاقه‌مندی‌ها بردار»→remove_favorite · «فلان ماده/مواد رو به لیستِ خرید اضافه کن» (مثلِ «خیار رو اضافه کن»، «ماست و نون بذار»)→add_items_to_shopping_list · «خیار رو از لیستِ خرید بردار/حذف کن»→remove_items_from_shopping_list · «تو لیستِ خریدم چیه؟/لیستمو نشون بده»→get_shopping_list · «موادِ این غذا رو بریز تو لیستِ خرید»→add_recipe_to_shopping_list · «لیستِ خریدِ هفته رو بساز»→add_week_to_shopping_list · «فلان روز فلان وعده فلان غذا بذار»→add_to_meal_plan · «کلِ برنامهٔ هفته رو بچین/کامل کن»→fill_week_plan · «فلان روز فلان وعده رو حذف کن»→remove_from_meal_plan · «فلان ماده رو دوست ندارم/عاشقِ فلان ماده‌ام»→set_ingredient_taste (سلیقهٔ نرم، نه آلرژی). «جابه‌جا کن از روزِ X به روزِ Y» = اول remove_from_meal_plan برای X، بعد add_to_meal_plan برای Y (اگر id رسپی را نداری، اول search_recipes). همهٔ این‌ها برگشت‌پذیرند، خودت انجامشان بده و نگو «نمی‌توانم».',
       // narrate-instead-of-act: a weak model says "I'll remember that" without firing the tool. Force the call.
       'مهم: وقتی کاربر کاری خواست یا علاقه/بیزاری‌اش را گفت، **عملاً همان لحظه ابزارِ مربوط را صدا بزن** — فقط نگو «لحاظ می‌کنم/یادم می‌مونه/اضافه کردم». تا ابزار را واقعاً اجرا نکرده‌ای، نگو انجام شد. مثلاً «گردو دوست دارم» = همین حالا set_ingredient_taste با stance=like.',
       // founder hit: asked for 3 dishes across 3 days, only 2 were placed (قیمه dropped); then «قیمه چی شد؟» got a
