@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
   IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
-  IconArrowsExchange, IconFlame, IconChevronRight,
+  IconArrowsExchange, IconFlame, IconChevronRight, IconCopy,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
 import { faDuration } from '../../components/ges/format';
@@ -181,13 +181,14 @@ function PlanError({ onRetry }) {
   );
 }
 
-function EmptyWeek({ onPropose, proposing, onManual }) {
+function EmptyWeek({ onPropose, proposing, onManual, onCopyPrev }) {
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-2)' }}>
       <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-2)' }}><IconCalendarPlus size={28} stroke={1.6} /></Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>بیا هفته‌ات رو با هم بچینیم</Text>
       <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 0 }}>با یک پیشنهادِ هماهنگ با ذائقه‌ات شروع کن.</Text>
       <UnstyledButton type="button" onClick={onPropose} disabled={proposing} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{proposing ? 'در حال چیدن…' : 'پیشنهاد بده'}</UnstyledButton>
+      <UnstyledButton type="button" onClick={onCopyPrev} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}><IconCopy size={15} stroke={1.8} aria-hidden="true" />کپیِ هفتهٔ قبل</UnstyledButton>
       <UnstyledButton type="button" onClick={onManual} style={{ marginBlockStart: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>یا خودم دستی می‌چینم</UnstyledButton>
     </Box>
   );
@@ -234,6 +235,7 @@ export default function PlanPage() {
     if (ok && nextCooked) { showToast('نوش جان! 🍽', IconFlame); trackEvent('cook_complete', { dayOfWeek, mealType, recipeId, source: 'meal_plan' }); }
     else if (!ok) showToast('نشد — دوباره امتحان کن', IconCloudOff);
   };
+  const onCopyPrev = async () => { const r = await m.copyPrevWeek(); showToast(r.ok ? 'هفتهٔ قبل کپی شد — حالا ویرایشش کن' : 'هفتهٔ قبل خالیه', r.ok ? IconCheck : IconCloudOff); };
 
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
 
@@ -265,7 +267,7 @@ export default function PlanPage() {
         </Box>
       </Box>
 
-      {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive && !manualMode) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} onManual={() => setManualMode(true)} /> : (
+      {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive && !manualMode) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} onManual={() => setManualMode(true)} onCopyPrev={onCopyPrev} /> : (
         <>
           <WeekStrip days={m.week.days} meals={m.meals} filled={m.filled} suggested={m.suggested} selectedDay={selectedDay} onSelect={setSelectedDay} />
 

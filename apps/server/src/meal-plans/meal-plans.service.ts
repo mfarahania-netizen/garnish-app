@@ -40,6 +40,28 @@ export class MealPlansService {
     }
   }
 
+  /**
+   * Copy a whole week's slots from one week to another (founder's repeat-use lever: "next week = this week + tweak").
+   * Clears the destination week, then clones the source slots (recipeId + canonical mealType + notes carry over; cookedAt
+   * deliberately does NOT — a copied week starts fresh/un-cooked). Owner-scoped via the user's own plans. Returns how
+   * many slots were copied (0 + ok:false if the source week is empty).
+   */
+  async copyWeek(userId: string, fromOffset: number, toOffset: number) {
+    if (fromOffset === toOffset) return { ok: false, copied: 0 };
+    const fromStart = getStartOfWeekOffset(fromOffset);
+    const toStart = getStartOfWeekOffset(toOffset);
+    const src = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: fromStart }, include: { slots: true } });
+    const srcSlots = (src?.slots ?? []).filter((s) => s.recipeId);
+    if (!srcSlots.length) return { ok: false, copied: 0 };
+    await this.prisma.$transaction(async (tx) => {
+      await tx.mealSlot.deleteMany({ where: { mealPlan: { userId, weekStart: toStart } } });
+      let dest = await tx.mealPlan.findFirst({ where: { userId, weekStart: toStart } });
+      if (!dest) dest = await tx.mealPlan.create({ data: { userId, weekStart: toStart } });
+      await tx.mealSlot.createMany({ data: srcSlots.map((s) => ({ mealPlanId: dest.id, dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId, notes: s.notes ?? '' })) });
+    });
+    return { ok: true, copied: srcSlots.length };
+  }
+
   /** Mark a slot cooked / un-cooked (the "پختم" signature interaction). Owner-scoped via the user's own plan. */
   async markCooked(userId: string, dayOfWeek: number, mealType: string, cooked: boolean, weekOffset = 0) {
     const mt = this.canonMeal(mealType);

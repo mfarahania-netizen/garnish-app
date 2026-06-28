@@ -48,6 +48,12 @@ export class MealPlansController {
     return this.mealPlansService.markCooked(req.user.userId, parseInt(dayOfWeek), mealType, body?.cooked !== false, weekOffset(offset));
   }
 
+  // Copy a whole week's slots to another week (?from & ?to are week offsets). The repeat-use lever ("next week = this week").
+  @Post('copy')
+  copyWeek(@Req() req, @Query('from') from?: string, @Query('to') to?: string) {
+    return this.mealPlansService.copyWeek(req.user.userId, weekOffset(from), weekOffset(to));
+  }
+
   // ✅ جدید: حذف یک وعده
   @Delete('slots/:dayOfWeek/:mealType')
   removeMealSlot(

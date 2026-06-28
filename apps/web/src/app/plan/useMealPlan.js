@@ -210,6 +210,17 @@ export function useMealPlan() {
   const prevWeek = useCallback(() => setWeekOffset((o) => Math.max(-8, o - 1)), []);
   const goToToday = useCallback(() => setWeekOffset(0), []);
 
+  // copy the PREVIOUS week's plan into the week being viewed (the repeat-use lever). Returns {ok, copied}.
+  const copyPrevWeek = useCallback(async () => {
+    try {
+      const res = await apiClient.post(`/meal-plans/copy?from=${offsetRef.current - 1}&to=${offsetRef.current}`).then((r) => r.data);
+      if (res?.ok) { await plan.refetch(); return { ok: true, copied: res.copied ?? 0 }; }
+      return { ok: false };
+    } catch {
+      return { ok: false };
+    }
+  }, [plan]);
+
   let status = 'ready';
   if (plan.isLoading) status = 'loading';
   else if (plan.isError) status = 'error';
@@ -218,7 +229,7 @@ export function useMealPlan() {
     status,
     refetch: () => plan.refetch(),
     week, meals: MEALS,
-    weekOffset, nextWeek, prevWeek, goToToday,
+    weekOffset, nextWeek, prevWeek, goToToday, copyPrevWeek,
     filled, suggested,
     hasPlan,
     proposalActive: !!proposal,
