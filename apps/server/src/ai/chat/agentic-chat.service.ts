@@ -299,6 +299,7 @@ export class AgenticChatService {
       '· "other": سؤال، طرزِ تهیه، جایگزینِ ماده، گپ، سلام، یا هر چیزِ نامطمئن.',
       `امروز «${dn(0)}» است؛ «فردا»=«${dn(1)}»،«پس‌فردا»=«${dn(2)}». روزها را با نامِ ${DAY.join('/')} بده و «فردا/پس‌فردا» را خودت به روزِ واقعی تبدیل کن.`,
       'نامِ مواد/غذا را کامل و دقیق بردار (مثلاً «توت فرنگی» را کامل، نه نصفه). چند ماده در یک جمله را از هم جدا کن. اگر مطمئن نیستی action="other".',
+      'مهم: اگر کاربر چند خانه/وعده یا چند ماده را در یک جمله گفت، **همه‌شان** را بیاور — حتی اگر برای بعضی غذای مشخص و برای بعضی خالی باشد. هیچ خانه/ماده‌ای را جا ننداز و هیچ قیدی (مثلِ «صبحانه املت باشد») را فراموش نکن.',
       'مثال‌ها:',
       '«چی پیشنهاد میدی؟» → {"action":"suggest","query":""}',
       '«چی بپزم؟» / «یه غذا بگو» → {"action":"suggest","query":""}',
@@ -307,6 +308,7 @@ export class AgenticChatService {
       '«خورشت قیمه رو بزار سه‌شنبه نهار» → {"action":"add_meal","day":"سه‌شنبه","meal":"ناهار","dish":"خورشت قیمه"}',
       '«فردا صبحانه و شام، پس‌فردا هر سه وعده، به سلیقهٔ خودت ایرانی بچین» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"صبحانه","dish":""},{"day":"[فردا]","meal":"شام","dish":""},{"day":"[پس‌فردا]","meal":"صبحانه","dish":""},{"day":"[پس‌فردا]","meal":"ناهار","dish":""},{"day":"[پس‌فردا]","meal":"شام","dish":""}]} ([فردا]/[پس‌فردا] را به نامِ واقعیِ روز جایگزین کن)',
       '«فردا نهار شیرین پلو، پس‌فردا صبحانه و نهار و شام به انتخاب خودت، صبحانه املت باشه» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"ناهار","dish":"شیرین پلو"},{"day":"[پس‌فردا]","meal":"صبحانه","dish":"املت"},{"day":"[پس‌فردا]","meal":"ناهار","dish":""},{"day":"[پس‌فردا]","meal":"شام","dish":""}]}',
+      '«فردا و پس‌فردا شام کباب، پنجشنبه نهار دیزی، جمعه شام قیمه، پس‌فردا صبحانه املت» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"شام","dish":"کباب"},{"day":"[پس‌فردا]","meal":"شام","dish":"کباب"},{"day":"پنج‌شنبه","meal":"ناهار","dish":"دیزی"},{"day":"جمعه","meal":"شام","dish":"قیمه"},{"day":"[پس‌فردا]","meal":"صبحانه","dish":"املت"}]} — وقتی «X و Y شام Z» گفت، برای X و Y جداگانه خانه بساز؛ و هیچ خانه‌ای را جا ننداز.',
       '«۲ کیلو موز و گوجه ۱ کیلو بذار تو لیست خرید» → {"action":"add_shopping","items":[{"name":"موز","amount":"۲ کیلو"},{"name":"گوجه","amount":"۱ کیلو"}]}',
       '«خیار رو از لیست خرید بردار» → {"action":"remove_shopping","items":[{"name":"خیار"}]}',
       '«قورمه چند کالری داره؟» → {"action":"other"}',
@@ -314,7 +316,7 @@ export class AgenticChatService {
     // RETRY ONCE: the free model intermittently returns malformed/empty JSON on the first shot. A second try
     // recovers most of those instead of mis-falling to the chat loop. (Same flake-tolerance as the tool loop.)
     for (let attempt = 1; attempt <= 2; attempt++) {
-      const out = await this.model.generate({ system, prompt: `پیام: «${prompt}»\nJSON:`, maxTokens: 500 }).catch(() => null);
+      const out = await this.model.generate({ system, prompt: `پیام: «${prompt}»\nJSON:`, maxTokens: 900 }).catch(() => null);
       const parsed = this.extractJson(out?.text ?? '');
       if (parsed && typeof parsed.action === 'string') return parsed as { action: string };
     }
