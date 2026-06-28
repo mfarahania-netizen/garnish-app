@@ -8,7 +8,7 @@ import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
-function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, first }) {
+function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, aisle, first }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(item.name);
   const [amount, setAmount] = useState(item.amount || '');
@@ -25,7 +25,7 @@ function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, fir
           <UnstyledButton type="button" onClick={save} aria-label="ذخیره" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}><IconCheck size={17} stroke={2.2} /></UnstyledButton>
           <UnstyledButton type="button" onClick={() => setEditing(false)} aria-label="انصراف" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconX size={17} stroke={1.8} /></UnstyledButton>
         </Box>
-        <UnstyledButton type="button" onClick={() => { setEditing(false); onPantry(); }} style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4, minBlockSize: 32, paddingInline: 'var(--g-space-2)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconHome size={13} stroke={1.8} aria-hidden="true" />از قبل دارم — به «موادِ همیشگی» ببر</UnstyledButton>
+        <UnstyledButton type="button" onClick={() => { setEditing(false); onPantry(); }} style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4, minBlockSize: 32, paddingInline: 'var(--g-space-2)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconHome size={13} stroke={1.8} aria-hidden="true" />همیشه خونه دارمش، دیگه نخرش</UnstyledButton>
       </Box>
     );
   }
@@ -37,7 +37,7 @@ function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, fir
         <Box aria-hidden="true" className={checked ? 'g-check-pop' : undefined} style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 140ms ease, border-color 140ms ease' }}>
           {checked ? <IconCheck size={14} stroke={2.4} /> : null}
         </Box>
-        {emojiFor(item.name) ? <Box component="span" aria-hidden="true" style={{ flexShrink: 0, fontSize: 18, lineHeight: 1, marginInlineStart: -2, opacity: checked ? 0.5 : 1 }}>{emojiFor(item.name)}</Box> : null}
+        <Box component="span" aria-hidden="true" style={{ flexShrink: 0, fontSize: 18, lineHeight: 1, marginInlineStart: -2, opacity: checked ? 0.5 : 1 }}>{emojiFor(item.name, aisle)}</Box>
         <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: checked ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)', textDecoration: checked ? 'line-through' : 'none' }}>{item.name}</Text>
         {checked ? (
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', whiteSpace: 'nowrap' }}>گرفتم</Text>
@@ -151,7 +151,7 @@ export default function ShoppingListPage() {
                       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{g.label}</Text>
                     </Box>
                     <Box style={{ background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', overflow: 'hidden' }}>
-                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} onUpdate={(patch) => s.updateItem(it, patch)} onPantry={() => s.addToPantry(it)} first={i === 0} />)}
+                      {g.items.map((it, i) => <GroceryRow key={it.id} item={it} checked={s.checkedOf(it)} onToggle={() => s.toggle(it)} onRemove={() => s.remove(it)} onUpdate={(patch) => s.updateItem(it, patch)} onPantry={() => s.addToPantry(it)} aisle={g.key} first={i === 0} />)}
                     </Box>
                   </Box>
                 ))}
@@ -166,9 +166,9 @@ export default function ShoppingListPage() {
                   <Box style={{ marginBlockStart: 'var(--g-space-6)', paddingBlockStart: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
                     <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-1)' }}>
                       <IconArchive size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
-                      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-secondary)', margin: 0 }}>موادِ همیشگی (از قبل دارم)</Text>
+                      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-secondary)', margin: 0 }}>چیزایی که همیشه خونه داری</Text>
                     </Box>
-                    <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '0 0 var(--g-space-2)' }}>اینا رو همیشه داری، پس موقعِ ساختن از برنامه دیگه به لیست اضافه نمی‌شن.</Text>
+                    <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '0 0 var(--g-space-2)' }}>اینا همیشه تو خونه‌ان (مثلِ نمک و روغن). وقتی لیست رو از «برنامهٔ هفتگی» می‌سازیم، این‌ها رو دیگه اضافه نمی‌کنیم که الکی نخری.</Text>
                     <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
                       {s.pantryItems.map((p) => (
                         <Box key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInlineStart: 'var(--g-space-2)', paddingInlineEnd: 2, paddingBlock: 3, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)' }}>
@@ -187,7 +187,7 @@ export default function ShoppingListPage() {
       <Box style={{ position: 'sticky', insetBlockEnd: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-3) + env(safe-area-inset-bottom))', background: 'var(--g-color-bg-surface-raised)', borderBlockStart: '1px solid var(--g-color-border-subtle)', boxShadow: 'var(--g-shadow-2)' }}>
         <Box style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', blockSize: 46, paddingInline: 'var(--g-space-4)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
           <IconPlus size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
-          <Box component="input" type="text" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !s.busy && draft.trim()) onAdd(); }} placeholder="افزودنِ دستی…" aria-label="افزودن آیتم" style={{ flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
+          <Box component="input" type="text" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !s.busy && draft.trim()) onAdd(); }} placeholder="مثلاً «گوجه ۲ کیلو»…" aria-label="افزودن آیتم (می‌تونی مقدار رو هم بنویسی)" style={{ flex: 1, minInlineSize: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }} />
         </Box>
         <UnstyledButton type="button" onClick={onAdd} aria-label="افزودن" disabled={s.busy || !draft.trim()} style={{ inlineSize: 46, blockSize: 46, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-input)', background: draft.trim() ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)', color: 'var(--g-color-text-inverse)' }}><IconPlus size={20} stroke={1.8} /></UnstyledButton>
       </Box>

@@ -4,8 +4,8 @@
  * Order matters where one keyword is a substring of another (شیر before شیرینی; تخم‌مرغ before مرغ).
  */
 const PAIRS = [
-  // herbs & greens
-  ['سبزی', '🌿'], ['جعفری', '🌿'], ['گشنیز', '🌿'], ['نعنا', '🌿'], ['ریحان', '🌿'], ['شوید', '🌿'], ['ترخون', '🌿'], ['تره', '🌿'], ['مرزه', '🌿'],
+  // herbs & greens (incl. colloquial spellings: ریحون=ریحان, گشنیج=گشنیز)
+  ['سبزی', '🌿'], ['جعفری', '🌿'], ['گشنیز', '🌿'], ['گشنیج', '🌿'], ['نعنا', '🌿'], ['ریحان', '🌿'], ['ریحون', '🌿'], ['شوید', '🌿'], ['ترخون', '🌿'], ['تره', '🌿'], ['مرزه', '🌿'], ['شنبلیله', '🌿'], ['نعناع', '🌿'],
   // vegetables
   ['خیار', '🥒'], ['گوجه', '🍅'], ['پیاز', '🧅'], ['سیر', '🧄'], ['هویج', '🥕'], ['بادمجان', '🍆'], ['فلفل', '🫑'], ['سیب زمینی', '🥔'], ['سیب‌زمینی', '🥔'],
   ['کاهو', '🥬'], ['کلم', '🥬'], ['اسفناج', '🥬'], ['کرفس', '🥬'], ['قارچ', '🍄'], ['ذرت', '🌽'], ['کدو', '🥒'], ['شلغم', '🥔'], ['چغندر', '🥕'], ['نخود فرنگی', '🫛'], ['لوبیا سبز', '🫛'],
@@ -21,9 +21,12 @@ const PAIRS = [
   ['روغن', '🫗'], ['زیتون', '🫒'], ['نمک', '🧂'], ['شکر', '🍬'], ['قند', '🍬'], ['چای', '🍵'], ['قهوه', '☕'], ['عسل', '🍯'], ['رب', '🥫'], ['سس', '🥫'], ['ادویه', '🌶️'], ['زعفران', '🌸'], ['دارچین', '🟤'], ['زردچوبه', '🟡'], ['گردو', '🌰'], ['بادام', '🌰'], ['پسته', '🌰'], ['فندق', '🌰'], ['تخمه', '🌻'], ['آجیل', '🥜'], ['کشمش', '🍇'], ['شکلات', '🍫'], ['آبمیوه', '🧃'], ['نوشابه', '🥤'], ['آب', '💧'],
 ];
 
-export function emojiFor(name) {
+// Per-aisle fallback so EVERY row gets an icon even when the exact ingredient isn't mapped (founder: «هر چیزی باید
+// آیکن داشته باشه، هر چیزی»). An unmatched herb still reads as 🌿, an unknown «سایر» item as 🛒 — never blank.
+const GROUP_EMOJI = { herbs: '🌿', produce: '🥬', protein: '🍖', grain: '🌾', dairy: '🥛', other: '🛒' };
+
+export function emojiFor(name, aisle) {
   const n = String(name || '').replace(/‌/g, '').trim();
-  if (!n) return '';
-  for (const [kw, emo] of PAIRS) if (n.includes(kw)) return emo;
-  return '';
+  if (n) for (const [kw, emo] of PAIRS) if (n.includes(kw)) return emo;
+  return GROUP_EMOJI[aisle] || '🛒'; // never blank
 }

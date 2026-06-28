@@ -14,7 +14,10 @@ export function splitQuantity(raw: string): { name: string; amount?: string } {
   const s = String(raw ?? '').trim();
   if (!s) return { name: s };
   const digit = '[\\d۰-۹]+(?:[.,٫][\\d۰-۹]+)?';
-  const qty = `(?:${digit}|${QTY_WORDS})(?:\\s*(?:${QTY_UNITS}))?`;
+  // A digit (a clear count) may stand alone or take a unit; a quantity WORD must be paired with a unit. So a bare
+  // «یه/دو/نیم» — frequently an article or vague word («یه چیزِ ناشناخته») — is NOT mistaken for an amount. Real
+  // quantities almost always carry a unit or a digit, so nothing useful is lost. Kills the «یه چیز» → «یه» false split.
+  const qty = `(?:${digit}(?:\\s*(?:${QTY_UNITS}))?|(?:${QTY_WORDS})\\s*(?:${QTY_UNITS}))`;
   let m = s.match(new RegExp(`^(${qty})\\s+(.{2,})$`)); // leading: «۵۰۰ گرم گوشت چرخ‌کرده»
   if (m) return { name: stripOrphanUnit(m[2].trim()) || m[2].trim(), amount: m[1].trim() };
   m = s.match(new RegExp(`^(.{2,}?)\\s+(${qty})$`)); // trailing: «سبزی خوردن دو کیلو»
