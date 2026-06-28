@@ -104,6 +104,38 @@ export class AgenticChatService {
       // no real match → fall through to the model loop (which still has the grounded search tool + the no-invent rule)
     }
 
+    // DETERMINISTIC shopping-list ops — the weak model flakes on actually calling add/remove (battery: «سه تا خیار بذار
+    // تو لیست خرید» sometimes silently did nothing). When the turn clearly targets the shopping list (and isn't the
+    // «موادِ این غذا رو بریز» recipe-ingredients case, which is add_recipe_to_shopping_list), we add/remove/read ourselves.
+    {
+      const pN = prompt.replace(/‌/g, '');
+      const shoppingCtx = /لیست\s*خرید|لیستم|به\s*لیست|تو(ی)?\s*لیست|از\s*لیست/.test(pN);
+      const recipeIngredients = /موادِ?\s|مواد لازم|دستورِ|طرز/.test(pN);
+      if (shoppingCtx && !recipeIngredients) {
+        const wantRemove = /حذف|بردار|پاک|درآر|در\s*بیار/.test(pN);
+        const wantAdd = !wantRemove && /اضافه|بذار|بزار|بریز|بنداز/.test(pN);
+        const wantRead = !wantRemove && !wantAdd && /چیه|چی\s*هست|چی\s*دارم|نشون|ببینم|بگو|محتوا/.test(pN);
+        const items = this.extractShoppingItems(prompt);
+        if (wantRemove && items.length) {
+          const tool = this.writeTools.build().find((t) => t.spec.name === 'remove_items_from_shopping_list');
+          const res = tool ? ((await tool.execute({ items }, ctx).catch(() => null)) as { ok?: boolean; removed?: string[] } | null) : null;
+          if (res?.ok) return { ok: true, text: res.removed?.length ? `از لیستِ خرید برداشتم: ${res.removed.join('، ')} ✅` : 'چیزی با این نام تو لیستِ خریدت نبود.', reason: null, toolCalls: [{ name: 'remove_items_from_shopping_list', arguments: '{}' }], model: 'deterministic:shop_remove' };
+        } else if (wantAdd && items.length) {
+          const tool = this.writeTools.build().find((t) => t.spec.name === 'add_items_to_shopping_list');
+          const res = tool ? ((await tool.execute({ items }, ctx).catch(() => null)) as { ok?: boolean; added?: string[] } | null) : null;
+          if (res?.ok) return { ok: true, text: `به لیستِ خرید اضافه کردم: ${(res.added ?? items).join('، ')} ✅`, reason: null, toolCalls: [{ name: 'add_items_to_shopping_list', arguments: '{}' }], model: 'deterministic:shop_add' };
+        } else if (wantRead) {
+          const tool = this.writeTools.build().find((t) => t.spec.name === 'get_shopping_list');
+          const res = tool ? ((await tool.execute({}, ctx).catch(() => null)) as { ok?: boolean; items?: { name: string; amount?: string }[] } | null) : null;
+          if (res?.ok) {
+            const its = res.items ?? [];
+            const text = its.length ? `الان تو لیستِ خریدت اینا هست:\n${its.map((i) => `- ${i.name}${i.amount ? ` (${i.amount})` : ''}`).join('\n')}` : 'لیستِ خریدت خالیه.';
+            return { ok: true, text, reason: null, toolCalls: [{ name: 'get_shopping_list', arguments: '{}' }], model: 'deterministic:shop_read' };
+          }
+        }
+      }
+    }
+
     // DETERMINISTIC single-slot meal-plan add / remove (battery: «شنبه شام قورمه بذار» didn't save and «یکشنبه ناهار رو
     // حذف کن» didn't remove — the weak model flaked on the search→add chain and the remove call). When the turn names
     // exactly ONE day + a meal + an add/remove verb (not a whole-week build, not a move), we do it ourselves.
@@ -159,6 +191,15 @@ export class AgenticChatService {
     }
     if (!result) return { ok: false, text: null, reason: 'error' };
     result.text = this.sanitize(result.text); // strip the garbage a weak model emits (founder saw «常务会» / «ته‌چی­n»)
+
+    // ANTI-FAKE write-claim gate: a weak model sometimes says «گذاشتم/اضافه کردم ✅» WITHOUT calling any write tool
+    // (founder: «دیزی رو پنجشنبه نهار بذار» → «گذاشتم ✅» but the slot stayed empty; «نزاشتی» → «الان گذاشتم!» again).
+    // If the reply claims a successful write but NO write tool actually ran this turn, the claim is fabricated —
+    // replace it with an honest ask instead of lying to the user.
+    if (this.claimsWriteWithoutDoing(result.text, result.toolCalls)) {
+      this.logger.warn('agentic reply claimed a write with no write-tool call — overriding with an honest message');
+      return { ok: true, text: 'ببخشید، نتونستم این کارو انجام بدم. یه‌بار دیگه دقیق‌تر بگو — مثلاً «پنجشنبه نهار آبگوشت بذار» یا «خیار رو به لیستِ خرید اضافه کن».', reason: null, toolCalls: result.toolCalls, model: result.model };
+    }
 
     // 3) OUTPUT gate (fail-closed): screen the final answer; only `unsafeTitles` is read by the screen.
     const verdict = await this.grounded.screenLiveOutput(userId, result.text, { unsafeTitles } as never);
@@ -280,8 +321,15 @@ export class AgenticChatService {
 
   /** Strip the day/meal/verb/filler words off an add request, leaving the dish term («شنبه شام قورمه سبزی بذار» → «قورمه سبزی»). */
   private extractDish(prompt: string): string {
-    const stop = /شنبه|یکشنبه|دوشنبه|سهشنبه|چهارشنبه|پنجشنبه|جمعه|صبحانه|صبحونه|ناهار|نهار|شام|عصرانه|میانوعده|رو|را|برای|بذار|بزار|قرار|بده|اضافه|کن|حذف|بردار|پاک|توی|تو|برنامه|غذای?ی?|وعده|یه|یک|لطفا|می‌?خوام/g;
+    const stop = /شنبه|یکشنبه|دوشنبه|سهشنبه|چهارشنبه|پنجشنبه|جمعه|صبحانه|صبحونه|ناهار|نهار|شام|عصرانه|میانوعده|رو|را|برای|بذار|بزار|قرار|بده|اضافه|کن|حذف|بردار|پاک|توی|تو|برنامه|هفتگ\S*|هفته|غذای?ی?|وعده|یه|یک|لطفا|می‌?خوام/g;
     return String(prompt || '').replace(/‌/g, '').replace(stop, ' ').replace(/[؟?.!،,]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /** Pull the item name(s) out of a shopping turn («سه تا خیار بذار تو لیست خرید» → ["سه تا خیار"]; «ماست و نون رو ...» → ["ماست","نون"]). */
+  private extractShoppingItems(prompt: string): string[] {
+    const stop = /به|از|توی|تو|لیستِ?|خریدم|خرید|اضافه|بذار|بزار|بریز|بنداز|حذف|بردار|پاک|کنم|کن|رو|را|لطفا|برام|بهم|می‌?خوام|اینو|اینا/g;
+    const cleaned = String(prompt || '').replace(/‌/g, '').replace(stop, ' ').replace(/[؟?.!،,]/g, ' ').replace(/\s+/g, ' ').trim();
+    return cleaned.split(/\s+و\s+/).map((s) => s.trim()).filter((s) => s.length >= 2);
   }
 
   /** Find the single best REAL, safety-filtered recipe for a dish term — grounded, for the deterministic single-slot add. */
@@ -292,6 +340,13 @@ export class AgenticChatService {
     const rows = (res?.results ?? []).filter((r): r is { id: string; title: string } => !!(r?.id && r?.title));
     const safe = (await this.safety.filter(ctx.userId, rows, 'id')) as { id: string; title: string }[];
     return safe[0] ?? null;
+  }
+
+  /** True when the reply CLAIMS a successful write but no write tool actually ran this turn (the model faked it). */
+  private claimsWriteWithoutDoing(text: string, toolCalls: { name: string }[] | undefined): boolean {
+    const WRITE = new Set(['add_to_meal_plan', 'remove_from_meal_plan', 'fill_week_plan', 'add_items_to_shopping_list', 'remove_items_from_shopping_list', 'add_recipe_to_shopping_list', 'add_week_to_shopping_list', 'add_favorite', 'remove_favorite', 'set_ingredient_taste']);
+    if ((toolCalls ?? []).some((c) => WRITE.has(c.name))) return false; // a real write ran → the claim is legitimate
+    return /گذاشتم|گذاشته شد|اضافه کردم|اضافه‌اش کردم|اضافه شد|ذخیره کردم|ذخیره شد|ثبت کردم|ثبت شد|حذف کردم|حذف شد|برداشتم|چیدم و ذخیره/.test(String(text ?? ''));
   }
 
   /** Wrap the recipe-surfacing tools with the INPUT safety filter; pass the rest through unchanged. */
