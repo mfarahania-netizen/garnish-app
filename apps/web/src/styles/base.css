@@ -50,6 +50,9 @@ button,[role="button"],a.g-action{min-height:44px;min-width:44px;touch-action:ma
    The reduced-motion block below neutralizes it automatically. */
 @keyframes g-check-pop{0%{transform:scale(.55)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
 .g-check-pop{animation:g-check-pop 200ms cubic-bezier(.34,1.56,.64,1)}
+/* meal-plan day transition — the selected day's detail fades+rises in on switch (keyed remount). Reduced-motion-safe. */
+@keyframes g-fade-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.g-fade-up{animation:g-fade-up 280ms var(--g-ease-enter)}
 
 /* Reduced motion — global hard fallback (motion.js also gates presets) */
 @media (prefers-reduced-motion:reduce){

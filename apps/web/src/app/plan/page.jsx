@@ -254,7 +254,7 @@ export default function PlanPage() {
         <>
           <WeekStrip days={m.week.days} meals={m.meals} filled={m.filled} suggested={m.suggested} selectedDay={selectedDay} onSelect={setSelectedDay} />
 
-          <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)' }}>
+          <Box key={selectedDay} className="g-fade-up" style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)' }}>
             {/* selected-day header */}
             <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: '0 0 var(--g-space-3)' }}>{isTodaySelected ? 'امروز' : day?.label} · {day?.dayFa} {day?.monthFa}</Text>
 
