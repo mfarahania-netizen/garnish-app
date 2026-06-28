@@ -66,103 +66,18 @@ export class AgenticChatService {
     const dietLine = await this.grounded.getDietConstraint(userId).catch(() => null); // diet = preference (non-fatal)
     const ctx: ToolContext = { userId, snapshot };
 
-    // DETERMINISTIC whole-week build — the flagship action must NOT depend on the free model CHOOSING to call the
-    // tool. Founder hit live: the model printed «کل برنامهٔ هفتگی ذخیره شد ✅» + a table it NEVER saved (only a
-    // single-slot add had really worked). So when the turn clearly means "build my whole week", we execute
-    // fill_week_plan OURSELVES and confirm from the REAL saved week — the model is out of the critical path, and we
-    // never claim a save we didn't make.
-    if (this.wantsWholeWeekPlan(prompt)) {
-      const tool = this.writeTools.build().find((t) => t.spec.name === 'fill_week_plan');
-      const res = (tool
-        ? await tool.execute({}, ctx).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }))
-        : { error: 'fill_week_plan unavailable' }) as { ok?: boolean; week?: { day: string; meals: { meal: string; dish: string }[] }[]; error?: string };
-      if (res?.ok && Array.isArray(res.week) && res.week.length) {
-        const text = this.formatWeekPlan(res.week);
-        const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
-        // The plan IS saved either way (generateSmartPlan already wrote it through the HARD safety filter). If the
-        // output screen false-positives on a title, we still confirm honestly — just without the table — never a lie.
-        const safeText = verdict.safe ? text : 'برنامهٔ هفته‌ات رو چیدم و ذخیره کردم ✅ — توی تبِ «برنامه» می‌بینیش.';
-        return { ok: true, text: safeText, reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'deterministic:fill_week_plan' };
-      }
-      // HONEST failure — never fake a save (the grounded fallback fakes an unsaved table, so we don't use it here).
-      return { ok: true, text: 'الان نتونستم کلِ برنامهٔ هفته رو بچینم. می‌تونی چند غذا رو دستی بگی بذارم، یا یه‌بارِ دیگه امتحان کن.', reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'deterministic:fill_week_plan' };
-    }
-
-    // DETERMINISTIC dish suggestions — founder hit live: «برای چهارشنبه چی پیشنهاد میدی؟» got THREE invented dishes
-    // («کوفتهٔ تره‌دیگی» etc.) that don't exist in the DB. The free model fabricates dishes instead of searching the
-    // real corpus. So for a clear "suggest me a dish" ask, we retrieve REAL recipes ourselves (grounded + safety
-    // filtered) and present only those — the model can't invent a dish that isn't in our catalog.
-    if (this.wantsDishSuggestion(prompt)) {
-      const dishes = await this.realDishSuggestions(ctx, prompt).catch(() => [] as { id: string; title: string }[]);
-      if (dishes.length) {
-        const text = this.formatSuggestions(dishes);
-        const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
-        if (verdict.safe) {
-          return { ok: true, text, reason: null, toolCalls: [{ name: 'search_recipes', arguments: JSON.stringify({ for: 'suggestion' }) }], model: 'deterministic:suggest' };
-        }
-      }
-      // no real match → fall through to the model loop (which still has the grounded search tool + the no-invent rule)
-    }
-
-    // DETERMINISTIC shopping-list ops — the weak model flakes on actually calling add/remove (battery: «سه تا خیار بذار
-    // تو لیست خرید» sometimes silently did nothing). When the turn clearly targets the shopping list (and isn't the
-    // «موادِ این غذا رو بریز» recipe-ingredients case, which is add_recipe_to_shopping_list), we add/remove/read ourselves.
-    {
-      const pN = prompt.replace(/‌/g, '');
-      const shoppingCtx = /لیست\s*خرید|لیستم|به\s*لیست|تو(ی)?\s*لیست|از\s*لیست/.test(pN);
-      const recipeIngredients = /موادِ?\s|مواد لازم|دستورِ|طرز/.test(pN);
-      if (shoppingCtx && !recipeIngredients) {
-        const wantRemove = /حذف|بردار|پاک|درآر|در\s*بیار/.test(pN);
-        const wantAdd = !wantRemove && /اضافه|بذار|بزار|بریز|بنداز/.test(pN);
-        const wantRead = !wantRemove && !wantAdd && /چیه|چی\s*هست|چی\s*دارم|نشون|ببینم|بگو|محتوا/.test(pN);
-        const items = this.extractShoppingItems(prompt);
-        if (wantRemove && items.length) {
-          const tool = this.writeTools.build().find((t) => t.spec.name === 'remove_items_from_shopping_list');
-          const res = tool ? ((await tool.execute({ items }, ctx).catch(() => null)) as { ok?: boolean; removed?: string[] } | null) : null;
-          if (res?.ok) return { ok: true, text: res.removed?.length ? `از لیستِ خرید برداشتم: ${res.removed.join('، ')} ✅` : 'چیزی با این نام تو لیستِ خریدت نبود.', reason: null, toolCalls: [{ name: 'remove_items_from_shopping_list', arguments: '{}' }], model: 'deterministic:shop_remove' };
-        } else if (wantAdd && items.length) {
-          const tool = this.writeTools.build().find((t) => t.spec.name === 'add_items_to_shopping_list');
-          const res = tool ? ((await tool.execute({ items }, ctx).catch(() => null)) as { ok?: boolean; added?: string[] } | null) : null;
-          if (res?.ok) return { ok: true, text: `به لیستِ خرید اضافه کردم: ${(res.added ?? items).join('، ')} ✅`, reason: null, toolCalls: [{ name: 'add_items_to_shopping_list', arguments: '{}' }], model: 'deterministic:shop_add' };
-        } else if (wantRead) {
-          const tool = this.writeTools.build().find((t) => t.spec.name === 'get_shopping_list');
-          const res = tool ? ((await tool.execute({}, ctx).catch(() => null)) as { ok?: boolean; items?: { name: string; amount?: string }[] } | null) : null;
-          if (res?.ok) {
-            const its = res.items ?? [];
-            const text = its.length ? `الان تو لیستِ خریدت اینا هست:\n${its.map((i) => `- ${i.name}${i.amount ? ` (${i.amount})` : ''}`).join('\n')}` : 'لیستِ خریدت خالیه.';
-            return { ok: true, text, reason: null, toolCalls: [{ name: 'get_shopping_list', arguments: '{}' }], model: 'deterministic:shop_read' };
-          }
-        }
-      }
-    }
-
-    // DETERMINISTIC single-slot meal-plan add / remove (battery: «شنبه شام قورمه بذار» didn't save and «یکشنبه ناهار رو
-    // حذف کن» didn't remove — the weak model flaked on the search→add chain and the remove call). When the turn names
-    // exactly ONE day + a meal + an add/remove verb (not a whole-week build, not a move), we do it ourselves.
-    {
-      const pNorm = prompt.replace(/‌/g, '');
-      const dm = this.detectDayMeal(prompt);
-      const moving = /جابه\s*جا|جا به جا|منتقل|عوض\s*کن/.test(pNorm);
-      if (dm && !moving) {
-        const remove = /حذف|بردار|پاک|خالی\s*کن/.test(pNorm);
-        const add = /بذار|بزار|قرار\s*بده|اضافه/.test(pNorm);
-        const dayName = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'][dm.day];
-        const mealName = ({ breakfast: 'صبحانه', lunch: 'ناهار', dinner: 'شام' } as Record<string, string>)[dm.meal] ?? dm.meal;
-        if (remove && !add) {
-          const tool = this.writeTools.build().find((t) => t.spec.name === 'remove_from_meal_plan');
-          const res = tool ? ((await tool.execute({ day: dm.day, mealType: dm.meal }, ctx).catch(() => null)) as { ok?: boolean } | null) : null;
-          if (res?.ok) return { ok: true, text: `${dayName} ${mealName} رو از برنامه‌ات برداشتم ✅`, reason: null, toolCalls: [{ name: 'remove_from_meal_plan', arguments: '{}' }], model: 'deterministic:remove_slot' };
-        } else if (add) {
-          const dish = this.extractDish(prompt);
-          const recipe = dish ? await this.findOneSafeRecipe(ctx, dish) : null;
-          if (recipe) {
-            const tool = this.writeTools.build().find((t) => t.spec.name === 'add_to_meal_plan');
-            const res = tool ? ((await tool.execute({ recipeId: recipe.id, day: dm.day, mealType: dm.meal }, ctx).catch(() => null)) as { ok?: boolean } | null) : null;
-            if (res?.ok) return { ok: true, text: `گذاشتم: **${recipe.title}** برای ${dayName} ${mealName} ✅ — توی تبِ «برنامه» می‌بینیش.`, reason: null, toolCalls: [{ name: 'add_to_meal_plan', arguments: '{}' }], model: 'deterministic:add_slot' };
-          }
-          // dish not found by deterministic search → fall through to the model (it can try variants); never fake a save
-        }
-      }
+    // UNDERSTAND-then-DO: the weak free model can't be trusted to call tools reliably or to refrain from inventing/
+    // faking — and a pure-regex parser is brittle on real Persian («سه شنبه»→«شنبه», «توت» mis-stripped, «۲ کیلو موز
+    // گوجه ۱ کیلو» mis-split). So we SPLIT the jobs: the model ONLY understands (→ a structured intent; it normalizes
+    // «فردا»/«سه شنبه»/messy item lists, which it's good at), then OUR CODE does the action (finds the real recipe,
+    // actually writes, confirms from the DB — it can't fake or invent). A misparse / "other" falls to the chat loop.
+    const intent = await this.parseActionIntent(prompt).catch(() => null);
+    if (intent && intent.action !== 'other') {
+      const done = await this.executeIntent(userId, intent, ctx).catch((e) => {
+        this.logger.warn(`executeIntent(${intent.action}) failed: ${e instanceof Error ? e.message : String(e)}`);
+        return null;
+      });
+      if (done) return done;
     }
 
     const unsafeTitles: string[] = [];
@@ -347,6 +262,124 @@ export class AgenticChatService {
     const WRITE = new Set(['add_to_meal_plan', 'remove_from_meal_plan', 'fill_week_plan', 'add_items_to_shopping_list', 'remove_items_from_shopping_list', 'add_recipe_to_shopping_list', 'add_week_to_shopping_list', 'add_favorite', 'remove_favorite', 'set_ingredient_taste']);
     if ((toolCalls ?? []).some((c) => WRITE.has(c.name))) return false; // a real write ran → the claim is legitimate
     return /گذاشتم|گذاشته شد|اضافه کردم|اضافه‌اش کردم|اضافه شد|ذخیره کردم|ذخیره شد|ثبت کردم|ثبت شد|حذف کردم|حذف شد|برداشتم|چیدم و ذخیره/.test(String(text ?? ''));
+  }
+
+  // ── UNDERSTAND-then-DO substrate: model UNDERSTANDS (→ structured intent), code DOES (deterministic, grounded) ──
+
+  /** The model's ONLY job here: classify + extract the turn into a small structured intent. It never executes. */
+  private async parseActionIntent(prompt: string): Promise<{ action: string; items?: { name?: string; amount?: string }[]; day?: string; meal?: string; dish?: string; query?: string } | null> {
+    const DAY = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
+    const today = (new Date().getDay() + 1) % 7;
+    const dn = (o: number) => DAY[(today + o) % 7];
+    const system = [
+      'تو فقط «منظوریابِ» یک اپِ آشپزی هستی. از پیامِ کاربر نیتش را دربیاور و «فقط یک JSON» بده — بدون هیچ توضیح، بدون ```.',
+      'قالب: {"action":"...","items":[{"name":"","amount":""}],"day":"","meal":"","dish":"","query":""}',
+      'action دقیقاً یکی از این‌ها:',
+      '· "add_shopping": افزودنِ مواد به لیستِ خرید — items را پر کن، هر ماده جدا، amount دقیق («۲ کیلو»،«نیم کیلو») و اگر نبود خالی.',
+      '· "remove_shopping": حذفِ مواد از لیستِ خرید — items فقط با name.',
+      '· "read_shopping": خواندنِ لیستِ خرید.',
+      '· "add_meal": گذاشتنِ یک غذا در برنامه — day، meal (صبحانه/ناهار/شام)، dish (نامِ غذا).',
+      '· "remove_meal": حذفِ یک وعده — day و meal.',
+      '· "fill_week": چیدنِ کلِ برنامهٔ هفته.',
+      '· "suggest": پیشنهادِ غذا — query را با ماده/نوع/مناسبت پر کن اگر گفت، وگرنه خالی.',
+      '· "other": سؤال، طرزِ تهیه، جایگزینِ ماده، گپ، سلام، یا هر چیزِ نامطمئن.',
+      `امروز «${dn(0)}» است؛ «فردا»=«${dn(1)}»،«پس‌فردا»=«${dn(2)}». روزها را با نامِ ${DAY.join('/')} بده و «فردا/پس‌فردا» را خودت به روزِ واقعی تبدیل کن.`,
+      'نامِ مواد/غذا را کامل و دقیق بردار (مثلاً «توت فرنگی» را کامل، نه نصفه). چند ماده در یک جمله را از هم جدا کن. اگر مطمئن نیستی action="other".',
+      'مثال‌ها:',
+      '«۳ تا غذای محلی بگو» → {"action":"suggest","query":"محلی"}',
+      '«یه خورشت خوب پیشنهاد بده» → {"action":"suggest","query":"خورشت"}',
+      '«خورشت قیمه رو بزار سه‌شنبه نهار» → {"action":"add_meal","day":"سه‌شنبه","meal":"ناهار","dish":"خورشت قیمه"}',
+      '«۲ کیلو موز و گوجه ۱ کیلو بذار تو لیست خرید» → {"action":"add_shopping","items":[{"name":"موز","amount":"۲ کیلو"},{"name":"گوجه","amount":"۱ کیلو"}]}',
+      '«خیار رو از لیست خرید بردار» → {"action":"remove_shopping","items":[{"name":"خیار"}]}',
+      '«قورمه چند کالری داره؟» → {"action":"other"}',
+    ].join('\n');
+    // RETRY ONCE: the free model intermittently returns malformed/empty JSON on the first shot. A second try
+    // recovers most of those instead of mis-falling to the chat loop. (Same flake-tolerance as the tool loop.)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const out = await this.model.generate({ system, prompt: `پیام: «${prompt}»\nJSON:`, maxTokens: 500 }).catch(() => null);
+      const parsed = this.extractJson(out?.text ?? '');
+      if (parsed && typeof parsed.action === 'string') return parsed as { action: string };
+    }
+    return null;
+  }
+
+  /** Pull the first JSON object out of a model reply (tolerates ``` fences / surrounding prose). */
+  private extractJson(text: string): { action?: string; [k: string]: unknown } | null {
+    const s = String(text ?? '').replace(/```json|```/gi, '');
+    const m = s.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    try { return JSON.parse(m[0]) as { action?: string }; } catch { return null; }
+  }
+
+  /** Tolerant Persian day-name → dayOfWeek (0=شنبه…6=جمعه); handles space/ZWNJ variants («سه شنبه»/«سه‌شنبه»). */
+  private dayNameToNum(name: string | undefined): number | null {
+    const n = String(name ?? '').replace(/[‌\s]/g, '');
+    for (const [k, v] of [['یکشنبه', 1], ['دوشنبه', 2], ['سهشنبه', 3], ['چهارشنبه', 4], ['پنجشنبه', 5], ['جمعه', 6], ['شنبه', 0]] as [string, number][]) {
+      if (n.includes(k)) return v;
+    }
+    return null;
+  }
+
+  /** DO the parsed action with deterministic, grounded code (no model decides/executes). Returns null to fall through to chat. */
+  private async executeIntent(userId: string, intent: { action: string; items?: { name?: string; amount?: string }[]; day?: string; meal?: string; dish?: string; query?: string }, ctx: ToolContext): Promise<AgenticChatOutcome | null> {
+    const W = (name: string) => this.writeTools.build().find((t) => t.spec.name === name);
+    switch (intent.action) {
+      case 'add_shopping': {
+        const items = (intent.items ?? []).map((i) => ({ name: String(i?.name ?? '').trim(), amount: i?.amount ? String(i.amount).trim() : '' })).filter((i) => i.name);
+        if (!items.length) return null;
+        const strs = items.map((i) => (i.amount ? `${i.amount} ${i.name}` : i.name)); // add_items' splitQuantity re-parses these cleanly
+        const res = (await W('add_items_to_shopping_list')?.execute({ items: strs }, ctx).catch(() => null)) as { ok?: boolean; added?: string[] } | null;
+        return res?.ok ? { ok: true, text: `به لیستِ خرید اضافه کردم: ${(res.added ?? strs).join('، ')} ✅`, reason: null, toolCalls: [{ name: 'add_items_to_shopping_list', arguments: '{}' }], model: 'understand:add_shopping' } : null;
+      }
+      case 'remove_shopping': {
+        const names = (intent.items ?? []).map((i) => String(i?.name ?? '').trim()).filter(Boolean);
+        if (!names.length) return null;
+        const res = (await W('remove_items_from_shopping_list')?.execute({ items: names }, ctx).catch(() => null)) as { ok?: boolean; removed?: string[] } | null;
+        return res?.ok ? { ok: true, text: res.removed?.length ? `از لیستِ خرید برداشتم: ${res.removed.join('، ')} ✅` : 'چیزی با این نام تو لیستِ خریدت نبود.', reason: null, toolCalls: [{ name: 'remove_items_from_shopping_list', arguments: '{}' }], model: 'understand:remove_shopping' } : null;
+      }
+      case 'read_shopping': {
+        const res = (await W('get_shopping_list')?.execute({}, ctx).catch(() => null)) as { ok?: boolean; items?: { name: string; amount?: string }[] } | null;
+        if (!res?.ok) return null;
+        const its = res.items ?? [];
+        const text = its.length ? `الان تو لیستِ خریدت اینا هست:\n${its.map((i) => `- ${i.name}${i.amount ? ` (${i.amount})` : ''}`).join('\n')}` : 'لیستِ خریدت خالیه.';
+        return { ok: true, text, reason: null, toolCalls: [{ name: 'get_shopping_list', arguments: '{}' }], model: 'understand:read_shopping' };
+      }
+      case 'add_meal': {
+        const day = this.dayNameToNum(intent.day);
+        const dish = String(intent.dish ?? '').trim();
+        if (day === null || !intent.meal || !dish) return null;
+        const recipe = await this.findOneSafeRecipe(ctx, dish);
+        if (!recipe) return { ok: true, text: `«${dish}» رو تو رسپی‌هامون پیدا نکردم — اسمِ دقیق‌ترشو بگو یا یه غذای دیگه.`, reason: null, toolCalls: [], model: 'understand:add_meal' };
+        const res = (await W('add_to_meal_plan')?.execute({ recipeId: recipe.id, day, mealType: intent.meal }, ctx).catch(() => null)) as { ok?: boolean } | null;
+        return res?.ok ? { ok: true, text: `گذاشتم: **${recipe.title}** برای ${intent.day} ${intent.meal} ✅ — توی تبِ «برنامه» می‌بینیش.`, reason: null, toolCalls: [{ name: 'add_to_meal_plan', arguments: '{}' }], model: 'understand:add_meal' } : null;
+      }
+      case 'remove_meal': {
+        const day = this.dayNameToNum(intent.day);
+        if (day === null || !intent.meal) return null;
+        const res = (await W('remove_from_meal_plan')?.execute({ day, mealType: intent.meal }, ctx).catch(() => null)) as { ok?: boolean } | null;
+        return res?.ok ? { ok: true, text: `${intent.day} ${intent.meal} رو از برنامه‌ات برداشتم ✅`, reason: null, toolCalls: [{ name: 'remove_from_meal_plan', arguments: '{}' }], model: 'understand:remove_meal' } : null;
+      }
+      case 'fill_week': {
+        const res = (await W('fill_week_plan')?.execute({}, ctx).catch(() => null)) as { ok?: boolean; week?: { day: string; meals: { meal: string; dish: string }[] }[] } | null;
+        if (res?.ok && res.week?.length) {
+          const text = this.formatWeekPlan(res.week);
+          const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
+          return { ok: true, text: verdict.safe ? text : 'برنامهٔ هفته‌ات رو چیدم و ذخیره کردم ✅ — توی تبِ «برنامه» می‌بینیش.', reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'understand:fill_week' };
+        }
+        return { ok: true, text: 'الان نتونستم کلِ برنامهٔ هفته رو بچینم. چند غذا رو دستی بگو می‌ذارم، یا دوباره امتحان کن.', reason: null, toolCalls: [], model: 'understand:fill_week' };
+      }
+      case 'suggest': {
+        const dishes = await this.realDishSuggestions(ctx, String(intent.query ?? '')).catch(() => [] as { id: string; title: string }[]);
+        if (dishes.length) {
+          const text = this.formatSuggestions(dishes);
+          const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
+          if (verdict.safe) return { ok: true, text, reason: null, toolCalls: [{ name: 'search_recipes', arguments: '{}' }], model: 'understand:suggest' };
+        }
+        return null;
+      }
+      default:
+        return null;
+    }
   }
 
   /** Wrap the recipe-surfacing tools with the INPUT safety filter; pass the rest through unchanged. */

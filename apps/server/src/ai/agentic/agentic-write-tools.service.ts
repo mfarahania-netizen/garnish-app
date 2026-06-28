@@ -29,17 +29,19 @@ function normalizeMeal(raw: unknown): string | null {
 // «سبزی خوردن دو کیلو» — the model treated the amount as part of the name). Deterministic, so it doesn't depend on
 // the weak model parsing it. «دو کیلو سبزی خوردن» → {name:'سبزی خوردن', amount:'دو کیلو'}; «خیار» → {name:'خیار'}.
 const QTY_WORDS = 'یک|یه|دو|سه|چهار|پنج|شش|شیش|هفت|هشت|نه|ده|نیم|ربع|چند|چندتا';
-const QTY_UNITS = 'کیلوگرمی|کیلوگرم|کیلو|گرمی|گرم|تایی|تا|عددی|عدد|دونه|دانه|بسته‌ای|بسته|شیشه|قوطی|حلب|لیتری|لیتر|بطری|فنجان|قاشق|پیمانه|کیسه|پاکت|بند|کله|سیر|مثقال';
+const QTY_UNITS = 'کیلوگرمی|کیلوگرم|کیلو|گرمی|گرم|تایی|تا|عددی|عدد|بسته‌ای|بسته|شیشه|قوطی|حلب|لیتری|لیتر|بطری|فنجان|قاشق|پیمانه|کیسه|پاکت|مثقال';
+// peel an orphan unit the model sometimes leaves in the name when it drops the number («کیلو موز» → «موز»).
+const stripOrphanUnit = (name: string): string => name.replace(new RegExp(`^(?:${QTY_UNITS})\\s+`), '').replace(new RegExp(`\\s+(?:${QTY_UNITS})$`), '').trim();
 function splitQuantity(raw: string): { name: string; amount?: string } {
   const s = String(raw ?? '').trim();
   if (!s) return { name: s };
   const digit = '[\\d۰-۹]+(?:[.,٫][\\d۰-۹]+)?';
   const qty = `(?:${digit}|${QTY_WORDS})(?:\\s*(?:${QTY_UNITS}))?`;
   let m = s.match(new RegExp(`^(${qty})\\s+(.{2,})$`)); // leading: «۵۰۰ گرم گوشت چرخ‌کرده»
-  if (m) return { name: m[2].trim(), amount: m[1].trim() };
+  if (m) return { name: stripOrphanUnit(m[2].trim()) || m[2].trim(), amount: m[1].trim() };
   m = s.match(new RegExp(`^(.{2,}?)\\s+(${qty})$`)); // trailing: «سبزی خوردن دو کیلو»
-  if (m && new RegExp(`${digit}|${QTY_UNITS}`).test(m[2])) return { name: m[1].trim(), amount: m[2].trim() };
-  return { name: s };
+  if (m && new RegExp(`${digit}|${QTY_UNITS}`).test(m[2])) return { name: stripOrphanUnit(m[1].trim()) || m[1].trim(), amount: m[2].trim() };
+  return { name: stripOrphanUnit(s) || s };
 }
 
 /**
