@@ -193,6 +193,39 @@ export class MealPlansService {
     return this.sanitizePlan(plan, userId); // consistency/defense (source is already published-only)
   }
 
+  /**
+   * Fill a SPECIFIC set of (day, meal) slots with auto-picked, SAFE, Persian-first dishes — WITHOUT touching the rest
+   * of the week. Founder: «فردا صبحانه و شام + پس‌فردا ۳ وعده بچین» wrongly triggered a whole-week regenerate. Reuses
+   * generateSmartPlan's HARD safety filter + Persian-first pools, then addMealSlot per slot (which replaces ONLY that
+   * one slot and canonicalizes the mealType). Returns what was actually placed (real titles — never fabricated).
+   */
+  async fillSlots(userId: string, slots: { dayOfWeek: number; mealType: string }[]): Promise<{ dayOfWeek: number; mealType: string; title: string }[]> {
+    const wanted = (slots || []).filter((s) => Number.isInteger(s?.dayOfWeek) && s.dayOfWeek >= 0 && s.dayOfWeek <= 6 && s?.mealType);
+    if (!wanted.length) return [];
+    const pref = await this.prisma.userPreference.findUnique({ where: { userId }, select: { diet: true } }).catch(() => null);
+    const where: any = { status: 'active', isPublic: true }; // published only (advisor audit)
+    if (pref?.diet === 'vegetarian' || pref?.diet === 'vegan') where.diet = { in: ['vegetarian', 'vegan'] };
+    let recipes = await this.prisma.recipe.findMany({ where, include: { ingredients: true }, take: 500 });
+    recipes = await this.safety.filter(userId, recipes); // HARD allergy/pork gate, fail-closed — never bypass
+    const isPersian = (r: any) => /persian|iran|ایران/i.test(r.region || '');
+    const shuffle = <X>(arr: X[]): X[] => { const a = [...arr]; for (let k = a.length - 1; k > 0; k--) { const m = Math.floor(Math.random() * (k + 1)); [a[k], a[m]] = [a[m], a[k]]; } return a; };
+    const poolFor = (mt: string) => [...shuffle(recipes.filter((r) => r.mealType?.includes(mt) && isPersian(r))), ...shuffle(recipes.filter((r) => r.mealType?.includes(mt) && !isPersian(r)))];
+    const pools: Record<string, any[]> = { breakfast: poolFor('breakfast'), lunch: poolFor('lunch'), dinner: poolFor('dinner') };
+    const used: Record<string, Set<string>> = { breakfast: new Set(), lunch: new Set(), dinner: new Set() };
+    const filled: { dayOfWeek: number; mealType: string; title: string }[] = [];
+    for (const s of wanted) {
+      const mt = this.canonMeal(s.mealType); // english canonical
+      const pool = pools[mt] ?? pools.lunch;
+      const u = used[mt] ?? used.lunch;
+      const pick = pool.find((x) => !u.has(x.id)) ?? pool[0];
+      if (!pick) continue;
+      u.add(pick.id);
+      await this.addMealSlot(userId, s.dayOfWeek, mt, pick.id); // replaces ONLY that slot + canonicalizes the mealType
+      filled.push({ dayOfWeek: s.dayOfWeek, mealType: mt, title: pick.title });
+    }
+    return filled;
+  }
+
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====
   /**
    * Canonical meal-type is ENGLISH («breakfast/lunch/dinner») — that is what the meal-plan SCREEN keys its grid by

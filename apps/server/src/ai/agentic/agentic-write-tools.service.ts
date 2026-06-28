@@ -93,6 +93,7 @@ export class AgenticWriteToolsService {
       this.addToMealPlan(),
       this.removeFromMealPlan(),
       this.fillWeekPlan(),
+      this.fillMealSlots(),
       this.setIngredientTaste(),
     ];
   }
@@ -126,6 +127,42 @@ export class AgenticWriteToolsService {
         } catch (e) {
           this.logger.warn(`fill_week_plan failed: ${e instanceof Error ? e.message : String(e)}`);
           return { error: 'چیدنِ برنامهٔ هفته الان ممکن نشد.' };
+        }
+      },
+    };
+  }
+
+  /**
+   * Fill a SPECIFIC set of (day, meal) slots with the system's own safe Persian-first picks — NOT the whole week
+   * (founder: «فردا صبحانه و شام + پس‌فردا ۳ وعده بچین» wrongly regenerated everything). Delegates to the audited
+   * MealPlansService.fillSlots (HARD safety filter + per-slot addMealSlot; the rest of the week is untouched).
+   */
+  private fillMealSlots(): AgenticTool {
+    return {
+      spec: {
+        name: 'fill_meal_slots',
+        description: 'پر کردنِ چند خانهٔ مشخصِ برنامه (روز+وعده) با غذای منتخبِ خودِ سیستم — وقتی کاربر چند وعدهٔ معین را «به سلیقهٔ خودت بچین» خواست (مثلِ «فردا صبحانه و شام و پس‌فردا هر سه وعده»). بقیهٔ هفته دست‌نخورده می‌ماند. برای «کلِ هفته» این نیست؛ fill_week_plan را بزن.',
+        parameters: {
+          type: 'object',
+          properties: {
+            slots: { type: 'array', description: 'فهرستِ خانه‌ها', items: { type: 'object', properties: { day: { type: 'string', description: 'روزِ هفته: شنبه…جمعه' }, mealType: { type: 'string', description: 'صبحانه/ناهار/شام' } } } },
+          },
+          required: ['slots'],
+        },
+      },
+      execute: async (args, ctx) => {
+        const raw = Array.isArray((args as { slots?: unknown })?.slots) ? ((args as { slots: unknown[] }).slots) : [];
+        const norm = raw
+          .map((s) => ({ dayOfWeek: normalizeDay((s as { day?: unknown; dayOfWeek?: unknown })?.day ?? (s as { dayOfWeek?: unknown })?.dayOfWeek), mealType: normalizeMeal((s as { mealType?: unknown; meal?: unknown })?.mealType ?? (s as { meal?: unknown })?.meal) }))
+          .filter((s): s is { dayOfWeek: number; mealType: string } => s.dayOfWeek !== null && !!s.mealType);
+        if (!norm.length) return { error: 'خانه‌ها (روز و وعده) مشخص نشد.' };
+        try {
+          const filled = await this.mealPlans.fillSlots(ctx.userId, norm);
+          if (!filled.length) return { error: 'الان نتونستم این خانه‌ها رو پر کنم (شاید با محدودیت‌های غذاییت گزینهٔ کافی نبود).' };
+          return { ok: true, action: 'fill_meal_slots', filled };
+        } catch (e) {
+          this.logger.warn(`fill_meal_slots failed: ${e instanceof Error ? e.message : String(e)}`);
+          return { error: 'پر کردنِ خانه‌ها الان ممکن نشد.' };
         }
       },
     };
