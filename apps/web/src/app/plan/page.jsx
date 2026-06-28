@@ -30,17 +30,18 @@ function Thumb({ title, size = 56 }) {
  * SlotRow — a full-width meal slot for the single-day view. Three states: FILLED (dish + swap/remove, tap → recipe),
  * SUGGESTED (AI proposal: accept / یکی دیگه), EMPTY (an inviting «+ افزودن {meal}» that opens the picker).
  */
-// Compact "for N people" stepper — sits in a slot's meta row and scales that dish's share of the shopping list.
+// Subtle "for N people" control — sits in a slot's meta row; the number scales that dish's share of the shopping list.
+// Small + muted on purpose (it's a secondary control, not a primary action); labelled «نفر» so its meaning is obvious.
 function ServingsStepper({ value, onChange }) {
   const v = value || 4;
   const stop = (e) => { e.stopPropagation(); e.preventDefault(); };
-  const btn = { flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)' };
+  const btn = { flexShrink: 0, inlineSize: 20, blockSize: 20, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' };
   return (
-    <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-      <IconUsers size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
-      <UnstyledButton type="button" onClick={(e) => { stop(e); onChange(Math.max(1, v - 1)); }} aria-label="نفرِ کمتر" style={btn}><IconMinus size={12} stroke={2.6} /></UnstyledButton>
-      <Text component="span" aria-label={`${v} نفر`} style={{ minInlineSize: 14, textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{toFaDigits(v)}</Text>
-      <UnstyledButton type="button" onClick={(e) => { stop(e); onChange(Math.min(20, v + 1)); }} aria-label="نفرِ بیشتر" style={btn}><IconPlus size={12} stroke={2.6} /></UnstyledButton>
+    <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+      <IconUsers size={12} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', marginInlineEnd: 2 }} />
+      <UnstyledButton type="button" onClick={(e) => { stop(e); onChange(Math.max(1, v - 1)); }} aria-label="نفرِ کمتر" style={btn}><IconMinus size={11} stroke={2.2} /></UnstyledButton>
+      <Text component="span" aria-label={`برای ${v} نفر`} style={{ minInlineSize: 32, textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>{toFaDigits(v)} نفر</Text>
+      <UnstyledButton type="button" onClick={(e) => { stop(e); onChange(Math.min(20, v + 1)); }} aria-label="نفرِ بیشتر" style={btn}><IconPlus size={11} stroke={2.2} /></UnstyledButton>
     </Box>
   );
 }
@@ -364,7 +365,7 @@ export default function PlanPage() {
                 <Box aria-hidden="true" style={{ inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center' }}><IconShoppingCart size={20} stroke={1.8} /></Box>
                 <Box style={{ flex: 1, textAlign: 'start' }}>
                   <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>از این برنامه، لیست خرید بساز</Text>
-                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>ادغام و دسته‌بندیِ خودکارِ مواد</Text>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>مقدارها برای «تعدادِ نفرِ» هر غذا حساب می‌شه</Text>
                 </Box>
                 <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
               </UnstyledButton>
