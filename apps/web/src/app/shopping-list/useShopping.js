@@ -86,11 +86,27 @@ export function useShopping() {
     const nextVal = !checkedOf(it);
     setOverrides((o) => ({ ...o, [it.id]: nextVal }));
     try {
-      await apiClient.patch(`/shopping-list/items/${it.id}`);
+      await apiClient.patch(`/shopping-list/items/${it.id}`, { isChecked: nextVal }); // explicit → idempotent (no flip-race on a double-tap)
     } catch {
       setOverrides((o) => ({ ...o, [it.id]: !nextVal })); // revert on failure
     }
   }, [checkedOf]);
+
+  // bulk: remove every checked item ("trip done" reset). Optimistic-clear then refetch the server truth.
+  const clearChecked = useCallback(async () => {
+    setBusy(true);
+    try {
+      await apiClient.post('/shopping-list/clear-checked');
+      setOverrides({});
+      setRemoved({});
+      await list.refetch();
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }, [list]);
 
   const remove = useCallback(async (it) => {
     setRemoved((r) => ({ ...r, [it.id]: true })); // optimistic
@@ -136,5 +152,5 @@ export function useShopping() {
   else if (list.isError) status = 'error';
   else if (total === 0) status = 'empty';
 
-  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, busy };
+  return { status, refetch: () => list.refetch(), groups, total, done, checkedOf, toggle, remove, addManual, buildFromPlan, clearChecked, busy };
 }

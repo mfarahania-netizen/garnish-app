@@ -9,10 +9,10 @@ import Toast from '../../components/ges/Toast';
 
 function GroceryRow({ item, checked, onToggle, onRemove, first }) {
   return (
-    <Box style={{ display: 'flex', alignItems: 'center', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)', opacity: checked ? 0.6 : 1 }}>
+    <Box style={{ display: 'flex', alignItems: 'center', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)', opacity: checked ? 0.55 : 1, transition: 'opacity 200ms ease' }}>
       {/* the row body toggles the no-shame checked state (accessible name = the item) */}
       <UnstyledButton type="button" onClick={onToggle} aria-pressed={checked} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minBlockSize: 48, paddingInlineStart: 'var(--g-space-4)', paddingInlineEnd: 'var(--g-space-2)', paddingBlock: 'var(--g-space-3)' }}>
-        <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box aria-hidden="true" className={checked ? 'g-check-pop' : undefined} style={{ flexShrink: 0, inlineSize: 24, blockSize: 24, borderRadius: 'var(--g-radius-chip)', border: checked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: checked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', transition: 'background 140ms ease, border-color 140ms ease' }}>
           {checked ? <IconCheck size={14} stroke={2.4} /> : null}
         </Box>
         <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 500, color: checked ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)', textDecoration: checked ? 'line-through' : 'none' }}>{item.name}</Text>
@@ -70,6 +70,7 @@ export default function ShoppingListPage() {
     showToast(`از برنامه ساخته شد · ${toFaDigits(r.added)} مورد${r.merged ? ` · ${toFaDigits(r.merged)} ادغام` : ''}${flag}`, IconWand);
   };
   const onAdd = async () => { const ok = await s.addManual(draft); if (ok) { setDraft(''); showToast('به لیست اضافه شد', IconPlus); } else showToast('اضافه نشد — دوباره امتحان کن', IconCloudOff); };
+  const onClearChecked = async () => { const n = s.done; const ok = await s.clearChecked(); showToast(ok ? `${toFaDigits(n)} مورد پاک شد` : 'الان نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '70dvh' }}>
@@ -96,6 +97,19 @@ export default function ShoppingListPage() {
           : s.status === 'empty' ? <ShoppingEmpty onFromPlan={onFromPlan} busy={s.busy} />
             : (
               <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-4)' }}>
+                {/* trip progress: a completion moment when everything's got, else a quiet "clear what's got" affordance */}
+                {s.done > 0 ? (
+                  s.done === s.total ? (
+                    <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-3)', padding: 'var(--g-space-3) var(--g-space-4)', marginBlockEnd: 'var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-state-success-bg, var(--g-color-brand-50))', border: '1px solid var(--g-color-state-success-fg)' }}>
+                      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-state-success-fg)' }}>🎉 همه‌چیزو گرفتی!</Text>
+                      <UnstyledButton type="button" onClick={onClearChecked} disabled={s.busy} style={{ flexShrink: 0, minBlockSize: 40, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>پاک کن و آماده شو</UnstyledButton>
+                    </Box>
+                  ) : (
+                    <Box style={{ display: 'flex', justifyContent: 'flex-end', marginBlockEnd: 'var(--g-space-3)' }}>
+                      <UnstyledButton type="button" onClick={onClearChecked} disabled={s.busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 36, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconTrash size={13} stroke={1.8} aria-hidden="true" />پاک‌کردنِ {toFaDigits(s.done)} گرفته‌شده</UnstyledButton>
+                    </Box>
+                  )
+                ) : null}
                 {s.groups.map((g) => (
                   <Box key={g.key} style={{ marginBlockEnd: 'var(--g-space-5)' }}>
                     <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginInline: 2, marginBlockEnd: 'var(--g-space-2)' }}>

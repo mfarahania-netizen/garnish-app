@@ -46,6 +46,11 @@ button,[role="button"],a.g-action{min-height:44px;min-width:44px;touch-action:ma
 /* Selection & scrollbar restraint */
 ::selection{background:var(--g-color-brand-200);color:var(--g-color-text-primary)}
 
+/* Satisfying grocery check-off — a single eased "pop" on the checkbox the moment an item is got (~200ms, spring ease).
+   The reduced-motion block below neutralizes it automatically. */
+@keyframes g-check-pop{0%{transform:scale(.55)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+.g-check-pop{animation:g-check-pop 200ms cubic-bezier(.34,1.56,.64,1)}
+
 /* Reduced motion — global hard fallback (motion.js also gates presets) */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
