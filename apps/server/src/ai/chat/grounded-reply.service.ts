@@ -9,6 +9,8 @@ import { foldPersian, aliasIngredient, isConfidentIngredientMatch, parseSearchQu
 import { extractStatedAllergens } from '../intent/allergen-extractor';
 import { t, Locale, resolveLocale } from '../i18n/template-registry';
 import { BehavioralContextSnapshot } from '../ai-core.types';
+import { PUBLISHED_RECIPE_WHERE } from '../../recipes/recipe-visibility';
+import { computeDishNutrition, buildDishInputs, DishDictRow } from '../../recipes/intelligence/dish-nutrition';
 
 /**
  * GroundedReplyService (AI-GROUNDED-ASSISTANT).
@@ -484,6 +486,80 @@ export class GroundedReplyService {
       const best = exact || confident[0] || [...withNutri].sort(byLen)[0];
       const name = best.nameFa || best.nameEn || best.code;
       return { name, per100g: best.nutritionPer100g as Record<string, number> };
+    }
+    return null;
+  }
+
+  /**
+   * Compute a WHOLE DISH's per-serving nutrition («کالریِ قیمه چنده؟») — the capability the amount→gram
+   * conversion layer unlocks. Deterministic + grounded: the number comes from the dish's own ingredients
+   * (source-locked per-100g × resolved grams), NEVER from a model. Resolves the named dish in the published
+   * corpus, prefers the stored per-serving Nutrition row (so the chat matches the meal-plan line), else
+   * live-computes via the conversion layer. Returns null when the dish isn't found OR can't be FULLY grounded
+   * — so the caller stays honest (it never surfaces a partial/guessed dish total). NO allergy decision here
+   * (informational readout of a dish the user named); the safety gate elsewhere governs what is RECOMMENDED.
+   */
+  async getDishNutrition(term: string): Promise<{ title: string; perServing: Record<string, number>; servings: number; source: 'stored' | 'computed_live' } | null> {
+    const cleaned = this.cleanDishTerm(term);
+    if (cleaned.length < 2) return null;
+    const recipe = await this.resolvePublishedRecipe(cleaned);
+    if (!recipe) return null;
+
+    const macros = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
+    // 1) prefer the stored per-serving Nutrition row — same number the meal-plan per-day line shows.
+    const stored = recipe.nutrition;
+    if (stored && stored.calories != null) {
+      const perServing: Record<string, number> = {};
+      for (const m of macros) if (stored[m] != null) perServing[m] = Number(stored[m]);
+      return { title: recipe.title, perServing, servings: Number(recipe.servings) || 0, source: 'stored' };
+    }
+    // 2) else live-compute from the ingredient amounts via the conversion layer.
+    const ids = (recipe.ingredients ?? []).map((i) => i.ingredientId).filter((x): x is string => !!x);
+    let dictRows: { id: string; nutritionPer100g: unknown; category: string | null; gramConversions: unknown }[] = [];
+    try {
+      dictRows = ids.length ? await this.prisma.ingredient.findMany({ where: { id: { in: ids } }, select: { id: true, nutritionPer100g: true, category: true, gramConversions: true } }) : [];
+    } catch {
+      return null;
+    }
+    const dictById = new Map<string, DishDictRow>(dictRows.map((d) => [d.id, { nutritionPer100g: d.nutritionPer100g, category: d.category, gramConversions: d.gramConversions }]));
+    const { inputs, servings } = buildDishInputs(recipe, dictById);
+    const res = computeDishNutrition(inputs, servings);
+    if (!res.perServing) return null; // not fully grounded → honest null (the nutrition guard stays)
+    return { title: recipe.title, perServing: res.perServing, servings, source: 'computed_live' };
+  }
+
+  /** Strip nutrition-question words off a turn, leaving the dish name («قیمه چند کالری داره؟» → «قیمه»). */
+  private cleanDishTerm(prompt: string): string {
+    const stop = /کالریِ?|کالری‌|چندتا|چند|چقدره?|چنده|داره|دارد|می‌?شه|پروتئینِ?|چربیِ?|کربوهیدرات|فیبر|قند|هر|یه|یک|پرس|وعده|بشقاب|این|اون|همین|اطلاعاتِ?|تغذیه|دارای|نوشته|مقدار|دونه|چه‌قدر|چقد|نفر|سهم/g;
+    return String(prompt || '').replace(/‌/g, ' ').replace(stop, ' ').replace(/[؟?.!،,()]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /** Resolve a published recipe by name (best title match), loading what dish-nutrition needs. */
+  private async resolvePublishedRecipe(cleaned: string) {
+    const select = {
+      id: true, title: true, servings: true, gris: true,
+      nutrition: { select: { calories: true, protein: true, carbs: true, fat: true, fiber: true } },
+      ingredients: { select: { name: true, ingredientId: true, amount: true, unit: true } },
+    } as const;
+    const rank = <T extends { title: string }>(rows: T[]): T => {
+      const f = foldPersian(cleaned);
+      return [...rows].sort((a, b) => {
+        const ax = foldPersian(a.title) === f ? 0 : foldPersian(a.title).startsWith(f) ? 1 : 2;
+        const bx = foldPersian(b.title) === f ? 0 : foldPersian(b.title).startsWith(f) ? 1 : 2;
+        return ax - bx || a.title.length - b.title.length; // best match, then shortest (most specific) title
+      })[0];
+    };
+    try {
+      const direct = await this.prisma.recipe.findMany({ where: { ...PUBLISHED_RECIPE_WHERE, title: { contains: cleaned } }, select, take: 8 });
+      if (direct.length) return rank(direct);
+      // fall back to the longest content token (handles «خورش قیمه» when the title is «قیمه نثار»)
+      const token = cleaned.split(/\s+/).filter((t) => t.length >= 2).sort((a, b) => b.length - a.length)[0];
+      if (token && token !== cleaned) {
+        const byToken = await this.prisma.recipe.findMany({ where: { ...PUBLISHED_RECIPE_WHERE, title: { contains: token } }, select, take: 8 });
+        if (byToken.length) return rank(byToken);
+      }
+    } catch {
+      /* DB error → honest null */
     }
     return null;
   }

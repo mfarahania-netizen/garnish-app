@@ -438,7 +438,8 @@ export class AgenticChatService {
   private gatedTools(userId: string, unsafeTitles: string[]): AgenticTool[] {
     return this.catalog.build().map((tool) => {
       if (tool.spec.name === 'search_recipes') return this.gateSearch(tool, userId, unsafeTitles);
-      if (tool.spec.name === 'get_recipe_details') return this.gateDetails(tool, userId, unsafeTitles);
+      // compute_nutrition + get_recipe_details both take a recipeId → same safety check (refuse an unsafe dish).
+      if (tool.spec.name === 'get_recipe_details' || tool.spec.name === 'compute_nutrition') return this.gateDetails(tool, userId, unsafeTitles);
       return tool; // troubleshoot_cooking / suggest_substitutions (already allergen-aware) / get_user_context
     });
   }
@@ -493,7 +494,11 @@ export class AgenticChatService {
       'به گفتگوی قبلی توجه کن. اگر کاربر پیشنهادهایت را رد کرد (مثلِ «نه اینا نه»)، غذاهای **متفاوت** پیشنهاد بده و همان‌هایی که قبلاً گفتی را تکرار نکن. اگر گفت «اولی/دومی» یا «همون قبلی»، منظورش همان موردِ گفتگوی قبلی است.',
       // The model searched the literal phrase «غذای مجلسی» (an OCCASION, not a dish) → no rows → "not found".
       'یک مناسبت یا حال‌وهوا (مثلِ «مجلسی»، «مهمونی»، «سریع»، «سبک»، «مقوی») نامِ غذا نیست؛ آن کلمه را جستجو نکن چون نتیجه نمی‌دهد. به‌جایش نامِ غذاهای شناخته‌شدهٔ مناسبِ آن را جستجو کن — مثلاً برای «مجلسی»: قرمه‌سبزی، فسنجان، ته‌چین، زرشک‌پلو، باقالی‌پلو. اگر یکی نبود سراغِ بعدی برو.',
-      'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
+      'ابزارها: برای پیدا کردنِ غذا search_recipes؛ برای دستورِ کامل اول search_recipes بعد get_recipe_details با id؛ برای کالری/پروتئین/ارزشِ غذاییِ یک غذای کامل اول search_recipes بعد compute_nutrition با id (خودش دقیق و امن حساب می‌کند — تو هیچ عددی را خودت حساب نکن)؛ برای مشکلِ حینِ پخت troubleshoot_cooking؛ برای جایگزینِ ماده suggest_substitutions؛ برای محدودیت‌ها/سلیقهٔ کاربر get_user_context.',
+      // the founder\'s headline ask: «یه غذای پرپروتئین بساز و دقیق حساب کن». When you suggest a dish and the user
+      // wants its numbers — or asks «چند کالری/پروتئین داره» — call compute_nutrition (after search_recipes for the id)
+      // and quote its `line` field VERBATIM. NEVER compute or estimate a calorie/protein number yourself.
+      'برای «یه غذای پرپروتئین بساز و حساب کن» یا «چند کالری داره»: اول search_recipes، بعد compute_nutrition با id؛ بعد متنِ فیلدِ line را عیناً بنویس. اگر computable=false بود، صادقانه بگو نمی‌توانی دقیق حساب کنی و عددِ ساختگی نده.',
       // brain phase B — the assistant can now DO things (reversible write-actions), not just talk.
       'کارها (فقط وقتی کاربر صریحاً خواست، و بعد کوتاه تأیید کن): «ذخیره کن»→add_favorite · «از علاقه‌مندی‌ها بردار»→remove_favorite · «فلان ماده/مواد رو به لیستِ خرید اضافه کن» (مثلِ «خیار رو اضافه کن»، «ماست و نون بذار»)→add_items_to_shopping_list · «خیار رو از لیستِ خرید بردار/حذف کن»→remove_items_from_shopping_list · «تو لیستِ خریدم چیه؟/لیستمو نشون بده»→get_shopping_list · «موادِ این غذا رو بریز تو لیستِ خرید»→add_recipe_to_shopping_list · «لیستِ خریدِ هفته رو بساز»→add_week_to_shopping_list · «فلان روز فلان وعده فلان غذا بذار»→add_to_meal_plan · «کلِ برنامهٔ هفته رو بچین/کامل کن»→fill_week_plan · «فلان روز فلان وعده رو حذف کن»→remove_from_meal_plan · «فلان ماده رو دوست ندارم/عاشقِ فلان ماده‌ام»→set_ingredient_taste (سلیقهٔ نرم، نه آلرژی). «جابه‌جا کن از روزِ X به روزِ Y» = اول remove_from_meal_plan برای X، بعد add_to_meal_plan برای Y (اگر id رسپی را نداری، اول search_recipes). همهٔ این‌ها برگشت‌پذیرند، خودت انجامشان بده و نگو «نمی‌توانم».',
       // narrate-instead-of-act: a weak model says "I'll remember that" without firing the tool. Force the call.

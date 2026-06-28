@@ -112,10 +112,21 @@ const TEMPLATES: Record<string, Entry> = {
     nl: 'ℹ️ De waarden zijn bij benadering, per 100 g rauw ingrediënt; geen voedings- of medisch advies.',
     en: 'ℹ️ Values are approximate, per 100 g of the raw ingredient; not nutritional or medical advice.',
   },
+  // ── whole-dish nutrition (computed from the recipe's own ingredients via the gram-conversion layer) ──
+  dish_nutrition_line: {
+    fa: '**{name}** — هر پُرس تقریباً: {parts}.',
+    nl: '**{name}** — per portie ongeveer: {parts}.',
+    en: '**{name}** — about {parts} per serving.',
+  },
+  dish_nutrition_disclaimer: {
+    fa: 'ℹ️ تخمینِ خودکار بر پایهٔ موادِ همین دستور است (نه اندازه‌گیریِ آزمایشگاهی)؛ با تغییرِ نفرات یا جایگزینیِ مواد فرق می‌کند. توصیهٔ تغذیه‌ای/پزشکی نیست.',
+    nl: 'ℹ️ Automatische schatting op basis van de ingrediënten van dit recept (geen labmeting); verandert met porties of vervangingen. Geen voedings- of medisch advies.',
+    en: 'ℹ️ An automatic estimate from this recipe’s ingredients (not a lab measurement); it changes with servings or substitutions. Not nutritional or medical advice.',
+  },
   nutrition_ask: {
-    fa: 'برای ارزشِ غذایی، اسمِ خودِ ماده رو بگو (مثلاً «کالری برنج» یا «پروتئین عدس»). برای کالریِ یک غذای کامل هم صفحهٔ همون رسپی رو ببین. من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم.',
-    nl: 'Voor voedingswaarde: noem het ingrediënt zelf (bijv. «calorieën rijst» of «eiwit linzen»). Voor de calorieën van een heel gerecht, bekijk de receptpagina. Ik geef geen voedings- of medisch advies.',
-    en: 'For nutrition, name the ingredient itself (e.g. «calories rice» or «protein lentils»). For a whole dish’s calories, see the recipe page. I don’t give nutritional or medical advice.',
+    fa: 'بگو ارزشِ غذاییِ چی رو می‌خوای — یک ماده (مثلِ «کالری برنج»، «پروتئین عدس») یا یک غذای کامل (مثلِ «قیمه چند کالری داره»). من توصیهٔ تغذیه‌ای/پزشکی نمی‌دم.',
+    nl: 'Zeg waarvan je de voedingswaarde wilt — een ingrediënt (bijv. «calorieën rijst») of een heel gerecht (bijv. «hoeveel calorieën heeft qeyme»). Ik geef geen voedings- of medisch advies.',
+    en: 'Tell me what you want the nutrition for — an ingredient (e.g. «calories rice») or a whole dish (e.g. «how many calories is qeyme»). I don’t give nutritional or medical advice.',
   },
   nutrient_calories: { fa: '{v} کالری', nl: '{v} kcal', en: '{v} kcal' },
   nutrient_protein: { fa: '{v} گرم پروتئین', nl: '{v} g eiwit', en: '{v} g protein' },

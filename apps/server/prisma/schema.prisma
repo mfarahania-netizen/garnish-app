@@ -221,6 +221,12 @@ model Ingredient {
   allergens           Json?
   nutritionPer100g    Json?
   nutritionConfidence Json?
+  // Amount→gram conversion layer: per-unit grams for the non-mass units the recipe corpus uses («عدد»،
+  // «پیمانه»، «قاشق غذاخوری»، «حبه» …), each entry source- + confidence-flagged (mined from the corpus and/or
+  // a documented culinary reference). ESTIMATED until USDA portion-locked. Nullable → legacy rows stay
+  // unknown; the compute-nutrition path only trusts a fully-resolved dish. Populated by
+  // scripts/data/backfill-ingredient-gram-conversions.cjs. See Nutrition.source for the same provenance pattern.
+  gramConversions     Json?
   tasteProfile        Json?
   textureProfile      Json?
   cookingBehavior     Json?

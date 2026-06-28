@@ -205,7 +205,7 @@ export class ChatOrchestrationService {
       const pq = parseSearchQuery(input.prompt);
       const isDiscovery = pq.mealTypes.length > 0 || pq.diets.length > 0 || pq.regions.length > 0 || pq.maxCookingTime != null;
       if (!isDiscovery) {
-        return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReply(input.prompt, locale));
+        return this.respondDeterministicTurn(input, conversationId, intentDecision, await this.composeNutritionReplyDishAware(input.prompt, locale));
       }
     }
 
@@ -539,7 +539,7 @@ export class ChatOrchestrationService {
       case 'feedback': return t('feedback_thanks', locale);
       case 'medical_or_health_advice': return t('medical_decline', locale);
       case 'out_of_domain': return t('out_of_domain', locale);
-      // nutrition_query is handled by an async DB-backed branch (composeNutritionReply), not here.
+      // nutrition_query is handled by an async DB-backed branch (composeNutritionReplyDishAware), not here.
       case 'technique_whyitworks': return t('technique_to_cookmode', locale);
       // NOTE: scaling is deliberately NOT routed here — a follow-up like «برای ۶ نفر» should carry the prior
       // dish into grounding (short-term memory), so it falls through to the grounded path.
@@ -641,23 +641,47 @@ export class ChatOrchestrationService {
     return null;
   }
 
-  /** Factual per-100g nutrition readout for an ingredient (USDA-sourced), or an honest ask. No health claims. */
-  private async composeNutritionReply(prompt: string, locale: Locale): Promise<string> {
-    const header = t('assistant_header', locale);
+  /** Render a per-X macro list from a {calories,protein,…} map, in the locale's digits + units. */
+  private macroParts(per: Record<string, number>, locale: Locale): string {
     const num = (n: unknown) => (locale === 'fa' ? String(n ?? '').replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]) : String(n ?? ''));
+    const parts: string[] = [];
+    if (per.calories != null) parts.push(t('nutrient_calories', locale, { v: num(Math.round(per.calories)) }));
+    if (per.protein != null) parts.push(t('nutrient_protein', locale, { v: num(Math.round(per.protein)) }));
+    if (per.carbs != null) parts.push(t('nutrient_carbs', locale, { v: num(Math.round(per.carbs)) }));
+    if (per.fat != null) parts.push(t('nutrient_fat', locale, { v: num(Math.round(per.fat)) }));
+    if (per.fiber != null) parts.push(t('nutrient_fiber', locale, { v: num(Math.round(per.fiber)) }));
+    return parts.join(t('list_sep', locale));
+  }
+
+  /** Per-100g ingredient readout («کالریِ برنج») as a reply line, or null when no ingredient resolves. */
+  private async tryIngredientNutritionLine(prompt: string, locale: Locale): Promise<string | null> {
+    const header = t('assistant_header', locale);
     for (const term of extractNutritionTargets(prompt).slice(0, 3)) {
       const n = await this.grounded.getIngredientNutrition(term);
       if (!n) continue;
-      const p = n.per100g || {};
-      const parts: string[] = [];
-      if (p.calories != null) parts.push(t('nutrient_calories', locale, { v: num(p.calories) }));
-      if (p.protein != null) parts.push(t('nutrient_protein', locale, { v: num(p.protein) }));
-      if (p.carbs != null) parts.push(t('nutrient_carbs', locale, { v: num(p.carbs) }));
-      if (p.fat != null) parts.push(t('nutrient_fat', locale, { v: num(p.fat) }));
-      if (p.fiber != null) parts.push(t('nutrient_fiber', locale, { v: num(p.fiber) }));
-      if (!parts.length) break;
-      const line = t('nutrition_line', locale, { name: n.name, parts: parts.join(t('list_sep', locale)) });
+      const parts = this.macroParts(n.per100g || {}, locale);
+      if (!parts) break;
+      const line = t('nutrition_line', locale, { name: n.name, parts });
       return `${header}\n\n${line}\n\n${t('nutrition_disclaimer', locale)}`;
+    }
+    return null;
+  }
+
+  /**
+   * Nutrition readout, INGREDIENT-first then WHOLE-DISH. «کالریِ برنج» → the raw ingredient per-100g (exact);
+   * «کالریِ قیمه» (not an ingredient) → the dish's per-serving total, computed deterministically from its own
+   * ingredients via the gram-conversion layer (never the model; surfaced ONLY when fully grounded). Falls back
+   * to an honest ask. No health/medical claims — same discipline as the per-100g path.
+   */
+  private async composeNutritionReplyDishAware(prompt: string, locale: Locale): Promise<string> {
+    const header = t('assistant_header', locale);
+    const ing = await this.tryIngredientNutritionLine(prompt, locale).catch(() => null);
+    if (ing) return ing;
+    const dish = await this.grounded.getDishNutrition(prompt).catch(() => null);
+    if (dish && dish.perServing && dish.perServing.calories != null) {
+      const parts = this.macroParts(dish.perServing, locale);
+      const line = t('dish_nutrition_line', locale, { name: dish.title, parts });
+      return `${header}\n\n${line}\n\n${t('dish_nutrition_disclaimer', locale)}`;
     }
     return `${header}\n\n${t('nutrition_ask', locale)}`;
   }

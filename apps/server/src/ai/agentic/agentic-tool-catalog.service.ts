@@ -6,6 +6,7 @@ import { SearchRecipesTool } from '../tools/search-recipes.tool';
 import { SuggestSubstitutionsTool } from '../tools/suggest-substitutions.tool';
 import { GetUserFoodContextTool } from '../tools/get-user-food-context.tool';
 import { matchTroubleshooting } from '../chat/cooking-troubleshooting';
+import { computeDishNutrition, buildDishInputs, DishDictRow } from '../../recipes/intelligence/dish-nutrition';
 
 /**
  * The agentic brain's TOOL CATALOG (brain piece 3) — the read-only tools the model may call.
@@ -26,7 +27,89 @@ export class AgenticToolCatalogService {
 
   /** The ordered catalog handed to the agentic loop. */
   build(): AgenticTool[] {
-    return [this.searchRecipes(), this.recipeDetails(), this.troubleshoot(), this.suggestSubstitutions(), this.getUserContext()];
+    return [this.searchRecipes(), this.recipeDetails(), this.computeNutrition(), this.troubleshoot(), this.suggestSubstitutions(), this.getUserContext()];
+  }
+
+  /**
+   * compute_nutrition — the deterministic «دقیق حساب کن» capability. Given a recipeId (from search_recipes),
+   * compute the dish's per-serving macros from its OWN ingredients (source-locked per-100g × resolved grams,
+   * via the gram-conversion layer) — the MODEL never does the math. Prefers the stored per-serving Nutrition
+   * row (so it matches the meal-plan line), else live-computes. Surfaces numbers ONLY when the dish is FULLY
+   * grounded; otherwise returns computable:false with an honest note (never a guessed/partial total). The
+   * `line` is a ready-to-quote Persian sentence so the weak model reproduces the numbers verbatim.
+   */
+  private computeNutrition(): AgenticTool {
+    return {
+      spec: {
+        name: 'compute_nutrition',
+        description:
+          'محاسبهٔ دقیقِ ارزشِ غذاییِ یک غذای کامل (کالری/پروتئین/کربوهیدرات/چربی هر پُرس) از روی موادِ همان دستور. recipeId را از نتایجِ search_recipes بده. وقتی کاربر می‌پرسد یک غذا چند کالری/چقدر پروتئین دارد، یا وقتی غذایی پیشنهاد دادی و باید «دقیق حساب» شود، این را صدا بزن. عددها را عیناً از خروجی (به‌ویژه فیلدِ line) بنویس و تغییر نده.',
+        parameters: {
+          type: 'object',
+          properties: { recipeId: { type: 'string', description: 'id رسپی، از نتایجِ search_recipes' } },
+          required: ['recipeId'],
+        },
+      },
+      execute: async (args) => {
+        const recipeId = String(args.recipeId ?? '').trim();
+        if (!recipeId) return { error: 'recipeId لازم است' };
+        return this.nutritionForRecipe(recipeId);
+      },
+    };
+  }
+
+  /** Load a published recipe + its dictionary and return its per-serving nutrition (stored-first, else computed). */
+  private async nutritionForRecipe(recipeId: string): Promise<unknown> {
+    let recipe: {
+      id: string; title: string; servings: number | null; gris: unknown;
+      nutrition: { calories: number | null; protein: number | null; carbs: number | null; fat: number | null; fiber: number | null } | null;
+      ingredients: { name: string; ingredientId: string | null; amount: string | null; unit: string | null }[];
+    } | null;
+    try {
+      recipe = await this.prisma.recipe.findFirst({
+        where: { id: recipeId, ...PUBLISHED_RECIPE_WHERE }, // publish gate
+        select: {
+          id: true, title: true, servings: true, gris: true,
+          nutrition: { select: { calories: true, protein: true, carbs: true, fat: true, fiber: true } },
+          ingredients: { select: { name: true, ingredientId: true, amount: true, unit: true } },
+        },
+      });
+    } catch {
+      return { computable: false, note: 'الان نتونستم محاسبه کنم.' };
+    }
+    if (!recipe) return { error: 'رسپی پیدا نشد یا عمومی نیست', recipeId };
+
+    const macros = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
+    let perServing: Record<string, number> | null = null;
+    let servings = Number(recipe.servings) || 0;
+    if (recipe.nutrition && recipe.nutrition.calories != null) {
+      perServing = {};
+      for (const m of macros) if (recipe.nutrition[m] != null) perServing[m] = Number(recipe.nutrition[m]);
+    } else {
+      const ids = recipe.ingredients.map((i) => i.ingredientId).filter((x): x is string => !!x);
+      let dictRows: { id: string; nutritionPer100g: unknown; category: string | null; gramConversions: unknown }[] = [];
+      try {
+        dictRows = ids.length ? await this.prisma.ingredient.findMany({ where: { id: { in: ids } }, select: { id: true, nutritionPer100g: true, category: true, gramConversions: true } }) : [];
+      } catch {
+        return { computable: false, note: 'الان نتونستم محاسبه کنم.' };
+      }
+      const dictById = new Map<string, DishDictRow>(dictRows.map((d) => [d.id, { nutritionPer100g: d.nutritionPer100g, category: d.category, gramConversions: d.gramConversions }]));
+      const built = buildDishInputs(recipe, dictById);
+      servings = built.servings;
+      const res = computeDishNutrition(built.inputs, built.servings);
+      perServing = res.perServing;
+    }
+    if (!perServing || perServing.calories == null) {
+      // honest refusal — the dish has an unquantified real-calorie ingredient we won't guess (the guard stays).
+      return { recipeId, title: recipe.title, computable: false, note: `ارزشِ غذاییِ «${recipe.title}» را با اطمینان نمی‌توانم دقیق حساب کنم (دادهٔ مقدارِ یکی از موادش کامل نیست). عددِ ساختگی نمی‌دهم.` };
+    }
+    const fa = (n: number) => String(Math.round(n)).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+    const bits: string[] = [`${fa(perServing.calories)} کالری`];
+    if (perServing.protein != null) bits.push(`${fa(perServing.protein)} گرم پروتئین`);
+    if (perServing.carbs != null) bits.push(`${fa(perServing.carbs)} گرم کربوهیدرات`);
+    if (perServing.fat != null) bits.push(`${fa(perServing.fat)} گرم چربی`);
+    const line = `**${recipe.title}** — هر پُرس تقریباً ${bits.join('، ')}. (تخمینی بر پایهٔ موادِ دستور؛ نه توصیهٔ تغذیه‌ای/پزشکی.)`;
+    return { recipeId, title: recipe.title, computable: true, servings, perServing, line };
   }
 
   private searchRecipes(): AgenticTool {

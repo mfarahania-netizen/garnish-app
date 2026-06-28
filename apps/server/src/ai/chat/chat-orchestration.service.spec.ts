@@ -47,6 +47,7 @@ function makeChat(modelText = 'a warm comforting stew', groundedReply = '🤖 gr
     composeDeterministicReply: jest.fn().mockReturnValue(groundedReply),
     getDeclaredAllergens: jest.fn().mockResolvedValue([]), // known profile, no declared allergies (default)
     getIngredientNutrition: jest.fn().mockResolvedValue(null), // default: no nutrition data → honest fallback
+    getDishNutrition: jest.fn().mockResolvedValue(null), // default: no whole-dish match → honest fallback
     getLocale: jest.fn().mockResolvedValue('fa'),
     getRecipeContent: jest.fn().mockResolvedValue(null), // default: no recipe content
   } as any;
@@ -228,10 +229,11 @@ describe('ChatOrchestrationService (E47-A3 legacy chat → orchestrator, AI-GROU
   });
 
   it('falls back honestly for a nutrition question with no data match', async () => {
-    const { svc, grounded } = makeChat(); // default getIngredientNutrition → null
+    const { svc, grounded } = makeChat(); // default getIngredientNutrition + getDishNutrition → null
     const out = await svc.handleChat({ userId: 'u1', prompt: 'کالریِ فلان‌چیزِ نامعلوم چقدره؟', conversationId: 'c-nut2' });
     expect(out.intent.intent).toBe('nutrition_query');
-    expect(out.reply).toContain('اسمِ خودِ ماده'); // honest ask, never invents a number
+    expect(out.reply).toContain('غذای کامل'); // honest ask (ingredient OR whole dish), never invents a number
+    expect(out.reply).toContain('تغذیه‌ای'); // carries the non-medical hedge
   });
 
   it('REPAIRS an empty result caused by a user CONSTRAINT into ONE concrete next step (offer to relax it)', async () => {
