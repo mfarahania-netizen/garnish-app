@@ -199,7 +199,7 @@ export class MealPlansService {
    * generateSmartPlan's HARD safety filter + Persian-first pools, then addMealSlot per slot (which replaces ONLY that
    * one slot and canonicalizes the mealType). Returns what was actually placed (real titles — never fabricated).
    */
-  async fillSlots(userId: string, slots: { dayOfWeek: number; mealType: string }[]): Promise<{ dayOfWeek: number; mealType: string; title: string }[]> {
+  async fillSlots(userId: string, slots: { dayOfWeek: number; mealType: string; dish?: string }[]): Promise<{ dayOfWeek: number; mealType: string; title: string }[]> {
     const wanted = (slots || []).filter((s) => Number.isInteger(s?.dayOfWeek) && s.dayOfWeek >= 0 && s.dayOfWeek <= 6 && s?.mealType);
     if (!wanted.length) return [];
     const pref = await this.prisma.userPreference.findUnique({ where: { userId }, select: { diet: true } }).catch(() => null);
@@ -212,12 +212,20 @@ export class MealPlansService {
     const poolFor = (mt: string) => [...shuffle(recipes.filter((r) => r.mealType?.includes(mt) && isPersian(r))), ...shuffle(recipes.filter((r) => r.mealType?.includes(mt) && !isPersian(r)))];
     const pools: Record<string, any[]> = { breakfast: poolFor('breakfast'), lunch: poolFor('lunch'), dinner: poolFor('dinner') };
     const used: Record<string, Set<string>> = { breakfast: new Set(), lunch: new Set(), dinner: new Set() };
+    const norm = (x: unknown) => String(x ?? '').replace(/[‌\s]/g, '').trim(); // strip ZWNJ + ALL spaces so «شیرین پلو» matches «شیرین‌پلو»
     const filled: { dayOfWeek: number; mealType: string; title: string }[] = [];
     for (const s of wanted) {
       const mt = this.canonMeal(s.mealType); // english canonical
       const pool = pools[mt] ?? pools.lunch;
       const u = used[mt] ?? used.lunch;
-      const pick = pool.find((x) => !u.has(x.id)) ?? pool[0];
+      let pick: any = null;
+      if (s.dish) {
+        // HONOR a named/constrained dish («فردا نهار شیرین پلو»، «صبحانه املت باشه»): prefer the right meal-type pool,
+        // else ANY safe recipe whose title matches — so a specific dish lands even if it isn't tagged to that meal.
+        const q = norm(s.dish);
+        pick = pool.find((r) => !u.has(r.id) && norm(r.title).includes(q)) ?? recipes.find((r) => norm(r.title).includes(q)) ?? null;
+      }
+      if (!pick) pick = pool.find((r) => !u.has(r.id)) ?? pool[0] ?? null; // no dish (or not found) → auto-pick
       if (!pick) continue;
       u.add(pick.id);
       await this.addMealSlot(userId, s.dayOfWeek, mt, pick.id); // replaces ONLY that slot + canonicalizes the mealType

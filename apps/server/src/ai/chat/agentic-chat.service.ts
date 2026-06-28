@@ -280,7 +280,7 @@ export class AgenticChatService {
   // ── UNDERSTAND-then-DO substrate: model UNDERSTANDS (→ structured intent), code DOES (deterministic, grounded) ──
 
   /** The model's ONLY job here: classify + extract the turn into a small structured intent. It never executes. */
-  private async parseActionIntent(prompt: string): Promise<{ action: string; items?: { name?: string; amount?: string }[]; slots?: { day?: string; meal?: string }[]; day?: string; meal?: string; dish?: string; query?: string } | null> {
+  private async parseActionIntent(prompt: string): Promise<{ action: string; items?: { name?: string; amount?: string }[]; slots?: { day?: string; meal?: string; dish?: string }[]; day?: string; meal?: string; dish?: string; query?: string } | null> {
     const DAY = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
     const today = (new Date().getDay() + 1) % 7;
     const dn = (o: number) => DAY[(today + o) % 7];
@@ -294,7 +294,7 @@ export class AgenticChatService {
       '· "add_meal": گذاشتنِ یک غذا در برنامه — day، meal (صبحانه/ناهار/شام)، dish (نامِ غذا).',
       '· "remove_meal": حذفِ یک وعده — day و meal.',
       '· "fill_week": چیدنِ کلِ برنامهٔ هفته (هر هفت روز).',
-      '· "fill_slots": پر کردنِ چند خانهٔ معین به سلیقهٔ سیستم — slots=[{"day":"دوشنبه","meal":"صبحانه"},...]. وقتی چند وعدهٔ مشخص («فردا صبحانه و شام»، «پس‌فردا هر سه وعده») را «به سلیقهٔ خودت بچین» خواست. «هر سه وعده»=صبحانه+ناهار+شام. این «کلِ هفته» نیست.',
+      '· "fill_slots": پر کردنِ چند خانهٔ معین — slots=[{"day":"دوشنبه","meal":"صبحانه","dish":""},...]. وقتی چند وعدهٔ مشخص را خواست (حتی ترکیبی). برای هر خانه: اگر غذای مشخص یا قید گفت (مثلِ «نهار شیرین پلو»، «صبحانه املت») dish را پر کن؛ وگرنه dish="" یعنی سیستم خودش انتخاب کند. «هر سه وعده»=صبحانه+ناهار+شام. این «کلِ هفته» نیست.',
       '· "suggest": پیشنهادِ غذا — query را با ماده/نوع/مناسبت پر کن اگر گفت، وگرنه خالی.',
       '· "other": سؤال، طرزِ تهیه، جایگزینِ ماده، گپ، سلام، یا هر چیزِ نامطمئن.',
       `امروز «${dn(0)}» است؛ «فردا»=«${dn(1)}»،«پس‌فردا»=«${dn(2)}». روزها را با نامِ ${DAY.join('/')} بده و «فردا/پس‌فردا» را خودت به روزِ واقعی تبدیل کن.`,
@@ -305,7 +305,8 @@ export class AgenticChatService {
       '«۳ تا غذای محلی بگو» → {"action":"suggest","query":"محلی"}',
       '«یه خورشت خوب پیشنهاد بده» → {"action":"suggest","query":"خورشت"}',
       '«خورشت قیمه رو بزار سه‌شنبه نهار» → {"action":"add_meal","day":"سه‌شنبه","meal":"ناهار","dish":"خورشت قیمه"}',
-      '«فردا صبحانه و شام، پس‌فردا هر سه وعده، به سلیقهٔ خودت ایرانی بچین» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"صبحانه"},{"day":"[فردا]","meal":"شام"},{"day":"[پس‌فردا]","meal":"صبحانه"},{"day":"[پس‌فردا]","meal":"ناهار"},{"day":"[پس‌فردا]","meal":"شام"}]} ([فردا]/[پس‌فردا] را به نامِ واقعیِ روز جایگزین کن)',
+      '«فردا صبحانه و شام، پس‌فردا هر سه وعده، به سلیقهٔ خودت ایرانی بچین» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"صبحانه","dish":""},{"day":"[فردا]","meal":"شام","dish":""},{"day":"[پس‌فردا]","meal":"صبحانه","dish":""},{"day":"[پس‌فردا]","meal":"ناهار","dish":""},{"day":"[پس‌فردا]","meal":"شام","dish":""}]} ([فردا]/[پس‌فردا] را به نامِ واقعیِ روز جایگزین کن)',
+      '«فردا نهار شیرین پلو، پس‌فردا صبحانه و نهار و شام به انتخاب خودت، صبحانه املت باشه» → {"action":"fill_slots","slots":[{"day":"[فردا]","meal":"ناهار","dish":"شیرین پلو"},{"day":"[پس‌فردا]","meal":"صبحانه","dish":"املت"},{"day":"[پس‌فردا]","meal":"ناهار","dish":""},{"day":"[پس‌فردا]","meal":"شام","dish":""}]}',
       '«۲ کیلو موز و گوجه ۱ کیلو بذار تو لیست خرید» → {"action":"add_shopping","items":[{"name":"موز","amount":"۲ کیلو"},{"name":"گوجه","amount":"۱ کیلو"}]}',
       '«خیار رو از لیست خرید بردار» → {"action":"remove_shopping","items":[{"name":"خیار"}]}',
       '«قورمه چند کالری داره؟» → {"action":"other"}',
@@ -338,7 +339,7 @@ export class AgenticChatService {
   }
 
   /** DO the parsed action with deterministic, grounded code (no model decides/executes). Returns null to fall through to chat. */
-  private async executeIntent(userId: string, intent: { action: string; items?: { name?: string; amount?: string }[]; slots?: { day?: string; meal?: string }[]; day?: string; meal?: string; dish?: string; query?: string }, ctx: ToolContext): Promise<AgenticChatOutcome | null> {
+  private async executeIntent(userId: string, intent: { action: string; items?: { name?: string; amount?: string }[]; slots?: { day?: string; meal?: string; dish?: string }[]; day?: string; meal?: string; dish?: string; query?: string }, ctx: ToolContext): Promise<AgenticChatOutcome | null> {
     const W = (name: string) => this.writeTools.build().find((t) => t.spec.name === name);
     switch (intent.action) {
       case 'add_shopping': {
@@ -386,7 +387,7 @@ export class AgenticChatService {
         return { ok: true, text: 'الان نتونستم کلِ برنامهٔ هفته رو بچینم. چند غذا رو دستی بگو می‌ذارم، یا دوباره امتحان کن.', reason: null, toolCalls: [], model: 'understand:fill_week' };
       }
       case 'fill_slots': {
-        const slots = (intent.slots ?? []).filter((s) => s?.day && s?.meal).map((s) => ({ day: s.day, mealType: s.meal }));
+        const slots = (intent.slots ?? []).filter((s) => s?.day && s?.meal).map((s) => ({ day: s.day, mealType: s.meal, dish: s.dish }));
         if (!slots.length) return null;
         const res = (await W('fill_meal_slots')?.execute({ slots }, ctx).catch(() => null)) as { ok?: boolean; filled?: { dayOfWeek: number; mealType: string; title: string }[] } | null;
         if (res?.ok && res.filled?.length) {

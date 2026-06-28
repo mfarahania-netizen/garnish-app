@@ -145,16 +145,20 @@ export class AgenticWriteToolsService {
         parameters: {
           type: 'object',
           properties: {
-            slots: { type: 'array', description: 'فهرستِ خانه‌ها', items: { type: 'object', properties: { day: { type: 'string', description: 'روزِ هفته: شنبه…جمعه' }, mealType: { type: 'string', description: 'صبحانه/ناهار/شام' } } } },
+            slots: { type: 'array', description: 'فهرستِ خانه‌ها', items: { type: 'object', properties: { day: { type: 'string', description: 'روزِ هفته: شنبه…جمعه' }, mealType: { type: 'string', description: 'صبحانه/ناهار/شام' }, dish: { type: 'string', description: 'اگر کاربر برای این خانه غذای مشخص یا قید گفت (مثلِ «شیرین پلو» یا «املت»)؛ وگرنه خالی → سیستم خودش انتخاب می‌کند' } } } },
           },
           required: ['slots'],
         },
       },
       execute: async (args, ctx) => {
         const raw = Array.isArray((args as { slots?: unknown })?.slots) ? ((args as { slots: unknown[] }).slots) : [];
-        const norm = raw
-          .map((s) => ({ dayOfWeek: normalizeDay((s as { day?: unknown; dayOfWeek?: unknown })?.day ?? (s as { dayOfWeek?: unknown })?.dayOfWeek), mealType: normalizeMeal((s as { mealType?: unknown; meal?: unknown })?.mealType ?? (s as { meal?: unknown })?.meal) }))
-          .filter((s): s is { dayOfWeek: number; mealType: string } => s.dayOfWeek !== null && !!s.mealType);
+        const norm: { dayOfWeek: number; mealType: string; dish?: string }[] = [];
+        for (const s of raw) {
+          const dow = normalizeDay((s as { day?: unknown; dayOfWeek?: unknown })?.day ?? (s as { dayOfWeek?: unknown })?.dayOfWeek);
+          const mt = normalizeMeal((s as { mealType?: unknown; meal?: unknown })?.mealType ?? (s as { meal?: unknown })?.meal);
+          if (dow === null || !mt) continue;
+          norm.push({ dayOfWeek: dow, mealType: mt, dish: String((s as { dish?: unknown })?.dish ?? '').trim() || undefined });
+        }
         if (!norm.length) return { error: 'خانه‌ها (روز و وعده) مشخص نشد.' };
         try {
           const filled = await this.mealPlans.fillSlots(ctx.userId, norm);
