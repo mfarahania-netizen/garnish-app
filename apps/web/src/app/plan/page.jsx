@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
   IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
-  IconArrowsExchange, IconFlame,
+  IconArrowsExchange, IconFlame, IconChevronRight,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
 import { faDuration } from '../../components/ges/format';
@@ -16,6 +16,7 @@ const seed = (id) => { const s = String(id ?? ''); let h = 0; for (let i = 0; i 
 const SHORT_DAY = ['شنبه', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'جمعه'];
 // the meal the user most likely cares about right now (drives the "امروز" hero)
 const nextMealKey = () => { const h = new Date().getHours(); if (h < 10) return 'breakfast'; if (h < 15) return 'lunch'; if (h < 18) return 'snack'; return 'dinner'; };
+const weekLabel = (o) => (o === 0 ? 'این هفته' : o === 1 ? 'هفتهٔ بعد' : o === -1 ? 'هفتهٔ پیش' : '');
 
 function Thumb({ title, size = 56 }) {
   return (
@@ -247,7 +248,21 @@ export default function PlanPage() {
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
       <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)' }}>
         <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برنامهٔ هفته</Text>
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 0' }}>{m.week.range}</Text>
+        {/* multi-week nav — RTL: «قبل» (earlier) points right, «بعد» (later) points left */}
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-1)' }}>
+          <UnstyledButton type="button" onClick={m.prevWeek} aria-label="هفتهٔ قبل" style={{ flexShrink: 0, inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-secondary)' }}><IconChevronRight size={18} stroke={1.8} /></UnstyledButton>
+          <Box style={{ flex: 1, minInlineSize: 0, textAlign: 'center' }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{m.week.range}</Text>
+            {weekLabel(m.weekOffset) ? (
+              m.weekOffset === 0
+                ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 1 }}>این هفته</Text>
+                : <UnstyledButton type="button" onClick={m.goToToday} style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)', marginBlockStart: 1 }}>{weekLabel(m.weekOffset)} · برگرد به این هفته</UnstyledButton>
+            ) : (
+              <UnstyledButton type="button" onClick={m.goToToday} style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)', marginBlockStart: 1 }}>برگرد به این هفته</UnstyledButton>
+            )}
+          </Box>
+          <UnstyledButton type="button" onClick={m.nextWeek} aria-label="هفتهٔ بعد" style={{ flexShrink: 0, inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-secondary)' }}><IconChevronLeft size={18} stroke={1.8} /></UnstyledButton>
+        </Box>
       </Box>
 
       {m.status === 'loading' ? <PlanLoading /> : (!m.hasPlan && !m.proposalActive && !manualMode) ? <EmptyWeek onPropose={onPropose} proposing={m.proposing} onManual={() => setManualMode(true)} /> : (

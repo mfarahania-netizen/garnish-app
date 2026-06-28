@@ -4,6 +4,13 @@ import { MealPlansService } from './meal-plans.service';
 import { MealPlanPlannerService } from './planner/meal-plan-planner.service';
 import { AddMealSlotDto, SavePlanDto } from './dto/meal-plan.dto';
 
+// parse + clamp the ?offset query (weeks from the current week; 0=this week) to a sane ±8-week window so a crafted value
+// can't probe far-off weeks. Non-numeric → current week.
+const weekOffset = (v?: string): number => {
+  const n = parseInt(v ?? '0', 10);
+  return Number.isFinite(n) ? Math.max(-8, Math.min(8, n)) : 0;
+};
+
 @Controller('meal-plans')
 @UseGuards(AuthGuard('jwt'))
 export class MealPlansController {
@@ -13,8 +20,8 @@ export class MealPlansController {
   ) {}
 
   @Get()
-  getCurrentPlan(@Req() req) {
-    return this.mealPlansService.getCurrentPlan(req.user.userId);
+  getCurrentPlan(@Req() req, @Query('offset') offset?: string) {
+    return this.mealPlansService.getCurrentPlan(req.user.userId, weekOffset(offset));
   }
 
   // حذف نمی‌شود، اما استفاده از آن در هوک جدید کم می‌شود
@@ -25,8 +32,8 @@ export class MealPlansController {
 
   // ✅ جدید: افزودن یک وعده
   @Post('slots')
-  addMealSlot(@Req() req, @Body() body: AddMealSlotDto) {
-    return this.mealPlansService.addMealSlot(req.user.userId, body.dayOfWeek, body.mealType, body.recipeId);
+  addMealSlot(@Req() req, @Body() body: AddMealSlotDto, @Query('offset') offset?: string) {
+    return this.mealPlansService.addMealSlot(req.user.userId, body.dayOfWeek, body.mealType, body.recipeId, weekOffset(offset));
   }
 
   // Safe dishes to MANUALLY drop into a slot (empty-slot picker). Allergy-gated; meal-fit + Persian-first; optional q.
@@ -37,8 +44,8 @@ export class MealPlansController {
 
   // Mark a slot cooked / un-cooked (the "پختم" signature interaction). Body { cooked: boolean } (defaults true).
   @Post('slots/:dayOfWeek/:mealType/cooked')
-  markCooked(@Req() req, @Param('dayOfWeek') dayOfWeek: string, @Param('mealType') mealType: string, @Body() body: { cooked?: boolean }) {
-    return this.mealPlansService.markCooked(req.user.userId, parseInt(dayOfWeek), mealType, body?.cooked !== false);
+  markCooked(@Req() req, @Param('dayOfWeek') dayOfWeek: string, @Param('mealType') mealType: string, @Body() body: { cooked?: boolean }, @Query('offset') offset?: string) {
+    return this.mealPlansService.markCooked(req.user.userId, parseInt(dayOfWeek), mealType, body?.cooked !== false, weekOffset(offset));
   }
 
   // ✅ جدید: حذف یک وعده
@@ -47,13 +54,14 @@ export class MealPlansController {
     @Req() req,
     @Param('dayOfWeek') dayOfWeek: string,
     @Param('mealType') mealType: string,
+    @Query('offset') offset?: string,
   ) {
-    return this.mealPlansService.removeMealSlot(req.user.userId, parseInt(dayOfWeek), mealType);
+    return this.mealPlansService.removeMealSlot(req.user.userId, parseInt(dayOfWeek), mealType, weekOffset(offset));
   }
 
   @Post('generate')
-  generatePlan(@Req() req) {
-    return this.mealPlansService.generateSmartPlan(req.user.userId);
+  generatePlan(@Req() req, @Query('offset') offset?: string) {
+    return this.mealPlansService.generateSmartPlan(req.user.userId, weekOffset(offset));
   }
 
   /**

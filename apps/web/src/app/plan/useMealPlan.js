@@ -17,15 +17,15 @@ const DAY_LABELS = ['شنبه', 'یک‌شنبه', 'دوشنبه', 'سه‌شن�
 const faDay = (d) => { try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric' }).format(d); } catch { return ''; } };
 const faMonth = (d) => { try { return new Intl.DateTimeFormat('fa-IR-u-ca-persian', { month: 'long' }).format(d); } catch { return ''; } };
 
-function buildWeek() {
+function buildWeek(offset = 0) {
   const now = new Date();
   const sinceSat = (now.getDay() + 1) % 7; // Sat→0 … Fri→6 (server convention 0=Sat..6=Fri)
   const sat = new Date(now);
-  sat.setDate(now.getDate() - sinceSat);
+  sat.setDate(now.getDate() - sinceSat + offset * 7); // offset weeks from the current week
   sat.setHours(0, 0, 0, 0);
   const days = DAY_LABELS.map((label, i) => {
     const d = new Date(sat); d.setDate(sat.getDate() + i);
-    return { dayOfWeek: i, label, dayFa: faDay(d), monthFa: faMonth(d), isToday: i === sinceSat };
+    return { dayOfWeek: i, label, dayFa: faDay(d), monthFa: faMonth(d), isToday: offset === 0 && i === sinceSat };
   });
   const range = days.length ? `${days[0].dayFa} تا ${days[6].dayFa} ${days[6].monthFa}` : '';
   return { days, range };
@@ -33,7 +33,9 @@ function buildWeek() {
 
 export function useMealPlan() {
   const queryClient = useQueryClient();
-  const plan = useQuery({ queryKey: ['plan', 'current'], queryFn: () => apiClient.get('/meal-plans').then((r) => r.data) });
+  const [weekOffset, setWeekOffset] = useState(0); // 0 = this week, +1 next, -1 last (multi-week nav)
+  const offsetRef = useRef(0); offsetRef.current = weekOffset; // always-fresh offset for mutation URLs/keys (no stale closure)
+  const plan = useQuery({ queryKey: ['plan', weekOffset], queryFn: () => apiClient.get(`/meal-plans?offset=${weekOffset}`).then((r) => r.data) });
   const [proposal, setProposal] = useState(null); // ProposedSlot[] | null
   const [proposing, setProposing] = useState(false);
   const [proposeError, setProposeError] = useState(false);
@@ -41,7 +43,7 @@ export function useMealPlan() {
   // FI-STEP-1.3: per-slot recipeIds already shown (so repeated «یکی دیگه» cycles, never re-offers one)
   const shownBySlot = useRef({});
 
-  const week = useMemo(() => buildWeek(), []);
+  const week = useMemo(() => buildWeek(weekOffset), [weekOffset]);
 
   // real, already-saved slots: key `${dayOfWeek}:${mealType}` → {recipeId, title, cookTimeText}
   const filled = useMemo(() => {
@@ -112,13 +114,13 @@ export function useMealPlan() {
   // Optimistic: drop it from the cached plan immediately; on failure, revert the cache + return false
   // (so the caller never claims a delete that did not happen).
   const removeSlot = useCallback(async (dayOfWeek, mealType) => {
-    const key = ['plan', 'current'];
+    const key = ['plan', offsetRef.current];
     const prev = queryClient.getQueryData(key);
     queryClient.setQueryData(key, (old) => (
       old?.slots ? { ...old, slots: old.slots.filter((s) => !(s.dayOfWeek === dayOfWeek && s.mealType === mealType)) } : old
     ));
     try {
-      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}`);
+      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}?offset=${offsetRef.current}`);
       await plan.refetch();
       return true;
     } catch {
@@ -133,7 +135,7 @@ export function useMealPlan() {
   const acceptSlot = useCallback(async (s) => {
     setApplying(true);
     try {
-      await apiClient.post('/meal-plans/slots', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
+      await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
       await plan.refetch();
       return true;
     } catch {
@@ -147,7 +149,7 @@ export function useMealPlan() {
   // so the slot moves to `filled`. Founder bug: empty slots were dead «—» with no way to add a dish by hand.
   const addDish = useCallback(async (dayOfWeek, mealType, recipeId) => {
     try {
-      await apiClient.post('/meal-plans/slots', { dayOfWeek, mealType, recipeId });
+      await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek, mealType, recipeId });
       await plan.refetch();
       return true;
     } catch {
@@ -157,13 +159,13 @@ export function useMealPlan() {
 
   // mark a slot cooked / un-cooked (the "پختم" moment). Optimistic cache flip; reverts on failure.
   const markCooked = useCallback(async (dayOfWeek, mealType, cooked) => {
-    const key = ['plan', 'current'];
+    const key = ['plan', offsetRef.current];
     const prev = queryClient.getQueryData(key);
     queryClient.setQueryData(key, (old) => (
       old?.slots ? { ...old, slots: old.slots.map((s) => (s.dayOfWeek === dayOfWeek && s.mealType === mealType ? { ...s, cookedAt: cooked ? new Date().toISOString() : null } : s)) } : old
     ));
     try {
-      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/cooked`, { cooked });
+      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/cooked?offset=${offsetRef.current}`, { cooked });
       return true;
     } catch {
       queryClient.setQueryData(key, prev);
@@ -192,7 +194,7 @@ export function useMealPlan() {
     let failed = 0;
     for (const s of items) {
       try {
-        await apiClient.post('/meal-plans/slots', { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
+        await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
       } catch {
         failed += 1;
       }
@@ -203,6 +205,11 @@ export function useMealPlan() {
     return { ok: failed === 0, failed, total: items.length };
   }, [suggested, plan]);
 
+  // multi-week navigation (clamped to the backend's ±8-week window)
+  const nextWeek = useCallback(() => setWeekOffset((o) => Math.min(8, o + 1)), []);
+  const prevWeek = useCallback(() => setWeekOffset((o) => Math.max(-8, o - 1)), []);
+  const goToToday = useCallback(() => setWeekOffset(0), []);
+
   let status = 'ready';
   if (plan.isLoading) status = 'loading';
   else if (plan.isError) status = 'error';
@@ -211,6 +218,7 @@ export function useMealPlan() {
     status,
     refetch: () => plan.refetch(),
     week, meals: MEALS,
+    weekOffset, nextWeek, prevWeek, goToToday,
     filled, suggested,
     hasPlan,
     proposalActive: !!proposal,

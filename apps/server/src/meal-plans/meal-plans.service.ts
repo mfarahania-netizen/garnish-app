@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { isRecipeVisibleTo } from '../recipes/recipe-visibility';
-import { getStartOfWeek } from '../utils/date.utils';
+import { getStartOfWeek, getStartOfWeekOffset } from '../utils/date.utils';
 
 @Injectable()
 export class MealPlansService {
@@ -11,8 +11,8 @@ export class MealPlansService {
     private readonly safety: RecipeSafetyFilterService,
   ) {}
 
-  async getCurrentPlan(userId: string) {
-    const startOfWeek = getStartOfWeek();
+  async getCurrentPlan(userId: string, weekOffset = 0) {
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
 
     const plan = await this.prisma.mealPlan.findFirst({
       where: {
@@ -41,9 +41,9 @@ export class MealPlansService {
   }
 
   /** Mark a slot cooked / un-cooked (the "پختم" signature interaction). Owner-scoped via the user's own plan. */
-  async markCooked(userId: string, dayOfWeek: number, mealType: string, cooked: boolean) {
+  async markCooked(userId: string, dayOfWeek: number, mealType: string, cooked: boolean, weekOffset = 0) {
     const mt = this.canonMeal(mealType);
-    const startOfWeek = getStartOfWeek();
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
     const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
     if (!plan) return { ok: false };
     const val = cooked ? new Date() : null;
@@ -104,7 +104,7 @@ export class MealPlansService {
     return this.sanitizePlan(plan, userId);
   }
 
-  async generateSmartPlan(userId: string) {
+  async generateSmartPlan(userId: string, weekOffset = 0) {
     const profile = await this.prisma.userPreference.findUnique({
       where: { userId },
     });
@@ -195,7 +195,7 @@ export class MealPlansService {
       }
     }
 
-    const startOfWeek = getStartOfWeek();
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
 
     const cleanSlots = planSlots.map(slot => ({
       dayOfWeek: slot.dayOfWeek,
@@ -323,9 +323,9 @@ export class MealPlansService {
     return map[m] ?? map[m.toLowerCase()] ?? m;
   }
 
-  async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string) {
+  async addMealSlot(userId: string, dayOfWeek: number, mealType: string, recipeId: string, weekOffset = 0) {
     mealType = this.canonMeal(mealType); // store the Persian canonical form (matches generateSmartPlan + the screen)
-    const startOfWeek = getStartOfWeek();
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
 
     // SECURITY (advisor audit): this is the PRIMARY apply path (POST /meal-plans/slots). Only a published recipe
     // (or the user's own draft) may be placed into a slot — block referencing another user's pending/private UGC
@@ -369,9 +369,9 @@ export class MealPlansService {
     return slot;
   }
 
-  async removeMealSlot(userId: string, dayOfWeek: number, mealType: string) {
+  async removeMealSlot(userId: string, dayOfWeek: number, mealType: string, weekOffset = 0) {
     mealType = this.canonMeal(mealType); // match the Persian canonical form a week-filled slot was stored with
-    const startOfWeek = getStartOfWeek();
+    const startOfWeek = getStartOfWeekOffset(weekOffset);
 
     const plan = await this.prisma.mealPlan.findFirst({
       where: { userId, weekStart: startOfWeek },

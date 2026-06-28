@@ -47,7 +47,7 @@ describe('useMealPlan — breakfast + delete (real hook)', () => {
     await waitFor(() => expect(result.current.status).toBe('ready'));
     let ok;
     await act(async () => { ok = await result.current.removeSlot(2, 'dinner'); });
-    expect(del).toHaveBeenCalledWith('/meal-plans/slots/2/dinner');
+    expect(del).toHaveBeenCalledWith('/meal-plans/slots/2/dinner?offset=0'); // multi-week: current week = offset 0
     expect(ok).toBe(true);
   });
 
@@ -57,7 +57,7 @@ describe('useMealPlan — breakfast + delete (real hook)', () => {
     await waitFor(() => expect(result.current.status).toBe('ready'));
     let ok;
     await act(async () => { ok = await result.current.removeSlot(0, 'lunch'); });
-    expect(del).toHaveBeenCalledWith('/meal-plans/slots/0/lunch');
+    expect(del).toHaveBeenCalledWith('/meal-plans/slots/0/lunch?offset=0');
     expect(ok).toBe(false);
   });
 
