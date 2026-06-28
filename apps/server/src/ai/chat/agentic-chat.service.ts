@@ -64,11 +64,34 @@ export class AgenticChatService {
     }
 
     const dietLine = await this.grounded.getDietConstraint(userId).catch(() => null); // diet = preference (non-fatal)
+    const ctx: ToolContext = { userId, snapshot };
+
+    // DETERMINISTIC whole-week build — the flagship action must NOT depend on the free model CHOOSING to call the
+    // tool. Founder hit live: the model printed «کل برنامهٔ هفتگی ذخیره شد ✅» + a table it NEVER saved (only a
+    // single-slot add had really worked). So when the turn clearly means "build my whole week", we execute
+    // fill_week_plan OURSELVES and confirm from the REAL saved week — the model is out of the critical path, and we
+    // never claim a save we didn't make.
+    if (this.wantsWholeWeekPlan(prompt)) {
+      const tool = this.writeTools.build().find((t) => t.spec.name === 'fill_week_plan');
+      const res = (tool
+        ? await tool.execute({}, ctx).catch((e) => ({ error: e instanceof Error ? e.message : String(e) }))
+        : { error: 'fill_week_plan unavailable' }) as { ok?: boolean; week?: { day: string; meals: { meal: string; dish: string }[] }[]; error?: string };
+      if (res?.ok && Array.isArray(res.week) && res.week.length) {
+        const text = this.formatWeekPlan(res.week);
+        const verdict = await this.grounded.screenLiveOutput(userId, text, { unsafeTitles: [] } as never);
+        // The plan IS saved either way (generateSmartPlan already wrote it through the HARD safety filter). If the
+        // output screen false-positives on a title, we still confirm honestly — just without the table — never a lie.
+        const safeText = verdict.safe ? text : 'برنامهٔ هفته‌ات رو چیدم و ذخیره کردم ✅ — توی تبِ «برنامه» می‌بینیش.';
+        return { ok: true, text: safeText, reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'deterministic:fill_week_plan' };
+      }
+      // HONEST failure — never fake a save (the grounded fallback fakes an unsaved table, so we don't use it here).
+      return { ok: true, text: 'الان نتونستم کلِ برنامهٔ هفته رو بچینم. می‌تونی چند غذا رو دستی بگی بذارم، یا یه‌بارِ دیگه امتحان کن.', reason: null, toolCalls: [{ name: 'fill_week_plan', arguments: '{}' }], model: 'deterministic:fill_week_plan' };
+    }
+
     const unsafeTitles: string[] = [];
     // read-only tools pass through the allergy gate; reversible WRITE-actions (favorite, shopping-list) act only
     // on the user's own data and auto-execute (no allergy filtering needed — they're user-initiated, not recs).
     const tools = [...this.gatedTools(userId, unsafeTitles), ...this.writeTools.build()];
-    const ctx: ToolContext = { userId, snapshot };
 
     // RETRY ONCE on a thrown loop error — the free OpenRouter tool models intermittently return an empty completion
     // (no text, no tool calls); a single retry gives the flake a second chance to actually call the tool (e.g.
@@ -99,6 +122,38 @@ export class AgenticChatService {
     }
 
     return { ok: true, text: result.text, reason: null, toolCalls: result.toolCalls, model: result.model };
+  }
+
+  /**
+   * Does this turn clearly mean "build my WHOLE week"? Conservative on purpose: it must mention the week AND a build
+   * verb AND a meal-plan word, and must NOT be the «لیستِ خریدِ هفته» action. Single-day adds («شنبه نهار X بذار»)
+   * have no «هفته» → they fall through to the model's add_to_meal_plan, untouched.
+   */
+  private wantsWholeWeekPlan(prompt: string): boolean {
+    const p = String(prompt || '').replace(/‌/g, ''); // strip ZWNJ so هفته‌ام / وعده‌ها normalize
+    const week = /هفته|هفتگی|۷\s*روز|7\s*روز/.test(p);
+    const build = /بچین|بساز|پر\s*کن|کامل\s*کن|درست\s*کن|ردیف\s*کن/.test(p);
+    const mealPlan = /برنامه|وعده|غذا|منو/.test(p);
+    const shopping = /خرید/.test(p); // «لیستِ خریدِ هفته» is a different deterministic action
+    return week && build && mealPlan && !shopping;
+  }
+
+  /** Render the REAL saved week (from fill_week_plan) as a clean table. Never invents dishes — only what was saved. */
+  private formatWeekPlan(week: { day: string; meals: { meal: string; dish: string }[] }[]): string {
+    const fa = (m: string): string => ({ breakfast: 'صبحانه', lunch: 'ناهار', dinner: 'شام', snack: 'میان‌وعده' } as Record<string, string>)[m] ?? m;
+    const rows = week.map((d) => {
+      const pick = (label: string) => d.meals.find((x) => fa(x.meal) === label)?.dish ?? '—';
+      return `| ${d.day} | ${pick('صبحانه')} | ${pick('ناهار')} | ${pick('شام')} |`;
+    });
+    return [
+      'کلِ برنامهٔ هفته‌ات رو چیدم و **ذخیره کردم** ✅ — همین الان توی تبِ «برنامه» می‌بینیش.',
+      '',
+      '| روز | صبحانه | ناهار | شام |',
+      '|---|---|---|---|',
+      ...rows,
+      '',
+      'هر وعده‌ای خواستی، بگو عوضش کنم. می‌خوای **لیستِ خریدش** رو هم برات بسازم؟',
+    ].join('\n');
   }
 
   /** Wrap the recipe-surfacing tools with the INPUT safety filter; pass the rest through unchanged. */
