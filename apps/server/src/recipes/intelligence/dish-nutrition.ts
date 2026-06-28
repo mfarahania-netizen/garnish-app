@@ -27,6 +27,16 @@ const GLOBAL_TRUST_KCAL = 50; // a generic (global) piece/cup weight is only tru
 // where guessing a piece/cup weight for a dense ingredient really can be wrong.
 const SMALL_VOLUME_UNIT = /قاشق|نوک\s*قاشق|میلی\s*لیتر|^ml$|سی\s*سی|^cc$/;
 
+// DEEP-FRY OIL: a frying bath is mostly DISCARDED, not eaten — only ~10% of the fried food's weight is absorbed
+// (literature 8–12%). Counting the full authored bath inflates a fried dish 4–5× (a bath is ~1000+ kcal/serving
+// of pure oil). So when a dish is fried — flagged by the title OR by a bath-sized total oil amount — we count
+// only the absorbed uptake (uptake × the fried solids' weight), exactly as the Persian nutrition backfill does.
+const FRY_OIL_UPTAKE = 0.10;
+const FRY_OIL_BATH_G = 150; // total oil ≥ this (≈⅔ cup) is a frying bath → uptake model, not the whole amount
+const FRY_TITLE = /سوخاری|سرخ[\s‌]?کرده|سرخ[\s‌]?شده|فلافل|سمبوسه|چیپس|پیراشکی|ناگت|تمپورا|کروکت|دونات|بامیه|زولبیا|گوش[\s‌]?فیل/;
+const OIL_RE = /روغن|\boil\b/i;
+const isOilItem = (ing: DishIngredientInput): boolean => ing.category === 'oil' || OIL_RE.test(ing.name || '');
+
 export interface DishIngredientInput {
   name: string;
   /** parsed numeric amount (use parseAmount upstream); null when unquantified. */
@@ -81,21 +91,28 @@ function round1(x: number): number {
 }
 
 /**
- * Compute per-serving macros for a dish. `baseServings` is the recipe's serving count.
- * Returns perServing ONLY when coverage === 'full' and the total is plausible.
+ * Compute per-serving macros for a dish. `baseServings` is the recipe's serving count; `opts.friedHint`
+ * (derived from the recipe title) forces the deep-fry-oil model. Returns perServing ONLY when coverage ===
+ * 'full' and the total is plausible.
  */
-export function computeDishNutrition(ingredients: DishIngredientInput[], baseServings: number): DishNutritionResult {
+export function computeDishNutrition(ingredients: DishIngredientInput[], baseServings: number, opts: { friedHint?: boolean } = {}): DishNutritionResult {
   const servings = baseServings && baseServings > 0 ? baseServings : 0;
   const total: Record<Macro, number> = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
   let resolved = 0;
   let considered = 0;
+  let solidGrams = 0; // grounded NON-oil weight — the basis for the deep-fry oil-uptake model
   const blockers: string[] = [];
+  const oils: { ing: DishIngredientInput; grams: number | null }[] = [];
+
+  const addContribution = (per100g: Record<string, unknown>, grams: number) => { for (const m of MACROS) { const v = Number(per100g[m]); if (Number.isFinite(v)) total[m] += (v * grams) / 100; } };
 
   for (const ing of ingredients) {
     // strongest grams first: authored GRIS weightG, else the amount→gram resolver.
     const r = typeof ing.weightG === 'number' && Number.isFinite(ing.weightG) && ing.weightG > 0
       ? { grams: ing.weightG, grounded: true }
       : resolveGrams({ amount: ing.amount, unit: ing.unit, gramConversions: ing.gramConversions });
+    // oils are handled by the deep-fry model AFTER the solids' weight is known (a frying bath isn't eaten whole).
+    if (isOilItem(ing)) { oils.push({ ing, grams: r.grams }); continue; }
     const kcal = kcalOf(ing.per100g);
 
     // a resolved, trustworthy, real-calorie ingredient → contribute. A generic (non-grounded) factor is trusted
@@ -105,7 +122,8 @@ export function computeDishNutrition(ingredients: DishIngredientInput[], baseSer
     if (r.grams != null && grounded && ing.per100g) {
       considered += 1;
       resolved += 1;
-      for (const m of MACROS) { const v = Number((ing.per100g as Record<string, unknown>)[m]); if (Number.isFinite(v)) total[m] += (v * r.grams) / 100; }
+      solidGrams += r.grams;
+      addContribution(ing.per100g as Record<string, unknown>, r.grams);
       continue;
     }
 
@@ -113,6 +131,26 @@ export function computeDishNutrition(ingredients: DishIngredientInput[], baseSer
     if (isNegligible(ing)) continue;
     considered += 1;
     blockers.push(String(ing.name || '?').trim());
+  }
+
+  // OIL MODEL: a frying bath (flagged by the title, or by a bath-sized total oil amount) contributes only the
+  // ABSORBED uptake (≈10% of the fried solids' weight), never the discarded bath — so a fried dish isn't inflated
+  // 4–5×. A small consumed oil (sauté/dressing) counts its authored grams (and blocks if it's an unquantified
+  // real-calorie amount). The representative oil per-100g is shared across oils (they're ~identical, ~884 kcal).
+  if (oils.length) {
+    const oilTotalG = oils.reduce((s, o) => s + (o.grams ?? 0), 0);
+    const rep = oils.find((o) => o.ing.per100g)?.ing.per100g ?? null;
+    const isBath = Boolean(opts.friedHint) || oilTotalG >= FRY_OIL_BATH_G;
+    if (isBath) {
+      const countedOilG = FRY_OIL_UPTAKE * solidGrams; // a bath needs no authored amount → never blocks on unquantified oil
+      if (rep && countedOilG > 0) { considered += 1; resolved += 1; addContribution(rep as Record<string, unknown>, countedOilG); }
+    } else {
+      for (const o of oils) {
+        if (o.grams != null && o.ing.per100g) { considered += 1; resolved += 1; addContribution(o.ing.per100g as Record<string, unknown>, o.grams); }
+        else if (isNegligible(o.ing)) { /* a drizzle «به مزه» → ignore */ }
+        else { considered += 1; blockers.push(String(o.ing.name || 'روغن').trim()); } // unquantified real-calorie oil → block
+      }
+    }
   }
 
   const ratio = considered ? resolved / considered : 0;
@@ -144,9 +182,9 @@ export interface DishDictRow {
  * GRIS weightG (the strongest grams) is preferred per ingredient; the resolver fills the rest from amounts.
  */
 export function buildDishInputs(
-  recipe: { servings?: number | null; gris?: unknown; ingredients?: { name?: string | null; ingredientId?: string | null; amount?: string | null; unit?: string | null }[] | null },
+  recipe: { title?: string | null; servings?: number | null; gris?: unknown; ingredients?: { name?: string | null; ingredientId?: string | null; amount?: string | null; unit?: string | null }[] | null },
   dictById: Map<string, DishDictRow>,
-): { inputs: DishIngredientInput[]; servings: number } {
+): { inputs: DishIngredientInput[]; servings: number; friedHint: boolean } {
   const gris = (recipe?.gris ?? null) as { ingredients?: unknown[]; glance?: { servings?: number } } | null;
   const grisW = new Map<string, number>();
   const grisArr = Array.isArray(gris?.ingredients) ? (gris!.ingredients as Record<string, unknown>[]) : [];
@@ -169,5 +207,6 @@ export function buildDishInputs(
   });
   const grisServings = typeof gris?.glance?.servings === 'number' && gris.glance.servings > 0 ? gris.glance.servings : null;
   const servings = grisServings ?? (Number(recipe?.servings) > 0 ? Number(recipe.servings) : 4);
-  return { inputs, servings };
+  const friedHint = FRY_TITLE.test(String(recipe?.title ?? ''));
+  return { inputs, servings, friedHint };
 }

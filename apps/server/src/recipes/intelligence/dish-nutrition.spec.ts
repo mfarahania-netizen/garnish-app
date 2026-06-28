@@ -72,14 +72,48 @@ describe('dish-nutrition (whole-dish compute, complete-only gate)', () => {
     expect(r.perServing).not.toBeNull();
   });
 
-  it('rejects an implausible per-serving total (artifact guard)', () => {
-    const oil = { calories: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 };
+  it('rejects an implausible per-serving total (artifact guard, non-oil)', () => {
     const r = computeDishNutrition([
-      ing({ name: 'روغن', amount: 1000, unit: 'گرم', per100g: oil }),
-      ing({ name: 'گوشت', amount: 100, unit: 'گرم', per100g: beef }),
-      ing({ name: 'برنج', amount: 100, unit: 'گرم', per100g: rice }),
-    ], 1); // ~9000 kcal/serving → implausible → null
+      ing({ name: 'گوشت', amount: 1, unit: 'عدد', per100g: beef, weightG: 9000 }), // an absurd authored weight
+      ing({ name: 'برنج', amount: 200, unit: 'گرم', per100g: rice }),
+      ing({ name: 'پیاز', amount: 150, unit: 'گرم', per100g: onion }),
+    ], 1); // ~23000 kcal/serving → implausible → null
     expect(r.perServing).toBeNull();
+  });
+
+  describe('deep-fry oil model', () => {
+    const oil = { calories: 884, protein: 0, carbs: 0, fat: 100, fiber: 0 };
+    const fish = { calories: 90, protein: 18, carbs: 0, fat: 1, fiber: 0 };
+    const flour = { calories: 364, protein: 10, carbs: 76, fat: 1, fiber: 3 };
+    const friedDish = (opts?: { friedHint?: boolean }) => computeDishNutrition([
+      ing({ name: 'ماهی', amount: 500, unit: 'گرم', per100g: fish }),
+      ing({ name: 'آرد', amount: 100, unit: 'گرم', per100g: flour }),
+      ing({ name: 'روغن آفتابگردان', amount: 600, unit: 'گرم', per100g: oil, category: 'oil' }),
+    ], 4, opts);
+
+    it('counts only the absorbed uptake of a frying BATH, not the discarded oil (friedHint)', () => {
+      const r = friedDish({ friedHint: true });
+      expect(r.coverage).toBe('full');
+      // solids 600g → uptake 60g oil (~530 kcal), NOT the 600g bath (~5300 kcal). Per serving stays realistic.
+      expect(r.perServing!.calories).toBeLessThan(400);
+      expect(r.perServing!.calories).toBeGreaterThan(150);
+    });
+
+    it('treats a bath-sized oil amount as deep-fry even with no fried-title hint', () => {
+      const r = friedDish(); // 600g oil ≥ bath threshold → uptake model regardless of title
+      expect(r.perServing!.calories).toBeLessThan(400);
+    });
+
+    it('counts a small sauté oil FULLY (consumed, not a bath)', () => {
+      const r = computeDishNutrition([
+        ing({ name: 'گوشت', amount: 300, unit: 'گرم', per100g: beef }),
+        ing({ name: 'برنج', amount: 200, unit: 'گرم', per100g: rice }),
+        ing({ name: 'روغن آفتابگردان', amount: 2, unit: 'قاشق غذاخوری', per100g: oil, category: 'oil', gramConversions: { perUnit: { 'قاشق غذاخوری': { g: 13.6, src: 'curated' } } } }),
+      ], 4);
+      expect(r.coverage).toBe('full');
+      // ~27g oil fully counted (~240 kcal total) — a small consumed amount, not modeled as a bath.
+      expect(r.perServing!.calories).toBeGreaterThan(200);
+    });
   });
 
   it('prefers an authored GRIS weightG over the amount→gram conversion', () => {

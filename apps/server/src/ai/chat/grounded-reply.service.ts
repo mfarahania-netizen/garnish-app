@@ -526,8 +526,8 @@ export class GroundedReplyService {
       return null;
     }
     const dictById = new Map<string, DishDictRow>(dictRows.map((d) => [d.id, { nutritionPer100g: d.nutritionPer100g, category: d.category, gramConversions: d.gramConversions }]));
-    const { inputs, servings } = buildDishInputs(recipe, dictById);
-    const res = computeDishNutrition(inputs, servings);
+    const { inputs, servings, friedHint } = buildDishInputs(recipe, dictById);
+    const res = computeDishNutrition(inputs, servings, { friedHint });
     if (!res.perServing) return null; // not fully grounded → honest null (the nutrition guard stays)
     return { title: recipe.title, perServing: res.perServing, servings, source: 'computed_live' };
   }

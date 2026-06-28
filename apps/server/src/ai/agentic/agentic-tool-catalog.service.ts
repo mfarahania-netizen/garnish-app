@@ -96,7 +96,7 @@ export class AgenticToolCatalogService {
       const dictById = new Map<string, DishDictRow>(dictRows.map((d) => [d.id, { nutritionPer100g: d.nutritionPer100g, category: d.category, gramConversions: d.gramConversions }]));
       const built = buildDishInputs(recipe, dictById);
       servings = built.servings;
-      const res = computeDishNutrition(built.inputs, built.servings);
+      const res = computeDishNutrition(built.inputs, built.servings, { friedHint: built.friedHint });
       perServing = res.perServing;
     }
     if (!perServing || perServing.calories == null) {
