@@ -502,6 +502,10 @@ export class GroundedReplyService {
   async getDishNutrition(term: string): Promise<{ title: string; perServing: Record<string, number>; servings: number; source: 'stored' | 'computed_live' } | null> {
     const cleaned = this.cleanDishTerm(term);
     if (cleaned.length < 2) return null;
+    // If the WHOLE cleaned term is itself a dictionary INGREDIENT («برنج»، «عدس»), this is a per-100g question —
+    // defer to the ingredient path so we don't compute a same-named DISH («برنج کته») for «کالریِ برنج». A compound
+    // DISH name («قورمه سبزی»، «قیمه») does not confidently match a single ingredient, so it proceeds to the dish.
+    if (await this.isConfidentIngredientTerm(cleaned)) return null;
     const recipe = await this.resolvePublishedRecipe(cleaned);
     if (!recipe) return null;
 
@@ -526,6 +530,13 @@ export class GroundedReplyService {
     const res = computeDishNutrition(inputs, servings);
     if (!res.perServing) return null; // not fully grounded → honest null (the nutrition guard stays)
     return { title: recipe.title, perServing: res.perServing, servings, source: 'computed_live' };
+  }
+
+  /** True when the whole cleaned term confidently names a dictionary INGREDIENT (→ answer per-100g, not as a dish). */
+  private async isConfidentIngredientTerm(cleaned: string): Promise<boolean> {
+    const n = await this.getIngredientNutrition(cleaned).catch(() => null);
+    if (!n) return false;
+    return foldPersian(n.name) === foldPersian(cleaned) || isConfidentIngredientMatch(cleaned, n.name);
   }
 
   /** Strip nutrition-question words off a turn, leaving the dish name («قیمه چند کالری داره؟» → «قیمه»). */

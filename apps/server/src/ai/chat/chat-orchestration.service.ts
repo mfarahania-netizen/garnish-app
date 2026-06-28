@@ -675,14 +675,16 @@ export class ChatOrchestrationService {
    */
   private async composeNutritionReplyDishAware(prompt: string, locale: Locale): Promise<string> {
     const header = t('assistant_header', locale);
-    const ing = await this.tryIngredientNutritionLine(prompt, locale).catch(() => null);
-    if (ing) return ing;
+    // DISH first — getDishNutrition itself defers (returns null) when the term is a bare dictionary ingredient,
+    // so «کالریِ برنج» still falls to the per-100g path while «قورمه سبزی چند کالری» computes the whole dish.
     const dish = await this.grounded.getDishNutrition(prompt).catch(() => null);
     if (dish && dish.perServing && dish.perServing.calories != null) {
       const parts = this.macroParts(dish.perServing, locale);
       const line = t('dish_nutrition_line', locale, { name: dish.title, parts });
       return `${header}\n\n${line}\n\n${t('dish_nutrition_disclaimer', locale)}`;
     }
+    const ing = await this.tryIngredientNutritionLine(prompt, locale).catch(() => null);
+    if (ing) return ing;
     return `${header}\n\n${t('nutrition_ask', locale)}`;
   }
 
