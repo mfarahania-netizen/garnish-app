@@ -35,6 +35,12 @@ export class MealPlansController {
     return this.mealPlansService.dishOptions(req.user.userId, meal, q);
   }
 
+  // Mark a slot cooked / un-cooked (the "پختم" signature interaction). Body { cooked: boolean } (defaults true).
+  @Post('slots/:dayOfWeek/:mealType/cooked')
+  markCooked(@Req() req, @Param('dayOfWeek') dayOfWeek: string, @Param('mealType') mealType: string, @Body() body: { cooked?: boolean }) {
+    return this.mealPlansService.markCooked(req.user.userId, parseInt(dayOfWeek), mealType, body?.cooked !== false);
+  }
+
   // ✅ جدید: حذف یک وعده
   @Delete('slots/:dayOfWeek/:mealType')
   removeMealSlot(

@@ -21,7 +21,34 @@ export class MealPlansService {
       },
       include: { slots: { include: { recipe: true } } },
     });
+    await this.hydrateCookedAt(plan);
     return this.sanitizePlan(plan, userId);
+  }
+
+  /**
+   * Merge each slot's `cookedAt` via raw SQL (the GRIS pattern) so this works even when the generated Prisma client
+   * predates the column — no `prisma generate` / server restart needed. Purely additive.
+   */
+  private async hydrateCookedAt(plan: any): Promise<void> {
+    if (!plan?.slots?.length) return;
+    try {
+      const rows: any[] = await this.prisma.$queryRawUnsafe('SELECT id, "cookedAt" FROM "MealSlot" WHERE "mealPlanId" = $1', plan.id);
+      const byId = new Map(rows.map((r) => [r.id, r.cookedAt]));
+      for (const s of plan.slots) s.cookedAt = byId.get(s.id) ?? null;
+    } catch {
+      /* column absent (older env) → cookedAt stays undefined; UI treats it as not-cooked */
+    }
+  }
+
+  /** Mark a slot cooked / un-cooked (the "پختم" signature interaction). Owner-scoped via the user's own plan. */
+  async markCooked(userId: string, dayOfWeek: number, mealType: string, cooked: boolean) {
+    const mt = this.canonMeal(mealType);
+    const startOfWeek = getStartOfWeek();
+    const plan = await this.prisma.mealPlan.findFirst({ where: { userId, weekStart: startOfWeek }, select: { id: true } });
+    if (!plan) return { ok: false };
+    const val = cooked ? new Date() : null;
+    await this.prisma.$executeRawUnsafe('UPDATE "MealSlot" SET "cookedAt" = $1 WHERE "mealPlanId" = $2 AND "dayOfWeek" = $3 AND "mealType" = $4', val, plan.id, dayOfWeek, mt);
+    return { ok: true, cooked };
   }
 
   /**

@@ -51,7 +51,7 @@ export function useMealPlan() {
       if (!s?.recipeId || !s?.recipe) continue;
       // no-cook dishes (salads/smoothies/دویماج) have cookingTime 0 but a real totalTime — fall back so the card
       // isn't blank (20 recipes were showing no time).
-      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime || Number(s.recipe.totalTime) || 0) };
+      map[`${s.dayOfWeek}:${s.mealType}`] = { recipeId: s.recipeId, title: s.recipe.title || 'دستور', cookTimeText: faDuration(s.recipe.cookingTime || Number(s.recipe.totalTime) || 0), cookedAt: s.cookedAt || null };
     }
     return map;
   }, [plan.data]);
@@ -155,6 +155,22 @@ export function useMealPlan() {
     }
   }, [plan]);
 
+  // mark a slot cooked / un-cooked (the "پختم" moment). Optimistic cache flip; reverts on failure.
+  const markCooked = useCallback(async (dayOfWeek, mealType, cooked) => {
+    const key = ['plan', 'current'];
+    const prev = queryClient.getQueryData(key);
+    queryClient.setQueryData(key, (old) => (
+      old?.slots ? { ...old, slots: old.slots.map((s) => (s.dayOfWeek === dayOfWeek && s.mealType === mealType ? { ...s, cookedAt: cooked ? new Date().toISOString() : null } : s)) } : old
+    ));
+    try {
+      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/cooked`, { cooked });
+      return true;
+    } catch {
+      queryClient.setQueryData(key, prev);
+      return false;
+    }
+  }, [queryClient]);
+
   // safe, meal-appropriate dishes for the picker (GET /meal-plans/dish-options — allergy-gated server-side). q searches.
   const fetchDishOptions = useCallback(async (mealType, q) => {
     try {
@@ -199,6 +215,6 @@ export function useMealPlan() {
     hasPlan,
     proposalActive: !!proposal,
     proposing, proposeError, applying,
-    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot, addDish, fetchDishOptions,
+    propose, clearProposal, acceptSlot, acceptAll, removeSlot, swapSlot, addDish, fetchDishOptions, markCooked,
   };
 }

@@ -321,6 +321,7 @@ model MealSlot {
   recipeId   String?
   recipe     Recipe?  @relation(fields: [recipeId], references: [id])
   notes      String?
+  cookedAt   DateTime? // set when the user marks this slot cooked (the "پختم" signature interaction); null = not cooked
 }
 
 model ShoppingList {

@@ -29,20 +29,26 @@ function Thumb({ title, size = 56 }) {
  * SlotRow — a full-width meal slot for the single-day view. Three states: FILLED (dish + swap/remove, tap → recipe),
  * SUGGESTED (AI proposal: accept / یکی دیگه), EMPTY (an inviting «+ افزودن {meal}» that opens the picker).
  */
-function SlotRow({ meal, slot, onOpen, onAccept, onSwap, onRemove, onAdd }) {
+function SlotRow({ meal, slot, cooked, onOpen, onAccept, onSwap, onRemove, onAdd, onCook }) {
   if (slot?.kind === 'filled') {
     return (
-      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)', boxShadow: 'var(--g-shadow-1)' }}>
-        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', textAlign: 'start' }}>
-          <Thumb title={slot.title} />
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', background: cooked ? 'var(--g-color-state-success-bg, var(--g-color-brand-50))' : 'var(--g-color-bg-surface)', border: cooked ? '1px solid var(--g-color-state-success-fg)' : '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)', boxShadow: cooked ? 'none' : 'var(--g-shadow-1)', transition: 'background 200ms var(--g-ease-standard)' }}>
+        {/* the «پختم» check — the signature moment (mirrors the shopping check-off the founder loved) */}
+        <UnstyledButton type="button" onClick={onCook} aria-pressed={!!cooked} aria-label={cooked ? 'پخته شد — برگردان' : 'علامتِ پخته شد'} style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box aria-hidden="true" className={cooked ? 'g-check-pop' : undefined} style={{ inlineSize: 26, blockSize: 26, borderRadius: '50%', display: 'grid', placeItems: 'center', border: cooked ? 'none' : '1.5px solid var(--g-color-border-strong)', background: cooked ? 'var(--g-color-brand-600)' : 'transparent', color: 'var(--g-color-text-inverse)', transition: 'background 140ms var(--g-ease-standard), border-color 140ms var(--g-ease-standard)' }}>{cooked ? <IconCheck size={15} stroke={2.6} /> : null}</Box>
+        </UnstyledButton>
+        <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — مشاهدهٔ دستور`} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', textAlign: 'start', opacity: cooked ? 0.62 : 1 }}>
+          <Thumb title={slot.title} size={52} />
           <Box style={{ flex: 1, minInlineSize: 0 }}>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7 }}>{slot.title}</Text>
-            {slot.cookTimeText ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={12} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box> : null}
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7, textDecoration: cooked ? 'line-through' : 'none' }}>{slot.title}</Text>
+            {cooked ? (
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-state-success-fg)', marginBlockStart: 2 }}>پخته شد ✓</Text>
+            ) : slot.cookTimeText ? <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}><IconClock size={12} stroke={1.8} aria-hidden="true" />{slot.cookTimeText}</Box> : null}
           </Box>
         </UnstyledButton>
-        <Box style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
-          <UnstyledButton type="button" onClick={onAdd} aria-label="تغییرِ غذا" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconArrowsExchange size={16} stroke={1.8} /></UnstyledButton>
-          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ inlineSize: 38, blockSize: 38, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconTrash size={16} stroke={1.7} /></UnstyledButton>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: 0, flexShrink: 0 }}>
+          <UnstyledButton type="button" onClick={onAdd} aria-label="تغییرِ غذا" style={{ inlineSize: 34, blockSize: 34, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconArrowsExchange size={15} stroke={1.8} /></UnstyledButton>
+          <UnstyledButton type="button" onClick={onRemove} aria-label="حذف از برنامه" style={{ inlineSize: 34, blockSize: 34, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}><IconTrash size={15} stroke={1.7} /></UnstyledButton>
         </Box>
       </Box>
     );
@@ -222,6 +228,11 @@ export default function PlanPage() {
     else showToast('اضافه نشد — دوباره امتحان کن', IconCloudOff);
     return ok;
   };
+  const onCook = async (dayOfWeek, mealType, recipeId, nextCooked) => {
+    const ok = await m.markCooked(dayOfWeek, mealType, nextCooked);
+    if (ok && nextCooked) { showToast('نوش جان! 🍽', IconFlame); trackEvent('cook_complete', { dayOfWeek, mealType, recipeId, source: 'meal_plan' }); }
+    else if (!ok) showToast('نشد — دوباره امتحان کن', IconCloudOff);
+  };
 
   if (m.status === 'error') return <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '60vh' }}><PlanError onRetry={m.refetch} /></Box>;
 
@@ -283,11 +294,13 @@ export default function PlanPage() {
                     <SlotRow
                       meal={meal}
                       slot={slot}
+                      cooked={!!filled?.cookedAt}
                       onOpen={() => openRecipe((filled || sugg)?.recipeId)}
                       onAccept={() => onAcceptSlot(sugg)}
                       onSwap={() => onSwapSlot(sugg)}
                       onRemove={() => onRemoveSlot(day.dayOfWeek, meal.key, filled?.recipeId)}
                       onAdd={() => setPicker({ day, meal })}
+                      onCook={() => onCook(day.dayOfWeek, meal.key, filled?.recipeId, !filled?.cookedAt)}
                     />
                   </Box>
                 );
