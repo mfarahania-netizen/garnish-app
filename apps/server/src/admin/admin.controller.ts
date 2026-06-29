@@ -211,6 +211,9 @@ export class AdminController {
   @Get('analytics/page-views')
   getPageViewStats() { return this.adminService.getPageViewStats(); }
 
+  @Get('analytics/recommendation-funnel')
+  getRecommendationFunnel() { return this.adminService.getRecommendationFunnel(); }
+
   @Get('analytics/system-health')
   getSystemHealth() { return this.adminService.getSystemHealth(); }
 

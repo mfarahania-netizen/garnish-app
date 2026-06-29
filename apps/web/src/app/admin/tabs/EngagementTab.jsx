@@ -2,7 +2,7 @@
 // Activity counts run over the current TEST users until the pilot — flagged honestly. Funnels are real math.
 import { Box, Text, Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
-import { IconUsers, IconUserPlus, IconCalendarWeek, IconActivity, IconAlertTriangle } from '@tabler/icons-react';
+import { IconUsers, IconUserPlus, IconCalendarWeek, IconActivity, IconAlertTriangle, IconEye, IconPointer, IconFlame, IconThumbDown } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import { Section, Kpi, HBar, Panel, Note, Awaiting, TrendChart, grid, toFaDigits, fmtInt, fmtPct01 } from '../_ui';
 
@@ -13,6 +13,7 @@ export default function EngagementTab({ days = 30 }) {
   const funnels = useQuery({ queryKey: ['admin', 'funnels'], queryFn: () => get('/admin/analytics/funnels') });
   const pages = useQuery({ queryKey: ['admin', 'page-views'], queryFn: () => get('/admin/analytics/page-views') });
   const userStats = useQuery({ queryKey: ['admin', 'user-stats'], queryFn: () => get('/admin/analytics/user-stats') });
+  const rec = useQuery({ queryKey: ['admin', 'rec-funnel'], queryFn: () => get('/admin/analytics/recommendation-funnel') });
 
   if (trends.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
 
@@ -21,6 +22,8 @@ export default function EngagementTab({ days = 30 }) {
   const topPages = pages.data?.topPages || [];
   const fnls = funnels.data?.funnels || [];
   const funnelName = (n) => (n === 'onboarding' ? 'قیفِ ورود (onboarding)' : n === 'cook' ? 'قیفِ پخت' : n);
+  const rf = rec.data || {};
+  const recLow = rf.status === 'real' && rf.impressions > 0 && rf.impressions < 30;
 
   return (
     <>
@@ -61,6 +64,24 @@ export default function EngagementTab({ days = 30 }) {
           );
         }) : <Awaiting note="قیفی در دسترس نیست." />}
       </Box>
+
+      <Section title="موتورِ پیشنهادِ صفحهٔ اصلی" sub="کیفیتِ پیشنهادها — چند درصد کلیک، پخت یا رد می‌شوند" />
+      <Box style={grid(184)}>
+        <Kpi icon={IconEye} label="نمایشِ پیشنهاد" status={rf.status === 'real' ? 'real' : 'awaiting_pilot'} value={fmtInt(rf.impressions)} sub="کلِ دفعاتِ نشان‌داده‌شده" awaitNote="در انتظار نمایش" />
+        <Kpi icon={IconPointer} label="نرخِ کلیک (CTR)" status={rf.ctr != null ? 'real' : 'awaiting_pilot'} value={rf.ctr != null ? fmtPct01(rf.ctr) : '—'} sub={`${toFaDigits(rf.clicks ?? 0)} کلیک`} awaitNote="—" />
+        <Kpi icon={IconFlame} label="نرخِ پخت" status={rf.cookRate != null ? 'real' : 'awaiting_pilot'} value={rf.cookRate != null ? fmtPct01(rf.cookRate) : '—'} sub={`${toFaDigits(rf.cooks ?? 0)} پخت`} awaitNote="—" />
+        <Kpi icon={IconThumbDown} label="نرخِ رد" status={rf.dismissRate != null ? 'real' : 'awaiting_pilot'} value={rf.dismissRate != null ? fmtPct01(rf.dismissRate) : '—'} sub={`${toFaDigits(rf.dismisses ?? 0)} «علاقه ندارم»`} tone={rf.dismissRate > 0.3 ? 'warn' : undefined} awaitNote="—" />
+      </Box>
+      <Panel status={rf.status === 'real' ? 'real' : 'awaiting_pilot'}>
+        {rf.status === 'real' ? (
+          <>
+            {recLow ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-state-warning-fg, #c0801c)', marginBlockEnd: 6 }}>نمونهٔ کوچک ({toFaDigits(rf.impressions)} نمایش) — نرخ‌ها هنوز آماری پایدار نیستند.</Text> : null}
+            <HBar label="نمایش" value={rf.impressions} max={rf.impressions || 1} display={toFaDigits(rf.impressions)} />
+            <HBar label="کلیک" value={rf.clicks} max={rf.impressions || 1} display={toFaDigits(rf.clicks)} color="var(--g-color-brand-400)" />
+            <HBar label="پخت" value={rf.cooks} max={rf.impressions || 1} display={toFaDigits(rf.cooks)} color="var(--g-color-state-success-fg, #2e7d4f)" />
+          </>
+        ) : <Awaiting note="هنوز پیشنهادی نمایش داده نشده." />}
+      </Panel>
 
       <Section title="پربازدیدترین صفحه‌ها" sub="بر اساس رویدادهای page_view" />
       <Panel status={topPages.length ? 'real' : 'awaiting_pilot'}>

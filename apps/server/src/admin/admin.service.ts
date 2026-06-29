@@ -297,6 +297,28 @@ export class AdminService {
     return { topRecipes, slotsAdded: addEvents.length, distinctPlanners };
   }
 
+  /** The recommendation-engine OUTCOME funnel — how the home/recsys slate actually performs: impressions → clicks
+   *  (CTR) → cooks (cook-rate), plus dismissals (the explicit −1 rejection). 100% from REAL emitted events
+   *  (recommendation_impression/click/cook/dismiss); honest `awaiting_pilot` if none yet. Aggregates only, no PII.
+   *  This is the "are my suggestions any good?" surface the founder asked for — accept/reject/click/cook rates. */
+  async getRecommendationFunnel() {
+    const [impressions, clicks, cooks, dismisses] = await Promise.all([
+      this.prisma.userEvent.count({ where: { type: 'recommendation_impression' } }),
+      this.prisma.userEvent.count({ where: { type: 'recommendation_click' } }),
+      this.prisma.userEvent.count({ where: { type: 'recommendation_cook' } }),
+      this.prisma.userEvent.count({ where: { type: 'recommendation_dismiss' } }),
+    ]);
+    const rate = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 1000) / 1000 : null);
+    return {
+      status: impressions > 0 || dismisses > 0 ? ('real' as const) : ('awaiting_pilot' as const),
+      impressions, clicks, cooks, dismisses,
+      ctr: rate(clicks, impressions),            // نرخِ کلیک: کلیک ÷ نمایش
+      cookRate: rate(cooks, impressions),        // نرخِ پخت: پخت ÷ نمایش
+      cookRateOfClicks: rate(cooks, clicks),     // از میانِ کلیک‌ها چند پخت شد
+      dismissRate: rate(dismisses, impressions), // نرخِ رد: «علاقه ندارم» ÷ نمایش
+    };
+  }
+
   async getAIInteractionStats() {
     const events = await this.prisma.userEvent.findMany({
       where: { type: 'ai_message_send' },
