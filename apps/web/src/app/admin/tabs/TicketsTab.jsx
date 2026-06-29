@@ -36,11 +36,11 @@ const ago = (d) => {
   if (!d) return '—';
   const m = Math.floor((Date.now() - new Date(d).getTime()) / 60000);
   if (m < 1) return 'هم‌اکنون';
-  if (m < 60) return toFaDigits(m) + 'د پیش';
+  if (m < 60) return toFaDigits(m) + ' دقیقه پیش';
   const h = Math.floor(m / 60);
-  if (h < 24) return toFaDigits(h) + 'س پیش';
+  if (h < 24) return toFaDigits(h) + ' ساعت پیش';
   const dd = Math.floor(h / 24);
-  return dd < 30 ? toFaDigits(dd) + 'ر پیش' : toFaDigits(String(d).slice(0, 10));
+  return dd < 30 ? toFaDigits(dd) + ' روز پیش' : toFaDigits(String(d).slice(0, 10));
 };
 const dur = (mins) => (mins == null ? '—' : mins < 60 ? toFaDigits(mins) + ' دقیقه' : toFaDigits(Math.round(mins / 60)) + ' ساعت');
 

@@ -62,7 +62,9 @@ export function Legend() {
 // ── KPI tile — small, light ────────────────────────────────────────────────────
 export function Kpi({ icon: Icon, label, value, sub, status = 'real', awaitNote, tone }) {
   const real = isReal(status) || status === 'partial';
-  const valueColor = tone === 'warn' ? 'var(--g-color-state-warning-fg, #c0801c)' : (status === 'real' || status === 'partial' ? 'var(--g-color-text-primary)' : 'var(--g-color-text-muted)');
+  // 'partial' (a known-MINIMUM, e.g. cost from rated calls only) must NOT read as a complete real figure — render
+  // it muted + an ≈ prefix so it's visibly distinct at a glance (re-audit blocker).
+  const valueColor = tone === 'warn' ? 'var(--g-color-state-warning-fg, #c0801c)' : status === 'real' ? 'var(--g-color-text-primary)' : status === 'partial' ? 'var(--g-color-text-secondary)' : 'var(--g-color-text-muted)';
   return (
     <Box style={{ ...CARD, ...(real ? {} : { borderStyle: 'dashed' }) }}>
       <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -74,7 +76,7 @@ export function Kpi({ icon: Icon, label, value, sub, status = 'real', awaitNote,
       </Box>
       {real ? (
         <>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '21px', fontWeight: 600, color: valueColor, marginBlockStart: 7, lineHeight: 1.15, letterSpacing: '.2px' }}>{value}</Text>
+          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '21px', fontWeight: 600, color: valueColor, marginBlockStart: 7, lineHeight: 1.15, letterSpacing: '.2px' }}>{status === 'partial' ? '≈ ' : ''}{value}</Text>
           {sub ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: tone === 'warn' ? 'var(--g-color-state-warning-fg, #c0801c)' : 'var(--g-color-text-muted)', marginBlockStart: 3 }}>{sub}</Text> : null}
         </>
       ) : (

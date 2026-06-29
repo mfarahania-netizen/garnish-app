@@ -2,11 +2,11 @@
 // glance. Grayscale-calm (P0-5 baked in): a healthy tile is near-neutral; color (amber→red) is spent ONLY on a
 // deviation, so the first anomaly is the only thing that lights up. Every tile is REAL or an explicit "No-data"
 // state (a 4th state ≠ green) — never a fabricated zero dressed as healthy (the founder's #1 law).
-import { Box, Text } from '@mantine/core';
+import { Box, Text, Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { IconActivity, IconShieldHalf, IconSparkles, IconCoin, IconChartBar, IconDatabase, IconShieldCheck, IconBolt, IconClock } from '@tabler/icons-react';
 import apiClient from '../../lib/apiClient';
-import { grid, toFaDigits, faPercent } from './_ui';
+import { grid, toFaDigits, faPercent, ErrorState } from './_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 // color-as-signal: ok is near-neutral (just a quiet green dot), deviation lights amber→red, no-data is gray.
@@ -45,6 +45,11 @@ export default function PulseStrip() {
   const stats = useQuery({ queryKey: ['admin', 'pulse', 'stats'], queryFn: () => get('/admin/analytics/stats'), refetchInterval: 15000 });
   const alerts = useQuery({ queryKey: ['admin', 'attention', 'alerts'], queryFn: () => get('/admin/workflows/alerts?status=open&limit=50'), refetchInterval: 20000 });
 
+  // HONESTY (re-audit blocker): a dead backend must NOT blend into a calm pre-launch board. If the core feeds all
+  // error → say "error" (not silent '—' tiles that read as a quiet empty board); if all still loading → a spinner.
+  if (health.isError && safety.isError && aiobs.isError) return <ErrorState note="نبضِ سیستم از سرور خوانده نشد — وضعیت نامعلوم است؛ این «خطا» است، نه بوردِ خالیِ پیش‌از‌لانچ." onRetry={() => { health.refetch(); safety.refetch(); aiobs.refetch(); stats.refetch(); alerts.refetch(); }} />;
+  if (health.isLoading && safety.isLoading && aiobs.isLoading && !health.data && !safety.data) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 28 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
+
   const h = health.data || {}, s = safety.data || {}, o = aiobs.data || {}, st = stats.data || {}, al = alerts.data || {};
   const T = o.totals || {};
   const openAlerts = al.alerts || [];
@@ -59,10 +64,11 @@ export default function PulseStrip() {
   const p95 = T.latencyMsP95 ?? h.aiCalls?.latencyMsP95 ?? null;
   const fallback = T.fallbackRate ?? 0;
   const errCount = Object.values(o.byErrorCode || {}).reduce((n, x) => n + (x || 0), 0);
-  const sysState = (health.isError && safety.isError) ? 'nodata' : criticals > 0 || (allergy && allergy.leaks > 0) ? 'down' : warnings > 0 ? 'degraded' : 'ok';
+  const feedErr = health.isError || safety.isError || aiobs.isError;
+  const sysState = criticals > 0 || (allergy && allergy.leaks > 0) ? 'down' : feedErr ? 'degraded' : warnings > 0 ? 'degraded' : 'ok';
 
   const tiles = [
-    { icon: IconActivity, label: 'وضعیتِ سیستم', state: sysState, value: STATE[sysState].word, sub: criticals ? `${toFaDigits(criticals)} بحرانی` : warnings ? `${toFaDigits(warnings)} هشدار` : 'بدونِ هشدار' },
+    { icon: IconActivity, label: 'وضعیتِ سیستم', state: sysState, value: STATE[sysState].word, sub: feedErr ? 'برخی فیدها پاسخ ندادند' : criticals ? `${toFaDigits(criticals)} بحرانی` : warnings ? `${toFaDigits(warnings)} هشدار` : 'بدونِ هشدار' },
     { icon: IconShieldHalf, label: 'نشتِ آلرژی', state: !allergy ? 'nodata' : allergy.leaks > 0 ? 'down' : 'ok', value: allergy ? toFaDigits(allergy.leaks ?? 0) : '—', sub: allergy ? (allergy.pass ? 'گاردِ سخت می‌گذراند' : 'بررسی') : 'در حالِ ارزیابی' },
     { icon: IconSparkles, label: 'سلامتِ چتِ AI', state: !aiReal ? 'nodata' : (fallback > 0.7 || errCount > 0) ? 'degraded' : 'ok', value: aiReal ? faPercent(fallback * 100) : '—', sub: aiReal ? `نرخِ fallback · ${toFaDigits(errCount)} خطا` : 'در انتظارِ فراخوان' },
     { icon: IconCoin, label: 'هزینهٔ AI امروز', state: T.totalCostUsd != null ? 'ok' : 'nodata', value: T.totalCostUsd != null ? '$' + toFaDigits(Math.round((T.totalCostUsd || 0) * 1e4) / 1e4) : '—', sub: T.totalCostUsd != null ? 'حداقلِ نرخ‌دار' : 'نرخِ تأییدشده نیست' },
