@@ -94,11 +94,33 @@ function RouteTracker() {
   const { trackEvent } = useAnalytics();
   const lastRef = useRef(null);
   useEffect(() => {
-    if (location.pathname.startsWith('/admin')) return;
-    if (lastRef.current === location.pathname) return; // guard StrictMode double-invoke + redundant re-renders
-    lastRef.current = location.pathname;
-    trackEvent('page_view', { page: location.pathname });
+    const path = location.pathname;
+    if (path.startsWith('/admin')) return;
+    if (lastRef.current === path) return; // StrictMode / dup-render guard within this mount
+    lastRef.current = path;
+    let prevPage = null, enterTs = 0;
+    try { prevPage = sessionStorage.getItem('g_prevPage') || null; enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0; } catch { /* private mode */ }
+    // TIME-ON-PAGE: how long the page we're leaving stayed open (sane 0.5s…30m window).
+    if (prevPage && enterTs) {
+      const ms = Date.now() - enterTs;
+      if (ms > 500 && ms < 1_800_000) trackEvent('page_dwell', { page: prevPage, ms });
+    }
+    // PAGE→PAGE FLOW: where this view came from. sessionStorage-backed so it survives a refresh within the session.
+    trackEvent('page_view', { page: path, from: prevPage });
+    try { sessionStorage.setItem('g_prevPage', path); sessionStorage.setItem('g_enterTs', String(Date.now())); } catch { /* */ }
   }, [location.pathname, trackEvent]);
+  // Flush the current page's dwell when the tab is hidden/closed (else the last page per visit is lost).
+  useEffect(() => {
+    const flush = () => {
+      if (document.visibilityState !== 'hidden') return;
+      try {
+        const prevPage = sessionStorage.getItem('g_prevPage'); const enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0;
+        if (prevPage && enterTs) { const ms = Date.now() - enterTs; if (ms > 500 && ms < 1_800_000) { trackEvent('page_dwell', { page: prevPage, ms }); sessionStorage.setItem('g_enterTs', String(Date.now())); } }
+      } catch { /* */ }
+    };
+    document.addEventListener('visibilitychange', flush);
+    return () => document.removeEventListener('visibilitychange', flush);
+  }, [trackEvent]);
   return null;
 }
 
