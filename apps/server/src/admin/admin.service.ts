@@ -452,10 +452,12 @@ export class AdminService {
       where: { type: 'page_view' },
       select: { page: true, timestamp: true },
     });
+    // Collapse dynamic detail routes so "top pages" buckets by SCREEN, not by every recipe id (/recipe/abc → /recipe).
+    const norm = (pg: string) => (pg || '/').replace(/^\/(recipe|cook)\/.+$/, '/$1');
     const pageCount = new Map<string, number>();
     const dailyCount = new Map<string, number>();
     for (const e of events) {
-      const page = e.page || '/';
+      const page = norm(e.page || '/');
       pageCount.set(page, (pageCount.get(page) || 0) + 1);
       const day = e.timestamp.toISOString().slice(0, 10);
       dailyCount.set(day, (dailyCount.get(day) || 0) + 1);

@@ -7,6 +7,13 @@ import apiClient from '../../../lib/apiClient';
 import { Section, Kpi, HBar, Panel, Note, Awaiting, TrendChart, grid, toFaDigits, fmtInt, fmtPct01 } from '../_ui';
 
 const get = (url, params) => apiClient.get(url, params ? { params } : undefined).then((r) => r.data);
+// Persian labels for the app's routes — so "top pages" reads «خانه/کشف/برنامه» not «/discover».
+const PAGE_FA = {
+  '/': 'خانه', '/discover': 'کشف', '/recipes': 'رسپی‌ها', '/recipe': 'صفحهٔ رسپی', '/plan': 'برنامهٔ غذایی',
+  '/shopping-list': 'لیست خرید', '/favorites': 'علاقه‌مندی‌ها', '/assistant': 'دستیار', '/profile': 'پروفایل',
+  '/food-dna': 'شناسهٔ ذائقه', '/cook': 'حالت پخت', '/settings': 'تنظیمات', '/notifications': 'اعلان‌ها',
+  '/achievements': 'دستاوردها', '/support': 'پشتیبانی', '/onboarding': 'ورود اولیه', '/login': 'ورود',
+};
 
 export default function EngagementTab({ days = 30 }) {
   const trends = useQuery({ queryKey: ['admin', 'trends', days], queryFn: () => get('/admin/analytics/trends', { bucket: 'day', days }) });
@@ -86,7 +93,7 @@ export default function EngagementTab({ days = 30 }) {
       <Section title="پربازدیدترین صفحه‌ها" sub="بر اساس رویدادهای page_view" />
       <Panel status={topPages.length ? 'real' : 'awaiting_pilot'}>
         {topPages.length ? topPages.slice(0, 8).map((p) => (
-          <HBar key={p.page} label={p.page || '/'} value={p.views} max={topPages[0]?.views || 1} display={toFaDigits(p.views)} />
+          <HBar key={p.page} label={PAGE_FA[p.page] || p.page || '/'} value={p.views} max={topPages[0]?.views || 1} display={toFaDigits(p.views)} />
         )) : <Awaiting note="بازدیدی ثبت نشده." />}
       </Panel>
     </>

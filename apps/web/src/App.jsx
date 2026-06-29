@@ -1,5 +1,5 @@
-import { Component } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Component, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { DirectionProvider, MantineProvider, createTheme } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@mantine/core/styles.css';
@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext';
 import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
 import RequireAuth from './shell/RequireAuth';
+import { useAnalytics } from './hooks/useAnalytics';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
 import CookPage from './app/cook/[id]/page';
@@ -85,6 +86,22 @@ class ErrorBoundary extends Component {
   }
 }
 
+// Fire a page_view on EVERY route change with the REAL path, so the admin "top pages" reflects actual
+// navigation. The rebuilt app had dropped page-view tracking entirely (only 18-day-old legacy /home events
+// remained → the panel showed just "/"). Admin routes are skipped so operator views don't pollute user analytics.
+function RouteTracker() {
+  const location = useLocation();
+  const { trackEvent } = useAnalytics();
+  const lastRef = useRef(null);
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin')) return;
+    if (lastRef.current === location.pathname) return; // guard StrictMode double-invoke + redundant re-renders
+    lastRef.current = location.pathname;
+    trackEvent('page_view', { page: location.pathname });
+  }, [location.pathname, trackEvent]);
+  return null;
+}
+
 export default function App() {
   // ErrorBoundary is outermost so it also catches a synchronous throw from any
   // provider; its fallback uses only CSS-var tokens (loaded independently of the
@@ -97,6 +114,7 @@ export default function App() {
             <AuthProvider>
               <RecipeProvider>
                 <BrowserRouter>
+                  <RouteTracker />
                   <AppRoutes />
                 </BrowserRouter>
               </RecipeProvider>
