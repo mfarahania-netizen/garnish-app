@@ -77,11 +77,13 @@ export class WorkflowService implements OnModuleInit {
     };
   }
 
-  /** The Command feed: alerts, default to open ones, newest first. */
+  /** The Command feed: alerts, default to open ones, newest first. A snoozed alert whose timer has expired
+   *  re-surfaces into the 'open' queue automatically (no cron needed). */
   async getAlerts(status = 'open', limit = 50) {
-    const where = status && status !== 'all' ? { status } : {};
+    const openWhere = { OR: [{ status: 'open' }, { status: 'snoozed', snoozedUntil: { lte: new Date() } }] };
+    const where: any = status === 'open' ? openWhere : status && status !== 'all' ? { status } : {};
     const alerts = await this.prisma.workflowAlert.findMany({ where, orderBy: { createdAt: 'desc' }, take: Math.min(limit, 200) });
-    const openCount = await this.prisma.workflowAlert.count({ where: { status: 'open' } });
+    const openCount = await this.prisma.workflowAlert.count({ where: openWhere });
     return { alerts, openCount };
   }
 
@@ -106,6 +108,28 @@ export class WorkflowService implements OnModuleInit {
     try {
       const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'acknowledged', acknowledgedBy: by ?? null } });
       return { id: updated.id, status: updated.status };
+    } catch {
+      return { error: 'unknown alert' };
+    }
+  }
+
+  /** Resolve an alert — operator closed it out (drops out of the open queue, stamped resolvedAt). */
+  async resolveAlert(id: string, by?: string) {
+    try {
+      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'resolved', resolvedAt: new Date(), acknowledgedBy: by ?? undefined } });
+      return { id: updated.id, status: updated.status };
+    } catch {
+      return { error: 'unknown alert' };
+    }
+  }
+
+  /** Snooze an alert N minutes (5m…24h) — it auto-re-surfaces to 'open' once snoozedUntil passes. */
+  async snoozeAlert(id: string, minutes = 60, by?: string) {
+    const m = Math.min(Math.max(5, Math.round(Number(minutes) || 60)), 1440);
+    try {
+      const snoozedUntil = new Date(Date.now() + m * 60000);
+      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'snoozed', snoozedUntil, acknowledgedBy: by ?? undefined } });
+      return { id: updated.id, status: updated.status, snoozedUntil };
     } catch {
       return { error: 'unknown alert' };
     }

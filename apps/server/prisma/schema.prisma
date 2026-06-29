@@ -1190,6 +1190,8 @@ model WorkflowAlert {
   threshold      Float?
   status         String   @default("open") // open | acknowledged | snoozed | resolved
   acknowledgedBy String?
+  snoozedUntil   DateTime? // snooze re-surfaces the alert to the open queue once this passes (no cron needed)
+  resolvedAt     DateTime?
   channelsSent   Json? // ['in_app'] now → ['slack','email'] later
   createdAt      DateTime @default(now())
 

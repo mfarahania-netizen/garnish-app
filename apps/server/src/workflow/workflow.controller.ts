@@ -39,4 +39,14 @@ export class WorkflowController {
   ack(@Req() req: any, @Param('id') id: string) {
     return this.workflows.ackAlert(id, req?.user?.userId);
   }
+
+  @Post('alerts/:id/resolve')
+  resolve(@Req() req: any, @Param('id') id: string) {
+    return this.workflows.resolveAlert(id, req?.user?.userId);
+  }
+
+  @Post('alerts/:id/snooze')
+  snooze(@Req() req: any, @Param('id') id: string, @Query('minutes') minutes?: string) {
+    return this.workflows.snoozeAlert(id, parseInt(minutes || '', 10) || 60, req?.user?.userId);
+  }
 }
