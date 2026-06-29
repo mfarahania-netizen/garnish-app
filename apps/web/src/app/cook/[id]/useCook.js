@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
@@ -62,6 +62,18 @@ export function useCook(id) {
   const [finished, setFinished] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [help, setHelp] = useState({ loading: false, text: null, error: false });
+
+  // Fire the canonical `start_cooking_click` the moment a cook session genuinely begins (recipe loaded + authed),
+  // once per mount. Without it the cook funnel read view→0→complete (completes with no starts) — a fake cliff; the
+  // event is already in the taxonomy, only the FE emitter was missing. Authed-gated to match cook_complete so the
+  // start→complete rate is a clean same-population measure.
+  const startedRef = useRef(false);
+  useEffect(() => {
+    if (!startedRef.current && token && detail.recipe?.id) {
+      startedRef.current = true;
+      trackEvent('start_cooking_click', { recipeId: id });
+    }
+  }, [token, detail.recipe?.id, trackEvent, id]);
 
   // Build the cook step list: prefer GRIS (rich, structured), else the flat text steps. Both reflect the
   // session swaps/removes via patchStepText so Cook Mode matches the personalized recipe page (C9/M4).

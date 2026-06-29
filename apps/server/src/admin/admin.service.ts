@@ -272,9 +272,12 @@ export class AdminService {
 
 
   async getMealPlanningStats() {
-    const [addEvents, generateCount] = await Promise.all([
+    // `mealplan_generate` was never emitted — meal-plan v2 fills slots one at a time, there is no "generate a
+    // plan" action — so the old generateCount was a permanently-dead 0 dressed as a metric. Report REAL planning
+    // activity instead: total slots added (mealplan_add, which IS emitted) + distinct planners.
+    const [addEvents, distinctPlanners] = await Promise.all([
       this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { payload: true } }),
-      this.prisma.userEvent.count({ where: { type: 'mealplan_generate' } }),
+      this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { userId: true }, distinct: ['userId'] }).then((r) => r.length).catch(() => 0),
     ]);
 
     const recipeCounts = new Map<string, number>();
@@ -291,7 +294,7 @@ export class AdminService {
       const recipes = await this.prisma.recipe.findMany({ where: { id: { in: topIds } }, select: { id: true, title: true } });
       topRecipes = recipes.map(r => ({ id: r.id, title: r.title, count: recipeCounts.get(r.id) || 0 })).sort((a, b) => b.count - a.count);
     }
-    return { topRecipes, generateCount };
+    return { topRecipes, slotsAdded: addEvents.length, distinctPlanners };
   }
 
   async getAIInteractionStats() {

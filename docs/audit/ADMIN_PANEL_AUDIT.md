@@ -13,6 +13,12 @@ Source: `admin-panel-audit` workflow (24 line-by-line lens agents, FE+BE per tab
 ## ✅ PROGRESS — batch 3 (P0-2 done + verified)
 - **P0-2 Attention Queue COMPLETE.** BE (commit ac3e569c): WorkflowAlert resolve+snooze endpoints + snoozedUntil/resolvedAt columns + snooze auto-re-surfaces. FE: `app/admin/AttentionQueue.jsx` merges open workflow alerts (already covering safety/cost/reliability guards) + unanswered tickets into ONE severity-then-time list with inline Ack / Snooze-1h / Resolve + ticket deep-link; wired into OverviewTab (replaced the fragmented attention feed); calm honest empty state ("۰ پرچم", never padded). Verified: lifecycle smoke (snooze→excluded-from-open→resolve) + Vite build clean (8081 modules).
 
+## ✅ PROGRESS — batch 4 (GROUP-1 fake metrics — founder rule #1 — CLOSED)
+- **Cook funnel «شروع پخت»:** `start_cooking_click` emitter wired in useCook.js (once per cook session, authed-gated like cook_complete) — the funnel no longer reads view→0→complete (completes with no starts). The event was already in the taxonomy; only the FE emitter was missing. Fixes BOTH getFunnels AND getBehaviorInsights per-recipe funnel.
+- **«برنامه‌های ساخته‌شده»:** `mealplan_generate` (never emitted → permanent-0 fake) replaced with REAL planning activity — `slotsAdded` (mealplan_add, which IS emitted) + `distinctPlanners`. Verified live: slotsAdded **48** / distinctPlanners **1**; generateCount removed; ContentTab KPI relabeled «افزودن به برنامه».
+- Re-verified ALREADY honest (no change needed): onboarding funnel (emitted register/diet/skill, dead allergy_changed dropped) · content-gaps topQueries (shows the GDPR shape-only note, not a fake list) · live $ cost (now real $0.098 via the deepseek/gemini rate catalog, no longer structurally null) · ranked lists + user-dossier «رویداد» + کل-کاربران split (all fixed batch-1).
+- **All 8 GROUP-1 items resolved → GROUP-1 CLOSED.** Verified: FE build clean (8082) + server 0 errors + endpoint shape correct.
+
 ## 🎯 MISSION-CONTROL TARGET (blueprint workflow `wf_7a53a52e`, internet-grounded) — the "finish" plan
 Score vs the mission-control bar: **4/10** (the 6/10 audit was "good admin panel"; this is the higher "watch+operate from one panel" bar). Vision: ONE grayscale big-board where a healthy app shows almost no color and the first anomaly is the only thing that lights up — "all-OK, or here's what's wrong + what to do" in <5s, honest at ~0 users by construction.
 

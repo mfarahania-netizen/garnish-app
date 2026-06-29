@@ -28,7 +28,7 @@ export default function ContentTab() {
   return (
     <>
       <Box style={grid(184)}>
-        <Kpi icon={IconCalendarEvent} label="برنامه‌های ساخته‌شده" status={meal.data?.generateCount > 0 ? 'real' : 'awaiting_pilot'} value={fmtInt(meal.data?.generateCount)} sub="رویدادِ mealplan_generate" awaitNote="—" />
+        <Kpi icon={IconCalendarEvent} label="افزودن به برنامه" status={meal.data?.slotsAdded > 0 ? 'real' : 'awaiting_pilot'} value={fmtInt(meal.data?.slotsAdded)} sub={`${toFaDigits(meal.data?.distinctPlanners ?? 0)} برنامه‌ریزِ متمایز`} awaitNote="—" />
         <Kpi icon={IconShoppingCart} label="کل آیتمِ خرید" status={sh.totalItems > 0 ? 'real' : 'awaiting_pilot'} value={fmtInt(sh.totalItems)} sub={`${toFaDigits(sh.checkedItems ?? 0)} تیک‌خورده`} awaitNote="—" />
         <Kpi icon={IconShoppingCart} label="نرخِ تیک‌خوردن" status={checkRate != null ? 'real' : 'awaiting_pilot'} value={checkRate != null ? fmtPct01(checkRate) : '—'} sub="آیتم‌های خریده‌شده" awaitNote="—" />
         <Kpi icon={IconSearchOff} label="جستجوی بی‌نتیجه" status={g.totalUnmet > 0 ? 'real' : 'awaiting_pilot'} value={fmtInt(g.totalUnmet)} sub={`${toFaDigits(g.distinctQueries ?? 0)} عبارتِ متمایز`} awaitNote="—" />
