@@ -2,8 +2,8 @@
 // Shared admin UI primitives — minimal, light, RTL, Vazirmatn. Every data tile renders EITHER a real value
 // OR an honest awaiting/post-launch state (status from the backend's self-labelling) — never a fake number.
 // Typography is deliberately small/light (founder: minimal). Charts use recharts. Catalog: docs/audit/ADMIN_DASHBOARD_CATALOG.md.
-import { Box, Text } from '@mantine/core';
-import { IconClock, IconLock } from '@tabler/icons-react';
+import { Box, Text, UnstyledButton } from '@mantine/core';
+import { IconClock, IconLock, IconAlertTriangle, IconRefresh } from '@tabler/icons-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { toFaDigits, faPercent } from '../../components/ges/format';
 
@@ -138,6 +138,19 @@ export function Awaiting({ note, icon: Icon = IconClock }) {
       <Box aria-hidden="true" style={{ inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-muted)', marginBlockEnd: 2 }}><Icon size={18} stroke={1.6} /></Box>
       <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, color: 'var(--g-color-text-secondary)' }}>در انتظار داده</Text>
       <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)', maxInlineSize: 320 }}>{note || 'این متریک با ورود کاربران واقعی فعال می‌شود.'}</Text>
+    </Box>
+  );
+}
+
+// ── honest ERROR state — a FOURTH state, distinct from Awaiting (no-data) and OK. A failed fetch must read
+// "error", never fake-green. This is load-bearing for a control tower: a dead backend can't say "all healthy".
+export function ErrorState({ note, onRetry }) {
+  return (
+    <Box style={{ textAlign: 'center', paddingBlock: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+      <Box aria-hidden="true" style={{ inlineSize: 36, blockSize: 36, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-state-danger-bg, #fdeceb)', color: 'var(--g-color-state-danger-fg, #b3261e)', marginBlockEnd: 2 }}><IconAlertTriangle size={18} stroke={1.7} /></Box>
+      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, color: 'var(--g-color-state-danger-fg, #b3261e)' }}>بارگذاری نشد</Text>
+      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)', maxInlineSize: 340 }}>{note || 'این بخش از سرور پاسخ نگرفت — این «خطا» است، نه «بدونِ داده».'}</Text>
+      {onRetry ? <UnstyledButton type="button" onClick={onRetry} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, minBlockSize: 36, paddingInline: 14, marginBlockStart: 6, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: 600 }}><IconRefresh size={14} stroke={1.8} />تلاش دوباره</UnstyledButton> : null}
     </Box>
   );
 }

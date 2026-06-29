@@ -8,7 +8,7 @@ import {
   IconSparkles, IconStack2, IconRouteAltLeft, IconWallet,
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
-import { Section, Kpi, HBar, Panel, Note, Awaiting, Table, Donut, Legend, grid, fmtInt, fmtCompact, fmtUsd, fmtSec, fmtPct01, toFaDigits } from '../_ui';
+import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, Table, Donut, Legend, grid, fmtInt, fmtCompact, fmtUsd, fmtSec, fmtPct01, toFaDigits } from '../_ui';
 
 const q = (key, url) => ({ queryKey: ['admin', key], queryFn: () => apiClient.get(url).then((r) => r.data) });
 const modelName = (k) => (k === 'unknown' ? 'نامشخص (ثبت‌نشده)' : k);
@@ -19,6 +19,7 @@ export default function AiCostTab() {
   const ai = useQuery(q('ai-interaction', '/admin/analytics/ai-interaction'));
 
   if (obs.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
+  if (obs.isError) return <Box style={{ paddingBlock: 60 }}><ErrorState note="رصدِ هوش مصنوعی از سرور خوانده نشد — این «خطا» است، نه «در انتظار»." onRetry={() => obs.refetch()} /></Box>;
 
   const o = obs.data || {};
   const T = o.totals || {};

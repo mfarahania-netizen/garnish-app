@@ -31,3 +31,7 @@ design-reference/
 
 # Founder design handoff bundle (read-only visual target — never imported/bundled)
 home-screen-design-exploration/
+
+# graphify (codebase knowledge-graph dev tool) — generated artifacts, never commit
+graphify-out/
+.graphify/

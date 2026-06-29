@@ -9,7 +9,7 @@ import {
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import { useOverviewData } from '../useAdmin';
-import { Section, Kpi, HBar, Panel, Note, Awaiting, grid, CARD, toFaDigits, faPercent } from '../_ui';
+import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits, faPercent } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 const SEV = {
@@ -26,7 +26,7 @@ const recsysRows = (offline) => Object.entries(offline || {}).filter(([, m]) => 
 const st = (real) => (real ? 'real' : 'awaiting_pilot');
 
 export default function OverviewTab({ days = 30 }) {
-  const { d, loading } = useOverviewData(days);
+  const { d, loading, error } = useOverviewData(days);
   // Pulse: what needs ATTENTION first — the background guards' open alerts + the top things to improve.
   const alertsQ = useQuery({ queryKey: ['admin', 'workflow-alerts'], queryFn: () => get('/admin/workflows/alerts?status=open&limit=10'), refetchInterval: 20000 });
   const behaviorQ = useQuery({ queryKey: ['admin', 'behavior'], queryFn: () => get('/admin/insights/behavior'), refetchInterval: 30000 });
@@ -34,12 +34,18 @@ export default function OverviewTab({ days = 30 }) {
   const improve = (behaviorQ.data?.improve || []).slice(0, 4);
 
   if (loading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 'var(--g-space-8)' }}><Loader color="var(--g-color-brand-600)" /></Box>;
+  // HONESTY (P0-3): the core ops feeds failed → say so. A dead backend must NEVER render as the green "all healthy" board.
+  if (error) return <Box style={{ paddingBlock: 'var(--g-space-6)' }}><ErrorState note="بخشِ اصلیِ عملیات (سلامت + ایمنی) از سرور پاسخ نداد — اعدادِ این صفحه قابلِ اعتماد نیست." onRetry={() => window.location.reload()} /></Box>;
 
   return (
     <>
       {/* ── PULSE: needs-attention first (alerts) + what to improve ── */}
       <Section title="وضعیتِ امروز" sub="در ۳۰ ثانیه: چیزی خراب است؟ چه کنم؟">
-        {attention.length === 0 ? (
+        {alertsQ.isError ? (
+          <Box style={{ ...CARD, border: 'none' }}><ErrorState note="هشدارها از سرور خوانده نشد — وضعیتِ واقعی نامعلوم است؛ «سالم» نشان نمی‌دهیم تا اشتباه نشود." onRetry={() => alertsQ.refetch()} /></Box>
+        ) : alertsQ.isLoading ? (
+          <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 10, border: 'none' }}><Loader size="sm" color="var(--g-color-brand-600)" /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-muted)' }}>در حالِ بررسیِ هشدارها…</Text></Box>
+        ) : attention.length === 0 ? (
           <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 10, background: 'var(--g-color-state-success-bg, #e9f6ee)', border: 'none' }}>
             <IconCircleCheck size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg, #2e7d4f)', flexShrink: 0 }} />
             <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, color: 'var(--g-color-state-success-fg, #2e7d4f)' }}>همه‌چیز سالم است — هیچ هشدارِ بحرانی‌ای نیست.</Text>

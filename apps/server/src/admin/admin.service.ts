@@ -289,7 +289,7 @@ export class AdminService {
     let topRecipes: any[] = [];
     if (topIds.length > 0) {
       const recipes = await this.prisma.recipe.findMany({ where: { id: { in: topIds } }, select: { id: true, title: true } });
-      topRecipes = recipes.map(r => ({ id: r.id, title: r.title, count: recipeCounts.get(r.id) || 0 }));
+      topRecipes = recipes.map(r => ({ id: r.id, title: r.title, count: recipeCounts.get(r.id) || 0 })).sort((a, b) => b.count - a.count);
     }
     return { topRecipes, generateCount };
   }
@@ -328,14 +328,17 @@ export class AdminService {
     const weekAgo = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
     const monthAgo = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const [totalUsers, todayUsers, weekUsers, monthUsers] = await Promise.all([
+    const [totalUsers, registeredUsers, guestUsers, todayUsers, weekUsers, monthUsers] = await Promise.all([
       this.prisma.user.count(),
+      this.prisma.user.count({ where: { isGuest: false } }),
+      this.prisma.user.count({ where: { isGuest: true } }),
       this.prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
       this.prisma.user.count({ where: { createdAt: { gte: weekAgo } } }),
       this.prisma.user.count({ where: { createdAt: { gte: monthAgo } } }),
     ]);
 
-    return { totalUsers, todayUsers, weekUsers, monthUsers };
+    // registeredUsers excludes anonymous guest visitors — the honest "real users" headline (most rows are guests today).
+    return { totalUsers, registeredUsers, guestUsers, todayUsers, weekUsers, monthUsers };
   }
 
   async getRecipeStats() {
@@ -360,7 +363,8 @@ export class AdminService {
         where: { id: { in: topViewedIds } },
         select: { id: true, title: true },
       });
-      topViewed = recipes.map(r => ({ id: r.id, title: r.title, views: viewCountMap.get(r.id) || 0 }));
+      // findMany does NOT preserve the `in` order → re-sort by the real count so the "top" list is actually ranked.
+      topViewed = recipes.map(r => ({ id: r.id, title: r.title, views: viewCountMap.get(r.id) || 0 })).sort((a, b) => b.views - a.views);
     }
 
     const favCounts = await this.prisma.favoriteRecipe.groupBy({
@@ -376,11 +380,13 @@ export class AdminService {
         where: { id: { in: favIds } },
         select: { id: true, title: true },
       });
-      topFavorited = recipes.map(r => ({
-        id: r.id,
-        title: r.title,
-        favorites: favCounts.find(f => f.recipeId === r.id)?._count?.recipeId || 0,
-      }));
+      topFavorited = recipes
+        .map(r => ({
+          id: r.id,
+          title: r.title,
+          favorites: favCounts.find(f => f.recipeId === r.id)?._count?.recipeId || 0,
+        }))
+        .sort((a, b) => b.favorites - a.favorites); // re-sort: findMany discards the groupBy order
     }
 
     return { topViewed, topFavorited };

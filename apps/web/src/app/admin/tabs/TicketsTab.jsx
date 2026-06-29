@@ -1,7 +1,7 @@
 // «تیکت‌ها» — admin support inbox (own tab, pulled out of ModerationTab). Metrics + filterable queue + a full
 // dossier drawer: conversation thread, staff reply (fires the user notification), triage (status/priority/category/
 // assignee/tags), and internal admin-only notes. Backed by the verified /admin/tickets* endpoints.
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Text, Loader, UnstyledButton, Drawer, Textarea, Select } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -9,7 +9,7 @@ import {
   IconSend, IconNote, IconUserCheck, IconHeadset, IconUserCircle, IconAlertTriangle,
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
-import { Section, Kpi, Panel, Awaiting, grid, toFaDigits, fmtInt } from '../_ui';
+import { Section, Kpi, Panel, Awaiting, ErrorState, grid, toFaDigits, fmtInt } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 const STATUS = {
@@ -57,9 +57,12 @@ function Chip({ on, children, onClick }) {
 }
 
 export default function TicketsTab() {
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [selectedId, setSelectedId] = useState(null);
+  // debounce: don't fire a backend query on every keystroke (matches UsersTab).
+  useEffect(() => { const t = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(t); }, [searchInput]);
 
   const metrics = useQuery({ queryKey: ['admin', 'tickets', 'metrics'], queryFn: () => get('/admin/tickets/metrics') });
   const fq = FILTERS.find((f) => f.id === filter)?.q || {};
@@ -82,7 +85,7 @@ export default function TicketsTab() {
       <Box style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBlockEnd: 11 }}>
         <Box style={{ position: 'relative', flex: 1, minInlineSize: 200 }}>
           <IconSearch size={15} stroke={1.8} style={{ position: 'absolute', insetInlineStart: 11, insetBlockStart: '50%', transform: 'translateY(-50%)', color: 'var(--g-color-text-muted)' }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جستجو در موضوع، متن یا نامِ کاربر…" style={{ inlineSize: '100%', minBlockSize: 38, paddingInline: '34px 12px', borderRadius: '10px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }} />
+          <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="جستجو در موضوع، متن یا نامِ کاربر…" style={{ inlineSize: '100%', minBlockSize: 38, paddingInline: '34px 12px', borderRadius: '10px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }} />
         </Box>
         <Box style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
           {FILTERS.map((f) => <Chip key={f.id} on={filter === f.id} onClick={() => setFilter(f.id)}>{f.label}</Chip>)}
@@ -92,6 +95,8 @@ export default function TicketsTab() {
       <Panel>
         {list.isLoading ? (
           <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 30 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>
+        ) : list.isError ? (
+          <ErrorState note="فهرستِ تیکت‌ها از سرور خوانده نشد." onRetry={() => list.refetch()} />
         ) : rows.length ? (
           <Box style={{ overflowX: 'auto' }}>
             <Box component="table" style={{ inlineSize: '100%', borderCollapse: 'collapse' }}>

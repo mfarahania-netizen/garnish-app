@@ -9,7 +9,7 @@ import {
   IconLogout, IconTrash, IconKey, IconDownload, IconDeviceMobile, IconX, IconAlertTriangle, IconUserStar,
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
-import { Section, Kpi, Panel, Note, Awaiting, grid, toFaDigits, fmtInt } from '../_ui';
+import { Section, Kpi, Panel, Note, Awaiting, ErrorState, grid, toFaDigits, fmtInt } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 const day = (d) => (d ? toFaDigits(String(d).slice(0, 10)) : '—');
@@ -141,6 +141,8 @@ export default function UsersTab() {
       <Panel>
         {list.isLoading ? (
           <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 30 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>
+        ) : list.isError ? (
+          <ErrorState note="فهرستِ کاربران از سرور خوانده نشد." onRetry={() => list.refetch()} />
         ) : rows.length ? (
           <Box style={{ overflowX: 'auto' }}>
             <Box component="table" style={{ inlineSize: '100%', borderCollapse: 'collapse', fontFamily: 'var(--g-font-fa)' }}>
@@ -196,7 +198,7 @@ export default function UsersTab() {
               {u.isBanned ? <Note tone="warn" icon={IconAlertTriangle}>مسدود از {day(u.bannedAt)}{u.banReason ? ` — «${u.banReason}»` : ''}</Note> : null}
 
               <Box style={grid(120)}>
-                {[['پخت‌ها', u._count?.events], ['تیکت', u._count?.tickets], ['علاقه‌مندی', u._count?.favorites], ['برنامه', u._count?.mealPlans], ['نشست', u._count?.sessions], ['رسپی', u._count?.recipes]].map(([l, v]) => (
+                {[['رویداد', u._count?.events], ['تیکت', u._count?.tickets], ['علاقه‌مندی', u._count?.favorites], ['برنامه', u._count?.mealPlans], ['نشست', u._count?.sessions], ['رسپی', u._count?.recipes]].map(([l, v]) => (
                   <Box key={l} style={{ background: 'var(--g-color-bg-canvas)', border: '1px solid var(--g-color-border-subtle)', borderRadius: '10px', padding: '8px 10px' }}>
                     <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '16px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{fmtInt(v ?? 0)}</Text>
                     <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)' }}>{l}</Text>

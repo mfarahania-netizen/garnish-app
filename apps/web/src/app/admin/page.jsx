@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   IconLeaf, IconLock, IconShieldLock, IconRefresh, IconDownload, IconHome,
   IconLayoutDashboard, IconSparkles, IconChartBar, IconActivity, IconToolsKitchen2,
-  IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket,
+  IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket, IconRobot,
 } from '@tabler/icons-react';
 import { useAuth } from '../../context/AuthContext';
 import { PostLaunch } from './_ui';
@@ -23,6 +23,7 @@ import RealtimeTab from './tabs/RealtimeTab';
 import BehaviorTab from './tabs/BehaviorTab';
 import UsersTab from './tabs/UsersTab';
 import TicketsTab from './tabs/TicketsTab';
+import AutomationTab from './tabs/AutomationTab';
 import AuthForm from '../../components/auth/AuthForm';
 
 const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }, { id: 30, label: '۳۰ روز' }];
@@ -38,13 +39,14 @@ const TABS = {
   realtime: { label: 'زنده', Icon: IconBolt, C: RealtimeTab },
   users: { label: 'کاربران', Icon: IconUsersGroup, C: UsersTab },
   tickets: { label: 'تیکت‌ها', Icon: IconTicket, C: TicketsTab },
+  automation: { label: 'ورک‌فلو', Icon: IconRobot, C: AutomationTab },
   revenue: { label: 'درآمد', Icon: IconCoin, C: () => <PostLaunch note="MRR/churn/LTV و اعتبارِ هوش مصنوعی — با اتصالِ درگاهِ پرداخت خودکار فعال می‌شود (§۱۱/§۱۲)" /> },
 };
 
 const GROUPS = [
   { label: 'تحلیل', ids: ['overview', 'behavior', 'engagement', 'retention', 'content'] },
   { label: 'هوش مصنوعی', ids: ['ai'] },
-  { label: 'عملیات', ids: ['users', 'tickets', 'safety', 'realtime', 'revenue'] },
+  { label: 'عملیات', ids: ['users', 'tickets', 'automation', 'safety', 'realtime', 'revenue'] },
 ];
 
 function useNarrow() {

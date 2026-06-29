@@ -5,7 +5,7 @@ import { Box, Text } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { IconSearch, IconSparkles, IconBulb, IconToolsKitchen2, IconFlame, IconMessage } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
-import { CARD, grid, Kpi, Panel, Section, Table, HBar, Note, Awaiting, fmtInt, fmtPct01, faPercent, toFaDigits } from '../_ui';
+import { CARD, grid, Kpi, Panel, Section, Table, HBar, Note, Awaiting, ErrorState, fmtInt, fmtPct01, faPercent, toFaDigits } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 
@@ -27,6 +27,7 @@ export default function BehaviorTab() {
   const q = useQuery({ queryKey: ['admin', 'behavior'], queryFn: () => get('/admin/insights/behavior'), refetchInterval: 30000 });
   const d = q.data;
   if (q.isLoading && !d) return <Box style={CARD}><Awaiting note="در حال خواندن رفتار کاربران…" /></Box>;
+  if (q.isError && !d) return <Box style={CARD}><ErrorState note="رفتار کاربران از سرور خوانده نشد — این «خطا» است، نه «بدونِ داده»." onRetry={() => q.refetch()} /></Box>;
   if (!d) return <Box style={CARD}><Awaiting note="داده‌ای نیست." /></Box>;
 
   const { recipes, search, ai, improve = [], funnel, usage } = d;
