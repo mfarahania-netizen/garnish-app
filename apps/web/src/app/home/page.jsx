@@ -14,6 +14,7 @@ import { useFavoritesQuery } from '../../hooks/useFavoritesQuery';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useImpressionObserver } from '../../hooks/useImpressionObserver';
 import { useDismissRecommendation } from '../../hooks/useDismissRecommendation';
+import { rememberRecommendation, recallRecommendation } from '../../lib/recommendationAttribution';
 import { toFaDigits } from '../../components/ges/format';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import AIWhisper from '../../components/ges/AIWhisper';
@@ -209,11 +210,23 @@ export default function HomePage() {
     toastTimer.current = setTimeout(() => setToast(null), 2200);
   }, []);
 
-  const openRecipe = useCallback((id) => { if (id) navigate(`/recipe/${id}`); }, [navigate]);
+  // Open a recipe. When it came from a recommendation slate (requestId present), fire the explicit
+  // `recommendation_click` reward AND remember recipeId→requestId so a later save/cook on another screen
+  // stays attributable to this exact slate (exposure↔reward join). Generic opens (rails without a
+  // requestId, the whisper) navigate untouched.
+  const openRecipe = useCallback((id, requestId) => {
+    if (!id) return;
+    if (requestId) {
+      trackEvent('recommendation_click', { recipeId: id, requestId });
+      rememberRecommendation(id, requestId);
+    }
+    navigate(`/recipe/${id}`);
+  }, [navigate, trackEvent]);
   const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
   // real favorites write: confirmation toast ONLY on a successful call; revert is automatic (server truth);
-  // fire the explicit `favorite_add` signal once per successful add.
-  const toggleSave = useCallback((id) => {
+  // fire the explicit `favorite_add` signal once per successful add — plus `recommendation_save` (with the
+  // slate requestId, inline or recalled) when the saved recipe came from a recommendation.
+  const toggleSave = useCallback((id, requestId) => {
     if (!id) return;
     if (isFavorite(id)) {
       removeFavorite(id, {
@@ -222,7 +235,12 @@ export default function HomePage() {
       });
     } else {
       addFavorite(id, {
-        onSuccess: () => { showToast('به ذخیره‌ها اضافه شد', IconBookmark); trackEvent('favorite_add', { recipeId: id }); },
+        onSuccess: () => {
+          showToast('به ذخیره‌ها اضافه شد', IconBookmark);
+          trackEvent('favorite_add', { recipeId: id });
+          const rid = requestId || recallRecommendation(id);
+          if (rid) trackEvent('recommendation_save', { recipeId: id, requestId: rid });
+        },
         onError: () => showToast('ذخیره نشد، دوباره تلاش کن', IconBookmark),
       });
     }
@@ -273,7 +291,7 @@ export default function HomePage() {
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
                 {picks.filter((p) => !dismissed.has(p.recipeId)).map((p, i) => (
                   <Box key={p.recipeId} ref={observe(p.recipeId, p.requestId)} component={motion.div} variants={settle} initial="initial" animate="animate" transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1], delay: 0.05 + i * 0.05 }}>
-                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId)} onOpen={() => openRecipe(p.recipeId)} onDismiss={() => dismiss(p.recipeId)} />
+                    <RecipeCard title={p.title} placeholderSeed={p.seed} fit={p.fit} cookTimeText={p.cookTimeText} difficultyText={p.difficultyText} servingsText={p.servingsText} reasons={p.reasons} reasonText={p.reasonText} saved={isFavorite(p.recipeId)} onSave={() => toggleSave(p.recipeId, p.requestId)} onOpen={() => openRecipe(p.recipeId, p.requestId)} onDismiss={() => dismiss(p.recipeId)} />
                   </Box>
                 ))}
               </Box>

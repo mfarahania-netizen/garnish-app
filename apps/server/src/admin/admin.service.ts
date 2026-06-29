@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytics-intelligence.service';
 import { OpsIntelligenceService } from '../analytics/intelligence/ops-intelligence.service';
+import { USER_BEHAVIOR_EVENT_WHERE } from '../analytics/user-behavior-filter';
 
 // SECURITY/GDPR (advisor audit): admin list/browse views MINIMIZE PII — phone/email masked by default (a
 // support action uses the in-app ticket flow, not the raw number). Pure + null-safe.
@@ -40,6 +41,8 @@ export class AdminService {
 
   // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
   getFunnels() { return this.analyticsIntelligence.getFunnels(); }
+  // BEHAVIOR + IMPROVE — the precise "what users do + what to fix" view (the founder's real ask).
+  getBehaviorInsights() { return this.analyticsIntelligence.getBehaviorInsights(); }
   getTrends(bucket?: string, days?: string) { return this.analyticsIntelligence.getTrends({ bucket: bucket === 'week' ? 'week' : 'day', days: parseInt(days ?? '') || 30 }); }
   getCohorts() { return this.analyticsIntelligence.getCohorts(); }
   getProductIntelligence() { return this.analyticsIntelligence.getProductIntelligence(); }
@@ -48,6 +51,71 @@ export class AdminService {
   getOpsHealth() { return this.opsIntelligence.getHealth(); }
   getOpsSafetyCompliance() { return this.opsIntelligence.getSafetyCompliance(); }
   getOpsEconomics() { return this.opsIntelligence.getEconomics(); }
+  getOpsAiObservability() { return this.opsIntelligence.getAiObservability(); }
+
+  // CONTENT-GAP signal (§7): the top searches that returned nothing useful → the demand-weighted authoring
+  // backlog ("what recipe to write next"). Aggregate counts only (search terms, no user link / no PII).
+  async getContentGaps() {
+    // The "what to author next" signal. HONESTY: search_unmet events deliberately carry only SHAPE
+    // (queryLength, wordCount) — the raw query text is NOT stored (GDPR; see web useDiscovery.js). So we report
+    // the real unmet VOLUME; surfacing WHICH dishes needs a privacy-safe normalized capture (a launch task), not a
+    // guess. `query` is read only in case such a capture later adds a normalized, non-PII term.
+    let events: { payload: string | null }[] = [];
+    try { events = await this.prisma.userEvent.findMany({ where: { type: 'search_unmet' }, select: { payload: true }, take: 5000 }); } catch { /* awaiting */ }
+    const counts = new Map<string, number>();
+    for (const e of events) {
+      try {
+        const p = JSON.parse(e.payload || '{}');
+        const qy = String(p.query ?? '').trim();
+        if (qy) counts.set(qy, (counts.get(qy) ?? 0) + 1);
+      } catch { /* skip */ }
+    }
+    const topQueries = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15).map(([query, count]) => ({ query, count }));
+    return {
+      status: events.length > 0 ? ('real' as const) : ('awaiting_pilot' as const),
+      totalUnmet: events.length,
+      distinctQueries: counts.size,
+      topQueries,
+      note: counts.size === 0 && events.length > 0 ? 'متنِ جستجو به‌دلیلِ حریمِ خصوصی ذخیره نمی‌شود؛ برای دیدنِ «کدام دیش»، ثبتِ نرمالِ privacy-safe لازم است (کارِ لانچ).' : null,
+    };
+  }
+
+  // ADMIN-AI (§14) — a REAL deterministic analyst: scans live metrics and emits honest findings via fixed
+  // rules (NOT a model guessing). The LLM-narration layer is a later, founder-gated step. Never fabricates.
+  async getAdminInsights() {
+    const [obs, health, safety, funnelsRes, gaps]: any[] = await Promise.all([
+      this.opsIntelligence.getAiObservability().catch(() => null),
+      this.opsIntelligence.getHealth().catch(() => null),
+      this.opsIntelligence.getSafetyCompliance().catch(() => null),
+      this.analyticsIntelligence.getFunnels().catch(() => null),
+      this.getContentGaps().catch(() => null),
+    ]);
+    const T = obs?.totals || {};
+    const insights: any[] = [];
+    const push = (severity: string, area: string, title: string, detail: string, metric: string) => insights.push({ severity, area, title, detail, metric });
+
+    if (typeof T.latencyMsP95 === 'number' && T.latencyMsP95 > 10000) push('warn', 'هوش مصنوعی', 'تأخیرِ پاسخ بالا', `p95 تأخیرِ مدل حدودِ ${Math.round(T.latencyMsP95 / 1000)} ثانیه است — تجربهٔ کاربر حین آشپزی آسیب می‌بیند. سوییچ به مدلِ سریع‌تر این را حل می‌کند.`, 'latency_p95');
+    if (typeof T.fallbackRate === 'number' && T.fallbackRate > 0.5) push('warn', 'هوش مصنوعی', 'اتکای زیاد به fallback', `${Math.round(T.fallbackRate * 100)}٪ نوبت‌ها روی زنجیرهٔ fallback می‌نشینند — مدلِ اصلی اغلب در دسترس نیست (۴۲۹).`, 'fallback_rate');
+    if (typeof T.ratedCallShare === 'number' && T.calls > 0 && T.ratedCallShare < 0.5) push('info', 'هزینه', 'پوششِ هزینهٔ ناقص', `فقط ${Math.round(T.ratedCallShare * 100)}٪ فراخوان‌ها نرخ‌گذاری‌شده‌اند؛ کلِ هزینهٔ دلاریِ واقعی نامعلوم است.`, 'rated_share');
+    const eq = health?.eventQuality?.wellFormedRate;
+    if (typeof eq === 'number' && eq < 0.95) push('warn', 'داده', 'کیفیتِ رویداد پایین', `نرخِ رویدادهای سالم ${Math.round(eq * 100)}٪ است — احتمالِ نویز یا داده‌های ناقص.`, 'event_quality');
+    const al = safety?.allergySafety;
+    if (al && al.pass === false) push('critical', 'ایمنی', 'نشتِ آلرژن!', `فیلترِ سختِ آلرژن ${al.leaks ?? '?'} نشت دارد — این بحرانی است، فوری بررسی شود.`, 'allergen');
+    if (al && al.pass === true) push('ok', 'ایمنی', 'آلرژن: صفر نشت', 'فیلترِ سختِ آلرژن روی همهٔ نمونه‌های پیکره گذراند — ایمن.', 'allergen');
+    const err = obs?.byErrorCode || {};
+    const errTotal: number = (Object.values(err) as any[]).reduce((s: number, n: any) => s + Number(n || 0), 0);
+    if (errTotal > 0) push('info', 'هوش مصنوعی', 'خطاهای مدل', `${errTotal} خطای مدل در ۳۰ روز ثبت شده.`, 'errors');
+    for (const f of (funnelsRes?.funnels || [])) {
+      if (f.status === 'real' && typeof f.overallConversion === 'number' && f.overallConversion < 0.3) {
+        const label = f.name === 'cook' ? 'پخت' : f.name === 'onboarding' ? 'ورود' : f.name;
+        push('info', 'قیف', `افتِ بالا در قیفِ ${label}`, `تبدیلِ کلِ این قیف ${Math.round(f.overallConversion * 100)}٪ است — جای بهبود دارد.`, 'funnel_' + f.name);
+      }
+    }
+    if (gaps && typeof gaps.totalUnmet === 'number' && gaps.totalUnmet > 0) push('info', 'محتوا', 'جستجوهای بی‌نتیجه', `${gaps.totalUnmet} جستجو نتیجه‌ای نداشت — تقاضای محتوای پوشش‌داده‌نشده.`, 'content_gap');
+    if (insights.length === 0) push('ok', 'سامانه', 'بدونِ هشدار', 'هیچ متریکی از آستانه‌های سلامت عبور نکرده.', 'none');
+
+    return { status: 'real', method: 'قواعدِ قطعی روی متریک‌های زنده (نه حدسِ مدل)', insights };
+  }
 
   async getDashboardStats() {
     const [recipeCount, userCount, ticketCount] = await Promise.all([
@@ -126,7 +194,10 @@ export class AdminService {
     const skip = (page - 1) * limit;
     const where: any = {};
     if (type && type !== 'all') {
-      where.type = type;
+      where.type = type; // explicit type filter = audit view: show exactly that type (even admin_/cron_)
+    } else {
+      // default live feed = real USER behavior only — operator/system events (admin_*/cron_*) excluded.
+      where.NOT = USER_BEHAVIOR_EVENT_WHERE.NOT;
     }
 
     // 🆕 فیلتر بازهٔ زمانی
@@ -191,9 +262,11 @@ export class AdminService {
   }
 
   async getAnalyticsStats() {
-    const totalEvents = await this.prisma.userEvent.count();
+    // USER-behavior counts only — operator/system events (admin_*/cron_*) excluded so the live numbers
+    // reflect real users, not the admin's own clicks.
+    const totalEvents = await this.prisma.userEvent.count({ where: { ...USER_BEHAVIOR_EVENT_WHERE } });
     const today = new Date(); today.setHours(0,0,0,0);
-    const todayEvents = await this.prisma.userEvent.count({ where: { timestamp: { gte: today } } });
+    const todayEvents = await this.prisma.userEvent.count({ where: { timestamp: { gte: today }, ...USER_BEHAVIOR_EVENT_WHERE } });
     return { totalEvents, todayEvents };
   }
 
@@ -335,12 +408,12 @@ export class AdminService {
       orderBy: { updatedAt: 'desc' },
       include: { user: { select: { name: true, phone: true } } },
     });
-    const avgConsistency = profiles.length > 0
-      ? profiles.reduce((sum, p) => sum + (p.consistencyScore || 0), 0) / profiles.length : 0;
-    const avgChurnRisk = profiles.length > 0
-      ? profiles.reduce((sum, p) => sum + (p.churnRiskScore || 0), 0) / profiles.length : 0;
+    // GLOBAL averages over ALL profiles (not just the listed top-50) — a true population mean, not a sampled one.
+    const agg = await this.prisma.userBehaviorProfile.aggregate({ _avg: { consistencyScore: true, churnRiskScore: true }, _count: { _all: true } });
+    const avgConsistency = agg._avg.consistencyScore ?? 0;
+    const avgChurnRisk = agg._avg.churnRiskScore ?? 0;
     const maskedProfiles = profiles.map((p: any) => (p.user ? { ...p, user: { ...p.user, phone: maskPhone(p.user.phone) } } : p));
-    return { profiles: maskedProfiles, avgConsistency, avgChurnRisk };
+    return { profiles: maskedProfiles, avgConsistency, avgChurnRisk, totalProfiles: agg._count._all };
   }
 
   async getPageViewStats() {

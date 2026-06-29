@@ -21,6 +21,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     const user = await this.usersService.findById(payload.sub);
     if (!user) return null;
+    // Banned → no valid principal (defense in depth; login also blocks).
+    if ((user as any).isBanned) return null;
+    // Stateless-JWT kick: a token minted before a force-logout / ban / admin password-reset carries a stale epoch
+    // → reject it. Legacy tokens with no epoch claim compare as 0, matching the default for an un-kicked user.
+    if ((payload.epoch ?? 0) !== ((user as any).sessionEpoch ?? 0)) return null;
     return {
       userId: user.id,
       phone: user.phone,

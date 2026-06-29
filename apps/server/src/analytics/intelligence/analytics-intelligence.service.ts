@@ -16,6 +16,7 @@ import { bucketTimeSeries, Bucket, TrendSeries } from './trends';
 import { computeCohortRetention, CohortReport } from './cohort';
 import { runRecommendationEval } from '../../recommendation/evaluation/recommendation-eval.harness';
 import { runIneSimulation, SimPersona } from '../../notifications/ine/ine-simulator';
+import { USER_BEHAVIOR_EVENT_WHERE } from '../user-behavior-filter';
 
 const USER_CAP = 100;
 const CATALOG_CAP = 500;
@@ -39,15 +40,16 @@ export class AnalyticsIntelligenceService {
 
   /** A. Funnels — onboarding + cook drop-off (distinct users per stage). */
   async getFunnels(): Promise<{ funnels: Funnel[] }> {
-    const [reg, diet, allergy, goals] = await Promise.all([this.distinctUsers('register'), this.distinctUsers('diet_changed'), this.distinctUsers('allergy_changed'), this.distinctUsers('skill_changed')]);
+    // Onboarding milestones from EMITTED events only: register (auth.service), diet_changed + skill_changed
+    // (onboarding). The old `allergy_changed` stage had NO emitter — a dead wire — so it's dropped, not faked.
+    const [reg, diet, goals] = await Promise.all([this.distinctUsers('register'), this.distinctUsers('diet_changed'), this.distinctUsers('skill_changed')]);
     const [view, startCook, complete] = await Promise.all([this.distinctUsers('recipe_view'), this.distinctUsers('start_cooking_click'), this.distinctUsers('cook_complete')]);
     return {
       funnels: [
         computeFunnel('onboarding', [
           { key: 'register', label: 'ثبت‌نام', count: reg },
-          { key: 'diet', label: 'رژیم', count: diet },
-          { key: 'allergy', label: 'حساسیت‌ها', count: allergy },
-          { key: 'goals', label: 'اهداف/مهارت', count: goals },
+          { key: 'diet', label: 'تنظیم رژیم', count: diet },
+          { key: 'goals', label: 'تنظیم اهداف', count: goals },
         ]),
         computeFunnel('cook', [
           { key: 'view', label: 'مشاهدهٔ رسپی', count: view },
@@ -83,6 +85,106 @@ export class AnalyticsIntelligenceService {
       }
     } catch { /* awaiting */ }
     return computeCohortRetention(signups, activity, [1, 2, 4]);
+  }
+
+  /**
+   * BEHAVIOR + IMPROVE — the founder's real ask: see, precisely and minimally, what users DO, and get a short
+   * action list of what to improve. Composed from REAL events (recipe funnel, searches, AI calls/topics) + the
+   * catalog. Rich where data exists (AI: 563 real calls; failed searches), honest-thin on the recipe funnel
+   * until real cooks accrue — never fabricated. Every block answers "what decision does this inform?".
+   */
+  async getBehaviorInsights(now: Date = new Date()) {
+    const since30 = new Date(now.getTime() - 30 * 86_400_000);
+    const median = (xs: number[]) => { if (!xs.length) return null; const s = [...xs].sort((a, b) => a - b); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
+
+    // ── 1. Recipe funnel: views → starts → cooks, per recipe ──
+    let funnelEvents: { type: string; recipeId: string | null }[] = [];
+    try {
+      funnelEvents = await this.prisma.userEvent.findMany({
+        where: { type: { in: ['recipe_view', 'start_cooking_click', 'cook_complete'] }, recipeId: { not: null } },
+        select: { type: true, recipeId: true },
+      });
+    } catch { /* awaiting */ }
+    const per = new Map<string, { views: number; starts: number; cooks: number }>();
+    for (const e of funnelEvents) {
+      if (!e.recipeId) continue;
+      const r = per.get(e.recipeId) || { views: 0, starts: 0, cooks: 0 };
+      if (e.type === 'recipe_view') r.views++;
+      else if (e.type === 'start_cooking_click') r.starts++;
+      else r.cooks++;
+      per.set(e.recipeId, r);
+    }
+    const ids = [...per.keys()];
+    let titles = new Map<string, string>();
+    if (ids.length) {
+      try {
+        const recs = await this.prisma.recipe.findMany({ where: { id: { in: ids } }, select: { id: true, title: true } });
+        titles = new Map(recs.map((r) => [r.id, r.title]));
+      } catch { /* */ }
+    }
+    const rows = ids.map((id) => { const r = per.get(id)!; return { recipeId: id, title: titles.get(id) || '—', views: r.views, cooks: r.cooks, cookRate: r.views > 0 ? Math.round((r.cooks / r.views) * 100) / 100 : null }; });
+    const topViewed = [...rows].sort((a, b) => b.views - a.views).slice(0, 8);
+    const viewedNotCooked = rows.filter((r) => r.views >= 2 && r.cooks === 0).sort((a, b) => b.views - a.views).slice(0, 8);
+    const publicRecipes = await this.prisma.recipe.count({ where: { isPublic: true } }).catch(() => 0);
+
+    // ── 2. Search behavior ──
+    const [searchTotal, searchFailed] = await Promise.all([
+      this.prisma.userEvent.count({ where: { type: 'search_query' } }).catch(() => 0),
+      this.prisma.userEvent.count({ where: { type: 'search_unmet' } }).catch(() => 0),
+    ]);
+
+    // ── 3. AI behavior: intents + fallback/error + chat topics ──
+    let aiRows: { intent: string | null; status: string; provider: string | null; latencyMs: number | null }[] = [];
+    try { aiRows = await this.prisma.aICallLog.findMany({ where: { createdAt: { gte: since30 }, provider: { not: 'stub-model' } }, select: { intent: true, status: true, provider: true, latencyMs: true } }) as any; } catch { /* */ }
+    const intentMap = new Map<string, number>();
+    let aiErrors = 0, aiFallback = 0; const lat: number[] = [];
+    for (const r of aiRows) {
+      intentMap.set(r.intent || 'unknown', (intentMap.get(r.intent || 'unknown') || 0) + 1);
+      if (r.status === 'error') aiErrors++;
+      if (String(r.provider || '').startsWith('fallback(')) aiFallback++;
+      if (r.status === 'ok' && typeof r.latencyMs === 'number') lat.push(r.latencyMs);
+    }
+    const topIntents = [...intentMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([intent, count]) => ({ intent, count }));
+    let chatEvents: { enrichment: string | null }[] = [];
+    try { chatEvents = await this.prisma.userEvent.findMany({ where: { type: 'ai_message_send' }, select: { enrichment: true }, take: 2000 }) as any; } catch { /* */ }
+    const topicMap = new Map<string, number>();
+    for (const e of chatEvents) { try { const en = JSON.parse(e.enrichment || '{}'); for (const c of [...(en.concepts || []), ...(en.ingredients || [])]) topicMap.set(c, (topicMap.get(c) || 0) + 1); } catch { /* */ } }
+    const topTopics = [...topicMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([topic, count]) => ({ topic, count }));
+
+    // ── 4. catalog allergen gap (for the improve list) ──
+    const allergenGaps = await this.prisma.recipe.count({ where: { isPublic: true, OR: [{ allergens: null }, { allergens: '[]' }] } }).catch(() => 0);
+
+    // ── 4b. Global cook funnel (WHERE users drop off) + app usage (WHICH parts get used) ──
+    const [fView, fStart, fCook] = await Promise.all([
+      this.prisma.userEvent.count({ where: { type: 'recipe_view' } }).catch(() => 0),
+      this.prisma.userEvent.count({ where: { type: 'start_cooking_click' } }).catch(() => 0),
+      this.prisma.userEvent.count({ where: { type: 'cook_complete' } }).catch(() => 0),
+    ]);
+    let typeRows: { type: string; _count: { type: number } }[] = [];
+    try { typeRows = await this.prisma.userEvent.groupBy({ by: ['type'], where: USER_BEHAVIOR_EVENT_WHERE as any, _count: { type: true }, orderBy: { _count: { type: 'desc' } }, take: 10 }) as any; } catch { /* awaiting */ }
+    let pageRows: { page: string | null; _count: { page: number } }[] = [];
+    try { pageRows = await this.prisma.userEvent.groupBy({ by: ['page'], where: { type: 'page_view', page: { not: null } }, _count: { page: true }, orderBy: { _count: { page: 'desc' } }, take: 8 }) as any; } catch { /* awaiting */ }
+
+    // ── 5. The IMPROVE action list — turns the behavior above into a few concrete to-dos ──
+    const improve = [
+      searchFailed > 0 ? { key: 'author', count: searchFailed, severity: 'high', title: 'غذاهای جدید بنویس', detail: 'کاربر دنبالِ غذایی بوده که نداریم (جست‌وجوی بی‌نتیجه)' } : null,
+      viewedNotCooked.length > 0 ? { key: 'fix_recipe', count: viewedNotCooked.length, severity: 'medium', title: 'رسپی‌های پربازدیدِ کم‌پخت را بازبینی کن', detail: 'دیده می‌شوند ولی پخته نمی‌شوند — شاید عکس/مرحله/سختی ایراد دارد' } : null,
+      aiFallback > 0 ? { key: 'ai_fallback', count: aiFallback, severity: 'medium', title: 'پایداریِ هوش مصنوعی', detail: 'پاسخ‌هایی که روی مدلِ پشتیبان رفته‌اند — مدلِ اصلی کند/خطادار است' } : null,
+      allergenGaps > 0 ? { key: 'allergen', count: allergenGaps, severity: 'low', title: 'برچسبِ آلرژن را بازبینی کن', detail: 'رسپی بدونِ آلرژنِ ثبت‌شده (بعضی واقعاً بدونِ آلرژن‌اند — بازبینی)' } : null,
+    ].filter(Boolean);
+
+    return {
+      recipes: { topViewed, viewedNotCooked, trackedRecipes: rows.length, publicRecipes, totalCooks: rows.reduce((s, r) => s + r.cooks, 0), status: rows.length > 0 ? ('real' as const) : ('awaiting_pilot' as const) },
+      search: { total: searchTotal, failed: searchFailed, failRate: searchTotal > 0 ? Math.round((searchFailed / searchTotal) * 100) / 100 : null, status: searchTotal > 0 ? ('real' as const) : ('awaiting_pilot' as const) },
+      ai: { calls: aiRows.length, topIntents, topTopics, fallbackRate: aiRows.length > 0 ? Math.round((aiFallback / aiRows.length) * 100) / 100 : null, errorRate: aiRows.length > 0 ? Math.round((aiErrors / aiRows.length) * 100) / 100 : null, latencyMsP50: median(lat), status: aiRows.length > 0 ? ('real' as const) : ('awaiting_pilot' as const) },
+      funnel: { view: fView, start: fStart, cook: fCook, status: fView > 0 ? ('real' as const) : ('awaiting_pilot' as const) },
+      usage: {
+        topActions: typeRows.map((r) => ({ action: r.type, count: Number(r._count?.type ?? 0) })),
+        topPages: pageRows.map((r) => ({ page: r.page || '—', count: Number(r._count?.page ?? 0) })),
+        status: typeRows.length > 0 ? ('real' as const) : ('awaiting_pilot' as const),
+      },
+      improve,
+    };
   }
 
   /** D. Product-intelligence — what the engines actually do (real or honest-null). */

@@ -28,6 +28,7 @@ import { ExperimentationModule } from './experimentation/experimentation.module'
 import { GovernanceModule } from './governance/governance.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { BriefingModule } from './briefing/briefing.module';
+import { WorkflowModule } from './workflow/workflow.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { BriefingModule } from './briefing/briefing.module';
     SupportModule,
     AdminModule,
     AnalyticsModule,
+    WorkflowModule, // Admin Control Center — in-house workflow automation engine (spec §B6)
     BehaviorEngineModule,
     ContextModule, // L0 real-time context engine (available for the ranker/assistant to inject)
     ProfileModule,

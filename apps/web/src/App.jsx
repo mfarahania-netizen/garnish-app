@@ -12,6 +12,7 @@ import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
 import CookPage from './app/cook/[id]/page';
 import OnboardingPage from './app/onboarding/page';
+import LoginPage from './app/login/page';
 import DiscoveryPage from './app/discover/page';
 import RecipesPage from './app/recipes/page';
 import ProfilePage from './app/profile/page';
@@ -23,6 +24,7 @@ import AssistantPage from './app/assistant/page';
 import SettingsPage from './app/settings/page';
 import NotificationsPage from './app/notifications/page';
 import AchievementsPage from './app/achievements/page';
+import SupportPage from './app/support/page';
 import AdminPage from './app/admin/page';
 import TermsPage from './app/terms/page';
 import PrivacyPage from './app/privacy/page';
@@ -112,6 +114,7 @@ export function AppRoutes() {
                   <Routes>
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
+                    <Route path="/login" element={<LoginPage />} />
                     {/* Public legal pages — opened (target=_blank) from the onboarding consent links */}
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
@@ -139,6 +142,7 @@ export function AppRoutes() {
                         <Route path="/assistant" element={<AssistantPage />} />
                         <Route path="/settings" element={<SettingsPage />} />
                         <Route path="/notifications" element={<NotificationsPage />} />
+                        <Route path="/support" element={<SupportPage />} />
                         <Route path="/achievements" element={<AchievementsPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Route>

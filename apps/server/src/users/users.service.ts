@@ -73,6 +73,8 @@ export class UsersService {
         avatar: true,
         isAdmin: true,
         isGuest: true,
+        isBanned: true, // jwt strategy rejects a banned principal
+        sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)
       },
     });
   }

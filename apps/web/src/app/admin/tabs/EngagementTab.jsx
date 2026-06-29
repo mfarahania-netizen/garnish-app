@@ -1,0 +1,62 @@
+// «درگیری و قیف» — activity trend (real chart) + onboarding/cook funnels + top pages. §3/§5.
+// Activity counts run over the current TEST users until the pilot — flagged honestly. Funnels are real math.
+import { Box, Text, Loader } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
+import { IconUsers, IconUserPlus, IconCalendarWeek, IconActivity, IconAlertTriangle } from '@tabler/icons-react';
+import apiClient from '../../../lib/apiClient';
+import { Section, Kpi, HBar, Panel, Note, Awaiting, TrendChart, grid, toFaDigits, fmtInt, fmtPct01 } from '../_ui';
+
+const get = (url, params) => apiClient.get(url, params ? { params } : undefined).then((r) => r.data);
+
+export default function EngagementTab({ days = 30 }) {
+  const trends = useQuery({ queryKey: ['admin', 'trends', days], queryFn: () => get('/admin/analytics/trends', { bucket: 'day', days }) });
+  const funnels = useQuery({ queryKey: ['admin', 'funnels'], queryFn: () => get('/admin/analytics/funnels') });
+  const pages = useQuery({ queryKey: ['admin', 'page-views'], queryFn: () => get('/admin/analytics/page-views') });
+  const userStats = useQuery({ queryKey: ['admin', 'user-stats'], queryFn: () => get('/admin/analytics/user-stats') });
+
+  if (trends.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
+
+  const u = userStats.data || {};
+  const daily = (pages.data?.dailyViews || []).map((d) => ({ label: d.date.slice(5), value: d.count }));
+  const topPages = pages.data?.topPages || [];
+  const fnls = funnels.data?.funnels || [];
+  const funnelName = (n) => (n === 'onboarding' ? 'قیفِ ورود (onboarding)' : n === 'cook' ? 'قیفِ پخت' : n);
+
+  return (
+    <>
+      <Note tone="warn" icon={IconAlertTriangle}>
+        اعدادِ کاربر و فعالیت روی <Text component="span" style={{ fontWeight: 600 }}>کاربرانِ تستیِ فعلی</Text> محاسبه شده‌اند — واقعی‌اند ولی تا پایلوت معنادار نیستند. ریاضیِ قیف‌ها درست است و با کاربرِ واقعی خودکار پر می‌شود.
+      </Note>
+
+      <Box style={grid(184)}>
+        <Kpi icon={IconUsers} label="کل کاربران" status="real" value={fmtInt(u.totalUsers)} sub="ثبت‌شده (شاملِ تستی)" />
+        <Kpi icon={IconCalendarWeek} label="کاربرانِ هفتهٔ اخیر" status="real" value={fmtInt(u.weekUsers)} sub="۷ روز گذشته" />
+        <Kpi icon={IconUserPlus} label="کاربرانِ امروز" status="real" value={fmtInt(u.todayUsers)} sub="از نیمه‌شب" />
+        <Kpi icon={IconActivity} label="کل رویداد" status={trends.data?.status === 'real' ? 'real' : 'awaiting_pilot'} value={fmtInt(trends.data?.totalEvents)} sub={`در ${toFaDigits(days)} روز`} awaitNote="در انتظار رویداد واقعی" />
+      </Box>
+
+      <Section title="روندِ بازدیدِ روزانه" sub="رویدادهای page_view در طول زمان" />
+      <Panel status={daily.length ? 'real' : 'awaiting_pilot'}>
+        <TrendChart data={daily} height={170} />
+      </Panel>
+
+      <Section title="قیف‌های تبدیل" sub="چند کاربر از هر مرحله به بعدی می‌رسند" />
+      <Box style={grid(300)}>
+        {fnls.length ? fnls.map((f) => (
+          <Panel key={f.name} title={funnelName(f.name)} status={f.status} sub={f.status === 'real' ? `تبدیل کل: ${fmtPct01(f.overallConversion)}` : undefined}>
+            {f.status === 'real' ? f.stages.map((s) => (
+              <HBar key={s.key} label={s.label} value={s.count} max={f.stages[0]?.count || 1} display={`${toFaDigits(s.count)}${s.dropOffFromPrev != null ? ` · افت ${fmtPct01(s.dropOffFromPrev)}` : ''}`} />
+            )) : <Awaiting note="هنوز کسی واردِ این قیف نشده." />}
+          </Panel>
+        )) : <Awaiting note="قیفی در دسترس نیست." />}
+      </Box>
+
+      <Section title="پربازدیدترین صفحه‌ها" sub="بر اساس رویدادهای page_view" />
+      <Panel status={topPages.length ? 'real' : 'awaiting_pilot'}>
+        {topPages.length ? topPages.slice(0, 8).map((p) => (
+          <HBar key={p.page} label={p.page || '/'} value={p.views} max={topPages[0]?.views || 1} display={toFaDigits(p.views)} />
+        )) : <Awaiting note="بازدیدی ثبت نشده." />}
+      </Panel>
+    </>
+  );
+}

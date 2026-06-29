@@ -1,6 +1,6 @@
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
-import { IconX, IconLeaf, IconLogout } from '@tabler/icons-react';
+import { IconX, IconLeaf, IconLogout, IconLayoutDashboard, IconLogin2 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { DRAWER_PRIMARY, DRAWER_SECONDARY } from './navConfig';
 import { useAuth } from '../context/AuthContext';
@@ -169,10 +169,30 @@ export default function NavDrawer({ opened, onClose }) {
             <DrawerLink key={item.to} item={item} onNavigate={onClose} secondary />
           ))}
         </Box>
+        {/* Admin entry — only for admins (the /admin endpoints are RolesGuard-protected; this link is UX). */}
+        {user?.isAdmin ? (
+          <>
+            <Box aria-hidden="true" style={{ blockSize: 1, background: 'var(--g-color-border-subtle)', marginInline: 'var(--g-space-5)' }} />
+            <Box component="nav" aria-label="مدیریت" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-3)' }}>
+              <DrawerLink item={{ to: '/admin', label: 'پنل مدیریت', Icon: IconLayoutDashboard, end: false }} onNavigate={onClose} secondary />
+            </Box>
+          </>
+        ) : null}
       </Box>
 
-      {/* LOGOUT (pinned bottom; only when signed in) */}
-      {token ? (
+      {/* Footer — a GUEST gets a prominent ورود/ثبت‌نام (the real auth entry point); a signed-in user gets خروج. */}
+      {user?.isGuest ? (
+        <Box style={{ paddingInline: 'var(--g-space-5)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
+          <UnstyledButton
+            type="button"
+            onClick={() => { onClose(); navigate('/login'); }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 46, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}
+          >
+            <IconLogin2 size={19} stroke={1.8} aria-hidden="true" />
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-14)', color: 'inherit' }}>ورود / ثبت‌نام</Text>
+          </UnstyledButton>
+        </Box>
+      ) : token ? (
         <Box style={{ paddingInline: 'var(--g-space-5)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
           <UnstyledButton
             type="button"

@@ -1,204 +1,169 @@
+// Admin section — a sidebar dashboard over the real backend (admin.controller: ~24 endpoints + ops/*).
+// Layout: a right-side nav rail (RTL inline-start) grouped into تحلیل / هوش مصنوعی / عملیات, a slim top bar,
+// and the active tab body. Each tab renders real values or honest awaiting/post-launch states.
+// Catalog: docs/audit/ADMIN_DASHBOARD_CATALOG.md.
+import { useState, useEffect } from 'react';
 import { Box, Text, UnstyledButton, Loader } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
-  IconLeaf, IconLock, IconRefresh, IconDownload, IconShieldCheck, IconShieldHalf, IconAlertTriangle,
-  IconClock, IconUsers, IconToolsKitchen2, IconSearch, IconSparkles, IconCircleCheck, IconHome, IconChartBar,
-  IconChevronRight,
+  IconLeaf, IconLock, IconShieldLock, IconRefresh, IconDownload, IconHome,
+  IconLayoutDashboard, IconSparkles, IconChartBar, IconActivity, IconToolsKitchen2,
+  IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket,
 } from '@tabler/icons-react';
-import { useAdmin } from './useAdmin';
-import { toFaDigits, faPercent } from '../../components/ges/format';
+import { useAuth } from '../../context/AuthContext';
+import { PostLaunch } from './_ui';
+import OverviewTab from './tabs/OverviewTab';
+import AiCostTab from './tabs/AiCostTab';
+import EngagementTab from './tabs/EngagementTab';
+import RetentionTab from './tabs/RetentionTab';
+import ContentTab from './tabs/ContentTab';
+import SafetyTab from './tabs/SafetyTab';
+import RealtimeTab from './tabs/RealtimeTab';
+import BehaviorTab from './tabs/BehaviorTab';
+import UsersTab from './tabs/UsersTab';
+import TicketsTab from './tabs/TicketsTab';
+import AuthForm from '../../components/auth/AuthForm';
 
-const card = { background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' };
-const sectionTitle = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' };
-const grid = (min) => ({ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${min}px, 1fr))`, gap: 'var(--g-space-3)' });
+const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }, { id: 30, label: '۳۰ روز' }];
 
-function Badge({ real }) {
-  return (
-    <Text component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, background: real ? 'var(--g-color-state-success-bg)' : 'var(--g-color-state-info-bg)', color: real ? 'var(--g-color-state-success-fg)' : 'var(--g-color-text-secondary)' }}>
-      {real ? 'داده واقعی' : 'در انتظار پایلوت'}
-    </Text>
-  );
+const TABS = {
+  overview: { label: 'نمای کلی', Icon: IconLayoutDashboard, C: OverviewTab, ranged: true },
+  behavior: { label: 'رفتار و بهبود', Icon: IconChartDots, C: BehaviorTab },
+  engagement: { label: 'درگیری و قیف', Icon: IconChartBar, C: EngagementTab, ranged: true },
+  retention: { label: 'ماندگاری', Icon: IconActivity, C: RetentionTab },
+  content: { label: 'محتوا و آشپزی', Icon: IconToolsKitchen2, C: ContentTab },
+  ai: { label: 'هوش مصنوعی', Icon: IconSparkles, C: AiCostTab },
+  safety: { label: 'ایمنی و انطباق', Icon: IconShieldCheck, C: SafetyTab },
+  realtime: { label: 'زنده', Icon: IconBolt, C: RealtimeTab },
+  users: { label: 'کاربران', Icon: IconUsersGroup, C: UsersTab },
+  tickets: { label: 'تیکت‌ها', Icon: IconTicket, C: TicketsTab },
+  revenue: { label: 'درآمد', Icon: IconCoin, C: () => <PostLaunch note="MRR/churn/LTV و اعتبارِ هوش مصنوعی — با اتصالِ درگاهِ پرداخت خودکار فعال می‌شود (§۱۱/§۱۲)" /> },
+};
+
+const GROUPS = [
+  { label: 'تحلیل', ids: ['overview', 'behavior', 'engagement', 'retention', 'content'] },
+  { label: 'هوش مصنوعی', ids: ['ai'] },
+  { label: 'عملیات', ids: ['users', 'tickets', 'safety', 'realtime', 'revenue'] },
+];
+
+function useNarrow() {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 880px)');
+    const on = () => setNarrow(mq.matches);
+    on(); mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return narrow;
 }
-
-function Kpi({ icon: Icon, label, value, sub, real, awaitNote }) {
-  return (
-    <Box style={{ ...card, ...(real ? {} : { borderStyle: 'dashed' }) }}>
-      <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--g-space-2)' }}>
-        <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', color: 'var(--g-color-text-secondary)' }}>
-          {Icon ? <Icon size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} /> : null}
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{label}</Text>
-        </Box>
-        <Badge real={real} />
-      </Box>
-      {real ? (
-        <>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-28)', fontWeight: 800, color: 'var(--g-color-text-primary)', marginBlockStart: 'var(--g-space-2)' }}>{value}</Text>
-          {sub ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{sub}</Text> : null}
-        </>
-      ) : (
-        <Box style={{ marginBlockStart: 'var(--g-space-2)' }}>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-secondary)' }}>در انتظار کاربران واقعی</Text>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{awaitNote || 'Track ۷ · هنوز کاربری نداریم'}</Text>
-        </Box>
-      )}
-    </Box>
-  );
-}
-
-function HBar({ label, value, max, suffix }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0;
-  return (
-    <Box style={{ marginBlockStart: 'var(--g-space-3)' }}>
-      <Box style={{ display: 'flex', justifyContent: 'space-between', marginBlockEnd: 6 }}>
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{label}</Text>
-        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>{toFaDigits(value)}{suffix || ''}</Text>
-      </Box>
-      <Box aria-hidden="true" style={{ blockSize: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-border-subtle)', overflow: 'hidden' }}>
-        <Box style={{ inlineSize: `${pct}%`, blockSize: '100%', background: 'var(--g-color-brand-500)' }} />
-      </Box>
-    </Box>
-  );
-}
-
-const GUARD_FA = { ai_safety: 'ایمنی هوش مصنوعی', prompt_injection: 'تزریق پرامپت', nutrition_claim: 'ادعای تغذیه‌ای' };
-const BAND_FA = { empty: 'تازه', forming: 'در حال شکل‌گیری', developing: 'در حال رشد', mature: 'پخته' };
-const RECSYS_FA = { catalogCoverage: 'پوشش کاتالوگ', coverage: 'پوشش', diversity: 'تنوع', fitQuality: 'کیفیت تناسب', quality: 'کیفیت', popularityBias: 'سوگیری محبوبیت' };
-// recsys.offline is Record<string, MetricResult{value,threshold,pass,note}> — only render numeric 0..1 values
-const recsysRows = (offline) => Object.entries(offline || {}).filter(([, m]) => m && typeof m.value === 'number');
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const a = useAdmin();
+  const queryClient = useQueryClient();
+  const { user, isLoading: authLoading, logout } = useAuth();
+  const isAdmin = !!user?.isAdmin;
+  const [params, setParams] = useSearchParams();
+  const narrow = useNarrow();
 
-  if (a.status === 'auth') {
+  const tab = TABS[params.get('tab')] ? params.get('tab') : 'overview';
+  const active = TABS[tab];
+  const days = parseInt(params.get('days'), 10) || 30;
+  const setTab = (id) => setParams((p) => { p.set('tab', id); return p; }, { replace: true });
+  const setDays = (d) => setParams((p) => { p.set('days', String(d)); return p; }, { replace: true });
+
+  if (authLoading) {
     return <Box style={{ minBlockSize: '100dvh', display: 'grid', placeItems: 'center', background: 'var(--g-color-bg-canvas)' }}><Loader color="var(--g-color-brand-600)" /></Box>;
   }
-  if (a.status === 'denied') {
+  if (!isAdmin) {
+    const loggedInNonAdmin = !!user && !user.isGuest;
     return (
-      <Box style={{ minBlockSize: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 'var(--g-space-2)', background: 'var(--g-color-bg-canvas)', paddingInline: 'var(--g-space-6)' }}>
-        <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)' }}><IconLock size={28} stroke={1.6} /></Box>
-        <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-2) 0 0' }}>دسترسی محدود</Text>
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 0 }}>این بخش فقط برای مدیران است.</Text>
-        <UnstyledButton type="button" onClick={() => navigate('/')} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconHome size={16} stroke={1.8} aria-hidden="true" />خانه</UnstyledButton>
+      <Box style={{ minBlockSize: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-bg-canvas)', paddingInline: 'var(--g-space-5)', paddingBlock: 'var(--g-space-6)' }}>
+        {loggedInNonAdmin ? (
+          <Box style={{ inlineSize: '100%', maxInlineSize: 380, textAlign: 'center', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: '18px', padding: '28px 24px' }}>
+            <Box aria-hidden="true" style={{ inlineSize: 52, blockSize: 52, borderRadius: '14px', margin: '0 auto', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconShieldLock size={28} stroke={1.7} /></Box>
+            <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '18px', fontWeight: 600, color: 'var(--g-color-text-primary)', margin: '12px 0 0' }}>دسترسیِ مدیر ندارید</Text>
+            <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-secondary)', margin: '6px 0 0', lineHeight: 1.6 }}>این حساب وارد شده ولی نقشِ مدیر ندارد. برای پنل، با حسابِ مدیر وارد شو.</Text>
+            <UnstyledButton type="button" onClick={() => logout()} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 46, marginBlockStart: 16, borderRadius: '12px', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '14px', fontWeight: 500 }}>خروج و ورود با حسابِ دیگر</UnstyledButton>
+            <UnstyledButton type="button" onClick={() => navigate('/')} style={{ inlineSize: '100%', paddingBlock: 8, marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-muted)' }}>بازگشت به اپ</UnstyledButton>
+          </Box>
+        ) : (
+          <AuthForm allowSignup={false} initialMode="login" icon={IconShieldLock} accent="admin" badge="ورود مدیران" heading="پنل مدیریت گارنیش" sub="برای ورود به پنل، با حسابِ مدیر وارد شو." footer={
+            <UnstyledButton type="button" onClick={() => navigate('/')} style={{ inlineSize: '100%', paddingBlock: 6, fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-muted)', textAlign: 'center' }}>بازگشت به اپ</UnstyledButton>
+          } />
+        )}
       </Box>
     );
   }
 
-  const d = a.d;
+  const onRefresh = () => queryClient.invalidateQueries({ queryKey: ['admin'] });
   const onExport = () => {
     try {
-      const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+      const dump = Object.fromEntries(queryClient.getQueriesData({ queryKey: ['admin'] }).map(([k, v]) => [JSON.stringify(k), v]));
+      const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a'); link.href = url; link.download = 'garnish-admin-overview.json';
+      const link = document.createElement('a'); link.href = url; link.download = 'garnish-admin-export.json';
       document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
     } catch { /* */ }
   };
 
+  const railW = narrow ? 58 : 204;
+  const ActiveBody = active.C;
+  const iconBtn = { inlineSize: 34, blockSize: 34, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center', flexShrink: 0 };
+
   return (
-    <Box style={{ minBlockSize: '100dvh', background: 'var(--g-color-bg-canvas)' }}>
-      {/* header */}
-      <Box style={{ position: 'sticky', insetBlockStart: 0, zIndex: 10, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', flexWrap: 'wrap', paddingInline: 'var(--g-space-5)', paddingBlock: 'var(--g-space-3)', background: 'var(--g-color-bg-surface)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
-        <UnstyledButton type="button" onClick={() => { if (window.history.state && window.history.state.idx > 0) navigate(-1); else navigate('/'); }} aria-label="بازگشت" style={{ inlineSize: 44, blockSize: 44, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><IconChevronRight size={20} stroke={1.8} /></UnstyledButton>
-        <Box aria-hidden="true" style={{ inlineSize: 36, blockSize: 36, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center' }}><IconLeaf size={21} stroke={1.8} /></Box>
-        <Box style={{ flex: 1, minInlineSize: 160 }}>
-          <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>پنل مدیریت</Text>
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-secondary)', margin: '2px 0 0' }}>نمای کلی · مدیر سیستم</Text>
+    <Box style={{ minBlockSize: '100dvh', background: 'var(--g-color-bg-canvas)', display: 'flex', alignItems: 'flex-start' }}>
+      {/* RIGHT nav rail (RTL inline-start) */}
+      <Box component="nav" aria-label="بخش‌های مدیریت" style={{ inlineSize: railW, flexShrink: 0, position: 'sticky', insetBlockStart: 0, blockSize: '100dvh', overflowY: 'auto', background: 'var(--g-color-bg-surface)', borderInlineEnd: '1px solid var(--g-color-border-subtle)', display: 'flex', flexDirection: 'column', paddingBlock: 14, paddingInline: narrow ? 8 : 12 }}>
+        <Box style={{ display: 'flex', alignItems: 'center', gap: 9, paddingInline: narrow ? 0 : 6, paddingBlockEnd: 14, justifyContent: narrow ? 'center' : 'flex-start' }}>
+          <Box aria-hidden="true" style={{ inlineSize: 32, blockSize: 32, borderRadius: '9px', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', flexShrink: 0 }}><IconLeaf size={19} stroke={1.8} /></Box>
+          {!narrow ? <Box><Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '14px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>گارنیش</Text><Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)' }}>پنل مدیریت</Text></Box> : null}
         </Box>
-        <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}>
-          {a.ranges.map((r) => (
-            <UnstyledButton key={r.id} type="button" onClick={() => a.setDays(r.id)} aria-pressed={a.days === r.id} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-3)', display: 'inline-flex', alignItems: 'center', borderRadius: 'var(--g-radius-chip)', background: a.days === r.id ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: a.days === r.id ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{r.label}</UnstyledButton>
-          ))}
-        </Box>
-        <UnstyledButton type="button" onClick={a.refetchAll} aria-label="به‌روزرسانی" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'grid', placeItems: 'center' }}><IconRefresh size={18} stroke={1.8} /></UnstyledButton>
-        <UnstyledButton type="button" onClick={onExport} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}><IconDownload size={16} stroke={1.8} aria-hidden="true" />خروجی</UnstyledButton>
+
+        {GROUPS.map((g) => (
+          <Box key={g.label} style={{ marginBlockStart: 8 }}>
+            {!narrow ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)', padding: '8px 8px 5px' }}>{g.label}</Text> : <Box style={{ blockSize: 1, background: 'var(--g-color-border-subtle)', marginInline: 6, marginBlock: 8 }} />}
+            {g.ids.map((id) => {
+              const t = TABS[id]; const on = id === tab;
+              return (
+                <UnstyledButton key={id} type="button" onClick={() => setTab(id)} aria-current={on ? 'page' : undefined} title={narrow ? t.label : undefined} style={{ display: 'flex', alignItems: 'center', gap: 9, inlineSize: '100%', minBlockSize: 38, paddingInline: narrow ? 0 : 10, justifyContent: narrow ? 'center' : 'flex-start', borderRadius: '10px', marginBlockEnd: 2, background: on ? 'var(--g-color-brand-50)' : 'transparent', color: on ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: on ? 500 : 400 }}>
+                  <t.Icon size={18} stroke={1.7} aria-hidden="true" style={{ color: on ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)', flexShrink: 0 }} />
+                  {!narrow ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.label}</span> : null}
+                </UnstyledButton>
+              );
+            })}
+          </Box>
+        ))}
+
+        <UnstyledButton type="button" onClick={() => navigate('/')} title="بازگشت به اپ" style={{ marginBlockStart: 'auto', display: 'flex', alignItems: 'center', gap: 9, minBlockSize: 38, paddingInline: narrow ? 0 : 10, justifyContent: narrow ? 'center' : 'flex-start', borderRadius: '10px', color: 'var(--g-color-text-muted)', fontFamily: 'var(--g-font-fa)', fontSize: '12px' }}>
+          <IconHome size={18} stroke={1.7} aria-hidden="true" />{!narrow ? <span>بازگشت به اپ</span> : null}
+        </UnstyledButton>
       </Box>
 
-      {a.status === 'loading' ? (
-        <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 'var(--g-space-8)' }}><Loader color="var(--g-color-brand-600)" /></Box>
-      ) : a.status === 'error' ? (
-        <Box style={{ textAlign: 'center', paddingBlock: 'var(--g-space-8)' }}>
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>بارگذاری نشد</Text>
-          <UnstyledButton type="button" onClick={a.refetchAll} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconRefresh size={15} stroke={1.8} aria-hidden="true" />تلاش دوباره</UnstyledButton>
-        </Box>
-      ) : (
-        <Box style={{ maxInlineSize: 1480, marginInline: 'auto', paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-8)' }}>
-          {/* growth & activity */}
-          <Text component="h2" style={sectionTitle}>رشد و فعالیت</Text>
-          <Box style={grid(190)}>
-            <Kpi icon={IconUsers} label="کل کاربران" real={d.growth.users.real} value={toFaDigits(d.growth.users.value)} sub="کاربرانِ ثبت‌شده" />
-            <Kpi icon={IconToolsKitchen2} label="پخت" real={d.growth.cooks.real} value={toFaDigits(d.growth.cooks.value)} sub={`در ${toFaDigits(a.days)} روز`} />
-            <Kpi icon={IconSearch} label="جستجو" real={d.growth.searches.real} value={toFaDigits(d.growth.searches.value)} sub={`در ${toFaDigits(a.days)} روز`} />
-            <Kpi icon={IconSparkles} label="استفاده از هوش مصنوعی" real={d.growth.ai.real} value={toFaDigits(d.growth.ai.value)} sub={`در ${toFaDigits(a.days)} روز`} />
+      {/* MAIN */}
+      <Box style={{ flex: 1, minInlineSize: 0, display: 'flex', flexDirection: 'column' }}>
+        <Box style={{ position: 'sticky', insetBlockStart: 0, zIndex: 5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', paddingInline: 20, paddingBlock: 13, background: 'var(--g-color-bg-surface)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+          <Box style={{ minInlineSize: 0 }}>
+            <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '16px', fontWeight: 600, color: 'var(--g-color-text-primary)', margin: 0 }}>{active.label}</Text>
+            <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)', margin: '1px 0 0' }}>پنل مدیریت گارنیش</Text>
           </Box>
-
-          {/* readiness */}
-          <Text component="h2" style={sectionTitle}>آمادگی پیش از پایلوت</Text>
-          <Box style={{ ...card, display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', background: 'var(--g-color-state-success-bg)', border: 'none', marginBlockEnd: 'var(--g-space-3)' }}>
-            <IconCircleCheck size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg)' }} />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-state-success-fg)' }}>سامانه آمادهٔ راه‌اندازی</Text>
-          </Box>
-          <Box style={grid(190)}>
-            <Kpi icon={IconShieldCheck} label="گاردهای ایمنی" real value={toFaDigits(d.guards.blocked)} sub={`از ${toFaDigits(d.guards.cases)} موردِ پیکره · مسدودشده`} />
-            <Kpi icon={IconShieldHalf} label="فیلتر آلرژن" real={!!d.allergen} value={d.allergen?.pass ? 'گذراند' : 'بررسی'} sub={d.allergen ? `${toFaDigits(d.allergen.leaks)} نشت` : ''} awaitNote="در حال ارزیابی" />
-            <Kpi icon={IconClock} label="تأخیر p۹۵ (ms)" real={d.latency.real && d.latency.p95 != null} value={d.latency.p95 != null ? toFaDigits(d.latency.p95) : 'بدون نمونهٔ موفق'} sub={d.latency.p50 != null ? `p۵۰ ${toFaDigits(d.latency.p50)}ms · از فراخوان‌های ثبت‌شده` : ''} awaitNote="در انتظار فراخوان‌های واقعی" />
-            <Kpi icon={IconChartBar} label="کیفیت رویداد" real={d.eventQuality.real} value={d.eventQuality.rate != null ? faPercent(d.eventQuality.rate * 100) : '—'} sub="رویدادهای معتبر" awaitNote="در انتظار رویدادهای واقعی" />
-          </Box>
-
-          {/* safety & compliance */}
-          <Text component="h2" style={sectionTitle}>ایمنی و انطباق</Text>
-          <Box style={{ ...card, display: 'flex', alignItems: 'flex-start', gap: 'var(--g-space-2)', background: 'var(--g-color-brand-50)', borderColor: 'var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-3)' }}>
-            <IconShieldCheck size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-700)', flexShrink: 0, marginBlockStart: 2 }} />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-brand-700)' }}>شواهد واقعی — نه دادهٔ ساختگی. اعداد از اجرای واقعیِ گاردها روی پیکرهٔ تست‌اند.</Text>
-          </Box>
-          <Box style={grid(280)}>
-            <Box style={card}>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>شلیک گاردها</Text>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{toFaDigits(d.guards.blocked)} مورد مسدود · روی {toFaDigits(d.guards.cases)} موردِ پیکره</Text>
-              {Object.entries(d.guards.byGuard).map(([k, v]) => <HBar key={k} label={GUARD_FA[k] || k} value={v} max={d.guards.cases || 1} />)}
-            </Box>
-            <Box style={card}>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>فیلتر سخت آلرژن</Text>
-              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: d.allergen?.pass ? 'var(--g-color-state-success-bg)' : 'var(--g-color-state-info-bg)', color: d.allergen?.pass ? 'var(--g-color-state-success-fg)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
-                {d.allergen?.pass ? <IconCircleCheck size={13} stroke={1.8} aria-hidden="true" /> : <IconAlertTriangle size={13} stroke={1.8} aria-hidden="true" />}{d.allergen?.indicator || (d.allergen?.pass ? 'گذراند' : 'در حال ارزیابی')}
+          <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+            {active.ranged ? (
+              <Box style={{ display: 'inline-flex', background: 'var(--g-color-bg-canvas)', border: '1px solid var(--g-color-border-subtle)', borderRadius: '9px', overflow: 'hidden' }}>
+                {RANGES.map((r) => (
+                  <UnstyledButton key={r.id} type="button" onClick={() => setDays(r.id)} aria-pressed={days === r.id} style={{ minBlockSize: 32, paddingInline: 11, display: 'inline-flex', alignItems: 'center', background: days === r.id ? 'var(--g-color-brand-600)' : 'transparent', color: days === r.id ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: 400 }}>{r.label}</UnstyledButton>
+                ))}
               </Box>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)', marginBlockStart: 'var(--g-space-4)' }}>ارسال اعلان</Text>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{d.notif?.realSendEnabled ? 'ارسال واقعی فعال' : 'DRY-RUN — ارسال واقعی خاموش است، فقط شبیه‌سازی.'}</Text>
-            </Box>
-          </Box>
-
-          {/* DNA bands + recsys */}
-          <Box style={grid(280)}>
-            <Box>
-              <Text component="h2" style={sectionTitle}>توزیع باند DNA غذایی</Text>
-              <Box style={card}>
-                {d.foodDna.real ? (
-                  Object.entries(d.foodDna.bands).map(([k, v]) => <HBar key={k} label={BAND_FA[k] || k} value={v} max={d.foodDna.sampled || 1} />)
-                ) : (
-                  <Box style={{ textAlign: 'center', paddingBlock: 'var(--g-space-4)' }}>
-                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-secondary)' }}>نمونه · پیش از پایلوت</Text>
-                    <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>با ورود کاربران واقعی نمایش داده می‌شود.</Text>
-                  </Box>
-                )}
-              </Box>
-            </Box>
-            <Box>
-              <Text component="h2" style={sectionTitle}>کیفیت پیشنهادگر</Text>
-              <Box style={card}>
-                {recsysRows(d.recsys.offline).length ? (
-                  recsysRows(d.recsys.offline).slice(0, 5).map(([k, m]) => <HBar key={k} label={RECSYS_FA[k] || k} value={Math.round(m.value * 100)} max={100} suffix="٪" />)
-                ) : (
-                  <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', textAlign: 'center', paddingBlock: 'var(--g-space-4)' }}>از هارنس ارزیابی S۱۱ · در حال آماده‌سازی</Text>
-                )}
-                {d.recsys.allergySafety ? (
-                  <Text component="div" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-3)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)' }}>
-                    <IconShieldCheck size={13} stroke={1.8} aria-hidden="true" />ایمنی آلرژن — {d.recsys.allergySafety.pass ? 'گذراند' : 'بررسی'}
-                  </Text>
-                ) : null}
-              </Box>
-            </Box>
+            ) : null}
+            <UnstyledButton type="button" onClick={onRefresh} aria-label="به‌روزرسانی" style={iconBtn}><IconRefresh size={16} stroke={1.8} /></UnstyledButton>
+            <UnstyledButton type="button" onClick={onExport} aria-label="خروجی JSON" style={iconBtn}><IconDownload size={16} stroke={1.8} /></UnstyledButton>
           </Box>
         </Box>
-      )}
+
+        <Box style={{ maxInlineSize: 1340, inlineSize: '100%', marginInline: 'auto', paddingInline: 20, paddingBlock: 18 }}>
+          <ActiveBody days={days} />
+        </Box>
+      </Box>
     </Box>
   );
 }

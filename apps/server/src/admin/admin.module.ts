@@ -5,10 +5,13 @@ import { ObservabilityService } from './observability.service';
 import { ObservabilityController } from './observability.controller';
 import { AnalyticsModule } from '../analytics/analytics.module'; // 👈 جدید
 import { ProfileModule } from '../behavior-engine/profile/profile.module'; // R8 observability → getLivingUserProfile
+import { UsersModule } from '../users/users.module'; // admin user-management reuses ErasureService + UserExportService
+import { AdminUsersService } from './admin-users.service';
+import { AdminTicketsService } from './admin-tickets.service'; // NotificationsModule is @Global → NotificationsService injects directly
 
 @Module({
-  imports: [AnalyticsModule, ProfileModule],
-  providers: [AdminService, ObservabilityService],
+  imports: [AnalyticsModule, ProfileModule, UsersModule],
+  providers: [AdminService, ObservabilityService, AdminUsersService, AdminTicketsService],
   controllers: [AdminController, ObservabilityController],
 })
 export class AdminModule {}

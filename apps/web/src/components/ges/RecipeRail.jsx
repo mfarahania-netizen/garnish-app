@@ -39,8 +39,8 @@ export default function RecipeRail({ title, icon: Icon, items = [], onSeeAll, on
               cookTimeText={it.cookTimeText}
               difficultyText={it.difficultyText}
               saved={isSaved ? isSaved(it.recipeId) : false}
-              onSave={onSave ? () => onSave(it.recipeId) : undefined}
-              onOpen={() => onOpen?.(it.recipeId)}
+              onSave={onSave ? () => onSave(it.recipeId, it.requestId) : undefined}
+              onOpen={() => onOpen?.(it.recipeId, it.requestId)}
             />
           </Box>
         ))}

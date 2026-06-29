@@ -4,22 +4,27 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { sanitizeUser } from '../common/serializers/user.serializer';
 import * as bcrypt from 'bcryptjs';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private prisma: PrismaService,
   ) {}
 
   async register(phone: string, password: string, name?: string) {
     const existing = await this.usersService.findByPhone(phone);
     if (existing) throw new UnauthorizedException('این شماره قبلاً ثبت شده است');
     const user = await this.usersService.createUser(phone, password, name);
-    // ❌ isAdmin از payload حذف شد. ❌ phone هم حذف شد — JWT payload فقط base64 است (نه رمز)، و data-minimization
-    // برای GDPR یعنی PII (شماره) داخل تُوکنِ کلاینت نباشد. jwt.strategy کاربر را با sub از DB می‌خوانَد.
+    // Funnel anchor: a real `register` event so the onboarding funnel measures real signups (fire-and-forget; never blocks signup).
+    this.prisma.userEvent.create({ data: { userId: user.id, type: 'register' } }).catch(() => {});
+    // ❌ isAdmin/phone از payload حذف شد (data-minimization؛ jwt.strategy کاربر را با sub از DB می‌خوانَد).
+    // epoch: کلیدِ ابطالِ توکن — هنگام force-logout/ban/reset عوض می‌شود تا توکن‌های قبلی باطل شوند.
     const token = this.jwtService.sign({
       sub: user.id,
+      epoch: (user as any).sessionEpoch ?? 0,
     });
     return { token, user: sanitizeUser(user) };
   }
@@ -34,7 +39,7 @@ export class AuthService {
    */
   async guestSession(deviceKey?: string) {
     const user = await this.usersService.findOrCreateGuest(deviceKey);
-    const token = this.jwtService.sign({ sub: user.id }, { expiresIn: '24h' });
+    const token = this.jwtService.sign({ sub: user.id, epoch: (user as any).sessionEpoch ?? 0 }, { expiresIn: '24h' });
     return { token, user: sanitizeUser(user), deviceKey: (user as any).deviceKey as string };
   }
 
@@ -47,10 +52,14 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('شماره یا رمز عبور اشتباه است');
     }
-    // ❌ isAdmin از payload حذف شد. ❌ phone هم حذف شد — JWT payload فقط base64 است (نه رمز)، و data-minimization
-    // برای GDPR یعنی PII (شماره) داخل تُوکنِ کلاینت نباشد. jwt.strategy کاربر را با sub از DB می‌خوانَد.
+    // مسدودشده → ورود ممنوع (jwt.strategy هم در هر درخواست رد می‌کند؛ این پیامِ روشن می‌دهد).
+    if ((user as any).isBanned) {
+      throw new UnauthorizedException('حساب شما مسدود شده است. برای پیگیری با پشتیبانی تماس بگیرید.');
+    }
+    // ❌ isAdmin/phone از payload حذف شد (data-minimization). epoch: کلیدِ ابطالِ توکن (force-logout/ban/reset).
     const token = this.jwtService.sign({
       sub: user.id,
+      epoch: (user as any).sessionEpoch ?? 0,
     });
     return { token, user: sanitizeUser(user) };
   }

@@ -5,6 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { useRecipeDetail } from '../../recipe/[id]/useRecipeDetail';
 import { usePersonalization } from '../../../hooks/usePersonalization';
+import { recallRecommendation } from '../../../lib/recommendationAttribution';
 import { extractBaseServings } from '../../../components/ges/scaling';
 import { patchStepText, swapsList } from '../../../components/ges/personalize';
 
@@ -98,7 +99,13 @@ export function useCook(id) {
       if (!finished) {
         setFinished(true);
         // CANONICAL completion event the gamification engine counts (UserEvent type 'cook_complete').
-        if (token) trackEvent('cook_complete', { recipeId: id });
+        if (token) {
+          trackEvent('cook_complete', { recipeId: id });
+          // If this recipe was reached from a recommendation (within the window), also fire the explicit
+          // `recommendation_cook` reward with the slate requestId — the strongest exposure↔reward signal.
+          const rid = recallRecommendation(id);
+          if (rid) trackEvent('recommendation_cook', { recipeId: id, requestId: rid });
+        }
       }
       return;
     }

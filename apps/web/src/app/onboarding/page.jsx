@@ -1,4 +1,5 @@
 import { Box, Text, UnstyledButton } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   IconChevronRight, IconArrowLeft, IconCircleCheckFilled, IconCheck, IconPlus, IconMinus,
@@ -374,9 +375,11 @@ function NoneFastExit({ onClick }) {
 export default function OnboardingPage() {
   const o = useOnboarding();
   const a = o.answers;
+  const navigate = useNavigate();
   return (
     <Column>
-      {o.step === 1 ? <Welcome onStart={o.next} onLogin={o.goLogin} showLogin={!o.authed} /> : null}
+      {/* Always show «ورود» → the standalone /login (the guest-spine token used to hide it, stranding returning users). */}
+      {o.step === 1 ? <Welcome onStart={o.next} onLogin={() => navigate('/login')} showLogin /> : null}
 
       {o.step >= 2 && o.step <= 4 ? (
         <QuestionShell o={o}>

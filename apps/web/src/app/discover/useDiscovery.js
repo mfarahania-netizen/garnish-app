@@ -191,6 +191,17 @@ export function useDiscovery() {
     }
   }, [status, query, trackEvent]);
 
+  // record EVERY completed search (results OR not), once per query → the real search-VOLUME signal the admin
+  // «جستجو» trend (search_query) reads. PRIVACY: shape-only payload (length + word count), never the raw text.
+  const searched = useRef('');
+  useEffect(() => {
+    if ((status === 'results' || status === 'noresults') && query && searched.current !== query) {
+      searched.current = query;
+      const q = query.trim();
+      trackEvent('search_query', { queryLength: q.length, wordCount: q ? q.split(/\s+/).length : 0 });
+    }
+  }, [status, query, trackEvent]);
+
   const setQueryNow = useCallback((q) => { setInput(q); setQuery(q.trim()); }, []);
   const clear = useCallback(() => { setInput(''); setQuery(''); setFilters({}); }, []);
   const toggleFilter = useCallback((id) => setFilters((f) => ({ ...f, [id]: !f[id] })), []);

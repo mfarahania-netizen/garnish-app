@@ -39,6 +39,15 @@ model User {
   recommendationAttributions RecommendationAttributionEvent[]
   profile                    UserBehaviorProfile?
   isAdmin                    Boolean                          @default(false)
+  // Admin moderation — account suspension. Login is gated on isBanned (auth.service); bannedAt/banReason
+  // give the audit trail. Additive + default-false → every existing user is unaffected (not banned).
+  isBanned                   Boolean                          @default(false)
+  bannedAt                   DateTime?
+  banReason                  String?
+  // Stateless-JWT invalidation epoch: bumped on force-logout / ban / admin password-reset. The jwt strategy
+  // rejects any token whose epoch != the user's current epoch → a REAL kick (deleting sessions alone can't,
+  // since the token is self-contained). Default 0; tokens minted without an epoch claim compare as 0 (back-compat).
+  sessionEpoch               Int                              @default(0)
   auditLogs                  UserAuditLog[]
   dataAccessLogs             DataAccessLog[]
   consentLogs                ConsentLog[]
@@ -382,12 +391,21 @@ model SupportTicket {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subject   String
   message   String
-  status    String   @default("open")
-  priority  String   @default("normal")
+  status    String   @default("open") // open | pending | in_progress | resolved | closed (validated in service)
+  priority  String   @default("normal") // low | normal | high | urgent (now actually used + filterable)
+  category  String   @default("general") // general | account | technical | billing | feature | content
+  assigneeId String? // admin user id this ticket is assigned to (plain column, no FK — like UserEvent.sessionId)
+  tags      String[] @default([]) // free-form admin labels
+  rating    Int? // 1–5 user satisfaction, set after resolution
+  ratingComment String?
+  firstResponseAt DateTime? // first STAFF reply → SLA first-response time
+  resolvedAt      DateTime? // moved to resolved/closed → SLA resolution time
+  lastReplyAt     DateTime? // newest reply (sort by activity / "needs attention")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   replies TicketReply[]
+  notes   TicketNote[]
 }
 
 model TicketReply {
@@ -396,6 +414,17 @@ model TicketReply {
   ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   message   String
   isStaff   Boolean       @default(false)
+  authorId  String? // who wrote it (user or admin id), for accountability
+  createdAt DateTime      @default(now())
+}
+
+// Internal admin-only notes on a ticket — NEVER returned to the user (unlike TicketReply).
+model TicketNote {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  String? // admin who wrote the note
+  body      String
   createdAt DateTime      @default(now())
 }
 
@@ -409,7 +438,6 @@ model UserSession {
   endTime   DateTime?
   device    String?
   ip        String?
-  events    UserEvent[]
 }
 
 model UserEvent {
@@ -418,8 +446,10 @@ model UserEvent {
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   type               String
   timestamp          DateTime            @default(now())
+  // Client-generated session correlation id. Plain indexed column (NO foreign key): sessions are DERIVED at
+  // analysis time by the 30-min inactivity gap (PostHog/Amplitude model), so an event never blocks on a
+  // UserSession row existing first. UserSession remains a standalone model (GDPR export/erasure/retention).
   sessionId          String?
-  session            UserSession?        @relation(fields: [sessionId], references: [id])
   page               String?
   duration           Int?
   payload            String?
@@ -433,6 +463,7 @@ model UserEvent {
   @@index([type])
   @@index([userId, recipeId, timestamp])
   @@index([consentPurpose]) // mirrors the migration's index (DSAR/observability provenance audits)
+  @@index([sessionId]) // session analytics group by sessionId (sessions derived by inactivity gap)
 }
 
 // L0 — durable transactional-outbox for event routing ("capture every second" / no lost signals). Every
@@ -1097,4 +1128,71 @@ model GamificationEvent {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+// ============================================================================================
+// ADMIN CONTROL CENTER — Workflow automation engine (spec: docs/audit/ADMIN_CONTROL_CENTER_SPEC.md §B6).
+// A lightweight in-house DAG runner over @nestjs/schedule + Prisma + EventOutbox (NOT Temporal/n8n).
+// Definition (Workflow) vs run (WorkflowRun, JSONB step-state) vs alert (WorkflowAlert) are kept separate —
+// definitions are small + edited rarely + version-pinned; runs are high-volume + pruned; alerts are the feed.
+// ============================================================================================
+
+model Workflow {
+  id              String        @id @default(uuid())
+  key             String        @unique // stable id, e.g. 'ai-cost-guardrail'
+  name            String
+  description     String?
+  enabled         Boolean       @default(true)
+  triggerType     String        @default("schedule") // 'schedule' | 'event' | 'manual'
+  intervalSec     Int? // schedule trigger: run every N seconds (v1 scheduler; cron-expression support later)
+  eventType       String? // event trigger: matches a UserEvent.type
+  graph           Json // { nodes: [{ id, type, params, next? }] } — the DAG (React-Flow editor-ready)
+  version         Int           @default(1) // bump on edit; a run pins the version it executed
+  defaultSeverity String        @default("info") // info | warning | critical
+  nextRunAt       DateTime? // the scheduler scans this (indexed)
+  lastRunAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  runs            WorkflowRun[]
+
+  @@index([enabled, triggerType, nextRunAt]) // the scheduler's hot query
+  @@index([eventType])
+}
+
+model WorkflowRun {
+  id              String    @id @default(uuid())
+  workflowId      String
+  workflow        Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowVersion Int       @default(1) // the definition version actually executed
+  trigger         String    @default("schedule") // 'schedule' | 'event' | 'manual'
+  status          String    @default("running") // running | succeeded | failed | skipped
+  startedAt       DateTime  @default(now())
+  finishedAt      DateTime?
+  durationMs      Int?
+  stepState       Json? // { [nodeId]: { status, output, error?, ms } } — one JSONB column per run (Windmill)
+  outcome         Json? // the final node output (alert payload / digest)
+  error           String? // sanitized; no PII/secrets
+
+  @@index([workflowId, startedAt])
+  @@index([status, startedAt]) // open/failed runs + pruning scan
+}
+
+model WorkflowAlert {
+  id             String   @id @default(uuid())
+  workflowId     String // loose ref (no FK) — alerts are an audit log that outlives workflow edits/deletes
+  workflowKey    String // denormalized so the Command feed reads without a join
+  runId          String?
+  severity       String   @default("info") // info | warning | critical
+  title          String
+  body           String
+  metric         String?
+  value          Float?
+  threshold      Float?
+  status         String   @default("open") // open | acknowledged | snoozed | resolved
+  acknowledgedBy String?
+  channelsSent   Json? // ['in_app'] now → ['slack','email'] later
+  createdAt      DateTime @default(now())
+
+  @@index([status, severity, createdAt])
+  @@index([workflowKey, createdAt])
 }

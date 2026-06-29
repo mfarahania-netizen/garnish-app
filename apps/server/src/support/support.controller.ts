@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { SupportService } from './support.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { AddReplyDto } from './dto/add-reply.dto';
+import { RateTicketDto } from './dto/rate-ticket.dto';
 
 @Controller('support')
 @UseGuards(AuthGuard('jwt'))
@@ -21,7 +22,7 @@ export class SupportController {
 
   @Post('tickets')
   createTicket(@Req() req, @Body() dto: CreateTicketDto) {
-    return this.supportService.createTicket(req.user.userId, dto.subject, dto.message);
+    return this.supportService.createTicket(req.user.userId, dto);
   }
 
   @Post('tickets/:id/replies')
@@ -32,5 +33,10 @@ export class SupportController {
   @Patch('tickets/:id/close')
   closeTicket(@Req() req, @Param('id') id: string) {
     return this.supportService.closeTicket(req.user.userId, id);
+  }
+
+  @Patch('tickets/:id/rate')
+  rateTicket(@Req() req, @Param('id') id: string, @Body() dto: RateTicketDto) {
+    return this.supportService.rate(req.user.userId, id, dto.rating, dto.comment);
   }
 }

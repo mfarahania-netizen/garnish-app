@@ -1,112 +1,54 @@
 import { screen } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
-import AdminPage from './page';
 
-// Mock the data hook so no network happens; the page reads everything off useAdmin().
-vi.mock('./useAdmin', () => ({ useAdmin: vi.fn() }));
-import { useAdmin } from './useAdmin';
+// useNarrow() (page.jsx) reads window.matchMedia — jsdom lacks it; polyfill before any mount.
+beforeAll(() => {
+  if (!window.matchMedia) {
+    window.matchMedia = (q) => ({ matches: false, media: q, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent() { return false; } });
+  }
+});
 
-// The harness wraps in the real AuthProvider, which touches localStorage at mount.
-// jsdom in this runner reports localStorage unavailable (no --localstorage-file), so
-// stub AuthProvider to a pass-through. The page never calls useAuth() itself (only the
-// mocked useAdmin does), so an admin user keeps the logged-in baseline intact.
+// Controllable auth state — hoisted so the (hoisted) vi.mock factory can read it.
+const { authState } = vi.hoisted(() => ({ authState: { value: null } }));
 vi.mock('../../context/AuthContext', () => ({
   AuthProvider: ({ children }) => children,
-  useAuth: () => ({
-    user: { name: 'تست', phone: '09120000000', isAdmin: true },
-    token: 't',
-    isLoading: false,
-    login: vi.fn(),
-    register: vi.fn(),
-    logout: vi.fn(),
-  }),
+  useAuth: () => authState.value,
+  ONBOARDED_KEY: 'garnish.onboarded',
 }));
 
-// Realistic RANGES the header maps over (matches the hook's RANGES constant).
-const ranges = [
-  { id: 1, label: '۲۴ ساعت' },
-  { id: 7, label: '۷ روز' },
-  { id: 30, label: '۳۰ روز' },
-];
+// Stub the default tab body — the smoke test targets the SHELL (gate / sidebar nav / topbar),
+// not recharts + react-query inside each tab.
+vi.mock('./tabs/OverviewTab', () => ({ default: () => <div data-testid="tab-overview">overview</div> }));
 
-// Complete `d` shape for the ready branch — every field the page dereferences.
-const fullData = () => ({
-  growth: {
-    users: { real: true, value: 1240 },
-    cooks: { real: true, value: 312 },
-    searches: { real: true, value: 980 },
-    ai: { real: false, value: 0 },
-  },
-  latency: { real: true, p50: 120, p95: 340, total: 500 },
-  eventQuality: { real: true, rate: 0.97, sampled: 200 },
-  guards: {
-    cases: 50,
-    blocked: 12,
-    byGuard: { ai_safety: 5, prompt_injection: 4, nutrition_claim: 3 },
-    source: 'fixture-corpus',
-  },
-  allergen: { pass: true, leaks: 0, indicator: 'گذراند' },
-  notif: { posture: 'dry-run', realSendEnabled: false },
-  foodDna: { real: true, bands: { empty: 10, forming: 8, developing: 5, mature: 2 }, sampled: 25 },
-  recsys: {
-    real: true,
-    offline: {
-      coverage: { value: 0.82, threshold: 0.5, pass: true, note: '' },
-      diversity: { value: 0.64, threshold: 0.5, pass: true, note: '' },
-    },
-    allergySafety: { pass: true },
-  },
-  readiness: { jobs: [], destructive: false },
-});
+import AdminPage from './page';
 
-const baseHook = (overrides) => ({
-  status: 'ready',
-  isAdmin: true,
-  ranges,
-  days: 30,
-  setDays: vi.fn(),
-  refetchAll: vi.fn(),
-  d: fullData(),
-  ...overrides,
-});
+const mk = (over) => ({ user: null, token: '', isLoading: false, login: vi.fn(), register: vi.fn(), logout: vi.fn(), ...over });
+const ADMIN = mk({ user: { name: 'تست', isAdmin: true, isGuest: false }, token: 't' });
+const GUEST = mk({ user: { isAdmin: false, isGuest: true }, token: 'g' });
+const LOADING = mk({ isLoading: true });
 
-describe('AdminPage smoke', () => {
-  it('renders the auth (loading-gate) state', () => {
-    useAdmin.mockReturnValue(baseHook({ status: 'auth' }));
+describe('AdminPage smoke (sidebar architecture)', () => {
+  it('shows a loader while auth resolves', () => {
+    authState.value = LOADING;
     const { container } = renderWithProviders(<AdminPage />);
-    // The auth gate renders only a centered Mantine Loader.
     expect(container.querySelector('.mantine-Loader-root')).toBeTruthy();
   });
 
-  it('renders the denied state with a home affordance', () => {
-    useAdmin.mockReturnValue(baseHook({ status: 'denied', isAdmin: false }));
+  it('shows the admin login card for a non-admin visitor', () => {
+    authState.value = GUEST;
     renderWithProviders(<AdminPage />);
-    expect(screen.getByRole('heading', { name: 'دسترسی محدود' })).toBeInTheDocument();
-    expect(screen.getByText('این بخش فقط برای مدیران است.')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'خانه' })).toBeInTheDocument();
+    expect(screen.getByText('ورود مدیران')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'پنل مدیریت گارنیش' })).toBeInTheDocument();
   });
 
-  it('renders the loading state with the header chrome', () => {
-    useAdmin.mockReturnValue(baseHook({ status: 'loading' }));
-    const { container } = renderWithProviders(<AdminPage />);
-    expect(screen.getByRole('heading', { name: 'پنل مدیریت' })).toBeInTheDocument();
+  it('renders the sidebar nav + active tab + topbar for an admin', () => {
+    authState.value = ADMIN;
+    renderWithProviders(<AdminPage />);
+    expect(screen.getByRole('button', { name: 'نمای کلی' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'هوش مصنوعی' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'ایمنی و انطباق' })).toBeInTheDocument();
+    expect(screen.getByTestId('tab-overview')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'به‌روزرسانی' })).toBeInTheDocument();
-    expect(container.querySelector('.mantine-Loader-root')).toBeTruthy();
-  });
-
-  it('renders the error state with a retry affordance', () => {
-    useAdmin.mockReturnValue(baseHook({ status: 'error' }));
-    renderWithProviders(<AdminPage />);
-    expect(screen.getByText('بارگذاری نشد')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'تلاش دوباره' })).toBeInTheDocument();
-  });
-
-  it('renders the ready dashboard with its sections', () => {
-    useAdmin.mockReturnValue(baseHook({ status: 'ready' }));
-    renderWithProviders(<AdminPage />);
-    expect(screen.getByRole('heading', { name: 'پنل مدیریت' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'رشد و فعالیت' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'ایمنی و انطباق' })).toBeInTheDocument();
-    expect(screen.getByText('سامانه آمادهٔ راه‌اندازی')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'خروجی JSON' })).toBeInTheDocument();
   });
 });

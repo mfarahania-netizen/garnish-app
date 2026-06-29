@@ -1,4 +1,5 @@
-import { IsString, MinLength, MaxLength } from 'class-validator';
+import { IsString, MinLength, MaxLength, IsOptional, IsIn } from 'class-validator';
+import { TICKET_CATEGORIES, TICKET_PRIORITIES } from '../ticket.constants';
 
 export class CreateTicketDto {
   @IsString()
@@ -10,4 +11,12 @@ export class CreateTicketDto {
   @MinLength(10)
   @MaxLength(5000)
   message: string;
+
+  @IsOptional()
+  @IsIn(TICKET_CATEGORIES as unknown as string[])
+  category?: string;
+
+  @IsOptional()
+  @IsIn(TICKET_PRIORITIES as unknown as string[])
+  priority?: string;
 }
