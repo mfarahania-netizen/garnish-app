@@ -67,7 +67,7 @@ export function Kpi({ icon: Icon, label, value, sub, status = 'real', awaitNote,
     <Box style={{ ...CARD, ...(real ? {} : { borderStyle: 'dashed' }) }}>
       <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 7, color: 'var(--g-color-text-secondary)', minInlineSize: 0 }}>
-          {Icon ? <Icon size={15} stroke={1.7} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : null}
+          {Icon ? <Icon size={15} stroke={1.7} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} /> : null}
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</Text>
         </Box>
         <Dot status={status} />

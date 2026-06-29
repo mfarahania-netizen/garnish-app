@@ -12,7 +12,7 @@ import {
   IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket, IconRobot,
 } from '@tabler/icons-react';
 import { useAuth } from '../../context/AuthContext';
-import { PostLaunch } from './_ui';
+import { PostLaunch, toFaDigits } from './_ui';
 import OverviewTab from './tabs/OverviewTab';
 import AiCostTab from './tabs/AiCostTab';
 import EngagementTab from './tabs/EngagementTab';
@@ -27,6 +27,26 @@ import AutomationTab from './tabs/AutomationTab';
 import AuthForm from '../../components/auth/AuthForm';
 
 const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }, { id: 30, label: '۳۰ روز' }];
+
+// A live "the panel is breathing" pill — ticks the wall-clock + re-stamps on window focus, so the operator can
+// trust the board isn't a frozen snapshot (the per-tab queries poll every 15–30s underneath, and react-query
+// refetches on focus). Honest: it signals liveness, not a specific per-metric timestamp.
+function FreshnessPill() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const t = setInterval(tick, 20000);
+    window.addEventListener('focus', tick);
+    return () => { clearInterval(t); window.removeEventListener('focus', tick); };
+  }, []);
+  const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  return (
+    <Box title="پنل زنده است و خودکار به‌روزرسانی می‌شود" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingInline: 10, minBlockSize: 32, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-success-fg, #2e7d4f)' }} />
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-secondary)', whiteSpace: 'nowrap' }}>زنده · {toFaDigits(hhmm)}</Text>
+    </Box>
+  );
+}
 
 const TABS = {
   overview: { label: 'نمای کلی', Icon: IconLayoutDashboard, C: OverviewTab, ranged: true },
@@ -157,6 +177,7 @@ export default function AdminPage() {
                 ))}
               </Box>
             ) : null}
+            <FreshnessPill />
             <UnstyledButton type="button" onClick={onRefresh} aria-label="به‌روزرسانی" style={iconBtn}><IconRefresh size={16} stroke={1.8} /></UnstyledButton>
             <UnstyledButton type="button" onClick={onExport} aria-label="خروجی JSON" style={iconBtn}><IconDownload size={16} stroke={1.8} /></UnstyledButton>
           </Box>
