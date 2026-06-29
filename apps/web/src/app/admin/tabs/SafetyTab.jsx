@@ -8,6 +8,25 @@ import { Section, Kpi, HBar, Panel, Note, Awaiting, grid, toFaDigits, fmtInt, fm
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
 const GUARD_FA = { ai_safety: 'ایمنی هوش مصنوعی', prompt_injection: 'تزریق پرامپت', nutrition_claim: 'ادعای تغذیه‌ای' };
+// Block-reason codes are raw English snake/kebab-case from the guard corpus — translate to Persian so the RTL
+// tab reads professionally (unknown keys fall back to a humanized form, never a raw token).
+const REASON_FA = {
+  'ignore-previous-instructions': 'نادیده‌گرفتنِ دستورهای قبلی',
+  'ignore-previous-fa': 'نادیده‌گرفتنِ دستورهای قبلی (فارسی)',
+  'forget-instructions': 'فراموش‌کردنِ دستورها',
+  'exfiltrate-system-prompt': 'استخراجِ پرامپتِ سیستم',
+  'disable-safety': 'غیرفعال‌سازیِ ایمنی',
+  'bypass-safety': 'دور زدنِ ایمنی',
+  'override-safety': 'نقضِ ایمنی',
+  'role-override': 'تغییرِ نقشِ مدل',
+  'role-override-fa': 'تغییرِ نقشِ مدل (فارسی)',
+  'jailbreak-mode': 'حالتِ جیلبریک',
+  medical_diagnosis_treatment: 'تشخیص یا درمانِ پزشکی',
+  strict_diet_planning: 'برنامهٔ غذاییِ درمانیِ سخت‌گیرانه',
+  sensitive_inference: 'استنتاجِ اطلاعاتِ حساس',
+  health_medical_claim_without_source_lock: 'ادعای سلامتی بدونِ منبعِ معتبر',
+  fake_vision_claim: 'ادعای جعلیِ تشخیصِ تصویری',
+};
 
 export default function SafetyTab() {
   const safety = useQuery({ queryKey: ['admin', 'ops-safety'], queryFn: () => get('/admin/ops/safety-compliance') });
@@ -41,7 +60,7 @@ export default function SafetyTab() {
           {Object.entries(gc.byGuard || {}).map(([k, v]) => <HBar key={k} label={GUARD_FA[k] || k} value={v} max={gc.casesEvaluated || 1} display={toFaDigits(v)} />)}
         </Panel>
         <Panel title="دلایلِ مسدودی" status={byReason.length ? 'real' : 'awaiting_pilot'}>
-          {byReason.length ? byReason.slice(0, 8).map(([k, v]) => <HBar key={k} label={k} value={v} max={gc.blockedCases || 1} display={toFaDigits(v)} color="var(--g-color-brand-400)" />) : <Awaiting note="دلیلی ثبت نشده." />}
+          {byReason.length ? byReason.slice(0, 8).map(([k, v]) => <HBar key={k} label={REASON_FA[k] || k.replace(/[-_]/g, ' ')} value={v} max={gc.blockedCases || 1} display={toFaDigits(v)} color="var(--g-color-brand-400)" />) : <Awaiting note="دلیلی ثبت نشده." />}
         </Panel>
       </Box>
 

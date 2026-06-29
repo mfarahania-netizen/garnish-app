@@ -7,6 +7,8 @@ import apiClient from '../../../lib/apiClient';
 import { Section, Kpi, Panel, Note, Awaiting, grid, toFaDigits, fmtInt, fmtPct01, faPercent } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
+const FREQ_FA = { daily: 'روزانه', weekly: 'هفتگی', occasional: 'گاه‌به‌گاه', rare: 'به‌ندرت', inactive: 'غیرفعال' };
+const riskColor = (r) => (r >= 66 ? 'var(--g-color-state-danger-fg, #c0392b)' : r >= 33 ? 'var(--g-color-state-warning-fg, #c0801c)' : 'var(--g-color-text-secondary)');
 
 function Cell({ val }) {
   const v = typeof val === 'number' ? val : 0;
@@ -28,6 +30,10 @@ export default function RetentionTab() {
   const p = profiles.data || {};
   const periods = c.periods || [1, 2, 4];
   const rows = c.cohorts || [];
+  // The per-user churn-risk list — previously fetched then dropped (only the count rendered). Surface the actual
+  // at-risk users (highest risk first) so the operator can target re-engagement. Names are admin-scoped; phone
+  // arrives already masked from the backend.
+  const atRisk = [...(p.profiles || [])].filter((x) => typeof x.churnRiskScore === 'number').sort((a, b) => b.churnRiskScore - a.churnRiskScore).slice(0, 10);
 
   return (
     <>
@@ -58,6 +64,19 @@ export default function RetentionTab() {
             </Box>
           </Box>
         ) : <Awaiting note={c.note || 'هنوز کوهورتی برای محاسبه نیست.'} />}
+      </Panel>
+
+      <Section title="کاربرانِ در ریسکِ ریزش" sub="مرتب بر اساسِ ریسک — بالاترین در صدر؛ فهرستِ هدفِ مداخله" />
+      <Panel status={atRisk.length ? 'real' : 'awaiting_pilot'}>
+        {atRisk.length ? atRisk.map((u) => (
+          <Box key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, paddingBlock: 9, borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+            <Box style={{ flex: 1, minInlineSize: 0 }}>
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: 500, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.user?.name || 'کاربرِ بی‌نام'}</Text>
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', marginBlockStart: 1 }}>{FREQ_FA[u.cookingFrequency] || u.cookingFrequency || '—'} · ثبات {faPercent(Math.round(u.consistencyScore || 0))}</Text>
+            </Box>
+            <Box style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 600, color: riskColor(u.churnRiskScore), background: 'var(--g-color-bg-canvas)', borderRadius: '7px', paddingInline: 9, paddingBlock: 4, flexShrink: 0 }}>ریسک {faPercent(Math.round(u.churnRiskScore))}</Box>
+          </Box>
+        )) : <Awaiting note="پروفایلی برای نمایش نیست." />}
       </Panel>
     </>
   );
