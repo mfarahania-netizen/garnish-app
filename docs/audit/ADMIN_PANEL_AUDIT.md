@@ -10,6 +10,9 @@ Source: `admin-panel-audit` workflow (24 line-by-line lens agents, FE+BE per tab
 ## ✅ PROGRESS — batch 2 (P0-3 start, done + verified)
 - Added `ErrorState` primitive to `_ui.jsx` (a 4th state: real / awaiting / **error** / ok). OverviewTab now: (a) renders a real "بارگذاری نشد" when the core ops feeds fail (was: ignored `error`), and (b) NO LONGER shows the green "همه‌چیز سالم" card when the alerts-fetch itself failed (was: fake-green on a dead backend — the launch-night catastrophe). **P0-3 now COMPLETE** — first-class Error state (≠ awaiting ≠ ok) on ALL 5 tabs (Overview + Behavior + AiCost + Users + Tickets): a failed fetch reads «بارگذاری نشد» (red) + retry, never fake-green or fake-awaiting. Verified: **full Vite build clean — 8080 modules.**
 
+## ✅ PROGRESS — batch 3 (P0-2 done + verified)
+- **P0-2 Attention Queue COMPLETE.** BE (commit ac3e569c): WorkflowAlert resolve+snooze endpoints + snoozedUntil/resolvedAt columns + snooze auto-re-surfaces. FE: `app/admin/AttentionQueue.jsx` merges open workflow alerts (already covering safety/cost/reliability guards) + unanswered tickets into ONE severity-then-time list with inline Ack / Snooze-1h / Resolve + ticket deep-link; wired into OverviewTab (replaced the fragmented attention feed); calm honest empty state ("۰ پرچم", never padded). Verified: lifecycle smoke (snooze→excluded-from-open→resolve) + Vite build clean (8081 modules).
+
 ## 🎯 MISSION-CONTROL TARGET (blueprint workflow `wf_7a53a52e`, internet-grounded) — the "finish" plan
 Score vs the mission-control bar: **4/10** (the 6/10 audit was "good admin panel"; this is the higher "watch+operate from one panel" bar). Vision: ONE grayscale big-board where a healthy app shows almost no color and the first anomaly is the only thing that lights up — "all-OK, or here's what's wrong + what to do" in <5s, honest at ~0 users by construction.
 

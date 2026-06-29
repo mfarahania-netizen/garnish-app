@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import { useOverviewData } from '../useAdmin';
+import AttentionQueue from '../AttentionQueue';
 import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits, faPercent } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
@@ -27,10 +28,8 @@ const st = (real) => (real ? 'real' : 'awaiting_pilot');
 
 export default function OverviewTab({ days = 30 }) {
   const { d, loading, error } = useOverviewData(days);
-  // Pulse: what needs ATTENTION first — the background guards' open alerts + the top things to improve.
-  const alertsQ = useQuery({ queryKey: ['admin', 'workflow-alerts'], queryFn: () => get('/admin/workflows/alerts?status=open&limit=10'), refetchInterval: 20000 });
+  // Pulse: what needs ATTENTION first — the unified Attention Queue (alerts + tickets) + the top things to improve.
   const behaviorQ = useQuery({ queryKey: ['admin', 'behavior'], queryFn: () => get('/admin/insights/behavior'), refetchInterval: 30000 });
-  const attention = (alertsQ.data?.alerts || []).filter((a) => a.severity === 'critical' || a.severity === 'warning');
   const improve = (behaviorQ.data?.improve || []).slice(0, 4);
 
   if (loading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 'var(--g-space-8)' }}><Loader color="var(--g-color-brand-600)" /></Box>;
@@ -41,29 +40,7 @@ export default function OverviewTab({ days = 30 }) {
     <>
       {/* ── PULSE: needs-attention first (alerts) + what to improve ── */}
       <Section title="وضعیتِ امروز" sub="در ۳۰ ثانیه: چیزی خراب است؟ چه کنم؟">
-        {alertsQ.isError ? (
-          <Box style={{ ...CARD, border: 'none' }}><ErrorState note="هشدارها از سرور خوانده نشد — وضعیتِ واقعی نامعلوم است؛ «سالم» نشان نمی‌دهیم تا اشتباه نشود." onRetry={() => alertsQ.refetch()} /></Box>
-        ) : alertsQ.isLoading ? (
-          <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 10, border: 'none' }}><Loader size="sm" color="var(--g-color-brand-600)" /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-muted)' }}>در حالِ بررسیِ هشدارها…</Text></Box>
-        ) : attention.length === 0 ? (
-          <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 10, background: 'var(--g-color-state-success-bg, #e9f6ee)', border: 'none' }}>
-            <IconCircleCheck size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg, #2e7d4f)', flexShrink: 0 }} />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, color: 'var(--g-color-state-success-fg, #2e7d4f)' }}>همه‌چیز سالم است — هیچ هشدارِ بحرانی‌ای نیست.</Text>
-          </Box>
-        ) : (
-          <Box style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {attention.map((a) => {
-              const s = SEV[a.severity] || SEV.info;
-              return (
-                <Box key={a.id} style={{ ...CARD, borderInlineStartWidth: 3, borderInlineStartColor: s.fg, borderInlineStartStyle: 'solid', display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <Box style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10px', fontWeight: 600, color: s.fg, background: s.bg, borderRadius: '5px', padding: '2px 7px', flexShrink: 0 }}>{s.label}</Box>
-                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{a.title}</Text>
-                  {a.value != null ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)' }}>· {toFaDigits(Math.round(a.value * 1000) / 1000)}</Text> : null}
-                </Box>
-              );
-            })}
-          </Box>
-        )}
+        <AttentionQueue />
 
         {improve.length > 0 ? (
           <Box style={{ ...CARD, marginBlockStart: 10 }}>
