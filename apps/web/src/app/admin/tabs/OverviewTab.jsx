@@ -10,6 +10,7 @@ import {
 import apiClient from '../../../lib/apiClient';
 import { useOverviewData } from '../useAdmin';
 import AttentionQueue from '../AttentionQueue';
+import PulseStrip from '../PulseStrip';
 import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits, faPercent } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
@@ -38,7 +39,12 @@ export default function OverviewTab({ days = 30 }) {
 
   return (
     <>
-      {/* ── PULSE: needs-attention first (alerts) + what to improve ── */}
+      {/* ── SYSTEM PULSE: the ≤9-tile black-box glance (P0-1) ── */}
+      <Section title="نبضِ سیستم" sub="در یک نگاه: همه‌چیز سالم است یا دقیقاً چه خراب است؟">
+        <PulseStrip />
+      </Section>
+
+      {/* ── ATTENTION QUEUE + what to improve ── */}
       <Section title="وضعیتِ امروز" sub="در ۳۰ ثانیه: چیزی خراب است؟ چه کنم؟">
         <AttentionQueue />
 
@@ -78,12 +84,7 @@ export default function OverviewTab({ days = 30 }) {
           <IconCircleCheck size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg)' }} />
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-state-success-fg)' }}>سامانه آمادهٔ راه‌اندازی</Text>
         </Box>
-        <Box style={grid(190)}>
-          <Kpi icon={IconShieldCheck} label="گاردهای ایمنی" status="real" value={toFaDigits(d.guards.blocked)} sub={`از ${toFaDigits(d.guards.cases)} موردِ پیکره · مسدودشده`} />
-          <Kpi icon={IconShieldHalf} label="فیلتر آلرژن" status={d.allergen ? 'real' : 'awaiting_pilot'} value={d.allergen?.pass ? 'گذراند' : 'بررسی'} sub={d.allergen ? `${toFaDigits(d.allergen.leaks)} نشت` : ''} awaitNote="در حال ارزیابی" />
-          <Kpi icon={IconClock} label="تأخیر p۹۵ (ms)" status={d.latency.real && d.latency.p95 != null ? 'real' : 'awaiting_pilot'} value={d.latency.p95 != null ? toFaDigits(d.latency.p95) : '—'} sub={d.latency.p50 != null ? `p۵۰ ${toFaDigits(d.latency.p50)}ms` : ''} awaitNote="در انتظار فراخوان واقعی" />
-          <Kpi icon={IconChartBar} label="کیفیت رویداد" status={d.eventQuality.real ? 'real' : 'awaiting_pilot'} value={d.eventQuality.rate != null ? faPercent(d.eventQuality.rate * 100) : '—'} sub="رویدادهای معتبر" awaitNote="در انتظار رویداد واقعی" />
-        </Box>
+        <Note tone="info">شاخص‌های زندهٔ آمادگی (آلرژن · گاردها · تأخیر · کیفیتِ رویداد) بالا در «نبضِ سیستم» نشان داده می‌شوند — اینجا تکرار نمی‌کنیم.</Note>
       </Section>
 
       <Section title="ایمنی و انطباق">
