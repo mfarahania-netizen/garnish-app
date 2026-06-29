@@ -42,13 +42,24 @@ export default function EngagementTab({ days = 30 }) {
 
       <Section title="قیف‌های تبدیل" sub="چند کاربر از هر مرحله به بعدی می‌رسند" />
       <Box style={grid(300)}>
-        {fnls.length ? fnls.map((f) => (
-          <Panel key={f.name} title={funnelName(f.name)} status={f.status} sub={f.status === 'real' ? `تبدیل کل: ${fmtPct01(f.overallConversion)}` : undefined}>
-            {f.status === 'real' ? f.stages.map((s) => (
-              <HBar key={s.key} label={s.label} value={s.count} max={f.stages[0]?.count || 1} display={`${toFaDigits(s.count)}${s.dropOffFromPrev != null ? ` · افت ${fmtPct01(s.dropOffFromPrev)}` : ''}`} />
-            )) : <Awaiting note="هنوز کسی واردِ این قیف نشده." />}
-          </Panel>
-        )) : <Awaiting note="قیفی در دسترس نیست." />}
+        {fnls.length ? fnls.map((f) => {
+          // n-count honesty gate: a conversion % computed from a handful of users is noise, not a trend. Flag it
+          // rather than letting a 1-of-2 = «۵۰٪» read like a stable rate. Threshold ~30 (statistical stability).
+          const entryN = f.stages?.[0]?.count || 0;
+          const lowSample = f.status === 'real' && entryN > 0 && entryN < 30;
+          return (
+            <Panel key={f.name} title={funnelName(f.name)} status={f.status} sub={f.status === 'real' ? `تبدیل کل: ${fmtPct01(f.overallConversion)}${lowSample ? ' · نمونهٔ کوچک' : ''}` : undefined}>
+              {f.status === 'real' ? (
+                <>
+                  {lowSample ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-state-warning-fg, #c0801c)', marginBlockEnd: 4 }}>نمونهٔ کوچک ({toFaDigits(entryN)} کاربر) — درصدها هنوز آماری پایدار نیستند.</Text> : null}
+                  {f.stages.map((s) => (
+                    <HBar key={s.key} label={s.label} value={s.count} max={f.stages[0]?.count || 1} display={`${toFaDigits(s.count)}${s.dropOffFromPrev != null ? ` · افت ${fmtPct01(s.dropOffFromPrev)}` : ''}`} />
+                  ))}
+                </>
+              ) : <Awaiting note="هنوز کسی واردِ این قیف نشده." />}
+            </Panel>
+          );
+        }) : <Awaiting note="قیفی در دسترس نیست." />}
       </Box>
 
       <Section title="پربازدیدترین صفحه‌ها" sub="بر اساس رویدادهای page_view" />

@@ -10,7 +10,7 @@ const TYPE_FA = {
   page_view: 'بازدید صفحه', recipe_view: 'دیدنِ رسپی', ai_message_send: 'پیامِ هوش مصنوعی', ai_suggestion_generated: 'پاسخِ هوش مصنوعی',
   mealplan_add: 'افزودن به برنامه', mealplan_remove: 'حذف از برنامه', mealplan_generate: 'ساختِ برنامه', cook_complete: 'تکمیلِ پخت',
   favorite_add: 'علاقه‌مندی', start_cooking_click: 'شروعِ پخت', search_unmet: 'جستجوی بی‌نتیجه', login: 'ورود', logout: 'خروج',
-  recommendation_impression: 'نمایشِ پیشنهاد', recommendation_click: 'کلیکِ پیشنهاد', admin_view: 'بازدیدِ ادمین',
+  recommendation_impression: 'نمایشِ پیشنهاد', recommendation_click: 'کلیکِ پیشنهاد',
 };
 const rel = (ts) => {
   const s = Math.max(0, Math.floor((Date.now() - new Date(ts).getTime()) / 1000));
