@@ -19,6 +19,15 @@ Source: `admin-panel-audit` workflow (24 line-by-line lens agents, FE+BE per tab
 - Re-verified ALREADY honest (no change needed): onboarding funnel (emitted register/diet/skill, dead allergy_changed dropped) · content-gaps topQueries (shows the GDPR shape-only note, not a fake list) · live $ cost (now real $0.098 via the deepseek/gemini rate catalog, no longer structurally null) · ranked lists + user-dossier «رویداد» + کل-کاربران split (all fixed batch-1).
 - **All 8 GROUP-1 items resolved → GROUP-1 CLOSED.** Verified: FE build clean (8082) + server 0 errors + endpoint shape correct.
 
+## ✅ PROGRESS — batch 5 (POLISH TO 100% — autonomous, all build+smoke verified, 5 commits)
+- **P0-1 Pulse strip** (a328044f): `PulseStrip.jsx` ≤9 black-box tiles (system · allergy-leak · chat-health · cost · traffic · pipeline · guards · open-criticals · p95), grayscale-calm, real-or-explicit-No-data; replaced the redundant readiness grid.
+- **AI Daily Brief** (c6bff9dd): `DailyBrief.jsx` wires the deterministic `getAdminInsights` as a plain-words briefing on the landing (glance→brief→act). 6 real findings live.
+- **P0-5 grayscale + P0-4 pragmatic** (fb90a2ec): Kpi icons brand-green → neutral gray (color = signal only); live «زنده · HH:MM» freshness pill + focus-refetch. **Full SSE deliberately NOT built** (over-engineering for 1 operator over ~0 traffic; pill + 15–30s pollers + focus-refetch deliver the trust signal).
+- **GROUP-4 completeness** (f9109dab): Safety block-reasons → Persian (`REASON_FA` + humanize fallback); Retention churn-risk panel renders the previously-dropped per-user profiles (sorted, color-as-signal, admin-scoped names + masked phone).
+- **P1 n-count gate + cleanup** (937c38b0): funnel with <30-user entry → «نمونهٔ کوچک» caveat (a 1-of-2=50% can't read as a stable rate); dropped the dead `admin_view` Realtime mapping.
+- **Expert-call DEFERRALS (recorded + justified):** full SSE (over-eng for 1 viewer) · forced 12→6 tab-collapse (risky content-merge; the 3-group nav already achieves the IA goal) · `recordAudit` on ops/* reads (non-PII aggregates polled every 20–30s → would flood the audit trail for zero Art.30 value; PII reads already logged) · Realtime enrichment (empty feed at ~0 traffic).
+- Verified: every batch FE build clean (8083) + admin smoke 3/3 + live endpoint smokes. Objective 100% gate: `admin-100-reaudit` workflow (6 dimension lenses + synthesis) running.
+
 ## 🎯 MISSION-CONTROL TARGET (blueprint workflow `wf_7a53a52e`, internet-grounded) — the "finish" plan
 Score vs the mission-control bar: **4/10** (the 6/10 audit was "good admin panel"; this is the higher "watch+operate from one panel" bar). Vision: ONE grayscale big-board where a healthy app shows almost no color and the first anomaly is the only thing that lights up — "all-OK, or here's what's wrong + what to do" in <5s, honest at ~0 users by construction.
 
