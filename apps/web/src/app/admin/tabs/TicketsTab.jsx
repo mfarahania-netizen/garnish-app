@@ -166,7 +166,7 @@ function TicketDetail({ id, onClose }) {
           <Box style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[{ isStaff: false, message: t.message, createdAt: t.createdAt }, ...(t.replies || [])].map((r, i) => (
               <Box key={i} style={{ display: 'flex', gap: 7, flexDirection: r.isStaff ? 'row-reverse' : 'row', alignItems: 'flex-end' }}>
-                <Box aria-hidden="true" style={{ inlineSize: 26, blockSize: 26, flexShrink: 0, borderRadius: '50%', display: 'grid', placeItems: 'center', background: r.isStaff ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: r.isStaff ? '#fff' : 'var(--g-color-text-secondary)', border: r.isStaff ? 'none' : '1px solid var(--g-color-border-subtle)' }}>{r.isStaff ? <IconHeadset size={14} stroke={1.8} /> : <IconUserCircle size={15} stroke={1.7} />}</Box>
+                <Box aria-hidden="true" style={{ inlineSize: 26, blockSize: 26, flexShrink: 0, borderRadius: '50%', display: 'grid', placeItems: 'center', background: r.isStaff ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: r.isStaff ? 'var(--g-color-text-inverse, #fff)' : 'var(--g-color-text-secondary)', border: r.isStaff ? 'none' : '1px solid var(--g-color-border-subtle)' }}>{r.isStaff ? <IconHeadset size={14} stroke={1.8} /> : <IconUserCircle size={15} stroke={1.7} />}</Box>
                 <Box style={{ maxInlineSize: '85%', padding: '8px 11px', borderRadius: '12px', background: r.isStaff ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', border: `1px solid ${r.isStaff ? 'var(--g-color-brand-200)' : 'var(--g-color-border-subtle)'}` }}>
                   <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', color: 'var(--g-color-text-primary)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{r.message}</Text>
                   <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '9.5px', color: 'var(--g-color-text-muted)', marginBlockStart: 3, textAlign: 'end' }}>{r.isStaff ? 'پشتیبانی' : 'کاربر'} · {ago(r.createdAt)}</Text>
@@ -179,7 +179,7 @@ function TicketDetail({ id, onClose }) {
         {/* reply composer */}
         <Box style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
           <Textarea value={reply} onChange={(e) => setReply(e.target.value)} placeholder="پاسخ به کاربر…" autosize minRows={2} maxRows={6} styles={fieldStyles} />
-          <UnstyledButton type="button" onClick={() => reply.trim() && respondM.mutate(reply.trim())} disabled={!reply.trim() || respondM.isPending} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, minBlockSize: 40, borderRadius: '10px', background: 'var(--g-color-brand-600)', color: '#fff', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, opacity: reply.trim() ? 1 : 0.5 }}>{respondM.isPending ? <Loader size={15} color="#fff" /> : <><IconSend size={15} stroke={1.8} />ارسالِ پاسخ</>}</UnstyledButton>
+          <UnstyledButton type="button" onClick={() => reply.trim() && respondM.mutate(reply.trim())} disabled={!reply.trim() || respondM.isPending} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, minBlockSize: 40, borderRadius: '10px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, opacity: reply.trim() ? 1 : 0.5 }}>{respondM.isPending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : <><IconSend size={15} stroke={1.8} />ارسالِ پاسخ</>}</UnstyledButton>
         </Box>
 
         {/* internal notes */}
@@ -190,7 +190,7 @@ function TicketDetail({ id, onClose }) {
           ))}
           <Box style={{ display: 'flex', gap: 6, marginBlockStart: 7 }}>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="یادداشت…" style={{ flex: 1, minBlockSize: 34, paddingInline: 10, borderRadius: '8px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: '12px' }} />
-            <UnstyledButton type="button" onClick={() => note.trim() && noteM.mutate(note.trim())} disabled={!note.trim() || noteM.isPending} style={{ paddingInline: 12, minBlockSize: 34, borderRadius: '8px', background: 'var(--g-color-text-secondary)', color: '#fff', fontFamily: 'var(--g-font-fa)', fontSize: '12px', display: 'grid', placeItems: 'center' }}>افزودن</UnstyledButton>
+            <UnstyledButton type="button" onClick={() => note.trim() && noteM.mutate(note.trim())} disabled={!note.trim() || noteM.isPending} style={{ paddingInline: 12, minBlockSize: 34, borderRadius: '8px', background: 'var(--g-color-text-secondary)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', display: 'grid', placeItems: 'center' }}>افزودن</UnstyledButton>
           </Box>
         </Box>
       </Box>

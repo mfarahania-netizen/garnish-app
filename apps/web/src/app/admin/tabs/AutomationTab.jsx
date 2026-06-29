@@ -36,6 +36,7 @@ function agoFa(iso) {
 }
 
 const fmtNum = (n) => (typeof n === 'number' && Number.isFinite(n) ? toFaDigits(Math.round(n * 1000) / 1000) : '—');
+const ALERT_BTN = { display: 'inline-flex', alignItems: 'center', gap: 5, minBlockSize: 30, paddingInline: 9, borderRadius: '8px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '11px', fontWeight: 500, flexShrink: 0 };
 
 // turn the last run's structured outcome into a plain coloured sentence — so a guard "reports its state"
 // on the card WITHOUT you clicking anything (healthy / alerted / digest / error / never-run).
@@ -58,6 +59,8 @@ export default function AutomationTab() {
   const invalidate = () => { qc.invalidateQueries({ queryKey: ['admin', 'workflows'] }); qc.invalidateQueries({ queryKey: ['admin', 'workflow-alerts'] }); };
   const runMut = useMutation({ mutationFn: (key) => apiClient.post(`/admin/workflows/${key}/run`).then((r) => r.data), onSuccess: invalidate });
   const ackMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/ack`).then((r) => r.data), onSuccess: invalidate });
+  const resolveMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/resolve`).then((r) => r.data), onSuccess: invalidate });
+  const snoozeMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`).then((r) => r.data), onSuccess: invalidate });
 
   const wfList = workflows.data?.workflows || [];
   const alertList = alerts.data?.alerts || [];
@@ -101,10 +104,17 @@ export default function AutomationTab() {
                         <span>{agoFa(a.createdAt)}</span>
                       </Box>
                     </Box>
-                    <UnstyledButton type="button" onClick={() => ackMut.mutate(a.id)} disabled={ackMut.isPending} title="تأیید و بستن"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0, minBlockSize: 32, paddingInline: 11, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', opacity: ackMut.isPending ? 0.6 : 1 }}>
-                      <IconCheck size={14} stroke={1.8} />رسیدگی شد
-                    </UnstyledButton>
+                    <Box style={{ display: 'inline-flex', gap: 5, flexShrink: 0 }}>
+                      <UnstyledButton type="button" onClick={() => ackMut.mutate(a.id)} disabled={ackMut.isPending} title="تأیید — دیده شد" style={ALERT_BTN}>
+                        <IconCheck size={14} stroke={1.8} />تأیید
+                      </UnstyledButton>
+                      <UnstyledButton type="button" onClick={() => snoozeMut.mutate(a.id)} disabled={snoozeMut.isPending} title="۱ ساعت بعد دوباره نشانم بده" style={ALERT_BTN}>
+                        <IconClock size={14} stroke={1.8} />۱ ساعت
+                      </UnstyledButton>
+                      <UnstyledButton type="button" onClick={() => resolveMut.mutate(a.id)} disabled={resolveMut.isPending} title="حل شد — بستنِ کامل" style={{ ...ALERT_BTN, color: 'var(--g-color-state-success-fg, #2e7d4f)' }}>
+                        <IconShieldCheck size={14} stroke={1.8} />حل شد
+                      </UnstyledButton>
+                    </Box>
                   </Box>
                 </Box>
               );

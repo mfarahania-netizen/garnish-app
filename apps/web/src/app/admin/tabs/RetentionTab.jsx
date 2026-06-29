@@ -15,7 +15,7 @@ function Cell({ val }) {
   return (
     <Box style={{ position: 'relative', borderRadius: 6, padding: '6px 0', textAlign: 'center', overflow: 'hidden', minInlineSize: 46 }}>
       <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'var(--g-color-brand-500)', opacity: Math.max(0.05, v) }} />
-      <Text component="span" style={{ position: 'relative', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: 500, color: v > 0.5 ? '#fff' : 'var(--g-color-text-primary)' }}>{faPercent(Math.round(v * 100))}</Text>
+      <Text component="span" style={{ position: 'relative', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: 500, color: v > 0.5 ? 'var(--g-color-text-inverse, #fff)' : 'var(--g-color-text-primary)' }}>{faPercent(Math.round(v * 100))}</Text>
     </Box>
   );
 }
@@ -72,7 +72,7 @@ export default function RetentionTab() {
           <Box key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 10, paddingBlock: 9, borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
             <Box style={{ flex: 1, minInlineSize: 0 }}>
               <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: 500, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.user?.name || 'کاربرِ بی‌نام'}</Text>
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', marginBlockStart: 1 }}>{FREQ_FA[u.cookingFrequency] || u.cookingFrequency || '—'} · ثبات {faPercent(Math.round(u.consistencyScore || 0))}</Text>
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', marginBlockStart: 1 }}>{FREQ_FA[u.cookingFrequency] || u.cookingFrequency || '—'} · ثبات {u.consistencyScore != null ? faPercent(Math.round(u.consistencyScore)) : '—'}</Text>
             </Box>
             <Box style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 600, color: riskColor(u.churnRiskScore), background: 'var(--g-color-bg-canvas)', borderRadius: '7px', paddingInline: 9, paddingBlock: 4, flexShrink: 0 }}>ریسک {faPercent(Math.round(u.churnRiskScore))}</Box>
           </Box>

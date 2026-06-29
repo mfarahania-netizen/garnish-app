@@ -271,7 +271,7 @@ export default function UsersTab() {
           {delM.error ? <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontSize: '12px', marginBlockEnd: 8 }}>خطا در حذف.</Text> : null}
           <Box style={{ display: 'flex', gap: 8, marginBlockStart: 8 }}>
             <UnstyledButton type="button" onClick={() => setConfirmDel(false)} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', color: 'var(--g-color-text-primary)' }}>انصراف</UnstyledButton>
-            <UnstyledButton type="button" onClick={() => detail.data && delM.mutate({ id: detail.data.id })} disabled={delM.isPending} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: '#fff', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{delM.isPending ? <Loader size={15} color="#fff" /> : 'حذفِ دائمی'}</UnstyledButton>
+            <UnstyledButton type="button" onClick={() => detail.data && delM.mutate({ id: detail.data.id })} disabled={delM.isPending} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{delM.isPending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'حذفِ دائمی'}</UnstyledButton>
           </Box>
         </Box>
       </Modal>
@@ -309,7 +309,7 @@ function CreateForm({ onSubmit, pending, error }) {
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
       <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
       <Switch label="نقشِ مدیر" checked={f.isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
-      <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: '#fff', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4 }}>{pending ? <Loader size={15} color="#fff" /> : 'ساختِ کاربر'}</UnstyledButton>
+      <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
     </Box>
   );
 }
@@ -321,7 +321,7 @@ function PwForm({ onSubmit, pending, error }) {
       <ErrorLine error={error} />
       <Note tone="info">رمزِ جدید تنظیم می‌شود و کاربر از همهٔ دستگاه‌ها خارج می‌شود (نشست‌ها باطل).</Note>
       <PasswordInput label="رمزِ جدید (حداقل ۶)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} />
-      <UnstyledButton type="button" onClick={() => onSubmit(pw)} disabled={pending || pw.length < 6} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: '#fff', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: pw.length < 6 ? 0.5 : 1 }}>{pending ? <Loader size={15} color="#fff" /> : 'ریستِ رمز'}</UnstyledButton>
+      <UnstyledButton type="button" onClick={() => onSubmit(pw)} disabled={pending || pw.length < 6} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: pw.length < 6 ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ریستِ رمز'}</UnstyledButton>
     </Box>
   );
 }
@@ -333,7 +333,7 @@ function BanForm({ onSubmit, pending, error }) {
       <ErrorLine error={error} />
       <Note tone="warn" icon={IconAlertTriangle}>کاربر بلافاصله خارج می‌شود و دیگر نمی‌تواند وارد شود تا رفعِ مسدودی.</Note>
       <TextInput label="دلیل (اختیاری)" value={reason} onChange={(e) => setReason(e.target.value)} styles={fieldStyles} placeholder="مثلاً: اسپم / تخلف" />
-      <UnstyledButton type="button" onClick={() => onSubmit(reason)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: '#fff', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{pending ? <Loader size={15} color="#fff" /> : 'مسدود کن'}</UnstyledButton>
+      <UnstyledButton type="button" onClick={() => onSubmit(reason)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: 'var(--g-color-text-inverse, #fff)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'مسدود کن'}</UnstyledButton>
     </Box>
   );
 }
