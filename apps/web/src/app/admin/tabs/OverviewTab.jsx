@@ -11,6 +11,7 @@ import apiClient from '../../../lib/apiClient';
 import { useOverviewData } from '../useAdmin';
 import AttentionQueue from '../AttentionQueue';
 import PulseStrip from '../PulseStrip';
+import DailyBrief from '../DailyBrief';
 import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits, faPercent } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
@@ -42,6 +43,11 @@ export default function OverviewTab({ days = 30 }) {
       {/* ── SYSTEM PULSE: the ≤9-tile black-box glance (P0-1) ── */}
       <Section title="نبضِ سیستم" sub="در یک نگاه: همه‌چیز سالم است یا دقیقاً چه خراب است؟">
         <PulseStrip />
+      </Section>
+
+      {/* ── DAILY BRIEF: the deterministic analyst, in plain words ── */}
+      <Section title="بریفِ امروز" sub="چه می‌گذرد و چه باید کرد — قواعدِ قطعی روی متریکِ زنده">
+        <DailyBrief />
       </Section>
 
       {/* ── ATTENTION QUEUE + what to improve ── */}
