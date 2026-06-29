@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
+import { useAnalytics } from '../../hooks/useAnalytics';
 import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart, IconLeaf } from '@tabler/icons-react';
 
 /**
@@ -174,12 +175,14 @@ export function useShopping() {
     }
   }, []);
 
+  const { trackEvent } = useAnalytics();
   const addManual = useCallback(async (name) => {
     const n = String(name || '').trim();
     if (!n) return false;
     setBusy(true);
     try {
       await apiClient.post('/shopping-list/items', { items: [{ name: n }] });
+      try { trackEvent('shopping_add_manual', {}); } catch { /* non-blocking */ } // revived emitter (source: manual)
       await list.refetch();
       return true;
     } catch {
@@ -187,13 +190,14 @@ export function useShopping() {
     } finally {
       setBusy(false);
     }
-  }, [list]);
+  }, [list, trackEvent]);
 
   const buildFromPlan = useCallback(async (servings) => {
     setBusy(true);
     try {
       const qs = servings && servings > 0 ? `?servings=${servings}` : ''; // «for N people» → scales the list
       const res = await apiClient.post(`/shopping-list/from-plan${qs}`).then((r) => r.data);
+      try { trackEvent('shopping_add_from_plan', { added: res?.added ?? 0 }); } catch { /* non-blocking */ } // revived emitter (source: meal-plan)
       setOverrides({});
       setRemoved({});
       await list.refetch();
@@ -203,7 +207,7 @@ export function useShopping() {
     } finally {
       setBusy(false);
     }
-  }, [list]);
+  }, [list, trackEvent]);
 
   let status = 'ready';
   if (list.isLoading) status = 'loading';

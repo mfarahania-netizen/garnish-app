@@ -90,6 +90,9 @@ export function useAssistant() {
     const wasNew = !convId;
     setMessages((m) => [...m, { role: 'user', text: prompt }]);
     setThinking(true);
+    // Revived emitter: the rebuilt chat had stopped emitting ai_message_send → the admin "AI usage" sat on dead
+    // data. Shape-only (NO raw prompt text; GDPR) — any topic enrichment is derived server-side.
+    try { trackEvent('ai_message_send', {}); } catch { /* non-blocking */ }
     try {
       const data = await apiClient.post('/ai/chat', { prompt, conversationId: convId }).then((r) => r.data);
       // RACE GUARD: if the user switched/started a thread mid-flight, the backend already saved this reply to ITS
@@ -111,7 +114,7 @@ export function useAssistant() {
     } finally {
       if (sendSeq.current === mySeq) setThinking(false);
     }
-  }, [thinking, convId, persistConv, loadConversations, refreshActionSurfaces]);
+  }, [thinking, convId, persistConv, loadConversations, refreshActionSurfaces, trackEvent]);
 
   // §3 confirm: write the offered allergens to the declared set (POST /users/allergies). The deterministic hard
   // gate then filters them from every recipe. Optimistic-safe: we only mark "added" after the server confirms.
