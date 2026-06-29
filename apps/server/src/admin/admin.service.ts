@@ -276,7 +276,7 @@ export class AdminService {
     // plan" action — so the old generateCount was a permanently-dead 0 dressed as a metric. Report REAL planning
     // activity instead: total slots added (mealplan_add, which IS emitted) + distinct planners.
     const [addEvents, distinctPlanners] = await Promise.all([
-      this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { payload: true } }),
+      this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { payload: true }, take: 10000 }),
       this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { userId: true }, distinct: ['userId'] }).then((r) => r.length).catch(() => 0),
     ]);
 
@@ -323,6 +323,7 @@ export class AdminService {
     const events = await this.prisma.userEvent.findMany({
       where: { type: 'ai_message_send' },
       select: { enrichment: true },
+      take: 10000,
     });
 
     const totalMessages = events.length;

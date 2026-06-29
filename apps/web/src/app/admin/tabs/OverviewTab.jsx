@@ -86,9 +86,9 @@ export default function OverviewTab({ days = 30 }) {
       </Section>
 
       <Section title="آمادگی پیش از پایلوت">
-        <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', background: 'var(--g-color-state-success-bg)', border: 'none', marginBlockEnd: 'var(--g-space-3)' }}>
-          <IconCircleCheck size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg)' }} />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-state-success-fg)' }}>سامانه آمادهٔ راه‌اندازی</Text>
+        <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 8, marginBlockEnd: 'var(--g-space-3)' }}>
+          <Box aria-hidden="true" style={{ inlineSize: 8, blockSize: 8, borderRadius: '50%', background: 'var(--g-color-state-success-fg, #2e7d4f)', flexShrink: 0 }} />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>سامانه آمادهٔ راه‌اندازی</Text>
         </Box>
         <Note tone="info">شاخص‌های زندهٔ آمادگی (آلرژن · گاردها · تأخیر · کیفیتِ رویداد) بالا در «نبضِ سیستم» نشان داده می‌شوند — اینجا تکرار نمی‌کنیم.</Note>
       </Section>

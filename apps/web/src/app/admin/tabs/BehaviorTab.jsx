@@ -30,7 +30,7 @@ export default function BehaviorTab() {
   if (q.isError && !d) return <Box style={CARD}><ErrorState note="رفتار کاربران از سرور خوانده نشد — این «خطا» است، نه «بدونِ داده»." onRetry={() => q.refetch()} /></Box>;
   if (!d) return <Box style={CARD}><Awaiting note="داده‌ای نیست." /></Box>;
 
-  const { recipes, search, ai, improve = [], funnel, usage } = d;
+  const { recipes = {}, search = {}, ai = {}, improve = [], funnel = {}, usage = {} } = d;
   const maxTopic = Math.max(1, ...(ai.topTopics || []).map((t) => t.count));
   const maxIntent = Math.max(1, ...(ai.topIntents || []).map((t) => t.count));
   const maxAction = Math.max(1, ...((usage?.topActions) || []).map((a) => a.count));
