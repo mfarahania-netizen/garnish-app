@@ -6,7 +6,10 @@
 - **مسیرِ کم‌ریسکِ انتخابی:** بدونِ DB migration روی DBِ پیش‌از‌لانچ — OwnerGuard با allowlistِ env + استفادهٔ مجددِ `UserAuditLog`.
 - **P0-1 + P0-2 (owner gate + reason + تأییدِ تایپی):** ✅ OwnerGuard روی delete/password/export/role (`ADMIN_OWNER_IDS` در .env) + `requireReason` + DangerModalِ یک‌پارچهٔ FE (reason الزامی + تایپِ نامِ کاربر برای حذف + خطای 403/400) + تفکیکِ tier (P1-9). **زنده تست:** بی‌دلیل→۴۰۰، با‌دلیل→۲۰۰، owner مجاز. پوش (`2531b322`).
 - **P0-3 (پایداریِ audit در برابرِ erasure):** ✅ کشفِ گپ: `erasure.service.ts:62` details/ip ردیف‌های UserAuditLogِ هدف را null می‌کند → audit حذف به **actor (ادمین)** کلید خورد، targetId در details. **زنده تست:** بعد از حذفِ کاربر، audit با کلِ `{actorId, targetId, reason, ip}` ماند.
-- **در صف:** P0-5 (PII mask پیش‌فرض + reveal با reason) · P1 (DTOها · workflow 404/400 · scheduler claim اتمیک · UI تیکت assignee/tags/SLA · observability drawer · active-users واقعی · runbook · بازچینیِ تب‌ها · تست‌های e2e) · P2 (a11y · mobile nav).
+- **P0-5 (PII):** ✅ list/detail با `pii.util` mask + endpointِ `reveal` (reason + audit) + دکمهٔ «نمایشِ کامل» در FE. **زنده تست:** detail `+99•••••0066`، reveal با reason `+99000000066`، بی‌reason→۴۰۰. پوش (`5c881109`).
+- **P1-2 + P1-3 (workflow):** ✅ منبعِ ناموجود→۴۰۴ (NotFoundException) + scheduler claimِ اتمیک (`updateMany` شرطی، ضدِ double-fire). **زنده تست:** ack/runsِ ناموجود→۴۰۴، لیستِ معتبر→۲۰۰. پوش (`421b8604`).
+- **✅✅ تیرِ P0 ۱۰۰٪ کامل + زنده‌تأیید + پوش.** ضمناً: P1-9 (تفکیکِ tierِ drawer) + P2-2ِ کاربران (a11yِ ردیف: role/tabIndex/Enter) هم انجام شد.
+- **مانده (P1/P2 — کیفیت/UX/معماری، نه بلاکرِ امنیتی):** P1-1 DTOها · P1-4 UIِ تیکت assignee/tags/SLA · P1-5 moderation · P1-6 observability drawer · P1-7/8 بازچینیِ تب‌ها + Command · P1-12 برچسبِ near-realtime · P1-13 active-users واقعی · P1-14 runbook · P1-15 تست‌های e2e · P1-16 کاهشِ any · P2-1 mobile nav · P2-2 a11yِ تیکت · P2-3 سطحِ خطا.
 - **حادثهٔ ابزاری:** `pnpm install` (برای رفعِ vite که خراب شده بود) کلاینتِ Prisma را پاک کرد → سرور لحظه‌ای down شد → `prisma generate` + restart → سالم. درس: `pnpm install` وسطِ کارِ زنده نزن.
 
 ---
