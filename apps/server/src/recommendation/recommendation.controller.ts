@@ -33,9 +33,12 @@ export class RecommendationController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async getRecommendations(@Req() req, @Query('limit') limit = 10) {
+  async getRecommendations(@Req() req, @Query('limit') limit = '10') {
     const userId = req.user.userId;
-    return this.pipeline.getRecommendations(userId, +limit);
+    // P0-8 (recsys audit): clamp the limit — an unvalidated `+limit` passed NaN / negative / huge values to the
+    // pipeline (Prisma skip/take blow-ups + over-fetch). Bound to [1, 50].
+    const n = Math.min(50, Math.max(1, Math.floor(Number(limit)) || 10));
+    return this.pipeline.getRecommendations(userId, n);
   }
 
   @Post('impression')
@@ -135,13 +138,17 @@ export class RecommendationController {
   }
 
   @Get('lifestyle')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async getLifestyle() {
     throw new NotImplementedException('lifestyle data is not implemented');
   }
 
+  // P0-8: a heavy debug/analysis route (buildFeatureVector + candidate generate + 3 rankings) — admin-only, not
+  // a public surface any authenticated user can hammer.
   @Get('compare')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
   async compareScenarios(@Req() req) {
     const userId = req.user.userId;
     await this.featureStore.buildFeatureVector(userId);
