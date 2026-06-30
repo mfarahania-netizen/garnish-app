@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   IconLeaf, IconLock, IconShieldLock, IconRefresh, IconHome,
   IconLayoutDashboard, IconSparkles, IconChartBar, IconActivity, IconToolsKitchen2,
-  IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket, IconRobot,
+  IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket, IconRobot, IconClipboardList,
 } from '@tabler/icons-react';
 import { useAuth } from '../../context/AuthContext';
 import { PostLaunch, toFaDigits } from './_ui';
@@ -24,6 +24,7 @@ import BehaviorTab from './tabs/BehaviorTab';
 import UsersTab from './tabs/UsersTab';
 import TicketsTab from './tabs/TicketsTab';
 import AutomationTab from './tabs/AutomationTab';
+import AuditTab from './tabs/AuditTab';
 import AuthForm from '../../components/auth/AuthForm';
 
 const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }, { id: 30, label: '۳۰ روز' }];
@@ -69,6 +70,7 @@ const TABS = {
   users: { label: 'کاربران', Icon: IconUsersGroup, C: UsersTab },
   tickets: { label: 'تیکت‌ها', Icon: IconTicket, C: TicketsTab },
   automation: { label: 'ورک‌فلو', Icon: IconRobot, C: AutomationTab },
+  audit: { label: 'ممیزی', Icon: IconClipboardList, C: AuditTab },
   revenue: { label: 'درآمد', Icon: IconCoin, C: () => <PostLaunch note="MRR/churn/LTV و اعتبارِ هوش مصنوعی — با اتصالِ درگاهِ پرداخت خودکار فعال می‌شود (§۱۱/§۱۲)" /> },
 };
 
@@ -83,7 +85,7 @@ const GROUPS = [
   { label: 'کاربران و پشتیبانی', ids: ['users', 'tickets'] },
   { label: 'محصول', ids: ['behavior', 'engagement', 'retention', 'content'] },
   { label: 'هوش مصنوعی', ids: ['ai'] },
-  { label: 'ایمنی و انطباق', ids: ['safety'] },
+  { label: 'ایمنی و انطباق', ids: ['safety', 'audit'] },
   { label: 'اتوماسیون و سیستم', ids: ['automation'] }, // P1-13: 'revenue' hidden from nav until the payment gateway is connected (the tab still exists for a direct URL / planning)
 ];
 
@@ -102,7 +104,7 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, isLoading: authLoading, logout } = useAuth();
-  const isAdmin = !!user?.isAdmin;
+  const isAdmin = !!user?.isAdmin || (!!user?.adminRole && user.adminRole !== 'user');
   const [params, setParams] = useSearchParams();
   const narrow = useNarrow();
 

@@ -45,15 +45,16 @@ export default function AttentionQueue() {
 
   const inval = () => qc.invalidateQueries({ queryKey: ['admin', 'attention'] });
   const ackM = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/ack`), onSuccess: inval });
-  const resolveM = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/resolve`), onSuccess: inval });
-  const snoozeM = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`), onSuccess: inval });
-  const busyId = ackM.variables ?? resolveM.variables ?? snoozeM.variables;
+  const resolveM = useMutation({ mutationFn: (arg) => { const id = typeof arg === 'string' ? arg : arg.id; const reason = typeof arg === 'string' ? 'attention queue quick resolve' : arg.reason; return apiClient.post(`/admin/workflows/alerts/${id}/resolve`, { reason }); }, onSuccess: inval });
+  const snoozeM = useMutation({ mutationFn: (arg) => { const id = typeof arg === 'string' ? arg : arg.id; const reason = typeof arg === 'string' ? 'attention queue quick snooze' : arg.reason; return apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`, { reason }); }, onSuccess: inval });
+  const askReason = (label) => { const r = (window.prompt(label) || '').trim(); return r.length >= 3 ? r : null; };
+  const busyId = ackM.variables ?? (typeof resolveM.variables === 'string' ? resolveM.variables : resolveM.variables?.id) ?? (typeof snoozeM.variables === 'string' ? snoozeM.variables : snoozeM.variables?.id);
   const busy = ackM.isPending || resolveM.isPending || snoozeM.isPending;
 
   if (alertsQ.isError && ticketsQ.isError) return <Box style={{ ...cardBase }}><ErrorState note="صفِ توجه از سرور خوانده نشد." onRetry={() => { alertsQ.refetch(); ticketsQ.refetch(); }} /></Box>;
   if (alertsQ.isLoading && ticketsQ.isLoading) return <Box style={{ ...cardBase, display: 'grid', placeItems: 'center', paddingBlock: 24 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
 
-  const alertItems = (alertsQ.data?.alerts || []).map((a) => ({ id: a.id, kind: 'alert', sev: SEV[a.severity] ? a.severity : 'info', title: a.title, subsystem: a.workflowKey || 'workflow', metric: a.metric, value: a.value, threshold: a.threshold, since: a.createdAt }));
+  const alertItems = (alertsQ.data?.alerts || []).map((a) => ({ id: a.id, kind: 'alert', sev: SEV[a.severity] ? a.severity : 'info', title: a.title, subsystem: a.workflowKey || 'workflow', metric: a.metric, value: a.value, threshold: a.threshold, since: a.createdAt, ownerRole: a.ownerRole, assignedTo: a.assignedTo, dueAt: a.dueAt, isOverdue: a.isOverdue }));
   const ticketItems = (ticketsQ.data?.data || []).map((t) => ({ id: t.id, kind: 'ticket', sev: PRIO_TO_SEV[t.priority] || 'info', title: t.subject, subsystem: 'پشتیبانی', since: t.createdAt }));
   const items = [...alertItems, ...ticketItems].sort((a, b) => (SEV_RANK[a.sev] - SEV_RANK[b.sev]) || (new Date(b.since) - new Date(a.since)));
 
@@ -72,6 +73,7 @@ export default function AttentionQueue() {
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {items.map((it) => {
         const s = SEV[it.sev] || SEV.info;
+        const dueLabel = it.dueAt ? `${it.isOverdue ? 'overdue' : 'due'} ${ago(it.dueAt)}` : null;
         const trigger = it.metric ? `${it.metric}: ${fmtNum(it.value)}${it.threshold != null ? ` (آستانه ${fmtNum(it.threshold)})` : ''}` : null;
         return (
           <Box key={`${it.kind}-${it.id}`} style={{ ...cardBase, borderInlineStartWidth: 3, borderInlineStartStyle: 'solid', borderInlineStartColor: s.fg, display: 'flex', alignItems: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
@@ -85,6 +87,13 @@ export default function AttentionQueue() {
                 <span>{it.subsystem}</span><span aria-hidden style={{ opacity: 0.5 }}>•</span><span>{ago(it.since)}</span>
                 {trigger ? <><span aria-hidden style={{ opacity: 0.5 }}>•</span><span>{trigger}</span></> : null}
               </Box>
+              {it.kind === 'alert' && (it.ownerRole || it.assignedTo || dueLabel) ? (
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginBlockStart: 4, fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)' }}>
+                  {it.ownerRole ? <span>{it.ownerRole}</span> : null}
+                  {it.assignedTo ? <span>assigned: {it.assignedTo}</span> : null}
+                  {dueLabel ? <span style={{ color: it.isOverdue ? 'var(--g-color-state-danger-fg, #c0392b)' : undefined }}>{dueLabel}</span> : null}
+                </Box>
+              ) : null}
             </Box>
             <Box style={{ display: 'inline-flex', gap: 5, flexShrink: 0 }}>
               {it.kind === 'alert' ? (

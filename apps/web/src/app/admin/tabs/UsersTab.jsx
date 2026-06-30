@@ -3,7 +3,7 @@
 // advisor audit: owner-gated destructive ops (P0-1), mandatory reason + typed-confirm (P0-2), risk-tiered grouping
 // (P1-9). All wired to /admin/users/*; a 403 (super_admin_required) / 400 (reason_required) shows a clear message.
 import { useState, useEffect } from 'react';
-import { Box, Text, Loader, UnstyledButton, Drawer, Modal, TextInput, PasswordInput, Switch } from '@mantine/core';
+import { Box, Text, Loader, UnstyledButton, Drawer, Modal, TextInput, PasswordInput } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   IconUsers, IconSearch, IconUserPlus, IconShield, IconShieldOff, IconBan, IconLockOpen,
@@ -34,6 +34,17 @@ const FILTERS = [
   { id: 'banned', label: 'مسدود', q: { status: 'banned' } },
 ];
 
+const ROLE_OPTIONS = [
+  { value: 'user', label: 'کاربر عادی' },
+  { value: 'admin', label: 'مدیر عمومی' },
+  { value: 'support', label: 'پشتیبانی' },
+  { value: 'privacy', label: 'حریم خصوصی' },
+  { value: 'ops', label: 'عملیات' },
+  { value: 'content', label: 'محتوا' },
+  { value: 'finance', label: 'مالی' },
+  { value: 'readonly', label: 'مشاهده‌گر' },
+];
+
 function Chip({ on, children, onClick }) {
   return (
     <UnstyledButton type="button" onClick={onClick} style={{ minBlockSize: 30, paddingInline: 12, borderRadius: '9px', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: on ? 500 : 400, background: on ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-surface)', color: on ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', border: `1px solid ${on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}` }}>{children}</UnstyledButton>
@@ -52,7 +63,9 @@ function Tag({ children, tone = 'info' }) {
   return <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', fontWeight: 500, paddingInline: 8, paddingBlock: 2, borderRadius: '6px', background: bg, color: fg, whiteSpace: 'nowrap' }}>{children}</Text>;
 }
 
-const roleTag = (u) => (u.isAdmin ? <Tag tone="brand">مدیر</Tag> : u.isGuest ? <Tag tone="muted">مهمان</Tag> : <Tag tone="info">کاربر</Tag>);
+const roleFa = (role) => ROLE_OPTIONS.find((r) => r.value === role)?.label || ({ owner: 'مالک' }[role]) || 'مدیر';
+const userRole = (u) => (u?.adminRole && u.adminRole !== 'user') ? u.adminRole : u?.isAdmin ? 'admin' : 'user';
+const roleTag = (u) => (userRole(u) !== 'user' ? <Tag tone="brand">{roleFa(userRole(u))}</Tag> : u.isGuest ? <Tag tone="muted">مهمان</Tag> : <Tag tone="info">کاربر</Tag>);
 const contact = (u) => u.phone || u.email || '—';
 
 // Action button used inside the dossier drawer.
@@ -115,9 +128,9 @@ export default function UsersTab() {
   };
 
   // dispatch the confirmed sensitive op (reason already validated by the modal).
-  const onDanger = async ({ reason, password }) => {
+  const onDanger = async ({ reason, password, adminRole }) => {
     const usr = danger?.user; if (!usr) return;
-    if (danger.kind === 'role') updateM.mutate({ id: usr.id, body: { isAdmin: !usr.isAdmin, reason } });
+    if (danger.kind === 'role') updateM.mutate({ id: usr.id, body: { adminRole, isAdmin: adminRole !== 'user', reason } });
     else if (danger.kind === 'password') pwM.mutate({ id: usr.id, password, reason });
     else if (danger.kind === 'ban') banM.mutate({ id: usr.id, banned: true, reason });
     else if (danger.kind === 'delete') delM.mutate({ id: usr.id, reason });
@@ -264,13 +277,13 @@ export default function UsersTab() {
             {/* actions — grouped by risk tier (advisor P1-9): session/security ops, then owner-only irreversible ops */}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: 7, padding: '14px 18px', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
               <Text component="div" style={actGroupLbl}>نشست و دسترسی</Text>
-              <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => { const reason = window.prompt('دلیلِ ابطالِ نشست‌های این کاربر؟ (اختیاری — در audit ثبت می‌شود)'); if (reason === null) return; logoutM.mutate({ id: u.id, reason }); }} />
+              <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => { const reason = window.prompt('دلیلِ ابطالِ نشست‌های این کاربر؟ (اجباری — در audit ثبت می‌شود)'); if (reason === null) return; if (reason.trim().length < 3) { window.alert('دلیل باید حداقل ۳ کاراکتر باشد.'); return; } logoutM.mutate({ id: u.id, reason: reason.trim() }); }} />
               {u.isBanned
                 ? <Act icon={IconLockOpen} label="رفعِ مسدودی" loading={banM.isPending} onClick={() => banM.mutate({ id: u.id, banned: false })} />
                 : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />}
               <Text component="div" style={{ ...actGroupLbl, marginBlockStart: 6 }}>عملیاتِ مالک · برگشت‌ناپذیر</Text>
               {/* P1-1/P1-14: owner-only irreversible / PII ops are hidden for a non-owner admin (not just 403'd) */}
-              {cap.canManageAdmins ? <Act icon={u.isAdmin ? IconShieldOff : IconShield} label={u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} /> : null}
+              {cap.canManageAdmins ? <Act icon={userRole(u) !== 'user' ? IconShieldOff : IconShield} label={userRole(u) !== 'user' ? 'تغییر یا برداشتن نقش ادمین' : 'دادن نقش ادمین'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} /> : null}
               {cap.canResetPassword ? <Act icon={IconKey} label="ریستِ رمزِ عبور" tone="danger" onClick={() => setDanger({ kind: 'password', user: u })} /> : null}
               {cap.canExportPii ? <Act icon={IconDownload} label="خروجیِ دادهٔ کاربر (GDPR)" tone="danger" onClick={() => setDanger({ kind: 'export', user: u })} /> : null}
               {cap.canDeleteUser ? <Act icon={IconTrash} label="حذفِ کامل (پاک‌سازیِ GDPR)" tone="danger" onClick={() => setDanger({ kind: 'delete', user: u })} /> : null}
@@ -388,6 +401,8 @@ function errLine(error) {
     cannot_delete_self: 'نمی‌توانی حسابِ خودت را حذف کنی.',
     cannot_ban_self: 'نمی‌توانی خودت را مسدود کنی.',
     cannot_demote_self: 'نمی‌توانی نقشِ مدیرِ خودت را برداری.',
+    invalid_admin_role: 'نقش ادمین معتبر نیست.',
+    privacy_admin_required: 'فقط مالک یا نقش حریم خصوصی/پشتیبانی می‌تواند PII را نمایش دهد.',
     phone_or_email_required: 'تلفن یا ایمیل لازم است.',
     password_min_6: 'رمز حداقل ۶ کاراکتر.',
     phone_taken: 'این تلفن قبلاً ثبت شده.',
@@ -402,7 +417,7 @@ function ErrorLine({ error, fallback }) {
 }
 
 const DANGER_CFG = {
-  role: (u) => ({ title: `${u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} — ${u.name || 'کاربر'}`, warn: u.isAdmin ? 'دسترسیِ کاملِ مدیر از این کاربر گرفته می‌شود.' : 'این کاربر دسترسیِ کاملِ مدیر می‌گیرد (عملیاتِ حساس). فقط مالک می‌تواند.', btn: 'تغییرِ نقش', danger: true }),
+  role: (u) => ({ title: `تغییر نقش ادمین — ${u.name || 'کاربر'}`, warn: `نقش فعلی: ${roleFa(userRole(u))}. تغییر نقش روی دسترسی‌های PII، workflow، محتوا و عملیات اثر مستقیم دارد. فقط مالک می‌تواند.`, btn: 'ثبت نقش', roleSelect: true, danger: true }),
   password: (u) => ({ title: `ریستِ رمز — ${u.name || 'کاربر'}`, warn: 'رمزِ جدید تنظیم و کاربر از همهٔ دستگاه‌ها خارج می‌شود. فقط مالک می‌تواند.', btn: 'ریستِ رمز', pw: true, danger: false }),
   ban: (u) => ({ title: `مسدود کردن — ${u.name || 'کاربر'}`, warn: 'کاربر بلافاصله خارج و تا رفعِ مسدودی نمی‌تواند وارد شود.', btn: 'مسدود کن', danger: true }),
   export: (u) => ({ title: `خروجیِ دادهٔ کاربر — ${u.name || 'کاربر'}`, warn: 'کلِ پروفایلِ کاربر (شاملِ PII) دانلود می‌شود؛ این کار server-side ثبت و audit می‌شود. فقط مالک می‌تواند.', btn: 'خروجی بگیر', danger: false }),
@@ -415,7 +430,8 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
   const [reason, setReason] = useState('');
   const [pw, setPw] = useState('');
   const [word, setWord] = useState('');
-  useEffect(() => { setReason(''); setPw(''); setWord(''); }, [state?.kind, state?.user?.id]);
+  const [selectedRole, setSelectedRole] = useState('user');
+  useEffect(() => { setReason(''); setPw(''); setWord(''); setSelectedRole(userRole(state?.user)); }, [state?.kind, state?.user?.id]);
   if (!state) return null;
   const u = state.user;
   const cfg = DANGER_CFG[state.kind](u);
@@ -423,18 +439,27 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
   const reasonOk = reason.trim().length >= 3;
   const pwOk = !cfg.pw || pw.length >= 6;
   const wordOk = !cfg.confirmWord || word.trim() === expect;
-  const ok = reasonOk && pwOk && wordOk;
+  const roleOk = !cfg.roleSelect || selectedRole !== userRole(u);
+  const ok = reasonOk && pwOk && wordOk && roleOk;
   return (
     <Modal opened onClose={onClose} title={cfg.title} centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 11, fontFamily: 'var(--g-font-fa)' }}>
         <Note tone={cfg.danger ? 'warn' : 'info'} icon={IconAlertTriangle}>{cfg.warn}</Note>
         {error ? <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontSize: '12px' }}>{errLine(error)}</Text> : null}
+        {cfg.roleSelect ? (
+          <label style={{ display: 'grid', gap: 4, fontSize: '12px', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>
+            نقش جدید
+            <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} style={{ minBlockSize: 38, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', paddingInline: 10 }}>
+              {ROLE_OPTIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+            </select>
+          </label>
+        ) : null}
         {cfg.pw ? <PasswordInput label="رمزِ جدید (حداقل ۶)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} /> : null}
         <TextInput label="دلیل (الزامی — در سندِ audit ثبت می‌شود)" value={reason} onChange={(e) => setReason(e.target.value)} styles={fieldStyles} placeholder="چرا این کار را انجام می‌دهی؟" />
         {cfg.confirmWord ? <TextInput label={`برای تأیید، «${expect}» را تایپ کن`} value={word} onChange={(e) => setWord(e.target.value)} styles={fieldStyles} /> : null}
         <Box style={{ display: 'flex', gap: 8, marginBlockStart: 2 }}>
           <UnstyledButton type="button" onClick={onClose} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', color: 'var(--g-color-text-primary)' }}>انصراف</UnstyledButton>
-          <UnstyledButton type="button" disabled={!ok || busy} onClick={() => onConfirm({ reason: reason.trim(), password: pw })} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: cfg.danger ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: (!ok || busy) ? 0.5 : 1 }}>{busy ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : cfg.btn}</UnstyledButton>
+          <UnstyledButton type="button" disabled={!ok || busy} onClick={() => onConfirm({ reason: reason.trim(), password: pw, adminRole: selectedRole })} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: cfg.danger ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: (!ok || busy) ? 0.5 : 1 }}>{busy ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : cfg.btn}</UnstyledButton>
         </Box>
       </Box>
     </Modal>
@@ -442,8 +467,8 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
 }
 
 function CreateForm({ onSubmit, pending, error, canCreateAdmin }) {
-  const [f, setF] = useState({ phone: '', email: '', name: '', password: '', isAdmin: false, reason: '' });
-  const isAdmin = f.isAdmin && canCreateAdmin; // P2-6: a non-owner can't grant admin (the switch is disabled below)
+  const [f, setF] = useState({ phone: '', email: '', name: '', password: '', adminRole: 'user', reason: '' });
+  const isAdmin = f.adminRole !== 'user' && canCreateAdmin; // P2-6: a non-owner can't grant admin roles
   const needsReason = isAdmin && f.reason.trim().length < 3; // P0-2: granting admin requires a justification (server enforces it)
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
@@ -452,9 +477,21 @@ function CreateForm({ onSubmit, pending, error, canCreateAdmin }) {
       <TextInput label="تلفن" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} styles={fieldStyles} dir="ltr" />
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
       <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
-      <Switch label={canCreateAdmin ? 'نقشِ مدیر' : 'نقشِ مدیر (فقط مالک می‌تواند)'} disabled={!canCreateAdmin} checked={isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
-      {isAdmin ? <TextInput label="دلیلِ ساختِ مدیر (الزامی — در audit ثبت می‌شود)" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} styles={fieldStyles} placeholder="چرا این فرد مدیر می‌شود؟" /> : null}
-      <UnstyledButton type="button" onClick={() => onSubmit({ ...f, isAdmin })} disabled={pending || needsReason} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4, opacity: (pending || needsReason) ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
+      <label style={{ display: 'grid', gap: 4, fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>
+        نقش ادمین
+        <select disabled={!canCreateAdmin} value={canCreateAdmin ? f.adminRole : 'user'} onChange={(e) => setF({ ...f, adminRole: e.target.value })} style={{ minBlockSize: 38, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', paddingInline: 10 }}>
+          <option value="user">کاربر عادی</option>
+          <option value="admin">مدیر عمومی</option>
+          <option value="support">پشتیبانی</option>
+          <option value="privacy">حریم خصوصی</option>
+          <option value="ops">عملیات</option>
+          <option value="content">محتوا</option>
+          <option value="finance">مالی</option>
+          <option value="readonly">مشاهده‌گر</option>
+        </select>
+      </label>
+      {isAdmin ? <TextInput label="دلیلِ ساختِ نقش ادمین (الزامی — در audit ثبت می‌شود)" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} styles={fieldStyles} placeholder="چرا این فرد این دسترسی را می‌گیرد؟" /> : null}
+      <UnstyledButton type="button" onClick={() => onSubmit({ ...f, isAdmin, adminRole: canCreateAdmin ? f.adminRole : 'user' })} disabled={pending || needsReason} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4, opacity: (pending || needsReason) ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
     </Box>
   );
 }

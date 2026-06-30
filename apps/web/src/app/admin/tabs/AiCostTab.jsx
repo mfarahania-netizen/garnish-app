@@ -17,6 +17,7 @@ const provLabel = (k) => (String(k).startsWith('fallback(') ? `زنجیرهٔ fa
 export default function AiCostTab() {
   const obs = useQuery(q('ai-observability', '/admin/ops/ai-observability'));
   const ai = useQuery(q('ai-interaction', '/admin/analytics/ai-interaction'));
+  const recsys = useQuery(q('recsys-health', '/admin/observability/recsys-health?days=7'));
 
   if (obs.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
   if (obs.isError) return <Box style={{ paddingBlock: 60 }}><ErrorState note="رصدِ هوش مصنوعی از سرور خوانده نشد — این «خطا» است، نه «در انتظار»." onRetry={() => obs.refetch()} /></Box>;
@@ -31,6 +32,10 @@ export default function AiCostTab() {
   const intentRows = (o.byIntent || []).filter((m) => m.key !== 'unknown');
   const errorEntries = Object.entries(o.byErrorCode || {}).sort((x, y) => y[1] - x[1]);
   const donutData = modelRows.map((m) => ({ name: m.name, value: m.calls }));
+  const rh = recsys.data || {};
+  const outbox = rh.outbox || {};
+  const signals = rh.signals || {};
+  const consentRows = rh.consent?.byPurpose || [];
 
   const aggCols = [
     { key: 'name', label: 'مدل' },
@@ -99,6 +104,15 @@ export default function AiCostTab() {
           {(a.topIngredients?.length || a.topConcepts?.length) ? (
             [...(a.topIngredients || []), ...(a.topConcepts || [])].slice(0, 8).map((it, idx) => <HBar key={`${it.name}-${idx}`} label={it.name} value={it.count} max={Math.max(1, ...(a.topIngredients || []).concat(a.topConcepts || []).map((x) => x.count))} display={toFaDigits(it.count)} />)
           ) : <Awaiting note={`${toFaDigits(a.totalMessages ?? 0)} پیام — موضوعی استخراج نشده`} />}
+        </Panel>
+      </Box>
+
+      <Section title="سلامت شخصی‌سازی و recsys" sub="outbox · سیگنال‌های یادگیری · consent · priors در ۷ روز اخیر" />
+      <Box style={grid(240)}>
+        <Kpi icon={IconDatabase} label="Outbox سیگنال" status={recsys.isError ? 'partial' : recsys.isLoading ? 'awaiting_pilot' : 'real'} value={recsys.isLoading ? '—' : toFaDigits(outbox.pendingBacklog ?? 0)} sub={`dead-letter: ${toFaDigits(outbox.deadLetter ?? 0)} · done: ${toFaDigits(outbox.processedInWindow ?? 0)}`} tone={outbox.deadLetter > 0 || outbox.pendingBacklog > 200 ? 'warn' : undefined} awaitNote="در حال خواندن سلامت recsys" />
+        <Kpi icon={IconSparkles} label="کاربران دارای سیگنال" status={recsys.isError ? 'partial' : recsys.isLoading ? 'awaiting_pilot' : 'real'} value={toFaDigits(signals.usersWithSignals ?? 0)} sub={`${toFaDigits(signals.observationsInWindow ?? 0)} observation در پنجره`} awaitNote="—" />
+        <Panel title="پوشش consent" status={consentRows.length ? 'real' : recsys.isLoading ? 'awaiting_pilot' : 'partial'}>
+          {consentRows.length ? consentRows.slice(0, 5).map((r) => <HBar key={r.purpose} label={r.purpose} value={r.count} max={Math.max(1, ...consentRows.map((x) => x.count || 0))} display={toFaDigits(r.count)} />) : <Awaiting note={recsys.isError ? 'سلامت recsys خوانده نشد.' : 'event با consentPurpose در این پنجره دیده نشد.'} />}
         </Panel>
       </Box>
 

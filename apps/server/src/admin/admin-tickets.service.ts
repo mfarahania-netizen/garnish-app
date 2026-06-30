@@ -22,6 +22,13 @@ export class AdminTicketsService {
     private readonly notifications: NotificationsService,
   ) {}
 
+  private async runTx<T>(fn: (tx: PrismaService) => Promise<T>): Promise<T> {
+    const prismaAny = this.prisma as any;
+    return typeof prismaAny.$transaction === 'function'
+      ? prismaAny.$transaction((tx: PrismaService) => fn(tx))
+      : fn(this.prisma);
+  }
+
   async list({ page = 1, limit = 20, search, status, priority, category, assignee, unanswered, sort }: ListArgs) {
     const where: Prisma.SupportTicketWhereInput = {};
     const s = (search ?? '').trim();
@@ -70,14 +77,17 @@ export class AdminTicketsService {
     const t = await this.prisma.supportTicket.findUnique({ where: { id }, select: { id: true, userId: true, subject: true, firstResponseAt: true, status: true } });
     if (!t) throw new NotFoundException('ticket_not_found');
     const now = new Date();
-    const reply = await this.prisma.ticketReply.create({ data: { ticketId: id, message: message.trim(), isStaff: true, authorId: adminId ?? null } });
-    await this.prisma.supportTicket.update({
-      where: { id },
-      data: {
-        lastReplyAt: now,
-        ...(t.firstResponseAt ? {} : { firstResponseAt: now }),
-        ...(t.status === 'open' || t.status === 'pending' ? { status: 'in_progress' } : {}),
-      },
+    const reply = await this.runTx(async (tx: any) => {
+      const created = await tx.ticketReply.create({ data: { ticketId: id, message: message.trim(), isStaff: true, authorId: adminId ?? null } });
+      await tx.supportTicket.update({
+        where: { id },
+        data: {
+          lastReplyAt: now,
+          ...(t.firstResponseAt ? {} : { firstResponseAt: now }),
+          ...(t.status === 'open' || t.status === 'pending' ? { status: 'in_progress' } : {}),
+        },
+      });
+      return created;
     });
     // The notification template existed (notifyTicketReply) but nothing ever called it — wire it here. Fire-and-forget.
     this.notifications.notifyTicketReply(t.userId, t.subject).catch(() => {});
@@ -99,7 +109,14 @@ export class AdminTicketsService {
     }
     if (body.priority !== undefined) { if (!isPriority(body.priority)) throw new BadRequestException('invalid_priority'); data.priority = body.priority; }
     if (body.category !== undefined) { if (!isCategory(body.category)) throw new BadRequestException('invalid_category'); data.category = body.category; }
-    if (body.assigneeId !== undefined) data.assigneeId = body.assigneeId || null;
+    if (body.assigneeId !== undefined) {
+      const assigneeId = body.assigneeId || null;
+      if (assigneeId) {
+        const assignee = await this.prisma.user.findUnique({ where: { id: assigneeId }, select: { id: true, isAdmin: true, adminRole: true, isBanned: true } });
+        if (!assignee || assignee.isBanned || (!assignee.isAdmin && assignee.adminRole === 'user')) throw new BadRequestException('invalid_assignee');
+      }
+      data.assigneeId = assigneeId;
+    }
     if (body.tags !== undefined) data.tags = Array.isArray(body.tags) ? body.tags.map((x) => String(x).trim()).filter(Boolean).slice(0, 20) : [];
     if (!Object.keys(data).length) throw new BadRequestException('nothing_to_update');
     return this.prisma.supportTicket.update({ where: { id }, data, include: { user: { select: { name: true } } } });

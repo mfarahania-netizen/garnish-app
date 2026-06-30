@@ -49,6 +49,6 @@ describe('AdminPage smoke (sidebar architecture)', () => {
     expect(screen.getByRole('button', { name: 'ایمنی و انطباق' })).toBeInTheDocument();
     expect(screen.getByTestId('tab-overview')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'به‌روزرسانی' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'خروجی JSON' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'خروجی JSON' })).not.toBeInTheDocument();
   });
 });

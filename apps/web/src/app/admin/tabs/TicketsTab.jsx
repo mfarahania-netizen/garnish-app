@@ -70,17 +70,20 @@ export default function TicketsTab() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
   // debounce: don't fire a backend query on every keystroke (matches UsersTab).
-  useEffect(() => { const t = setTimeout(() => setSearch(searchInput.trim()), 400); return () => clearTimeout(t); }, [searchInput]);
+  useEffect(() => { const t = setTimeout(() => { setSearch(searchInput.trim()); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
 
   const metrics = useQuery({ queryKey: ['admin', 'tickets', 'metrics'], queryFn: () => get('/admin/tickets/metrics') });
   const fq = FILTERS.find((f) => f.id === filter)?.q || {};
-  const qs = new URLSearchParams({ limit: '50', sort: 'activity', ...(search ? { search } : {}), ...fq }).toString();
+  const qs = new URLSearchParams({ page: String(page), limit: '50', sort: 'activity', ...(search ? { search } : {}), ...fq }).toString();
   const list = useQuery({ queryKey: ['admin', 'tickets', qs], queryFn: () => get('/admin/tickets?' + qs), placeholderData: (p) => p });
 
   const m = metrics.data || {};
   const rows = list.data?.data || [];
+  const total = list.data?.total || 0;
+  const pages = Math.max(1, Math.ceil(total / 50));
 
   return (
     <>
@@ -98,7 +101,7 @@ export default function TicketsTab() {
           <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="جستجو در موضوع، متن یا نامِ کاربر…" style={{ inlineSize: '100%', minBlockSize: 38, paddingInline: '34px 12px', borderRadius: '10px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }} />
         </Box>
         <Box style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
-          {FILTERS.map((f) => <Chip key={f.id} on={filter === f.id} onClick={() => setFilter(f.id)}>{f.label}</Chip>)}
+          {FILTERS.map((f) => <Chip key={f.id} on={filter === f.id} onClick={() => { setFilter(f.id); setPage(1); }}>{f.label}</Chip>)}
         </Box>
       </Box>
 
@@ -108,26 +111,35 @@ export default function TicketsTab() {
         ) : list.isError ? (
           <ErrorState note="فهرستِ تیکت‌ها از سرور خوانده نشد." onRetry={() => list.refetch()} />
         ) : rows.length ? (
-          <Box style={{ overflowX: 'auto' }}>
-            <Box component="table" style={{ inlineSize: '100%', borderCollapse: 'collapse' }}>
-              <Box component="thead"><Box component="tr">
-                {['موضوع', 'کاربر', 'دسته', 'اولویت', 'وضعیت', 'پاسخ', 'فعالیت'].map((h) => <Box component="th" key={h} style={{ textAlign: 'start', padding: '7px 8px', fontSize: '11px', fontWeight: 500, color: 'var(--g-color-text-muted)', borderBlockEnd: '1px solid var(--g-color-border-subtle)', whiteSpace: 'nowrap', fontFamily: 'var(--g-font-fa)' }}>{h}</Box>)}
-              </Box></Box>
-              <Box component="tbody">
-                {rows.map((t) => (
-                  <Box component="tr" key={t.id} role="button" tabIndex={0} aria-label={`تیکتِ ${t.subject || t.id}`} onClick={() => setSelectedId(t.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(t.id); } }} style={{ cursor: 'pointer' }}>
-                    <Box component="td" style={{ ...tdS, fontWeight: 500, maxInlineSize: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}{t.firstResponseAt ? null : <Box aria-hidden="true" title={breached(t) ? 'نقضِ SLA' : 'بی‌پاسخ'} style={{ display: 'inline-block', inlineSize: 7, blockSize: 7, borderRadius: '50%', background: breached(t) ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-state-warning-fg, #c0801c)', marginInlineStart: 6 }} />}</Box>
-                    <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-secondary)' }}>{t.user?.name || '—'}</Box>
-                    <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{CATEGORY[t.category] || 'عمومی'}</Box>
-                    <Box component="td" style={tdS}><PrioTag p={t.priority} /></Box>
-                    <Box component="td" style={tdS}><StatusTag s={t.status} /></Box>
-                    <Box component="td" style={{ ...tdS, textAlign: 'center', color: 'var(--g-color-text-muted)' }}>{toFaDigits(t._count?.replies ?? 0)}</Box>
-                    <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{ago(t.lastReplyAt || t.createdAt)}</Box>
-                  </Box>
-                ))}
+          <>
+            <Box style={{ overflowX: 'auto' }}>
+              <Box component="table" style={{ inlineSize: '100%', borderCollapse: 'collapse' }}>
+                <Box component="thead"><Box component="tr">
+                  {['موضوع', 'کاربر', 'دسته', 'اولویت', 'وضعیت', 'پاسخ', 'فعالیت'].map((h) => <Box component="th" key={h} style={{ textAlign: 'start', padding: '7px 8px', fontSize: '11px', fontWeight: 500, color: 'var(--g-color-text-muted)', borderBlockEnd: '1px solid var(--g-color-border-subtle)', whiteSpace: 'nowrap', fontFamily: 'var(--g-font-fa)' }}>{h}</Box>)}
+                </Box></Box>
+                <Box component="tbody">
+                  {rows.map((t) => (
+                    <Box component="tr" key={t.id} role="button" tabIndex={0} aria-label={`تیکتِ ${t.subject || t.id}`} onClick={() => setSelectedId(t.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(t.id); } }} style={{ cursor: 'pointer' }}>
+                      <Box component="td" style={{ ...tdS, fontWeight: 500, maxInlineSize: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}{t.firstResponseAt ? null : <Box aria-hidden="true" title={breached(t) ? 'نقضِ SLA' : 'بی‌پاسخ'} style={{ display: 'inline-block', inlineSize: 7, blockSize: 7, borderRadius: '50%', background: breached(t) ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-state-warning-fg, #c0801c)', marginInlineStart: 6 }} />}</Box>
+                      <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-secondary)' }}>{t.user?.name || '—'}</Box>
+                      <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{CATEGORY[t.category] || 'عمومی'}</Box>
+                      <Box component="td" style={tdS}><PrioTag p={t.priority} /></Box>
+                      <Box component="td" style={tdS}><StatusTag s={t.status} /></Box>
+                      <Box component="td" style={{ ...tdS, textAlign: 'center', color: 'var(--g-color-text-muted)' }}>{toFaDigits(t._count?.replies ?? 0)}</Box>
+                      <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{ago(t.lastReplyAt || t.createdAt)}</Box>
+                    </Box>
+                  ))}
+                </Box>
               </Box>
             </Box>
-          </Box>
+            <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBlockStart: 12, fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-secondary)' }}>
+              <Text component="span">{toFaDigits(total)} تیکت · صفحه {toFaDigits(page)} از {toFaDigits(pages)}</Text>
+              <Box style={{ display: 'inline-flex', gap: 6 }}>
+                <UnstyledButton type="button" disabled={page <= 1} onClick={() => setPage(page - 1)} style={pageBtn(page <= 1)}>قبلی</UnstyledButton>
+                <UnstyledButton type="button" disabled={page >= pages} onClick={() => setPage(page + 1)} style={pageBtn(page >= pages)}>بعدی</UnstyledButton>
+              </Box>
+            </Box>
+          </>
         ) : <Awaiting note="تیکتی با این فیلتر نیست." icon={IconTicket} />}
       </Panel>
 
@@ -138,11 +150,13 @@ export default function TicketsTab() {
   );
 }
 
+const pageBtn = (disabled) => ({ minBlockSize: 32, paddingInline: 12, borderRadius: '8px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', opacity: disabled ? 0.45 : 1 });
+
 function TicketDetail({ id, onClose }) {
   const qc = useQueryClient();
   const detail = useQuery({ queryKey: ['admin', 'ticket', id], queryFn: () => get('/admin/tickets/' + id) });
   const staff = useQuery({ queryKey: ['admin', 'staff-mini'], queryFn: () => get('/admin/users?role=admin&limit=50'), staleTime: 300000 });
-  const staffOpts = (staff.data?.data || []).filter((u) => u.isAdmin).map((u) => ({ value: u.id, label: u.name || u.phone || 'ادمین' }));
+  const staffOpts = (staff.data?.data || []).filter((u) => u.isAdmin || (u.adminRole && u.adminRole !== 'user')).map((u) => ({ value: u.id, label: u.name || u.phone || 'ادمین' }));
   const [reply, setReply] = useState('');
   const [note, setNote] = useState('');
   const t = detail.data;
