@@ -9,7 +9,34 @@ export class FeatureStoreService {
     private snapshotBuilder: SnapshotBuilderService,
   ) {}
 
+  // P1-4: in-flight guard so concurrent stale requests trigger at most ONE background refresh per user.
+  private readonly rebuilding = new Set<string>();
+
+  /**
+   * P1-4 (recsys audit): cache-aware entry point. The serve path (GET /recommendations) previously ran the FULL
+   * rebuild on every call — snapshotBuilder.buildAll + a userFeature delete/recreate — i.e. DB write
+   * amplification + latency on every Home open. Now a FRESH cached vector (< TTL) is returned with NO write; a
+   * STALE one is served immediately while ONE background refresh runs (no serve-path write/latency); only a
+   * truly absent vector (first-ever call) rebuilds synchronously. TTL is env-tunable (FEATURE_VECTOR_TTL_MS,
+   * default 10 min); FEATURE_VECTOR_TTL_MS=0 restores the legacy always-rebuild behaviour.
+   */
   async buildFeatureVector(userId: string): Promise<Record<string, number>> {
+    const ttlMs = Math.max(0, Number(process.env.FEATURE_VECTOR_TTL_MS) || 10 * 60 * 1000);
+    if (ttlMs > 0 && typeof this.prisma.userFeatureVector?.findUnique === 'function') {
+      const cached = await this.prisma.userFeatureVector.findUnique({ where: { userId } }).catch(() => null);
+      if (cached?.features) {
+        const ageMs = cached.updatedAt ? Date.now() - new Date(cached.updatedAt).getTime() : Infinity;
+        if (ageMs >= ttlMs && !this.rebuilding.has(userId)) {
+          this.rebuilding.add(userId); // stale → ONE background refresh; serve cached now (no serve-path write)
+          void this.rebuildFeatureVector(userId).catch(() => {}).finally(() => this.rebuilding.delete(userId));
+        }
+        return cached.features as Record<string, number>;
+      }
+    }
+    return this.rebuildFeatureVector(userId); // absent vector (or TTL disabled) → synchronous full rebuild
+  }
+
+  private async rebuildFeatureVector(userId: string): Promise<Record<string, number>> {
     await this.snapshotBuilder.buildAll(userId);
 
     const [signals, dimensions, snapshots, outcomes, identitySnapshot, user] = await Promise.all([

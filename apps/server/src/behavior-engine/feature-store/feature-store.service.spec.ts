@@ -53,4 +53,23 @@ describe('FeatureStoreService', () => {
     expect(features.signal_recommendation_engagement_30d).toBeGreaterThan(0);
     expect(snapshotBuilder.buildAll).toHaveBeenCalledWith('u1');
   });
+
+  it('P1-4: a FRESH cached vector is served WITHOUT a rebuild (no buildAll, no write)', async () => {
+    prisma.userFeatureVector.findUnique = jest.fn().mockResolvedValue({
+      features: { signal_x: 0.42 },
+      updatedAt: new Date(), // fresh (just now)
+    });
+    const features = await service.buildFeatureVector('u1');
+    expect(features).toEqual({ signal_x: 0.42 });
+    expect(snapshotBuilder.buildAll).not.toHaveBeenCalled(); // no rebuild
+    expect(prisma.userFeatureVector.upsert).not.toHaveBeenCalled(); // no write
+    expect(prisma.$transaction).not.toHaveBeenCalled(); // no userFeature delete/recreate
+  });
+
+  it('P1-4: an ABSENT cached vector falls through to a full rebuild', async () => {
+    prisma.userFeatureVector.findUnique = jest.fn().mockResolvedValue(null);
+    await service.buildFeatureVector('u1');
+    expect(snapshotBuilder.buildAll).toHaveBeenCalledWith('u1'); // rebuilt
+    expect(prisma.userFeatureVector.upsert).toHaveBeenCalled(); // written
+  });
 });
