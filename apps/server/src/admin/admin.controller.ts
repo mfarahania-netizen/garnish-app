@@ -7,6 +7,7 @@ import { AdminTicketsService } from './admin-tickets.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { OwnerGuard, isOwnerId } from '../auth/owner.guard';
+import { CreateAdminUserDto, UpdateAdminUserDto, ResetUserPasswordDto, BanUserDto, ReasonDto } from './dto/admin-user.dto';
 
 // Mandatory operator justification for sensitive ops (advisor P0-2) — recorded into the audit ledger. <3 chars → 400.
 function requireReason(reason: string | undefined): string {
@@ -146,7 +147,7 @@ export class AdminController {
   }
 
   @Post('users')
-  async createUser(@Req() req, @Body() body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean; reason?: string }) {
+  async createUser(@Req() req, @Body() body: CreateAdminUserDto) {
     if (body?.isAdmin && !isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // granting admin = owner-only
     const created: any = await this.adminUsers.create(body || {});
     await this.adminService.recordAuditStrict(req.user?.userId, created?.id ?? 'new', 'admin_user_create', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { isAdmin: !!body?.isAdmin } });
@@ -154,7 +155,7 @@ export class AdminController {
   }
 
   @Patch('users/:id')
-  async updateUser(@Req() req, @Param('id') id: string, @Body() body: { name?: string; email?: string; isAdmin?: boolean; reason?: string }) {
+  async updateUser(@Req() req, @Param('id') id: string, @Body() body: UpdateAdminUserDto) {
     const roleChange = body?.isAdmin !== undefined;
     if (roleChange) {
       if (body.isAdmin === false && req.user?.userId === id) throw new BadRequestException('cannot_demote_self');
@@ -167,14 +168,14 @@ export class AdminController {
 
   @Patch('users/:id/password')
   @UseGuards(OwnerGuard)
-  async resetUserPassword(@Req() req, @Param('id') id: string, @Body('password') password: string, @Body('reason') reason?: string) {
-    const r = requireReason(reason);
+  async resetUserPassword(@Req() req, @Param('id') id: string, @Body() body: ResetUserPasswordDto) {
+    const r = requireReason(body?.reason);
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_password_reset', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
-    return this.adminUsers.resetPassword(id, password);
+    return this.adminUsers.resetPassword(id, body?.password as string);
   }
 
   @Post('users/:id/ban')
-  async banUser(@Req() req, @Param('id') id: string, @Body() body: { banned?: boolean; reason?: string }) {
+  async banUser(@Req() req, @Param('id') id: string, @Body() body: BanUserDto) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_ban_self');
     if (body?.banned) requireReason(body?.reason); // banning needs a reason; un-banning is safe
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_ban', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { banned: !!body?.banned } });
@@ -189,7 +190,7 @@ export class AdminController {
 
   @Delete('users/:id')
   @UseGuards(OwnerGuard)
-  async deleteUser(@Req() req, @Param('id') id: string, @Body() body?: { reason?: string }) {
+  async deleteUser(@Req() req, @Param('id') id: string, @Body() body?: ReasonDto) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_delete_self');
     const r = requireReason(body?.reason);
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_delete', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
