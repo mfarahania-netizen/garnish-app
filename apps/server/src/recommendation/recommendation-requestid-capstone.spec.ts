@@ -100,7 +100,7 @@ function makeHarness() {
     prisma,
     { applyPositiveFeedback: jest.fn(), applyNegativeFeedback: jest.fn() } as any,
   );
-  const registry = new ProcessorRegistry({} as any, {} as any, {} as any, recommendationProcessor);
+  const registry = new ProcessorRegistry({} as any, {} as any, {} as any, recommendationProcessor, {} as any);
   const router = new EventRouterService(registry);
   const outbox = new EventOutboxService(prisma, router);
   const analytics = new AnalyticsService(

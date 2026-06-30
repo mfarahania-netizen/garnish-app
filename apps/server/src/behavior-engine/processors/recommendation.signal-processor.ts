@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
+import { safeJsonPayload } from './safe-payload';
 
 @Injectable()
 export class RecommendationSignalProcessor {
@@ -11,7 +12,7 @@ export class RecommendationSignalProcessor {
   ) {}
 
   async process(event: any, userId: string) {
-    const payload = JSON.parse(event.payload || '{}');
+    const payload = safeJsonPayload(event);
     const recipeIds = payload.recipeIds?.length
       ? payload.recipeIds
       : payload.recipeId

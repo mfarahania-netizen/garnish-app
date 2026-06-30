@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
+import { safeJsonPayload } from './safe-payload';
 
 /**
  * P0-4 (recsys audit): the strongest in-session taste signals — portion_scaled / ingredient_swapped /
@@ -21,8 +22,7 @@ export class PersonalizationSignalProcessor {
   ) {}
 
   async process(event: any, userId: string) {
-    let payload: any = {};
-    try { payload = JSON.parse(event.payload || '{}'); } catch { payload = {}; }
+    const payload = safeJsonPayload(event);
     const recipeId: string | undefined = typeof payload.recipeId === 'string' ? payload.recipeId : undefined;
 
     if (event.type === 'portion_scaled') {

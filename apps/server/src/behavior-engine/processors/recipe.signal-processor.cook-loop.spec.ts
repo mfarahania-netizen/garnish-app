@@ -62,7 +62,7 @@ describe('RecipeSignalProcessor — cook loop (L0/C1)', () => {
 
   it('the router registry now routes cook_complete (was silently dropped)', () => {
     const recipeProc: any = { process: jest.fn() };
-    const reg = new ProcessorRegistry(recipeProc, {} as any, {} as any, {} as any);
+    const reg = new ProcessorRegistry(recipeProc, {} as any, {} as any, {} as any, {} as any);
     expect(reg.get('cook_complete')).toBe(recipeProc);
     expect(reg.get('recipe_cooked')).toBe(recipeProc);
   });

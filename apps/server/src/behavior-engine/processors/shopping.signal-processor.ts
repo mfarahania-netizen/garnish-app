@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
+import { safeJsonPayload } from './safe-payload';
 
 @Injectable()
 export class ShoppingSignalProcessor {
@@ -14,8 +15,7 @@ export class ShoppingSignalProcessor {
     // P0-3 (recsys audit): the real FE shopping-add events (manual / from a meal-plan / from a favorite) —
     // previously unrouted. Treat as grocery-routine activity; a from-plan add also evidences meal-planning.
     if (event.type === 'shopping_add_manual' || event.type === 'shopping_add_from_plan' || event.type === 'shopping_add_from_fav') {
-      let payload: any = {};
-      try { payload = JSON.parse(event.payload || '{}'); } catch { payload = {}; }
+      const payload = safeJsonPayload(event);
       const added = Number(payload.added) > 0 ? Number(payload.added) : 1;
       await this.signalCalculator.updateSignal(userId, 'budget_sensitive', 'engagement', 'behavior', 0.7, 1);
       await this.prisma.signalObservation.create({

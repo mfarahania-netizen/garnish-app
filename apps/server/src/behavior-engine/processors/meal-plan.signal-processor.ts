@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
+import { safeJsonPayload } from './safe-payload';
 
 @Injectable()
 export class MealPlanSignalProcessor {
@@ -32,7 +33,7 @@ export class MealPlanSignalProcessor {
     // down-weights the user's taste signals and reaches the LIVE ranker. mealplan_clear has no single
     // recipeId, so it records the negative observation only.
     if (event.type === 'mealplan_remove' || event.type === 'mealplan_clear') {
-      const payload = JSON.parse(event.payload || '{}');
+      const payload = safeJsonPayload(event);
       if (payload.recipeId) {
         await this.signalCalculator.applyNegativeFeedback(userId, payload.recipeId, -0.2);
       }
