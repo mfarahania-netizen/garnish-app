@@ -318,6 +318,7 @@ function Auth({ o }) {
 
           {o.isSignup ? (
             <Box style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-1)' }}>
+              <input type="checkbox" checked={o.consent} onChange={o.toggleConsent} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
               <UnstyledButton
                 type="button"
                 onClick={o.toggleConsent}
@@ -379,7 +380,7 @@ export default function OnboardingPage() {
   return (
     <Column>
       {/* Always show «ورود» → the standalone /login (the guest-spine token used to hide it, stranding returning users). */}
-      {o.step === 1 ? <Welcome onStart={o.next} onLogin={() => navigate('/login')} showLogin /> : null}
+      {o.step === 1 ? <Welcome onStart={o.next} onLogin={() => navigate('/login?from=/')} showLogin /> : null}
 
       {o.step >= 2 && o.step <= 4 ? (
         <QuestionShell o={o}>

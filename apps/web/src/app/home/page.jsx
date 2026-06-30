@@ -230,7 +230,7 @@ export default function HomePage() {
     if (!id) return;
     if (isFavorite(id)) {
       removeFavorite(id, {
-        onSuccess: () => showToast('از ذخیره‌ها برداشته شد', IconBookmark),
+        onSuccess: () => { showToast('از ذخیره‌ها برداشته شد', IconBookmark); trackEvent('favorite_remove', { recipeId: id }); },
         onError: () => showToast('انجام نشد، دوباره تلاش کن', IconBookmark),
       });
     } else {

@@ -121,14 +121,15 @@ export default function AuthForm({ initialMode = 'login', allowSignup = true, on
         <AnimatePresence initial={false}>
           {isSignup ? (
             <motion.div key="consent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-              <Box role="checkbox" aria-checked={consent} tabIndex={0} onClick={() => setConsent((c) => !c)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setConsent((c) => !c); } }} style={{ display: 'flex', alignItems: 'center', gap: 9, cursor: 'pointer', paddingBlock: 4 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 9, inlineSize: '100%', cursor: 'pointer', paddingBlock: 4, textAlign: 'start' }}>
+                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
                 <Box aria-hidden="true" style={{ inlineSize: 19, blockSize: 19, flexShrink: 0, borderRadius: '6px', display: 'grid', placeItems: 'center', border: `1.5px solid ${consent ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: consent ? 'var(--g-color-brand-600)' : 'transparent', transition: 'background .16s ease, border-color .16s ease' }}>
                   <AnimatePresence>{consent ? <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: 'spring', stiffness: 520, damping: 22 }} style={{ display: 'grid', placeItems: 'center' }}><IconCheck size={13} stroke={2.6} style={{ color: 'var(--g-color-text-inverse)' }} /></motion.span> : null}</AnimatePresence>
                 </Box>
                 <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', lineHeight: 1.6, color: 'var(--g-color-text-secondary)' }}>
                   با <a href="/terms" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: 'var(--g-color-brand-700)', fontWeight: 500 }}>شرایط استفاده</a> و <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: 'var(--g-color-brand-700)', fontWeight: 500 }}>حریم خصوصی</a> موافقم
                 </Text>
-              </Box>
+              </label>
             </motion.div>
           ) : null}
         </AnimatePresence>

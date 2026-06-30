@@ -23,7 +23,7 @@ export class AuthController {
   }
 
   // Onboarding v1 — silent passwordless guest session (rate-limited; resumes by deviceKey). No PII.
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Throttle({ default: { limit: 60, ttl: 60000 } })
   @Post('guest')
   guest(@Body() body: GuestDto) {
     return this.authService.guestSession(body.deviceKey);

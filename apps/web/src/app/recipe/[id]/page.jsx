@@ -361,7 +361,7 @@ export default function RecipeDetailPage() {
   const toggleSave = useCallback(() => {
     if (!id) return;
     if (isFavorite(id)) {
-      removeFavorite(id, { onSuccess: () => showToast('از ذخیره‌ها برداشته شد', IconBookmark), onError: () => showToast('انجام نشد، دوباره تلاش کن', IconBookmark) });
+      removeFavorite(id, { onSuccess: () => { showToast('از ذخیره‌ها برداشته شد', IconBookmark); trackEvent('favorite_remove', { recipeId: id }); }, onError: () => showToast('انجام نشد، دوباره تلاش کن', IconBookmark) });
     } else {
       addFavorite(id, { onSuccess: () => { showToast('به ذخیره‌ها اضافه شد', IconBookmark); trackEvent('favorite_add', { recipeId: id }); }, onError: () => showToast('ذخیره نشد، دوباره تلاش کن', IconBookmark) });
     }
