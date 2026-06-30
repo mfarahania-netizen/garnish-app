@@ -1,5 +1,5 @@
 // apps/server/src/admin/admin.controller.ts
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Query, Req, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Query, Req, Header, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
 import { AdminUsersService } from './admin-users.service';
@@ -88,7 +88,7 @@ export class AdminController {
   @UseGuards(OwnerGuard)
   async approveRecipe(@Req() req, @Param('id') id: string) {
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_approve', { ip: req.ip, userAgent: req.headers['user-agent'] });
-    return this.adminService.updateRecipeStatus(id, 'approved');
+    return this.adminService.updateRecipeStatus(id, 'active'); // P0-1: 'active' (+ isPublic) = actually published; 'approved' was a dead status no public surface reads
   }
 
   @Patch('recipes/:id/reject')
@@ -133,19 +133,24 @@ export class AdminController {
   //   P0-1 OwnerGuard: hard-delete / password-reset / full-export / role-change require an owner (ADMIN_OWNER_IDS).
   //   P0-2 requireReason: a justification is mandatory and is written into the ledger.
   //   P0-3 recordAuditStrict: FAIL-CLOSED audit (actor+target+reason+ip+ua) BEFORE the mutation → no untraceable change.
-  @Get('users/:id/export')
+  // P0-3 (re-audit): PII export is a POST with the reason in the BODY (never a GET ?reason= — that leaks the
+  // justification + target into browser history, proxy/access logs, and analytics) + Cache-Control: no-store so
+  // the PII payload is never cached. Owner-gated + reason-gated + fail-closed audit BEFORE the read.
+  @Post('users/:id/export')
   @UseGuards(OwnerGuard)
-  async exportUser(@Req() req, @Param('id') id: string, @Query('reason') reason?: string) {
-    const r = requireReason(reason);
+  @Header('Cache-Control', 'no-store')
+  async exportUser(@Req() req, @Param('id') id: string, @Body() body?: ReasonDto) {
+    const r = requireReason(body?.reason);
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_export', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.export(id);
   }
 
-  // Reveal ONE user's real phone/email (advisor P0-5) — lists/detail are masked by default. Reason-gated + audited
-  // (a single-user reveal is the support path; reason + audit are the accountability, not owner-gated).
-  @Get('users/:id/reveal')
-  async revealUserPii(@Req() req, @Param('id') id: string, @Query('reason') reason?: string) {
-    const r = requireReason(reason);
+  // P0-3: reveal ONE user's real phone/email — POST + body reason + no-store (lists/detail stay masked by default).
+  // Reason-gated + audited (a single-user reveal is the support path; reason + audit are the accountability).
+  @Post('users/:id/reveal')
+  @Header('Cache-Control', 'no-store')
+  async revealUserPii(@Req() req, @Param('id') id: string, @Body() body?: ReasonDto) {
+    const r = requireReason(body?.reason);
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_pii_reveal', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.reveal(id);
   }
@@ -153,8 +158,13 @@ export class AdminController {
   @Post('users')
   async createUser(@Req() req, @Body() body: CreateAdminUserDto) {
     if (body?.isAdmin && !isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // granting admin = owner-only
+    if (body?.isAdmin) requireReason(body?.reason); // P0-2: creating an admin REQUIRES a justification (≥3 chars)
+    // P0-2 (re-audit): FAIL-CLOSED audit BEFORE the create — same pattern as every other sensitive op. If the
+    // ledger write fails the account is NEVER created (no untraceable admin). Keyed by email since no id exists yet;
+    // a separate confirm audit after create stamps the real id for the trail.
+    await this.adminService.recordAuditStrict(req.user?.userId, body?.email ?? 'new', 'admin_user_create', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { isAdmin: !!body?.isAdmin } });
     const created: any = await this.adminUsers.create(body || {});
-    await this.adminService.recordAuditStrict(req.user?.userId, created?.id ?? 'new', 'admin_user_create', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { isAdmin: !!body?.isAdmin } });
+    await this.adminService.recordAudit(req.user?.userId, 'admin_user_create_done', { userId: created?.id, isAdmin: !!body?.isAdmin });
     return created;
   }
 

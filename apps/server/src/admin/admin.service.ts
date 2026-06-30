@@ -194,9 +194,13 @@ export class AdminService {
   }
 
   async updateRecipeStatus(recipeId: string, status: string, adminNote?: string) {
+    // P0-1 (re-audit): the public surfaces (Home/Discover/Search/AI/MealPlan) gate on status:'active' + isPublic:true
+    // (recipe-visibility.ts PUBLISHED_RECIPE_WHERE). So approve must set BOTH — otherwise the operator "approves" a
+    // recipe that never actually appears anywhere. isPublic is derived from the status: only 'active' is published;
+    // 'rejected'/'archived'/anything-else unpublishes.
     return this.prisma.recipe.update({
       where: { id: recipeId },
-      data: { status, adminNote },
+      data: { status, adminNote, isPublic: status === 'active' },
     });
   }
 
