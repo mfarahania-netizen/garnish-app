@@ -136,6 +136,15 @@ export class AdminController {
     return this.adminUsers.export(id);
   }
 
+  // Reveal ONE user's real phone/email (advisor P0-5) — lists/detail are masked by default. Reason-gated + audited
+  // (a single-user reveal is the support path; reason + audit are the accountability, not owner-gated).
+  @Get('users/:id/reveal')
+  async revealUserPii(@Req() req, @Param('id') id: string, @Query('reason') reason?: string) {
+    const r = requireReason(reason);
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_pii_reveal', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
+    return this.adminUsers.reveal(id);
+  }
+
   @Post('users')
   async createUser(@Req() req, @Body() body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean; reason?: string }) {
     if (body?.isAdmin && !isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // granting admin = owner-only

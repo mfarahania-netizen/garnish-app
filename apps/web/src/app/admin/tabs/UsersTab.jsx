@@ -79,8 +79,10 @@ export default function UsersTab() {
   const [danger, setDanger] = useState(null); // { kind:'role'|'password'|'ban'|'export'|'delete', user } — unified P0-2 modal
   const [exporting, setExporting] = useState(false);
   const [exportErr, setExportErr] = useState(null);
+  const [revealed, setRevealed] = useState(null); // {phone,email} — real PII for the open dossier (P0-5 reveal)
 
   useEffect(() => { const t = setTimeout(() => { setSearch(searchInput.trim()); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
+  useEffect(() => { setRevealed(null); }, [selectedId]); // a new dossier starts masked again
 
   const fq = FILTERS.find((f) => f.id === filter)?.q || {};
   const qs = new URLSearchParams({ page: String(page), limit: '20', ...(search ? { search } : {}), ...fq }).toString();
@@ -116,6 +118,7 @@ export default function UsersTab() {
     else if (danger.kind === 'ban') banM.mutate({ id: usr.id, banned: true, reason });
     else if (danger.kind === 'delete') delM.mutate({ id: usr.id, reason });
     else if (danger.kind === 'export') { setExporting(true); setExportErr(null); try { await exportUser(usr.id, usr.name, reason); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
+    else if (danger.kind === 'reveal') { setExporting(true); setExportErr(null); try { const d = await get('/admin/users/' + usr.id + '/reveal?reason=' + encodeURIComponent(reason)); setRevealed(d); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
   };
 
   const s = stats.data || {};
@@ -202,7 +205,10 @@ export default function UsersTab() {
                   <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '16px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{u.name || 'بی‌نام'}</Text>
                   {roleTag(u)} {u.isBanned ? <Tag tone="danger">مسدود</Tag> : null}
                 </Box>
-                <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', direction: 'ltr', textAlign: 'start', marginBlockStart: 2 }}>{contact(u)}</Text>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockStart: 2 }}>
+                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', direction: 'ltr', textAlign: 'start' }}>{revealed ? (revealed.phone || revealed.email || '—') : contact(u)}</Text>
+                  {!revealed && !u.isGuest && (u.phone || u.email) ? <UnstyledButton type="button" onClick={() => setDanger({ kind: 'reveal', user: u })} style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-brand-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>نمایشِ کامل</UnstyledButton> : null}
+                </Box>
               </Box>
               <UnstyledButton type="button" onClick={() => setSelectedId(null)} aria-label="بستن" style={{ inlineSize: 30, blockSize: 30, borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'var(--g-color-text-muted)', flexShrink: 0 }}><IconX size={18} /></UnstyledButton>
             </Box>
@@ -317,6 +323,7 @@ const DANGER_CFG = {
   ban: (u) => ({ title: `مسدود کردن — ${u.name || 'کاربر'}`, warn: 'کاربر بلافاصله خارج و تا رفعِ مسدودی نمی‌تواند وارد شود.', btn: 'مسدود کن', danger: true }),
   export: (u) => ({ title: `خروجیِ دادهٔ کاربر — ${u.name || 'کاربر'}`, warn: 'کلِ پروفایلِ کاربر (شاملِ PII) دانلود می‌شود؛ این کار server-side ثبت و audit می‌شود. فقط مالک می‌تواند.', btn: 'خروجی بگیر', danger: false }),
   delete: (u) => ({ title: `حذفِ کاملِ کاربر — ${u.name || 'کاربر'}`, warn: 'غیرقابلِ بازگشت — کلِ دادهٔ کاربر طبقِ GDPR پاک می‌شود. فقط سندِ اثباتِ پاک‌سازی (بدونِ PII) می‌ماند. فقط مالک می‌تواند.', btn: 'حذفِ دائمی', confirmWord: true, danger: true }),
+  reveal: (u) => ({ title: `نمایشِ اطلاعاتِ کامل — ${u.name || 'کاربر'}`, warn: 'تلفن/ایمیلِ واقعیِ این کاربر نمایش داده می‌شود؛ با دلیل ثبت و audit می‌شود.', btn: 'نمایش بده', danger: false }),
 };
 
 // Unified sensitive-op modal: mandatory reason (P0-2) + typed-name confirmation for delete + clear owner/reason errors.

@@ -12,6 +12,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { ErasureService } from '../users/erasure/erasure.service';
 import { UserExportService } from '../users/export/user-export.service';
+import { maskPhone, maskEmail } from './pii.util';
 import * as bcrypt from 'bcryptjs';
 
 type ListArgs = { page?: number; limit?: number; search?: string; role?: string; status?: string };
@@ -61,7 +62,8 @@ export class AdminUsersService {
       ? await this.prisma.userEvent.groupBy({ by: ['userId'], where: { userId: { in: ids } }, _max: { timestamp: true } })
       : [];
     const lastMap = new Map(last.map((e) => [e.userId, e._max.timestamp]));
-    const data = rows.map((r) => ({ ...r, lastActiveAt: lastMap.get(r.id) ?? null }));
+    // P0-5: default-mask PII in the roster (the bulk-exposure surface). Real values via the audited reveal endpoint.
+    const data = rows.map((r) => ({ ...r, phone: maskPhone(r.phone), email: maskEmail(r.email), lastActiveAt: lastMap.get(r.id) ?? null }));
     return { data, total, page: Math.max(1, page), limit: take };
   }
 
@@ -102,6 +104,8 @@ export class AdminUsersService {
     ]);
     return {
       ...user,
+      phone: maskPhone(user.phone), // P0-5: masked by default; real value via the audited reveal endpoint
+      email: maskEmail(user.email),
       allergies: user.allergies.map((a) => a.allergy.name),
       cuisines: user.cuisines.map((c) => c.cuisine.name),
       healthGoals: user.healthGoals.map((g) => g.healthGoal.name),
@@ -109,6 +113,13 @@ export class AdminUsersService {
       activeSessions: sessions.filter((x) => !x.endTime).length,
       recentEvents,
     };
+  }
+
+  /** Reveal the REAL phone/email for ONE user (advisor P0-5) — only via the audited, reason-gated reveal endpoint. */
+  async reveal(id: string) {
+    const u = await this.prisma.user.findUnique({ where: { id }, select: { id: true, phone: true, email: true } });
+    if (!u) throw new NotFoundException('user_not_found');
+    return u;
   }
 
   /** Create a user from admin (staff/manual). Friendly uniqueness errors instead of a raw P2002. */
