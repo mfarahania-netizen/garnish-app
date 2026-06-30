@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Req, UseGuards, Patch, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Req, UseGuards, Patch, Query, ForbiddenException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { OptionalJwtGuard } from '../auth/optional-jwt.guard';
 import { RecipesService } from './recipes.service';
@@ -79,9 +79,18 @@ export class RecipesController {
     return this.recipesService.getMyRecipes(req.user.userId);
   }
 
+  // P0-1 (recsys audit): the HARD allergy/observance gate must hold on the DIRECT recipe link too, not just the
+  // rails/search. Anonymous → unfiltered (no declared profile — documented policy); a logged-in user whose
+  // profile conflicts (avoid_allergen / avoid_constraint) is blocked by the SAME gate as /recommendations.
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recipesService.findOne(id);
+  @UseGuards(OptionalJwtGuard)
+  async findOne(@Param('id') id: string, @Req() req) {
+    const recipe = await this.recipesService.findOne(id); // 404s for missing/unpublished
+    const userId = req.user?.userId;
+    if (userId && !(await this.safety.safeIds(userId, [id])).length) {
+      throw new ForbiddenException('recipe_unsafe_for_profile');
+    }
+    return recipe;
   }
 
   /**
@@ -91,7 +100,13 @@ export class RecipesController {
    */
   @Get(':id/full')
   @UseGuards(AuthGuard('jwt'))
-  getFull(@Param('id') id: string, @Req() req) {
+  async getFull(@Param('id') id: string, @Req() req) {
+    // P0-1: block the FULL body (ingredients + steps) when the recipe conflicts with the user's allergy/observance
+    // profile — getRichRecipe computes a fit but never refused to serve it. The cook page reads this endpoint, so
+    // blocking here also stops an unsafe recipe from entering cook/step mode (acceptance criterion).
+    if (!(await this.safety.safeIds(req.user.userId, [id])).length) {
+      throw new ForbiddenException('recipe_unsafe_for_profile');
+    }
     return this.richness.getRichRecipe(id, req.user.userId);
   }
 
