@@ -169,10 +169,13 @@ export class RecommendationEvaluatorService {
         : [],
     ]);
 
-    const events = [
-      ...attributionEvents,
-      ...userEvents.map((event) => ({ eventType: event.type })),
-    ];
+    // P1-7 (recsys audit): attribution is the SOURCE OF TRUTH for the recommendation funnel; UserEvent is a
+    // FALLBACK only when attribution is absent. attribution is DERIVED from UserEvent, so summing BOTH
+    // double-counts impressions/clicks/saves/cooks → CTR/CVR become unreliable. Prefer attribution; fall back
+    // to UserEvent only when there is no attribution at all.
+    const events = attributionEvents.length
+      ? attributionEvents
+      : userEvents.map((event) => ({ eventType: event.type }));
 
     return events.reduce(
       (acc: any, event: { eventType: string }) => {

@@ -93,6 +93,34 @@ describe('RecommendationEvaluatorService', () => {
     expect(attribution.cookRate).toBeCloseTo(0.5);
   });
 
+  it('P1-7: attribution is the source of truth — does NOT double-count when UserEvent has the same rows', async () => {
+    // attribution is DERIVED from UserEvent, so both tables carry the same 2 impressions + 1 click.
+    prisma.recommendationAttributionEvent.findMany.mockResolvedValue([
+      { eventType: 'recommendation_impression' },
+      { eventType: 'recommendation_impression' },
+      { eventType: 'recommendation_click' },
+    ]);
+    prisma.userEvent = { findMany: jest.fn().mockResolvedValue([
+      { type: 'recommendation_impression' },
+      { type: 'recommendation_impression' },
+      { type: 'recommendation_click' },
+    ]) };
+    const attribution = await service.getRecommendationAttribution('u1');
+    expect(attribution.impressions).toBe(2); // NOT 4 — attribution only, no double-count
+    expect(attribution.clickThroughRate).toBeCloseTo(0.5); // 1 click / 2 impressions
+  });
+
+  it('P1-7: falls back to UserEvent only when attribution is absent', async () => {
+    prisma.recommendationAttributionEvent.findMany.mockResolvedValue([]); // no attribution
+    prisma.userEvent = { findMany: jest.fn().mockResolvedValue([
+      { type: 'recommendation_impression' },
+      { type: 'recommendation_impression' },
+      { type: 'recommendation_click' },
+    ]) };
+    const attribution = await service.getRecommendationAttribution('u1');
+    expect(attribution.impressions).toBe(2); // fallback used when attribution empty
+  });
+
   it('returns latest recommendation reward', async () => {
     prisma.userOutcome.findFirst.mockResolvedValue({
       metricName: 'recommendation_reward',

@@ -44,13 +44,14 @@ export class RecommendationRewardService {
         : 0,
     ]);
 
-    const events = [
-      ...attributionEvents,
-      ...userEvents.map((event) => ({
-        eventType: event.type,
-        value: this.defaultEventValue(event.type),
-      })),
-    ];
+    // P1-7 (recsys audit): attribution is the SOURCE OF TRUTH; UserEvent is a fallback only when attribution is
+    // absent (it's derived from UserEvent, so summing both double-counts the reward total + funnel counts).
+    const events = attributionEvents.length
+      ? attributionEvents
+      : userEvents.map((event) => ({
+          eventType: event.type,
+          value: this.defaultEventValue(event.type),
+        }));
 
     const aggregate = events.reduce(
       (acc: Record<string, number>, event: { eventType: string; value: number }) => {
