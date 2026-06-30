@@ -51,8 +51,22 @@ export class RecommendationCountersService {
         sessionId: opts.sessionId ?? null,
         contextJson,
       }));
-      const res = await this.prisma.recommendationServedItem.createMany({ data });
-      return res?.count ?? data.length;
+      // P1-8 (recsys audit): a bounded retry so a transient DB hiccup doesn't silently lose served-slate
+      // exposure rows that the IPS/off-policy layer can NEVER recover after serve time. Still fire-and-forget
+      // from the caller (never awaited on the serve path) → adds no user-facing latency. A persistent failure
+      // escalates debug→warn so the §12 health surface can notice it instead of silently dropping exposure.
+      for (let attempt = 0; ; attempt++) {
+        try {
+          const res = await this.prisma.recommendationServedItem.createMany({ data });
+          return res?.count ?? data.length;
+        } catch (err) {
+          if (attempt >= 2) {
+            this.logger.warn(`served-slate log FAILED after 3 attempts (${data.length} rows lost): ${(err as Error)?.message}`);
+            return 0;
+          }
+          await new Promise((r) => setTimeout(r, 50 * (attempt + 1)));
+        }
+      }
     } catch (err) {
       this.logger.debug(`served-slate log skipped: ${(err as Error)?.message}`);
       return 0;

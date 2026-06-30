@@ -44,9 +44,26 @@ describe('RecommendationCountersService — counters first-class', () => {
       expect(created[0].contextJson).toContain('winter'); // context captured for counterfactual replay
     });
 
-    it('NEVER throws — a DB fault returns 0 so serving is unaffected', async () => {
+    it('NEVER throws — a persistent DB fault (all retries fail) returns 0 so serving is unaffected', async () => {
       const { svc } = make(true);
       await expect(svc.logSlate('u1', [{ recipeId: 'a', score: 1 }])).resolves.toBe(0);
+    });
+
+    it('P1-8: a transient DB fault is retried — recovers the slate instead of losing it', async () => {
+      let attempts = 0;
+      const prisma: any = {
+        recommendationServedItem: {
+          createMany: jest.fn(async ({ data }: any) => {
+            attempts += 1;
+            if (attempts < 3) throw new Error('transient'); // fail the first two, succeed on the third
+            return { count: data.length };
+          }),
+        },
+      };
+      const svc = new RecommendationCountersService(prisma);
+      const n = await svc.logSlate('u1', [{ recipeId: 'a', score: 1 }]);
+      expect(n).toBe(1); // recovered — not silently dropped
+      expect(attempts).toBe(3);
     });
 
     it('skips empty input / missing user (no write)', async () => {
