@@ -2,6 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 
+// P1-3: signal names that must NEVER reach the AI snapshot (sensitive). Mirrors get-user-food-context's filter.
+const SENSITIVE_SIGNAL = /allerg|health|medical|diagnos|disease|symptom|diabet|cholesterol|insulin|blood|weight|calorie|bmi|pregnan|fertility/i;
+
 /**
  * Behavioral Context Snapshot (E47-A3).
  *
@@ -32,16 +35,50 @@ export class BehavioralContextSnapshotService {
     } catch (err) {
       this.logger.warn(`snapshot preferences unavailable; degrading to minimal: ${err instanceof Error ? err.message : String(err)}`);
     }
+
+    // P1-3 (recsys audit): hydrate REAL derived behavioral signals — but ONLY with the user's personalization
+    // consent, and REDACTED (signalName + a coarse strength bucket; never a raw value, never a health/allergy
+    // signal). No consent → empty signals + cold-start, BYTE-IDENTICAL to before (no personalization consent is
+    // granted today). This lets the AI ground "because you recently saved quick meals" in real evidence, and
+    // stay honest-limited when there is none.
+    let signals: Record<string, unknown> = {};
+    let dataMaturity = 'cold-start';
+    const consents = ['core'];
+    try {
+      const consented = await this.prisma.userConsent.findFirst({
+        where: { userId, purpose: 'personalization', status: 'granted' },
+        select: { id: true },
+      });
+      if (consented) {
+        consents.push('personalization');
+        const top = await this.prisma.userBehaviorSignal.findMany({
+          where: { userId },
+          orderBy: { confidence: 'desc' },
+          take: 8,
+          select: { signalName: true, confidence: true },
+        });
+        for (const s of top) {
+          if (SENSITIVE_SIGNAL.test(s.signalName)) continue; // never surface health/allergy-shaped signals
+          const c = Number(s.confidence ?? 0);
+          signals[s.signalName] = c >= 0.66 ? 'high' : c >= 0.33 ? 'medium' : 'low'; // REDACTED coarse strength
+        }
+        const n = Object.keys(signals).length;
+        if (n) dataMaturity = n >= 4 ? 'established' : 'warming';
+      }
+    } catch (err) {
+      this.logger.warn(`snapshot signal hydration skipped; cold-start: ${err instanceof Error ? err.message : String(err)}`);
+    }
+
     return {
       userId,
       generatedAt: new Date().toISOString(),
       schemaVersion: 1,
       locale: opts.locale ?? 'fa',
       preferences,
-      signals: {},
-      consents: ['core'],
+      signals,
+      consents,
       nutritionSourceLocked: false,
-      dataMaturity: 'cold-start',
+      dataMaturity,
     };
   }
 

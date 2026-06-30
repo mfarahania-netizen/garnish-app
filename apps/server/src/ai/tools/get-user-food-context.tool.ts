@@ -36,13 +36,22 @@ export class GetUserFoodContextTool implements AiTool {
       if (SENSITIVE_KEY_PATTERNS.some((re) => re.test(key))) continue; // exclude sensitive
       preferences[key] = value;
     }
+    // P1-3: surface the snapshot's REDACTED behavioral signals (already consent-gated + coarse-bucketed when the
+    // orchestrator built the snapshot), re-applying the sensitive-key filter here as defense-in-depth.
+    const rawSignals =
+      snap?.signals && typeof snap.signals === 'object' && !Array.isArray(snap.signals)
+        ? (snap.signals as Record<string, unknown>)
+        : {};
+    const recentSignals = Object.entries(rawSignals)
+      .filter(([key]) => !SENSITIVE_KEY_PATTERNS.some((re) => re.test(key)))
+      .map(([signal, strength]) => ({ signal, strength }));
     return {
       tool: this.name,
       userId: ctx?.userId ?? null,
       locale: snap?.locale ?? 'fa',
       preferences,
-      recentSignals: [] as unknown[], // no stored safe signals yet (behavior engine: later phase)
-      contextStatus: Object.keys(preferences).length ? 'partial' : 'limited',
+      recentSignals,
+      contextStatus: recentSignals.length ? 'established' : Object.keys(preferences).length ? 'partial' : 'limited',
     };
   }
 }

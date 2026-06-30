@@ -46,4 +46,26 @@ describe('GetUserFoodContextTool (safe, non-sensitive, PII-free)', () => {
     expect(s).not.toMatch(/@/);
     expect(s).not.toMatch(/\b\d{8,}\b/);
   });
+
+  it('P1-3: surfaces snapshot behavioral signals as recentSignals, EXCLUDING sensitive-named ones', async () => {
+    const ctx = {
+      userId: 'u1',
+      snapshot: {
+        userId: 'u1', generatedAt: 'now', schemaVersion: 1, locale: 'fa',
+        preferences: { diet: 'vegan' },
+        signals: {
+          'taste.cuisine_affinity': 'high',
+          'shops_efficiently': 'medium',
+          'health_risk_marker': 'high', // sensitive-named → must be excluded
+        },
+      },
+    } as any;
+    const out: any = await tool.handler({}, ctx);
+    expect(out.recentSignals).toEqual([
+      { signal: 'taste.cuisine_affinity', strength: 'high' },
+      { signal: 'shops_efficiently', strength: 'medium' },
+    ]);
+    expect(JSON.stringify(out.recentSignals)).not.toMatch(/health_risk/); // sensitive excluded
+    expect(out.contextStatus).toBe('established');
+  });
 });
