@@ -330,9 +330,19 @@ export class FeatureStoreService {
     const qualifiedTypes = [
       'recipe_view',
       'favorite_add',
+      'favorite_remove', // P1-5: curation (incl. de-favoriting) is real preference data
+      'cook_complete', // P1-5: the single strongest signal — the user actually cooked it
+      'recipe_cooked', // P1-5: legacy alias the recipe processor also accepts
+      'start_cooking_click', // P1-5: cooking intent
       'mealplan_add',
       'shopping_item_add',
       'shopping_item_toggle',
+      'shopping_add_manual', // P1-5: the real FE shopping-add events (routed since P0-3)
+      'shopping_add_from_plan',
+      'shopping_add_from_fav',
+      'portion_scaled', // P1-5: in-session personalization actions (routed since P0-4)
+      'ingredient_removed',
+      'ingredient_swapped',
       'recommendation_impression',
       'recommendation_click',
       'recommendation_save',
