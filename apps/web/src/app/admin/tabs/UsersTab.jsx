@@ -13,6 +13,7 @@ import apiClient from '../../../lib/apiClient';
 import { Section, Kpi, Panel, Note, Awaiting, ErrorState, grid, toFaDigits, fmtInt } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
+const post = (url, body) => apiClient.post(url, body).then((r) => r.data); // P0-3: sensitive reads go via POST + body
 const day = (d) => (d ? toFaDigits(String(d).slice(0, 10)) : '—');
 const ago = (d) => {
   if (!d) return 'بدونِ فعالیت';
@@ -103,7 +104,7 @@ export default function UsersTab() {
 
   // export now carries a mandatory reason (owner-gated + audited server-side) and THROWS on failure so the modal can show it.
   const exportUser = async (id, name, reason) => {
-    const data = await get('/admin/users/' + id + '/export?reason=' + encodeURIComponent(reason || ''));
+    const data = await post('/admin/users/' + id + '/export', { reason }); // P0-3: reason in body, never the URL
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a'); link.href = url; link.download = `user-${(name || id).toString().slice(0, 16)}.json`;
@@ -118,7 +119,7 @@ export default function UsersTab() {
     else if (danger.kind === 'ban') banM.mutate({ id: usr.id, banned: true, reason });
     else if (danger.kind === 'delete') delM.mutate({ id: usr.id, reason });
     else if (danger.kind === 'export') { setExporting(true); setExportErr(null); try { await exportUser(usr.id, usr.name, reason); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
-    else if (danger.kind === 'reveal') { setExporting(true); setExportErr(null); try { const d = await get('/admin/users/' + usr.id + '/reveal?reason=' + encodeURIComponent(reason)); setRevealed(d); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
+    else if (danger.kind === 'reveal') { setExporting(true); setExportErr(null); try { const d = await post('/admin/users/' + usr.id + '/reveal', { reason }); setRevealed(d); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
   };
 
   const s = stats.data || {};
@@ -436,7 +437,8 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
 }
 
 function CreateForm({ onSubmit, pending, error }) {
-  const [f, setF] = useState({ phone: '', email: '', name: '', password: '', isAdmin: false });
+  const [f, setF] = useState({ phone: '', email: '', name: '', password: '', isAdmin: false, reason: '' });
+  const needsReason = f.isAdmin && f.reason.trim().length < 3; // P0-2: granting admin requires a justification (server enforces it)
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
       <ErrorLine error={error} />
@@ -445,7 +447,8 @@ function CreateForm({ onSubmit, pending, error }) {
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
       <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
       <Switch label="نقشِ مدیر (فقط مالک)" checked={f.isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
-      <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
+      {f.isAdmin ? <TextInput label="دلیلِ ساختِ مدیر (الزامی — در audit ثبت می‌شود)" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} styles={fieldStyles} placeholder="چرا این فرد مدیر می‌شود؟" /> : null}
+      <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending || needsReason} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4, opacity: (pending || needsReason) ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
     </Box>
   );
 }

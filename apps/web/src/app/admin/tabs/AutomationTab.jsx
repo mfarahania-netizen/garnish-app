@@ -57,10 +57,12 @@ export default function AutomationTab() {
   const alerts = useQuery({ queryKey: ['admin', 'workflow-alerts'], queryFn: () => get('/admin/workflows/alerts?status=all&limit=30'), refetchInterval: 15000 });
 
   const invalidate = () => { qc.invalidateQueries({ queryKey: ['admin', 'workflows'] }); qc.invalidateQueries({ queryKey: ['admin', 'workflow-alerts'] }); };
-  const runMut = useMutation({ mutationFn: (key) => apiClient.post(`/admin/workflows/${key}/run`).then((r) => r.data), onSuccess: invalidate });
+  const runMut = useMutation({ mutationFn: ({ key, reason }) => apiClient.post(`/admin/workflows/${key}/run`, { reason }).then((r) => r.data), onSuccess: invalidate });
   const ackMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/ack`).then((r) => r.data), onSuccess: invalidate });
-  const resolveMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/resolve`).then((r) => r.data), onSuccess: invalidate });
-  const snoozeMut = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`).then((r) => r.data), onSuccess: invalidate });
+  const resolveMut = useMutation({ mutationFn: ({ id, reason }) => apiClient.post(`/admin/workflows/alerts/${id}/resolve`, { reason }).then((r) => r.data), onSuccess: invalidate });
+  const snoozeMut = useMutation({ mutationFn: ({ id, reason }) => apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`, { reason }).then((r) => r.data), onSuccess: invalidate });
+  // P0-4: run/resolve/snooze are audit-grade — the server requires a reason (>=3). ack stays reason-free.
+  const askReason = (label) => { const r = (window.prompt(label) || '').trim(); return r.length >= 3 ? r : null; };
 
   const wfList = workflows.data?.workflows || [];
   const alertList = alerts.data?.alerts || [];
@@ -117,10 +119,10 @@ export default function AutomationTab() {
                       <UnstyledButton type="button" onClick={() => ackMut.mutate(a.id)} disabled={ackMut.isPending} title="تأیید — دیده شد" style={ALERT_BTN}>
                         <IconCheck size={14} stroke={1.8} />تأیید
                       </UnstyledButton>
-                      <UnstyledButton type="button" onClick={() => snoozeMut.mutate(a.id)} disabled={snoozeMut.isPending} title="۱ ساعت بعد دوباره نشانم بده" style={ALERT_BTN}>
+                      <UnstyledButton type="button" onClick={() => { const reason = askReason('دلیلِ تعویقِ ۱ساعتهٔ این هشدار؟'); if (reason) snoozeMut.mutate({ id: a.id, reason }); }} disabled={snoozeMut.isPending} title="۱ ساعت بعد دوباره نشانم بده" style={ALERT_BTN}>
                         <IconClock size={14} stroke={1.8} />۱ ساعت
                       </UnstyledButton>
-                      <UnstyledButton type="button" onClick={() => resolveMut.mutate(a.id)} disabled={resolveMut.isPending} title="حل شد — بستنِ کامل" style={{ ...ALERT_BTN, color: 'var(--g-color-state-success-fg, #2e7d4f)' }}>
+                      <UnstyledButton type="button" onClick={() => { const reason = askReason('دلیلِ بستن (حل‌شدن) این هشدار؟'); if (reason) resolveMut.mutate({ id: a.id, reason }); }} disabled={resolveMut.isPending} title="حل شد — بستنِ کامل" style={{ ...ALERT_BTN, color: 'var(--g-color-state-success-fg, #2e7d4f)' }}>
                         <IconShieldCheck size={14} stroke={1.8} />حل شد
                       </UnstyledButton>
                     </Box>
@@ -164,9 +166,9 @@ export default function AutomationTab() {
                       <b style={{ color: 'var(--g-color-text-secondary)' }}>مسئول:</b> {w.runbook.ownerRole} — {w.runbook.expectedAction}
                     </Text>
                   ) : null}
-                  <UnstyledButton type="button" onClick={() => runMut.mutate(w.key)} disabled={runMut.isPending}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBlockStart: 11, minBlockSize: 34, paddingInline: 13, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-canvas)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 500, opacity: runMut.isPending && runMut.variables === w.key ? 0.6 : 1 }}>
-                    <IconPlayerPlay size={14} stroke={1.8} />{runMut.isPending && runMut.variables === w.key ? 'در حال بررسی…' : 'بررسیِ دستی'}
+                  <UnstyledButton type="button" onClick={() => { const reason = askReason('دلیلِ اجرای دستیِ این نگهبان؟'); if (reason) runMut.mutate({ key: w.key, reason }); }} disabled={runMut.isPending}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBlockStart: 11, minBlockSize: 34, paddingInline: 13, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-canvas)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 500, opacity: runMut.isPending && runMut.variables?.key === w.key ? 0.6 : 1 }}>
+                    <IconPlayerPlay size={14} stroke={1.8} />{runMut.isPending && runMut.variables?.key === w.key ? 'در حال بررسی…' : 'بررسیِ دستی'}
                   </UnstyledButton>
                 </Box>
               );
