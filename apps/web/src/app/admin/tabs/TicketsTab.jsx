@@ -152,6 +152,15 @@ function TicketDetail({ id, onClose }) {
   const updateM = useMutation({ mutationFn: (body) => apiClient.patch(`/admin/tickets/${id}`, body), onSuccess: inval });
   const noteM = useMutation({ mutationFn: (body) => apiClient.post(`/admin/tickets/${id}/notes`, { body }), onSuccess: () => { setNote(''); inval(); } });
 
+  // P1-11: tags edit locally and PATCH only after typing settles (debounced + cancellable) — not on every keystroke.
+  const [tags, setTags] = useState([]);
+  useEffect(() => { setTags(t?.tags || []); }, [t?.id]); // (re)sync when the open ticket changes
+  useEffect(() => {
+    if (!t || JSON.stringify(tags) === JSON.stringify(t.tags || [])) return; // unchanged → no PATCH
+    const h = setTimeout(() => updateM.mutate({ tags }), 600);
+    return () => clearTimeout(h);
+  }, [tags]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if (detail.isLoading || !t) return <Box style={{ display: 'grid', placeItems: 'center', minBlockSize: 200 }}><Loader color="var(--g-color-brand-600)" /></Box>;
   const sla = slaLabel(t);
 
@@ -166,6 +175,12 @@ function TicketDetail({ id, onClose }) {
       </Box>
 
       <Box style={{ flex: 1, overflowY: 'auto', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* P1-10: any failed mutation (reply/triage/note) shows a clear inline error so the operator isn't left guessing */}
+        {(respondM.error || updateM.error || noteM.error) ? (
+          <Box style={{ padding: '8px 11px', borderRadius: '9px', background: 'var(--g-color-state-danger-bg, #fdecea)', border: '1px solid var(--g-color-state-danger-fg, #b3261e)' }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-state-danger-fg, #b3261e)' }}>عملیاتِ اخیر ناموفق بود — دوباره تلاش کن.{(respondM.error || updateM.error || noteM.error)?.response?.data?.message ? ` (${(respondM.error || updateM.error || noteM.error).response.data.message})` : ''}</Text>
+          </Box>
+        ) : null}
         {/* triage */}
         <Box style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
           <Select label="وضعیت" data={STATUS_OPTS} value={t.status} onChange={(v) => v && updateM.mutate({ status: v })} allowDeselect={false} size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} />
@@ -175,7 +190,7 @@ function TicketDetail({ id, onClose }) {
         {/* P1-4: assignee (from the admin roster) + free-form tags — both persist via the same triage PATCH */}
         <Box style={{ display: 'grid', gap: 8 }}>
           <Select label="محول به" data={staffOpts} value={t.assigneeId || null} onChange={(v) => updateM.mutate({ assigneeId: v || null })} placeholder={staff.isLoading ? 'در حال بارگذاری…' : 'محول‌نشده'} clearable searchable size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} nothingFoundMessage="ادمینی پیدا نشد" />
-          <TagsInput label="برچسب‌ها" value={t.tags || []} onChange={(v) => updateM.mutate({ tags: v })} placeholder="برچسب و Enter…" size="xs" styles={fieldStyles} maxTags={20} clearable />
+          <TagsInput label="برچسب‌ها" value={tags} onChange={setTags} placeholder="برچسب و Enter…" size="xs" styles={fieldStyles} maxTags={20} clearable />
         </Box>
 
         {/* thread */}

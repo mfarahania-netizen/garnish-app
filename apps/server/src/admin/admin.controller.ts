@@ -197,8 +197,9 @@ export class AdminController {
   }
 
   @Post('users/:id/force-logout')
-  async forceLogoutUser(@Req() req, @Param('id') id: string) {
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_force_logout', { ip: req.ip, userAgent: req.headers['user-agent'] });
+  async forceLogoutUser(@Req() req, @Param('id') id: string, @Body() body?: ReasonDto) {
+    if (req.user?.userId === id) throw new BadRequestException('cannot_force_logout_self'); // P1-8: don't lock yourself out
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_force_logout', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'] }); // P1-8: optional reason in the ledger
     return this.adminUsers.forceLogout(id);
   }
 

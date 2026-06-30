@@ -99,7 +99,7 @@ export default function UsersTab() {
   const updateM = useMutation({ mutationFn: ({ id, body }) => apiClient.patch('/admin/users/' + id, body), ...onDone(closeDanger) });
   const pwM = useMutation({ mutationFn: ({ id, password, reason }) => apiClient.patch('/admin/users/' + id + '/password', { password, reason }), ...onDone(closeDanger) });
   const banM = useMutation({ mutationFn: ({ id, banned, reason }) => apiClient.post('/admin/users/' + id + '/ban', { banned, reason }), ...onDone(closeDanger) });
-  const logoutM = useMutation({ mutationFn: ({ id }) => apiClient.post('/admin/users/' + id + '/force-logout'), ...onDone() });
+  const logoutM = useMutation({ mutationFn: ({ id, reason }) => apiClient.post('/admin/users/' + id + '/force-logout', { reason }), ...onDone() });
   const delM = useMutation({ mutationFn: ({ id, reason }) => apiClient.delete('/admin/users/' + id, { data: { reason } }), ...onDone(() => { closeDanger(); setSelectedId(null); }) });
 
   // export now carries a mandatory reason (owner-gated + audited server-side) and THROWS on failure so the modal can show it.
@@ -207,7 +207,7 @@ export default function UsersTab() {
                   {roleTag(u)} {u.isBanned ? <Tag tone="danger">مسدود</Tag> : null}
                 </Box>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockStart: 2 }}>
-                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', direction: 'ltr', textAlign: 'start' }}>{revealed ? (revealed.phone || revealed.email || '—') : contact(u)}</Text>
+                  <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', direction: 'ltr', textAlign: 'start' }}>{revealed ? ([revealed.phone, revealed.email].filter(Boolean).join(' · ') || '—') : contact(u)}</Text>
                   {!revealed && !u.isGuest && (u.phone || u.email) ? <UnstyledButton type="button" onClick={() => setDanger({ kind: 'reveal', user: u })} style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-brand-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>نمایشِ کامل</UnstyledButton> : null}
                 </Box>
               </Box>
@@ -261,7 +261,7 @@ export default function UsersTab() {
             {/* actions — grouped by risk tier (advisor P1-9): session/security ops, then owner-only irreversible ops */}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: 7, padding: '14px 18px', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
               <Text component="div" style={actGroupLbl}>نشست و دسترسی</Text>
-              <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => logoutM.mutate({ id: u.id })} />
+              <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => { const reason = window.prompt('دلیلِ ابطالِ نشست‌های این کاربر؟ (اختیاری — در audit ثبت می‌شود)'); if (reason === null) return; logoutM.mutate({ id: u.id, reason }); }} />
               {u.isBanned
                 ? <Act icon={IconLockOpen} label="رفعِ مسدودی" loading={banM.isPending} onClick={() => banM.mutate({ id: u.id, banned: false })} />
                 : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />}

@@ -32,18 +32,27 @@ const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }
 // trust the board isn't a frozen snapshot (the per-tab queries poll every 15–30s underneath, and react-query
 // refetches on focus). Honest: it signals liveness, not a specific per-metric timestamp.
 function FreshnessPill() {
+  const qc = useQueryClient();
   const [now, setNow] = useState(() => new Date());
+  const [errs, setErrs] = useState(0);
   useEffect(() => {
-    const tick = () => setNow(new Date());
+    // P1-12: honest freshness — surface how many admin panels actually FAILED to load, so a green pill never
+    // masks a stale/broken panel. Recomputed on each tick + on focus (the queries themselves poll underneath).
+    const tick = () => {
+      setNow(new Date());
+      try { setErrs(qc.getQueryCache().findAll({ queryKey: ['admin'] }).filter((q) => q.state.status === 'error').length); } catch { setErrs(0); }
+    };
+    tick();
     const t = setInterval(tick, 20000);
     window.addEventListener('focus', tick);
     return () => { clearInterval(t); window.removeEventListener('focus', tick); };
-  }, []);
+  }, [qc]);
   const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const ok = errs === 0;
   return (
-    <Box title="پنل زنده است و خودکار به‌روزرسانی می‌شود" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingInline: 10, minBlockSize: 32, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
-      <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-success-fg, #2e7d4f)' }} />
-      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-secondary)', whiteSpace: 'nowrap' }}>زنده · {toFaDigits(hhmm)}</Text>
+    <Box title={ok ? 'پنل زنده است و خودکار به‌روزرسانی می‌شود' : `${errs} پنل بارگذاری نشد — «به‌روزرسانی» را بزن`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingInline: 10, minBlockSize: 32, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: ok ? 'var(--g-color-bg-surface)' : 'var(--g-color-state-warning-bg, #fdf3e3)' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: ok ? 'var(--g-color-state-success-fg, #2e7d4f)' : 'var(--g-color-state-warning-fg, #c0801c)' }} />
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: ok ? 'var(--g-color-text-secondary)' : 'var(--g-color-state-warning-fg, #c0801c)', whiteSpace: 'nowrap' }}>{ok ? `زنده · ${toFaDigits(hhmm)}` : `${toFaDigits(errs)} پنل خطا`}</Text>
     </Box>
   );
 }
@@ -75,7 +84,7 @@ const GROUPS = [
   { label: 'محصول', ids: ['behavior', 'engagement', 'retention', 'content'] },
   { label: 'هوش مصنوعی', ids: ['ai'] },
   { label: 'ایمنی و انطباق', ids: ['safety'] },
-  { label: 'اتوماسیون و سیستم', ids: ['automation', 'revenue'] },
+  { label: 'اتوماسیون و سیستم', ids: ['automation'] }, // P1-13: 'revenue' hidden from nav until the payment gateway is connected (the tab still exists for a direct URL / planning)
 ];
 
 function useNarrow() {
@@ -131,7 +140,7 @@ export default function AdminPage() {
   // not all 12 tabs — so this is already scoped (P1-10). The whole-cache JSON export was REMOVED (P0-4): it
   // dumped real PII client-side with no server-side audit trail (silent exfiltration). Any export must be a
   // server endpoint, super-admin-gated, reason+audited, redacted — not a browser cache dump.
-  const onRefresh = () => queryClient.invalidateQueries({ queryKey: ['admin'] });
+  const onRefresh = () => queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }); // P2-3: refetch only the mounted (active-tab) queries, not the whole namespace
 
   const railW = narrow ? 58 : 204;
   const ActiveBody = active.C;
@@ -152,7 +161,7 @@ export default function AdminPage() {
             {g.ids.map((id) => {
               const t = TABS[id]; const on = id === tab;
               return (
-                <UnstyledButton key={id} type="button" onClick={() => setTab(id)} aria-current={on ? 'page' : undefined} title={narrow ? t.label : undefined} style={{ display: 'flex', alignItems: 'center', gap: 9, inlineSize: '100%', minBlockSize: 38, paddingInline: narrow ? 0 : 10, justifyContent: narrow ? 'center' : 'flex-start', borderRadius: '10px', marginBlockEnd: 2, background: on ? 'var(--g-color-brand-50)' : 'transparent', color: on ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: on ? 500 : 400 }}>
+                <UnstyledButton key={id} type="button" onClick={() => setTab(id)} aria-current={on ? 'page' : undefined} aria-label={t.label} title={narrow ? t.label : undefined} style={{ display: 'flex', alignItems: 'center', gap: 9, inlineSize: '100%', minBlockSize: 38, paddingInline: narrow ? 0 : 10, justifyContent: narrow ? 'center' : 'flex-start', borderRadius: '10px', marginBlockEnd: 2, background: on ? 'var(--g-color-brand-50)' : 'transparent', color: on ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', fontWeight: on ? 500 : 400 }}>
                   <t.Icon size={18} stroke={1.7} aria-hidden="true" style={{ color: on ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)', flexShrink: 0 }} />
                   {!narrow ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.label}</span> : null}
                 </UnstyledButton>
