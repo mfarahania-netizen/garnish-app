@@ -7,6 +7,9 @@ import { CandidateGeneratorService } from './pipeline/candidate-generator';
 import { RankingService } from './pipeline/ranking.service';
 import { RecommendationPipelineService } from './pipeline/recommendation-pipeline.service';
 import { RecommendationCountersService } from './pipeline/recommendation-counters.service';
+import { RecipePriorService } from './pipeline/recipe-prior.service';
+import { RecipePriorLearnerService } from './pipeline/recipe-prior-learner.service';
+import { L1_RECIPE_PRIOR_SOURCE } from './pipeline/recipe-prior.source';
 import { ContributionCalculatorService } from './ranking-model/contribution-calculator';
 import { ExplainabilityService } from './explainability/explainability.service';
 import { ExperimentationModule } from '../experimentation/experimentation.module';
@@ -45,6 +48,15 @@ import { ContextModule } from '../context/context.module';
     RankingService,
     RecommendationPipelineService,
     RecommendationCountersService, // L0/L1 "counters first-class": served-slate (position+propensity) log
+    // P1-1 (recsys audit): wire the L1 learned-prior seam — DEFAULT-OFF + byte-identical. The read source
+    // (RecipePriorService.valuesForSlate) self-gates on L1_RECIPE_PRIOR_ENABLED (off → returns null, no DB
+    // query, neutral 0.5) and the nightly learner self-gates on L1_RECIPE_PRIOR_LEARN_ENABLED (off → no-op, no
+    // online learning). The `recipePrior` ranking WEIGHT stays pinned at 0, so registering these changes NOTHING
+    // in live output until the founder deliberately flips the env flags (offline-replay-gated). L1_WEIGHT_SOURCE
+    // is intentionally left ABSENT — providing it is what raises the weight (= activation), which stays gated.
+    RecipePriorService,
+    RecipePriorLearnerService,
+    { provide: L1_RECIPE_PRIOR_SOURCE, useExisting: RecipePriorService },
     ContributionCalculatorService,
     ExplainabilityService,
     ExposureTrackingService,
