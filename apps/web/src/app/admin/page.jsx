@@ -1,5 +1,5 @@
 // Admin section — a sidebar dashboard over the real backend (admin.controller: ~24 endpoints + ops/*).
-// Layout: a right-side nav rail (RTL inline-start) grouped into تحلیل / هوش مصنوعی / عملیات, a slim top bar,
+// Layout: a right-side nav rail (RTL inline-start) grouped BY JOB — مرکز فرماندهی / کاربران و پشتیبانی / محصول / هوش مصنوعی / ایمنی / اتوماسیون, a slim top bar,
 // and the active tab body. Each tab renders real values or honest awaiting/post-launch states.
 // Catalog: docs/audit/ADMIN_DASHBOARD_CATALOG.md.
 import { useState, useEffect } from 'react';
@@ -63,10 +63,19 @@ const TABS = {
   revenue: { label: 'درآمد', Icon: IconCoin, C: () => <PostLaunch note="MRR/churn/LTV و اعتبارِ هوش مصنوعی — با اتصالِ درگاهِ پرداخت خودکار فعال می‌شود (§۱۱/§۱۲)" /> },
 };
 
+// P1-7 (advisor §7): job-based navigation, not by metric type. The old grouping mixed the command surface
+// with product analytics ('تحلیل') and lumped people + ops + safety into one 'عملیات'. Now the operator
+// navigates by the JOB to be done: Command (the "now" — pulse + live feed), People (users + support),
+// Product analytics, AI, Safety (stands alone — allergens are critical), and Automation+System. Realtime
+// moves up into Command and Safety is separated from ops, per §7. All tab COMPONENTS and the URL routing
+// are unchanged — only this grouping/order moved, so nothing breaks.
 const GROUPS = [
-  { label: 'تحلیل', ids: ['overview', 'behavior', 'engagement', 'retention', 'content'] },
+  { label: 'مرکز فرماندهی', ids: ['overview', 'realtime'] },
+  { label: 'کاربران و پشتیبانی', ids: ['users', 'tickets'] },
+  { label: 'محصول', ids: ['behavior', 'engagement', 'retention', 'content'] },
   { label: 'هوش مصنوعی', ids: ['ai'] },
-  { label: 'عملیات', ids: ['users', 'tickets', 'automation', 'safety', 'realtime', 'revenue'] },
+  { label: 'ایمنی و انطباق', ids: ['safety'] },
+  { label: 'اتوماسیون و سیستم', ids: ['automation', 'revenue'] },
 ];
 
 function useNarrow() {
