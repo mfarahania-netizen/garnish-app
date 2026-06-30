@@ -11,7 +11,9 @@
 - **✅✅ تیرِ P0 ۱۰۰٪ کامل + زنده‌تأیید + پوش.** ضمناً: P1-9 (تفکیکِ tierِ drawer) + P2-2ِ کاربران (a11yِ ردیف: role/tabIndex/Enter) هم انجام شد.
 - **P1-1 (DTOها + validation):** ✅ DTOهای typed (Create/Update/ResetPassword/Ban/Reason) روی endpointهای کاربر؛ قواعدِ business در service (کدهای خطای FE حفظ). **زنده تست:** معتبر→ok، فیلدِ ناشناخته→۴۰۰. پوش (`891ef530`).
 - **P1-5/12/13/14 + P2-2:** ✅ owner-gateِ moderation · برچسبِ صادقِ near-realtime · active-usersِ سمتِ سرور (distinct userId/۳۰دق) · runbookِ هر ۶ workflow (owner/اقدام/مراحل/escalation، نمایش روی هشدار+کارت) · a11yِ ردیفِ تیکت. زنده تست (`391fb06a`,`51b3d3d2`).
-- **مانده — همه بزرگ، نشستِ تازه می‌خواهند:** P1-4 UIِ تیکت (assignee/tags/SLA) · P1-6 observability drawer · P1-7/8 بازچینیِ تب‌ها · P1-15 تست‌های e2e · P1-16 any · P2-1 mobile · P2-3 خطا.
+- **P1-15 (تست‌های e2e):** ✅ ۶ تستِ امنیتیِ admin (RolesGuard·OwnerGuard·reason·audit-survival·workflow-404·DTO-whitelist) — userها مستقیم با prisma ساخته و با JwtService امضا می‌شوند (دور زدنِ register/throttler). ۶/۶ سبز. پوش (`84809218`).
+- **P1-4 (triageِ تیکت):** ✅ Selectِ assignee (از روسترِ ادمین) + TagsInput + نشانِ SLAِ اولین‌پاسخ (نقض اگر تیکتِ باز >۲۴س بی‌پاسخ) روی هدرِ drawer + نقطهٔ ردیف؛ همه با PATCHِ موجود persist می‌شوند (backend از قبل assigneeId/tags داشت). build سبز + لیست render شد + کلیک‌ها live کار کردند؛ drawerِ state-driven در previewِ headless با کلیکِ مصنوعیِ `<tr>` باز نشد (محدودیتِ harness، نه کد). پوش (`7b49f841`). ضمناً: یک artifactِ **HMRِ بیاتِ `onExport`** در preview کشف+رفع شد (page.jsxِ کامیت‌شده پاک است).
+- **مانده — ۲ موردِ بزرگ + ۳ جزئی:** P1-6 observability drawer (بزرگ) · P1-7/8 بازچینیِ تب‌ها (بزرگ + **پرریسک**: می‌تواند nav را بشکند) · P1-16 any · P2-1 mobile · P2-3 خطا.
 - **حادثهٔ ابزاری:** `pnpm install` (برای رفعِ vite که خراب شده بود) کلاینتِ Prisma را پاک کرد → سرور لحظه‌ای down شد → `prisma generate` + restart → سالم. درس: `pnpm install` وسطِ کارِ زنده نزن.
 
 ---
