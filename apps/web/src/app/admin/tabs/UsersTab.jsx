@@ -229,7 +229,8 @@ export default function UsersTab() {
               <DossierRow label="عضویت" value={`${day(u.createdAt)} · ${ago(u.recentEvents?.[0]?.timestamp)}`} />
               <DossierRow label="منطقه" value={[u.locale, u.country].filter(Boolean).join(' · ') || '—'} />
               {u.preferences ? <DossierRow label="ترجیحات" value={[u.preferences.diet, u.preferences.skillLevel, u.preferences.budget].filter(Boolean).join(' · ') || '—'} /> : null}
-              {u.allergies?.length ? <DossierRow label="آلرژی" value={u.allergies.join('، ')} tone="danger" /> : null}
+              {u.allergiesCount ? <DossierRow label="آلرژی" value={`${toFaDigits(u.allergiesCount)} مورد (محرمانه — سلامت)`} tone="danger" /> : null}
+              {u.healthGoalsCount ? <DossierRow label="هدفِ سلامت" value={`${toFaDigits(u.healthGoalsCount)} مورد (محرمانه)`} /> : null}
               {u.cuisines?.length ? <DossierRow label="آشپزی‌ها" value={u.cuisines.join('، ')} /> : null}
 
               <Box>
@@ -337,7 +338,7 @@ function ObsContent({ tab, d }) {
     const keys = Object.keys(rec);
     return (
       <Box>
-        <ObsRow a="بلوغ" b={String(d.maturity?.stage ?? d.maturity ?? '—')} />
+        <ObsRow a="بلوغ" b={d.maturity && typeof d.maturity === 'object' ? String(d.maturity.band ?? d.maturity.stage ?? d.maturity.overallScore ?? '—') : String(d.maturity ?? '—')} />
         {d.observed ? <ObsRow a="مشاهده‌شده" b={String(d.observed.status ?? '—')} c={d.observed.overallConfidence != null ? 'اطمینان ' + toFaDigits(d.observed.overallConfidence) : ''} /> : null}
         {keys.length ? keys.map((k) => { const v = rec[k] || {}; return <ObsRow key={k} a={k} b={k === 'allergies' ? `${toFaDigits(v.count ?? 0)} مورد (مخفی)` : String(v.value ?? v.status ?? '—')} c={v.confidence != null ? toFaDigits(v.confidence) : ''} />; }) : <Text component="div" style={obsMuted}>بُعدی reconcile نشده.</Text>}
       </Box>
@@ -353,7 +354,7 @@ function ObsContent({ tab, d }) {
   }
   if (tab === 'tickets') {
     const tk = d.tickets || [];
-    return tk.length ? <Box>{tk.map((t) => <ObsRow key={t.id} a={t.subject} b={t.status} c={day(t.createdAt)} />)}</Box> : <Text component="div" style={obsMuted}>تیکتی نیست.</Text>;
+    return tk.length ? <Box>{tk.map((t) => <ObsRow key={t.id} a={t.category || 'تیکت'} b={t.status} c={day(t.createdAt)} />)}</Box> : <Text component="div" style={obsMuted}>تیکتی نیست.</Text>;
   }
   return null;
 }

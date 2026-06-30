@@ -7,6 +7,11 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { isStatus, isPriority, isCategory, CLOSED_STATUSES } from '../support/ticket.constants';
+import { maskPhone, maskEmail } from './pii.util';
+
+// P1-2 (re-audit): a ticket's user contact is masked BY DEFAULT (like the user roster/dossier) — the support
+// path doesn't need the raw number to do its job, and an unmasked list is a bulk-PII escape hatch.
+const maskTicketUser = (t: any) => (t?.user ? { ...t, user: { ...t.user, phone: maskPhone(t.user.phone), email: maskEmail(t.user.email) } } : t);
 
 type ListArgs = { page?: number; limit?: number; search?: string; status?: string; priority?: string; category?: string; assignee?: string; unanswered?: string; sort?: string };
 
@@ -43,7 +48,7 @@ export class AdminTicketsService {
       }),
       this.prisma.supportTicket.count({ where }),
     ]);
-    return { data, total, page: Math.max(1, page), limit: take };
+    return { data: data.map(maskTicketUser), total, page: Math.max(1, page), limit: take };
   }
 
   async detail(id: string) {
@@ -56,7 +61,7 @@ export class AdminTicketsService {
       },
     });
     if (!t) throw new NotFoundException('ticket_not_found');
-    return t;
+    return maskTicketUser(t); // P1-2: contact masked by default in the dossier too
   }
 
   /** Staff reply. Stamps firstResponseAt (SLA) + lastReplyAt, advances status, and FIRES the user notification. */

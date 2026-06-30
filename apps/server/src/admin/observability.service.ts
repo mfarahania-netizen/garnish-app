@@ -88,9 +88,12 @@ export class ObservabilityService {
 
   /** The user's recent support tickets (metadata — the support side of the dossier). */
   async tickets(userId: string, limit = 30) {
+    // P1-3 (re-audit): the dossier is metadata-only — a ticket SUBJECT is free user text that can carry PII (a
+    // phone, an address, a health detail), so it is NOT returned here; the subject lives only in the (role-
+    // appropriate) Ticket detail view.
     const tickets = await this.prisma.supportTicket.findMany({
       where: { userId }, orderBy: { createdAt: 'desc' }, take: Math.min(Math.max(limit, 1), 100),
-      select: { id: true, subject: true, status: true, priority: true, category: true, firstResponseAt: true, lastReplyAt: true, createdAt: true },
+      select: { id: true, status: true, priority: true, category: true, firstResponseAt: true, lastReplyAt: true, createdAt: true },
     }).catch(() => []);
     return { userId, count: tickets.length, tickets };
   }

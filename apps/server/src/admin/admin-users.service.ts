@@ -107,9 +107,14 @@ export class AdminUsersService {
       ...user,
       phone: maskPhone(user.phone), // P0-5: masked by default; real value via the audited reveal endpoint
       email: maskEmail(user.email),
-      allergies: user.allergies.map((a) => a.allergy.name),
+      // P1-4 (re-audit): allergy + health-goal data is MORE sensitive than contact — return COUNTS by default,
+      // never the named lists (the names are health-sensitive and need a role-gated reveal, not an auto-return to
+      // every admin). Cuisine taste is not health-sensitive, so it stays.
+      allergiesCount: user.allergies.length,
+      healthGoalsCount: user.healthGoals.length,
+      allergies: [] as string[], // redacted — count is in allergiesCount
+      healthGoals: [] as string[], // redacted — count is in healthGoalsCount
       cuisines: user.cuisines.map((c) => c.cuisine.name),
-      healthGoals: user.healthGoals.map((g) => g.healthGoal.name),
       sessions,
       activeSessions: sessions.filter((x) => !x.endTime).length,
       recentEvents,
