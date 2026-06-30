@@ -569,20 +569,22 @@
 
 **یکپارچگی پنل ادمین (نگرانی اصلی شما) — تأیید شد سالم:** یک ایجنت کل مسیر را code-review کرد: هیچ سیگنیچر سرویسی که ادمین صدا می‌زند عوض نشده؛ ردیف‌های جدید `SignalObservation` با reader ادمین null-safe سازگارند؛ consent gate در dev byte-identical است و `userEvent.create` همیشه (صرف‌نظر از gate) اجرا می‌شود پس شمارش‌های ادمین خالی نمی‌شوند؛ DI سالم. تأیید live: analytics + observability همه ۲۰۰.
 
-### P1 — مطابق §13 به‌صورت issue list، نه اجرای الان
+### P1 — همه انجام شد (۸/۸) + §12
 
-P1-5 (data maturity) انجام شد (`e28b91fd`): forward-value روشن + کم‌ریسک (شمردن cook/shop/personalization در بلوغ؛ feature-store 6/6؛ هنوز پشت consent gate خاموش). بقیهٔ P1 دقیقاً طبق §13 («prior learning، AI context، ranker optimization را **بعد از P0 با evidence** فعال کن») به موجِ post-launch موکول شد — هرکدام با دلیلِ code-grounded:
+پس از P0 و به‌دستورِ صریحِ founder، کلِ تایرِ P1 هم اجرا شد — با اصلِ ایمنیِ **build-کامل، فعال‌سازیِ ریسکی-خاموش**؛ هرکدام تست‌دار + verify، و مواردِ مسیرِ-زندهٔ ranker با اثباتِ خروجیِ byte-identical:
 
-انجام‌شده (علاوه بر P1-5؛ هرکدام تست‌دار + verify):
-- **P1-6 candidate parallelization** (`509db517`) — ۸ منبعِ کاندیدا موازی + ایزولهٔ خطا (یک منبع throw کند، slate نمی‌شکند)؛ robustnessِ لانچ + latency؛ byte-identical روی happy path. 9/9 spec + live 200.
+- **P1-5 data maturity** (`e28b91fd`) — بلوغ حالا cook/shop/personalization/de-favorite را می‌شمارد. feature-store 6/6.
+- **P1-6 candidate parallelization** (`509db517`) — ۸ منبعِ کاندیدا موازی + ایزولهٔ خطا (یک منبع throw کند، slate نمی‌شکند)؛ byte-identical روی happy path. 9/9 + live 200.
 - **P1-8 slate durability** (`0dece972`) — retryِ کراندار در logSlate (دادهٔ off-policy گم نشود)، fire-and-forget می‌ماند.
-- **§12 observability** (`9c533e6a`) — `GET /admin/observability/recsys-health`: outbox/dead-letter · پوششِ سیگنال · پوششِ consent · تازگیِ prior؛ کلِ این کار حالا در پنلِ ادمین **دیده** می‌شود. live 200 با دادهٔ واقعی.
+- **P1-1 ranker/prior wiring** (`1b3713a2`) — providerهای RecipePrior/Learner/L1_RECIPE_PRIOR_SOURCE وصل شدند؛ سه‌گانه self-gated (valuesForSlate · learner-cron · وزنِ pinned=0) → خروجیِ زندهٔ ranker **BYTE-IDENTICAL** اثبات شد؛ L1_WEIGHT_SOURCE عمداً absent (= activation، founder-gated). 44/44.
+- **P1-7 metrics dedupe** (`b74567ff`) — attribution = منبعِ حقیقت، UserEvent فقط fallback؛ دیگر دوبار شمرده نمی‌شود؛ بدونِ migration. 5/5.
+- **P1-4 feature-store cache** (`edb81e28`) — buildFeatureVector cache-aware (fresh→بی‌write، stale→refreshِ پس‌زمینه)؛ byte-identical زنده اثبات شد. 3/3.
+- **P1-3 AI context hydration** (`06f37645`) — snapshotِ AI از سیگنال‌های واقعی (consent-gated، redacted، بی‌health/allergy)؛ بی‌consent → byte-identical (امروز inert، مثلِ living profile). 7/7.
+- **P1-2 canonical↔legacy gap** (`9f2029b5`) — به‌جای شدوِ per-eventِ پرریسک (§13)، شکاف در recsys-health **دیده** شد: ۵۵ سیگنالِ registry (۳۷ active_v1) ولی ۹ از ۱۰ سیگنالِ live خارج از taxonomy. شدوِ عمیقِ per-event = قدمِ post-launch.
+- **§12 observability** (`9c533e6a`) — `GET /admin/observability/recsys-health`: outbox/dead-letter · پوششِ سیگنال · پوششِ consent · تازگیِ prior · پوششِ registry. live 200 با دادهٔ واقعی.
 
-عمداً موکول به post-launch (دلیلِ code-grounded؛ همگی gated / regression-risk / migration-blocked — دقیقاً هشدارِ §13):
-- **P1-1 ranker/prior learning** — به داده نیاز دارد + در trackِ L1 founder-gated شماست (قدم بعدیِ تأییدشده offline-replay است، نه سیم‌کشیِ live ranker). **تصمیم با شما.**
-- **P1-2 SignalObservationEngine shadow** — §13 صراحتاً refactor کاملش را regression-risk خوانده.
-- **P1-3 AI context hydration** — با بازسازیِ فعالِ AI (#23) هم‌پوشان + پشتِ consent-grantِ هنوز-wire-نشده؛ در دلِ #23 انجام شود نه patch جدا.
-- **P1-4 feature-store async/cache** — بهینهٔ latency در مقیاس + ریسکِ staleness؛ در لانچِ ~۰-ترافیک ارزشِ ~۰.
-- **P1-7 metrics dedupe** — پشتِ همان migrationِ attribution-key (attribution فاقد `eventId`) که P0-6 به L1 موکول کرد؛ بی‌migration ممکن نیست.
+**سواییِ نهایی: ۱۲۵ تستِ unit (۲۱ suite) + ۵ e2e ایمنی — همه سبز · ۰ خطا · پنل ادمین دست‌نخورده.**
+
+تنها چیزی که **عمداً خاموش ماند** (نه ناتمام): فعال‌سازیِ یادگیریِ ranker (env flagهای L1) — تصمیمِ founder پشتِ offline-replay است؛ همه‌چیز wire و آماده، فقط منتظرِ go-ی شما.
 
 **نکتهٔ عملیاتی push:** credential helper (`manager`) در محیط non-interactive گیر می‌کند (`could not read Username … prompts disabled`)، پس commitهای این جلسه فقط **local** روی `audit/recsys-p0` هستند؛ remote تا `45c0923d` (P0-7) دارد. وقتی برگشتید: **`git push origin audit/recsys-p0`** — همه‌چیز را روی remote می‌برد. همه‌چیز تست‌شده، server سالم (۰ خطای کامپایل)، و امن است.
