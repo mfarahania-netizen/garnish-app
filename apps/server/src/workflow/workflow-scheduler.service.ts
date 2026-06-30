@@ -33,15 +33,20 @@ export class WorkflowSchedulerService {
       return;
     }
     for (const wf of due) {
-      // Claim first: advance nextRunAt by the interval so the next tick won't re-pick a still-running workflow.
+      // ATOMIC claim (advisor P1-3): a CONDITIONAL updateMany (nextRunAt still due) — across multiple server
+      // instances only ONE wins (its update advances nextRunAt; the loser then matches 0 rows). Plain update-by-id
+      // was unconditional → both instances would run the same workflow (duplicate alerts, double AI/DB load).
+      let claimed = 0;
       try {
-        await this.prisma.workflow.update({
-          where: { id: wf.id },
+        const res = await this.prisma.workflow.updateMany({
+          where: { id: wf.id, nextRunAt: { lte: now } },
           data: { lastRunAt: now, nextRunAt: new Date(now.getTime() + (wf.intervalSec ?? 3600) * 1000) },
         });
+        claimed = res.count;
       } catch {
         continue;
       }
+      if (claimed !== 1) continue; // another instance already claimed this tick
       this.runner
         .run(wf as RunnableWorkflow, 'schedule')
         .catch((e) => this.logger.warn(`workflow ${wf.key} run failed: ${String(e?.message || e)}`));

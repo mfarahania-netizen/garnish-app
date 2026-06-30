@@ -4,7 +4,9 @@
 - **P0-4 (export کلِ cache):** ✅ حذف شد + پوش (`430f03c5`). دکمه + onExport + import رفت — هر export باید server-side + owner + reason + audit + redaction شود.
 - **P0-3 (audit ledger):** ✅ `recordAuditStrict` روی `UserAuditLog` (بادوام/SetNull، **fail-closed**، actor+target+reason+ip+userAgent+after) جای fire-and-forgetِ `UserEvent`؛ روی هر ۷ عملیاتِ حساس؛ **live-tested** (ساخت→ردیفِ audit نشست، حذف پاک شد) + پوش (`3c7fc5ab`).
 - **مسیرِ کم‌ریسکِ انتخابی:** بدونِ DB migration روی DBِ پیش‌از‌لانچ — OwnerGuard با allowlistِ env + استفادهٔ مجددِ `UserAuditLog`.
-- **در صف (با احتیاتِ بیشتر چون restart/FE می‌خواهند):** P0-1 (OwnerGuard + `ADMIN_OWNER_IDS` در .env + restart — ریسکِ lock-out، باید دقیق تست شود) · P0-2 (input reason + تأییدِ تایپی در FE) · P0-5 (PII mask پیش‌فرض + reveal با reason) · P1 (DTOها · workflow 404/400 · scheduler claim اتمیک · UI تیکت assignee/tags/SLA · observability drawer) · P2 (a11y · runbook).
+- **P0-1 + P0-2 (owner gate + reason + تأییدِ تایپی):** ✅ OwnerGuard روی delete/password/export/role (`ADMIN_OWNER_IDS` در .env) + `requireReason` + DangerModalِ یک‌پارچهٔ FE (reason الزامی + تایپِ نامِ کاربر برای حذف + خطای 403/400) + تفکیکِ tier (P1-9). **زنده تست:** بی‌دلیل→۴۰۰، با‌دلیل→۲۰۰، owner مجاز. پوش (`2531b322`).
+- **P0-3 (پایداریِ audit در برابرِ erasure):** ✅ کشفِ گپ: `erasure.service.ts:62` details/ip ردیف‌های UserAuditLogِ هدف را null می‌کند → audit حذف به **actor (ادمین)** کلید خورد، targetId در details. **زنده تست:** بعد از حذفِ کاربر، audit با کلِ `{actorId, targetId, reason, ip}` ماند.
+- **در صف:** P0-5 (PII mask پیش‌فرض + reveal با reason) · P1 (DTOها · workflow 404/400 · scheduler claim اتمیک · UI تیکت assignee/tags/SLA · observability drawer · active-users واقعی · runbook · بازچینیِ تب‌ها · تست‌های e2e) · P2 (a11y · mobile nav).
 - **حادثهٔ ابزاری:** `pnpm install` (برای رفعِ vite که خراب شده بود) کلاینتِ Prisma را پاک کرد → سرور لحظه‌ای down شد → `prisma generate` + restart → سالم. درس: `pnpm install` وسطِ کارِ زنده نزن.
 
 ---

@@ -3,7 +3,7 @@
  * surface the admin Command screen uses — list workflows + last-run status, the alert feed, run history,
  * a manual run trigger, and alert acknowledgement.
  */
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowRunnerService, RunnableWorkflow } from './workflow-runner.service';
 import { WORKFLOW_DEFINITIONS } from './workflow-definitions';
@@ -90,7 +90,7 @@ export class WorkflowService implements OnModuleInit {
   /** Recent runs for one workflow (the run history / audit trail). */
   async getRuns(key: string, limit = 20) {
     const wf = await this.prisma.workflow.findUnique({ where: { key } });
-    if (!wf) return { error: 'unknown workflow', runs: [] };
+    if (!wf) throw new NotFoundException('unknown_workflow');
     const runs = await this.prisma.workflowRun.findMany({ where: { workflowId: wf.id }, orderBy: { startedAt: 'desc' }, take: Math.min(limit, 100) });
     return { key, runs };
   }
@@ -98,7 +98,7 @@ export class WorkflowService implements OnModuleInit {
   /** Manually trigger a workflow now (admin "run" button + on-demand). */
   async runNow(key: string) {
     const wf = await this.prisma.workflow.findUnique({ where: { key } });
-    if (!wf) return { error: 'unknown workflow' };
+    if (!wf) throw new NotFoundException('unknown_workflow');
     const result = await this.runner.run(wf as unknown as RunnableWorkflow, 'manual');
     return { key, ...result };
   }
@@ -108,8 +108,9 @@ export class WorkflowService implements OnModuleInit {
     try {
       const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'acknowledged', acknowledgedBy: by ?? null } });
       return { id: updated.id, status: updated.status };
-    } catch {
-      return { error: 'unknown alert' };
+    } catch (e: any) {
+      if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found
+      throw e;
     }
   }
 
@@ -118,8 +119,9 @@ export class WorkflowService implements OnModuleInit {
     try {
       const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'resolved', resolvedAt: new Date(), acknowledgedBy: by ?? undefined } });
       return { id: updated.id, status: updated.status };
-    } catch {
-      return { error: 'unknown alert' };
+    } catch (e: any) {
+      if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found
+      throw e;
     }
   }
 
@@ -130,8 +132,9 @@ export class WorkflowService implements OnModuleInit {
       const snoozedUntil = new Date(Date.now() + m * 60000);
       const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'snoozed', snoozedUntil, acknowledgedBy: by ?? undefined } });
       return { id: updated.id, status: updated.status, snoozedUntil };
-    } catch {
-      return { error: 'unknown alert' };
+    } catch (e: any) {
+      if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found
+      throw e;
     }
   }
 }
