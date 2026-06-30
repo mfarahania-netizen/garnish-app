@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
-import { safeJsonPayload } from './safe-payload';
+import { safeJsonPayload, alreadyConsumed } from './safe-payload';
 
 @Injectable()
 export class ShoppingSignalProcessor {
@@ -12,6 +12,7 @@ export class ShoppingSignalProcessor {
   ) {}
 
   async process(event: any, userId: string) {
+    if (await alreadyConsumed(this.prisma, event.id)) return; // P0-6: skip a redelivered (at-least-once) event
     // P0-3 (recsys audit): the real FE shopping-add events (manual / from a meal-plan / from a favorite) —
     // previously unrouted. Treat as grocery-routine activity; a from-plan add also evidences meal-planning.
     if (event.type === 'shopping_add_manual' || event.type === 'shopping_add_from_plan' || event.type === 'shopping_add_from_fav') {

@@ -9,7 +9,7 @@ describe('PersonalizationSignalProcessor (recsys P0-4)', () => {
 
   beforeEach(() => {
     prisma = {
-      signalObservation: { create: jest.fn().mockResolvedValue({}) },
+      signalObservation: { create: jest.fn().mockResolvedValue({}), findFirst: jest.fn().mockResolvedValue(null) },
       ingredient: { findFirst: jest.fn() },
     };
     sc = { applyIngredientPreference: jest.fn().mockResolvedValue(undefined) };

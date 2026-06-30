@@ -8,7 +8,7 @@ describe('RecipeSignalProcessor — favorite_remove (recsys P0-2)', () => {
 
   beforeEach(() => {
     prisma = {
-      signalObservation: { create: jest.fn().mockResolvedValue({}) },
+      signalObservation: { create: jest.fn().mockResolvedValue({}), findFirst: jest.fn().mockResolvedValue(null) },
       recipe: { findUnique: jest.fn().mockResolvedValue({ diet: null, categories: [], region: 'persian', ingredients: [] }) },
     };
     signalCalculator = {
@@ -42,5 +42,12 @@ describe('RecipeSignalProcessor — favorite_remove (recsys P0-2)', () => {
     expect(signalCalculator.applyPositiveFeedback).not.toHaveBeenCalled();
     expect(signalCalculator.applyNegativeFeedback).not.toHaveBeenCalled();
     expect(names()).toContain('views_recipe');
+  });
+
+  it('P0-6: a redelivered event is skipped (alreadyConsumed → no double writes/feedback)', async () => {
+    prisma.signalObservation.findFirst.mockResolvedValue({ id: 'existing' });
+    await proc.process(ev('favorite_add'), 'u1');
+    expect(prisma.signalObservation.create).not.toHaveBeenCalled();
+    expect(signalCalculator.applyPositiveFeedback).not.toHaveBeenCalled();
   });
 });

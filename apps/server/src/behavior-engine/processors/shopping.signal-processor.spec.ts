@@ -7,7 +7,7 @@ describe('ShoppingSignalProcessor — real add events (recsys P0-3)', () => {
   let proc: ShoppingSignalProcessor;
 
   beforeEach(() => {
-    prisma = { signalObservation: { create: jest.fn().mockResolvedValue({}) } };
+    prisma = { signalObservation: { create: jest.fn().mockResolvedValue({}), findFirst: jest.fn().mockResolvedValue(null) } };
     signalCalculator = { updateSignal: jest.fn().mockResolvedValue(undefined) };
     proc = new ShoppingSignalProcessor(prisma, signalCalculator);
   });
