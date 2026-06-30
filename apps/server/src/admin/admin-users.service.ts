@@ -143,10 +143,13 @@ export class AdminUsersService {
     await this.ensureExists(id);
     const data: Prisma.UserUncheckedUpdateInput = {};
     if (body.name !== undefined) data.name = body.name?.trim() || null;
-    if (body.email !== undefined) data.email = body.email?.trim() || null;
     if (body.isAdmin !== undefined) data.isAdmin = !!body.isAdmin;
-    if (data.email) {
-      const clash = await this.prisma.user.findFirst({ where: { email: data.email, NOT: { id } }, select: { id: true } });
+    // keep the email as a plain value so it can ALSO be used in a WHERE filter below — reading `data.email` back
+    // is typed as an UpdateInput operation, not a filter, so narrow it here instead.
+    const email = body.email !== undefined ? (body.email?.trim() || null) : undefined;
+    if (email !== undefined) data.email = email;
+    if (email) {
+      const clash = await this.prisma.user.findFirst({ where: { email, NOT: { id } }, select: { id: true } });
       if (clash) throw new BadRequestException('email_taken');
     }
     return this.prisma.user.update({ where: { id }, data, select: { id: true, name: true, email: true, isAdmin: true } });
