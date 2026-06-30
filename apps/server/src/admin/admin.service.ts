@@ -49,13 +49,17 @@ export class AdminService {
     action: string,
     opts: { reason?: string; ip?: string; userAgent?: string; before?: any; after?: any } = {},
   ): Promise<void> {
+    // KEY THE ROW BY THE ACTOR (the admin), not the target. The GDPR erasure scrubs ip/userAgent/details of the
+    // *target's* UserAuditLog rows (erasure.service.ts: where userId=targetId) — so a delete-audit keyed to the
+    // target would lose "who + why" the moment the target is erased. Keyed to the actor it SURVIVES the target's
+    // erasure (the actor/admin is essentially never GDPR-erased). targetId rides in details so the trail is whole.
     await this.prisma.userAuditLog.create({
       data: {
-        userId: targetId,
+        userId: actorId ?? targetId,
         action,
         ip: opts.ip ?? null,
         userAgent: opts.userAgent ?? null,
-        details: JSON.stringify({ actorId: actorId ?? null, reason: opts.reason ?? null, before: opts.before ?? null, after: opts.after ?? null }),
+        details: JSON.stringify({ actorId: actorId ?? null, targetId, reason: opts.reason ?? null, before: opts.before ?? null, after: opts.after ?? null }),
       },
     });
   }

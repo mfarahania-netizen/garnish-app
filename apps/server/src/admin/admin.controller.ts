@@ -1,11 +1,19 @@
 // apps/server/src/admin/admin.controller.ts
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Query, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Query, Req, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminService } from './admin.service';
 import { AdminUsersService } from './admin-users.service';
 import { AdminTicketsService } from './admin-tickets.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { OwnerGuard, isOwnerId } from '../auth/owner.guard';
+
+// Mandatory operator justification for sensitive ops (advisor P0-2) — recorded into the audit ledger. <3 chars → 400.
+function requireReason(reason: string | undefined): string {
+  const r = String(reason ?? '').trim();
+  if (r.length < 3) throw new BadRequestException('reason_required');
+  return r;
+}
 
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -116,17 +124,21 @@ export class AdminController {
     return this.adminUsers.sessions(id);
   }
 
-  // ── Sensitive user ops — advisor P0-3: each FAIL-CLOSED audits to the durable UserAuditLog ledger (actor +
-  // target + reason + ip + userAgent) BEFORE the mutation, so no untraceable change is possible. The super-admin
-  // (owner) gate (P0-1, OwnerGuard) + mandatory reason (P0-2) layer on next. recordAudit→recordAuditStrict. ──
+  // ── Sensitive user ops — layered defenses from the advisor audit:
+  //   P0-1 OwnerGuard: hard-delete / password-reset / full-export / role-change require an owner (ADMIN_OWNER_IDS).
+  //   P0-2 requireReason: a justification is mandatory and is written into the ledger.
+  //   P0-3 recordAuditStrict: FAIL-CLOSED audit (actor+target+reason+ip+ua) BEFORE the mutation → no untraceable change.
   @Get('users/:id/export')
-  async exportUser(@Req() req, @Param('id') id: string) {
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_export', { ip: req.ip, userAgent: req.headers['user-agent'] });
+  @UseGuards(OwnerGuard)
+  async exportUser(@Req() req, @Param('id') id: string, @Query('reason') reason?: string) {
+    const r = requireReason(reason);
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_export', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.export(id);
   }
 
   @Post('users')
   async createUser(@Req() req, @Body() body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean; reason?: string }) {
+    if (body?.isAdmin && !isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // granting admin = owner-only
     const created: any = await this.adminUsers.create(body || {});
     await this.adminService.recordAuditStrict(req.user?.userId, created?.id ?? 'new', 'admin_user_create', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { isAdmin: !!body?.isAdmin } });
     return created;
@@ -134,20 +146,28 @@ export class AdminController {
 
   @Patch('users/:id')
   async updateUser(@Req() req, @Param('id') id: string, @Body() body: { name?: string; email?: string; isAdmin?: boolean; reason?: string }) {
-    if (body?.isAdmin === false && req.user?.userId === id) throw new BadRequestException('cannot_demote_self');
+    const roleChange = body?.isAdmin !== undefined;
+    if (roleChange) {
+      if (body.isAdmin === false && req.user?.userId === id) throw new BadRequestException('cannot_demote_self');
+      if (!isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // role grant/revoke = owner-only
+      requireReason(body?.reason);
+    }
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_update', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { name: body?.name, email: body?.email, isAdmin: body?.isAdmin } });
     return this.adminUsers.update(id, body || {});
   }
 
   @Patch('users/:id/password')
+  @UseGuards(OwnerGuard)
   async resetUserPassword(@Req() req, @Param('id') id: string, @Body('password') password: string, @Body('reason') reason?: string) {
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_password_reset', { reason, ip: req.ip, userAgent: req.headers['user-agent'] });
+    const r = requireReason(reason);
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_password_reset', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.resetPassword(id, password);
   }
 
   @Post('users/:id/ban')
   async banUser(@Req() req, @Param('id') id: string, @Body() body: { banned?: boolean; reason?: string }) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_ban_self');
+    if (body?.banned) requireReason(body?.reason); // banning needs a reason; un-banning is safe
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_ban', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { banned: !!body?.banned } });
     return this.adminUsers.setBanned(id, !!body?.banned, body?.reason);
   }
@@ -159,9 +179,11 @@ export class AdminController {
   }
 
   @Delete('users/:id')
+  @UseGuards(OwnerGuard)
   async deleteUser(@Req() req, @Param('id') id: string, @Body() body?: { reason?: string }) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_delete_self');
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_delete', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'] });
+    const r = requireReason(body?.reason);
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_delete', { reason: r, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.remove(id);
   }
 

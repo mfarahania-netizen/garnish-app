@@ -1,6 +1,7 @@
 // «کاربران» — full admin user control + live monitoring (founder mandate: "do anything, watch moment-by-moment").
-// Roster (search + role/status filters) → per-user dossier drawer → every action: edit, reset password, ban/unban,
-// force-logout (real stateless-JWT kick), make/remove admin, delete (GDPR erasure), export. All wired to /admin/users/*.
+// Roster (search + role/status filters) → per-user dossier drawer → every action behind the security layers from the
+// advisor audit: owner-gated destructive ops (P0-1), mandatory reason + typed-confirm (P0-2), risk-tiered grouping
+// (P1-9). All wired to /admin/users/*; a 403 (super_admin_required) / 400 (reason_required) shows a clear message.
 import { useState, useEffect } from 'react';
 import { Box, Text, Loader, UnstyledButton, Drawer, Modal, TextInput, PasswordInput, Switch } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -75,9 +76,9 @@ export default function UsersTab() {
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const [pwUser, setPwUser] = useState(null); // {id,name} for reset-password modal
-  const [banUser, setBanUser] = useState(null); // {id,name} for ban modal
-  const [confirmDel, setConfirmDel] = useState(false);
+  const [danger, setDanger] = useState(null); // { kind:'role'|'password'|'ban'|'export'|'delete', user } — unified P0-2 modal
+  const [exporting, setExporting] = useState(false);
+  const [exportErr, setExportErr] = useState(null);
 
   useEffect(() => { const t = setTimeout(() => { setSearch(searchInput.trim()); setPage(1); }, 400); return () => clearTimeout(t); }, [searchInput]);
 
@@ -88,23 +89,33 @@ export default function UsersTab() {
   const list = useQuery({ queryKey: ['admin', 'users', qs], queryFn: () => get('/admin/users?' + qs), placeholderData: (prev) => prev });
   const detail = useQuery({ queryKey: ['admin', 'user', selectedId], queryFn: () => get('/admin/users/' + selectedId), enabled: !!selectedId });
 
+  const closeDanger = () => { setDanger(null); setExportErr(null); };
   // shared onSuccess: refresh the roster + the open dossier, then run the per-mutation follow-up (close a modal, etc).
   const onDone = (extra) => ({ onSuccess: (...a) => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); if (selectedId) qc.invalidateQueries({ queryKey: ['admin', 'user', selectedId] }); if (extra) extra(...a); } });
   const createM = useMutation({ mutationFn: (body) => apiClient.post('/admin/users', body), ...onDone(() => setCreateOpen(false)) });
-  const updateM = useMutation({ mutationFn: ({ id, body }) => apiClient.patch('/admin/users/' + id, body), ...onDone() });
-  const pwM = useMutation({ mutationFn: ({ id, password }) => apiClient.patch('/admin/users/' + id + '/password', { password }), ...onDone(() => setPwUser(null)) });
-  const banM = useMutation({ mutationFn: ({ id, banned, reason }) => apiClient.post('/admin/users/' + id + '/ban', { banned, reason }), ...onDone(() => setBanUser(null)) });
+  const updateM = useMutation({ mutationFn: ({ id, body }) => apiClient.patch('/admin/users/' + id, body), ...onDone(closeDanger) });
+  const pwM = useMutation({ mutationFn: ({ id, password, reason }) => apiClient.patch('/admin/users/' + id + '/password', { password, reason }), ...onDone(closeDanger) });
+  const banM = useMutation({ mutationFn: ({ id, banned, reason }) => apiClient.post('/admin/users/' + id + '/ban', { banned, reason }), ...onDone(closeDanger) });
   const logoutM = useMutation({ mutationFn: ({ id }) => apiClient.post('/admin/users/' + id + '/force-logout'), ...onDone() });
-  const delM = useMutation({ mutationFn: ({ id }) => apiClient.delete('/admin/users/' + id), ...onDone(() => { setConfirmDel(false); setSelectedId(null); }) });
+  const delM = useMutation({ mutationFn: ({ id, reason }) => apiClient.delete('/admin/users/' + id, { data: { reason } }), ...onDone(() => { closeDanger(); setSelectedId(null); }) });
 
-  const exportUser = async (id, name) => {
-    try {
-      const data = await get('/admin/users/' + id + '/export');
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a'); link.href = url; link.download = `user-${(name || id).toString().slice(0, 16)}.json`;
-      document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
-    } catch { /* */ }
+  // export now carries a mandatory reason (owner-gated + audited server-side) and THROWS on failure so the modal can show it.
+  const exportUser = async (id, name, reason) => {
+    const data = await get('/admin/users/' + id + '/export?reason=' + encodeURIComponent(reason || ''));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a'); link.href = url; link.download = `user-${(name || id).toString().slice(0, 16)}.json`;
+    document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+  };
+
+  // dispatch the confirmed sensitive op (reason already validated by the modal).
+  const onDanger = async ({ reason, password }) => {
+    const usr = danger?.user; if (!usr) return;
+    if (danger.kind === 'role') updateM.mutate({ id: usr.id, body: { isAdmin: !usr.isAdmin, reason } });
+    else if (danger.kind === 'password') pwM.mutate({ id: usr.id, password, reason });
+    else if (danger.kind === 'ban') banM.mutate({ id: usr.id, banned: true, reason });
+    else if (danger.kind === 'delete') delM.mutate({ id: usr.id, reason });
+    else if (danger.kind === 'export') { setExporting(true); setExportErr(null); try { await exportUser(usr.id, usr.name, reason); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
   };
 
   const s = stats.data || {};
@@ -112,6 +123,8 @@ export default function UsersTab() {
   const total = list.data?.total || 0;
   const pages = Math.ceil(total / 20);
   const u = detail.data; // selected user dossier
+  const dangerBusy = updateM.isPending || pwM.isPending || banM.isPending || delM.isPending || exporting;
+  const dangerError = updateM.error || pwM.error || banM.error || delM.error || exportErr;
 
   return (
     <>
@@ -151,7 +164,7 @@ export default function UsersTab() {
               </Box></Box>
               <Box component="tbody">
                 {rows.map((r) => (
-                  <Box component="tr" key={r.id} onClick={() => setSelectedId(r.id)} style={{ cursor: 'pointer' }} className="adminUserRow">
+                  <Box component="tr" key={r.id} role="button" tabIndex={0} aria-label={`پروندهٔ ${r.name || 'کاربرِ بی‌نام'}`} onClick={() => setSelectedId(r.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(r.id); } }} style={{ cursor: 'pointer' }} className="adminUserRow">
                     <Box component="td" style={tdS}>
                       <Text component="span" style={{ fontWeight: 500, fontSize: '12.5px' }}>{r.name || <span style={{ color: 'var(--g-color-text-muted)' }}>بی‌نام</span>}</Text>
                       {r.country ? <Text component="span" style={{ color: 'var(--g-color-text-muted)', fontSize: '11px', marginInlineStart: 6 }}>{r.country}</Text> : null}
@@ -234,16 +247,18 @@ export default function UsersTab() {
               </Box>
             </Box>
 
-            {/* actions */}
+            {/* actions — grouped by risk tier (advisor P1-9): session/security ops, then owner-only irreversible ops */}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: 7, padding: '14px 18px', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
-              <Act icon={u.isAdmin ? IconShieldOff : IconShield} label={u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} loading={updateM.isPending} onClick={() => updateM.mutate({ id: u.id, body: { isAdmin: !u.isAdmin } })} />
-              <Act icon={IconKey} label="ریستِ رمزِ عبور" onClick={() => setPwUser({ id: u.id, name: u.name })} />
+              <Text component="div" style={actGroupLbl}>نشست و دسترسی</Text>
               <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => logoutM.mutate({ id: u.id })} />
               {u.isBanned
                 ? <Act icon={IconLockOpen} label="رفعِ مسدودی" loading={banM.isPending} onClick={() => banM.mutate({ id: u.id, banned: false })} />
-                : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setBanUser({ id: u.id, name: u.name })} />}
-              <Act icon={IconDownload} label="خروجیِ دادهٔ کاربر (GDPR)" onClick={() => exportUser(u.id, u.name)} />
-              <Act icon={IconTrash} label="حذفِ کامل (پاک‌سازیِ GDPR)" tone="danger" onClick={() => setConfirmDel(true)} />
+                : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />}
+              <Text component="div" style={{ ...actGroupLbl, marginBlockStart: 6 }}>عملیاتِ مالک · برگشت‌ناپذیر</Text>
+              <Act icon={u.isAdmin ? IconShieldOff : IconShield} label={u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} />
+              <Act icon={IconKey} label="ریستِ رمزِ عبور" tone="danger" onClick={() => setDanger({ kind: 'password', user: u })} />
+              <Act icon={IconDownload} label="خروجیِ دادهٔ کاربر (GDPR)" tone="danger" onClick={() => setDanger({ kind: 'export', user: u })} />
+              <Act icon={IconTrash} label="حذفِ کامل (پاک‌سازیِ GDPR)" tone="danger" onClick={() => setDanger({ kind: 'delete', user: u })} />
             </Box>
           </Box>
         )}
@@ -254,33 +269,15 @@ export default function UsersTab() {
         <CreateForm pending={createM.isPending} error={createM.error} onSubmit={(body) => createM.mutate(body)} />
       </Modal>
 
-      {/* ── RESET PASSWORD ── */}
-      <Modal opened={!!pwUser} onClose={() => setPwUser(null)} title={`ریستِ رمز — ${pwUser?.name || 'کاربر'}`} centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
-        <PwForm pending={pwM.isPending} error={pwM.error} onSubmit={(password) => pwM.mutate({ id: pwUser.id, password })} />
-      </Modal>
-
-      {/* ── BAN ── */}
-      <Modal opened={!!banUser} onClose={() => setBanUser(null)} title={`مسدود کردن — ${banUser?.name || 'کاربر'}`} centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
-        <BanForm pending={banM.isPending} error={banM.error} onSubmit={(reason) => banM.mutate({ id: banUser.id, banned: true, reason })} />
-      </Modal>
-
-      {/* ── DELETE CONFIRM ── */}
-      <Modal opened={confirmDel} onClose={() => setConfirmDel(false)} title="حذفِ کاملِ کاربر" centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
-        <Box style={{ fontFamily: 'var(--g-font-fa)' }}>
-          <Note tone="warn" icon={IconAlertTriangle}>این عمل <b>غیرقابلِ بازگشت</b> است — همهٔ دادهٔ کاربر طبقِ GDPR پاک می‌شود (پروفایل، پخت‌ها، تیکت‌ها، نشست‌ها). یک سندِ اثباتِ پاک‌سازی (بدونِ PII) باقی می‌ماند.</Note>
-          {delM.error ? <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontSize: '12px', marginBlockEnd: 8 }}>خطا در حذف.</Text> : null}
-          <Box style={{ display: 'flex', gap: 8, marginBlockStart: 8 }}>
-            <UnstyledButton type="button" onClick={() => setConfirmDel(false)} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', color: 'var(--g-color-text-primary)' }}>انصراف</UnstyledButton>
-            <UnstyledButton type="button" onClick={() => detail.data && delM.mutate({ id: detail.data.id })} disabled={delM.isPending} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{delM.isPending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'حذفِ دائمی'}</UnstyledButton>
-          </Box>
-        </Box>
-      </Modal>
+      {/* ── UNIFIED DANGER MODAL — reason (required) + typed-confirm for delete (P0-2), owner/reason errors surfaced ── */}
+      <DangerModal state={danger} onClose={closeDanger} busy={dangerBusy} error={dangerError} onConfirm={onDanger} />
     </>
   );
 }
 
 const tdS = { padding: '9px 8px', fontSize: '12.5px', color: 'var(--g-color-text-primary)', borderBlockEnd: '1px solid var(--g-color-border-subtle)', verticalAlign: 'middle' };
 const lblS = { fontFamily: 'var(--g-font-fa)', fontSize: '11px', fontWeight: 500, color: 'var(--g-color-text-muted)', marginBlockEnd: 6 };
+const actGroupLbl = { fontFamily: 'var(--g-font-fa)', fontSize: '10px', fontWeight: 600, color: 'var(--g-color-text-muted)', textTransform: 'uppercase', letterSpacing: '.3px', marginBlockEnd: 1 };
 const pgBtn = (dis) => ({ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: dis ? 'var(--g-color-text-muted)' : 'var(--g-color-brand-600)', paddingInline: 10, minBlockSize: 32 });
 
 function DossierRow({ label, value, tone }) {
@@ -292,11 +289,65 @@ function DossierRow({ label, value, tone }) {
   );
 }
 
+// map a backend error code (403 super_admin / 400 reason / self-protect) to a clear Persian line.
+function errLine(error) {
+  const code = error?.response?.data?.message || error?.response?.data?.error;
+  const map = {
+    super_admin_required: 'فقط مالک (super-admin) می‌تواند این کار را انجام دهد — شناسهٔ تو در ADMIN_OWNER_IDS نیست.',
+    reason_required: 'دلیل الزامی است (حداقل ۳ کاراکتر).',
+    cannot_delete_self: 'نمی‌توانی حسابِ خودت را حذف کنی.',
+    cannot_ban_self: 'نمی‌توانی خودت را مسدود کنی.',
+    cannot_demote_self: 'نمی‌توانی نقشِ مدیرِ خودت را برداری.',
+    phone_or_email_required: 'تلفن یا ایمیل لازم است.',
+    password_min_6: 'رمز حداقل ۶ کاراکتر.',
+    phone_taken: 'این تلفن قبلاً ثبت شده.',
+    email_taken: 'این ایمیل قبلاً ثبت شده.',
+  };
+  return map[code] || 'خطا رخ داد.';
+}
+
 function ErrorLine({ error, fallback }) {
   if (!error) return null;
-  const code = error?.response?.data?.message;
-  const map = { phone_or_email_required: 'تلفن یا ایمیل لازم است', password_min_6: 'رمز حداقل ۶ کاراکتر', phone_taken: 'این تلفن قبلاً ثبت شده', email_taken: 'این ایمیل قبلاً ثبت شده' };
-  return <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', marginBlockEnd: 8 }}>{map[code] || fallback || 'خطا رخ داد.'}</Text>;
+  return <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', marginBlockEnd: 8 }}>{errLine(error) === 'خطا رخ داد.' && fallback ? fallback : errLine(error)}</Text>;
+}
+
+const DANGER_CFG = {
+  role: (u) => ({ title: `${u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} — ${u.name || 'کاربر'}`, warn: u.isAdmin ? 'دسترسیِ کاملِ مدیر از این کاربر گرفته می‌شود.' : 'این کاربر دسترسیِ کاملِ مدیر می‌گیرد (عملیاتِ حساس). فقط مالک می‌تواند.', btn: 'تغییرِ نقش', danger: true }),
+  password: (u) => ({ title: `ریستِ رمز — ${u.name || 'کاربر'}`, warn: 'رمزِ جدید تنظیم و کاربر از همهٔ دستگاه‌ها خارج می‌شود. فقط مالک می‌تواند.', btn: 'ریستِ رمز', pw: true, danger: false }),
+  ban: (u) => ({ title: `مسدود کردن — ${u.name || 'کاربر'}`, warn: 'کاربر بلافاصله خارج و تا رفعِ مسدودی نمی‌تواند وارد شود.', btn: 'مسدود کن', danger: true }),
+  export: (u) => ({ title: `خروجیِ دادهٔ کاربر — ${u.name || 'کاربر'}`, warn: 'کلِ پروفایلِ کاربر (شاملِ PII) دانلود می‌شود؛ این کار server-side ثبت و audit می‌شود. فقط مالک می‌تواند.', btn: 'خروجی بگیر', danger: false }),
+  delete: (u) => ({ title: `حذفِ کاملِ کاربر — ${u.name || 'کاربر'}`, warn: 'غیرقابلِ بازگشت — کلِ دادهٔ کاربر طبقِ GDPR پاک می‌شود. فقط سندِ اثباتِ پاک‌سازی (بدونِ PII) می‌ماند. فقط مالک می‌تواند.', btn: 'حذفِ دائمی', confirmWord: true, danger: true }),
+};
+
+// Unified sensitive-op modal: mandatory reason (P0-2) + typed-name confirmation for delete + clear owner/reason errors.
+function DangerModal({ state, onClose, busy, error, onConfirm }) {
+  const [reason, setReason] = useState('');
+  const [pw, setPw] = useState('');
+  const [word, setWord] = useState('');
+  useEffect(() => { setReason(''); setPw(''); setWord(''); }, [state?.kind, state?.user?.id]);
+  if (!state) return null;
+  const u = state.user;
+  const cfg = DANGER_CFG[state.kind](u);
+  const expect = String(u.name || u.phone || u.email || 'حذف');
+  const reasonOk = reason.trim().length >= 3;
+  const pwOk = !cfg.pw || pw.length >= 6;
+  const wordOk = !cfg.confirmWord || word.trim() === expect;
+  const ok = reasonOk && pwOk && wordOk;
+  return (
+    <Modal opened onClose={onClose} title={cfg.title} centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: 11, fontFamily: 'var(--g-font-fa)' }}>
+        <Note tone={cfg.danger ? 'warn' : 'info'} icon={IconAlertTriangle}>{cfg.warn}</Note>
+        {error ? <Text style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', fontSize: '12px' }}>{errLine(error)}</Text> : null}
+        {cfg.pw ? <PasswordInput label="رمزِ جدید (حداقل ۶)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} /> : null}
+        <TextInput label="دلیل (الزامی — در سندِ audit ثبت می‌شود)" value={reason} onChange={(e) => setReason(e.target.value)} styles={fieldStyles} placeholder="چرا این کار را انجام می‌دهی؟" />
+        {cfg.confirmWord ? <TextInput label={`برای تأیید، «${expect}» را تایپ کن`} value={word} onChange={(e) => setWord(e.target.value)} styles={fieldStyles} /> : null}
+        <Box style={{ display: 'flex', gap: 8, marginBlockStart: 2 }}>
+          <UnstyledButton type="button" onClick={onClose} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', color: 'var(--g-color-text-primary)' }}>انصراف</UnstyledButton>
+          <UnstyledButton type="button" disabled={!ok || busy} onClick={() => onConfirm({ reason: reason.trim(), password: pw })} style={{ flex: 1, minBlockSize: 42, borderRadius: '11px', background: cfg.danger ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: (!ok || busy) ? 0.5 : 1 }}>{busy ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : cfg.btn}</UnstyledButton>
+        </Box>
+      </Box>
+    </Modal>
+  );
 }
 
 function CreateForm({ onSubmit, pending, error }) {
@@ -308,32 +359,8 @@ function CreateForm({ onSubmit, pending, error }) {
       <TextInput label="تلفن" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} styles={fieldStyles} dir="ltr" />
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
       <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
-      <Switch label="نقشِ مدیر" checked={f.isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
+      <Switch label="نقشِ مدیر (فقط مالک)" checked={f.isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
       <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
-    </Box>
-  );
-}
-
-function PwForm({ onSubmit, pending, error }) {
-  const [pw, setPw] = useState('');
-  return (
-    <Box style={{ display: 'flex', flexDirection: 'column', gap: 11, fontFamily: 'var(--g-font-fa)' }}>
-      <ErrorLine error={error} />
-      <Note tone="info">رمزِ جدید تنظیم می‌شود و کاربر از همهٔ دستگاه‌ها خارج می‌شود (نشست‌ها باطل).</Note>
-      <PasswordInput label="رمزِ جدید (حداقل ۶)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} />
-      <UnstyledButton type="button" onClick={() => onSubmit(pw)} disabled={pending || pw.length < 6} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', opacity: pw.length < 6 ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ریستِ رمز'}</UnstyledButton>
-    </Box>
-  );
-}
-
-function BanForm({ onSubmit, pending, error }) {
-  const [reason, setReason] = useState('');
-  return (
-    <Box style={{ display: 'flex', flexDirection: 'column', gap: 11, fontFamily: 'var(--g-font-fa)' }}>
-      <ErrorLine error={error} />
-      <Note tone="warn" icon={IconAlertTriangle}>کاربر بلافاصله خارج می‌شود و دیگر نمی‌تواند وارد شود تا رفعِ مسدودی.</Note>
-      <TextInput label="دلیل (اختیاری)" value={reason} onChange={(e) => setReason(e.target.value)} styles={fieldStyles} placeholder="مثلاً: اسپم / تخلف" />
-      <UnstyledButton type="button" onClick={() => onSubmit(reason)} disabled={pending} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-state-danger-fg, #b3261e)', color: 'var(--g-color-text-inverse, #fff)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center' }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'مسدود کن'}</UnstyledButton>
     </Box>
   );
 }
