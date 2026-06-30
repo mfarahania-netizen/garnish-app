@@ -3,6 +3,7 @@
 // inbox: search/filter/sort, conversation thread + internal notes, reply (which now actually FIRES the user
 // notification — it existed but was never called), status/priority/category/assignee/tags, SLA metrics.
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { isStatus, isPriority, isCategory, CLOSED_STATUSES } from '../support/ticket.constants';
@@ -17,7 +18,7 @@ export class AdminTicketsService {
   ) {}
 
   async list({ page = 1, limit = 20, search, status, priority, category, assignee, unanswered, sort }: ListArgs) {
-    const where: any = {};
+    const where: Prisma.SupportTicketWhereInput = {};
     const s = (search ?? '').trim();
     if (s) where.OR = [
       { subject: { contains: s, mode: 'insensitive' } },
@@ -32,7 +33,7 @@ export class AdminTicketsService {
     else if (assignee) where.assigneeId = assignee;
     if (unanswered === 'true') { where.firstResponseAt = null; where.status = where.status ?? { notIn: CLOSED_STATUSES }; }
 
-    const orderBy: any = sort === 'oldest' ? { createdAt: 'asc' } : sort === 'activity' ? [{ lastReplyAt: 'desc' }, { createdAt: 'desc' }] : { createdAt: 'desc' };
+    const orderBy: Prisma.SupportTicketOrderByWithRelationInput | Prisma.SupportTicketOrderByWithRelationInput[] = sort === 'oldest' ? { createdAt: 'asc' } : sort === 'activity' ? [{ lastReplyAt: 'desc' }, { createdAt: 'desc' }] : { createdAt: 'desc' };
     const take = Math.min(Math.max(1, limit), 100);
     const skip = (Math.max(1, page) - 1) * take;
     const [data, total] = await Promise.all([
@@ -82,7 +83,7 @@ export class AdminTicketsService {
   async update(id: string, body: { status?: string; priority?: string; category?: string; assigneeId?: string | null; tags?: string[] }) {
     const t = await this.prisma.supportTicket.findUnique({ where: { id }, select: { id: true, status: true } });
     if (!t) throw new NotFoundException('ticket_not_found');
-    const data: any = {};
+    const data: Prisma.SupportTicketUncheckedUpdateInput = {};
     if (body.status !== undefined) {
       if (!isStatus(body.status)) throw new BadRequestException('invalid_status');
       data.status = body.status;

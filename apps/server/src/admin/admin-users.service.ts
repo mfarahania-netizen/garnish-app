@@ -9,6 +9,7 @@
 // force-logout / password-reset therefore BUMP user.sessionEpoch — the jwt strategy rejects any token whose epoch
 // is stale → a real, immediate kick. We also clear the session rows so the "active sessions" view reflects reality.
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ErasureService } from '../users/erasure/erasure.service';
 import { UserExportService } from '../users/export/user-export.service';
@@ -27,7 +28,7 @@ export class AdminUsersService {
 
   /** Rich, searchable, filterable roster with per-user counts + last-activity (the "monitor users" list). */
   async list({ page = 1, limit = 20, search, role, status }: ListArgs) {
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
     const s = (search ?? '').trim();
     if (s) {
       where.OR = [
@@ -140,7 +141,7 @@ export class AdminUsersService {
   /** Update profile + role. */
   async update(id: string, body: { name?: string; email?: string; isAdmin?: boolean }) {
     await this.ensureExists(id);
-    const data: any = {};
+    const data: Prisma.UserUncheckedUpdateInput = {};
     if (body.name !== undefined) data.name = body.name?.trim() || null;
     if (body.email !== undefined) data.email = body.email?.trim() || null;
     if (body.isAdmin !== undefined) data.isAdmin = !!body.isAdmin;
@@ -164,7 +165,7 @@ export class AdminUsersService {
   /** Ban/unban. Banning bumps the epoch + clears sessions → the user is kicked immediately and can't log back in. */
   async setBanned(id: string, banned: boolean, reason?: string) {
     await this.ensureExists(id);
-    const data: any = banned
+    const data: Prisma.UserUncheckedUpdateInput = banned
       ? { isBanned: true, bannedAt: new Date(), banReason: reason?.trim() || null, sessionEpoch: { increment: 1 } }
       : { isBanned: false, bannedAt: null, banReason: null };
     const u = await this.prisma.user.update({ where: { id }, data, select: { id: true, isBanned: true, bannedAt: true, banReason: true } });
