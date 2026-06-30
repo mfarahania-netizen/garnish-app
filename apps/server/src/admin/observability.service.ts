@@ -119,4 +119,68 @@ export class ObservabilityService {
     const problem = rows.filter((r) => r.view >= 5).sort((a, b) => (a.cookThrough ?? 1) - (b.cookThrough ?? 1) || b.skip - a.skip).slice(0, limit);
     return { sinceDays: days, recipesTracked: rows.length, trending, problem };
   }
+
+  /**
+   * recsys audit §12 — SYSTEM-level operational health of the personalization/recsys loop: the "is the engine
+   * alive + honest?" cabin. Read-only + additive + defensive (optional models degrade to null, never throws).
+   * Surfaces exactly what §12 demands so the founder can SEE, at launch: (1) the outbox no-lost-signal pipeline
+   * — deadLetter>0 means signals permanently failed; (2) signal coverage — is it actually learning, for how
+   * many users, which signal types (the P0-2/3/4 processors should now appear here); (3) consent provenance
+   * coverage — the P0-5 gate stamping every event; (4) L1 prior freshness — has the learner run.
+   */
+  async recsysHealth(opts: { days?: number } = {}) {
+    const days = Math.min(Math.max(opts.days ?? 7, 1), 90);
+    const since = new Date(Date.now() - days * 86_400_000);
+
+    // 1. Outbox pipeline — the at-least-once "no lost signals" guarantee.
+    const [pending, processing, dead, processedInWindow] = await Promise.all([
+      this.prisma.eventOutbox.count({ where: { status: 'pending' } }).catch(() => 0),
+      this.prisma.eventOutbox.count({ where: { status: 'processing' } }).catch(() => 0),
+      this.prisma.eventOutbox.count({ where: { status: 'dead' } }).catch(() => 0),
+      this.prisma.eventOutbox.count({ where: { status: 'done', processedAt: { gte: since } } }).catch(() => 0),
+    ]);
+
+    // 2. Signal coverage — is the engine deriving signals, and for how many users? (P0-2/3/4 types appear here.)
+    const [usersWithSignals, totalObservations, observationsInWindow, obsByName] = await Promise.all([
+      this.prisma.userBehaviorSignal.groupBy({ by: ['userId'], _count: { _all: true } } as any).then((r: any[]) => r.length).catch(() => 0),
+      this.prisma.signalObservation.count().catch(() => 0),
+      this.prisma.signalObservation.count({ where: { observedAt: { gte: since } } }).catch(() => 0),
+      this.prisma.signalObservation.groupBy({ by: ['signalName'], _count: { _all: true }, where: { observedAt: { gte: since } } } as any).catch(() => []),
+    ]);
+
+    // 3. Consent provenance coverage — the P0-5 gate: every event carries the purpose it was collected under.
+    const consentByPurpose = await this.prisma.userEvent
+      .groupBy({ by: ['consentPurpose'], _count: { _all: true }, where: { timestamp: { gte: since } } } as any)
+      .catch(() => []);
+
+    // 4. L1 prior freshness — optional; the learner may not have run yet pre-launch (then this is null).
+    let priors: any = null;
+    try {
+      const [count, latest, byScope] = await Promise.all([
+        this.prisma.recipePrior.count(),
+        this.prisma.recipePrior.findFirst({ orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }),
+        this.prisma.recipePrior.groupBy({ by: ['scope'], _count: { _all: true } } as any),
+      ]);
+      priors = { count, latestUpdate: latest?.updatedAt ?? null, byScope: (byScope as any[]).map((g) => ({ scope: g.scope, count: g._count?._all ?? 0 })) };
+    } catch {
+      priors = null;
+    }
+
+    const outboxHealth = dead > 0 ? 'dead_letters_present' : pending > 200 ? 'backlog' : 'healthy';
+
+    return {
+      sinceDays: days,
+      outbox: { pendingBacklog: pending, processing, deadLetter: dead, processedInWindow, health: outboxHealth },
+      signals: {
+        usersWithSignals,
+        totalObservations,
+        observationsInWindow,
+        typeCoverage: (obsByName as any[]).map((g) => ({ signalName: g.signalName, count: g._count?._all ?? 0 })).sort((a, b) => b.count - a.count),
+      },
+      consent: {
+        byPurpose: (consentByPurpose as any[]).map((g) => ({ purpose: g.consentPurpose ?? 'unstamped', count: g._count?._all ?? 0 })).sort((a, b) => b.count - a.count),
+      },
+      priors,
+    };
+  }
 }

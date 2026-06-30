@@ -45,4 +45,10 @@ export class ObservabilityController {
   counters(@Query('days') days?: string, @Query('limit') limit?: string) {
     return this.obs.counters({ days: days ? parseInt(days, 10) : undefined, limit: limit ? parseInt(limit, 10) : undefined });
   }
+
+  /** recsys audit §12 — system-level recsys/personalization operational health (outbox · signals · consent · priors). */
+  @Get('recsys-health')
+  recsysHealth(@Query('days') days?: string) {
+    return this.obs.recsysHealth({ days: days ? parseInt(days, 10) : undefined });
+  }
 }
