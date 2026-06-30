@@ -2,11 +2,11 @@ import { AdminService, maskPhone, maskEmail } from './admin.service';
 
 describe('admin PII minimization + audit (advisor audit)', () => {
   describe('maskPhone', () => {
-    it('masks the middle, keeps first 4 + last 2', () => {
-      expect(maskPhone('09123456789')).toBe('0912*****89');
+    it('masks the middle, keeps first 3 + last 4 (single source: pii.util)', () => {
+      expect(maskPhone('09123456789')).toBe('091••••6789');
     });
     it('fully masks short values + passes null/empty through', () => {
-      expect(maskPhone('12345')).toBe('*****');
+      expect(maskPhone('12345')).toBe('•••••');
       expect(maskPhone(null)).toBeNull();
       expect(maskPhone('')).toBe('');
     });
@@ -14,10 +14,10 @@ describe('admin PII minimization + audit (advisor audit)', () => {
 
   describe('maskEmail', () => {
     it('keeps first char + domain, masks the rest', () => {
-      expect(maskEmail('ali@gmail.com')).toBe('a***@gmail.com');
+      expect(maskEmail('ali@gmail.com')).toBe('a•••@gmail.com');
     });
     it('handles malformed / null', () => {
-      expect(maskEmail('noatsign')).toBe('***');
+      expect(maskEmail('noatsign')).toBe('•••');
       expect(maskEmail(null)).toBeNull();
     });
   });
@@ -66,7 +66,7 @@ describe('admin PII minimization + audit (advisor audit)', () => {
       const e = events[0] as any;
       expect(e).not.toHaveProperty('payload'); // raw user text must not cross the wire
       expect(e).not.toHaveProperty('enrichment');
-      expect(e.user.phone).toBe('0912*****89'); // masked
+      expect(e.user.phone).toBe('091••••6789'); // masked (pii.util single source)
       expect(e.recipeTitle).toBe('قورمه'); // derived display value kept
       expect(JSON.stringify(e)).not.toContain('something private');
     });

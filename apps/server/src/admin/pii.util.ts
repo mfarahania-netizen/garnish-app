@@ -5,8 +5,9 @@
 export function maskPhone(phone: string | null | undefined): string | null {
   if (!phone) return phone ?? null;
   const s = String(phone);
-  if (s.length <= 4) return '•••';
-  return s.slice(0, Math.min(3, s.length - 4)) + '•'.repeat(Math.max(3, s.length - 7)) + s.slice(-4);
+  // P2-1: short numbers can't keep first-3 + last-4 without the slices overlapping → fully mask them.
+  if (s.length <= 7) return '•'.repeat(s.length);
+  return s.slice(0, 3) + '•'.repeat(s.length - 7) + s.slice(-4);
 }
 
 export function maskEmail(email: string | null | undefined): string | null {

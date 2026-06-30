@@ -5,21 +5,11 @@ import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytic
 import { OpsIntelligenceService } from '../analytics/intelligence/ops-intelligence.service';
 import { USER_BEHAVIOR_EVENT_WHERE } from '../analytics/user-behavior-filter';
 
-// SECURITY/GDPR (advisor audit): admin list/browse views MINIMIZE PII — phone/email masked by default (a
-// support action uses the in-app ticket flow, not the raw number). Pure + null-safe.
-export function maskPhone(phone?: string | null): string | null {
-  if (!phone) return phone ?? null;
-  const p = String(phone);
-  if (p.length <= 6) return '*'.repeat(p.length);
-  return p.slice(0, 4) + '*'.repeat(p.length - 6) + p.slice(-2);
-}
-export function maskEmail(email?: string | null): string | null {
-  if (!email) return email ?? null;
-  const [local, ...rest] = String(email).split('@');
-  const domain = rest.join('@');
-  if (!domain) return '***';
-  return (local?.[0] ?? '') + '***@' + domain;
-}
+// P2-1 (re-audit): SINGLE source of truth for PII masking — pii.util owns the implementation; admin.service
+// imports it (so the internal getRecentEvents/profile masks use the one copy) AND re-exports it (so consumers +
+// the spec keep importing maskPhone/maskEmail from here). No second copy to drift.
+import { maskPhone, maskEmail } from './pii.util';
+export { maskPhone, maskEmail };
 
 @Injectable()
 export class AdminService {
@@ -91,8 +81,10 @@ export class AdminService {
     for (const e of events) {
       try {
         const p = JSON.parse(e.payload || '{}');
-        const qy = String(p.query ?? '').trim();
-        if (qy) counts.set(qy, (counts.get(qy) ?? 0) + 1);
+        // P1-17 (re-audit): NEVER surface the raw query (PII). Only a privacy-safe normalized term — normalizedIntent,
+        // queryHash, or an ingredient tag — may bucket the demand. Raw `query` is ignored even if a producer wrote it.
+        const term = String(p.normalizedIntent ?? p.queryHash ?? p.ingredientTag ?? '').trim();
+        if (term) counts.set(term, (counts.get(term) ?? 0) + 1);
       } catch { /* skip */ }
     }
     const topQueries = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15).map(([query, count]) => ({ query, count }));
@@ -151,33 +143,8 @@ export class AdminService {
     return { recipeCount, userCount, ticketCount };
   }
 
-  async getAllTickets(page = 1, limit = 20) {
-    const skip = (page - 1) * limit;
-    const [data, total] = await Promise.all([
-      this.prisma.supportTicket.findMany({
-        skip,
-        take: limit,
-        include: { user: { select: { name: true, phone: true } }, replies: true },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.supportTicket.count(),
-    ]);
-    const masked = data.map((t: any) => (t.user ? { ...t, user: { ...t.user, phone: maskPhone(t.user.phone) } } : t));
-    return { data: masked, total, page, limit };
-  }
-
-  async respondToTicket(ticketId: string, message: string) {
-    return this.prisma.ticketReply.create({
-      data: { ticketId, message, isStaff: true },
-    });
-  }
-
-  async updateTicketStatus(ticketId: string, status: string) {
-    return this.prisma.supportTicket.update({
-      where: { id: ticketId },
-      data: { status },
-    });
-  }
+  // P2-2 (re-audit): getAllTickets / respondToTicket / updateTicketStatus removed — dead since the live ticket
+  // routes use AdminTicketsService. (getAllUsers removed below too — AdminUsersService owns the user list.)
 
   async getAllRecipes(page = 1, limit = 20) {
     const skip = (page - 1) * limit;
@@ -204,22 +171,10 @@ export class AdminService {
     });
   }
 
-  async getAllUsers(page = 1, limit = 20) {
-    const skip = (page - 1) * limit;
-    const [data, total] = await Promise.all([
-      this.prisma.user.findMany({
-        skip,
-        take: limit,
-        select: { id: true, name: true, phone: true, email: true, createdAt: true },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.user.count(),
-    ]);
-    const masked = data.map((u: any) => ({ ...u, phone: maskPhone(u.phone), email: maskEmail(u.email) }));
-    return { data: masked, total, page, limit };
-  }
-
   async getRecentEvents(limit = 100, page = 1, type?: string, from?: string, to?: string) {
+    // P1-16 (re-audit): clamp the page size so a controller/caller can't request an unbounded `take` and hammer the DB.
+    limit = Math.min(Math.max(Math.floor(Number(limit)) || 100, 1), 200);
+    page = Math.max(Math.floor(Number(page)) || 1, 1);
     const skip = (page - 1) * limit;
     const where: any = {};
     if (type && type !== 'all') {
@@ -542,14 +497,20 @@ export class AdminService {
 
   async getSystemHealth() {
     const errorEvents = await this.prisma.userEvent.count({ where: { type: 'ai_error' } });
-    const adminActions = await this.prisma.userEvent.count({
-      where: { type: { in: ['admin_view', 'admin_ticket_reply', 'admin_ticket_status', 'admin_recipe_approve', 'admin_recipe_reject'] } },
-    });
-    const lastCronRun = await this.prisma.userEvent.findFirst({
-      where: { type: 'cron_behavior_engine_run' },
-      orderBy: { timestamp: 'desc' },
-      select: { timestamp: true },
-    });
-    return { errorCount: errorEvents, adminActions, lastCronRun: lastCronRun?.timestamp || null };
+    // P1-6 (re-audit): admin activity now spans TWO ledgers — legacy UserEvent (admin_view/...) AND the durable
+    // UserAuditLog (the sensitive ops: pii_reveal/export/delete/password_reset/workflow_run/...). Count BOTH so the
+    // health number reflects reality instead of under-reporting the most important actions.
+    const [legacyActions, strictActions, lastCronRun] = await Promise.all([
+      this.prisma.userEvent.count({
+        where: { type: { in: ['admin_view', 'admin_ticket_reply', 'admin_ticket_status', 'admin_recipe_approve', 'admin_recipe_reject'] } },
+      }),
+      this.prisma.userAuditLog.count().catch(() => 0),
+      this.prisma.userEvent.findFirst({
+        where: { type: 'cron_behavior_engine_run' },
+        orderBy: { timestamp: 'desc' },
+        select: { timestamp: true },
+      }),
+    ]);
+    return { errorCount: errorEvents, adminActions: legacyActions + strictActions, adminActionsLedger: { legacy: legacyActions, strict: strictActions }, lastCronRun: lastCronRun?.timestamp || null };
   }
 }
