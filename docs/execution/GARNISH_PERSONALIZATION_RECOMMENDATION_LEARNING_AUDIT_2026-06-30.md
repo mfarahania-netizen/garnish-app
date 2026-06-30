@@ -573,12 +573,16 @@
 
 P1-5 (data maturity) انجام شد (`e28b91fd`): forward-value روشن + کم‌ریسک (شمردن cook/shop/personalization در بلوغ؛ feature-store 6/6؛ هنوز پشت consent gate خاموش). بقیهٔ P1 دقیقاً طبق §13 («prior learning، AI context، ranker optimization را **بعد از P0 با evidence** فعال کن») به موجِ post-launch موکول شد — هرکدام با دلیلِ code-grounded:
 
-- **P1-1 ranker/prior learning** — به داده نیاز دارد + در trackِ L1 founder-gated شماست (قدم بعدیِ تأییدشده offline-replay است، نه سیم‌کشیِ live ranker). **تصمیم با شما.**
-- **P1-2 SignalObservationEngine shadow** — §13 صراحتاً refactor کاملش را regression-risk خوانده؛ post-launch.
-- **P1-3 AI context hydration** — با بازسازی فعال AI (#23) هم‌پوشان + پشت همان consent-grantِ هنوز-wire-نشده؛ در دلِ #23 انجام شود نه patch جدا.
-- **P1-4 feature-store async/cache** — بهینهٔ latency در مقیاس؛ post-launch.
-- **P1-6 candidate parallelization** — latency در مقیاس؛ post-launch.
-- **P1-7 metrics dedupe** — پشت همان migrationِ attribution-key (attribution فاقد `eventId` است) که P0-6 به L1 موکول کرد؛ در ~۰ ترافیک عددش ~۰.
-- **P1-8 slate durability** — عمداً fire-and-forget برای latency؛ durable-کردن outbox می‌خواهد؛ post-launch.
+انجام‌شده (علاوه بر P1-5؛ هرکدام تست‌دار + verify):
+- **P1-6 candidate parallelization** (`509db517`) — ۸ منبعِ کاندیدا موازی + ایزولهٔ خطا (یک منبع throw کند، slate نمی‌شکند)؛ robustnessِ لانچ + latency؛ byte-identical روی happy path. 9/9 spec + live 200.
+- **P1-8 slate durability** (`0dece972`) — retryِ کراندار در logSlate (دادهٔ off-policy گم نشود)، fire-and-forget می‌ماند.
+- **§12 observability** (`9c533e6a`) — `GET /admin/observability/recsys-health`: outbox/dead-letter · پوششِ سیگنال · پوششِ consent · تازگیِ prior؛ کلِ این کار حالا در پنلِ ادمین **دیده** می‌شود. live 200 با دادهٔ واقعی.
 
-**نکتهٔ عملیاتی push:** credential helper (`manager`) در محیط non-interactive گیر می‌کند، پس ۴ commit آخر فقط **local** روی `audit/recsys-p0` هستند؛ remote تا `45c0923d` دارد. وقتی برگشتید: `git push origin audit/recsys-p0`. همه‌چیز تست‌شده، server سالم (۰ خطای کامپایل)، و امن است.
+عمداً موکول به post-launch (دلیلِ code-grounded؛ همگی gated / regression-risk / migration-blocked — دقیقاً هشدارِ §13):
+- **P1-1 ranker/prior learning** — به داده نیاز دارد + در trackِ L1 founder-gated شماست (قدم بعدیِ تأییدشده offline-replay است، نه سیم‌کشیِ live ranker). **تصمیم با شما.**
+- **P1-2 SignalObservationEngine shadow** — §13 صراحتاً refactor کاملش را regression-risk خوانده.
+- **P1-3 AI context hydration** — با بازسازیِ فعالِ AI (#23) هم‌پوشان + پشتِ consent-grantِ هنوز-wire-نشده؛ در دلِ #23 انجام شود نه patch جدا.
+- **P1-4 feature-store async/cache** — بهینهٔ latency در مقیاس + ریسکِ staleness؛ در لانچِ ~۰-ترافیک ارزشِ ~۰.
+- **P1-7 metrics dedupe** — پشتِ همان migrationِ attribution-key (attribution فاقد `eventId`) که P0-6 به L1 موکول کرد؛ بی‌migration ممکن نیست.
+
+**نکتهٔ عملیاتی push:** credential helper (`manager`) در محیط non-interactive گیر می‌کند (`could not read Username … prompts disabled`)، پس commitهای این جلسه فقط **local** روی `audit/recsys-p0` هستند؛ remote تا `45c0923d` (P0-7) دارد. وقتی برگشتید: **`git push origin audit/recsys-p0`** — همه‌چیز را روی remote می‌برد. همه‌چیز تست‌شده، server سالم (۰ خطای کامپایل)، و امن است.
