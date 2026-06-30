@@ -9,7 +9,8 @@
 - **P0-5 (PII):** ✅ list/detail با `pii.util` mask + endpointِ `reveal` (reason + audit) + دکمهٔ «نمایشِ کامل» در FE. **زنده تست:** detail `+99•••••0066`، reveal با reason `+99000000066`، بی‌reason→۴۰۰. پوش (`5c881109`).
 - **P1-2 + P1-3 (workflow):** ✅ منبعِ ناموجود→۴۰۴ (NotFoundException) + scheduler claimِ اتمیک (`updateMany` شرطی، ضدِ double-fire). **زنده تست:** ack/runsِ ناموجود→۴۰۴، لیستِ معتبر→۲۰۰. پوش (`421b8604`).
 - **✅✅ تیرِ P0 ۱۰۰٪ کامل + زنده‌تأیید + پوش.** ضمناً: P1-9 (تفکیکِ tierِ drawer) + P2-2ِ کاربران (a11yِ ردیف: role/tabIndex/Enter) هم انجام شد.
-- **مانده (P1/P2 — کیفیت/UX/معماری، نه بلاکرِ امنیتی):** P1-1 DTOها · P1-4 UIِ تیکت assignee/tags/SLA · P1-5 moderation · P1-6 observability drawer · P1-7/8 بازچینیِ تب‌ها + Command · P1-12 برچسبِ near-realtime · P1-13 active-users واقعی · P1-14 runbook · P1-15 تست‌های e2e · P1-16 کاهشِ any · P2-1 mobile nav · P2-2 a11yِ تیکت · P2-3 سطحِ خطا.
+- **P1-1 (DTOها + validation):** ✅ DTOهای typed (Create/Update/ResetPassword/Ban/Reason) روی endpointهای کاربر؛ قواعدِ business در service (کدهای خطای FE حفظ). **زنده تست:** معتبر→ok، فیلدِ ناشناخته→۴۰۰. پوش (`891ef530`).
+- **مانده (P1/P2 — کیفیت/UX/معماری، نه بلاکرِ امنیتی):** P1-4 UIِ تیکت · P1-5 moderation · P1-6 observability drawer · P1-7/8 بازچینیِ تب‌ها · P1-12 برچسبِ near-realtime · P1-13 active-users · P1-14 runbook · P1-15 تست‌های e2e · P1-16 any · P2-1 mobile · P2-2 a11yِ تیکت · P2-3 خطا. (بزرگ‌ها: drawer · بازچینی · تست.)
 - **حادثهٔ ابزاری:** `pnpm install` (برای رفعِ vite که خراب شده بود) کلاینتِ Prisma را پاک کرد → سرور لحظه‌ای down شد → `prisma generate` + restart → سالم. درس: `pnpm install` وسطِ کارِ زنده نزن.
 
 ---
