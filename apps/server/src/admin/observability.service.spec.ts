@@ -93,6 +93,9 @@ describe('ObservabilityService.recsysHealth (recsys §12)', () => {
     expect(out.consent.byPurpose).toContainEqual({ purpose: 'analytics', count: 80 });
     expect(out.consent.byPurpose).toContainEqual({ purpose: 'unstamped', count: 20 }); // null consentPurpose → 'unstamped'
     expect(out.priors).toEqual({ count: 0, latestUpdate: null, byScope: [] });
+    // P1-2: registry-vs-live coverage — the legacy live names are OFF the canonical taxonomy.
+    expect(out.registryCoverage.registryTotal).toBeGreaterThan(0);
+    expect(out.registryCoverage.legacyOnlySignals).toEqual(expect.arrayContaining(['likes_recipe', 'views_recipe']));
   });
 
   it('flags dead-letters in the outbox health verdict', async () => {

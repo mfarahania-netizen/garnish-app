@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileReadService } from '../behavior-engine/profile/read/profile-read.service';
+import { SIGNAL_REGISTRY } from '../behavior-engine/signals/signal-registry';
 
 /**
  * R8 — admin observability "behavioral cabin" ("capture every second"; SEE the loop close). Read-only,
@@ -166,6 +167,30 @@ export class ObservabilityService {
       priors = null;
     }
 
+    // 5. Canonical signal-registry coverage (P1-2): the registry is the INTENDED source-of-truth, but live ingest
+    //    still runs the LEGACY processors (P1-2's "two parallel truths"). This surfaces the divergence WITHOUT a
+    //    risky per-event re-derivation: which active registry signals the live path actually produces, which it
+    //    never does (a derivation gap), and which live signals fall OUTSIDE the canonical taxonomy (legacy-only).
+    //    The deeper per-event shadow (UserEvent → CanonicalEventEnvelope → extractSignalObservations diff) stays
+    //    post-launch per the report's own §11 tier-3 + §13 regression-risk note.
+    let registryCoverage: any = null;
+    try {
+      const allLive = await this.prisma.signalObservation.groupBy({ by: ['signalName'], _count: { _all: true } } as any).catch(() => []);
+      const liveNames = new Set<string>((allLive as any[]).map((g) => g.signalName));
+      const registryKeys = new Set<string>((SIGNAL_REGISTRY as any[]).map((s) => s.signalKey));
+      const byStatus: Record<string, number> = {};
+      for (const s of SIGNAL_REGISTRY as any[]) byStatus[s.status ?? 'unknown'] = (byStatus[s.status ?? 'unknown'] ?? 0) + 1;
+      registryCoverage = {
+        registryTotal: SIGNAL_REGISTRY.length,
+        registryByStatus: byStatus, // mostly 'planned' today = the canonical engine is NOT yet the live derivation
+        liveSignalTypes: liveNames.size,
+        producedFromRegistry: [...liveNames].filter((n) => registryKeys.has(n)).length, // live names that ARE canonical keys
+        legacyOnlySignals: [...liveNames].filter((n) => !registryKeys.has(n)).slice(0, 50), // live signals OFF the canonical taxonomy
+      };
+    } catch {
+      registryCoverage = null;
+    }
+
     const outboxHealth = dead > 0 ? 'dead_letters_present' : pending > 200 ? 'backlog' : 'healthy';
 
     return {
@@ -181,6 +206,7 @@ export class ObservabilityService {
         byPurpose: (consentByPurpose as any[]).map((g) => ({ purpose: g.consentPurpose ?? 'unstamped', count: g._count?._all ?? 0 })).sort((a, b) => b.count - a.count),
       },
       priors,
+      registryCoverage,
     };
   }
 }
