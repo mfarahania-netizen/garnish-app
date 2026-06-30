@@ -116,48 +116,52 @@ export class AdminController {
     return this.adminUsers.sessions(id);
   }
 
+  // ── Sensitive user ops — advisor P0-3: each FAIL-CLOSED audits to the durable UserAuditLog ledger (actor +
+  // target + reason + ip + userAgent) BEFORE the mutation, so no untraceable change is possible. The super-admin
+  // (owner) gate (P0-1, OwnerGuard) + mandatory reason (P0-2) layer on next. recordAudit→recordAuditStrict. ──
   @Get('users/:id/export')
-  exportUser(@Req() req, @Param('id') id: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_export', { userId: id });
+  async exportUser(@Req() req, @Param('id') id: string) {
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_export', { ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.export(id);
   }
 
   @Post('users')
-  createUser(@Req() req, @Body() body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean }) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_create', { isAdmin: !!body?.isAdmin });
-    return this.adminUsers.create(body || {});
+  async createUser(@Req() req, @Body() body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean; reason?: string }) {
+    const created: any = await this.adminUsers.create(body || {});
+    await this.adminService.recordAuditStrict(req.user?.userId, created?.id ?? 'new', 'admin_user_create', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { isAdmin: !!body?.isAdmin } });
+    return created;
   }
 
   @Patch('users/:id')
-  updateUser(@Req() req, @Param('id') id: string, @Body() body: { name?: string; email?: string; isAdmin?: boolean }) {
+  async updateUser(@Req() req, @Param('id') id: string, @Body() body: { name?: string; email?: string; isAdmin?: boolean; reason?: string }) {
     if (body?.isAdmin === false && req.user?.userId === id) throw new BadRequestException('cannot_demote_self');
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_update', { userId: id });
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_update', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { name: body?.name, email: body?.email, isAdmin: body?.isAdmin } });
     return this.adminUsers.update(id, body || {});
   }
 
   @Patch('users/:id/password')
-  resetUserPassword(@Req() req, @Param('id') id: string, @Body('password') password: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_password_reset', { userId: id });
+  async resetUserPassword(@Req() req, @Param('id') id: string, @Body('password') password: string, @Body('reason') reason?: string) {
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_password_reset', { reason, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.resetPassword(id, password);
   }
 
   @Post('users/:id/ban')
-  banUser(@Req() req, @Param('id') id: string, @Body() body: { banned?: boolean; reason?: string }) {
+  async banUser(@Req() req, @Param('id') id: string, @Body() body: { banned?: boolean; reason?: string }) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_ban_self');
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_ban', { userId: id, banned: !!body?.banned });
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_ban', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'], after: { banned: !!body?.banned } });
     return this.adminUsers.setBanned(id, !!body?.banned, body?.reason);
   }
 
   @Post('users/:id/force-logout')
-  forceLogoutUser(@Req() req, @Param('id') id: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_force_logout', { userId: id });
+  async forceLogoutUser(@Req() req, @Param('id') id: string) {
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_force_logout', { ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.forceLogout(id);
   }
 
   @Delete('users/:id')
-  deleteUser(@Req() req, @Param('id') id: string) {
+  async deleteUser(@Req() req, @Param('id') id: string, @Body() body?: { reason?: string }) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_delete_self');
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_delete', { userId: id });
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_user_delete', { reason: body?.reason, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminUsers.remove(id);
   }
 

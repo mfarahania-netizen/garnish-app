@@ -39,6 +39,27 @@ export class AdminService {
       .catch(() => {});
   }
 
+  // FAIL-CLOSED admin-action audit (advisor P0-3). Writes to the durable UserAuditLog ledger (userId SetNull on
+  // erasure → survives the target's deletion; separate from UserEvent which cascades). AWAITS and THROWS on
+  // failure: sensitive controllers call this BEFORE the mutation, so a missing audit row ABORTS the action — no
+  // untraceable change. actor/reason/before/after ride in `details` (a queryable JSON), ip + userAgent are columns.
+  async recordAuditStrict(
+    actorId: string | undefined,
+    targetId: string,
+    action: string,
+    opts: { reason?: string; ip?: string; userAgent?: string; before?: any; after?: any } = {},
+  ): Promise<void> {
+    await this.prisma.userAuditLog.create({
+      data: {
+        userId: targetId,
+        action,
+        ip: opts.ip ?? null,
+        userAgent: opts.userAgent ?? null,
+        details: JSON.stringify({ actorId: actorId ?? null, reason: opts.reason ?? null, before: opts.before ?? null, after: opts.after ?? null }),
+      },
+    });
+  }
+
   // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
   getFunnels() { return this.analyticsIntelligence.getFunnels(); }
   // BEHAVIOR + IMPROVE — the precise "what users do + what to fix" view (the founder's real ask).
