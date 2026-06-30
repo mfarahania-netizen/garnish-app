@@ -12,6 +12,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OpsIntelligenceService } from '../analytics/intelligence/ops-intelligence.service';
 import { AnalyticsIntelligenceService } from '../analytics/intelligence/analytics-intelligence.service';
+import { WORKFLOW_RUNBOOK } from './workflow-definitions';
 import { WfNode, WfRunContext, NodeOutcome, resolvePath, interpolate } from './workflow.types';
 
 @Injectable()
@@ -41,7 +42,7 @@ export class WorkflowNodesService {
    * the founder exactly which content to complete.
    */
   private async recipeAudit() {
-    const base = { isPublic: true } as const;
+    const base = { isPublic: true, status: 'active' } as const;
     const [total, noNutrition, noImage, noTime, noDifficulty] = await Promise.all([
       this.prisma.recipe.count({ where: base }),
       this.prisma.recipe.count({ where: { ...base, nutrition: { is: null } } }),
@@ -113,10 +114,11 @@ export class WorkflowNodesService {
 
   private async thresholdNode(params: Record<string, any>, ctx: WfRunContext): Promise<NodeOutcome> {
     const raw = resolvePath(ctx.outputs, params.input);
-    const value = typeof raw === 'boolean' ? (raw ? 1 : 0) : Number(raw);
+    const value = raw == null ? NaN : typeof raw === 'boolean' ? (raw ? 1 : 0) : Number(raw);
     const threshold = Number(params.threshold);
-    let breached = false;
-    if (Number.isFinite(value) && Number.isFinite(threshold)) {
+    const unknown = !Number.isFinite(value) || !Number.isFinite(threshold);
+    let breached = unknown;
+    if (!unknown) {
       switch (params.op) {
         case 'gt': breached = value > threshold; break;
         case 'gte': breached = value >= threshold; break;
@@ -127,7 +129,7 @@ export class WorkflowNodesService {
         default: breached = false;
       }
     }
-    const output = { value: Number.isFinite(value) ? value : null, threshold, op: params.op, breached };
+    const output = { value: Number.isFinite(value) ? value : null, threshold: Number.isFinite(threshold) ? threshold : null, op: params.op, breached, status: unknown ? 'unknown' : 'evaluated' };
     if (params.gate && !breached) {
       return { output, stop: true, stopReason: `gate: ${params.input} ${params.op} ${threshold} → not breached (value=${output.value})` };
     }
@@ -151,8 +153,12 @@ export class WorkflowNodesService {
     const title = interpolate(params.title || ctx.workflow.name, ctx.outputs);
     const body = interpolate(params.body || '', ctx.outputs);
     const metric = params.metric ?? null;
-    const valueNum = params.valueRef != null ? Number(resolvePath(ctx.outputs, params.valueRef)) : NaN;
-    const thrNum = params.thresholdRef != null ? Number(resolvePath(ctx.outputs, params.thresholdRef)) : NaN;
+    const valueRaw = params.valueRef != null ? resolvePath(ctx.outputs, params.valueRef) : undefined;
+    const thrRaw = params.thresholdRef != null ? resolvePath(ctx.outputs, params.thresholdRef) : undefined;
+    const valueNum = valueRaw == null ? NaN : Number(valueRaw);
+    const thrNum = thrRaw == null ? NaN : Number(thrRaw);
+    const runbook = WORKFLOW_RUNBOOK[ctx.workflow.key] || null;
+    const dueAt = runbook?.escalateAfterMin != null ? new Date(Date.now() + Math.max(0, Number(runbook.escalateAfterMin) || 0) * 60000) : null;
     const data = {
       severity,
       title,
@@ -160,27 +166,35 @@ export class WorkflowNodesService {
       value: Number.isFinite(valueNum) ? valueNum : null,
       threshold: Number.isFinite(thrNum) ? thrNum : null,
       runId: ctx.runId,
+      ownerRole: runbook?.ownerRole ?? null,
+      lastChangedBy: 'system',
     };
 
-    // FLAP CONTROL (spec §B7): one OPEN alert per (workflow, metric). A still-breaching scheduled workflow
-    // refreshes the existing open alert instead of spawning a duplicate every tick. Once an operator
-    // acknowledges it, the next breach opens a fresh alert (so re-occurrence after triage is still surfaced).
+    // FLAP CONTROL (spec §B7): one active alert per (workflow, metric). Open alerts are refreshed; snoozed alerts
+    // suppress duplicates until their timer expires, so a snooze actually quiets the feed.
+    const now = new Date();
     const existing = metric
       ? await this.prisma.workflowAlert.findFirst({
-          where: { workflowKey: ctx.workflow.key, metric, status: 'open' },
+          where: { workflowKey: ctx.workflow.key, metric, OR: [{ status: 'open' }, { status: 'snoozed', snoozedUntil: { gt: now } }] },
           orderBy: { createdAt: 'desc' },
         })
       : null;
 
     let alertId: string;
     let deduped = false;
+    if (existing?.status === 'snoozed') {
+      alertId = existing.id;
+      deduped = true;
+      return { output: { alertId, severity, title, deduped, suppressed: true, snoozedUntil: existing.snoozedUntil } };
+    }
     if (existing) {
-      const updated = await this.prisma.workflowAlert.update({ where: { id: existing.id }, data: { ...data, createdAt: new Date() } });
+      const overdue = (existing as any).dueAt && new Date((existing as any).dueAt).getTime() <= now.getTime();
+      const updated = await this.prisma.workflowAlert.update({ where: { id: existing.id }, data: { ...data, createdAt: new Date(), escalatedAt: overdue && !(existing as any).escalatedAt ? now : undefined } });
       alertId = updated.id;
       deduped = true;
     } else {
       const created = await this.prisma.workflowAlert.create({
-        data: { workflowId: ctx.workflow.id, workflowKey: ctx.workflow.key, metric, channelsSent: ['in_app'], ...data },
+        data: { workflowId: ctx.workflow.id, workflowKey: ctx.workflow.key, metric, channelsSent: ['in_app'], dueAt, ...data },
       });
       alertId = created.id;
     }

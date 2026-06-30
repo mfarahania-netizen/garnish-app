@@ -30,14 +30,18 @@ export interface RunResult {
 function topoSort(nodes: WfNode[]): WfNode[] {
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const indeg = new Map(nodes.map((n) => [n.id, 0]));
-  for (const n of nodes) for (const nx of n.next || []) if (indeg.has(nx)) indeg.set(nx, (indeg.get(nx) || 0) + 1);
+  for (const n of nodes) {
+    for (const nx of n.next || []) {
+      if (!indeg.has(nx)) throw new Error(`workflow graph has a dangling edge: ${n.id} -> ${nx}`);
+      indeg.set(nx, (indeg.get(nx) || 0) + 1);
+    }
+  }
   const queue = nodes.filter((n) => (indeg.get(n.id) || 0) === 0).map((n) => n.id);
   const order: WfNode[] = [];
   while (queue.length) {
     const id = queue.shift() as string;
     order.push(byId.get(id) as WfNode);
     for (const nx of byId.get(id)?.next || []) {
-      if (!indeg.has(nx)) continue;
       indeg.set(nx, (indeg.get(nx) || 0) - 1);
       if (indeg.get(nx) === 0) queue.push(nx);
     }

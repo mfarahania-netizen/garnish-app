@@ -86,7 +86,8 @@ export class WorkflowService implements OnModuleInit {
     const where: any = status === 'open' ? openWhere : status && status !== 'all' ? { status } : {};
     const alerts = await this.prisma.workflowAlert.findMany({ where, orderBy: { createdAt: 'desc' }, take: Math.min(limit, 200) });
     const openCount = await this.prisma.workflowAlert.count({ where: openWhere });
-    return { alerts, openCount };
+    const now = Date.now();
+    return { alerts: alerts.map((a: any) => ({ ...a, isOverdue: !!a.dueAt && a.status !== 'resolved' && new Date(a.dueAt).getTime() <= now })), openCount };
   }
 
   /** Recent runs for one workflow (the run history / audit trail). */
@@ -108,7 +109,7 @@ export class WorkflowService implements OnModuleInit {
   /** Acknowledge an alert (operator triage). */
   async ackAlert(id: string, by?: string) {
     try {
-      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'acknowledged', acknowledgedBy: by ?? null } });
+      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'acknowledged', acknowledgedBy: by ?? null, assignedTo: by ?? undefined, lastChangedBy: by ?? null } });
       return { id: updated.id, status: updated.status };
     } catch (e: any) {
       if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found
@@ -117,9 +118,9 @@ export class WorkflowService implements OnModuleInit {
   }
 
   /** Resolve an alert — operator closed it out (drops out of the open queue, stamped resolvedAt). */
-  async resolveAlert(id: string, by?: string) {
+  async resolveAlert(id: string, by?: string, reason?: string) {
     try {
-      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'resolved', resolvedAt: new Date(), acknowledgedBy: by ?? undefined } });
+      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'resolved', resolvedAt: new Date(), acknowledgedBy: by ?? undefined, assignedTo: by ?? undefined, lastChangedBy: by ?? null, resolutionReason: reason ?? null } });
       return { id: updated.id, status: updated.status };
     } catch (e: any) {
       if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found
@@ -132,7 +133,7 @@ export class WorkflowService implements OnModuleInit {
     const m = Math.min(Math.max(5, Math.round(Number(minutes) || 60)), 1440);
     try {
       const snoozedUntil = new Date(Date.now() + m * 60000);
-      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'snoozed', snoozedUntil, acknowledgedBy: by ?? undefined } });
+      const updated = await this.prisma.workflowAlert.update({ where: { id }, data: { status: 'snoozed', snoozedUntil, acknowledgedBy: by ?? undefined, assignedTo: by ?? undefined, lastChangedBy: by ?? null } });
       return { id: updated.id, status: updated.status, snoozedUntil };
     } catch (e: any) {
       if (e?.code === 'P2025') throw new NotFoundException('unknown_alert'); // Prisma: record-to-update not found

@@ -71,4 +71,14 @@ describe('WorkflowRunnerService', () => {
     const res = await svc.run(wf({ nodes: [{ id: 'a', type: 'query', next: ['b'] }, { id: 'b', type: 'query', next: ['a'] }] }) as any, 'manual');
     expect(res.status).toBe('failed');
   });
+
+  it('a dangling edge fails cleanly instead of silently skipping the bad target', async () => {
+    const nodes = { runNode: jest.fn(async () => ({ output: {} })) };
+    const prisma = mkPrisma();
+    const svc = new WorkflowRunnerService(prisma as any, nodes as any);
+    const res = await svc.run(wf({ nodes: [{ id: 'a', type: 'query', next: ['missing'] }] }) as any, 'manual');
+    expect(res.status).toBe('failed');
+    expect(String((prisma as any)._row.error)).toContain('dangling edge');
+    expect(nodes.runNode).not.toHaveBeenCalled();
+  });
 });

@@ -1,14 +1,18 @@
 import { WorkflowController } from './workflow.controller';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 
 // re-audit P0-4: manual workflow/alert ops must be fail-closed audited + reason-gated (run/resolve/snooze).
 describe('WorkflowController — audit + reason (re-audit P0-4)', () => {
   let workflows: any;
   let prisma: any;
   let ctrl: WorkflowController;
-  const req: any = { user: { userId: 'admin-1' }, ip: '1.2.3.4', headers: { 'user-agent': 'jest' } };
+  const req: any = { user: { userId: 'admin-1', isAdmin: true }, ip: '1.2.3.4', headers: { 'user-agent': 'jest' } };
 
   beforeEach(() => {
+    process.env.ADMIN_OWNER_IDS = '';
+    process.env.ADMIN_OPS_IDS = 'admin-1';
+    delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_MAX;
+    delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_WINDOW_MS;
     workflows = {
       runNow: jest.fn().mockResolvedValue({ ok: true }),
       ackAlert: jest.fn().mockResolvedValue({ ok: true }),
@@ -43,9 +47,30 @@ describe('WorkflowController — audit + reason (re-audit P0-4)', () => {
     expect(workflows.snoozeAlert).not.toHaveBeenCalled();
   });
 
+  it('passes the resolve reason through to the incident lifecycle row', async () => {
+    await ctrl.resolve(req, 'a1', { reason: 'fixed upstream issue' });
+    expect(workflows.resolveAlert).toHaveBeenCalledWith('a1', 'admin-1', 'fixed upstream issue');
+  });
+
   it('ack is audited (no reason required)', async () => {
     await ctrl.ack(req, 'a1');
     expect(prisma.userAuditLog.create).toHaveBeenCalled();
     expect(workflows.ackAlert).toHaveBeenCalledWith('a1', 'admin-1');
+  });
+
+  it('a non-ops admin cannot mutate workflows', async () => {
+    process.env.ADMIN_OPS_IDS = '';
+    await expect(ctrl.run(req, 'wf1', { reason: 'manual rerun after fix' })).rejects.toBeInstanceOf(ForbiddenException);
+    expect(workflows.runNow).not.toHaveBeenCalled();
+  });
+
+  it('rate-limits repeated workflow mutations before the second action', async () => {
+    process.env.ADMIN_OPS_IDS = 'limited-ops';
+    process.env.ADMIN_SENSITIVE_RATE_LIMIT_MAX = '1';
+    process.env.ADMIN_SENSITIVE_RATE_LIMIT_WINDOW_MS = '60000';
+    const limitedReq: any = { user: { userId: 'limited-ops', isAdmin: true }, ip: '1.2.3.4', headers: { 'user-agent': 'jest' } };
+    await ctrl.ack(limitedReq, 'a1');
+    await expect(ctrl.ack(limitedReq, 'a2')).rejects.toMatchObject({ status: 429 });
+    expect(workflows.ackAlert).toHaveBeenCalledTimes(1);
   });
 });
