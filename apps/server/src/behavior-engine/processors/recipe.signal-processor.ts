@@ -16,6 +16,18 @@ export class RecipeSignalProcessor {
 
     if (!recipeId) return;
 
+    // P0-2 (recsys audit): favorite_remove is a NEGATIVE interest signal. The old code fell through to
+    // 'views_recipe' (a false positive) and never reduced affinity. Handle it explicitly — a negative
+    // observation + soft negative feedback (the mirror of the +0.3 a favorite_add applies) — and NEVER a
+    // 'views_recipe' row.
+    if (event.type === 'favorite_remove') {
+      await this.prisma.signalObservation.create({
+        data: { userId, signalName: 'unfavorited_recipe', eventId: event.id, weight: -0.3, recipeId },
+      });
+      await this.signalCalculator.applyNegativeFeedback(userId, recipeId, 0.3);
+      return;
+    }
+
     // strength of the action as evidence of taste: cooking >> favoriting >> viewing.
     const cooked = event.type === 'cook_complete' || event.type === 'recipe_cooked';
     const positive = cooked || event.type === 'favorite_add';
