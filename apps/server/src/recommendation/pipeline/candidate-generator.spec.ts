@@ -133,6 +133,17 @@ describe('CandidateGeneratorService', () => {
     expect(result.some((id) => id.startsWith('trend-'))).toBe(true);
     expect(new Set(result).size).toBe(result.length);
   });
+
+  it('P1-6: one candidate source throwing does NOT fail the slate (failure isolated, not propagated)', async () => {
+    // userEvent.groupBy is used ONLY by the trending source → make exactly that one source throw.
+    prisma.userEvent.groupBy.mockRejectedValue(new Error('trending source down'));
+    // the similar source still yields a safe candidate
+    prisma.userEvent.findMany.mockResolvedValue([{ payload: '{"recipeId":"seed"}' }]);
+    prisma.searchTerm.findMany.mockResolvedValueOnce([{ term: 't' }]).mockResolvedValueOnce([{ recipeId: 'safe-dish' }]);
+    const result = await service.generate('u1', 10);
+    // pre-P1-6 the sequential `await` propagated the throw and failed the whole request; now the slate serves.
+    expect(result).toContain('safe-dish');
+  });
 });
 
 describe('CandidateGeneratorService — COLDSTART-L4-14 (profile-grounded, allergy-safe)', () => {

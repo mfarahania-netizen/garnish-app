@@ -1,5 +1,5 @@
 // apps/server/src/recommendation/pipeline/candidate-generator.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FeatureStoreService } from '../../behavior-engine/feature-store/feature-store.service';
 import { RecipeEmbeddingService } from '../../embeddings/recipe-embedding.service';
@@ -18,6 +18,8 @@ const FIT_SELECT = {
 
 @Injectable()
 export class CandidateGeneratorService {
+  private readonly logger = new Logger(CandidateGeneratorService.name);
+
   constructor(
     private prisma: PrismaService,
     private featureStore: FeatureStoreService,
@@ -28,16 +30,28 @@ export class CandidateGeneratorService {
   ) {}
 
   async generate(userId: string, limit = 50): Promise<string[]> {
-    const buckets = [
-      { source: 'similar', ids: await this.getSimilarRecipes(userId) },
-      { source: 'embedding', ids: await this.getEmbeddingSimilarRecipes(userId) },
-      { source: 'collaborative', ids: await this.getCollaborativeRecipes(userId) },
-      { source: 'trending', ids: await this.getTrendingRecipes() },
-      { source: 'health', ids: await this.getHealthGoalRecipes(userId) },
-      { source: 'seasonal', ids: await this.getSeasonalRecipes() },
-      { source: 'inventory', ids: await this.getInventoryRecipes(userId) },
-      { source: 'cold_start', ids: await this.getColdStartRecipes(userId) },
+    // P1-6 (recsys audit): generate the 8 candidate sources in PARALLEL and ISOLATE failures. Previously they
+    // ran sequentially (8 serial DB round-trips) AND a single source throwing failed the ENTIRE recommendation
+    // request. Promise.allSettled fixes both: parallel latency + a failing source degrades to an empty bucket
+    // (logged) while the slate still serves. Input order is preserved → the quota logic is byte-identical when
+    // all sources succeed.
+    const sources: Array<{ source: string; run: () => Promise<string[]> }> = [
+      { source: 'similar', run: () => this.getSimilarRecipes(userId) },
+      { source: 'embedding', run: () => this.getEmbeddingSimilarRecipes(userId) },
+      { source: 'collaborative', run: () => this.getCollaborativeRecipes(userId) },
+      { source: 'trending', run: () => this.getTrendingRecipes() },
+      { source: 'health', run: () => this.getHealthGoalRecipes(userId) },
+      { source: 'seasonal', run: () => this.getSeasonalRecipes() },
+      { source: 'inventory', run: () => this.getInventoryRecipes(userId) },
+      { source: 'cold_start', run: () => this.getColdStartRecipes(userId) },
     ];
+    const settled = await Promise.allSettled(sources.map((s) => s.run()));
+    const buckets = sources.map((s, i) => {
+      const r = settled[i];
+      if (r.status === 'fulfilled') return { source: s.source, ids: r.value };
+      this.logger.warn(`candidate source '${s.source}' failed (slate still serves): ${(r.reason as Error)?.message}`);
+      return { source: s.source, ids: [] as string[] };
+    });
 
     const target = Math.max(limit, 1);
     const quotas = new Map<string, number>();
