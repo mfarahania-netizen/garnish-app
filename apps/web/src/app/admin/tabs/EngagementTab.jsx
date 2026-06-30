@@ -15,6 +15,42 @@ const PAGE_FA = {
   '/achievements': 'دستاوردها', '/support': 'پشتیبانی', '/onboarding': 'ورود اولیه', '/login': 'ورود',
 };
 
+// A compact 2-column Sankey for page→page flow: source pages on the RIGHT, destinations on the LEFT (RTL),
+// band width ∝ transition count. Brand-tinted (data viz, not a state colour). Hover a band for the exact count.
+function FlowSankey({ flow, label }) {
+  const sources = {}, dests = {};
+  flow.forEach((f) => { sources[f.from] = (sources[f.from] || 0) + f.count; dests[f.to] = (dests[f.to] || 0) + f.count; });
+  const srcKeys = Object.keys(sources).sort((a, b) => sources[b] - sources[a]);
+  const dstKeys = Object.keys(dests).sort((a, b) => dests[b] - dests[a]);
+  const totalSrc = srcKeys.reduce((s, k) => s + sources[k], 0) || 1;
+  const totalDst = dstKeys.reduce((s, k) => s + dests[k], 0) || 1;
+  const W = 600, nodeW = 10, gapPx = 9, labelPad = 78;
+  const rows = Math.max(srcKeys.length, dstKeys.length, 1), H = Math.max(150, rows * 42);
+  const srcX = W - labelPad - nodeW, dstX = labelPad;
+  const srcScale = (H - gapPx * (srcKeys.length - 1)) / totalSrc;
+  const dstScale = (H - gapPx * (dstKeys.length - 1)) / totalDst;
+  const srcNodes = {}; let sy = 0; srcKeys.forEach((k) => { const h = Math.max(4, sources[k] * srcScale); srcNodes[k] = { y: sy, h, off: 0 }; sy += h + gapPx; });
+  const dstNodes = {}; let dy = 0; dstKeys.forEach((k) => { const h = Math.max(4, dests[k] * dstScale); dstNodes[k] = { y: dy, h, off: 0 }; dy += h + gapPx; });
+  const bands = flow.map((f, i) => {
+    const sn = srcNodes[f.from], dn = dstNodes[f.to];
+    const sh = Math.max(2, f.count * srcScale), dh = Math.max(2, f.count * dstScale);
+    const a = sn.y + sn.off; sn.off += sh;
+    const b = dn.y + dn.off; dn.off += dh;
+    const x0 = srcX, x1 = dstX + nodeW, mx = (x0 + x1) / 2;
+    return { key: i, title: `${label(f.from)} ‹ ${label(f.to)} · ${f.count}`, d: `M${x0} ${a} C${mx} ${a},${mx} ${b},${x1} ${b} L${x1} ${b + dh} C${mx} ${b + dh},${mx} ${a + sh},${x0} ${a + sh} Z` };
+  });
+  const txt = { fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', fill: 'var(--g-color-text-secondary)' };
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block', overflow: 'visible' }} role="img" aria-label="نمودارِ جریانِ صفحات">
+      {bands.map((bd) => <path key={bd.key} d={bd.d} fill="var(--g-color-brand-400)" opacity="0.3"><title>{bd.title}</title></path>)}
+      {srcKeys.map((k) => <rect key={'s' + k} x={srcX} y={srcNodes[k].y} width={nodeW} height={srcNodes[k].h} rx="2" fill="var(--g-color-brand-600)" />)}
+      {dstKeys.map((k) => <rect key={'d' + k} x={dstX} y={dstNodes[k].y} width={nodeW} height={dstNodes[k].h} rx="2" fill="var(--g-color-brand-600)" />)}
+      {srcKeys.map((k) => <text key={'sl' + k} x={srcX + nodeW + 6} y={srcNodes[k].y + srcNodes[k].h / 2 + 3.5} textAnchor="start" style={txt}>{label(k)}</text>)}
+      {dstKeys.map((k) => <text key={'dl' + k} x={dstX - 6} y={dstNodes[k].y + dstNodes[k].h / 2 + 3.5} textAnchor="end" style={txt}>{label(k)}</text>)}
+    </svg>
+  );
+}
+
 export default function EngagementTab({ days = 30 }) {
   const trends = useQuery({ queryKey: ['admin', 'trends', days], queryFn: () => get('/admin/analytics/trends', { bucket: 'day', days }) });
   const funnels = useQuery({ queryKey: ['admin', 'funnels'], queryFn: () => get('/admin/analytics/funnels') });
@@ -113,16 +149,16 @@ export default function EngagementTab({ days = 30 }) {
         </>
       ) : null}
 
-      <Section title="مسیرِ کاربر — از کجا به کجا" sub="پرتکرارترین جابه‌جایی‌ها میانِ صفحات" />
+      <Section title="مسیرِ کاربر — از کجا به کجا" sub="نمودارِ جریان: مبدأ سمتِ راست، مقصد سمتِ چپ، پهنای باند ∝ تعداد" />
       <Panel status={flow.length ? 'real' : 'awaiting_pilot'}>
-        {flow.length ? flow.map((f, i) => (
-          <Box key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBlock: 7, borderBlockEnd: i < flow.length - 1 ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }}>{PG(f.from)}</Text>
-            <Text component="span" aria-hidden style={{ color: 'var(--g-color-brand-600)', fontSize: '15px', lineHeight: 1 }}>←</Text>
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }}>{PG(f.to)}</Text>
-            <Text component="span" style={{ marginInlineStart: 'auto', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>{toFaDigits(f.count)} بار</Text>
-          </Box>
-        )) : <Awaiting note="هنوز جابه‌جاییِ صفحه‌ای ثبت نشده — با ناوبریِ کاربرِ واقعی پر می‌شود." />}
+        {flow.length ? (
+          <>
+            <FlowSankey flow={flow} label={PG} />
+            <Box style={{ display: 'flex', justifyContent: 'space-between', marginBlockStart: 6, fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)' }}>
+              <span>مقصد</span><span>مبدأ</span>
+            </Box>
+          </>
+        ) : <Awaiting note="هنوز جابه‌جاییِ صفحه‌ای ثبت نشده — با ناوبریِ کاربرِ واقعی پر می‌شود." />}
       </Panel>
 
       <Section title="زمانِ ماندن در هر صفحه" sub="میانهٔ ثانیه‌هایی که کاربر در هر صفحه می‌مانَد" />
