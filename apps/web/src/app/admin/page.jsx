@@ -7,7 +7,7 @@ import { Box, Text, UnstyledButton, Loader } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  IconLeaf, IconLock, IconShieldLock, IconRefresh, IconDownload, IconHome,
+  IconLeaf, IconLock, IconShieldLock, IconRefresh, IconHome,
   IconLayoutDashboard, IconSparkles, IconChartBar, IconActivity, IconToolsKitchen2,
   IconShieldCheck, IconBolt, IconCoin, IconChartDots, IconUsersGroup, IconTicket, IconRobot,
 } from '@tabler/icons-react';
@@ -118,16 +118,11 @@ export default function AdminPage() {
     );
   }
 
+  // invalidateQueries refetches only the ACTIVE (mounted) observers — i.e. the current tab + pulse/attention,
+  // not all 12 tabs — so this is already scoped (P1-10). The whole-cache JSON export was REMOVED (P0-4): it
+  // dumped real PII client-side with no server-side audit trail (silent exfiltration). Any export must be a
+  // server endpoint, super-admin-gated, reason+audited, redacted — not a browser cache dump.
   const onRefresh = () => queryClient.invalidateQueries({ queryKey: ['admin'] });
-  const onExport = () => {
-    try {
-      const dump = Object.fromEntries(queryClient.getQueriesData({ queryKey: ['admin'] }).map(([k, v]) => [JSON.stringify(k), v]));
-      const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a'); link.href = url; link.download = 'garnish-admin-export.json';
-      document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
-    } catch { /* */ }
-  };
 
   const railW = narrow ? 58 : 204;
   const ActiveBody = active.C;
@@ -179,7 +174,6 @@ export default function AdminPage() {
             ) : null}
             <FreshnessPill />
             <UnstyledButton type="button" onClick={onRefresh} aria-label="به‌روزرسانی" style={iconBtn}><IconRefresh size={16} stroke={1.8} /></UnstyledButton>
-            <UnstyledButton type="button" onClick={onExport} aria-label="خروجی JSON" style={iconBtn}><IconDownload size={16} stroke={1.8} /></UnstyledButton>
           </Box>
         </Box>
 
