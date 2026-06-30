@@ -4,6 +4,7 @@ import { RecipeSignalProcessor } from '../processors/recipe.signal-processor';
 import { MealPlanSignalProcessor } from '../processors/meal-plan.signal-processor';
 import { ShoppingSignalProcessor } from '../processors/shopping.signal-processor';
 import { RecommendationSignalProcessor } from '../processors/recommendation.signal-processor';
+import { PersonalizationSignalProcessor } from '../processors/personalization.signal-processor';
 
 export interface IEventProcessor {
   process(event: any, userId: string): Promise<void>;
@@ -18,6 +19,7 @@ export class ProcessorRegistry {
     mealPlanProcessor: MealPlanSignalProcessor,
     shoppingProcessor: ShoppingSignalProcessor,
     recommendationProcessor: RecommendationSignalProcessor,
+    personalizationProcessor: PersonalizationSignalProcessor,
   ) {
     // Recipe events
     this.map.set('recipe_view', recipeProcessor);
@@ -56,6 +58,11 @@ export class ProcessorRegistry {
     this.map.set('recipe_skip', recommendationProcessor);
     this.map.set('not_interested', recommendationProcessor);
     this.map.set('quick_exit', recommendationProcessor);
+
+    // P0-4 (recsys audit): in-session personalization actions — emitted (usePersonalization.js) but unprocessed.
+    this.map.set('portion_scaled', personalizationProcessor);
+    this.map.set('ingredient_swapped', personalizationProcessor);
+    this.map.set('ingredient_removed', personalizationProcessor);
   }
 
   get(eventType: string): IEventProcessor | undefined {

@@ -18,6 +18,7 @@ import { RecipeSignalProcessor } from './processors/recipe.signal-processor';
 import { MealPlanSignalProcessor } from './processors/meal-plan.signal-processor';
 import { ShoppingSignalProcessor } from './processors/shopping.signal-processor';
 import { RecommendationSignalProcessor } from './processors/recommendation.signal-processor';
+import { PersonalizationSignalProcessor } from './processors/personalization.signal-processor';
 import { LifestyleGraphBuilder } from '../lifestyle/lifestyle-graph.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
 
@@ -40,6 +41,7 @@ import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
     MealPlanSignalProcessor,
     ShoppingSignalProcessor,
     RecommendationSignalProcessor,
+    PersonalizationSignalProcessor,
     LifestyleGraphBuilder,
     RecipeEmbeddingService,
   ],

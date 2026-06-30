@@ -178,6 +178,13 @@ export class SignalCalculatorService {
     }
   }
 
+  /** P0-4 (recsys audit): apply a soft INFERRED per-ingredient taste delta from a personalization action
+   *  (ingredient swap/remove). Public wrapper over the private upsert so the PersonalizationSignalProcessor can
+   *  write a resolved-ingredient signal the ranker already reads (signal_ing_*); respects a user correction. */
+  async applyIngredientPreference(userId: string, ingredientId: string, delta: number) {
+    return this.upsertIngredientSignal(userId, ingredientId, delta);
+  }
+
   private async upsertIngredientSignal(userId: string, signalName: string, delta: number) {
     const existing = await this.prisma.userBehaviorSignal.findUnique({
       where: { userId_signalName: { userId, signalName } },
