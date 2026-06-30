@@ -38,6 +38,11 @@ export class ProcessorRegistry {
     this.map.set('shopping_item_add', shoppingProcessor);
     this.map.set('shopping_item_toggle', shoppingProcessor);
     this.map.set('shopping_item_remove', shoppingProcessor);
+    // P0-3 (recsys audit): the REAL FE shopping-add events were emitted (useShopping.js) but unrouted, so
+    // shopping demand never reached learning. Route them to the same processor.
+    this.map.set('shopping_add_manual', shoppingProcessor);
+    this.map.set('shopping_add_from_plan', shoppingProcessor);
+    this.map.set('shopping_add_from_fav', shoppingProcessor);
 
     // Recommendation events
     this.map.set('recommendation_impression', recommendationProcessor);
