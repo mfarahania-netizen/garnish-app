@@ -7,7 +7,9 @@ import { AdminTicketsService } from './admin-tickets.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { OwnerGuard, isOwnerId } from '../auth/owner.guard';
+import { resolveAdminCapabilities } from '../auth/admin-capabilities';
 import { CreateAdminUserDto, UpdateAdminUserDto, ResetUserPasswordDto, BanUserDto, ReasonDto } from './dto/admin-user.dto';
+import { RespondTicketDto, UpdateTicketDto, CreateTicketNoteDto } from './dto/admin-ticket.dto';
 
 // Mandatory operator justification for sensitive ops (advisor P0-2) — recorded into the audit ledger. <3 chars → 400.
 function requireReason(reason: string | undefined): string {
@@ -28,6 +30,13 @@ export class AdminController {
 
   @Get('dashboard')
   getDashboard() { return this.adminService.getDashboardStats(); }
+
+  // P1-14 (re-audit): the current operator's capabilities — the UI reads this to hide/disable actions it can't
+  // perform (e.g. the owner-only admin-role switch), instead of letting them click and eat a 403.
+  @Get('me/permissions')
+  mePermissions(@Req() req) {
+    return resolveAdminCapabilities(req.user?.userId, !!req.user?.isAdmin);
+  }
 
   // ── SUPPORT TICKETS — full admin inbox: list/filter/sort, thread + internal notes, reply (fires the user
   // notification), triage (status/priority/category/assignee/tags), SLA metrics. Backed by AdminTicketsService. ──
@@ -60,21 +69,21 @@ export class AdminController {
   }
 
   @Post('tickets/:id/respond')
-  respondToTicket(@Req() req, @Param('id') id: string, @Body('message') message: string) {
+  respondToTicket(@Req() req, @Param('id') id: string, @Body() body: RespondTicketDto) {
     this.adminService.recordAudit(req.user?.userId, 'admin_ticket_reply', { ticketId: id });
-    return this.adminTickets.respond(id, message, req.user?.userId);
+    return this.adminTickets.respond(id, body?.message as string, req.user?.userId);
   }
 
   @Patch('tickets/:id')
-  updateTicket(@Req() req, @Param('id') id: string, @Body() body: { status?: string; priority?: string; category?: string; assigneeId?: string | null; tags?: string[] }) {
+  updateTicket(@Req() req, @Param('id') id: string, @Body() body: UpdateTicketDto) {
     this.adminService.recordAudit(req.user?.userId, 'admin_ticket_update', { ticketId: id, ...(body?.status ? { status: body.status } : {}) });
     return this.adminTickets.update(id, body || {});
   }
 
   @Post('tickets/:id/notes')
-  addTicketNote(@Req() req, @Param('id') id: string, @Body('body') body: string) {
+  addTicketNote(@Req() req, @Param('id') id: string, @Body() dto: CreateTicketNoteDto) {
     this.adminService.recordAudit(req.user?.userId, 'admin_ticket_note', { ticketId: id });
-    return this.adminTickets.addNote(id, body, req.user?.userId);
+    return this.adminTickets.addNote(id, dto?.body as string, req.user?.userId);
   }
 
   @Get('recipes')
@@ -120,7 +129,7 @@ export class AdminController {
 
   @Get('users/:id')
   getUser(@Req() req, @Param('id') id: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_user_view', { userId: id });
+    this.adminService.recordAuditDurable(req.user?.userId, id, 'admin_user_view', { ip: req.ip }); // P1-7: dossier open → durable ledger
     return this.adminUsers.detail(id);
   }
 

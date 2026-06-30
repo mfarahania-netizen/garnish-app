@@ -91,6 +91,9 @@ export default function UsersTab() {
   const stats = useQuery({ queryKey: ['admin', 'users', 'stats'], queryFn: () => get('/admin/users/stats') });
   const list = useQuery({ queryKey: ['admin', 'users', qs], queryFn: () => get('/admin/users?' + qs), placeholderData: (prev) => prev });
   const detail = useQuery({ queryKey: ['admin', 'user', selectedId], queryFn: () => get('/admin/users/' + selectedId), enabled: !!selectedId });
+  // P1-14: the operator's capabilities — hide/disable actions they can't perform (instead of a click → 403).
+  const perms = useQuery({ queryKey: ['admin', 'me', 'permissions'], queryFn: () => get('/admin/me/permissions'), staleTime: 300000 });
+  const cap = perms.data || {};
 
   const closeDanger = () => { setDanger(null); setExportErr(null); };
   // shared onSuccess: refresh the roster + the open dossier, then run the per-mutation follow-up (close a modal, etc).
@@ -208,7 +211,7 @@ export default function UsersTab() {
                 </Box>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockStart: 2 }}>
                   <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', direction: 'ltr', textAlign: 'start' }}>{revealed ? ([revealed.phone, revealed.email].filter(Boolean).join(' · ') || '—') : contact(u)}</Text>
-                  {!revealed && !u.isGuest && (u.phone || u.email) ? <UnstyledButton type="button" onClick={() => setDanger({ kind: 'reveal', user: u })} style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-brand-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>نمایشِ کامل</UnstyledButton> : null}
+                  {cap.canRevealPii && !revealed && !u.isGuest && (u.phone || u.email) ? <UnstyledButton type="button" onClick={() => setDanger({ kind: 'reveal', user: u })} style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-brand-600)', flexShrink: 0, whiteSpace: 'nowrap' }}>نمایشِ کامل</UnstyledButton> : null}
                 </Box>
               </Box>
               <UnstyledButton type="button" onClick={() => setSelectedId(null)} aria-label="بستن" style={{ inlineSize: 30, blockSize: 30, borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'var(--g-color-text-muted)', flexShrink: 0 }}><IconX size={18} /></UnstyledButton>
@@ -266,10 +269,11 @@ export default function UsersTab() {
                 ? <Act icon={IconLockOpen} label="رفعِ مسدودی" loading={banM.isPending} onClick={() => banM.mutate({ id: u.id, banned: false })} />
                 : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />}
               <Text component="div" style={{ ...actGroupLbl, marginBlockStart: 6 }}>عملیاتِ مالک · برگشت‌ناپذیر</Text>
-              <Act icon={u.isAdmin ? IconShieldOff : IconShield} label={u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} />
-              <Act icon={IconKey} label="ریستِ رمزِ عبور" tone="danger" onClick={() => setDanger({ kind: 'password', user: u })} />
-              <Act icon={IconDownload} label="خروجیِ دادهٔ کاربر (GDPR)" tone="danger" onClick={() => setDanger({ kind: 'export', user: u })} />
-              <Act icon={IconTrash} label="حذفِ کامل (پاک‌سازیِ GDPR)" tone="danger" onClick={() => setDanger({ kind: 'delete', user: u })} />
+              {/* P1-1/P1-14: owner-only irreversible / PII ops are hidden for a non-owner admin (not just 403'd) */}
+              {cap.canManageAdmins ? <Act icon={u.isAdmin ? IconShieldOff : IconShield} label={u.isAdmin ? 'برداشتنِ نقشِ مدیر' : 'مدیر کردن'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} /> : null}
+              {cap.canResetPassword ? <Act icon={IconKey} label="ریستِ رمزِ عبور" tone="danger" onClick={() => setDanger({ kind: 'password', user: u })} /> : null}
+              {cap.canExportPii ? <Act icon={IconDownload} label="خروجیِ دادهٔ کاربر (GDPR)" tone="danger" onClick={() => setDanger({ kind: 'export', user: u })} /> : null}
+              {cap.canDeleteUser ? <Act icon={IconTrash} label="حذفِ کامل (پاک‌سازیِ GDPR)" tone="danger" onClick={() => setDanger({ kind: 'delete', user: u })} /> : null}
             </Box>
           </Box>
         )}
@@ -277,7 +281,7 @@ export default function UsersTab() {
 
       {/* ── CREATE ── */}
       <Modal opened={createOpen} onClose={() => setCreateOpen(false)} title="افزودنِ کاربرِ جدید" centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
-        <CreateForm pending={createM.isPending} error={createM.error} onSubmit={(body) => createM.mutate(body)} />
+        <CreateForm canCreateAdmin={!!cap.canManageAdmins} pending={createM.isPending} error={createM.error} onSubmit={(body) => createM.mutate(body)} />
       </Modal>
 
       {/* ── UNIFIED DANGER MODAL — reason (required) + typed-confirm for delete (P0-2), owner/reason errors surfaced ── */}
@@ -437,9 +441,10 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
   );
 }
 
-function CreateForm({ onSubmit, pending, error }) {
+function CreateForm({ onSubmit, pending, error, canCreateAdmin }) {
   const [f, setF] = useState({ phone: '', email: '', name: '', password: '', isAdmin: false, reason: '' });
-  const needsReason = f.isAdmin && f.reason.trim().length < 3; // P0-2: granting admin requires a justification (server enforces it)
+  const isAdmin = f.isAdmin && canCreateAdmin; // P2-6: a non-owner can't grant admin (the switch is disabled below)
+  const needsReason = isAdmin && f.reason.trim().length < 3; // P0-2: granting admin requires a justification (server enforces it)
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
       <ErrorLine error={error} />
@@ -447,9 +452,9 @@ function CreateForm({ onSubmit, pending, error }) {
       <TextInput label="تلفن" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} styles={fieldStyles} dir="ltr" />
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
       <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
-      <Switch label="نقشِ مدیر (فقط مالک)" checked={f.isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
-      {f.isAdmin ? <TextInput label="دلیلِ ساختِ مدیر (الزامی — در audit ثبت می‌شود)" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} styles={fieldStyles} placeholder="چرا این فرد مدیر می‌شود؟" /> : null}
-      <UnstyledButton type="button" onClick={() => onSubmit(f)} disabled={pending || needsReason} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4, opacity: (pending || needsReason) ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
+      <Switch label={canCreateAdmin ? 'نقشِ مدیر' : 'نقشِ مدیر (فقط مالک می‌تواند)'} disabled={!canCreateAdmin} checked={isAdmin} onChange={(e) => setF({ ...f, isAdmin: e.currentTarget.checked })} styles={{ label: { fontFamily: 'var(--g-font-fa)', fontSize: '12.5px' } }} />
+      {isAdmin ? <TextInput label="دلیلِ ساختِ مدیر (الزامی — در audit ثبت می‌شود)" value={f.reason} onChange={(e) => setF({ ...f, reason: e.target.value })} styles={fieldStyles} placeholder="چرا این فرد مدیر می‌شود؟" /> : null}
+      <UnstyledButton type="button" onClick={() => onSubmit({ ...f, isAdmin })} disabled={pending || needsReason} style={{ minBlockSize: 44, borderRadius: '11px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse, #fff)', fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, display: 'grid', placeItems: 'center', marginBlockStart: 4, opacity: (pending || needsReason) ? 0.5 : 1 }}>{pending ? <Loader size={15} color="var(--g-color-text-inverse, #fff)" /> : 'ساختِ کاربر'}</UnstyledButton>
     </Box>
   );
 }
