@@ -14,6 +14,56 @@ export interface WorkflowDef {
   graph: { nodes: Array<{ id: string; type: string; params?: Record<string, any>; next?: string[] }> };
 }
 
+/**
+ * P1-14 (advisor): per-workflow operating runbook — owner, the expected first action, concrete steps, and the
+ * escalation window (minutes; 0 = immediate). Static config (no migration). Attached to listWorkflows so an
+ * operator who sees an alert knows who owns it and exactly what to do — not just that "something fired".
+ */
+export interface WorkflowRunbook {
+  ownerRole: string;
+  expectedAction: string;
+  steps: string;
+  escalateAfterMin: number;
+}
+export const WORKFLOW_RUNBOOK: Record<string, WorkflowRunbook> = {
+  'ai-cost-guardrail': {
+    ownerRole: 'مالک / مهندسِ مسئول',
+    expectedAction: 'سقفِ هزینهٔ امروز را بررسی کن؛ اگر واقعی است، مدلِ گران را موقتاً خاموش یا محدود کن.',
+    steps: 'AICallLogِ امروز → مدلِ پرهزینه را پیدا کن → در .env سقف/مدل را عوض کن → ری‌استارت → تأیید.',
+    escalateAfterMin: 30,
+  },
+  'allergy-safety-sentinel': {
+    ownerRole: 'مالک — تحملِ صفر',
+    expectedAction: 'فوراً: کدام رسپی/کاربر؟ فیلترِ سختِ آلرژی را بررسی کن؛ تا رفع، surfaceِ مربوط را ببند.',
+    steps: 'logِ assessRecipeFit/analyzeRecipeIntegrity → ورودیِ نشت → تستِ گیت → hotfix → تأییدِ leaks=۰.',
+    escalateAfterMin: 0,
+  },
+  'ai-reliability-watch': {
+    ownerRole: 'مهندسِ مسئول',
+    expectedAction: 'سلامتِ مدلِ اصلی را چک کن؛ اگر پایین است، کلید/مدلِ پشتیبان را بررسی کن.',
+    steps: 'AICallLogِ ۱ساعتِ اخیر → کدام مدل fail می‌شود → کلید/کوتا/۴۲۹ → چرخشِ مدل.',
+    escalateAfterMin: 60,
+  },
+  'daily-ops-brief': {
+    ownerRole: 'مالک (مرورِ روزانه)',
+    expectedAction: 'فقط مرور؛ اگر عددی پرت بود، workflowِ مربوط را باز کن.',
+    steps: 'خلاصه را بخوان → هر عددِ غیرعادی را به تبِ مربوط دنبال کن.',
+    escalateAfterMin: 1440,
+  },
+  'recipe-catalog-audit': {
+    ownerRole: 'مسئولِ محتوا',
+    expectedAction: 'فهرستِ کمبودها را به backlogِ نویسندگی ببر (کالری/آلرژن/عکس/مراحل).',
+    steps: 'تبِ محتوا → رسپی‌های ناقص → کاملشان کن یا واگذار کن.',
+    escalateAfterMin: 1440,
+  },
+  'content-gap-digest': {
+    ownerRole: 'مسئولِ محتوا',
+    expectedAction: 'جست‌وجوهای بی‌نتیجه را به نامزدِ رسپیِ تازه تبدیل کن.',
+    steps: 'فهرستِ search_unmet → پرتکرارها → رسپیِ تازه بنویس/سفارش بده.',
+    escalateAfterMin: 10080,
+  },
+};
+
 export const WORKFLOW_DEFINITIONS: WorkflowDef[] = [
   // ① AI cost guardrail — the bill-surprise stop (free models now → real the day the paid model lands).
   {

@@ -6,7 +6,7 @@
 import { Injectable, Logger, OnModuleInit, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowRunnerService, RunnableWorkflow } from './workflow-runner.service';
-import { WORKFLOW_DEFINITIONS } from './workflow-definitions';
+import { WORKFLOW_DEFINITIONS, WORKFLOW_RUNBOOK } from './workflow-definitions';
 
 @Injectable()
 export class WorkflowService implements OnModuleInit {
@@ -72,6 +72,8 @@ export class WorkflowService implements OnModuleInit {
           lastRun: last ? { id: last.id, status: last.status, startedAt: last.startedAt, durationMs: last.durationMs } : null,
           // the auto-reported state: what the last run found (healthy / alerted / digest + the checked value)
           lastResult: o ? { alerted: !!o.alerted, healthy: !!o.healthy, failed: !!o.failed, isDigest: !!o.isDigest, checked: o.checked ?? null, at: last?.startedAt } : null,
+          // P1-14: the operating runbook (owner / first action / steps / escalation window) for this workflow.
+          runbook: WORKFLOW_RUNBOOK[w.key] || null,
         };
       }),
     };

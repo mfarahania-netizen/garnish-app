@@ -65,6 +65,9 @@ export default function AutomationTab() {
   const wfList = workflows.data?.workflows || [];
   const alertList = alerts.data?.alerts || [];
   const openAlerts = alertList.filter((a) => a.status === 'open');
+  // P1-14: map each workflow's operating runbook by key, so an open alert shows "who owns it + the first action".
+  const runbookByKey = {};
+  wfList.forEach((w) => { if (w.runbook) runbookByKey[w.key] = w.runbook; });
 
   return (
     <Box>
@@ -103,6 +106,12 @@ export default function AutomationTab() {
                         <span>منبع: {a.workflowKey}</span>
                         <span>{agoFa(a.createdAt)}</span>
                       </Box>
+                      {runbookByKey[a.workflowKey] ? (
+                        <Box style={{ marginBlockStart: 9, padding: '8px 10px', borderRadius: '8px', background: 'var(--g-color-bg-canvas)', border: '1px solid var(--g-color-border-subtle)' }}>
+                          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-secondary)', lineHeight: 1.75 }}><b>مسئول:</b> {runbookByKey[a.workflowKey].ownerRole} · <b>اقدامِ اول:</b> {runbookByKey[a.workflowKey].expectedAction}</Text>
+                          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)', marginBlockStart: 3 }}>{runbookByKey[a.workflowKey].steps}</Text>
+                        </Box>
+                      ) : null}
                     </Box>
                     <Box style={{ display: 'inline-flex', gap: 5, flexShrink: 0 }}>
                       <UnstyledButton type="button" onClick={() => ackMut.mutate(a.id)} disabled={ackMut.isPending} title="تأیید — دیده شد" style={ALERT_BTN}>
@@ -150,6 +159,11 @@ export default function AutomationTab() {
                     <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: rl.color, fontWeight: 500 }}>{rl.text}</Text>
                     {last ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)' }}>· {agoFa(last.startedAt)}</Text> : null}
                   </Box>
+                  {w.runbook ? (
+                    <Text component="div" title={w.runbook.steps} style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)', marginBlockStart: 8, lineHeight: 1.65, paddingBlockStart: 8, borderBlockStart: '1px dashed var(--g-color-border-subtle)' }}>
+                      <b style={{ color: 'var(--g-color-text-secondary)' }}>مسئول:</b> {w.runbook.ownerRole} — {w.runbook.expectedAction}
+                    </Text>
+                  ) : null}
                   <UnstyledButton type="button" onClick={() => runMut.mutate(w.key)} disabled={runMut.isPending}
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBlockStart: 11, minBlockSize: 34, paddingInline: 13, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-canvas)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 500, opacity: runMut.isPending && runMut.variables === w.key ? 0.6 : 1 }}>
                     <IconPlayerPlay size={14} stroke={1.8} />{runMut.isPending && runMut.variables === w.key ? 'در حال بررسی…' : 'بررسیِ دستی'}
