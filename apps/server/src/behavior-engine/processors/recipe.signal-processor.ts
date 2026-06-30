@@ -26,7 +26,24 @@ export class RecipeSignalProcessor {
       await this.prisma.signalObservation.create({
         data: { userId, signalName: 'unfavorited_recipe', eventId: event.id, weight: -0.3, recipeId },
       });
-      await this.signalCalculator.applyNegativeFeedback(userId, recipeId, 0.3);
+      // P0-1 (re-audit): applyNegativeFeedback does `value + factor`, and every OTHER caller (dismiss -0.5,
+      // meal-plan remove -0.2) passes a NEGATIVE factor to DECREASE affinity. This path used to pass +0.3 →
+      // it INCREASED affinity on an unfavorite (the opposite of intent). It must be -0.3 (the mirror of the
+      // +0.3 a favorite_add applies via applyPositiveFeedback).
+      await this.signalCalculator.applyNegativeFeedback(userId, recipeId, -0.3);
+      return;
+    }
+
+    // P0-6 (re-audit): start_cooking_click = the user OPENED cook mode — strong INTENT, weaker than a finished
+    // cook. Record a distinct observation (weight 0.7, below cook's 1.5) + a LIGHT taste positive (0.2, below a
+    // favorite's 0.3), so cooking intent reaches the feature store / ranker. A later cook_complete is a separate
+    // eventId (not deduped against this), so completion still adds its full weight — intent and completion are
+    // different moments, not a double count.
+    if (event.type === 'start_cooking_click') {
+      await this.prisma.signalObservation.create({
+        data: { userId, signalName: 'started_cooking_recipe', eventId: event.id, weight: 0.7, recipeId },
+      });
+      await this.signalCalculator.applyPositiveFeedback(userId, recipeId, 0.2);
       return;
     }
 

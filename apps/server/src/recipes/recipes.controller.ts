@@ -50,7 +50,7 @@ export class RecipesController {
   @Get('search')
   @UseGuards(OptionalJwtGuard)
   async search(@Req() req, @Query() query: SearchRecipesDto) {
-    const limitNum = parseInt(query.limit, 10) || 10;
+    const limitNum = Math.min(50, Math.max(1, parseInt(query.limit, 10) || 10)); // P1-6: clamp — a negative/huge limit was unbounded
     const userId = req.user?.userId;
     const q = normalizeSearchQuery(query.q); // قورمه→قرمه + Arabic folds so famous dishes are found by their common spelling
     const ranked = await this.searchService.search(q, { limit: limitNum });
@@ -117,11 +117,18 @@ export class RecipesController {
    */
   @Post(':id/personalize')
   @UseGuards(AuthGuard('jwt'))
-  personalize(
+  async personalize(
     @Param('id') id: string,
     @Req() req,
     @Body() body: { servings?: number; swaps?: { from: string; to: string }[]; removed?: string[] },
   ) {
+    // P0-5 (re-audit): the personalization cascade is a user-facing recipe read (it returns ingredients +
+    // grounded nutrition + swaps) — it must hold the SAME hard allergy/observance gate as GET /:id/full.
+    // Without it a profile-conflicting recipe could still be personalized via a direct POST, breaking the
+    // "every user-facing recipe path is allergy-safe" invariant.
+    if (!(await this.safety.safeIds(req.user.userId, [id])).length) {
+      throw new ForbiddenException('recipe_unsafe_for_profile');
+    }
     return this.richness.personalize(id, req.user.userId, body ?? {});
   }
 

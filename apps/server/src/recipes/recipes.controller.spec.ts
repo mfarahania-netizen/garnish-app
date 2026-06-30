@@ -4,22 +4,31 @@ import { RecipesController } from './recipes.controller';
 // hard safety gate with the logged-in user's id, and that anonymous passes through (userId undefined).
 describe('RecipesController — safety-gate wiring', () => {
   let controller: RecipesController;
-  let safety: { filter: jest.Mock };
+  let safety: { filter: jest.Mock; safeIds: jest.Mock };
   let recipesService: any;
+  let richness: any;
   let searchService: any;
 
   beforeEach(() => {
-    safety = { filter: jest.fn(async (_uid: any, rows: any[]) => rows) };
+    safety = {
+      filter: jest.fn(async (_uid: any, rows: any[]) => rows),
+      safeIds: jest.fn(async (_uid: any, ids: string[]) => ids), // default: all safe (no block)
+    };
     recipesService = {
       findAll: jest.fn(async () => ({ data: [{ id: 'a' }, { id: 'b' }], total: 2 })),
+      findOne: jest.fn(async (id: string) => ({ id })),
       search: jest.fn(async () => [{ id: 's1' }]),
       findByIdsOrdered: jest.fn(async () => [{ id: 'r1' }]),
+    };
+    richness = {
+      getRichRecipe: jest.fn(async (id: string) => ({ id, rich: true })),
+      personalize: jest.fn(async (id: string) => ({ id, personalized: true })),
     };
     searchService = {
       search: jest.fn(async () => ({ resultStatus: 'ok', results: [{ recipeId: 'r1', score: 1, why: { matchedTerms: [] } }] })),
       similar: jest.fn(async () => ({ recipeId: 'x', results: [{ recipeId: 'n1' }], resultStatus: 'ok' })),
     };
-    controller = new RecipesController(recipesService as any, {} as any, searchService as any, safety as any);
+    controller = new RecipesController(recipesService as any, richness as any, searchService as any, safety as any);
   });
 
   it('findAll runs the gate with the logged-in user id (Home/Discover rail)', async () => {

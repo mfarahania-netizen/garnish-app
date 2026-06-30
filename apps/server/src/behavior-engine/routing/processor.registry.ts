@@ -29,6 +29,9 @@ export class ProcessorRegistry {
     // useCook.js; it was silently dropped here, so the loop never closed).
     this.map.set('cook_complete', recipeProcessor);
     this.map.set('recipe_cooked', recipeProcessor); // legacy alias, same handler
+    // P0-6 (re-audit): start_cooking_click (opening cook mode) is emitted by the FE and COUNTED by
+    // getDataMaturity, but had no route — so maturity rose while the engine learned nothing. Route the INTENT.
+    this.map.set('start_cooking_click', recipeProcessor);
 
     // Meal Plan events
     this.map.set('mealplan_add', mealPlanProcessor);

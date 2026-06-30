@@ -106,14 +106,14 @@ export class AnalyticsService {
     // ALWAYS stored (ops / legitimate interest); but BUILDING a personalization profile from it — routing
     // into the signal engine — requires the 'personalization' purpose when enforced. Routing already no-ops
     // for non-personalization event types, so this scopes the gate exactly to personalization signals.
-    // EVENT_CONSENT_GATE_MODE = off (default) | log (observe only) | enforce (skip routing without consent).
-    // P0-5 (recsys audit): default to 'log' in PRODUCTION (stamp the correct consent provenance per event + surface
-    // the consent gap in logs) and 'off' in dev/test (so the admin demo data + the dev learning loop keep flowing
-    // unchanged — the admin panel reads UserEvent, which is ALWAYS stored regardless of the gate). An explicit env
-    // var still wins. DECISION: flip the production default to 'enforce' ONLY after onboarding wires an explicit
-    // personalization opt-in (food-dna-activation phase B) — enforcing before any user can GRANT the
-    // 'personalization' purpose would silently disable personalization for everyone, which is a worse regression.
-    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || (process.env.NODE_ENV === 'production' ? 'log' : 'off')).toLowerCase();
+    // EVENT_CONSENT_GATE_MODE = off (dev/test default) | log (observe only) | enforce (PRODUCTION default).
+    // P0-3 (re-audit): production now ENFORCES. The raw UserEvent is ALWAYS stored (ops / legitimate interest,
+    // and the admin panel reads UserEvent) — but BUILDING a taste/health profile from it (routing into the signal
+    // engine) requires the explicit 'personalization' purpose. Processing personal data into a profile without
+    // opt-in is not lawful for the EU/NL launch, so without consent the event is stored but NEVER routed.
+    // Personalization activates per-user the moment they GRANT the purpose (settings/onboarding consent). Dev/test
+    // stay 'off' so the local learning loop + the admin demo data keep flowing unchanged. An explicit env wins.
+    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || (process.env.NODE_ENV === 'production' ? 'enforce' : 'off')).toLowerCase();
     // L0 — GDPR provenance: stamp the consent purpose this event is collected under. Baseline 'analytics'
     // (legitimate interest — always lawful for raw product analytics); when the gate is on we reuse its
     // consent read (no second query) to upgrade to 'personalization' for users who granted it.
