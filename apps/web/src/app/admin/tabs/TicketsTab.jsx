@@ -105,7 +105,7 @@ export default function TicketsTab() {
               </Box></Box>
               <Box component="tbody">
                 {rows.map((t) => (
-                  <Box component="tr" key={t.id} onClick={() => setSelectedId(t.id)} style={{ cursor: 'pointer' }}>
+                  <Box component="tr" key={t.id} role="button" tabIndex={0} aria-label={`تیکتِ ${t.subject || t.id}`} onClick={() => setSelectedId(t.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(t.id); } }} style={{ cursor: 'pointer' }}>
                     <Box component="td" style={{ ...tdS, fontWeight: 500, maxInlineSize: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}{t.firstResponseAt ? null : <Box aria-hidden="true" style={{ display: 'inline-block', inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-warning-fg, #c0801c)', marginInlineStart: 6 }} />}</Box>
                     <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-secondary)' }}>{t.user?.name || '—'}</Box>
                     <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{CATEGORY[t.category] || 'عمومی'}</Box>

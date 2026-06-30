@@ -82,15 +82,19 @@ export class AdminController {
     return this.adminService.getAllRecipes(parseInt(page) || 1, parseInt(limit) || 20);
   }
 
+  // Content moderation — owner-gated + fail-closed audited (advisor P1-5): there is no live UGC flow, so these
+  // stay restricted to an owner rather than being a loose surface any admin can hit.
   @Patch('recipes/:id/approve')
-  approveRecipe(@Req() req, @Param('id') id: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_recipe_approve', { recipeId: id });
+  @UseGuards(OwnerGuard)
+  async approveRecipe(@Req() req, @Param('id') id: string) {
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_approve', { ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminService.updateRecipeStatus(id, 'approved');
   }
 
   @Patch('recipes/:id/reject')
-  rejectRecipe(@Req() req, @Param('id') id: string, @Body('note') note: string) {
-    this.adminService.recordAudit(req.user?.userId, 'admin_recipe_reject', { recipeId: id });
+  @UseGuards(OwnerGuard)
+  async rejectRecipe(@Req() req, @Param('id') id: string, @Body('note') note: string) {
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_reject', { reason: note, ip: req.ip, userAgent: req.headers['user-agent'] });
     return this.adminService.updateRecipeStatus(id, 'rejected', note);
   }
 

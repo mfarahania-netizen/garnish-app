@@ -292,7 +292,11 @@ export class AdminService {
     const totalEvents = await this.prisma.userEvent.count({ where: { ...USER_BEHAVIOR_EVENT_WHERE } });
     const today = new Date(); today.setHours(0,0,0,0);
     const todayEvents = await this.prisma.userEvent.count({ where: { timestamp: { gte: today }, ...USER_BEHAVIOR_EVENT_WHERE } });
-    return { totalEvents, todayEvents };
+    // P1-13: real active-user count = DISTINCT userId with a (real-user) event in the last 30 min — server-side,
+    // not the FE guessing from sessionId/name over a 40-event feed.
+    const since30 = new Date(Date.now() - 30 * 60 * 1000);
+    const activeRows = await this.prisma.userEvent.findMany({ where: { timestamp: { gte: since30 }, ...USER_BEHAVIOR_EVENT_WHERE }, select: { userId: true }, distinct: ['userId'], take: 5000 }).catch(() => []);
+    return { totalEvents, todayEvents, activeUsers30m: activeRows.length };
   }
 
 

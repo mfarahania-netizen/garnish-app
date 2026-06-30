@@ -29,7 +29,6 @@ export default function RealtimeTab() {
   const list = events.data?.events || [];
   const since = Date.now() - 30 * 60 * 1000;
   const recent = list.filter((e) => new Date(e.timestamp).getTime() >= since);
-  const activeIds = new Set(recent.map((e) => e.sessionId || e.user?.name).filter(Boolean));
 
   return (
     <>
@@ -37,10 +36,10 @@ export default function RealtimeTab() {
         <Kpi icon={IconCalendarTime} label="رویدادِ امروز" status={typeof stats.data?.todayEvents === 'number' ? 'real' : 'awaiting_pilot'} value={fmtInt(stats.data?.todayEvents)} sub="از نیمه‌شب" awaitNote="—" />
         <Kpi icon={IconActivity} label="کل رویداد" status={typeof stats.data?.totalEvents === 'number' ? 'real' : 'awaiting_pilot'} value={fmtInt(stats.data?.totalEvents)} sub="کلِ تاریخچه" awaitNote="—" />
         <Kpi icon={IconBolt} label="رویداد در ۳۰ دقیقهٔ اخیر" status={recent.length ? 'real' : 'awaiting_pilot'} value={fmtInt(recent.length)} sub="از فیدِ زنده" awaitNote="فعالیتی نیست" />
-        <Kpi icon={IconUsers} label="کاربرانِ فعالِ ۳۰ دقیقهٔ اخیر" status={activeIds.size ? 'real' : 'awaiting_pilot'} value={fmtInt(activeIds.size)} sub="کاربرانِ متمایز (از فیدِ زنده)" awaitNote="—" />
+        <Kpi icon={IconUsers} label="کاربرانِ فعالِ ۳۰ دقیقهٔ اخیر" status={typeof stats.data?.activeUsers30m === 'number' ? 'real' : 'awaiting_pilot'} value={fmtInt(stats.data?.activeUsers30m)} sub="کاربرانِ متمایز (محاسبهٔ سرور، نه حدس)" awaitNote="—" />
       </Box>
 
-      <Section title="فیدِ زندهٔ رویدادها" sub="هر ۵ ثانیه به‌روز می‌شود" right={<Box style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-state-success-fg)' }}><Box style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-success-fg)' }} />زنده</Box>} />
+      <Section title="آخرین رویدادها" sub="هر ۵ ثانیه به‌روز می‌شود (polling — نه streamِ قطعی)" right={<Box style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)' }}><Box style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-success-fg)' }} />تقریباً زنده</Box>} />
       <Panel status={list.length ? 'real' : 'awaiting_pilot'}>
         {list.length ? (
           <Box style={{ display: 'flex', flexDirection: 'column' }}>
