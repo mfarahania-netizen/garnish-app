@@ -72,6 +72,7 @@ export class UsersService {
         email: true,
         avatar: true,
         isAdmin: true,
+        adminRole: true,
         isGuest: true,
         isBanned: true, // jwt strategy rejects a banned principal
         sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)

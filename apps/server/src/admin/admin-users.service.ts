@@ -17,6 +17,25 @@ import { maskPhone, maskEmail } from './pii.util';
 import * as bcrypt from 'bcryptjs';
 
 type ListArgs = { page?: number; limit?: number; search?: string; role?: string; status?: string };
+const ADMIN_ROLES = new Set(['user', 'admin', 'support', 'privacy', 'ops', 'content', 'finance', 'readonly']);
+
+function safeDevice(device: string | null | undefined): string | null {
+  const d = String(device ?? '').toLowerCase();
+  if (!d) return null;
+  if (d.includes('iphone') || d.includes('android') || d.includes('mobile')) return 'mobile';
+  if (d.includes('ipad') || d.includes('tablet')) return 'tablet';
+  if (d.includes('windows') || d.includes('mac') || d.includes('linux')) return 'desktop';
+  return 'unknown';
+}
+
+function safeSession(s: any) {
+  return {
+    id: s.id,
+    startTime: s.startTime,
+    endTime: s.endTime,
+    device: safeDevice(s.device),
+  };
+}
 
 @Injectable()
 export class AdminUsersService {
@@ -29,19 +48,22 @@ export class AdminUsersService {
   /** Rich, searchable, filterable roster with per-user counts + last-activity (the "monitor users" list). */
   async list({ page = 1, limit = 20, search, role, status }: ListArgs) {
     const where: Prisma.UserWhereInput = {};
+    const and: Prisma.UserWhereInput[] = [];
     const s = (search ?? '').trim();
     if (s) {
-      where.OR = [
+      and.push({ OR: [
         { name: { contains: s, mode: 'insensitive' } },
         { phone: { contains: s } },
         { email: { contains: s, mode: 'insensitive' } },
-      ];
+      ] });
     }
-    if (role === 'admin') where.isAdmin = true;
+    if (role === 'admin') and.push({ OR: [{ isAdmin: true }, { adminRole: { not: 'user' } }] });
+    else if (role && ADMIN_ROLES.has(role) && role !== 'user') and.push({ adminRole: role });
     else if (role === 'guest') where.isGuest = true;
-    else if (role === 'registered') { where.isGuest = false; where.isAdmin = false; }
+    else if (role === 'registered') { where.isGuest = false; where.isAdmin = false; where.adminRole = 'user'; }
     if (status === 'banned') where.isBanned = true;
     else if (status === 'active') where.isBanned = false;
+    if (and.length) where.AND = and;
 
     const take = Math.min(Math.max(1, limit), 100);
     const skip = (Math.max(1, page) - 1) * take;
@@ -50,7 +72,7 @@ export class AdminUsersService {
         where, skip, take, orderBy: { createdAt: 'desc' },
         select: {
           id: true, name: true, phone: true, email: true, avatar: true,
-          isAdmin: true, isGuest: true, isBanned: true, locale: true, country: true, createdAt: true,
+          isAdmin: true, adminRole: true, isGuest: true, isBanned: true, locale: true, country: true, createdAt: true,
           _count: { select: { events: true, tickets: true, favorites: true, mealPlans: true } },
         },
       }),
@@ -73,7 +95,7 @@ export class AdminUsersService {
     const [total, guests, admins, banned] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.user.count({ where: { isGuest: true } }),
-      this.prisma.user.count({ where: { isAdmin: true } }),
+      this.prisma.user.count({ where: { OR: [{ isAdmin: true }, { adminRole: { not: 'user' } }] } }),
       this.prisma.user.count({ where: { isBanned: true } }),
     ]);
     return { total, registered: total - guests, guests, admins, banned };
@@ -85,7 +107,7 @@ export class AdminUsersService {
       where: { id },
       select: {
         id: true, name: true, phone: true, email: true, avatar: true,
-        isAdmin: true, isGuest: true, isBanned: true, bannedAt: true, banReason: true,
+        isAdmin: true, adminRole: true, isGuest: true, isBanned: true, bannedAt: true, banReason: true,
         locale: true, country: true, createdAt: true, updatedAt: true,
         preferences: { select: { diet: true, skillLevel: true, budget: true, updatedAt: true } },
         allergies: { select: { allergy: { select: { name: true } } } },
@@ -97,7 +119,12 @@ export class AdminUsersService {
     if (!user) throw new NotFoundException('user_not_found');
 
     const [sessions, recentEvents] = await Promise.all([
-      this.prisma.userSession.findMany({ where: { userId: id }, orderBy: { startTime: 'desc' }, take: 10 }),
+      this.prisma.userSession.findMany({
+        where: { userId: id },
+        orderBy: { startTime: 'desc' },
+        take: 10,
+        select: { id: true, startTime: true, endTime: true, device: true },
+      }),
       this.prisma.userEvent.findMany({
         where: { userId: id }, orderBy: { timestamp: 'desc' }, take: 20,
         select: { id: true, type: true, timestamp: true, page: true, recipeId: true },
@@ -115,7 +142,7 @@ export class AdminUsersService {
       allergies: [] as string[], // redacted — count is in allergiesCount
       healthGoals: [] as string[], // redacted — count is in healthGoalsCount
       cuisines: user.cuisines.map((c) => c.cuisine.name),
-      sessions,
+      sessions: sessions.map(safeSession),
       activeSessions: sessions.filter((x) => !x.endTime).length,
       recentEvents,
     };
@@ -129,7 +156,7 @@ export class AdminUsersService {
   }
 
   /** Create a user from admin (staff/manual). Friendly uniqueness errors instead of a raw P2002. */
-  async create(body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean }) {
+  async create(body: { phone?: string; email?: string; name?: string; password?: string; isAdmin?: boolean; adminRole?: string }) {
     const phone = body.phone?.trim() || null;
     const email = body.email?.trim() || null;
     if (!phone && !email) throw new BadRequestException('phone_or_email_required');
@@ -137,18 +164,35 @@ export class AdminUsersService {
     if (phone && (await this.prisma.user.findUnique({ where: { phone } }))) throw new BadRequestException('phone_taken');
     if (email && (await this.prisma.user.findUnique({ where: { email } }))) throw new BadRequestException('email_taken');
     const password = await bcrypt.hash(body.password, 10);
+    const requestedRole = String(body.adminRole || '').trim().toLowerCase();
+    if (requestedRole && !ADMIN_ROLES.has(requestedRole)) throw new BadRequestException('invalid_admin_role');
+    const adminRole = requestedRole && requestedRole !== 'user'
+      ? requestedRole
+      : body.isAdmin
+        ? 'admin'
+        : 'user';
     return this.prisma.user.create({
-      data: { phone, email, name: body.name?.trim() || null, password, isAdmin: !!body.isAdmin, isGuest: false },
-      select: { id: true, name: true, phone: true, email: true, isAdmin: true, createdAt: true },
+      data: { phone, email, name: body.name?.trim() || null, password, isAdmin: adminRole !== 'user', adminRole, isGuest: false },
+      select: { id: true, name: true, phone: true, email: true, isAdmin: true, adminRole: true, createdAt: true },
     });
   }
 
   /** Update profile + role. */
-  async update(id: string, body: { name?: string; email?: string; isAdmin?: boolean }) {
-    await this.ensureExists(id);
+  async update(id: string, body: { name?: string; email?: string; isAdmin?: boolean; adminRole?: string }) {
+    const current = await this.prisma.user.findUnique({ where: { id }, select: { id: true, email: true } });
+    if (!current) throw new NotFoundException('user_not_found');
     const data: Prisma.UserUncheckedUpdateInput = {};
     if (body.name !== undefined) data.name = body.name?.trim() || null;
-    if (body.isAdmin !== undefined) data.isAdmin = !!body.isAdmin;
+    if (body.isAdmin !== undefined) {
+      data.isAdmin = !!body.isAdmin;
+      data.adminRole = body.isAdmin ? 'admin' : 'user';
+    }
+    if (body.adminRole !== undefined) {
+      const role = String(body.adminRole || '').trim().toLowerCase();
+      if (!ADMIN_ROLES.has(role)) throw new BadRequestException('invalid_admin_role');
+      data.adminRole = role;
+      data.isAdmin = role !== 'user';
+    }
     // keep the email as a plain value so it can ALSO be used in a WHERE filter below — reading `data.email` back
     // is typed as an UpdateInput operation, not a filter, so narrow it here instead.
     const email = body.email !== undefined ? (body.email?.trim() || null) : undefined;
@@ -157,7 +201,8 @@ export class AdminUsersService {
       const clash = await this.prisma.user.findFirst({ where: { email, NOT: { id } }, select: { id: true } });
       if (clash) throw new BadRequestException('email_taken');
     }
-    return this.prisma.user.update({ where: { id }, data, select: { id: true, name: true, email: true, isAdmin: true } });
+    if (email !== undefined && email !== current.email) data.sessionEpoch = { increment: 1 };
+    return this.prisma.user.update({ where: { id }, data, select: { id: true, name: true, email: true, isAdmin: true, adminRole: true } });
   }
 
   /** Reset a user's password (admin recovery). Bumps the epoch + clears sessions → forces re-login everywhere. */
@@ -197,7 +242,13 @@ export class AdminUsersService {
 
   async sessions(id: string) {
     await this.ensureExists(id);
-    return this.prisma.userSession.findMany({ where: { userId: id }, orderBy: { startTime: 'desc' }, take: 50 });
+    const sessions = await this.prisma.userSession.findMany({
+      where: { userId: id },
+      orderBy: { startTime: 'desc' },
+      take: 50,
+      select: { id: true, startTime: true, endTime: true, device: true },
+    });
+    return sessions.map(safeSession);
   }
 
   /** GDPR export of a user's full data (admin-triggered, for a support/compliance request). */

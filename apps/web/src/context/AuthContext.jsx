@@ -74,9 +74,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (phone, password, name) => {
-    await apiClient.post('/auth/register', { phone, password, name });
-    await login(phone, password);
-  }, [login]);
+    const { data } = await apiClient.post('/auth/register', { phone, password, name });
+    const extractedToken = data.access_token || data.token;
+    const extractedUser = data.user || data.data;
+    if (!extractedToken) throw new Error('auth token missing');
+    localStorage.setItem('token', extractedToken);
+    setToken(extractedToken);
+    setUser(extractedUser || null);
+    if (posthog?.__loaded && extractedUser?.id) posthog.identify(extractedUser.id);
+  }, []);
 
   const logout = useCallback(() => {
     // 🆕 بازنشانی session در PostHog

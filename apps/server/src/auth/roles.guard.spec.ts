@@ -24,6 +24,7 @@ describe('RolesGuard (E3 deny-by-default)', () => {
 
   it('allows an admin when @Roles("admin") is required', () => {
     expect(makeGuard(['admin']).canActivate(makeContext({ isAdmin: true }))).toBe(true);
+    expect(makeGuard(['admin']).canActivate(makeContext({ isAdmin: false, adminRole: 'ops' }))).toBe(true);
   });
 
   it('denies a non-admin when @Roles("admin") is required', () => {

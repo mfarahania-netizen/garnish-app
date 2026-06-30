@@ -31,9 +31,11 @@ describe('AdminUsersService', () => {
     });
     const res = await mk(prisma).list({ search: 'ali', role: 'admin', status: 'banned' });
     const where = prisma.user.findMany.mock.calls[0][0].where;
-    expect(where.isAdmin).toBe(true);
+    expect(where.AND).toEqual(expect.arrayContaining([
+      expect.objectContaining({ OR: expect.arrayContaining([expect.objectContaining({ name: expect.any(Object) })]) }),
+      expect.objectContaining({ OR: expect.arrayContaining([expect.objectContaining({ isAdmin: true })]) }),
+    ]));
     expect(where.isBanned).toBe(true);
-    expect(where.OR).toHaveLength(3); // name + phone + email
     expect(res.data.find((u: any) => u.id === 'a')!.lastActiveAt).toBeInstanceOf(Date);
     expect(res.data.find((u: any) => u.id === 'b')!.lastActiveAt).toBeNull(); // no events → null, not crash
   });
@@ -44,11 +46,36 @@ describe('AdminUsersService', () => {
     const where = prisma.user.findMany.mock.calls[0][0].where;
     expect(where.isGuest).toBe(false);
     expect(where.isAdmin).toBe(false);
+    expect(where.adminRole).toBe('user');
   });
 
   it('detail throws NotFound for a missing user', async () => {
     const prisma = mkPrisma({ user: { findUnique: jest.fn(async () => null) } });
     await expect(mk(prisma).detail('nope')).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('detail returns sanitized sessions without raw IP or raw user-agent device strings', async () => {
+    const prisma = mkPrisma({
+      user: {
+        findUnique: jest.fn(async () => ({
+          id: 'u1', name: 'Ali', phone: '09123456789', email: 'ali@example.com', avatar: null,
+          isAdmin: false, isGuest: false, isBanned: false, bannedAt: null, banReason: null,
+          locale: 'fa', country: 'IR', createdAt: new Date(), updatedAt: new Date(),
+          preferences: null,
+          allergies: [],
+          cuisines: [],
+          healthGoals: [],
+          _count: { events: 0, tickets: 0, favorites: 0, mealPlans: 0, recipes: 0, sessions: 1 },
+        })),
+      },
+      userSession: {
+        findMany: jest.fn(async () => [{ id: 's1', startTime: new Date(), endTime: null, device: 'Mozilla/5.0 (iPhone)', ip: '1.2.3.4' }]),
+      },
+    });
+    const res: any = await mk(prisma).detail('u1');
+    expect(res.sessions[0]).toMatchObject({ id: 's1', device: 'mobile' });
+    expect(res.sessions[0].ip).toBeUndefined();
+    expect(String(res.sessions[0].device)).not.toContain('Mozilla');
   });
 
   it('create rejects: no identifier, short password, and a taken phone', async () => {
@@ -65,6 +92,16 @@ describe('AdminUsersService', () => {
     expect(data.password).not.toBe('secret123');
     expect(String(data.password).startsWith('$2')).toBe(true); // bcrypt
     expect(data.isGuest).toBe(false);
+  });
+
+  it('create and update persist exact adminRole values', async () => {
+    const prisma = mkPrisma({ user: { findUnique: jest.fn(async () => null), create: jest.fn(async ({ data }: any) => ({ id: 'n', ...data })) } });
+    await mk(prisma).create({ phone: '0912000', password: 'secret123', adminRole: 'ops' });
+    expect(prisma.user.create.mock.calls[0][0].data).toMatchObject({ isAdmin: true, adminRole: 'ops' });
+
+    const p2 = mkPrisma({ user: { findUnique: jest.fn(async () => ({ id: 'u1', email: null })), update: jest.fn(async ({ data }: any) => ({ id: 'u1', ...data })) } });
+    await mk(p2).update('u1', { adminRole: 'privacy' });
+    expect(p2.user.update.mock.calls[0][0].data).toMatchObject({ isAdmin: true, adminRole: 'privacy' });
   });
 
   it('setBanned(true) bumps the epoch + clears sessions; unban clears ban fields without an epoch bump', async () => {

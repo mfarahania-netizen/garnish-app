@@ -11,6 +11,19 @@ import { USER_BEHAVIOR_EVENT_WHERE } from '../analytics/user-behavior-filter';
 import { maskPhone, maskEmail } from './pii.util';
 export { maskPhone, maskEmail };
 
+function targetTypeFromAction(action: string): string {
+  if (action.includes('ticket')) return 'ticket';
+  if (action.includes('recipe')) return 'recipe';
+  if (action.includes('workflow')) return 'workflow';
+  return 'user';
+}
+
+function riskLevelFromAction(action: string): string {
+  if (/(delete|export|pii_reveal|password_reset|admin_user_create|admin_user_update|workflow_run)/.test(action)) return 'high';
+  if (/(ban|force_logout|ticket_update|ticket_reply|ticket_note|recipe_approve|recipe_reject)/.test(action)) return 'medium';
+  return 'low';
+}
+
 @Injectable()
 export class AdminService {
   constructor(
@@ -37,7 +50,7 @@ export class AdminService {
     actorId: string | undefined,
     targetId: string,
     action: string,
-    opts: { reason?: string; ip?: string; userAgent?: string; before?: any; after?: any } = {},
+    opts: { reason?: string; ip?: string; userAgent?: string; before?: any; after?: any; targetType?: string; riskLevel?: string } = {},
   ): Promise<void> {
     // KEY THE ROW BY THE ACTOR (the admin), not the target. The GDPR erasure scrubs ip/userAgent/details of the
     // *target's* UserAuditLog rows (erasure.service.ts: where userId=targetId) — so a delete-audit keyed to the
@@ -46,7 +59,12 @@ export class AdminService {
     await this.prisma.userAuditLog.create({
       data: {
         userId: actorId ?? targetId,
+        actorId: actorId ?? null,
+        targetId,
+        targetType: opts.targetType ?? targetTypeFromAction(action),
         action,
+        reason: opts.reason ?? null,
+        riskLevel: opts.riskLevel ?? riskLevelFromAction(action),
         ip: opts.ip ?? null,
         userAgent: opts.userAgent ?? null,
         details: JSON.stringify({ actorId: actorId ?? null, targetId, reason: opts.reason ?? null, before: opts.before ?? null, after: opts.after ?? null }),
@@ -54,10 +72,83 @@ export class AdminService {
     });
   }
 
+  // P1-7 (re-audit): a DURABLE-but-non-blocking audit for sensitive READS (opening a user dossier now exposes
+  // sessions + health counts + activity). Writes to the same UserAuditLog ledger as the strict ops (so it survives
+  // the target's GDPR erasure, unlike fire-and-forget UserEvent which cascades) but NEVER throws — a read must not
+  // fail on an audit hiccup. Keyed by the actor (the admin); targetId rides in details.
+  recordAuditDurable(actorId: string | undefined, targetId: string, action: string, meta: Record<string, any> = {}): void {
+    this.prisma.userAuditLog
+      .create({
+        data: {
+          userId: actorId ?? targetId,
+          actorId: actorId ?? null,
+          targetId,
+          targetType: typeof meta.targetType === 'string' ? meta.targetType : targetTypeFromAction(action),
+          action,
+          reason: typeof meta.reason === 'string' ? meta.reason : null,
+          riskLevel: typeof meta.riskLevel === 'string' ? meta.riskLevel : riskLevelFromAction(action),
+          ip: typeof meta.ip === 'string' ? meta.ip : null,
+          userAgent: typeof meta.userAgent === 'string' ? meta.userAgent : null,
+          details: JSON.stringify({ actorId: actorId ?? null, targetId, ...meta }),
+        },
+      })
+      .catch(() => {});
+  }
+
   // ── ANALYTICS-L4-16: funnels / trends / cohorts / product-intelligence (real or honest awaiting_pilot) ──
   getFunnels() { return this.analyticsIntelligence.getFunnels(); }
   // BEHAVIOR + IMPROVE — the precise "what users do + what to fix" view (the founder's real ask).
   getBehaviorInsights() { return this.analyticsIntelligence.getBehaviorInsights(); }
+
+  async getAuditLogs(opts: { page?: number; limit?: number; action?: string; actorId?: string; targetId?: string; riskLevel?: string }) {
+    const page = Math.max(Math.floor(Number(opts.page)) || 1, 1);
+    const limit = Math.min(Math.max(Math.floor(Number(opts.limit)) || 50, 1), 100);
+    const where: any = {};
+    if (opts.action) where.action = { contains: String(opts.action).trim(), mode: 'insensitive' };
+    if (opts.actorId) where.actorId = String(opts.actorId).trim();
+    if (opts.targetId) where.targetId = String(opts.targetId).trim();
+    if (opts.riskLevel && opts.riskLevel !== 'all') where.riskLevel = String(opts.riskLevel).trim();
+    const [rows, total] = await Promise.all([
+      this.prisma.userAuditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+        select: {
+          id: true,
+          actorId: true,
+          targetId: true,
+          targetType: true,
+          action: true,
+          reason: true,
+          riskLevel: true,
+          ip: true,
+          userAgent: true,
+          createdAt: true,
+          details: true,
+        },
+      }),
+      this.prisma.userAuditLog.count({ where }),
+    ]);
+    return {
+      data: rows.map((r) => ({
+        id: r.id,
+        actorId: r.actorId,
+        targetId: r.targetId,
+        targetType: r.targetType,
+        action: r.action,
+        reason: r.reason,
+        riskLevel: r.riskLevel,
+        ip: r.ip,
+        userAgent: r.userAgent ? String(r.userAgent).slice(0, 80) : null,
+        createdAt: r.createdAt,
+        hasDetails: !!r.details,
+      })),
+      total,
+      page,
+      limit,
+    };
+  }
   getTrends(bucket?: string, days?: string) { return this.analyticsIntelligence.getTrends({ bucket: bucket === 'week' ? 'week' : 'day', days: parseInt(days ?? '') || 30 }); }
   getCohorts() { return this.analyticsIntelligence.getCohorts(); }
   getProductIntelligence() { return this.analyticsIntelligence.getProductIntelligence(); }

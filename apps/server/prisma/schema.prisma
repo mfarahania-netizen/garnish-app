@@ -39,6 +39,7 @@ model User {
   recommendationAttributions RecommendationAttributionEvent[]
   profile                    UserBehaviorProfile?
   isAdmin                    Boolean                          @default(false)
+  adminRole                  String                           @default("user")
   // Admin moderation — account suspension. Login is gated on isBanned (auth.service); bannedAt/banReason
   // give the audit trail. Additive + default-false → every existing user is unaffected (not banned).
   isBanned                   Boolean                          @default(false)
@@ -519,13 +520,21 @@ model UserAuditLog {
   id        String   @id @default(uuid())
   userId    String? // E39-1B: nullable for audit-long survival (SetNull on erasure)
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  actorId   String?
+  targetId  String?
+  targetType String?
   action    String
+  reason    String?
+  riskLevel String?
   details   String?
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([targetId, createdAt])
+  @@index([action, createdAt])
 }
 
 model DataAccessLog {
@@ -1190,11 +1199,20 @@ model WorkflowAlert {
   threshold      Float?
   status         String   @default("open") // open | acknowledged | snoozed | resolved
   acknowledgedBy String?
+  assignedTo     String?
+  ownerRole      String?
   snoozedUntil   DateTime? // snooze re-surfaces the alert to the open queue once this passes (no cron needed)
+  dueAt          DateTime?
+  escalatedAt    DateTime?
   resolvedAt     DateTime?
+  resolutionReason String?
+  lastChangedBy  String?
   channelsSent   Json? // ['in_app'] now → ['slack','email'] later
   createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([status, severity, createdAt])
+  @@index([status, dueAt])
+  @@index([assignedTo, status])
   @@index([workflowKey, createdAt])
 }

@@ -1,4 +1,4 @@
-import { isOwnerId } from './owner.guard';
+import { isOpsAdminId, isOwnerId, isPrivacyAdminId } from './owner.guard';
 
 /**
  * P1-14 (re-audit): the admin capability set the UI reads (GET /admin/me/permissions) so it can hide/disable the
@@ -12,6 +12,7 @@ import { isOwnerId } from './owner.guard';
 export interface AdminCapabilities {
   isAdmin: boolean;
   isOwner: boolean;
+  adminRole: string;
   canRevealPii: boolean;
   canExportPii: boolean;
   canDeleteUser: boolean;
@@ -21,17 +22,35 @@ export interface AdminCapabilities {
   canRunWorkflows: boolean;
 }
 
-export function resolveAdminCapabilities(userId: string | undefined, isAdmin: boolean): AdminCapabilities {
-  const isOwner = isOwnerId(userId);
+const ROLE_SET = new Set(['owner', 'admin', 'support', 'privacy', 'ops', 'content', 'finance', 'readonly']);
+
+export function normalizeAdminRole(adminRole: string | undefined | null, isAdmin: boolean): string {
+  const role = String(adminRole || '').trim().toLowerCase();
+  if (ROLE_SET.has(role)) return role;
+  return isAdmin ? 'admin' : 'user';
+}
+
+export function isAdminRole(adminRole: string | undefined | null, isAdmin: boolean): boolean {
+  return normalizeAdminRole(adminRole, isAdmin) !== 'user' || !!isAdmin;
+}
+
+export function resolveAdminCapabilities(userId: string | undefined, isAdmin: boolean, adminRole?: string | null): AdminCapabilities {
+  const role = normalizeAdminRole(adminRole, isAdmin);
+  const isOwner = isOwnerId(userId) || role === 'owner';
+  const privacy = isOwner || role === 'privacy' || role === 'support' || isPrivacyAdminId(userId);
+  const ops = isOwner || role === 'ops' || isOpsAdminId(userId);
+  const content = isOwner || role === 'content';
+  const admin = isAdminRole(role, isAdmin);
   return {
-    isAdmin,
+    isAdmin: admin,
     isOwner,
-    canRevealPii: isAdmin, // support path — reason + audit are the accountability (not owner-gated)
-    canExportPii: isOwner, // full PII export → owner only
+    adminRole: role,
+    canRevealPii: admin && privacy,
+    canExportPii: admin && (isOwner || role === 'privacy'),
     canDeleteUser: isOwner,
     canResetPassword: isOwner,
     canManageAdmins: isOwner, // grant / revoke the admin role
-    canApproveRecipe: isOwner,
-    canRunWorkflows: isAdmin,
+    canApproveRecipe: content,
+    canRunWorkflows: admin && ops,
   };
 }

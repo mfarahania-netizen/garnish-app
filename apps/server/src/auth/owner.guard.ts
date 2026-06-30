@@ -9,13 +9,26 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger }
  *
  * FAIL-CLOSED: if the allowlist is empty/unset, NO id matches → these ops are denied until an owner is configured.
  */
-export function isOwnerId(userId: string | undefined | null): boolean {
-  if (!userId) return false;
-  const ids = (process.env.ADMIN_OWNER_IDS || '')
+function envIds(name: string): string[] {
+  return (process.env[name] || '')
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  return ids.includes(userId);
+}
+
+export function isOwnerId(userId: string | undefined | null): boolean {
+  if (!userId) return false;
+  return envIds('ADMIN_OWNER_IDS').includes(userId);
+}
+
+export function isPrivacyAdminId(userId: string | undefined | null): boolean {
+  if (!userId) return false;
+  return isOwnerId(userId) || envIds('ADMIN_PRIVACY_IDS').includes(userId);
+}
+
+export function isOpsAdminId(userId: string | undefined | null): boolean {
+  if (!userId) return false;
+  return isOwnerId(userId) || envIds('ADMIN_OPS_IDS').includes(userId);
 }
 
 @Injectable()

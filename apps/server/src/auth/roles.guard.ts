@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { isAdminRole } from './admin-capabilities';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,7 +20,7 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
     // چک می‌کند که آیا کاربر ادمین است یا نه
     return requiredRoles.some(role => {
-      if (role === 'admin') return user?.isAdmin === true;
+      if (role === 'admin') return isAdminRole(user?.adminRole, user?.isAdmin);
       return false;
     });
   }

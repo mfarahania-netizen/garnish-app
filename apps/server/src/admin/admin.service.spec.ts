@@ -47,6 +47,48 @@ describe('admin PII minimization + audit (advisor audit)', () => {
     });
   });
 
+  describe('getAuditLogs', () => {
+    it('paginates, filters, and never returns raw details', async () => {
+      const createdAt = new Date('2026-06-30T10:00:00.000Z');
+      const prisma: any = {
+        userAuditLog: {
+          findMany: jest.fn(async () => [{
+            id: 'log1',
+            actorId: 'admin1',
+            targetId: 'user1',
+            targetType: 'user',
+            action: 'admin_user_pii_reveal',
+            reason: 'support ticket',
+            riskLevel: 'high',
+            ip: '1.2.3.4',
+            userAgent: 'x'.repeat(120),
+            createdAt,
+            details: JSON.stringify({ secret: 'must-not-leak' }),
+          }]),
+          count: jest.fn(async () => 51),
+        },
+      };
+      const svc = new AdminService(prisma, {} as any, {} as any);
+
+      const res = await svc.getAuditLogs({ page: 2, limit: 25, action: 'pii', actorId: 'admin1', targetId: 'user1', riskLevel: 'high' });
+
+      expect(prisma.userAuditLog.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        skip: 25,
+        take: 25,
+        where: {
+          action: { contains: 'pii', mode: 'insensitive' },
+          actorId: 'admin1',
+          targetId: 'user1',
+          riskLevel: 'high',
+        },
+      }));
+      expect(res).toMatchObject({ total: 51, page: 2, limit: 25 });
+      expect(res.data[0]).toMatchObject({ id: 'log1', hasDetails: true, userAgent: 'x'.repeat(80) });
+      expect(res.data[0]).not.toHaveProperty('details');
+      expect(JSON.stringify(res)).not.toContain('must-not-leak');
+    });
+  });
+
   // guardian-caught leak: getRecentEvents must NOT return the raw payload/enrichment strings
   describe('getRecentEvents PII', () => {
     it('omits raw payload/enrichment and masks user.phone (keeps derived recipeTitle)', async () => {

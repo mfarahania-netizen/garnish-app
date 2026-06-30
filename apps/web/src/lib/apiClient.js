@@ -25,11 +25,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      // redirect to the REAL auth/login entry (/onboarding); '/auth' is not a route (TRUTH-AND-SAFETY FIX 3).
-      if (!window.location.pathname.startsWith('/admin')) {
-        window.location.href = '/onboarding';
-      }
+      const requestUrl = String(error.config?.url || '');
+      const path = window.location?.pathname || '';
+      const isAuthAttempt = /\/auth\/(login|register|guest)$/.test(requestUrl);
+      const isPublicAuthRoute = path === '/login' || path === '/onboarding' || path === '/terms' || path === '/privacy';
+      if (!isAuthAttempt) localStorage.removeItem('token');
+      if (!isAuthAttempt && !isPublicAuthRoute && !path.startsWith('/admin')) window.location.href = '/login';
     }
     return Promise.reject(error);
   }

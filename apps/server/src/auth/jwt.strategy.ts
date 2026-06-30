@@ -29,7 +29,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       userId: user.id,
       phone: user.phone,
-      isAdmin: user.isAdmin,
+      isAdmin: user.isAdmin || ((user as any).adminRole && (user as any).adminRole !== 'user'),
+      adminRole: (user as any).adminRole ?? (user.isAdmin ? 'admin' : 'user'),
       isGuest: (user as any).isGuest ?? false,
     };
   }

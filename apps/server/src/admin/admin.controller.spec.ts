@@ -7,15 +7,20 @@ describe('AdminController — sensitive-op guards (re-audit P0-2/P0-3)', () => {
   let adminService: any;
   let adminUsers: any;
   let ctrl: AdminController;
-  const req = (userId: string) => ({ user: { userId }, ip: '1.2.3.4', headers: { 'user-agent': 'jest' } });
+  const req = (userId: string, isAdmin = true) => ({ user: { userId, isAdmin }, ip: '1.2.3.4', headers: { 'user-agent': 'jest' } });
 
   beforeEach(() => {
     process.env.ADMIN_OWNER_IDS = OWNER;
-    adminService = { recordAuditStrict: jest.fn().mockResolvedValue(undefined), recordAudit: jest.fn().mockResolvedValue(undefined) };
+    process.env.ADMIN_PRIVACY_IDS = '';
+    delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_MAX;
+    delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_WINDOW_MS;
+    adminService = { recordAuditStrict: jest.fn().mockResolvedValue(undefined), recordAudit: jest.fn().mockResolvedValue(undefined), recordAuditDurable: jest.fn() };
     adminUsers = {
       create: jest.fn().mockResolvedValue({ id: 'u-new' }),
       export: jest.fn().mockResolvedValue({ ok: true }),
       reveal: jest.fn().mockResolvedValue({ phone: '0912...', email: 'a@b.c' }),
+      update: jest.fn().mockResolvedValue({ id: 'u1' }),
+      forceLogout: jest.fn().mockResolvedValue({ ok: true }),
     };
     ctrl = new AdminController(adminService, adminUsers, {} as any);
   });
@@ -45,5 +50,39 @@ describe('AdminController — sensitive-op guards (re-audit P0-2/P0-3)', () => {
     await ctrl.revealUserPii(req(OWNER), 'u1', { reason: 'support call #42' } as any);
     expect(adminService.recordAuditStrict).toHaveBeenCalledWith(OWNER, 'u1', 'admin_user_pii_reveal', expect.objectContaining({ reason: 'support call #42' }));
     expect(adminUsers.reveal).toHaveBeenCalledWith('u1');
+  });
+
+  it('P0: a plain admin cannot reveal PII without the privacy allowlist', async () => {
+    await expect(ctrl.revealUserPii(req('plain-admin'), 'u1', { reason: 'support call #42' } as any)).rejects.toBeInstanceOf(ForbiddenException);
+    expect(adminUsers.reveal).not.toHaveBeenCalled();
+  });
+
+  it('P0: changing email is owner + reason gated', async () => {
+    await expect(ctrl.updateUser(req('plain-admin'), 'u1', { email: 'new@example.com', reason: 'support' } as any)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(ctrl.updateUser(req(OWNER), 'u1', { email: 'new@example.com' } as any)).rejects.toBeInstanceOf(BadRequestException);
+    await ctrl.updateUser(req(OWNER), 'u1', { email: 'new@example.com', reason: 'verified support request' } as any);
+    expect(adminUsers.update).toHaveBeenCalledWith('u1', expect.objectContaining({ email: 'new@example.com' }));
+  });
+
+  it('RBAC: changing an exact adminRole is owner + reason gated', async () => {
+    await expect(ctrl.updateUser(req('plain-admin'), 'u1', { adminRole: 'ops', reason: 'ops lead' } as any)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(ctrl.updateUser(req(OWNER), 'u1', { adminRole: 'ops' } as any)).rejects.toBeInstanceOf(BadRequestException);
+    await ctrl.updateUser(req(OWNER), 'u1', { adminRole: 'ops', reason: 'ops lead' } as any);
+    expect(adminUsers.update).toHaveBeenCalledWith('u1', expect.objectContaining({ adminRole: 'ops' }));
+  });
+
+  it('P1: force logout requires a reason', async () => {
+    await expect(ctrl.forceLogoutUser(req(OWNER), 'u1', {} as any)).rejects.toBeInstanceOf(BadRequestException);
+    await ctrl.forceLogoutUser(req(OWNER), 'u1', { reason: 'suspected compromise' } as any);
+    expect(adminUsers.forceLogout).toHaveBeenCalledWith('u1');
+  });
+
+  it('P1: sensitive admin ops are rate-limited before the second mutation', async () => {
+    process.env.ADMIN_SENSITIVE_RATE_LIMIT_MAX = '1';
+    process.env.ADMIN_SENSITIVE_RATE_LIMIT_WINDOW_MS = '60000';
+    const actorReq = req('rate-limited-admin');
+    await ctrl.forceLogoutUser(actorReq, 'u1', { reason: 'suspected compromise' } as any);
+    await expect(ctrl.forceLogoutUser(actorReq, 'u2', { reason: 'suspected compromise' } as any)).rejects.toMatchObject({ status: 429 });
+    expect(adminUsers.forceLogout).toHaveBeenCalledTimes(1);
   });
 });

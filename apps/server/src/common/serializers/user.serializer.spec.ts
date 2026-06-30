@@ -8,6 +8,7 @@ describe('user.serializer (E2)', () => {
     email: 'test@example.com',
     avatar: 'a.png',
     isAdmin: false,
+    adminRole: 'user',
     createdAt: new Date('2026-01-01'),
     // sensitive — must never survive serialization:
     password: '$2a$10$hashedhashedhashed',
@@ -30,6 +31,7 @@ describe('user.serializer (E2)', () => {
         email: 'test@example.com',
         avatar: 'a.png',
         isAdmin: false,
+        adminRole: 'user',
         createdAt: rawUser.createdAt,
       });
     });
@@ -40,7 +42,7 @@ describe('user.serializer (E2)', () => {
     });
 
     it('omits fields that are absent (e.g. safe-selected findById without createdAt)', () => {
-      const partial = { id: 'u2', phone: '0912', name: null, email: null, avatar: null, isAdmin: true };
+      const partial = { id: 'u2', phone: '0912', name: null, email: null, avatar: null, isAdmin: true, adminRole: 'admin' };
       const safe = sanitizeUser(partial) as any;
       expect(safe).toEqual(partial);
       expect('createdAt' in safe).toBe(false);

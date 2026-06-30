@@ -1,4 +1,6 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, MaxLength, ValidateIf } from 'class-validator';
+
+const ADMIN_ROLES = ['user', 'readonly', 'support', 'privacy', 'ops', 'content', 'finance', 'admin', 'owner'];
 
 /**
  * Type/shape DTOs for the admin user-mutation endpoints (advisor audit P1-1). The global ValidationPipe is
@@ -8,31 +10,33 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
  * preserved. Every field the FE actually sends MUST be declared here, or forbidNonWhitelisted would 400 it.
  */
 export class CreateAdminUserDto {
-  @IsOptional() @IsString() phone?: string;
-  @IsOptional() @IsString() email?: string;
-  @IsOptional() @IsString() name?: string;
-  @IsOptional() @IsString() password?: string;
+  @IsOptional() @IsString() @MaxLength(32) phone?: string;
+  @ValidateIf((_, v) => v !== undefined && v !== '') @IsEmail() @MaxLength(254) email?: string;
+  @IsOptional() @IsString() @MaxLength(120) name?: string;
+  @IsOptional() @IsString() @MaxLength(128) password?: string;
   @IsOptional() @IsBoolean() isAdmin?: boolean;
-  @IsOptional() @IsString() reason?: string;
+  @IsOptional() @IsString() @IsIn(ADMIN_ROLES) adminRole?: string;
+  @IsOptional() @IsString() @MaxLength(500) reason?: string;
 }
 
 export class UpdateAdminUserDto {
-  @IsOptional() @IsString() name?: string;
-  @IsOptional() @IsString() email?: string;
+  @IsOptional() @IsString() @MaxLength(120) name?: string;
+  @ValidateIf((_, v) => v !== undefined && v !== '') @IsEmail() @MaxLength(254) email?: string;
   @IsOptional() @IsBoolean() isAdmin?: boolean;
-  @IsOptional() @IsString() reason?: string;
+  @IsOptional() @IsString() @IsIn(ADMIN_ROLES) adminRole?: string;
+  @IsOptional() @IsString() @MaxLength(500) reason?: string;
 }
 
 export class ResetUserPasswordDto {
-  @IsOptional() @IsString() password?: string;
-  @IsOptional() @IsString() reason?: string;
+  @IsOptional() @IsString() @MaxLength(128) password?: string;
+  @IsOptional() @IsString() @MaxLength(500) reason?: string;
 }
 
 export class BanUserDto {
   @IsOptional() @IsBoolean() banned?: boolean;
-  @IsOptional() @IsString() reason?: string;
+  @IsOptional() @IsString() @MaxLength(500) reason?: string;
 }
 
 export class ReasonDto {
-  @IsOptional() @IsString() reason?: string;
+  @IsOptional() @IsString() @MaxLength(500) reason?: string;
 }
