@@ -26,6 +26,21 @@ export class ObservabilityController {
     return this.obs.profileTrace(userId);
   }
 
+  @Get('user/:userId/consent')
+  consent(@Param('userId') userId: string) {
+    return this.obs.consent(userId);
+  }
+
+  @Get('user/:userId/ai-calls')
+  aiCalls(@Param('userId') userId: string, @Query('limit') limit?: string) {
+    return this.obs.aiCalls(userId, limit ? parseInt(limit, 10) : undefined);
+  }
+
+  @Get('user/:userId/tickets')
+  userTickets(@Param('userId') userId: string, @Query('limit') limit?: string) {
+    return this.obs.tickets(userId, limit ? parseInt(limit, 10) : undefined);
+  }
+
   @Get('counters')
   counters(@Query('days') days?: string, @Query('limit') limit?: string) {
     return this.obs.counters({ days: days ? parseInt(days, 10) : undefined, limit: limit ? parseInt(limit, 10) : undefined });

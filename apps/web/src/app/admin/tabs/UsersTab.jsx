@@ -251,6 +251,9 @@ export default function UsersTab() {
                   </Box>
                 )) : <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)' }}>فعالیتی ثبت نشده.</Text>}
               </Box>
+
+              {/* P1-6: per-user observability cabin — Timeline / Signals / Profile Trace / Consent / AI calls / Tickets */}
+              <ObservabilityCabin userId={u.id} />
             </Box>
 
             {/* actions — grouped by risk tier (advisor P1-9): session/security ops, then owner-only irreversible ops */}
@@ -291,6 +294,81 @@ function DossierRow({ label, value, tone }) {
     <Box style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
       <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', flexShrink: 0 }}>{label}</Text>
       <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: tone === 'danger' ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-text-primary)', textAlign: 'end' }}>{value}</Text>
+    </Box>
+  );
+}
+
+// ── P1-6: observability cabin (consumes the read-only /admin/observability/user/:id/* endpoints) ──
+const OBS_TABS = [
+  { id: 'events', label: 'تایم‌لاین' },
+  { id: 'observations', label: 'سیگنال‌ها' },
+  { id: 'profile-trace', label: 'پروفایل' },
+  { id: 'consent', label: 'رضایت' },
+  { id: 'ai-calls', label: 'AI' },
+  { id: 'tickets', label: 'تیکت' },
+];
+const obsMuted = { fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)', paddingBlock: 8 };
+const obsChip = (on) => ({ minBlockSize: 26, paddingInline: 9, borderRadius: '7px', fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', fontWeight: on ? 600 : 400, background: on ? 'var(--g-color-brand-600)' : 'var(--g-color-bg-canvas)', color: on ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', border: `1px solid ${on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}` });
+
+function ObsRow({ a, b, c }) {
+  return (
+    <Box style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBlock: 4, borderBlockEnd: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px' }}>
+      <Text component="span" style={{ color: 'var(--g-color-text-primary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a}</Text>
+      <Text component="span" style={{ color: 'var(--g-color-text-secondary)', flexShrink: 0 }}>{b}</Text>
+      {c ? <Text component="span" style={{ color: 'var(--g-color-text-muted)', fontSize: '10px', flexShrink: 0, maxInlineSize: 96, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c}</Text> : null}
+    </Box>
+  );
+}
+
+function ObsContent({ tab, d }) {
+  if (!d) return <Text component="div" style={obsMuted}>—</Text>;
+  if (tab === 'events') {
+    const ev = d.events || [];
+    return ev.length ? <Box>{ev.slice(0, 30).map((e) => <ObsRow key={e.id} a={e.type + (e.page ? ' · ' + e.page : '')} b={ago(e.timestamp)} c={e.consentPurpose} />)}</Box> : <Text component="div" style={obsMuted}>رویدادی ثبت نشده.</Text>;
+  }
+  if (tab === 'observations') {
+    const sum = d.summary || [];
+    return sum.length ? <Box>{sum.slice(0, 20).map((s) => <ObsRow key={s.signalName} a={s.signalName} b={`×${toFaDigits(s.count)}`} c={(s.values || []).slice(0, 2).join('، ')} />)}</Box> : <Text component="div" style={obsMuted}>سیگنالی استخراج نشده.</Text>;
+  }
+  if (tab === 'profile-trace') {
+    if (d.error) return <Text component="div" style={obsMuted}>پروفایل در دسترس نیست.</Text>;
+    const rec = d.reconciled || {};
+    const keys = Object.keys(rec);
+    return (
+      <Box>
+        <ObsRow a="بلوغ" b={String(d.maturity?.stage ?? d.maturity ?? '—')} />
+        {d.observed ? <ObsRow a="مشاهده‌شده" b={String(d.observed.status ?? '—')} c={d.observed.overallConfidence != null ? 'اطمینان ' + toFaDigits(d.observed.overallConfidence) : ''} /> : null}
+        {keys.length ? keys.map((k) => { const v = rec[k] || {}; return <ObsRow key={k} a={k} b={k === 'allergies' ? `${toFaDigits(v.count ?? 0)} مورد (مخفی)` : String(v.value ?? v.status ?? '—')} c={v.confidence != null ? toFaDigits(v.confidence) : ''} />; }) : <Text component="div" style={obsMuted}>بُعدی reconcile نشده.</Text>}
+      </Box>
+    );
+  }
+  if (tab === 'consent') {
+    const cs = d.consents || [];
+    return cs.length ? <Box>{cs.map((c, i) => <ObsRow key={i} a={c.purpose} b={c.status} c={c.withdrawnAt ? 'لغو ' + day(c.withdrawnAt) : c.grantedAt ? day(c.grantedAt) : c.lawfulBasis} />)}</Box> : <Text component="div" style={obsMuted}>رکوردِ رضایتی نیست.</Text>;
+  }
+  if (tab === 'ai-calls') {
+    const ca = d.calls || [];
+    return ca.length ? <Box>{ca.map((c) => <ObsRow key={c.id} a={c.surface || c.intent || 'chat'} b={c.model || '—'} c={`${c.status || ''}${c.latencyMs != null ? ' · ' + toFaDigits(c.latencyMs) + 'ms' : ''}`} />)}</Box> : <Text component="div" style={obsMuted}>فراخوانِ AI نیست.</Text>;
+  }
+  if (tab === 'tickets') {
+    const tk = d.tickets || [];
+    return tk.length ? <Box>{tk.map((t) => <ObsRow key={t.id} a={t.subject} b={t.status} c={day(t.createdAt)} />)}</Box> : <Text component="div" style={obsMuted}>تیکتی نیست.</Text>;
+  }
+  return null;
+}
+
+function ObservabilityCabin({ userId }) {
+  const [tab, setTab] = useState('events');
+  const q = useQuery({ queryKey: ['admin', 'obs', userId, tab], queryFn: () => get(`/admin/observability/user/${userId}/${tab}`), enabled: !!userId, staleTime: 30000 });
+  return (
+    <Box>
+      <Text component="div" style={lblS}>کابینِ مشاهده‌پذیری</Text>
+      <Box style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBlockEnd: 9 }}>
+        {OBS_TABS.map((t) => <UnstyledButton key={t.id} type="button" onClick={() => setTab(t.id)} style={obsChip(tab === t.id)}>{t.label}</UnstyledButton>)}
+      </Box>
+      {q.isLoading ? <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 16 }}><Loader size="xs" color="var(--g-color-brand-600)" /></Box>
+        : q.isError ? <Text component="div" style={obsMuted}>خواندن از سرور ناموفق بود.</Text>
+          : <ObsContent tab={tab} d={q.data} />}
     </Box>
   );
 }

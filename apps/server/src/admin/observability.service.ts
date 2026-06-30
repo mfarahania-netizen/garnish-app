@@ -67,6 +67,33 @@ export class ObservabilityService {
     };
   }
 
+  /** GDPR consent provenance — the user's granular grants (purpose + state + lawful basis), newest first. */
+  async consent(userId: string) {
+    const consents = await this.prisma.userConsent.findMany({
+      where: { userId }, orderBy: { updatedAt: 'desc' }, take: 100,
+      select: { purpose: true, status: true, lawfulBasis: true, policyVersion: true, source: true, grantedAt: true, withdrawnAt: true, updatedAt: true },
+    }).catch(() => []);
+    return { userId, count: consents.length, consents };
+  }
+
+  /** Recent AI calls — METADATA ONLY (the log never stores prompt/response text; GDPR shape-only). */
+  async aiCalls(userId: string, limit = 30) {
+    const calls = await this.prisma.aICallLog.findMany({
+      where: { userId }, orderBy: { createdAt: 'desc' }, take: Math.min(Math.max(limit, 1), 100),
+      select: { id: true, surface: true, intent: true, model: true, provider: true, status: true, latencyMs: true, estimatedInputTokens: true, estimatedOutputTokens: true, estimatedCost: true, createdAt: true },
+    }).catch(() => []);
+    return { userId, count: calls.length, calls };
+  }
+
+  /** The user's recent support tickets (metadata — the support side of the dossier). */
+  async tickets(userId: string, limit = 30) {
+    const tickets = await this.prisma.supportTicket.findMany({
+      where: { userId }, orderBy: { createdAt: 'desc' }, take: Math.min(Math.max(limit, 1), 100),
+      select: { id: true, subject: true, status: true, priority: true, category: true, firstResponseAt: true, lastReplyAt: true, createdAt: true },
+    }).catch(() => []);
+    return { userId, count: tickets.length, tickets };
+  }
+
   /** Engagement counters — trending dishes + a "problem" list (high views, low cook-through). */
   async counters(opts: { days?: number; limit?: number } = {}) {
     const days = Math.min(Math.max(opts.days ?? 30, 1), 365);
