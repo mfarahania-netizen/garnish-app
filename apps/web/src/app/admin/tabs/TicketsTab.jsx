@@ -2,7 +2,7 @@
 // dossier drawer: conversation thread, staff reply (fires the user notification), triage (status/priority/category/
 // assignee/tags), and internal admin-only notes. Backed by the verified /admin/tickets* endpoints.
 import { useState, useEffect } from 'react';
-import { Box, Text, Loader, UnstyledButton, Drawer, Textarea, Select } from '@mantine/core';
+import { Box, Text, Loader, UnstyledButton, Drawer, Textarea, Select, TagsInput } from '@mantine/core';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   IconTicket, IconSearch, IconClockExclamation, IconClockHour4, IconInbox, IconX,
@@ -43,6 +43,16 @@ const ago = (d) => {
   return dd < 30 ? toFaDigits(dd) + ' روز پیش' : toFaDigits(String(d).slice(0, 10));
 };
 const dur = (mins) => (mins == null ? '—' : mins < 60 ? toFaDigits(mins) + ' دقیقه' : toFaDigits(Math.round(mins / 60)) + ' ساعت');
+// P1-4: first-response SLA. A ticket breaches if it's still open and unanswered past the target window.
+const SLA_FIRST_H = 24;
+const breached = (t) => !t.firstResponseAt && !['resolved', 'closed'].includes(t.status) && (Date.now() - new Date(t.createdAt).getTime()) / 3.6e6 > SLA_FIRST_H;
+function slaLabel(t) {
+  if (t.firstResponseAt) return { breach: false, text: `اولین‌پاسخ در ${dur(Math.round((new Date(t.firstResponseAt).getTime() - new Date(t.createdAt).getTime()) / 60000))}` };
+  if (['resolved', 'closed'].includes(t.status)) return null;
+  const ageH = (Date.now() - new Date(t.createdAt).getTime()) / 3.6e6;
+  if (ageH > SLA_FIRST_H) return { breach: true, text: `نقضِ SLA — ${toFaDigits(Math.floor(ageH))} ساعت بی‌پاسخ` };
+  return { breach: false, text: `در مهلت — ${toFaDigits(Math.max(0, Math.ceil(SLA_FIRST_H - ageH)))} ساعت مانده` };
+}
 
 function Tag({ children, bg, fg }) {
   return <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', fontWeight: 600, paddingInline: 8, paddingBlock: 2, borderRadius: '6px', background: bg, color: fg, whiteSpace: 'nowrap' }}>{children}</Text>;
@@ -106,7 +116,7 @@ export default function TicketsTab() {
               <Box component="tbody">
                 {rows.map((t) => (
                   <Box component="tr" key={t.id} role="button" tabIndex={0} aria-label={`تیکتِ ${t.subject || t.id}`} onClick={() => setSelectedId(t.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(t.id); } }} style={{ cursor: 'pointer' }}>
-                    <Box component="td" style={{ ...tdS, fontWeight: 500, maxInlineSize: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}{t.firstResponseAt ? null : <Box aria-hidden="true" style={{ display: 'inline-block', inlineSize: 7, blockSize: 7, borderRadius: '50%', background: 'var(--g-color-state-warning-fg, #c0801c)', marginInlineStart: 6 }} />}</Box>
+                    <Box component="td" style={{ ...tdS, fontWeight: 500, maxInlineSize: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.subject}{t.firstResponseAt ? null : <Box aria-hidden="true" title={breached(t) ? 'نقضِ SLA' : 'بی‌پاسخ'} style={{ display: 'inline-block', inlineSize: 7, blockSize: 7, borderRadius: '50%', background: breached(t) ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-state-warning-fg, #c0801c)', marginInlineStart: 6 }} />}</Box>
                     <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-secondary)' }}>{t.user?.name || '—'}</Box>
                     <Box component="td" style={{ ...tdS, color: 'var(--g-color-text-muted)', fontSize: '11.5px' }}>{CATEGORY[t.category] || 'عمومی'}</Box>
                     <Box component="td" style={tdS}><PrioTag p={t.priority} /></Box>
@@ -131,6 +141,8 @@ export default function TicketsTab() {
 function TicketDetail({ id, onClose }) {
   const qc = useQueryClient();
   const detail = useQuery({ queryKey: ['admin', 'ticket', id], queryFn: () => get('/admin/tickets/' + id) });
+  const staff = useQuery({ queryKey: ['admin', 'staff-mini'], queryFn: () => get('/admin/users?role=admin&limit=50'), staleTime: 300000 });
+  const staffOpts = (staff.data?.data || []).filter((u) => u.isAdmin).map((u) => ({ value: u.id, label: u.name || u.phone || 'ادمین' }));
   const [reply, setReply] = useState('');
   const [note, setNote] = useState('');
   const t = detail.data;
@@ -141,12 +153,13 @@ function TicketDetail({ id, onClose }) {
   const noteM = useMutation({ mutationFn: (body) => apiClient.post(`/admin/tickets/${id}/notes`, { body }), onSuccess: () => { setNote(''); inval(); } });
 
   if (detail.isLoading || !t) return <Box style={{ display: 'grid', placeItems: 'center', minBlockSize: 200 }}><Loader color="var(--g-color-brand-600)" /></Box>;
+  const sla = slaLabel(t);
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '100dvh' }}>
       <Box style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, padding: '15px 18px', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <Box style={{ minInlineSize: 0 }}>
-          <Box style={{ display: 'flex', alignItems: 'center', gap: 8 }}><Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '15px', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{t.subject}</Text><StatusTag s={t.status} /></Box>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}><Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '15px', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{t.subject}</Text><StatusTag s={t.status} />{sla ? <Tag bg={sla.breach ? 'var(--g-color-state-danger-bg, #fdecea)' : 'var(--g-color-bg-canvas)'} fg={sla.breach ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-text-muted)'}>{sla.text}</Tag> : null}</Box>
           <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{t.user?.name || 'کاربر'} · <span style={{ direction: 'ltr' }}>{t.user?.phone || t.user?.email || '—'}</span></Text>
         </Box>
         <UnstyledButton type="button" onClick={onClose} aria-label="بستن" style={{ inlineSize: 30, blockSize: 30, borderRadius: '8px', display: 'grid', placeItems: 'center', color: 'var(--g-color-text-muted)', flexShrink: 0 }}><IconX size={18} /></UnstyledButton>
@@ -158,6 +171,11 @@ function TicketDetail({ id, onClose }) {
           <Select label="وضعیت" data={STATUS_OPTS} value={t.status} onChange={(v) => v && updateM.mutate({ status: v })} allowDeselect={false} size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} />
           <Select label="اولویت" data={PRIORITY_OPTS} value={t.priority} onChange={(v) => v && updateM.mutate({ priority: v })} allowDeselect={false} size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} />
           <Select label="دسته" data={CATEGORY_OPTS} value={t.category} onChange={(v) => v && updateM.mutate({ category: v })} allowDeselect={false} size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} />
+        </Box>
+        {/* P1-4: assignee (from the admin roster) + free-form tags — both persist via the same triage PATCH */}
+        <Box style={{ display: 'grid', gap: 8 }}>
+          <Select label="محول به" data={staffOpts} value={t.assigneeId || null} onChange={(v) => updateM.mutate({ assigneeId: v || null })} placeholder={staff.isLoading ? 'در حال بارگذاری…' : 'محول‌نشده'} clearable searchable size="xs" styles={fieldStyles} comboboxProps={{ withinPortal: false }} nothingFoundMessage="ادمینی پیدا نشد" />
+          <TagsInput label="برچسب‌ها" value={t.tags || []} onChange={(v) => updateM.mutate({ tags: v })} placeholder="برچسب و Enter…" size="xs" styles={fieldStyles} maxTags={20} clearable />
         </Box>
 
         {/* thread */}
