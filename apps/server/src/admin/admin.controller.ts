@@ -214,6 +214,9 @@ export class AdminController {
   @Get('analytics/recommendation-funnel')
   getRecommendationFunnel() { return this.adminService.getRecommendationFunnel(); }
 
+  @Get('analytics/add-source')
+  getAddSource() { return this.adminService.getAddSource(); }
+
   @Get('analytics/system-health')
   getSystemHealth() { return this.adminService.getSystemHealth(); }
 

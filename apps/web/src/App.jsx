@@ -93,29 +93,42 @@ function RouteTracker() {
   const location = useLocation();
   const { trackEvent } = useAnalytics();
   const lastRef = useRef(null);
+  // CLICKS-PER-PAGE: count clicks on the current page (capture phase); flushed as ONE summary on leave (low volume,
+  // never per-click — that would flood ingest). Stored in sessionStorage so it survives a same-session refresh.
+  useEffect(() => {
+    const onClick = () => { try { sessionStorage.setItem('g_clicks', String((Number(sessionStorage.getItem('g_clicks')) || 0) + 1)); } catch { /* */ } };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, []);
   useEffect(() => {
     const path = location.pathname;
     if (path.startsWith('/admin')) return;
     if (lastRef.current === path) return; // StrictMode / dup-render guard within this mount
     lastRef.current = path;
-    let prevPage = null, enterTs = 0;
-    try { prevPage = sessionStorage.getItem('g_prevPage') || null; enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0; } catch { /* private mode */ }
-    // TIME-ON-PAGE: how long the page we're leaving stayed open (sane 0.5s…30m window).
+    let prevPage = null, enterTs = 0, clicks = 0;
+    try { prevPage = sessionStorage.getItem('g_prevPage') || null; enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0; clicks = Number(sessionStorage.getItem('g_clicks')) || 0; } catch { /* private mode */ }
+    // TIME-ON-PAGE + CLICKS: summarise the page we're LEAVING.
     if (prevPage && enterTs) {
       const ms = Date.now() - enterTs;
       if (ms > 500 && ms < 1_800_000) trackEvent('page_dwell', { page: prevPage, ms });
+      if (clicks > 0) trackEvent('page_clicks', { page: prevPage, count: clicks });
     }
     // PAGE→PAGE FLOW: where this view came from. sessionStorage-backed so it survives a refresh within the session.
     trackEvent('page_view', { page: path, from: prevPage });
-    try { sessionStorage.setItem('g_prevPage', path); sessionStorage.setItem('g_enterTs', String(Date.now())); } catch { /* */ }
+    try { sessionStorage.setItem('g_prevPage', path); sessionStorage.setItem('g_enterTs', String(Date.now())); sessionStorage.setItem('g_clicks', '0'); } catch { /* */ }
   }, [location.pathname, trackEvent]);
-  // Flush the current page's dwell when the tab is hidden/closed (else the last page per visit is lost).
+  // Flush the current page's dwell + clicks when the tab is hidden/closed (else the last page per visit is lost).
   useEffect(() => {
     const flush = () => {
       if (document.visibilityState !== 'hidden') return;
       try {
-        const prevPage = sessionStorage.getItem('g_prevPage'); const enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0;
-        if (prevPage && enterTs) { const ms = Date.now() - enterTs; if (ms > 500 && ms < 1_800_000) { trackEvent('page_dwell', { page: prevPage, ms }); sessionStorage.setItem('g_enterTs', String(Date.now())); } }
+        const prevPage = sessionStorage.getItem('g_prevPage'); const enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0; const clicks = Number(sessionStorage.getItem('g_clicks')) || 0;
+        if (prevPage && enterTs) {
+          const ms = Date.now() - enterTs;
+          if (ms > 500 && ms < 1_800_000) trackEvent('page_dwell', { page: prevPage, ms });
+          if (clicks > 0) trackEvent('page_clicks', { page: prevPage, count: clicks });
+          sessionStorage.setItem('g_enterTs', String(Date.now())); sessionStorage.setItem('g_clicks', '0');
+        }
       } catch { /* */ }
     };
     document.addEventListener('visibilitychange', flush);

@@ -448,29 +448,63 @@ export class AdminService {
     return { profiles: maskedProfiles, avgConsistency, avgChurnRisk, totalProfiles: agg._count._all };
   }
 
+  // The full page-behavior bundle (one call): most/least-viewed pages, daily trend, page→page FLOW, TIME-on-page,
+  // and CLICKS-per-page — all from the RouteTracker's real events (page_view{from} · page_dwell{ms} · page_clicks).
+  // Honest: empty arrays until the captures accrue real traffic; never fabricated. Dynamic routes collapse by screen.
   async getPageViewStats() {
-    const events = await this.prisma.userEvent.findMany({
-      where: { type: 'page_view' },
-      select: { page: true, timestamp: true },
-    });
-    // Collapse dynamic detail routes so "top pages" buckets by SCREEN, not by every recipe id (/recipe/abc → /recipe).
     const norm = (pg: string) => (pg || '/').replace(/^\/(recipe|cook)\/.+$/, '/$1');
+    const [views, dwells, clicks] = await Promise.all([
+      this.prisma.userEvent.findMany({ where: { type: 'page_view' }, select: { page: true, payload: true, timestamp: true }, take: 50000 }),
+      this.prisma.userEvent.findMany({ where: { type: 'page_dwell' }, select: { payload: true }, take: 50000 }).catch(() => [] as any[]),
+      this.prisma.userEvent.findMany({ where: { type: 'page_clicks' }, select: { payload: true }, take: 50000 }).catch(() => [] as any[]),
+    ]);
+
+    // ── views: top + least-viewed + daily trend + page→page flow ──
     const pageCount = new Map<string, number>();
     const dailyCount = new Map<string, number>();
-    for (const e of events) {
+    const flowMap = new Map<string, number>();
+    for (const e of views) {
       const page = norm(e.page || '/');
       pageCount.set(page, (pageCount.get(page) || 0) + 1);
       const day = e.timestamp.toISOString().slice(0, 10);
       dailyCount.set(day, (dailyCount.get(day) || 0) + 1);
+      try { const p = JSON.parse(e.payload || '{}'); const from = p.from ? norm(p.from) : null; if (from && from !== page) flowMap.set(from + '→' + page, (flowMap.get(from + '→' + page) || 0) + 1); } catch { /* */ }
     }
-    const topPages = [...pageCount.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([page, views]) => ({ page, views }));
-    const dailyViews = [...dailyCount.entries()]
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([date, count]) => ({ date, count }));
-    return { topPages, dailyViews };
+    const ranked = [...pageCount.entries()].sort((a, b) => b[1] - a[1]).map(([page, views]) => ({ page, views }));
+    const topPages = ranked.slice(0, 10);
+    const bottomPages = ranked.length > 10 ? ranked.slice(-8).reverse() : [];
+    const dailyViews = [...dailyCount.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([date, count]) => ({ date, count }));
+    const flow = [...flowMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, count]) => { const [from, to] = k.split('→'); return { from, to, count }; });
+
+    // ── time-on-page: median seconds per page ──
+    const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2); };
+    const dwellMap = new Map<string, number[]>();
+    for (const e of dwells) { try { const p = JSON.parse(e.payload || '{}'); if (p.page && typeof p.ms === 'number') { const pg = norm(p.page); const arr = dwellMap.get(pg) || []; arr.push(p.ms); dwellMap.set(pg, arr); } } catch { /* */ } }
+    const dwell = [...dwellMap.entries()].map(([page, arr]) => ({ page, medianSec: Math.round(median(arr) / 1000), samples: arr.length })).sort((a, b) => b.medianSec - a.medianSec).slice(0, 10);
+
+    // ── clicks-per-page: total + avg per visit ──
+    const clickMap = new Map<string, { total: number; visits: number }>();
+    for (const e of clicks) { try { const p = JSON.parse(e.payload || '{}'); if (p.page && typeof p.count === 'number') { const pg = norm(p.page); const c = clickMap.get(pg) || { total: 0, visits: 0 }; c.total += p.count; c.visits += 1; clickMap.set(pg, c); } } catch { /* */ } }
+    const clickStats = [...clickMap.entries()].map(([page, c]) => ({ page, total: c.total, avgPerVisit: Math.round((c.total / c.visits) * 10) / 10 })).sort((a, b) => b.total - a.total).slice(0, 10);
+
+    return { topPages, bottomPages, dailyViews, flow, dwell, clicks: clickStats };
+  }
+
+  // "Manual vs meal-plan" source split for the shopping list (the founder's «دستی یا با برنامه»). From the revived
+  // shopping_add_manual / shopping_add_from_plan emitters. (Assistant-driven adds run server-side from /ai/chat and
+  // would need a backend source tag — a follow-up; noted honestly rather than guessed.)
+  async getAddSource() {
+    const [manual, fromPlan, mealplanAdds] = await Promise.all([
+      this.prisma.userEvent.count({ where: { type: 'shopping_add_manual' } }),
+      this.prisma.userEvent.count({ where: { type: 'shopping_add_from_plan' } }),
+      this.prisma.userEvent.count({ where: { type: 'mealplan_add' } }),
+    ]);
+    const shopTotal = manual + fromPlan;
+    return {
+      status: shopTotal > 0 ? ('real' as const) : ('awaiting_pilot' as const),
+      shopping: { manual, fromPlan, total: shopTotal, manualRate: shopTotal > 0 ? Math.round((manual / shopTotal) * 100) / 100 : null },
+      mealplanAdds,
+    };
   }
 
   async getSystemHealth() {

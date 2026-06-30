@@ -21,12 +21,19 @@ export default function EngagementTab({ days = 30 }) {
   const pages = useQuery({ queryKey: ['admin', 'page-views'], queryFn: () => get('/admin/analytics/page-views') });
   const userStats = useQuery({ queryKey: ['admin', 'user-stats'], queryFn: () => get('/admin/analytics/user-stats') });
   const rec = useQuery({ queryKey: ['admin', 'rec-funnel'], queryFn: () => get('/admin/analytics/recommendation-funnel') });
+  const sourceQ = useQuery({ queryKey: ['admin', 'add-source'], queryFn: () => get('/admin/analytics/add-source') });
 
   if (trends.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
 
   const u = userStats.data || {};
   const daily = (pages.data?.dailyViews || []).map((d) => ({ label: d.date.slice(5), value: d.count }));
   const topPages = pages.data?.topPages || [];
+  const bottomPages = pages.data?.bottomPages || [];
+  const flow = pages.data?.flow || [];
+  const dwell = pages.data?.dwell || [];
+  const clicks = pages.data?.clicks || [];
+  const src = sourceQ.data || {};
+  const PG = (p) => PAGE_FA[p] || p || '/';
   const fnls = funnels.data?.funnels || [];
   const funnelName = (n) => (n === 'onboarding' ? 'قیفِ ورود (onboarding)' : n === 'cook' ? 'قیفِ پخت' : n);
   const rf = rec.data || {};
@@ -93,8 +100,50 @@ export default function EngagementTab({ days = 30 }) {
       <Section title="پربازدیدترین صفحه‌ها" sub="بر اساس رویدادهای page_view" />
       <Panel status={topPages.length ? 'real' : 'awaiting_pilot'}>
         {topPages.length ? topPages.slice(0, 8).map((p) => (
-          <HBar key={p.page} label={PAGE_FA[p.page] || p.page || '/'} value={p.views} max={topPages[0]?.views || 1} display={toFaDigits(p.views)} />
+          <HBar key={p.page} label={PG(p.page)} value={p.views} max={topPages[0]?.views || 1} display={toFaDigits(p.views)} />
         )) : <Awaiting note="بازدیدی ثبت نشده." />}
+      </Panel>
+
+      {bottomPages.length > 0 ? (
+        <>
+          <Section title="کم‌بازدیدترین صفحه‌ها" sub="کمترین بازدید — شاید گمشده یا کم‌اهمیت دیده می‌شوند" />
+          <Panel status="real">
+            {bottomPages.map((p) => <HBar key={p.page} label={PG(p.page)} value={p.views} max={bottomPages[0]?.views || 1} display={toFaDigits(p.views)} color="var(--g-color-text-muted)" />)}
+          </Panel>
+        </>
+      ) : null}
+
+      <Section title="مسیرِ کاربر — از کجا به کجا" sub="پرتکرارترین جابه‌جایی‌ها میانِ صفحات" />
+      <Panel status={flow.length ? 'real' : 'awaiting_pilot'}>
+        {flow.length ? flow.map((f, i) => (
+          <Box key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBlock: 7, borderBlockEnd: i < flow.length - 1 ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }}>{PG(f.from)}</Text>
+            <Text component="span" aria-hidden style={{ color: 'var(--g-color-brand-600)', fontSize: '15px', lineHeight: 1 }}>←</Text>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)' }}>{PG(f.to)}</Text>
+            <Text component="span" style={{ marginInlineStart: 'auto', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>{toFaDigits(f.count)} بار</Text>
+          </Box>
+        )) : <Awaiting note="هنوز جابه‌جاییِ صفحه‌ای ثبت نشده — با ناوبریِ کاربرِ واقعی پر می‌شود." />}
+      </Panel>
+
+      <Section title="زمانِ ماندن در هر صفحه" sub="میانهٔ ثانیه‌هایی که کاربر در هر صفحه می‌مانَد" />
+      <Panel status={dwell.length ? 'real' : 'awaiting_pilot'}>
+        {dwell.length ? dwell.map((d) => <HBar key={d.page} label={PG(d.page)} value={d.medianSec} max={dwell[0]?.medianSec || 1} display={`${toFaDigits(d.medianSec)} ثانیه`} color="var(--g-color-brand-400)" />) : <Awaiting note="هنوز زمانِ ماندنی ثبت نشده — با گشت‌وگذارِ کاربر پر می‌شود." />}
+      </Panel>
+
+      <Section title="کلیک در هر صفحه" sub="کدام صفحه بیشترین تعاملِ کلیکی را دارد" />
+      <Panel status={clicks.length ? 'real' : 'awaiting_pilot'}>
+        {clicks.length ? clicks.map((c) => <HBar key={c.page} label={PG(c.page)} value={c.total} max={clicks[0]?.total || 1} display={`${toFaDigits(c.total)} · میانگین ${toFaDigits(c.avgPerVisit)}`} />) : <Awaiting note="هنوز کلیکی ثبت نشده." />}
+      </Panel>
+
+      <Section title="منبعِ افزودن به لیستِ خرید" sub="دستی یا از روی برنامهٔ غذایی؟" />
+      <Panel status={src.status === 'real' ? 'real' : 'awaiting_pilot'}>
+        {src.status === 'real' ? (
+          <>
+            <HBar label="دستی" value={src.shopping?.manual || 0} max={src.shopping?.total || 1} display={toFaDigits(src.shopping?.manual || 0)} />
+            <HBar label="از روی برنامه" value={src.shopping?.fromPlan || 0} max={src.shopping?.total || 1} display={toFaDigits(src.shopping?.fromPlan || 0)} color="var(--g-color-brand-400)" />
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', marginBlockStart: 6 }}>{src.shopping?.manualRate != null ? `${fmtPct01(src.shopping.manualRate)} دستی` : '—'} · افزودنِ دستیار جدا ثبت نمی‌شود (به‌زودی)</Text>
+          </>
+        ) : <Awaiting note="هنوز چیزی به لیستِ خرید اضافه نشده." />}
       </Panel>
     </>
   );
