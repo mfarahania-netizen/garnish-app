@@ -158,6 +158,50 @@ function ScaledAmount({ amountText, factor }) {
   );
 }
 
+function LiteRecipeBody({ recipe, scaled, servedFor, scaleFactor }) {
+  const steps = (recipe.steps || []).slice(0, 4);
+  return (
+    <>
+      {recipe.ingredients.length ? (
+        <>
+          <Box style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 'var(--g-space-2)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>
+            <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>مواد لازم</Text>
+            {scaled ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>تنظیم‌شده برای {toFaDigits(servedFor)} نفر</Text> : null}
+          </Box>
+          <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
+            {recipe.ingredients.map((ing, i) => (
+              <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
+                <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+                <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
+                {ing.amountText ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
+              </Box>
+            ))}
+          </Box>
+        </>
+      ) : null}
+
+      {steps.length ? (
+        <>
+          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>روش سریع</Text>
+          <Box component="ol" style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+            {steps.map((step, i) => (
+              <Box component="li" key={`${step}-${i}`} style={{ display: 'flex', gap: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)' }}>
+                <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 800, flexShrink: 0 }}>{toFaDigits(i + 1)}</Box>
+                <Text component="p" style={{ ...stepText, margin: 0 }}>{step}</Text>
+              </Box>
+            ))}
+          </Box>
+        </>
+      ) : null}
+
+      <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-5)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-info-bg)' }}>
+        <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-secondary)', flexShrink: 0, marginBlockStart: 1 }} />
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0 }}>اگر ماده‌ای با حساسیت یا محدودیت غذایی تو ناسازگار است، همان ماده را حذف یا با گزینه امن خودت عوض کن. آیتم‌های تازه را همان روز مصرف کن و باقی‌مانده را در ظرف دربسته و سرد نگه دار.</Text>
+      </Box>
+    </>
+  );
+}
+
 function RecipeError({ onRetry }) {
   return (
     <Column>
@@ -484,7 +528,7 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* FIT + WhyChip (honest; allergen demoted-not-hidden) */}
-          {fit ? (
+          {fit && (!recipe.isLiteFood || isAllergen) ? (
             <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: isAllergen ? 'var(--g-color-allergen-bg)' : isGreat ? 'var(--g-color-state-success-bg)' : 'var(--g-color-state-info-bg)' }}>
               {isAllergen ? <IconAlertTriangle size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-allergen-fg)', flexShrink: 0 }} /> : <IconHeartCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: isGreat ? 'var(--g-color-state-success-fg)' : 'var(--g-color-text-secondary)', flexShrink: 0 }} />}
               <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', color: isAllergen ? 'var(--g-color-allergen-fg)' : isGreat ? 'var(--g-color-state-success-fg)' : 'var(--g-color-text-secondary)' }}>
@@ -499,12 +543,12 @@ export default function RecipeDetailPage() {
           {/* LEDE — only on the flat (non-GRIS) path. For GRIS the recipe.description is a technique line, so it
               is relocated into the «چرا این‌طوری؟» science accordion (passed as techniqueTip) and the «داستان»
               section's origin becomes the narrative intro — the intro is never a technique tip. */}
-          {!gris && recipe.description ? (
+          {(!gris || recipe.isLiteFood) && recipe.description ? (
             <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-4) 0 0' }}>{recipe.description}</Text>
           ) : null}
 
           {/* AI Sheet entry */}
-          <UnstyledButton type="button" onClick={() => setSheetOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', marginBlockStart: 'var(--g-space-4)', padding: 'var(--g-space-4)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)' }}>
+          {!recipe.isLiteFood ? <UnstyledButton type="button" onClick={() => setSheetOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', marginBlockStart: 'var(--g-space-4)', padding: 'var(--g-space-4)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)' }}>
             <Box aria-hidden="true" style={{ flexShrink: 0, inlineSize: 40, blockSize: 40, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}>
               <IconSparkles size={20} stroke={1.8} />
             </Box>
@@ -513,13 +557,13 @@ export default function RecipeDetailPage() {
               <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>تعداد نفرات، جایگزینِ مواد، زمان</Text>
             </Box>
             <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
-          </UnstyledButton>
+          </UnstyledButton> : null}
 
           {/* Personalization summary (recomputed nutrition now lives in the unified «ارزشِ غذایی» accordion below) */}
-          <PersonalizationBanner items={personalizationSummary(perso)} />
+          {!recipe.isLiteFood ? <PersonalizationBanner items={personalizationSummary(perso)} /> : null}
 
           {/* Byline */}
-          {recipe.author ? (
+          {!recipe.isLiteFood && recipe.author ? (
             <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-5)' }}>
               <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 34, blockSize: 34, borderRadius: '50%', background: 'var(--g-color-brand-100)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontWeight: 700, fontSize: 'var(--g-font-size-14)' }}>{recipe.author.trim().charAt(0)}</Box>
               <Box style={{ minInlineSize: 0 }}>
@@ -530,8 +574,9 @@ export default function RecipeDetailPage() {
           ) : null}
 
           {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
-          {gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} techniqueTip={recipe.description || null} /> : null}
-          {!gris ? (<>
+          {recipe.isLiteFood ? <LiteRecipeBody recipe={recipe} scaled={scaled} servedFor={servedFor} scaleFactor={scaleFactor} /> : null}
+          {!recipe.isLiteFood && gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} techniqueTip={recipe.description || null} /> : null}
+          {!recipe.isLiteFood && !gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (
             <>
@@ -644,7 +689,7 @@ export default function RecipeDetailPage() {
           </>) : null}
 
           {/* NUTRITION — unified + quiet, last in the disclosure stack, for BOTH layouts (qualitative + numbers) */}
-          <NutritionSection gris={gris} cascade={cascade} nutrition={nutrition} />
+          {!recipe.isLiteFood ? <NutritionSection gris={gris} cascade={cascade} nutrition={nutrition} /> : null}
         </Box>
       </Box>
 

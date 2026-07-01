@@ -9,6 +9,17 @@ const asText = (s) => (typeof s === 'string' ? s : s?.text || s?.instruction || 
 const toolText = (s) => (typeof s === 'string' ? s : s?.name || s?.title || s?.label || s?.tool || '');
 const faqItem = (f) => ({ q: asText(f?.question || f?.q || f?.title) || asText(f), a: asText(f?.answer || f?.a || f?.body) });
 const asList = (v) => (Array.isArray(v) ? v : []);
+const hasTag = (v, tag) => Array.isArray(v) && v.includes(tag);
+const isLiteFoodRecipe = (r) => {
+  const adminNote = r?.adminNote && typeof r.adminNote === 'object' ? r.adminNote : {};
+  const lite = adminNote?.lite || adminNote?.aiContext?.lite || {};
+  return (
+    lite?.contentType === 'lite_food' ||
+    adminNote?.contentType === 'lite_food' ||
+    hasTag(r?.dishType, 'lite_food') ||
+    String(r?.id || '').startsWith('garnish_lite_')
+  );
+};
 // localized meal types — never a raw enum key like "dinner"
 const FA_MEAL = { breakfast: 'صبحانه', brunch: 'میان‌وعده', lunch: 'ناهار', dinner: 'شام', supper: 'شام', snack: 'میان‌وعده', dessert: 'دسر', appetizer: 'پیش‌غذا', side: 'مخلفات', drink: 'نوشیدنی', beverage: 'نوشیدنی' };
 const calorieOf = (n) =>
@@ -55,6 +66,7 @@ export function useRecipeDetail(id) {
 
     const recipe = {
       id: r.id,
+      isLiteFood: isLiteFoodRecipe(r),
       title: r.title || 'دستور',
       imageUrl: r.imageUrl || null,
       // localized to Persian — never a raw enum key like "main_course"

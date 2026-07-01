@@ -37,6 +37,7 @@ const readyValue = () => ({
   status: 'ready',
   recipe: {
     id: '1',
+    isLiteFood: false,
     title: 'خورش قورمه‌سبزی',
     imageUrl: null,
     categories: ['غذای اصلی', 'ایرانی'],
@@ -163,5 +164,30 @@ describe('RecipeDetailPage smoke', () => {
     renderPage();
     expect(screen.getByRole('button', { name: /نکته‌ها/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /نکات سرآشپز/ })).not.toBeInTheDocument();
+  });
+
+  it('renders Lite Food through the compact body and does not leak authored/internal richness fields', () => {
+    const v = readyValue();
+    v.recipe.id = 'garnish_lite_fa_094_fde3c956';
+    v.recipe.isLiteFood = true;
+    v.recipe.description = 'یک آیتم سریع و سبک برای مصرف روزمره.';
+    v.recipe.steps = ['مواد را آماده کن.', 'همان موقع سرو کن.'];
+    v.recipe.tips = ['Meal Plan'];
+    v.recipe.chefTips = ['ingredientId should never render'];
+    v.recipe.commonMistakes = ['unresolved import'];
+    v.recipe.servingSuggestions = ['Shopping List'];
+    v.recipe.authoredSwaps = ['GRIS metadata database DB'];
+    v.recipe.faq = [{ q: 'readyForImport', a: 'source-backed' }];
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+
+    expect(screen.getByRole('heading', { name: 'مواد لازم' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'روش سریع' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /نکات سرآشپز/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /اشتباهات رایج/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /جایگزین‌ها/ })).not.toBeInTheDocument();
+    for (const term of ['ingredientId', 'unresolved', 'Meal Plan', 'Shopping List', 'GRIS', 'metadata', 'database', 'DB', 'readyForImport', 'source-backed']) {
+      expect(screen.queryByText(new RegExp(term))).not.toBeInTheDocument();
+    }
   });
 });

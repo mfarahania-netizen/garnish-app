@@ -59,7 +59,9 @@
     "lite-food:validate:recipes": "node --env-file=.env scripts/lite-food/validate-lite-food-96-v0-3.js --db",
     "lite-food:import:recipes:dry": "node --env-file=.env scripts/lite-food/import-lite-food-96-v0-3.js --dry-run",
     "lite-food:import:recipes": "node --env-file=.env scripts/lite-food/import-lite-food-96-v0-3.js --apply",
-    "lite-food:verify": "node --env-file=.env scripts/lite-food/verify-lite-food-96-v0-3.js"
+    "lite-food:verify": "node --env-file=.env scripts/lite-food/verify-lite-food-96-v0-3.js",
+    "display-copy:validate": "node --env-file=.env scripts/display-copy/display-copy-sanitizer-v0-1.js",
+    "display-copy:sanitize": "node --env-file=.env scripts/display-copy/display-copy-sanitizer-v0-1.js --apply"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

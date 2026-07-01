@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "display_copy_sanitizer_v0.1",
+  "generatedAt": "2026-07-01T11:06:22.134Z",
+  "mode": "dry-run",
+  "database": {
+    "databaseName": "garnish_db",
+    "host": "localhost"
+  },
+  "destructiveOperationUsed": false,
+  "productionApplyUsed": false,
+  "liteFood": {
+    "recipesScanned": 96,
+    "contaminatedFieldsBefore": 0,
+    "affectedRecipesBefore": 0,
+    "fieldsPatched": 0,
+    "contaminatedFieldsAfter": 0,
+    "affectedRecipesAfter": 0,
+    "remainingFindings": []
+  },
+  "globalBatchAudit": {
+    "filesFound": [],
+    "batch01SafeToImport": false,
+    "batch02SafeToImport": false,
+    "reason": "No Batch 01/02 files were present in the workspace; import remains blocked until files are available and pass validation."
+  },
+  "validationPassed": true
+}
