@@ -1,0 +1,5201 @@
+[
+  {
+    "ingredientId": "ing_honey",
+    "code": "honey",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 1,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "عسل",
+        "normalized": "عسل",
+        "display": "عسل"
+      },
+      "en": {
+        "canonical": "honey",
+        "normalized": "honey",
+        "display": "Honey"
+      },
+      "ar": {
+        "canonical": "عسل نحل",
+        "normalized": "عسل نحل",
+        "display": "عسل نحل"
+      },
+      "tr": {
+        "canonical": "bal",
+        "normalized": "bal",
+        "display": "bal"
+      },
+      "de": {
+        "canonical": "Honig",
+        "normalized": "honig",
+        "display": "Honig"
+      },
+      "fr": {
+        "canonical": "miel",
+        "normalized": "miel",
+        "display": "miel"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "عسل",
+        "عسل طبیعی",
+        "عسل صبحانه"
+      ],
+      "en": [
+        "honey",
+        "bee honey"
+      ],
+      "ar": [
+        "عسل",
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "اسل",
+        "عصل",
+        "عسلل"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "عسل",
+        "شیرین‌کننده",
+        "صبحانه"
+      ],
+      "en": [
+        "honey",
+        "sweetener",
+        "breakfast"
+      ],
+      "ar": [
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "bee_honey"
+    },
+    "origin": {
+      "animalSource": "bee",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 304,
+      "protein": 0.3,
+      "fat": 0,
+      "carbs": 82.4,
+      "fiber": 0.2,
+      "sugar": 82.1,
+      "sodium": 4
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "honey",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 0,
+      "fatty": 0,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 1,
+      "chewy": 0,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "breakfast",
+        "drizzle",
+        "drink_sweetener"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "mixed",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "drizzled",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/honey.webp",
+      "thumbnail": "/media/ingredients/honey-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "عسل / honey یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "اسل",
+        "عصل",
+        "عسلل"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "jar",
+        "squeeze_bottle"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 5,
+      "dutch": 4,
+      "american": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "عسل",
+        "عسل طبیعی",
+        "عسل صبحانه"
+      ],
+      "en": [
+        "honey",
+        "bee honey"
+      ],
+      "ar": [
+        "عسل",
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "ready_to_use",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_breadsticks",
+    "code": "breadsticks",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 2,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "چوب‌شور ساده",
+        "normalized": "چوب‌شور ساده",
+        "display": "چوب‌شور ساده"
+      },
+      "en": {
+        "canonical": "plain breadsticks",
+        "normalized": "plain breadsticks",
+        "display": "Plain breadsticks"
+      },
+      "ar": {
+        "canonical": "أعواد خبز",
+        "normalized": "أعواد خبز",
+        "display": "أعواد خبز"
+      },
+      "tr": {
+        "canonical": "grissini sade",
+        "normalized": "grissini sade",
+        "display": "grissini sade"
+      },
+      "de": {
+        "canonical": "Brotstangen",
+        "normalized": "brotstangen",
+        "display": "Brotstangen"
+      },
+      "fr": {
+        "canonical": "gressins nature",
+        "normalized": "gressins nature",
+        "display": "gressins nature"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "چوب‌شور",
+        "برداستیک",
+        "نان چوبی شور"
+      ],
+      "en": [
+        "breadsticks",
+        "plain breadsticks",
+        "grissini"
+      ],
+      "ar": [
+        "أعواد خبز"
+      ],
+      "tr": [
+        "grissini",
+        "ekmek çubuğu"
+      ],
+      "de": [
+        "Brotstangen",
+        "Grissini"
+      ],
+      "fr": [
+        "gressins"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "چوب شور",
+        "چوبشور"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "چوب‌شور",
+        "اسنک",
+        "نان خشک"
+      ],
+      "en": [
+        "breadsticks",
+        "grissini",
+        "snack"
+      ],
+      "ar": [
+        "أعواد خبز"
+      ],
+      "tr": [
+        "grissini sade"
+      ],
+      "de": [
+        "Brotstangen"
+      ],
+      "fr": [
+        "gressins nature"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "snack_bakery",
+      "family": "wheat"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "baked",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
+      "other": [],
+      "mayContain": [
+        "sesame",
+        "milk"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 412,
+      "protein": 12,
+      "fat": 9,
+      "carbs": 70,
+      "fiber": 3,
+      "sugar": 4,
+      "sodium": 820
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "plain breadsticks",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 1,
+      "salty": 3,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 4,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "dipping",
+        "cheese_pairing"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "stick",
+        "whole",
+        "broken"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/breadsticks.webp",
+      "thumbnail": "/media/ingredients/breadsticks-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "چوب‌شور ساده / plain breadsticks یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "چوب شور",
+        "چوبشور"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag",
+        "box"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "چوب‌شور",
+        "برداستیک",
+        "نان چوبی شور"
+      ],
+      "en": [
+        "breadsticks",
+        "plain breadsticks",
+        "grissini"
+      ],
+      "ar": [
+        "أعواد خبز"
+      ],
+      "tr": [
+        "grissini",
+        "ekmek çubuğu"
+      ],
+      "de": [
+        "Brotstangen",
+        "Grissini"
+      ],
+      "fr": [
+        "gressins"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "baked",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_cold_turkey_slices",
+    "code": "cold_turkey_slices",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 3,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ورقه بوقلمون سرد آماده",
+        "normalized": "ورقه بوقلمون سرد آماده",
+        "display": "ورقه بوقلمون سرد آماده"
+      },
+      "en": {
+        "canonical": "cold turkey slices",
+        "normalized": "cold turkey slices",
+        "display": "Cold turkey slices"
+      },
+      "ar": {
+        "canonical": "شرائح ديك رومي باردة",
+        "normalized": "شرائح دیک رومی باردة",
+        "display": "شرائح ديك رومي باردة"
+      },
+      "tr": {
+        "canonical": "soğuk hindi dilimleri",
+        "normalized": "soguk hindi dilimleri",
+        "display": "soğuk hindi dilimleri"
+      },
+      "de": {
+        "canonical": "Putenaufschnitt",
+        "normalized": "putenaufschnitt",
+        "display": "Putenaufschnitt"
+      },
+      "fr": {
+        "canonical": "tranches de dinde froide",
+        "normalized": "tranches de dinde froide",
+        "display": "tranches de dinde froide"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ورقه بوقلمون سرد",
+        "بوقلمون ورقه‌ای",
+        "کالباس بوقلمون"
+      ],
+      "en": [
+        "cold turkey slices",
+        "sliced turkey",
+        "turkey deli slices"
+      ],
+      "ar": [
+        "شرائح ديك رومي باردة"
+      ],
+      "tr": [
+        "hindi füme dilim",
+        "hindi dilimleri"
+      ],
+      "de": [
+        "Putenaufschnitt",
+        "Putenbrust Aufschnitt"
+      ],
+      "fr": [
+        "tranches de dinde",
+        "dinde en tranches"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "بوقلمون ورقه‌ای",
+        "پروتئین آماده",
+        "ساندویچ"
+      ],
+      "en": [
+        "cold turkey slices",
+        "deli turkey",
+        "wrap"
+      ],
+      "ar": [
+        "شرائح ديك رومي باردة"
+      ],
+      "tr": [
+        "soğuk hindi dilimleri"
+      ],
+      "de": [
+        "Putenaufschnitt"
+      ],
+      "fr": [
+        "tranches de dinde froide"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "animal_product",
+      "subCategory": "cold_cut",
+      "family": "turkey"
+    },
+    "origin": {
+      "animalSource": "turkey",
+      "plantSource": null,
+      "part": "breast_or_mixed"
+    },
+    "ingredientState": {
+      "physicalState": "processed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_eat",
+      "waterState": "refrigerated"
+    },
+    "dietFlags": [
+      "high_protein"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": [
+        "milk",
+        "gluten_cereals",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 112,
+      "protein": 18,
+      "fat": 2.2,
+      "carbs": 3,
+      "fiber": 0,
+      "sugar": 1.5,
+      "sodium": 900
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "cold turkey slices",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 1,
+      "salty": 4,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 3,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 3,
+      "creamy": 0,
+      "chewy": 2,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sandwich",
+        "wrap",
+        "quick_meal_protein"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "sliced",
+        "layered"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [
+        "فرآورده آماده است؛ سدیم و آلرژن‌ها به برند وابسته‌اند."
+      ],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/cold_turkey_slices.webp",
+      "thumbnail": "/media/ingredients/cold_turkey_slices-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "ورقه بوقلمون سرد آماده / cold turkey slices یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "refrigerated_pack",
+        "deli_slices"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ورقه بوقلمون سرد",
+        "بوقلمون ورقه‌ای",
+        "کالباس بوقلمون"
+      ],
+      "en": [
+        "cold turkey slices",
+        "sliced turkey",
+        "turkey deli slices"
+      ],
+      "ar": [
+        "شرائح ديك رومي باردة"
+      ],
+      "tr": [
+        "hindi füme dilim",
+        "hindi dilimleri"
+      ],
+      "de": [
+        "Putenaufschnitt",
+        "Putenbrust Aufschnitt"
+      ],
+      "fr": [
+        "tranches de dinde",
+        "dinde en tranches"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "processed",
+      "defaultPreparationStateApplied": "ready_to_eat",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_matcha_powder",
+    "code": "matcha_powder",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 4,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پودر ماچا",
+        "normalized": "پودر ماچا",
+        "display": "پودر ماچا"
+      },
+      "en": {
+        "canonical": "matcha powder",
+        "normalized": "matcha powder",
+        "display": "Matcha powder"
+      },
+      "ar": {
+        "canonical": "مسحوق ماتشا",
+        "normalized": "مسحوق ماتشا",
+        "display": "مسحوق ماتشا"
+      },
+      "tr": {
+        "canonical": "matcha tozu",
+        "normalized": "matcha tozu",
+        "display": "matcha tozu"
+      },
+      "de": {
+        "canonical": "Matcha-Pulver",
+        "normalized": "matcha-pulver",
+        "display": "Matcha-Pulver"
+      },
+      "fr": {
+        "canonical": "poudre de matcha",
+        "normalized": "poudre de matcha",
+        "display": "poudre de matcha"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پودر ماچا",
+        "ماچا"
+      ],
+      "en": [
+        "matcha powder",
+        "matcha"
+      ],
+      "ar": [
+        "مسحوق ماتشا",
+        "ماتشا"
+      ],
+      "tr": [
+        "matcha tozu",
+        "matcha"
+      ],
+      "de": [
+        "Matcha-Pulver",
+        "Matcha"
+      ],
+      "fr": [
+        "poudre de matcha",
+        "matcha"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "ماچا پودر",
+        "مچا"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "ماچا",
+        "چای سبز پودری",
+        "لاته"
+      ],
+      "en": [
+        "matcha",
+        "green tea powder",
+        "latte"
+      ],
+      "ar": [
+        "مسحوق ماتشا"
+      ],
+      "tr": [
+        "matcha tozu"
+      ],
+      "de": [
+        "Matcha-Pulver"
+      ],
+      "fr": [
+        "poudre de matcha"
+      ]
+    },
+    "taxonomy": {
+      "category": "beverage",
+      "parentCategory": "plant_product",
+      "subCategory": "tea_powder",
+      "family": "green_tea"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "tea",
+      "part": "leaf"
+    },
+    "ingredientState": {
+      "physicalState": "powder",
+      "ediblePortion": "edible_portion",
+      "preparationState": "dried_ground",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 324,
+      "protein": 30,
+      "fat": 5,
+      "carbs": 38,
+      "fiber": 30,
+      "sugar": 0,
+      "sodium": 6
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "matcha powder",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 4,
+      "umami": 3,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "drink",
+        "latte",
+        "dessert_flavoring"
+      ],
+      "commonCookingMethods": [
+        "whisked",
+        "mixed",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "powder",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/matcha_powder.webp",
+      "thumbnail": "/media/ingredients/matcha_powder-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "پودر ماچا / matcha powder یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "ماچا پودر",
+        "مچا"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "tin",
+        "pouch"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "japanese": 5,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پودر ماچا",
+        "ماچا"
+      ],
+      "en": [
+        "matcha powder",
+        "matcha"
+      ],
+      "ar": [
+        "مسحوق ماتشا",
+        "ماتشا"
+      ],
+      "tr": [
+        "matcha tozu",
+        "matcha"
+      ],
+      "de": [
+        "Matcha-Pulver",
+        "Matcha"
+      ],
+      "fr": [
+        "poudre de matcha",
+        "matcha"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "powder",
+      "defaultPreparationStateApplied": "dried_ground",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_mortadella_cold_cuts",
+    "code": "mortadella_cold_cuts",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 5,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "کالباس یا مارتادلا سرد",
+        "normalized": "کالباس یا مارتادلا سرد",
+        "display": "کالباس یا مارتادلا سرد"
+      },
+      "en": {
+        "canonical": "mortadella cold cuts",
+        "normalized": "mortadella cold cuts",
+        "display": "Mortadella cold cuts"
+      },
+      "ar": {
+        "canonical": "مرتديلا شرائح",
+        "normalized": "مرتدیلا شرائح",
+        "display": "مرتديلا شرائح"
+      },
+      "tr": {
+        "canonical": "mortadella dilimleri",
+        "normalized": "mortadella dilimleri",
+        "display": "mortadella dilimleri"
+      },
+      "de": {
+        "canonical": "Mortadella-Aufschnitt",
+        "normalized": "mortadella-aufschnitt",
+        "display": "Mortadella-Aufschnitt"
+      },
+      "fr": {
+        "canonical": "mortadelle en tranches",
+        "normalized": "mortadelle en tranches",
+        "display": "mortadelle en tranches"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "کالباس",
+        "مارتادلا",
+        "کالباس سرد",
+        "مارتادلا سرد"
+      ],
+      "en": [
+        "mortadella",
+        "cold cuts",
+        "mortadella cold cuts"
+      ],
+      "ar": [
+        "مرتديلا",
+        "شرائح مرتديلا"
+      ],
+      "tr": [
+        "mortadella",
+        "salam dilimleri"
+      ],
+      "de": [
+        "Mortadella",
+        "Aufschnitt"
+      ],
+      "fr": [
+        "mortadelle",
+        "charcuterie en tranches"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "کالباس",
+        "مارتادلا",
+        "ساندویچ سرد"
+      ],
+      "en": [
+        "mortadella",
+        "cold cuts",
+        "sandwich"
+      ],
+      "ar": [
+        "مرتديلا شرائح"
+      ],
+      "tr": [
+        "mortadella dilimleri"
+      ],
+      "de": [
+        "Mortadella-Aufschnitt"
+      ],
+      "fr": [
+        "mortadelle en tranches"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "animal_product",
+      "subCategory": "cold_cut",
+      "family": "mixed_meat"
+    },
+    "origin": {
+      "animalSource": "mixed_or_brand_specific",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "processed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_eat",
+      "waterState": "refrigerated"
+    },
+    "dietFlags": [],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": [
+        "milk",
+        "gluten_cereals",
+        "tree_nuts",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 311,
+      "protein": 16,
+      "fat": 25,
+      "carbs": 3,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 1050
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "mortadella cold cuts",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 1,
+      "sweet": 1,
+      "salty": 4,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 4,
+      "fatty": 4,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 3,
+      "creamy": 1,
+      "chewy": 2,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sandwich",
+        "cold_cut",
+        "quick_meal_protein"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "sliced",
+        "layered"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [
+        "نوع گوشت، حلال بودن، وجود خوک و آلرژن‌ها به برند و بازار وابسته است؛ برای فیلترهای حساس باید برچسب محصول بررسی شود."
+      ],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/mortadella_cold_cuts.webp",
+      "thumbnail": "/media/ingredients/mortadella_cold_cuts-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "کالباس یا مارتادلا سرد / mortadella cold cuts یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "refrigerated_pack",
+        "deli_slices"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "کالباس",
+        "مارتادلا",
+        "کالباس سرد",
+        "مارتادلا سرد"
+      ],
+      "en": [
+        "mortadella",
+        "cold cuts",
+        "mortadella cold cuts"
+      ],
+      "ar": [
+        "مرتديلا",
+        "شرائح مرتديلا"
+      ],
+      "tr": [
+        "mortadella",
+        "salam dilimleri"
+      ],
+      "de": [
+        "Mortadella",
+        "Aufschnitt"
+      ],
+      "fr": [
+        "mortadelle",
+        "charcuterie en tranches"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "processed",
+      "defaultPreparationStateApplied": "ready_to_eat",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_plain_popcorn",
+    "code": "plain_popcorn",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 6,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پاپ‌کورن ساده آماده",
+        "normalized": "پاپ‌کورن ساده آماده",
+        "display": "پاپ‌کورن ساده آماده"
+      },
+      "en": {
+        "canonical": "plain popcorn",
+        "normalized": "plain popcorn",
+        "display": "Plain popcorn"
+      },
+      "ar": {
+        "canonical": "فشار جاهز عادي",
+        "normalized": "فشار جاهز عادی",
+        "display": "فشار جاهز عادي"
+      },
+      "tr": {
+        "canonical": "sade patlamış mısır",
+        "normalized": "sade patlamis misir",
+        "display": "sade patlamış mısır"
+      },
+      "de": {
+        "canonical": "einfaches Popcorn",
+        "normalized": "einfaches popcorn",
+        "display": "einfaches Popcorn"
+      },
+      "fr": {
+        "canonical": "pop-corn nature",
+        "normalized": "pop-corn nature",
+        "display": "pop-corn nature"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پاپ‌کورن ساده",
+        "پاپ کورن ساده",
+        "ذرت بو داده ساده"
+      ],
+      "en": [
+        "plain popcorn",
+        "popcorn"
+      ],
+      "ar": [
+        "فشار عادي",
+        "ذرة فشار"
+      ],
+      "tr": [
+        "sade patlamış mısır",
+        "patlamış mısır"
+      ],
+      "de": [
+        "Popcorn"
+      ],
+      "fr": [
+        "pop-corn nature",
+        "popcorn"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "پاپ‌کورن",
+        "ذرت بو داده",
+        "اسنک"
+      ],
+      "en": [
+        "popcorn",
+        "plain popcorn",
+        "snack"
+      ],
+      "ar": [
+        "فشار جاهز عادي"
+      ],
+      "tr": [
+        "sade patlamış mısır"
+      ],
+      "de": [
+        "einfaches Popcorn"
+      ],
+      "fr": [
+        "pop-corn nature"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "snack",
+      "family": "corn"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "corn",
+      "part": "kernel"
+    },
+    "ingredientState": {
+      "physicalState": "popped",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": [
+        "milk",
+        "peanuts",
+        "tree_nuts"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 387,
+      "protein": 12.9,
+      "fat": 4.5,
+      "carbs": 78,
+      "fiber": 14.5,
+      "sugar": 0.9,
+      "sodium": 8
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "plain popcorn",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 4,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "topping"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "popped",
+        "bowl"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/plain_popcorn.webp",
+      "thumbnail": "/media/ingredients/plain_popcorn-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "پاپ‌کورن ساده آماده / plain popcorn یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag",
+        "loose"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پاپ‌کورن ساده",
+        "پاپ کورن ساده",
+        "ذرت بو داده ساده"
+      ],
+      "en": [
+        "plain popcorn",
+        "popcorn"
+      ],
+      "ar": [
+        "فشار عادي",
+        "ذرة فشار"
+      ],
+      "tr": [
+        "sade patlamış mısır",
+        "patlamış mısır"
+      ],
+      "de": [
+        "Popcorn"
+      ],
+      "fr": [
+        "pop-corn nature",
+        "popcorn"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "popped",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_potato_chips",
+    "code": "potato_chips",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 7,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "چیپس سیب‌زمینی ساده",
+        "normalized": "چیپس سیب‌زمینی ساده",
+        "display": "چیپس سیب‌زمینی ساده"
+      },
+      "en": {
+        "canonical": "plain potato chips",
+        "normalized": "plain potato chips",
+        "display": "Plain potato chips"
+      },
+      "ar": {
+        "canonical": "رقائق بطاطس",
+        "normalized": "رقائق بطاطس",
+        "display": "رقائق بطاطس"
+      },
+      "tr": {
+        "canonical": "patates cipsi",
+        "normalized": "patates cipsi",
+        "display": "patates cipsi"
+      },
+      "de": {
+        "canonical": "Kartoffelchips",
+        "normalized": "kartoffelchips",
+        "display": "Kartoffelchips"
+      },
+      "fr": {
+        "canonical": "chips de pomme de terre",
+        "normalized": "chips de pomme de terre",
+        "display": "chips de pomme de terre"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "چیپس",
+        "چیپس سیب‌زمینی",
+        "چیپس ساده"
+      ],
+      "en": [
+        "potato chips",
+        "plain potato chips",
+        "crisps"
+      ],
+      "ar": [
+        "رقائق بطاطس"
+      ],
+      "tr": [
+        "patates cipsi"
+      ],
+      "de": [
+        "Kartoffelchips",
+        "Chips"
+      ],
+      "fr": [
+        "chips",
+        "chips de pomme de terre"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "چیپس",
+        "اسنک",
+        "دیپ"
+      ],
+      "en": [
+        "potato chips",
+        "crisps",
+        "snack"
+      ],
+      "ar": [
+        "رقائق بطاطس"
+      ],
+      "tr": [
+        "patates cipsi"
+      ],
+      "de": [
+        "Kartoffelchips"
+      ],
+      "fr": [
+        "chips de pomme de terre"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "snack",
+      "family": "potato"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "potato",
+      "part": "tuber"
+    },
+    "ingredientState": {
+      "physicalState": "fried",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": [
+        "milk",
+        "gluten_cereals",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 536,
+      "protein": 7,
+      "fat": 35,
+      "carbs": 53,
+      "fiber": 4.8,
+      "sugar": 0.5,
+      "sodium": 525
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "plain potato chips",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 4,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 2,
+      "fatty": 4,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 5,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "dipping"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "chips",
+        "whole"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/potato_chips.webp",
+      "thumbnail": "/media/ingredients/potato_chips-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "چیپس سیب‌زمینی ساده / plain potato chips یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "چیپس",
+        "چیپس سیب‌زمینی",
+        "چیپس ساده"
+      ],
+      "en": [
+        "potato chips",
+        "plain potato chips",
+        "crisps"
+      ],
+      "ar": [
+        "رقائق بطاطس"
+      ],
+      "tr": [
+        "patates cipsi"
+      ],
+      "de": [
+        "Kartoffelchips",
+        "Chips"
+      ],
+      "fr": [
+        "chips",
+        "chips de pomme de terre"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "fried",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_pretzels",
+    "code": "pretzels",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 8,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پرتزل آماده",
+        "normalized": "پرتزل آماده",
+        "display": "پرتزل آماده"
+      },
+      "en": {
+        "canonical": "pretzels",
+        "normalized": "pretzels",
+        "display": "Pretzels"
+      },
+      "ar": {
+        "canonical": "بريتزل",
+        "normalized": "بریتزل",
+        "display": "بريتزل"
+      },
+      "tr": {
+        "canonical": "pretzel",
+        "normalized": "pretzel",
+        "display": "pretzel"
+      },
+      "de": {
+        "canonical": "Brezeln",
+        "normalized": "brezeln",
+        "display": "Brezeln"
+      },
+      "fr": {
+        "canonical": "bretzels",
+        "normalized": "bretzels",
+        "display": "bretzels"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پرتزل",
+        "پرتزل آماده"
+      ],
+      "en": [
+        "pretzels",
+        "pretzel snacks"
+      ],
+      "ar": [
+        "بريتزل"
+      ],
+      "tr": [
+        "pretzel"
+      ],
+      "de": [
+        "Brezeln",
+        "Pretzels"
+      ],
+      "fr": [
+        "bretzels",
+        "pretzels"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "پرتزل",
+        "اسنک شور",
+        "خردل"
+      ],
+      "en": [
+        "pretzels",
+        "pretzel snack",
+        "mustard dip"
+      ],
+      "ar": [
+        "بريتزل"
+      ],
+      "tr": [
+        "pretzel"
+      ],
+      "de": [
+        "Brezeln"
+      ],
+      "fr": [
+        "bretzels"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "snack_bakery",
+      "family": "wheat"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "baked",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [
+        "gluten_cereals"
+      ],
+      "us9": [
+        "wheat"
+      ],
+      "other": [],
+      "mayContain": [
+        "sesame",
+        "milk"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 380,
+      "protein": 10,
+      "fat": 3,
+      "carbs": 79,
+      "fiber": 3,
+      "sugar": 2,
+      "sodium": 1260
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "pretzels",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 1,
+      "salty": 5,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 5,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "dipping"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "pieces",
+        "twists"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/pretzels.webp",
+      "thumbnail": "/media/ingredients/pretzels-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "پرتزل آماده / pretzels یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag",
+        "box"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پرتزل",
+        "پرتزل آماده"
+      ],
+      "en": [
+        "pretzels",
+        "pretzel snacks"
+      ],
+      "ar": [
+        "بريتزل"
+      ],
+      "tr": [
+        "pretzel"
+      ],
+      "de": [
+        "Brezeln",
+        "Pretzels"
+      ],
+      "fr": [
+        "bretzels",
+        "pretzels"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "baked",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_ready_caramel_popcorn",
+    "code": "ready_caramel_popcorn",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 9,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پاپ‌کورن کاراملی آماده",
+        "normalized": "پاپ‌کورن کاراملی آماده",
+        "display": "پاپ‌کورن کاراملی آماده"
+      },
+      "en": {
+        "canonical": "ready caramel popcorn",
+        "normalized": "ready caramel popcorn",
+        "display": "Ready caramel popcorn"
+      },
+      "ar": {
+        "canonical": "فشار بالكراميل جاهز",
+        "normalized": "فشار بالکرامیل جاهز",
+        "display": "فشار بالكراميل جاهز"
+      },
+      "tr": {
+        "canonical": "hazır karamelli patlamış mısır",
+        "normalized": "hazir karamelli patlamis misir",
+        "display": "hazır karamelli patlamış mısır"
+      },
+      "de": {
+        "canonical": "fertiges Karamell-Popcorn",
+        "normalized": "fertiges karamell-popcorn",
+        "display": "fertiges Karamell-Popcorn"
+      },
+      "fr": {
+        "canonical": "pop-corn caramel prêt à consommer",
+        "normalized": "pop-corn caramel prêt à consommer",
+        "display": "pop-corn caramel prêt à consommer"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پاپ‌کورن کاراملی",
+        "پاپ کورن کاراملی",
+        "پاپ‌کورن کاراملی آماده"
+      ],
+      "en": [
+        "caramel popcorn",
+        "ready caramel popcorn"
+      ],
+      "ar": [
+        "فشار بالكراميل"
+      ],
+      "tr": [
+        "karamelli patlamış mısır"
+      ],
+      "de": [
+        "Karamell-Popcorn"
+      ],
+      "fr": [
+        "pop-corn caramel"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "پاپ‌کورن کاراملی",
+        "اسنک شیرین"
+      ],
+      "en": [
+        "caramel popcorn",
+        "sweet snack"
+      ],
+      "ar": [
+        "فشار بالكراميل جاهز"
+      ],
+      "tr": [
+        "hazır karamelli patlamış mısır"
+      ],
+      "de": [
+        "fertiges Karamell-Popcorn"
+      ],
+      "fr": [
+        "pop-corn caramel prêt à consommer"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "sweet_snack",
+      "family": "corn_caramel"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "popped_coated",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [
+        "milk"
+      ],
+      "us9": [
+        "milk"
+      ],
+      "other": [],
+      "mayContain": [
+        "peanuts",
+        "tree_nuts",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 431,
+      "protein": 4,
+      "fat": 12,
+      "carbs": 78,
+      "fiber": 5,
+      "sugar": 45,
+      "sodium": 290
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "ready caramel popcorn",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 2,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 2,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 4,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 2,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "dessert_snack"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "popped",
+        "coated"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/ready_caramel_popcorn.webp",
+      "thumbnail": "/media/ingredients/ready_caramel_popcorn-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "پاپ‌کورن کاراملی آماده / ready caramel popcorn یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag",
+        "tub"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پاپ‌کورن کاراملی",
+        "پاپ کورن کاراملی",
+        "پاپ‌کورن کاراملی آماده"
+      ],
+      "en": [
+        "caramel popcorn",
+        "ready caramel popcorn"
+      ],
+      "ar": [
+        "فشار بالكراميل"
+      ],
+      "tr": [
+        "karamelli patlamış mısır"
+      ],
+      "de": [
+        "Karamell-Popcorn"
+      ],
+      "fr": [
+        "pop-corn caramel"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "popped_coated",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_ready_cheese_dip",
+    "code": "ready_cheese_dip",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 10,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "دیپ پنیر آماده",
+        "normalized": "دیپ پنیر آماده",
+        "display": "دیپ پنیر آماده"
+      },
+      "en": {
+        "canonical": "ready cheese dip",
+        "normalized": "ready cheese dip",
+        "display": "Ready cheese dip"
+      },
+      "ar": {
+        "canonical": "صلصة جبن جاهزة",
+        "normalized": "صلصة جبن جاهزة",
+        "display": "صلصة جبن جاهزة"
+      },
+      "tr": {
+        "canonical": "hazır peynir dip sos",
+        "normalized": "hazir peynir dip sos",
+        "display": "hazır peynir dip sos"
+      },
+      "de": {
+        "canonical": "fertiger Käsedip",
+        "normalized": "fertiger kasedip",
+        "display": "fertiger Käsedip"
+      },
+      "fr": {
+        "canonical": "dip au fromage prêt à consommer",
+        "normalized": "dip au fromage prêt à consommer",
+        "display": "dip au fromage prêt à consommer"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "دیپ پنیر",
+        "دیپ پنیر آماده",
+        "سس پنیر آماده"
+      ],
+      "en": [
+        "ready cheese dip",
+        "cheese dip",
+        "cheese sauce dip"
+      ],
+      "ar": [
+        "صلصة جبن جاهزة"
+      ],
+      "tr": [
+        "peynir dip sos",
+        "hazır peynir sos"
+      ],
+      "de": [
+        "Käsedip",
+        "Kaesedip"
+      ],
+      "fr": [
+        "dip au fromage",
+        "sauce fromage"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "دیپ پنیر",
+        "سس پنیر",
+        "چیپس"
+      ],
+      "en": [
+        "cheese dip",
+        "cheese sauce",
+        "chips dip"
+      ],
+      "ar": [
+        "صلصة جبن جاهزة"
+      ],
+      "tr": [
+        "hazır peynir dip sos"
+      ],
+      "de": [
+        "fertiger Käsedip"
+      ],
+      "fr": [
+        "dip au fromage prêt à consommer"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "dairy",
+      "subCategory": "sauce_dip",
+      "family": "cheese"
+    },
+    "origin": {
+      "animalSource": "milk",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "creamy",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "refrigerated_or_shelf_stable"
+    },
+    "dietFlags": [
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [
+        "milk"
+      ],
+      "us9": [
+        "milk"
+      ],
+      "other": [],
+      "mayContain": [
+        "gluten_cereals",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 260,
+      "protein": 7,
+      "fat": 20,
+      "carbs": 12,
+      "fiber": 0,
+      "sugar": 4,
+      "sodium": 850
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "ready cheese dip",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 1,
+      "salty": 4,
+      "sour": 1,
+      "bitter": 0,
+      "umami": 4,
+      "fatty": 4,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 4,
+      "creamy": 5,
+      "chewy": 0,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "dip",
+        "snack_sauce",
+        "chips_pairing"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "warmed_optional"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "cup",
+        "spooned"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/ready_cheese_dip.webp",
+      "thumbnail": "/media/ingredients/ready_cheese_dip-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "دیپ پنیر آماده / ready cheese dip یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "jar",
+        "cup",
+        "refrigerated_tub"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "دیپ پنیر",
+        "دیپ پنیر آماده",
+        "سس پنیر آماده"
+      ],
+      "en": [
+        "ready cheese dip",
+        "cheese dip",
+        "cheese sauce dip"
+      ],
+      "ar": [
+        "صلصة جبن جاهزة"
+      ],
+      "tr": [
+        "peynir dip sos",
+        "hazır peynir sos"
+      ],
+      "de": [
+        "Käsedip",
+        "Kaesedip"
+      ],
+      "fr": [
+        "dip au fromage",
+        "sauce fromage"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "creamy",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_ready_rice_pudding_cup",
+    "code": "ready_rice_pudding_cup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 11,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شیر برنج آماده",
+        "normalized": "شیر برنج آماده",
+        "display": "شیر برنج آماده"
+      },
+      "en": {
+        "canonical": "ready rice pudding cup",
+        "normalized": "ready rice pudding cup",
+        "display": "Ready rice pudding cup"
+      },
+      "ar": {
+        "canonical": "أرز بالحليب جاهز",
+        "normalized": "أرز بالحلیب جاهز",
+        "display": "أرز بالحليب جاهز"
+      },
+      "tr": {
+        "canonical": "hazır sütlaç",
+        "normalized": "hazir sutlac",
+        "display": "hazır sütlaç"
+      },
+      "de": {
+        "canonical": "fertiger Milchreis",
+        "normalized": "fertiger milchreis",
+        "display": "fertiger Milchreis"
+      },
+      "fr": {
+        "canonical": "riz au lait prêt à consommer",
+        "normalized": "riz au lait prêt à consommer",
+        "display": "riz au lait prêt à consommer"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شیر برنج آماده",
+        "شیر برنج بسته‌بندی",
+        "رایس پودینگ آماده"
+      ],
+      "en": [
+        "ready rice pudding",
+        "rice pudding cup",
+        "cold rice pudding cup"
+      ],
+      "ar": [
+        "أرز بالحليب جاهز"
+      ],
+      "tr": [
+        "hazır sütlaç",
+        "sütlaç"
+      ],
+      "de": [
+        "Milchreis",
+        "fertiger Milchreis"
+      ],
+      "fr": [
+        "riz au lait",
+        "riz au lait prêt"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شیر برنج",
+        "دسر آماده",
+        "صبحانه"
+      ],
+      "en": [
+        "rice pudding",
+        "ready dessert",
+        "breakfast"
+      ],
+      "ar": [
+        "أرز بالحليب جاهز"
+      ],
+      "tr": [
+        "hazır sütlaç"
+      ],
+      "de": [
+        "fertiger Milchreis"
+      ],
+      "fr": [
+        "riz au lait prêt à consommer"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "dairy",
+      "subCategory": "dessert",
+      "family": "rice_milk"
+    },
+    "origin": {
+      "animalSource": "milk",
+      "plantSource": "rice",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "creamy",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "refrigerated"
+    },
+    "dietFlags": [
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [
+        "milk"
+      ],
+      "us9": [
+        "milk"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 120,
+      "protein": 3.2,
+      "fat": 3,
+      "carbs": 20,
+      "fiber": 0.2,
+      "sugar": 12,
+      "sodium": 60
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "ready rice pudding cup",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 4,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 2,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 5,
+      "creamy": 5,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "dessert",
+        "breakfast",
+        "snack"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "chilled"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "cup",
+        "spooned"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/ready_rice_pudding_cup.webp",
+      "thumbnail": "/media/ingredients/ready_rice_pudding_cup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شیر برنج آماده / ready rice pudding cup یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "refrigerated_cup"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شیر برنج آماده",
+        "شیر برنج بسته‌بندی",
+        "رایس پودینگ آماده"
+      ],
+      "en": [
+        "ready rice pudding",
+        "rice pudding cup",
+        "cold rice pudding cup"
+      ],
+      "ar": [
+        "أرز بالحليب جاهز"
+      ],
+      "tr": [
+        "hazır sütlaç",
+        "sütlaç"
+      ],
+      "de": [
+        "Milchreis",
+        "fertiger Milchreis"
+      ],
+      "fr": [
+        "riz au lait",
+        "riz au lait prêt"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "creamy",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_salted_dried_fava_beans",
+    "code": "salted_dried_fava_beans",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 12,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "باقالی شور آماده",
+        "normalized": "باقالی شور آماده",
+        "display": "باقالی شور آماده"
+      },
+      "en": {
+        "canonical": "salted dried fava beans",
+        "normalized": "salted dried fava beans",
+        "display": "Salted dried fava beans"
+      },
+      "ar": {
+        "canonical": "فول مجفف مملح",
+        "normalized": "فول مجفف مملح",
+        "display": "فول مجفف مملح"
+      },
+      "tr": {
+        "canonical": "tuzlu kuru bakla",
+        "normalized": "tuzlu kuru bakla",
+        "display": "tuzlu kuru bakla"
+      },
+      "de": {
+        "canonical": "gesalzene getrocknete Ackerbohnen",
+        "normalized": "gesalzene getrocknete ackerbohnen",
+        "display": "gesalzene getrocknete Ackerbohnen"
+      },
+      "fr": {
+        "canonical": "fèves sèches salées",
+        "normalized": "fèves sèches salées",
+        "display": "fèves sèches salées"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "باقالی شور",
+        "باقالی خشک شور",
+        "باقالی شور آماده"
+      ],
+      "en": [
+        "salted dried fava beans",
+        "salted fava beans"
+      ],
+      "ar": [
+        "فول مملح",
+        "فول مجفف مملح"
+      ],
+      "tr": [
+        "tuzlu bakla",
+        "tuzlu kuru bakla"
+      ],
+      "de": [
+        "gesalzene Ackerbohnen"
+      ],
+      "fr": [
+        "fèves salées",
+        "feves salees"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "باقالی شور",
+        "اسنک ایرانی",
+        "حبوبات"
+      ],
+      "en": [
+        "salted fava beans",
+        "snack legume"
+      ],
+      "ar": [
+        "فول مجفف مملح"
+      ],
+      "tr": [
+        "tuzlu kuru bakla"
+      ],
+      "de": [
+        "gesalzene getrocknete Ackerbohnen"
+      ],
+      "fr": [
+        "fèves sèches salées"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "legume",
+      "subCategory": "snack_legume",
+      "family": "fava_bean"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "fava_bean",
+      "part": "seed"
+    },
+    "ingredientState": {
+      "physicalState": "dried_roasted",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "dairy_free",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [
+        "fava_bean"
+      ],
+      "mayContain": [
+        "peanuts",
+        "tree_nuts",
+        "sesame"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 360,
+      "protein": 24,
+      "fat": 3,
+      "carbs": 58,
+      "fiber": 18,
+      "sugar": 5,
+      "sodium": 950
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "salted dried fava beans",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 1,
+      "salty": 5,
+      "sour": 0,
+      "bitter": 1,
+      "umami": 2,
+      "fatty": 1,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 3,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 3,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "tea_pairing"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "shelled_or_unshelled"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [
+        "برای افرادی که به باقلا حساسیت یا محدودیت دارند مناسب نیست؛ برچسب محصول بررسی شود."
+      ],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/salted_dried_fava_beans.webp",
+      "thumbnail": "/media/ingredients/salted_dried_fava_beans-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "باقالی شور آماده / salted dried fava beans یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 3,
+      "persian": 5,
+      "middle_eastern": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "باقالی شور",
+        "باقالی خشک شور",
+        "باقالی شور آماده"
+      ],
+      "en": [
+        "salted dried fava beans",
+        "salted fava beans"
+      ],
+      "ar": [
+        "فول مملح",
+        "فول مجفف مملح"
+      ],
+      "tr": [
+        "tuzlu bakla",
+        "tuzlu kuru bakla"
+      ],
+      "de": [
+        "gesalzene Ackerbohnen"
+      ],
+      "fr": [
+        "fèves salées",
+        "feves salees"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "dried_roasted",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_sekanjabin_syrup",
+    "code": "sekanjabin_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 13,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت سکنجبین آماده",
+        "normalized": "شربت سکنجبین آماده",
+        "display": "شربت سکنجبین آماده"
+      },
+      "en": {
+        "canonical": "sekanjabin syrup",
+        "normalized": "sekanjabin syrup",
+        "display": "Sekanjabin syrup"
+      },
+      "ar": {
+        "canonical": "شراب سكنجبين مركز",
+        "normalized": "شراب سکنجبین مرکز",
+        "display": "شراب سكنجبين مركز"
+      },
+      "tr": {
+        "canonical": "hazır sekanjabin şurubu",
+        "normalized": "hazir sekanjabin surubu",
+        "display": "hazır sekanjabin şurubu"
+      },
+      "de": {
+        "canonical": "Sekanjabin-Sirup",
+        "normalized": "sekanjabin-sirup",
+        "display": "Sekanjabin-Sirup"
+      },
+      "fr": {
+        "canonical": "sirop de sekanjabin",
+        "normalized": "sirop de sekanjabin",
+        "display": "sirop de sekanjabin"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت سکنجبین",
+        "سکنجبین آماده",
+        "شربت سکنجبین آماده"
+      ],
+      "en": [
+        "sekanjabin syrup",
+        "sekanjabin concentrate"
+      ],
+      "ar": [
+        "سكنجبين",
+        "شراب سكنجبين"
+      ],
+      "tr": [
+        "sekanjabin şurubu"
+      ],
+      "de": [
+        "Sekanjabin-Sirup"
+      ],
+      "fr": [
+        "sirop de sekanjabin"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "سکنجبین",
+        "سکنجبینن",
+        "سکنجبين"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "سکنجبین",
+        "شربت سنتی",
+        "خیار"
+      ],
+      "en": [
+        "sekanjabin",
+        "Persian syrup",
+        "cooler"
+      ],
+      "ar": [
+        "شراب سكنجبين مركز"
+      ],
+      "tr": [
+        "hazır sekanjabin şurubu"
+      ],
+      "de": [
+        "Sekanjabin-Sirup"
+      ],
+      "fr": [
+        "sirop de sekanjabin"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "vinegar_mint_syrup"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 280,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 70,
+      "fiber": 0,
+      "sugar": 68,
+      "sodium": 10
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "sekanjabin syrup",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 0,
+      "sour": 3,
+      "bitter": 0,
+      "umami": 0,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 2
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "drink_syrup",
+        "cooler",
+        "diluted_beverage"
+      ],
+      "commonCookingMethods": [
+        "diluted",
+        "mixed"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/sekanjabin_syrup.webp",
+      "thumbnail": "/media/ingredients/sekanjabin_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت سکنجبین آماده / sekanjabin syrup یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "سکنجبین",
+        "سکنجبینن",
+        "سکنجبين"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bottle",
+        "homemade_syrup"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 2,
+      "persian": 5,
+      "middle_eastern": 3
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت سکنجبین",
+        "سکنجبین آماده",
+        "شربت سکنجبین آماده"
+      ],
+      "en": [
+        "sekanjabin syrup",
+        "sekanjabin concentrate"
+      ],
+      "ar": [
+        "سكنجبين",
+        "شراب سكنجبين"
+      ],
+      "tr": [
+        "sekanjabin şurubu"
+      ],
+      "de": [
+        "Sekanjabin-Sirup"
+      ],
+      "fr": [
+        "sirop de sekanjabin"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_sour_cherry_syrup",
+    "code": "sour_cherry_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 14,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت آلبالو",
+        "normalized": "شربت آلبالو",
+        "display": "شربت آلبالو"
+      },
+      "en": {
+        "canonical": "sour cherry syrup",
+        "normalized": "sour cherry syrup",
+        "display": "Sour cherry syrup"
+      },
+      "ar": {
+        "canonical": "شراب كرز حامض",
+        "normalized": "شراب کرز حامض",
+        "display": "شراب كرز حامض"
+      },
+      "tr": {
+        "canonical": "vişne şurubu",
+        "normalized": "visne surubu",
+        "display": "vişne şurubu"
+      },
+      "de": {
+        "canonical": "Sauerkirschsirup",
+        "normalized": "sauerkirschsirup",
+        "display": "Sauerkirschsirup"
+      },
+      "fr": {
+        "canonical": "sirop de griotte",
+        "normalized": "sirop de griotte",
+        "display": "sirop de griotte"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت آلبالو",
+        "سیروپ آلبالو",
+        "شربت آلبالوی آماده"
+      ],
+      "en": [
+        "sour cherry syrup",
+        "cherry syrup"
+      ],
+      "ar": [
+        "شراب كرز حامض"
+      ],
+      "tr": [
+        "vişne şurubu"
+      ],
+      "de": [
+        "Sauerkirschsirup"
+      ],
+      "fr": [
+        "sirop de griotte",
+        "sirop de cerise acide"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "شربت البالو",
+        "شربت آلبالوو"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "شربت آلبالو",
+        "نوشیدنی سرد",
+        "آلبالو"
+      ],
+      "en": [
+        "sour cherry syrup",
+        "cherry cooler"
+      ],
+      "ar": [
+        "شراب كرز حامض"
+      ],
+      "tr": [
+        "vişne şurubu"
+      ],
+      "de": [
+        "Sauerkirschsirup"
+      ],
+      "fr": [
+        "sirop de griotte"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "sour_cherry"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "sour_cherry",
+      "part": "fruit"
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 260,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 65,
+      "fiber": 0,
+      "sugar": 63,
+      "sodium": 5
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "sour cherry syrup",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 0,
+      "sour": 3,
+      "bitter": 0,
+      "umami": 0,
+      "fatty": 0,
+      "fresh": 2
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 2
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "drink_syrup",
+        "cooler",
+        "dessert_syrup"
+      ],
+      "commonCookingMethods": [
+        "diluted",
+        "mixed"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/sour_cherry_syrup.webp",
+      "thumbnail": "/media/ingredients/sour_cherry_syrup-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "شربت آلبالو / sour cherry syrup یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "شربت البالو",
+        "شربت آلبالوو"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bottle",
+        "homemade_syrup"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 3,
+      "persian": 5,
+      "middle_eastern": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت آلبالو",
+        "سیروپ آلبالو",
+        "شربت آلبالوی آماده"
+      ],
+      "en": [
+        "sour cherry syrup",
+        "cherry syrup"
+      ],
+      "ar": [
+        "شراب كرز حامض"
+      ],
+      "tr": [
+        "vişne şurubu"
+      ],
+      "de": [
+        "Sauerkirschsirup"
+      ],
+      "fr": [
+        "sirop de griotte",
+        "sirop de cerise acide"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_tortilla_chips",
+    "code": "tortilla_chips",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 15,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "چیپس ذرت تورتیلا",
+        "normalized": "چیپس ذرت تورتیلا",
+        "display": "چیپس ذرت تورتیلا"
+      },
+      "en": {
+        "canonical": "tortilla chips",
+        "normalized": "tortilla chips",
+        "display": "Tortilla chips"
+      },
+      "ar": {
+        "canonical": "رقائق تورتيلا",
+        "normalized": "رقائق تورتیلا",
+        "display": "رقائق تورتيلا"
+      },
+      "tr": {
+        "canonical": "tortilla cipsi",
+        "normalized": "tortilla cipsi",
+        "display": "tortilla cipsi"
+      },
+      "de": {
+        "canonical": "Tortilla-Chips",
+        "normalized": "tortilla-chips",
+        "display": "Tortilla-Chips"
+      },
+      "fr": {
+        "canonical": "chips tortilla",
+        "normalized": "chips tortilla",
+        "display": "chips tortilla"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "چیپس ذرت",
+        "چیپس تورتیلا",
+        "چیپس ذرت تورتیلا"
+      ],
+      "en": [
+        "tortilla chips",
+        "corn tortilla chips"
+      ],
+      "ar": [
+        "رقائق تورتيلا",
+        "رقائق ذرة"
+      ],
+      "tr": [
+        "tortilla cipsi",
+        "mısır cipsi"
+      ],
+      "de": [
+        "Tortilla-Chips",
+        "Maischips"
+      ],
+      "fr": [
+        "chips tortilla",
+        "chips de maïs"
+      ]
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "چیپس ذرت",
+        "گواکاموله",
+        "اسنک"
+      ],
+      "en": [
+        "tortilla chips",
+        "corn chips",
+        "guacamole"
+      ],
+      "ar": [
+        "رقائق تورتيلا"
+      ],
+      "tr": [
+        "tortilla cipsi"
+      ],
+      "de": [
+        "Tortilla-Chips"
+      ],
+      "fr": [
+        "chips tortilla"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "snack",
+      "family": "corn"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "corn",
+      "part": "kernel"
+    },
+    "ingredientState": {
+      "physicalState": "fried_or_baked",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "dry"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": [
+        "milk",
+        "gluten_cereals",
+        "soy"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 489,
+      "protein": 7,
+      "fat": 24,
+      "carbs": 63,
+      "fiber": 5,
+      "sugar": 1,
+      "sodium": 470
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "tortilla chips",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 4,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 2,
+      "fatty": 3,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 5,
+      "soft": 0,
+      "creamy": 0,
+      "chewy": 0,
+      "juicy": 0
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "dipping",
+        "guacamole_pairing"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "chips",
+        "triangles"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/tortilla_chips.webp",
+      "thumbnail": "/media/ingredients/tortilla_chips-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "چیپس ذرت تورتیلا / tortilla chips یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bag"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 3,
+      "dutch": 3,
+      "american": 4
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "چیپس ذرت",
+        "چیپس تورتیلا",
+        "چیپس ذرت تورتیلا"
+      ],
+      "en": [
+        "tortilla chips",
+        "corn tortilla chips"
+      ],
+      "ar": [
+        "رقائق تورتيلا",
+        "رقائق ذرة"
+      ],
+      "tr": [
+        "tortilla cipsi",
+        "mısır cipsi"
+      ],
+      "de": [
+        "Tortilla-Chips",
+        "Maischips"
+      ],
+      "fr": [
+        "chips tortilla",
+        "chips de maïs"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "fried_or_baked",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  },
+  {
+    "ingredientId": "ing_yazdi_cupcake",
+    "code": "yazdi_cupcake",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 16,
+      "expansionBase": "lite_food_96_unresolved_terms_v0_3"
+    },
+    "names": {
+      "fa": {
+        "canonical": "کیک یزدی آماده",
+        "normalized": "کیک یزدی آماده",
+        "display": "کیک یزدی آماده"
+      },
+      "en": {
+        "canonical": "Yazdi cupcake",
+        "normalized": "yazdi cupcake",
+        "display": "Yazdi cupcake"
+      },
+      "ar": {
+        "canonical": "كيك يزدي",
+        "normalized": "کیک یزدی",
+        "display": "كيك يزدي"
+      },
+      "tr": {
+        "canonical": "Yazdi keki",
+        "normalized": "yazdi keki",
+        "display": "Yazdi keki"
+      },
+      "de": {
+        "canonical": "Yazdi-Küchlein",
+        "normalized": "yazdi-kuchlein",
+        "display": "Yazdi-Küchlein"
+      },
+      "fr": {
+        "canonical": "petit gâteau yazdi",
+        "normalized": "petit gâteau yazdi",
+        "display": "petit gâteau yazdi"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "کیک یزدی",
+        "کیک یزدی آماده"
+      ],
+      "en": [
+        "Yazdi cupcake",
+        "Yazdi cake",
+        "Persian cupcake"
+      ],
+      "ar": [
+        "كيك يزدي"
+      ],
+      "tr": [
+        "Yazdi keki"
+      ],
+      "de": [
+        "Yazdi-Kuchen",
+        "Yazdi-Küchlein"
+      ],
+      "fr": [
+        "gâteau yazdi",
+        "gateau yazdi"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "کیک یزدى",
+        "کیک یزدیی"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "کیک یزدی",
+        "چای",
+        "شیرینی ایرانی"
+      ],
+      "en": [
+        "Yazdi cupcake",
+        "Persian cake",
+        "tea snack"
+      ],
+      "ar": [
+        "كيك يزدي"
+      ],
+      "tr": [
+        "Yazdi keki"
+      ],
+      "de": [
+        "Yazdi-Küchlein"
+      ],
+      "fr": [
+        "petit gâteau yazdi"
+      ]
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "carbohydrate",
+      "subCategory": "bakery_cake",
+      "family": "wheat_egg_dairy"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "baked",
+      "ediblePortion": "edible_portion",
+      "preparationState": "prepared",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "halal"
+    ],
+    "allergens": {
+      "eu14": [
+        "gluten_cereals",
+        "eggs",
+        "milk"
+      ],
+      "us9": [
+        "wheat",
+        "egg",
+        "milk"
+      ],
+      "other": [],
+      "mayContain": [
+        "sesame",
+        "tree_nuts"
+      ]
+    },
+    "nutritionPer100g": {
+      "calories": 390,
+      "protein": 7,
+      "fat": 16,
+      "carbs": 55,
+      "fiber": 1.5,
+      "sugar": 28,
+      "sodium": 280
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "Yazdi cupcake",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 3,
+      "fresh": 0
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 5,
+      "creamy": 0,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "snack",
+        "tea_pairing",
+        "dessert"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "whole",
+        "cupcake"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/yazdi_cupcake.webp",
+      "thumbnail": "/media/ingredients/yazdi_cupcake-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "کیک یزدی آماده / Yazdi cupcake یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "کیک یزدى",
+        "کیک یزدیی"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "bakery_item",
+        "packaged"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 2,
+      "persian": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "کیک یزدی",
+        "کیک یزدی آماده"
+      ],
+      "en": [
+        "Yazdi cupcake",
+        "Yazdi cake",
+        "Persian cupcake"
+      ],
+      "ar": [
+        "كيك يزدي"
+      ],
+      "tr": [
+        "Yazdi keki"
+      ],
+      "de": [
+        "Yazdi-Kuchen",
+        "Yazdi-Küchlein"
+      ],
+      "fr": [
+        "gâteau yazdi",
+        "gateau yazdi"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "baked",
+      "defaultPreparationStateApplied": "prepared",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    }
+  }
+]

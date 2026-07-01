@@ -1,0 +1,802 @@
+{
+  "schemaVersion": "lite_food_v0.3_wrapper",
+  "source": "NON_COOKABLE_ITEMS.md",
+  "recipeCount": 96,
+  "baseIngredientDictionaryCount": 1008,
+  "newIngredientExpansionCount": 16,
+  "requiredCombinedIngredientCount": 1024,
+  "phaseOneSequenceStart": 355,
+  "phaseOneSequenceEnd": 450,
+  "contentType": "lite_food",
+  "importOrder": [
+    "1) validate and upsert ingredient expansion 16",
+    "2) validate lite food 96 against combined dictionary 1024",
+    "3) dry-run recipe import",
+    "4) apply idempotent create-only recipe import"
+  ],
+  "categories": {
+    "primaryDbCategory": "lite_food",
+    "uiGroups": [
+      "lite_group_breakfast",
+      "lite_group_snack_drink_side",
+      "lite_group_quick_meal"
+    ],
+    "liteCategories": [
+      "lite_breakfast",
+      "lite_snack",
+      "lite_drink",
+      "lite_side",
+      "lite_quick_meal"
+    ]
+  },
+  "recipes": [
+    {
+      "recipeId": "garnish_lite_fa_001_6f1166ee",
+      "slug": "bread-with-dates-and-sesame",
+      "titleFa": "نان و خرما و کنجد",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_002_6f0bd5c3",
+      "slug": "grape-molasses-and-tahini-on-bread",
+      "titleFa": "شیره انگور و ارده روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_003_84eb3049",
+      "slug": "date-syrup-and-tahini-on-bread",
+      "titleFa": "شیره خرما و ارده روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_004_ab5fbe9d",
+      "slug": "feta-walnut-and-honey-on-bread",
+      "titleFa": "پنیر و گردو و عسل روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_005_c5ef5d2a",
+      "slug": "butter-and-cheese-on-warm-bread",
+      "titleFa": "کره و پنیر روی نان داغ",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_006_0ad8d5a5",
+      "slug": "yogurt-with-honey-and-cinnamon",
+      "titleFa": "ماست و عسل و دارچین",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_007_f1109425",
+      "slug": "persian-breakfast-plate",
+      "titleFa": "بشقاب صبحانه پنیر و سبزی و گوجه",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_008_c8ddf724",
+      "slug": "sesame-halva-on-bread",
+      "titleFa": "حلوا شکری روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_009_2268aef8",
+      "slug": "cream-and-jam-on-bread",
+      "titleFa": "خامه و مربا روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_010_5402d628",
+      "slug": "soft-boiled-egg-with-bread-soldiers",
+      "titleFa": "تخم‌مرغ عسلی با نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_011_8be28048",
+      "slug": "cottage-cheese-with-tomato-toast",
+      "titleFa": "پنیر کاتیج با گوجه و نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_012_c3da9856",
+      "slug": "ricotta-and-honey-toast",
+      "titleFa": "تست ریکوتا و عسل",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_013_374a5ddc",
+      "slug": "almond-butter-and-berry-toast",
+      "titleFa": "تست کره بادام و توت",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_014_d55fff42",
+      "slug": "chia-pudding",
+      "titleFa": "کاسه چیا پودینگ",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_015_d850a87c",
+      "slug": "yogurt-with-peanut-butter-and-banana",
+      "titleFa": "ماست با کره بادام‌زمینی و موز",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_016_565be283",
+      "slug": "cream-cheese-and-cucumber-toast",
+      "titleFa": "تست پنیر خامه‌ای و خیار",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_017_eda0ea67",
+      "slug": "cottage-cheese-fruit-and-nut-bowl",
+      "titleFa": "کاسه پنیر کاتیج با میوه و آجیل",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_018_03b6b930",
+      "slug": "mango-yogurt-smoothie",
+      "titleFa": "اسموتی انبه و ماست",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_019_37a117f6",
+      "slug": "date-and-cacao-smoothie",
+      "titleFa": "اسموتی خرما و کاکائو",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_020_131860ac",
+      "slug": "granola-bowl-with-milk",
+      "titleFa": "کاسه گرانولا با شیر",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_021_da2f107f",
+      "slug": "dates-stuffed-with-cream-cheese",
+      "titleFa": "خرما پر شده با پنیر خامه‌ای",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_022_918e1afd",
+      "slug": "morning-nut-raisin-and-date-mix",
+      "titleFa": "آجیل و کشمش و خرما (مخلوط صبحانه)",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_023_82c3c28e",
+      "slug": "butter-and-date-on-bread",
+      "titleFa": "کره و خرما روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_024_b668a688",
+      "slug": "tabrizi-cheese-and-walnut-with-tea",
+      "titleFa": "پنیر تبریزی و گردو با چای",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_025_cff0018f",
+      "slug": "clotted-cream-and-date-on-bread",
+      "titleFa": "خامه و خرما روی نان",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_026_0f726e6c",
+      "slug": "cold-rice-pudding-cup-with-cinnamon",
+      "titleFa": "شیر برنج آماده با دارچین",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_027_fe3a950f",
+      "slug": "kefir-fruit-bowl",
+      "titleFa": "کاسه کفیر با میوه",
+      "readyForImport": true,
+      "liteCategory": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast"
+    },
+    {
+      "recipeId": "garnish_lite_fa_028_37e48787",
+      "slug": "caramel-popcorn",
+      "titleFa": "پاپ‌کورن کاراملی",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_029_eff8d609",
+      "slug": "tortilla-chips-with-guacamole",
+      "titleFa": "چیپس ذرت با گواکاموله",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_030_0341963d",
+      "slug": "crackers-with-cream-cheese-and-pepper-jelly",
+      "titleFa": "کراکر با پنیر خامه‌ای و مربا فلفل",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_031_1ee0fadc",
+      "slug": "pistachios-and-raisins",
+      "titleFa": "پسته و کشمش",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_032_f43fdf8e",
+      "slug": "dried-mulberry-and-walnut",
+      "titleFa": "توت خشک و گردو",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_033_980e9629",
+      "slug": "dried-figs-stuffed-with-walnut",
+      "titleFa": "انجیر خشک با گردو",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_034_396e101d",
+      "slug": "roasted-chickpeas-and-raisins",
+      "titleFa": "نخودچی کشمش",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_035_3483033b",
+      "slug": "salted-dried-fava-beans",
+      "titleFa": "باقالی شور",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_036_35d377a6",
+      "slug": "chips-with-cheese-dip",
+      "titleFa": "چیپس و دیپ پنیر",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_037_836bac22",
+      "slug": "pretzels-with-mustard-dip",
+      "titleFa": "پرتزل با خردل",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_038_de0f96b1",
+      "slug": "marinated-olive-and-herb-dip-with-bread",
+      "titleFa": "زیتون پرورده با نان",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_039_f5062366",
+      "slug": "dates-stuffed-with-walnut",
+      "titleFa": "خرما با گردو",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_040_167f7ab7",
+      "slug": "biscuits-with-milk",
+      "titleFa": "بیسکویت با شیر",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_041_4c94bb3f",
+      "slug": "cupcake-with-tea",
+      "titleFa": "کیک یزدی با چای",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_042_9be6a738",
+      "slug": "mexican-street-corn-cup",
+      "titleFa": "ذرت مکزیکی فنجانی (الوته آماده)",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_043_fe50cdbf",
+      "slug": "cucumber-walnut-yogurt-dip",
+      "titleFa": "ماست با خیار و گردو (دیپ)",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_044_ee2f79ac",
+      "slug": "honey-sesame-toast",
+      "titleFa": "نان تست با عسل و کنجد",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_045_42ab7334",
+      "slug": "banana-with-honey-and-walnuts",
+      "titleFa": "موز با عسل و گردو",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_046_5acd7ef7",
+      "slug": "cold-kashk-and-walnut-dip-with-bread",
+      "titleFa": "کشک و گردو با نان (دیپ سرد)",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_047_a6f6b289",
+      "slug": "breadsticks-with-cheese",
+      "titleFa": "چوب‌شور با پنیر",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_048_89204b05",
+      "slug": "beet-yogurt-dip",
+      "titleFa": "دیپ ماست و لبو (بورانی سرد)",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_049_91d7f7f4",
+      "slug": "peanut-butter-crackers",
+      "titleFa": "کره بادام‌زمینی روی کراکر",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_050_ad49d256",
+      "slug": "parmesan-popcorn",
+      "titleFa": "پاپ‌کورن با پنیر پارمزان",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_051_25696db8",
+      "slug": "date-cheese-and-walnut-bite",
+      "titleFa": "خرما و پنیر و گردو (لقمه)",
+      "readyForImport": true,
+      "liteCategory": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_052_cbf1699d",
+      "slug": "pineapple-coconut-smoothie",
+      "titleFa": "اسموتی آناناس و نارگیل",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_053_03f59ac8",
+      "slug": "mint-limeade",
+      "titleFa": "شربت آبلیمو و نعنا",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_054_40007b8f",
+      "slug": "iced-matcha-latte",
+      "titleFa": "آیس ماچا لاته",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_055_dce52169",
+      "slug": "iced-honey-vanilla-milk",
+      "titleFa": "شیر طلایی سرد با عسل",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_056_6f618741",
+      "slug": "peach-yogurt-smoothie",
+      "titleFa": "اسموتی هلو و ماست",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_057_c1cfff50",
+      "slug": "fresh-orange-juice",
+      "titleFa": "آب پرتقال تازه",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_058_9891c764",
+      "slug": "sour-cherry-cooler",
+      "titleFa": "شربت آلبالو خانگی با یخ",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_059_c1594c61",
+      "slug": "mint-yogurt-drink",
+      "titleFa": "دوغ نعنا خانگی",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_060_0a0758f2",
+      "slug": "saffron-orange-blossom-cooler",
+      "titleFa": "شربت زعفران و بهارنارنج",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_061_a11935fe",
+      "slug": "watermelon-juice",
+      "titleFa": "آب‌میوه هندوانه",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_062_0b593690",
+      "slug": "chocolate-banana-smoothie",
+      "titleFa": "اسموتی شکلات و موز",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_063_ac0a3894",
+      "slug": "classic-lemonade",
+      "titleFa": "لیموناد کلاسیک",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_064_769340cd",
+      "slug": "iced-green-tea-with-lemon",
+      "titleFa": "آیس چای سبز با لیمو",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_065_cda75133",
+      "slug": "cold-pistachio-milk",
+      "titleFa": "شیر پسته سرد",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_066_09614bdf",
+      "slug": "avocado-smoothie",
+      "titleFa": "اسموتی آووکادو",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_067_65bc28c4",
+      "slug": "sekanjabin-with-cucumber",
+      "titleFa": "شربت سکنجبین با خیار",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_068_37fec2fb",
+      "slug": "fresh-pomegranate-juice",
+      "titleFa": "آب‌انار تازه",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_069_6bd00b08",
+      "slug": "iranian-nut-and-fruit-shake",
+      "titleFa": "معجون انرژی‌زا",
+      "readyForImport": true,
+      "liteCategory": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_070_fad47a28",
+      "slug": "tomato-cucumber-and-onion-chopped-salad",
+      "titleFa": "سالاد گوجه و خیار و پیاز شیرازی‌وار",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_071_ddaeef9b",
+      "slug": "quick-spinach-yogurt-side",
+      "titleFa": "ماست و اسفناج آماده (بورانی سرد)",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_072_dad6a14e",
+      "slug": "pickle-olive-and-tomato-side-plate",
+      "titleFa": "خیارشور و زیتون و گوجه (مزه کنار غذا)",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_073_9481977d",
+      "slug": "red-cabbage-and-carrot-slaw",
+      "titleFa": "سالاد کلم بنفش و هویج",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_074_821a3098",
+      "slug": "simple-green-salad-with-vinaigrette",
+      "titleFa": "سالاد سبز ساده با سس وینگرت",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_075_a94612da",
+      "slug": "watermelon-and-feta-salad",
+      "titleFa": "سالاد هندوانه و فتا",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_076_cd5d8bb9",
+      "slug": "avocado-and-tomato-salad",
+      "titleFa": "سالاد آووکادو و گوجه",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_077_2c5659c2",
+      "slug": "quinoa-salad",
+      "titleFa": "سالاد کینوا آماده با سبزیجات",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_078_578dd342",
+      "slug": "guacamole-with-bread",
+      "titleFa": "دیپ گواکاموله با نان",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_079_999c19be",
+      "slug": "napa-cabbage-kimchi",
+      "titleFa": "کیمچی کلم آماده",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_080_532aebff",
+      "slug": "corn-and-bean-salad",
+      "titleFa": "سالاد ذرت و لوبیا",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_081_1fb39818",
+      "slug": "cabbage-and-pineapple-slaw",
+      "titleFa": "سالاد کارائیب کلم و آناناس",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_082_5e31f95b",
+      "slug": "radish-and-cucumber-with-lemon-salt",
+      "titleFa": "تربچه و خیار با نمک و آبلیمو",
+      "readyForImport": true,
+      "liteCategory": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side"
+    },
+    {
+      "recipeId": "garnish_lite_fa_083_a0f30266",
+      "slug": "cheese-tomato-and-cucumber-sandwich",
+      "titleFa": "ساندویچ پنیر و گوجه و خیار",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_084_b1b75380",
+      "slug": "egg-salad-sandwich",
+      "titleFa": "ساندویچ تخم‌مرغ و مایونز",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_085_7e285172",
+      "slug": "hummus-and-veggie-wrap",
+      "titleFa": "رپ هوموس و سبزیجات",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_086_89bab8fc",
+      "slug": "tuna-and-bean-bowl",
+      "titleFa": "کاسه تن ماهی و لوبیا",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_087_61b3189b",
+      "slug": "turkey-and-cheese-wrap",
+      "titleFa": "رپ بوقلمون و پنیر",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_088_be94fc3b",
+      "slug": "grazing-plate",
+      "titleFa": "بشقاب مزه (پنیر، کراکر، میوه، آجیل)",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_089_7d03e966",
+      "slug": "leftover-rice-bowl-with-tuna",
+      "titleFa": "کاسه برنج باقی‌مانده با تن و سبزیجات",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_090_0e727d97",
+      "slug": "peanut-butter-and-honey-sandwich",
+      "titleFa": "ساندویچ کره بادام‌زمینی و عسل",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_091_be3a7a1d",
+      "slug": "greek-salad-wrap",
+      "titleFa": "رپ سالاد یونانی",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_092_c4c10a13",
+      "slug": "yogurt-fruit-and-granola-lunch-bowl",
+      "titleFa": "کاسه ماست و گرانولا و میوه (وعده سبک)",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_093_936a36ff",
+      "slug": "cream-cheese-and-veggie-roll-up",
+      "titleFa": "رپ پنیر خامه‌ای و سبزیجات",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_094_fde3c956",
+      "slug": "cold-mortadella-and-cheese-sandwich",
+      "titleFa": "ساندویچ کالباس و پنیر سرد",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_095_315eb78a",
+      "slug": "cottage-cheese-and-tuna-bowl",
+      "titleFa": "کاسه کاتیج‌چیز و تن ماهی",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    },
+    {
+      "recipeId": "garnish_lite_fa_096_2d866197",
+      "slug": "avocado-and-tomato-sandwich",
+      "titleFa": "ساندویچ آووکادو و گوجه",
+      "readyForImport": true,
+      "liteCategory": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal"
+    }
+  ]
+}

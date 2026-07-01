@@ -18,14 +18,16 @@ export function useSupportQuery() {
 
   const createMutation = useMutation({
     mutationFn: async ({ subject, message, category, priority }) => {
-      await apiClient.post('/support/tickets', {
+      const { data } = await apiClient.post('/support/tickets', {
         subject,
         message,
-        data: { category, priority },
+        category,
+        priority,
       });
+      return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['tickets']);
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 
@@ -34,7 +36,7 @@ export function useSupportQuery() {
       await apiClient.post(`/support/tickets/${ticketId}/replies`, { message });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['tickets']);
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 
@@ -43,7 +45,7 @@ export function useSupportQuery() {
       await apiClient.patch(`/support/tickets/${ticketId}/close`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['tickets']);
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
     },
   });
 

@@ -1,0 +1,476 @@
+{
+  "schemaVersion": "lite_food_v0.3_ingredient_registry_patch",
+  "addIngredientIds": [
+    "ing_honey",
+    "ing_breadsticks",
+    "ing_cold_turkey_slices",
+    "ing_matcha_powder",
+    "ing_mortadella_cold_cuts",
+    "ing_plain_popcorn",
+    "ing_potato_chips",
+    "ing_pretzels",
+    "ing_ready_caramel_popcorn",
+    "ing_ready_cheese_dip",
+    "ing_ready_rice_pudding_cup",
+    "ing_salted_dried_fava_beans",
+    "ing_sekanjabin_syrup",
+    "ing_sour_cherry_syrup",
+    "ing_tortilla_chips",
+    "ing_yazdi_cupcake"
+  ],
+  "addCodes": [
+    "honey",
+    "breadsticks",
+    "cold_turkey_slices",
+    "matcha_powder",
+    "mortadella_cold_cuts",
+    "plain_popcorn",
+    "potato_chips",
+    "pretzels",
+    "ready_caramel_popcorn",
+    "ready_cheese_dip",
+    "ready_rice_pudding_cup",
+    "salted_dried_fava_beans",
+    "sekanjabin_syrup",
+    "sour_cherry_syrup",
+    "tortilla_chips",
+    "yazdi_cupcake"
+  ],
+  "addRecipeInputAliases": {
+    "ing_honey": {
+      "fa": [
+        "عسل",
+        "عسل طبیعی",
+        "عسل صبحانه"
+      ],
+      "en": [
+        "honey",
+        "bee honey"
+      ],
+      "ar": [
+        "عسل",
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "ing_breadsticks": {
+      "fa": [
+        "چوب‌شور",
+        "برداستیک",
+        "نان چوبی شور"
+      ],
+      "en": [
+        "breadsticks",
+        "plain breadsticks",
+        "grissini"
+      ],
+      "ar": [
+        "أعواد خبز"
+      ],
+      "tr": [
+        "grissini",
+        "ekmek çubuğu"
+      ],
+      "de": [
+        "Brotstangen",
+        "Grissini"
+      ],
+      "fr": [
+        "gressins"
+      ]
+    },
+    "ing_cold_turkey_slices": {
+      "fa": [
+        "ورقه بوقلمون سرد",
+        "بوقلمون ورقه‌ای",
+        "کالباس بوقلمون"
+      ],
+      "en": [
+        "cold turkey slices",
+        "sliced turkey",
+        "turkey deli slices"
+      ],
+      "ar": [
+        "شرائح ديك رومي باردة"
+      ],
+      "tr": [
+        "hindi füme dilim",
+        "hindi dilimleri"
+      ],
+      "de": [
+        "Putenaufschnitt",
+        "Putenbrust Aufschnitt"
+      ],
+      "fr": [
+        "tranches de dinde",
+        "dinde en tranches"
+      ]
+    },
+    "ing_matcha_powder": {
+      "fa": [
+        "پودر ماچا",
+        "ماچا"
+      ],
+      "en": [
+        "matcha powder",
+        "matcha"
+      ],
+      "ar": [
+        "مسحوق ماتشا",
+        "ماتشا"
+      ],
+      "tr": [
+        "matcha tozu",
+        "matcha"
+      ],
+      "de": [
+        "Matcha-Pulver",
+        "Matcha"
+      ],
+      "fr": [
+        "poudre de matcha",
+        "matcha"
+      ]
+    },
+    "ing_mortadella_cold_cuts": {
+      "fa": [
+        "کالباس",
+        "مارتادلا",
+        "کالباس سرد",
+        "مارتادلا سرد"
+      ],
+      "en": [
+        "mortadella",
+        "cold cuts",
+        "mortadella cold cuts"
+      ],
+      "ar": [
+        "مرتديلا",
+        "شرائح مرتديلا"
+      ],
+      "tr": [
+        "mortadella",
+        "salam dilimleri"
+      ],
+      "de": [
+        "Mortadella",
+        "Aufschnitt"
+      ],
+      "fr": [
+        "mortadelle",
+        "charcuterie en tranches"
+      ]
+    },
+    "ing_plain_popcorn": {
+      "fa": [
+        "پاپ‌کورن ساده",
+        "پاپ کورن ساده",
+        "ذرت بو داده ساده"
+      ],
+      "en": [
+        "plain popcorn",
+        "popcorn"
+      ],
+      "ar": [
+        "فشار عادي",
+        "ذرة فشار"
+      ],
+      "tr": [
+        "sade patlamış mısır",
+        "patlamış mısır"
+      ],
+      "de": [
+        "Popcorn"
+      ],
+      "fr": [
+        "pop-corn nature",
+        "popcorn"
+      ]
+    },
+    "ing_potato_chips": {
+      "fa": [
+        "چیپس",
+        "چیپس سیب‌زمینی",
+        "چیپس ساده"
+      ],
+      "en": [
+        "potato chips",
+        "plain potato chips",
+        "crisps"
+      ],
+      "ar": [
+        "رقائق بطاطس"
+      ],
+      "tr": [
+        "patates cipsi"
+      ],
+      "de": [
+        "Kartoffelchips",
+        "Chips"
+      ],
+      "fr": [
+        "chips",
+        "chips de pomme de terre"
+      ]
+    },
+    "ing_pretzels": {
+      "fa": [
+        "پرتزل",
+        "پرتزل آماده"
+      ],
+      "en": [
+        "pretzels",
+        "pretzel snacks"
+      ],
+      "ar": [
+        "بريتزل"
+      ],
+      "tr": [
+        "pretzel"
+      ],
+      "de": [
+        "Brezeln",
+        "Pretzels"
+      ],
+      "fr": [
+        "bretzels",
+        "pretzels"
+      ]
+    },
+    "ing_ready_caramel_popcorn": {
+      "fa": [
+        "پاپ‌کورن کاراملی",
+        "پاپ کورن کاراملی",
+        "پاپ‌کورن کاراملی آماده"
+      ],
+      "en": [
+        "caramel popcorn",
+        "ready caramel popcorn"
+      ],
+      "ar": [
+        "فشار بالكراميل"
+      ],
+      "tr": [
+        "karamelli patlamış mısır"
+      ],
+      "de": [
+        "Karamell-Popcorn"
+      ],
+      "fr": [
+        "pop-corn caramel"
+      ]
+    },
+    "ing_ready_cheese_dip": {
+      "fa": [
+        "دیپ پنیر",
+        "دیپ پنیر آماده",
+        "سس پنیر آماده"
+      ],
+      "en": [
+        "ready cheese dip",
+        "cheese dip",
+        "cheese sauce dip"
+      ],
+      "ar": [
+        "صلصة جبن جاهزة"
+      ],
+      "tr": [
+        "peynir dip sos",
+        "hazır peynir sos"
+      ],
+      "de": [
+        "Käsedip",
+        "Kaesedip"
+      ],
+      "fr": [
+        "dip au fromage",
+        "sauce fromage"
+      ]
+    },
+    "ing_ready_rice_pudding_cup": {
+      "fa": [
+        "شیر برنج آماده",
+        "شیر برنج بسته‌بندی",
+        "رایس پودینگ آماده"
+      ],
+      "en": [
+        "ready rice pudding",
+        "rice pudding cup",
+        "cold rice pudding cup"
+      ],
+      "ar": [
+        "أرز بالحليب جاهز"
+      ],
+      "tr": [
+        "hazır sütlaç",
+        "sütlaç"
+      ],
+      "de": [
+        "Milchreis",
+        "fertiger Milchreis"
+      ],
+      "fr": [
+        "riz au lait",
+        "riz au lait prêt"
+      ]
+    },
+    "ing_salted_dried_fava_beans": {
+      "fa": [
+        "باقالی شور",
+        "باقالی خشک شور",
+        "باقالی شور آماده"
+      ],
+      "en": [
+        "salted dried fava beans",
+        "salted fava beans"
+      ],
+      "ar": [
+        "فول مملح",
+        "فول مجفف مملح"
+      ],
+      "tr": [
+        "tuzlu bakla",
+        "tuzlu kuru bakla"
+      ],
+      "de": [
+        "gesalzene Ackerbohnen"
+      ],
+      "fr": [
+        "fèves salées",
+        "feves salees"
+      ]
+    },
+    "ing_sekanjabin_syrup": {
+      "fa": [
+        "شربت سکنجبین",
+        "سکنجبین آماده",
+        "شربت سکنجبین آماده"
+      ],
+      "en": [
+        "sekanjabin syrup",
+        "sekanjabin concentrate"
+      ],
+      "ar": [
+        "سكنجبين",
+        "شراب سكنجبين"
+      ],
+      "tr": [
+        "sekanjabin şurubu"
+      ],
+      "de": [
+        "Sekanjabin-Sirup"
+      ],
+      "fr": [
+        "sirop de sekanjabin"
+      ]
+    },
+    "ing_sour_cherry_syrup": {
+      "fa": [
+        "شربت آلبالو",
+        "سیروپ آلبالو",
+        "شربت آلبالوی آماده"
+      ],
+      "en": [
+        "sour cherry syrup",
+        "cherry syrup"
+      ],
+      "ar": [
+        "شراب كرز حامض"
+      ],
+      "tr": [
+        "vişne şurubu"
+      ],
+      "de": [
+        "Sauerkirschsirup"
+      ],
+      "fr": [
+        "sirop de griotte",
+        "sirop de cerise acide"
+      ]
+    },
+    "ing_tortilla_chips": {
+      "fa": [
+        "چیپس ذرت",
+        "چیپس تورتیلا",
+        "چیپس ذرت تورتیلا"
+      ],
+      "en": [
+        "tortilla chips",
+        "corn tortilla chips"
+      ],
+      "ar": [
+        "رقائق تورتيلا",
+        "رقائق ذرة"
+      ],
+      "tr": [
+        "tortilla cipsi",
+        "mısır cipsi"
+      ],
+      "de": [
+        "Tortilla-Chips",
+        "Maischips"
+      ],
+      "fr": [
+        "chips tortilla",
+        "chips de maïs"
+      ]
+    },
+    "ing_yazdi_cupcake": {
+      "fa": [
+        "کیک یزدی",
+        "کیک یزدی آماده"
+      ],
+      "en": [
+        "Yazdi cupcake",
+        "Yazdi cake",
+        "Persian cupcake"
+      ],
+      "ar": [
+        "كيك يزدي"
+      ],
+      "tr": [
+        "Yazdi keki"
+      ],
+      "de": [
+        "Yazdi-Kuchen",
+        "Yazdi-Küchlein"
+      ],
+      "fr": [
+        "gâteau yazdi",
+        "gateau yazdi"
+      ]
+    }
+  },
+  "categoryPlacement": {
+    "sweetener": [
+      "ing_honey",
+      "ing_sekanjabin_syrup",
+      "ing_sour_cherry_syrup"
+    ],
+    "processed_food": [
+      "ing_breadsticks",
+      "ing_cold_turkey_slices",
+      "ing_mortadella_cold_cuts",
+      "ing_plain_popcorn",
+      "ing_potato_chips",
+      "ing_pretzels",
+      "ing_ready_caramel_popcorn",
+      "ing_ready_cheese_dip",
+      "ing_ready_rice_pudding_cup",
+      "ing_salted_dried_fava_beans",
+      "ing_tortilla_chips",
+      "ing_yazdi_cupcake"
+    ],
+    "beverage": [
+      "ing_matcha_powder"
+    ]
+  }
+}

@@ -52,7 +52,14 @@
     "recipes:validate:international-150": "node scripts/recipes/validate-international-core-150-v0-6-0.js",
     "recipes:import:international-150:dry-run": "node --env-file=.env scripts/recipes/import-international-core-150-v0-6-0.js --dry-run",
     "recipes:import:international-150": "node --env-file=.env scripts/recipes/import-international-core-150-v0-6-0.js --apply",
-    "recipes:verify:international-150": "node --env-file=.env scripts/recipes/verify-international-core-150-v0-6-0.js"
+    "recipes:verify:international-150": "node --env-file=.env scripts/recipes/verify-international-core-150-v0-6-0.js",
+    "lite-food:validate:ingredients": "node scripts/lite-food/validate-lite-food-ingredient-expansion-v0-3.js",
+    "lite-food:import:ingredients:dry": "node --env-file=.env scripts/lite-food/import-lite-food-ingredient-expansion-v0-3.js --dry-run",
+    "lite-food:import:ingredients": "node --env-file=.env scripts/lite-food/import-lite-food-ingredient-expansion-v0-3.js --apply",
+    "lite-food:validate:recipes": "node --env-file=.env scripts/lite-food/validate-lite-food-96-v0-3.js --db",
+    "lite-food:import:recipes:dry": "node --env-file=.env scripts/lite-food/import-lite-food-96-v0-3.js --dry-run",
+    "lite-food:import:recipes": "node --env-file=.env scripts/lite-food/import-lite-food-96-v0-3.js --apply",
+    "lite-food:verify": "node --env-file=.env scripts/lite-food/verify-lite-food-96-v0-3.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

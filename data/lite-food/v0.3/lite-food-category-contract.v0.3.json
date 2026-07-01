@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "lite_food_v0.3_category_contract",
+  "dbCategoryValue": "lite_food",
+  "doNotAddPrismaCategoryMigrationUnlessProductAlreadyHasCategoryTable": true,
+  "uiGroups": [
+    {
+      "id": "lite_group_breakfast",
+      "titleFa": "صبحانه‌های سریع",
+      "descriptionFa": "آیتم‌های صبحانه، نان/لبنیات/میوه و آماده‌سازی کوتاه."
+    },
+    {
+      "id": "lite_group_snack_drink_side",
+      "titleFa": "میان‌وعده، نوشیدنی و کنارغذا",
+      "descriptionFa": "اسنک‌ها، نوشیدنی‌های سریع و سایدهای سبک."
+    },
+    {
+      "id": "lite_group_quick_meal",
+      "titleFa": "وعده‌های سریع",
+      "descriptionFa": "ساندویچ، رپ، کاسه و آیتم‌های مناسب وعده سبک."
+    }
+  ],
+  "subCategories": [
+    {
+      "id": "lite_breakfast",
+      "uiGroup": "lite_group_breakfast",
+      "titleFa": "صبحانه"
+    },
+    {
+      "id": "lite_snack",
+      "uiGroup": "lite_group_snack_drink_side",
+      "titleFa": "میان‌وعده"
+    },
+    {
+      "id": "lite_drink",
+      "uiGroup": "lite_group_snack_drink_side",
+      "titleFa": "نوشیدنی"
+    },
+    {
+      "id": "lite_side",
+      "uiGroup": "lite_group_snack_drink_side",
+      "titleFa": "کنارغذا"
+    },
+    {
+      "id": "lite_quick_meal",
+      "uiGroup": "lite_group_quick_meal",
+      "titleFa": "وعده سریع"
+    }
+  ]
+}

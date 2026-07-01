@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "lite_food_v0.2_missing_decision_report",
+  "policy": "No fake mapping. Missing dictionary terms block import unless the user approves dictionary expansion or title/ingredient replacement.",
+  "totalItems": 96,
+  "readyForImportItems": 66,
+  "blockedItems": 30,
+  "distinctMissingTerms": 16,
+  "missingTerms": [
+    {
+      "term": "honey",
+      "count": 17,
+      "affected": [
+        {
+          "sourceIndex": 4,
+          "titleFa": "پنیر و گردو و عسل روی نان",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 6,
+          "titleFa": "ماست و عسل و دارچین",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 12,
+          "titleFa": "تست ریکوتا و عسل",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 14,
+          "titleFa": "کاسه چیا پودینگ",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 15,
+          "titleFa": "ماست با کره بادام‌زمینی و موز",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 17,
+          "titleFa": "کاسه پنیر کاتیج با میوه و آجیل",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 26,
+          "titleFa": "شیر برنج آماده با دارچین",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 44,
+          "titleFa": "نان تست با عسل و کنجد",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 45,
+          "titleFa": "موز با عسل و گردو",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 55,
+          "titleFa": "شیر طلایی سرد با عسل",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 56,
+          "titleFa": "اسموتی هلو و ماست",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 64,
+          "titleFa": "آیس چای سبز با لیمو",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 65,
+          "titleFa": "شیر پسته سرد",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 66,
+          "titleFa": "اسموتی آووکادو",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 69,
+          "titleFa": "معجون انرژی‌زا",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 90,
+          "titleFa": "ساندویچ کره بادام‌زمینی و عسل",
+          "line": "عسل"
+        },
+        {
+          "sourceIndex": 92,
+          "titleFa": "کاسه ماست و گرانولا و میوه (وعده سبک)",
+          "line": "عسل"
+        }
+      ]
+    },
+    {
+      "term": "breadsticks",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 47,
+          "titleFa": "چوب‌شور با پنیر",
+          "line": "چوب‌شور یا برداستیک آماده"
+        }
+      ]
+    },
+    {
+      "term": "cold_turkey_slices",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 87,
+          "titleFa": "رپ بوقلمون و پنیر",
+          "line": "ورقه بوقلمون سرد آماده"
+        }
+      ]
+    },
+    {
+      "term": "matcha_powder",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 54,
+          "titleFa": "آیس ماچا لاته",
+          "line": "پودر ماچا"
+        }
+      ]
+    },
+    {
+      "term": "mortadella_cold_cuts",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 94,
+          "titleFa": "ساندویچ کالباس و پنیر سرد",
+          "line": "کالباس یا مارتادلا سرد"
+        }
+      ]
+    },
+    {
+      "term": "plain_popcorn",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 50,
+          "titleFa": "پاپ‌کورن با پنیر پارمزان",
+          "line": "پاپ‌کورن ساده آماده"
+        }
+      ]
+    },
+    {
+      "term": "potato_chips",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 36,
+          "titleFa": "چیپس و دیپ پنیر",
+          "line": "چیپس آماده"
+        }
+      ]
+    },
+    {
+      "term": "pretzels",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 37,
+          "titleFa": "پرتزل با خردل",
+          "line": "پرتزل آماده"
+        }
+      ]
+    },
+    {
+      "term": "ready_caramel_popcorn",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 28,
+          "titleFa": "پاپ‌کورن کاراملی",
+          "line": "پاپ‌کورن کاراملی آماده"
+        }
+      ]
+    },
+    {
+      "term": "ready_cheese_dip",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 36,
+          "titleFa": "چیپس و دیپ پنیر",
+          "line": "دیپ پنیر آماده"
+        }
+      ]
+    },
+    {
+      "term": "ready_rice_pudding_cup",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 26,
+          "titleFa": "شیر برنج آماده با دارچین",
+          "line": "شیر برنج آماده"
+        }
+      ]
+    },
+    {
+      "term": "salted_dried_fava_beans",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 35,
+          "titleFa": "باقالی شور",
+          "line": "باقالی شور آماده"
+        }
+      ]
+    },
+    {
+      "term": "sekanjabin_syrup",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 67,
+          "titleFa": "شربت سکنجبین با خیار",
+          "line": "شربت سکنجبین آماده"
+        }
+      ]
+    },
+    {
+      "term": "sour_cherry_syrup",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 58,
+          "titleFa": "شربت آلبالو خانگی با یخ",
+          "line": "شربت آلبالو"
+        }
+      ]
+    },
+    {
+      "term": "tortilla_chips",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 29,
+          "titleFa": "چیپس ذرت با گواکاموله",
+          "line": "چیپس ذرت"
+        }
+      ]
+    },
+    {
+      "term": "yazdi_cupcake",
+      "count": 1,
+      "affected": [
+        {
+          "sourceIndex": 41,
+          "titleFa": "کیک یزدی با چای",
+          "line": "کیک یزدی آماده"
+        }
+      ]
+    }
+  ]
+}

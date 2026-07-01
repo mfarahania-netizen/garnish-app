@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "lite_food_v0.3_validation_report",
+  "source": "NON_COOKABLE_ITEMS.md",
+  "baseIngredientDictionaryCount": 1008,
+  "newIngredientExpansionCount": 16,
+  "combinedIngredientDictionaryCount": 1024,
+  "totalItems": 96,
+  "readyForImportItems": 96,
+  "blockedUnresolvedItems": 0,
+  "ingredientLines": 333,
+  "patchedPreviouslyMissingIngredientLines": 32,
+  "unresolvedIngredientLines": 0,
+  "invalidIngredientIds": 0,
+  "ingredientIdCodeMismatch": 0,
+  "duplicateRecipeIds": 0,
+  "duplicateSlugs": 0,
+  "duplicateNewIngredientIds": 0,
+  "duplicateNewIngredientCodes": 0,
+  "newIngredientIdsCollidingWithBase": 0,
+  "newIngredientCodesCollidingWithBase": 0,
+  "readyForDatabaseApplyAfterIngredientExpansion": true,
+  "policy": [
+    "Apply ingredient expansion first; only then import lite-food recipes.",
+    "Nutrition is not source-locked and must not be used for medical/strict diet claims."
+  ]
+}

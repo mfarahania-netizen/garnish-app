@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "lite_food_v0.3_missing_resolution_report",
+  "previousDistinctMissingTerms": 16,
+  "resolution": "dictionary_expansion_required_before_import",
+  "terms": [
+    {
+      "term": "honey",
+      "newCode": "honey",
+      "newIngredientId": "ing_honey"
+    },
+    {
+      "term": "breadsticks",
+      "newCode": "breadsticks",
+      "newIngredientId": "ing_breadsticks"
+    },
+    {
+      "term": "cold_turkey_slices",
+      "newCode": "cold_turkey_slices",
+      "newIngredientId": "ing_cold_turkey_slices"
+    },
+    {
+      "term": "matcha_powder",
+      "newCode": "matcha_powder",
+      "newIngredientId": "ing_matcha_powder"
+    },
+    {
+      "term": "mortadella_cold_cuts",
+      "newCode": "mortadella_cold_cuts",
+      "newIngredientId": "ing_mortadella_cold_cuts"
+    },
+    {
+      "term": "plain_popcorn",
+      "newCode": "plain_popcorn",
+      "newIngredientId": "ing_plain_popcorn"
+    },
+    {
+      "term": "potato_chips",
+      "newCode": "potato_chips",
+      "newIngredientId": "ing_potato_chips"
+    },
+    {
+      "term": "pretzels",
+      "newCode": "pretzels",
+      "newIngredientId": "ing_pretzels"
+    },
+    {
+      "term": "ready_caramel_popcorn",
+      "newCode": "ready_caramel_popcorn",
+      "newIngredientId": "ing_ready_caramel_popcorn"
+    },
+    {
+      "term": "ready_cheese_dip",
+      "newCode": "ready_cheese_dip",
+      "newIngredientId": "ing_ready_cheese_dip"
+    },
+    {
+      "term": "ready_rice_pudding_cup",
+      "newCode": "ready_rice_pudding_cup",
+      "newIngredientId": "ing_ready_rice_pudding_cup"
+    },
+    {
+      "term": "salted_dried_fava_beans",
+      "newCode": "salted_dried_fava_beans",
+      "newIngredientId": "ing_salted_dried_fava_beans"
+    },
+    {
+      "term": "sekanjabin_syrup",
+      "newCode": "sekanjabin_syrup",
+      "newIngredientId": "ing_sekanjabin_syrup"
+    },
+    {
+      "term": "sour_cherry_syrup",
+      "newCode": "sour_cherry_syrup",
+      "newIngredientId": "ing_sour_cherry_syrup"
+    },
+    {
+      "term": "tortilla_chips",
+      "newCode": "tortilla_chips",
+      "newIngredientId": "ing_tortilla_chips"
+    },
+    {
+      "term": "yazdi_cupcake",
+      "newCode": "yazdi_cupcake",
+      "newIngredientId": "ing_yazdi_cupcake"
+    }
+  ],
+  "previousBlockedItemsNowReady": 30,
+  "previousReadyItemsStillReady": 66,
+  "all96ReadyAfterExpansion": true
+}

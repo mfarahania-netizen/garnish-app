@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "source": "lite-food-v0.3",
+  "generatedAt": "2026-07-01T10:33:30.085Z",
+  "ingredientCount": 1024,
+  "expansionRows": 16,
+  "liteRows": 96,
+  "taggedLiteRows": 96,
+  "categoryCount": 96,
+  "activePublicCount": 96,
+  "nullIngredientLines": 0,
+  "danglingIngredientReferences": 0,
+  "metadataFailures": 0,
+  "samples": [
+    {
+      "slug": "feta-walnut-and-honey-on-bread",
+      "id": "garnish_lite_fa_004_ab5fbe9d",
+      "title": "پنیر و گردو و عسل روی نان",
+      "ingredientIds": [
+        "ing_lavash_bread",
+        "ing_feta_cheese",
+        "ing_walnuts_raw",
+        "ing_honey"
+      ],
+      "shoppingListCompatible": true
+    },
+    {
+      "slug": "iced-matcha-latte",
+      "id": "garnish_lite_fa_054_40007b8f",
+      "title": "آیس ماچا لاته",
+      "ingredientIds": [
+        "ing_matcha_powder",
+        "ing_whole_milk"
+      ],
+      "shoppingListCompatible": true
+    },
+    {
+      "slug": "cold-mortadella-and-cheese-sandwich",
+      "id": "garnish_lite_fa_094_fde3c956",
+      "title": "ساندویچ کالباس و پنیر سرد",
+      "ingredientIds": [
+        "ing_mortadella_cold_cuts",
+        "ing_cheddar_cheese",
+        "ing_cucumber_pickled",
+        "ing_tomato_raw",
+        "ing_baguette",
+        "ing_mayonnaise"
+      ],
+      "shoppingListCompatible": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "sourceDataValidAgainstDbIngredients",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "ingredientCountAtLeast1024",
+      "ok": true,
+      "detail": "ingredientCount=1024"
+    },
+    {
+      "name": "all16ExpansionIngredientsExist",
+      "ok": true,
+      "detail": "expansionRows=16"
+    },
+    {
+      "name": "all96LiteRecipeIdsExist",
+      "ok": true,
+      "detail": "liteRows=96"
+    },
+    {
+      "name": "all96LiteRecipesTagged",
+      "ok": true,
+      "detail": "tagged=96"
+    },
+    {
+      "name": "allLiteIngredientLinesConnected",
+      "ok": true,
+      "detail": "nullIngredientLines=0"
+    },
+    {
+      "name": "noDanglingLiteIngredientRefs",
+      "ok": true,
+      "detail": "dangling=0"
+    },
+    {
+      "name": "categoryLiteFoodQueryable",
+      "ok": true,
+      "detail": "categoryCount=96"
+    },
+    {
+      "name": "allLiteRecipesActiveAndPublic",
+      "ok": true,
+      "detail": "activePublicCount=96"
+    },
+    {
+      "name": "liteMetadataAndSearchTermsPreserved",
+      "ok": true,
+      "detail": "metadataFailures=0"
+    },
+    {
+      "name": "sampleShoppingListExtractionCompatible",
+      "ok": true,
+      "detail": "[{\"slug\":\"feta-walnut-and-honey-on-bread\",\"id\":\"garnish_lite_fa_004_ab5fbe9d\",\"title\":\"پنیر و گردو و عسل روی نان\",\"ingredientIds\":[\"ing_lavash_bread\",\"ing_feta_cheese\",\"ing_walnuts_raw\",\"ing_honey\"],\"shoppingListCompatible\":true},{\"slug\":\"iced-matcha-latte\",\"id\":\"garnish_lite_fa_054_40007b8f\",\"title\":\"آیس ماچا لاته\",\"ingredientIds\":[\"ing_matcha_powder\",\"ing_whole_milk\"],\"shoppingListCompatible\":true},{\"slug\":\"cold-mortadella-and-cheese-sandwich\",\"id\":\"garnish_lite_fa_094_fde3c956\",\"title\":\"ساندویچ کالباس و پنیر سرد\",\"ingredientIds\":[\"ing_mortadella_cold_cuts\",\"ing_cheddar_cheese\",\"ing_cucumber_pickled\",\"ing_tomato_raw\",\"ing_baguette\",\"ing_mayonnaise\"],\"shoppingListCompatible\":true}]"
+    }
+  ],
+  "ok": true,
+  "destructiveOperationUsed": false
+}

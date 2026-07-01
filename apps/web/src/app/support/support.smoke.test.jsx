@@ -1,4 +1,4 @@
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 
 // jsdom lacks these — Mantine's autosize Textarea (new-ticket form) touches them. Polyfill before any mount.
@@ -25,8 +25,13 @@ vi.mock('../../lib/apiClient', () => ({
 }));
 
 import SupportPage from './page';
+import apiClient from '../../lib/apiClient';
 
 describe('SupportPage smoke', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('renders the header, empty state, and the new-ticket CTA', async () => {
     renderWithProviders(<SupportPage />);
     expect(screen.getByRole('heading', { name: 'پشتیبانی' })).toBeInTheDocument();
@@ -42,5 +47,29 @@ describe('SupportPage smoke', () => {
     expect(screen.getByRole('button', { name: 'فنی' })).toBeInTheDocument(); // category chip
     expect(screen.getByRole('button', { name: 'فوری' })).toBeInTheDocument(); // priority chip
     expect(screen.getByRole('button', { name: 'ارسالِ تیکت' })).toBeInTheDocument();
+  });
+
+  it('submits a valid user ticket to the support API', async () => {
+    renderWithProviders(<SupportPage />);
+    await screen.findByText('هنوز تیکتی نداری');
+    fireEvent.click(screen.getByRole('button', { name: /تیکتِ جدید/ }));
+
+    const submit = screen.getByTestId('support-submit-ticket');
+    expect(submit).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('عنوان'), { target: { value: 'مشکل ورود' } });
+    fireEvent.change(screen.getByLabelText('توضیح'), { target: { value: 'ارسال تیکت از سمت کاربر کار نمی‌کند.' } });
+
+    expect(submit).toBeEnabled();
+    fireEvent.click(submit);
+
+    await waitFor(() => {
+      expect(apiClient.post).toHaveBeenCalledWith('/support/tickets', {
+        subject: 'مشکل ورود',
+        message: 'ارسال تیکت از سمت کاربر کار نمی‌کند.',
+        category: 'general',
+        priority: 'normal',
+      });
+    });
   });
 });

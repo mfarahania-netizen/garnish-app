@@ -214,13 +214,26 @@ function NewTicket({ onBack, onCreated }) {
   const [priority, setPriority] = useState('normal');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const valid = subject.trim().length >= 3 && message.trim().length >= 10;
-  const submit = () => { if (valid) create.mutate({ subject: subject.trim(), message: message.trim(), category, priority }, { onSuccess: (t) => onCreated(t.id) }); };
+  const subjectOk = subject.trim().length >= 3;
+  const messageOk = message.trim().length >= 10;
+  const valid = subjectOk && messageOk;
+  const rawErrorMessage = Array.isArray(create.error?.response?.data?.message)
+    ? create.error.response.data.message.join('، ')
+    : create.error?.response?.data?.message;
+  const errorMessage = typeof rawErrorMessage === 'string' ? rawErrorMessage : null;
+  const submit = (event) => {
+    event?.preventDefault();
+    if (!valid || create.isPending) return;
+    create.mutate(
+      { subject: subject.trim(), message: message.trim(), category, priority },
+      { onSuccess: (t) => { if (t?.id) onCreated(t.id); } },
+    );
+  };
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
       <BackHeader title="تیکتِ جدید" onBack={onBack} />
-      <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-5)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-8)' }}>
+      <Box component="form" onSubmit={submit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-5)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-8)' }}>
         {/* category as tiles (matches «دستهٔ غذا») */}
         <Box>
           <Text component="div" style={fieldStyles.label}>موضوع چیست؟</Text>
@@ -248,8 +261,9 @@ function NewTicket({ onBack, onCreated }) {
         </Box>
         <TextInput label="عنوان" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="کوتاه و گویا" styles={fieldStyles} maxLength={200} />
         <Textarea label="توضیح" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="مشکل یا سؤالت را کامل بنویس…" autosize minRows={4} maxRows={10} styles={fieldStyles} maxLength={5000} />
-        {create.isError ? <Text style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-danger-fg, #b3261e)' }}>ارسال نشد. دوباره تلاش کن.</Text> : null}
-        <UnstyledButton type="button" onClick={submit} disabled={!valid || create.isPending} style={{ ...cta, minBlockSize: 50, opacity: valid ? 1 : 0.5 }}>{create.isPending ? <Loader size={18} color="#fff" /> : 'ارسالِ تیکت'}</UnstyledButton>
+        {!valid ? <Text style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: -8 }}>عنوان باید حداقل ۳ کاراکتر و توضیح حداقل ۱۰ کاراکتر باشد.</Text> : null}
+        {create.isError ? <Text role="alert" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-danger-fg, #b3261e)' }}>{errorMessage || 'ارسال نشد. اتصال یا ورودت را بررسی کن و دوباره تلاش کن.'}</Text> : null}
+        <UnstyledButton type="submit" data-testid="support-submit-ticket" disabled={!valid || create.isPending} style={{ ...cta, minBlockSize: 50, opacity: valid ? 1 : 0.5 }}>{create.isPending ? <Loader size={18} color="#fff" /> : 'ارسالِ تیکت'}</UnstyledButton>
         <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', textAlign: 'center', margin: 0 }}>معمولاً در کمتر از یک روزِ کاری جواب می‌دهیم.</Text>
       </Box>
     </Box>
