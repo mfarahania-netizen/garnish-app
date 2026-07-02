@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "global_143_sample_fetch_v0.1",
+  "generatedAt": "2026-07-01T13:14:20.391Z",
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "category": "Batch 01",
+      "slug": "classic-bakers-croissant",
+      "id": "garnish_recipe_global_143_001_758db93a",
+      "status": 200,
+      "ok": true,
+      "title": "کروسان کلاسیک لایه‌ای",
+      "ingredients": 8,
+      "steps": 8
+    },
+    {
+      "category": "Batch 02",
+      "slug": "smashed-avocado-toast",
+      "id": "garnish_recipe_global_143_022_a1009be1",
+      "status": 200,
+      "ok": true,
+      "title": "آووکادو تست له‌شده",
+      "ingredients": 7,
+      "steps": 3
+    },
+    {
+      "category": "Batch 03",
+      "slug": "korean-napa-cabbage-kimchi",
+      "id": "garnish_recipe_global_143_041_33abbd3b",
+      "status": 200,
+      "ok": true,
+      "title": "کیمچی کلم چینی",
+      "ingredients": 12,
+      "steps": 5
+    },
+    {
+      "category": "Batch 04",
+      "slug": "grilled-halloumi-lemon-herbs",
+      "id": "garnish_recipe_global_143_061_6a6023a1",
+      "status": 200,
+      "ok": true,
+      "title": "حلومی گریل‌شده با لیمو و سبزی",
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "category": "Batch 05 dessert",
+      "slug": "umm-ali-egyptian-bread-pudding",
+      "id": "garnish_recipe_global_143_083_233e9bde",
+      "status": 200,
+      "ok": true,
+      "title": "اُم علی مصری",
+      "ingredients": 8,
+      "steps": 4
+    },
+    {
+      "category": "Batch 06 complex main",
+      "slug": "murgh-makhani-butter-chicken",
+      "id": "garnish_recipe_global_143_101_f007a227",
+      "status": 200,
+      "ok": true,
+      "title": "مرغ کره‌ای هندی",
+      "ingredients": 14,
+      "steps": 5
+    },
+    {
+      "category": "Batch 07",
+      "slug": "peruvian-lomo-saltado",
+      "id": "garnish_recipe_global_143_121_ee99f013",
+      "status": 200,
+      "ok": true,
+      "title": "لومو سالتادوی پرویی",
+      "ingredients": 11,
+      "steps": 5
+    },
+    {
+      "category": "containsPork",
+      "slug": "pan-fried-pork-gyoza",
+      "id": "garnish_recipe_global_143_040_dcfd7c46",
+      "status": 200,
+      "ok": true,
+      "title": "گیوزای خوک و کلم",
+      "ingredients": 11,
+      "steps": 5
+    },
+    {
+      "category": "dessert",
+      "slug": "chocolate-lava-cake",
+      "id": "garnish_recipe_global_143_092_87b53529",
+      "status": 200,
+      "ok": true,
+      "title": "کیک لاوای شکلاتی",
+      "ingredients": 7,
+      "steps": 4
+    },
+    {
+      "category": "complex main",
+      "slug": "classic-beef-wellington",
+      "id": "garnish_recipe_global_143_130_c4a5fa79",
+      "status": 200,
+      "ok": true,
+      "title": "بیف ولینگتون کلاسیک",
+      "ingredients": 8,
+      "steps": 5
+    }
+  ],
+  "pass": true
+}

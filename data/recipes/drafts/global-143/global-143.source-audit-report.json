@@ -1,0 +1,1575 @@
+[
+  {
+    "slug": "classic-bakers-croissant",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-bakers-croissant; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "full-english-breakfast",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for full-english-breakfast; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "eggs-benedict",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for eggs-benedict; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "bagel-lox-cream-cheese",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for bagel-lox-cream-cheese; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "chinese-breakfast-congee",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for chinese-breakfast-congee; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "cantonese-siu-mai-dim-sum",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for cantonese-siu-mai-dim-sum; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "natto-gohan",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for natto-gohan; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "tamagoyaki-japanese-rolled-omelette",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for tamagoyaki-japanese-rolled-omelette; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "turkish-kaymak-honey",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for turkish-kaymak-honey; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "sucuklu-yumurta",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for sucuklu-yumurta; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "ful-medames",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for ful-medames; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "aloo-paratha",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for aloo-paratha; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "idli-with-sambar",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for idli-with-sambar; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "masala-dosa",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for masala-dosa; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "churros-con-chocolate",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for churros-con-chocolate; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "pan-con-tomate",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for pan-con-tomate; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "german-brotchen-breakfast-spread",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for german-brotchen-breakfast-spread; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "bircher-muesli",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for bircher-muesli; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "american-pancakes-maple-syrup",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for american-pancakes-maple-syrup; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "buttermilk-waffles",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for buttermilk-waffles; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-french-toast",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-french-toast; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "smashed-avocado-toast",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for smashed-avocado-toast; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "singapore-kaya-toast",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for singapore-kaya-toast; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "espresso-double-shot",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for espresso-double-shot; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-cappuccino",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-cappuccino; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "warm-matcha-latte",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for warm-matcha-latte; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "masala-chai",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for masala-chai; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-milk-bubble-tea",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-milk-bubble-tea; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-hot-chocolate",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-hot-chocolate; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "mint-limonana",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for mint-limonana; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "turkish-ayran",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for turkish-ayran; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "mango-cardamom-lassi",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for mango-cardamom-lassi; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "watermelon-agua-fresca",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for watermelon-agua-fresca; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "yerba-mate-traditional",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for yerba-mate-traditional; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "vietnamese-iced-coffee",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for vietnamese-iced-coffee; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "moroccan-mint-tea",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for moroccan-mint-tea; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "mexican-rice-horchata",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for mexican-rice-horchata; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "thai-iced-tea",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for thai-iced-tea; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "vietnamese-fresh-spring-rolls",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for vietnamese-fresh-spring-rolls; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "pan-fried-pork-gyoza",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for pan-fried-pork-gyoza; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "korean-napa-cabbage-kimchi",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for korean-napa-cabbage-kimchi; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "korean-scallion-pajeon",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for korean-scallion-pajeon; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "cantonese-har-gow-shrimp-dumplings",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for cantonese-har-gow-shrimp-dumplings; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "steamed-pork-baozi",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for steamed-pork-baozi; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "crispy-vegetable-pakora",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for crispy-vegetable-pakora; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "punjabi-potato-samosa",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for punjabi-potato-samosa; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "thai-fried-spring-rolls",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for thai-fried-spring-rolls; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "filipino-lumpia-shanghai",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for filipino-lumpia-shanghai; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "beef-empanadas",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for beef-empanadas; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-guacamole",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-guacamole; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "cheese-quesadilla",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for cheese-quesadilla; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "salted-edamame",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for salted-edamame; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "buffalo-chicken-wings",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for buffalo-chicken-wings; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "loaded-nachos",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for loaded-nachos; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "blistered-padron-peppers",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for blistered-padron-peppers; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "spanish-ham-croquetas",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for spanish-ham-croquetas; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "beef-carpaccio-arugula-parmesan",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for beef-carpaccio-arugula-parmesan; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "italian-antipasto-platter",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for italian-antipasto-platter; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "buckwheat-blini-with-caviar",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for buckwheat-blini-with-caviar; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "smoky-mutabbal-eggplant-tahini",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for smoky-mutabbal-eggplant-tahini; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "grilled-halloumi-lemon-herbs",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for grilled-halloumi-lemon-herbs; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "oysters-on-the-half-shell",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for oysters-on-the-half-shell; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-chocolate-eclair",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-chocolate-eclair; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "french-vanilla-macarons",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for french-vanilla-macarons; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-apple-tarte-tatin",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-apple-tarte-tatin; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-dark-chocolate-mousse",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-dark-chocolate-mousse; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "new-york-style-cheesecake",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for new-york-style-cheesecake; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "fudgy-chocolate-brownies",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for fudgy-chocolate-brownies; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-american-apple-pie",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-american-apple-pie; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-chocolate-chip-cookies",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-chocolate-chip-cookies; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-banoffee-pie",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-banoffee-pie; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-fruit-pavlova",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-fruit-pavlova; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "sicilian-ricotta-cannoli",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for sicilian-ricotta-cannoli; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "vanilla-bean-gelato",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for vanilla-bean-gelato; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-sachertorte",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-sachertorte; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-caramel-flan",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-caramel-flan; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-tres-leches-cake",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-tres-leches-cake; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "daifuku-mochi-red-bean",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for daifuku-mochi-red-bean; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "dorayaki-red-bean-pancakes",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for dorayaki-red-bean-pancakes; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "thai-mango-sticky-rice",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for thai-mango-sticky-rice; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "gulab-jamun-cardamom-syrup",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for gulab-jamun-cardamom-syrup; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "kunafa-cheese-syrup",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for kunafa-cheese-syrup; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "umm-ali-egyptian-bread-pudding",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for umm-ali-egyptian-bread-pudding; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "malva-pudding-caramel-sauce",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for malva-pudding-caramel-sauce; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "turkish-delight-rose-pistachio",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for turkish-delight-rose-pistachio; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "medovik-russian-honey-cake",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for medovik-russian-honey-cake; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "glazed-yeast-doughnuts",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for glazed-yeast-doughnuts; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "alfajores-dulce-de-leche",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for alfajores-dulce-de-leche; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "brigadeiro-chocolate-truffles",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for brigadeiro-chocolate-truffles; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "crepes-suzette-orange-butter",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for crepes-suzette-orange-butter; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "korean-bingsu-red-bean-fruit",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for korean-bingsu-red-bean-fruit; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "chocolate-lava-cake",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for chocolate-lava-cake; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "sushi-rolls-salmon-tuna",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for sushi-rolls-salmon-tuna; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "thai-massaman-chicken-curry",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for thai-massaman-chicken-curry; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "vietnamese-beef-pho",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for vietnamese-beef-pho; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "vietnamese-pork-banh-mi",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for vietnamese-pork-banh-mi; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "korean-bibimbap-beef-vegetables",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for korean-bibimbap-beef-vegetables; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "korean-beef-bulgogi",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for korean-beef-bulgogi; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "mexican-beef-tacos",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for mexican-beef-tacos; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "chicken-enchiladas-red-sauce",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for chicken-enchiladas-red-sauce; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "murgh-makhani-butter-chicken",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for murgh-makhani-butter-chicken; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "hyderabadi-style-chicken-biryani",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for hyderabadi-style-chicken-biryani; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "chicken-tikka-masala",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for chicken-tikka-masala; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "home-style-peking-duck",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for home-style-peking-duck; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "xiao-long-bao-soup-dumplings",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for xiao-long-bao-soup-dumplings; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "indonesian-nasi-goreng",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for indonesian-nasi-goreng; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "indonesian-beef-rendang",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for indonesian-beef-rendang; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "filipino-chicken-adobo",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for filipino-chicken-adobo; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "coconut-laksa-noodle-soup",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for coconut-laksa-noodle-soup; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "saudi-chicken-kabsa",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for saudi-chicken-kabsa; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "jordanian-mansaf-lamb-jameed",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for jordanian-mansaf-lamb-jameed; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "iraqi-lamb-quzi-rice",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for iraqi-lamb-quzi-rice; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "egyptian-koshari",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for egyptian-koshari; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "moroccan-chicken-tagine-apricot",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for moroccan-chicken-tagine-apricot; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "north-african-vegetable-couscous",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for north-african-vegetable-couscous; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "west-african-jollof-rice",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for west-african-jollof-rice; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "injera-with-doro-wat",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for injera-with-doro-wat; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "south-african-bunny-chow",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for south-african-bunny-chow; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "brazilian-feijoada-black-beans",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for brazilian-feijoada-black-beans; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "peruvian-fish-ceviche",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for peruvian-fish-ceviche; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "peruvian-lomo-saltado",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for peruvian-lomo-saltado; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "argentinian-asado-with-chimichurri",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for argentinian-asado-with-chimichurri; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "arepas-with-cheese-and-beans",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for arepas-with-cheese-and-beans; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "cuban-ropa-vieja",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for cuban-ropa-vieja; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "jamaican-jerk-chicken",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for jamaican-jerk-chicken; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "louisiana-chicken-shrimp-gumbo",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for louisiana-chicken-shrimp-gumbo; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-macaroni-and-cheese",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-macaroni-and-cheese; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "tex-mex-chili-con-carne",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for tex-mex-chili-con-carne; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "canadian-poutine",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for canadian-poutine; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "classic-beef-wellington",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for classic-beef-wellington; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "coq-au-vin",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for coq-au-vin; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "boeuf-bourguignon",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for boeuf-bourguignon; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "french-cassoulet",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for french-cassoulet; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "bacalhau-a-bras",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for bacalhau-a-bras; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "roman-spaghetti-carbonara",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for roman-spaghetti-carbonara; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "osso-buco-alla-milanese",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for osso-buco-alla-milanese; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "wiener-schnitzel",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for wiener-schnitzel; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "swiss-cheese-fondue",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for swiss-cheese-fondue; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "greek-kleftiko-lamb",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for greek-kleftiko-lamb; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "turkish-karniyarik",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for turkish-karniyarik; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "georgian-khinkali",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for georgian-khinkali; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "uzbek-plov-osh",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for uzbek-plov-osh; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  },
+  {
+    "slug": "danish-smorrebrod-herring",
+    "identityChecked": true,
+    "coreIngredientsChecked": true,
+    "methodChecked": true,
+    "majorRisk": null,
+    "sourceNotesInternalOnly": [
+      "Internal v0.3 review package accepted for danish-smorrebrod-herring; source names remain outside display copy.",
+      "Ingredient rows and cook steps are persisted from v0.3 without generic template rewriting."
+    ]
+  }
+]

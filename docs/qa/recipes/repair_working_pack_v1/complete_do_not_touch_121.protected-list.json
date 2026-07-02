@@ -1,0 +1,856 @@
+{
+  "schemaVersion": "repair_working_pack_v1",
+  "validation": {
+    "count": 121,
+    "protected": true
+  },
+  "recipes": [
+    {
+      "recipeId": "garnish_recipe_fa_101_877a41d3",
+      "slug": "garnish_recipe_fa_101_877a41d3",
+      "titleFa": "خورش آلو",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "garnish_recipe_fa_103_066b318c",
+      "titleFa": "واویشکا",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "slug": "garnish_recipe_fa_104_7b4ced78",
+      "titleFa": "گمج کباب",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1051_68dd60e0",
+      "slug": "garnish_recipe_fa_1051_68dd60e0",
+      "titleFa": "خورشت کرفس",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1052_8bde566e",
+      "slug": "garnish_recipe_fa_1052_8bde566e",
+      "titleFa": "خورشت آلو اسفناج",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1053_29566b67",
+      "slug": "garnish_recipe_fa_1053_29566b67",
+      "titleFa": "خورشت بامیه",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "slug": "garnish_recipe_fa_1071_6e0696a6",
+      "titleFa": "کتلت گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1072_b55bdfe7",
+      "slug": "garnish_recipe_fa_1072_b55bdfe7",
+      "titleFa": "اشکنه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1084_8f35205e",
+      "slug": "garnish_recipe_fa_1084_8f35205e",
+      "titleFa": "ته چین مرغ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_110_847e93ad",
+      "slug": "garnish_recipe_fa_110_847e93ad",
+      "titleFa": "خورشت سیب",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_112_9764d4aa",
+      "slug": "garnish_recipe_fa_112_9764d4aa",
+      "titleFa": "کدو پلو مازندرانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1195_4b547f19",
+      "slug": "garnish_recipe_fa_1195_4b547f19",
+      "titleFa": "ماکارونی",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1197_73204fa8",
+      "slug": "garnish_recipe_fa_1197_73204fa8",
+      "titleFa": "کباب تابه‌ای مرغ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_119_2a846a21",
+      "slug": "garnish_recipe_fa_119_2a846a21",
+      "titleFa": "آش شولی یزدی",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1207_5b8c823a",
+      "slug": "garnish_recipe_fa_1207_5b8c823a",
+      "titleFa": "شیشلیک (کباب دنده)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1208_434b3a9a",
+      "slug": "garnish_recipe_fa_1208_434b3a9a",
+      "titleFa": "آش رشته",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1209_7bd0ff68",
+      "slug": "garnish_recipe_fa_1209_7bd0ff68",
+      "titleFa": "کباب بختیاری",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1215_673014ad",
+      "slug": "garnish_recipe_fa_1215_673014ad",
+      "titleFa": "کباب چنجه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1220_6429319c",
+      "slug": "garnish_recipe_fa_1220_6429319c",
+      "titleFa": "سبزی پلو با ماهی",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1224_c65df148",
+      "slug": "garnish_recipe_fa_1224_c65df148",
+      "titleFa": "باقلاقاتُق",
+      "score": 90,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "slug": "garnish_recipe_fa_1225_159208a2",
+      "titleFa": "میرزا قاسمی",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1235_f91ccc6d",
+      "slug": "garnish_recipe_fa_1235_f91ccc6d",
+      "titleFa": "آش دوغ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "slug": "garnish_recipe_fa_1237_3dff9aba",
+      "titleFa": "آش شله قلمکار",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "slug": "garnish_recipe_fa_1238_296fbec3",
+      "titleFa": "حلیم گندم",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1239_1be04a64",
+      "slug": "garnish_recipe_fa_1239_1be04a64",
+      "titleFa": "قیمه نثار",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1251_3f83f105",
+      "slug": "garnish_recipe_fa_1251_3f83f105",
+      "titleFa": "خورشت بادمجان",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1252_3d200c70",
+      "slug": "garnish_recipe_fa_1252_3d200c70",
+      "titleFa": "کلم‌پلو شیرازی",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1261_99e02971",
+      "slug": "garnish_recipe_fa_1261_99e02971",
+      "titleFa": "دمپختک (ماش‌پلو تهرانی)",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1262_9f42258a",
+      "slug": "garnish_recipe_fa_1262_9f42258a",
+      "titleFa": "ترش‌شامی گیلانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "slug": "garnish_recipe_fa_1263_0e8a8255",
+      "titleFa": "کاله‌جوش (کله‌جوش)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1276_cdef73d2",
+      "slug": "garnish_recipe_fa_1276_cdef73d2",
+      "titleFa": "تاس‌کباب",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1279_e3e99c0f",
+      "slug": "garnish_recipe_fa_1279_e3e99c0f",
+      "titleFa": "میگو پلو",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1280_13a22528",
+      "slug": "garnish_recipe_fa_1280_13a22528",
+      "titleFa": "رشته‌پلو شیرازی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1290_f5fc285f",
+      "slug": "garnish_recipe_fa_1290_f5fc285f",
+      "titleFa": "حلیم بادمجان",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1291_b4dad1f1",
+      "slug": "garnish_recipe_fa_1291_b4dad1f1",
+      "titleFa": "بریان ماهی (ماهی شکم‌پر)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "slug": "garnish_recipe_fa_129_5d8a7866",
+      "titleFa": "قنبرپلو شیرازی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1306_a212d523",
+      "slug": "garnish_recipe_fa_1306_a212d523",
+      "titleFa": "قلیه ماهی سیرافی",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1307_4401749e",
+      "slug": "garnish_recipe_fa_1307_4401749e",
+      "titleFa": "قلیه میگو",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1314_7f39d182",
+      "slug": "garnish_recipe_fa_1314_7f39d182",
+      "titleFa": "خورشت ماست",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_131_abd5e2d6",
+      "slug": "garnish_recipe_fa_131_abd5e2d6",
+      "titleFa": "کال کباب",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "slug": "garnish_recipe_fa_1323_cf6bcb5c",
+      "titleFa": "لازانیا",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1324_2b0dbfd9",
+      "slug": "garnish_recipe_fa_1324_2b0dbfd9",
+      "titleFa": "سالاد الویه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1325_87da9b04",
+      "slug": "garnish_recipe_fa_1325_87da9b04",
+      "titleFa": "املت گوجه فرنگی",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "slug": "garnish_recipe_fa_1333_db68905d",
+      "titleFa": "مرغ سوخاری",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "slug": "garnish_recipe_fa_1334_8963bd85",
+      "titleFa": "اشترودل گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_133_139b05e2",
+      "slug": "garnish_recipe_fa_133_139b05e2",
+      "titleFa": "کوکو سیب‌زمینی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1341_6b4ba753",
+      "slug": "garnish_recipe_fa_1341_6b4ba753",
+      "titleFa": "همبرگر (چیز‌برگر)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1342_ce4a8da3",
+      "slug": "garnish_recipe_fa_1342_ce4a8da3",
+      "titleFa": "خوراک مرغ زعفرانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+      "slug": "garnish_recipe_fa_1343_5bf8151c",
+      "titleFa": "خوراک مرغ و قارچ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_134_34e1816f",
+      "slug": "garnish_recipe_fa_134_34e1816f",
+      "titleFa": "کوکو بادمجان",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1353_5d0ac837",
+      "slug": "garnish_recipe_fa_1353_5d0ac837",
+      "titleFa": "کباب ترکی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_139_012333bd",
+      "slug": "garnish_recipe_fa_139_012333bd",
+      "titleFa": "کوفته برنجی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1482_782462e9",
+      "slug": "garnish_recipe_fa_1482_782462e9",
+      "titleFa": "شله زرد",
+      "score": 90,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1491_0553f941",
+      "slug": "garnish_recipe_fa_1491_0553f941",
+      "titleFa": "شیر برنج",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1492_08a81971",
+      "slug": "garnish_recipe_fa_1492_08a81971",
+      "titleFa": "فرنی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1528_32041352",
+      "slug": "garnish_recipe_fa_1528_32041352",
+      "titleFa": "کله پاچه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1548_dc89130d",
+      "slug": "garnish_recipe_fa_1548_dc89130d",
+      "titleFa": "خاگینه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_154_cdfcadf7",
+      "slug": "garnish_recipe_fa_154_cdfcadf7",
+      "titleFa": "شله مشهدی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_161_b79bdd11",
+      "slug": "garnish_recipe_fa_161_b79bdd11",
+      "titleFa": "دمپخت ماهی جنوبی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_164_8367ec24",
+      "slug": "garnish_recipe_fa_164_8367ec24",
+      "titleFa": "ته‌چین گوشت و بادمجان",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "slug": "garnish_recipe_fa_168_8b2d9b86",
+      "titleFa": "آبگوشت متنجنه کرمانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "slug": "garnish_recipe_fa_170_44f0d2ad",
+      "titleFa": "قیمه‌ریزه اصفهانی",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1743_005c3739",
+      "slug": "garnish_recipe_fa_1743_005c3739",
+      "titleFa": "کشک بادمجان",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1761_4f9171a7",
+      "slug": "garnish_recipe_fa_1761_4f9171a7",
+      "titleFa": "سالاد رنگینک",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1767_4e6ed616",
+      "slug": "garnish_recipe_fa_1767_4e6ed616",
+      "titleFa": "شامی کباب لرستانی",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_179_9cb4bccf",
+      "slug": "garnish_recipe_fa_179_9cb4bccf",
+      "titleFa": "زولبیا و بامیه",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1808_788119ed",
+      "slug": "garnish_recipe_fa_1808_788119ed",
+      "titleFa": "سالاد ماکارونی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "slug": "garnish_recipe_fa_1816_dec0afbb",
+      "titleFa": "سوپ شیر",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1820_41034bbe",
+      "slug": "garnish_recipe_fa_1820_41034bbe",
+      "titleFa": "شاورما",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_190_49162ac2",
+      "slug": "garnish_recipe_fa_190_49162ac2",
+      "titleFa": "خورش مرغ قیسی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_197_dbaa9b9a",
+      "slug": "garnish_recipe_fa_197_dbaa9b9a",
+      "titleFa": "چلو ماهیچه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2028_1932b5ee",
+      "slug": "garnish_recipe_fa_2028_1932b5ee",
+      "titleFa": "سس فلافل",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2035_e1080e79",
+      "slug": "garnish_recipe_fa_2035_e1080e79",
+      "titleFa": "سس مارینارا",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2049_765e338a",
+      "slug": "garnish_recipe_fa_2049_765e338a",
+      "titleFa": "کوکو سبزی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "slug": "garnish_recipe_fa_2064_b5a2a37a",
+      "titleFa": "پاستا پستو",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2071_5391bddf",
+      "slug": "garnish_recipe_fa_2071_5391bddf",
+      "titleFa": "سالاد سزار",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2075_3d9b2098",
+      "slug": "garnish_recipe_fa_2075_3d9b2098",
+      "titleFa": "سمبوسه آبادانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2079_5543499b",
+      "slug": "garnish_recipe_fa_2079_5543499b",
+      "titleFa": "سمبوسه در فر",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2086_c02ef228",
+      "slug": "garnish_recipe_fa_2086_c02ef228",
+      "titleFa": "فلافل آبادانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2090_ea20119c",
+      "slug": "garnish_recipe_fa_2090_ea20119c",
+      "titleFa": "نودل سبزیجات",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "slug": "garnish_recipe_fa_216_1bfdfe55",
+      "titleFa": "جوجه کباب زعفرانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_224_c9d0355d",
+      "slug": "garnish_recipe_fa_224_c9d0355d",
+      "titleFa": "خورشت قرمه‌سبزی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_228_09a631f3",
+      "slug": "garnish_recipe_fa_228_09a631f3",
+      "titleFa": "خورشت فسنجان",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_230_332dd922",
+      "slug": "garnish_recipe_fa_230_332dd922",
+      "titleFa": "دیزی (آبگوشت)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_235_3d02f3ae",
+      "slug": "garnish_recipe_fa_235_3d02f3ae",
+      "titleFa": "چلو کباب کوبیده",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "garnish_recipe_fa_77_3adf94d4",
+      "titleFa": "آش سبزی شیرازی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_78_26989900",
+      "slug": "garnish_recipe_fa_78_26989900",
+      "titleFa": "آش ترش گیلانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_84_52c11d43",
+      "slug": "garnish_recipe_fa_84_52c11d43",
+      "titleFa": "کباب برگ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_862_dbf3d4d5",
+      "slug": "garnish_recipe_fa_862_dbf3d4d5",
+      "titleFa": "باقالی پلو با گوشت",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_864_37673192",
+      "slug": "garnish_recipe_fa_864_37673192",
+      "titleFa": "عدس‌پلو با گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_866_9986ddf5",
+      "slug": "garnish_recipe_fa_866_9986ddf5",
+      "titleFa": "لوبیا پلو با گوشت چرخ‌کرده",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_868_c97331a5",
+      "slug": "garnish_recipe_fa_868_c97331a5",
+      "titleFa": "استانبولی پلو بدون گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_870_d37ad654",
+      "slug": "garnish_recipe_fa_870_d37ad654",
+      "titleFa": "آلبالو پلو با مرغ یا گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_872_529097b4",
+      "slug": "garnish_recipe_fa_872_529097b4",
+      "titleFa": "دلمه برگ مو (دلمه‌ی برگ انگور)",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_875_f2ddeb1c",
+      "slug": "garnish_recipe_fa_875_f2ddeb1c",
+      "titleFa": "دلمه بادمجان / دلمه کلم",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_878_85458912",
+      "slug": "garnish_recipe_fa_878_85458912",
+      "titleFa": "زرشک پلو با مرغ",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_880_6164abab",
+      "slug": "garnish_recipe_fa_880_6164abab",
+      "titleFa": "کوفته تبریزی",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_883_4b80bbcf",
+      "slug": "garnish_recipe_fa_883_4b80bbcf",
+      "titleFa": "رولت گوشت",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_89_292dde1d",
+      "slug": "garnish_recipe_fa_89_292dde1d",
+      "titleFa": "اکبر جوجه",
+      "score": 94,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_90_85d9aaf0",
+      "slug": "garnish_recipe_fa_90_85d9aaf0",
+      "titleFa": "بریانی اصفهان",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_93_657f87d7",
+      "slug": "garnish_recipe_fa_93_657f87d7",
+      "titleFa": "آبگوشت بزباش",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "slug": "garnish_recipe_fa_94_78034c8a",
+      "titleFa": "آبگوشت کشک",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_95_0962d2a9",
+      "slug": "garnish_recipe_fa_95_0962d2a9",
+      "titleFa": "آبگوشت قنبید",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "garnish_recipe_fa_98_601bddc6",
+      "titleFa": "خورشت هویج تبریزی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_fa_99_14f1018b",
+      "slug": "garnish_recipe_fa_99_14f1018b",
+      "titleFa": "خورشت ریواس",
+      "score": 93,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_002_ca22fd2f",
+      "slug": "garnish_recipe_intl_002_ca22fd2f",
+      "titleFa": "سالاد کاپرزه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "slug": "garnish_recipe_intl_014_33ae62d8",
+      "titleFa": "سوپ میسو",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_019_629698d5",
+      "slug": "garnish_recipe_intl_019_629698d5",
+      "titleFa": "تام کا گای (سوپ مرغ و نارگیل)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_021_6914ecb7",
+      "slug": "garnish_recipe_intl_021_6914ecb7",
+      "titleFa": "سوپ پیاز فرانسوی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "slug": "garnish_recipe_intl_025_b9bdfd91",
+      "titleFa": "ماهی و چیپس",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_027_8a794c67",
+      "slug": "garnish_recipe_intl_027_8a794c67",
+      "titleFa": "سالاد سیب‌زمینی آلمانی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "slug": "garnish_recipe_intl_032_a150e5b1",
+      "titleFa": "سوپ مینسترونه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_038_16764713",
+      "slug": "garnish_recipe_intl_038_16764713",
+      "titleFa": "کوفته سوئدی",
+      "score": 96,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "slug": "garnish_recipe_intl_046_0c90256b",
+      "titleFa": "سوپ عدس قرمز ترکی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_049_04e612cd",
+      "slug": "garnish_recipe_intl_049_04e612cd",
+      "titleFa": "تام یوم گونگ (سوپ تند میگو)",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_057_64cc7ff7",
+      "slug": "garnish_recipe_intl_057_64cc7ff7",
+      "titleFa": "پاتاتاس براواس",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_058_f01bc84b",
+      "slug": "garnish_recipe_intl_058_f01bc84b",
+      "titleFa": "میگوی سیر اسپانیایی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_077_40b61937",
+      "slug": "garnish_recipe_intl_077_40b61937",
+      "titleFa": "کوفتهٔ ترکی",
+      "score": 91,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_098_0fbf4374",
+      "slug": "garnish_recipe_intl_098_0fbf4374",
+      "titleFa": "خورش ایرلندی",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_106_81b42fa9",
+      "slug": "garnish_recipe_intl_106_81b42fa9",
+      "titleFa": "اسکندر کباب",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "slug": "garnish_recipe_intl_127_65e78281",
+      "titleFa": "مقلوبه",
+      "score": 97,
+      "reasonWhyComplete": "All major GRIS sections present, dish-specific, no blockers."
+    }
+  ]
+}
