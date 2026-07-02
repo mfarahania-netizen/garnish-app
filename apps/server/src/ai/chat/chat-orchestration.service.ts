@@ -54,7 +54,7 @@ export interface HandleChatResult {
   /** §3 conversational-allergy: when the user DECLARES an allergy mid-chat, the assistant offers to add it to the
    *  declared set (confirm-then-write, decision D2). The client renders this as a one-tap confirm → POST
    *  /users/allergies. Nothing is auto-written; the deterministic gate stays the sole source of truth. */
-  suggestedAction?: { type: 'add_allergy'; allergens: ExtractedAllergen[] };
+  suggestedAction?: { type: 'add_allergy' | 'remove_allergy'; allergens: ExtractedAllergen[] };
 }
 
 const STUB_MODEL = 'stub-model-v0';
@@ -154,7 +154,54 @@ export class ChatOrchestrationService {
     // QUESTION ("آیا گردو برای آلرژیم خطرناکه؟") or a RETRACTION ("دیگه به گردو حساس نیستم") also lands here. Neither
     // should produce an ADD offer — gate the WRITE route on a declaration shape (not interrogative, not negated) and
     // let everything else fall through to the normal grounded path.
-    if (intentDecision.intent === 'stated_constraint' && this.isAllergyDeclaration(input.prompt)) {
+    const allergyRemovalContext = [
+        input.prompt,
+        ...recentTurns
+          .filter((turn) => turn.role === 'user')
+          .slice(-2)
+          .map((turn) => turn.content),
+      ].join(' ');
+    const allergyRemovalAllergens = extractStatedAllergens(allergyRemovalContext);
+    const explicitAllergyRemoval = this.isExplicitAllergyRemovalRequest(input.prompt);
+    const positiveAllergyDeclaration = !explicitAllergyRemoval && this.isAllergyDeclaration(input.prompt);
+    const wantsAllergyRemoval =
+      explicitAllergyRemoval ||
+      (!positiveAllergyDeclaration && this.isAllergyRemovalRequest(input.prompt)) ||
+      (this.isShortAllergyRemovalConfirmation(input.prompt) && allergyRemovalAllergens.length > 0);
+
+    if (wantsAllergyRemoval) {
+      const allergens = allergyRemovalAllergens;
+      const reply = allergens.length
+        ? `متوجه شدم. اگر تأیید کنی، ${allergens.map((a) => a.label).join('، ')} را از آلرژی‌هایت حذف می‌کنم.`
+        : 'متوجه شدم می‌خواهی آلرژی را تغییر بدهی، اما دقیق نفهمیدم کدام مورد را حذف کنم. اسم ماده را بگو یا از صفحه تنظیمات حذفش کن.';
+      const assistantMessage = await this.chatMessages.create({
+        userId: input.userId,
+        conversationId,
+        role: 'assistant',
+        content: reply,
+        model: STUB_MODEL,
+        contentSafetyStatus: 'ok',
+      });
+      await this.recordAssistantTurnEvent(input.userId, conversationId, assistantMessage?.id, intentDecision, {
+        status: 'ok',
+        providerMode: 'deterministic',
+        model: STUB_MODEL,
+        aiCallLogId: null,
+        suggestedActionType: allergens.length ? 'remove_allergy' : null,
+        turnContext,
+      });
+      return {
+        reply,
+        conversationId,
+        status: 'ok',
+        providerMode: 'deterministic',
+        aiCallLogId: null,
+        intent: intentDecision,
+        ...(allergens.length ? { suggestedAction: { type: 'remove_allergy' as const, allergens } } : {}),
+      };
+    }
+
+    if (intentDecision.intent === 'stated_constraint' && positiveAllergyDeclaration) {
       const allergens = extractStatedAllergens(input.prompt);
       const reply = allergens.length
         ? t('allergy_offer', locale, { names: allergens.map((a) => a.label).join(t('list_sep', locale)) })
@@ -847,6 +894,32 @@ export class ChatOrchestrationService {
     if (/\bno (allergy|allergies)\b/.test(t)) return false;
     if (/\b(dont|doesnt|didnt) have (an?|any)?\s?(\w+\s){0,2}allerg/.test(t)) return false; // «dont have [a/any] [nut] allergy»
     return true;
+  }
+
+  private isAllergyRemovalRequest(prompt: string): boolean {
+    const t = normalizeText(prompt);
+    if (!t) return false;
+    if (/[؟?]/.test(t)) return false;
+    if (/(حذف|پاک|بردار|برداشته|درار|در بیار|لغو|remove|delete|clear)/.test(t) && /(حساس|حساسیت|الرژی|آلرژی|allerg)/.test(t)) return true;
+    if (/(حساسیت|الرژی|آلرژی|حساس).{0,25}(نیست|نبود|ندار|نداشت)/.test(t)) return true;
+    if (/(دیگه|دیگر|از این به بعد).{0,25}(حساس|حساسیت|الرژی|آلرژی).{0,25}(نیست|ندار)/.test(t)) return true;
+    if (/\b(no longer|not|never) (allergic|sensitive)\b/.test(t)) return true;
+    if (/\b(dont|doesnt|didnt) have (an?|any)?\s?(\w+\s){0,2}allerg/.test(t)) return true;
+    return false;
+  }
+
+  private isExplicitAllergyRemovalRequest(prompt: string): boolean {
+    const t = normalizeText(prompt);
+    if (!t) return false;
+    if (/[؟?]/.test(t)) return false;
+    if (/(حذف|پاک|بردار|برداشته|درار|در بیار|لغو|remove|delete|clear)/.test(t) && /(حساس|حساسیت|الرژی|آلرژی|allerg)/.test(t)) return true;
+    return false;
+  }
+
+  private isShortAllergyRemovalConfirmation(prompt: string): boolean {
+    const t = normalizeText(prompt);
+    if (!t) return false;
+    return /^(نه )?(حذف|پاک|بردار|بردارش|پاکش کن|حذفش کن|remove|delete|clear)$/.test(t.trim());
   }
 
   /** Deterministic, safe responses for blocked calls — no medical/vision/diet claims, no pretend AI. */

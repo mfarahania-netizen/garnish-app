@@ -8,6 +8,12 @@ import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
+const normalizeShoppingAmount = (value) =>
+  String(value ?? '')
+    .replace(/\bas needed\b/gi, 'به مقدار لازم')
+    .replace(/\bto taste\b/gi, 'به مقدار لازم')
+    .trim();
+
 function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, aisle, first }) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(item.name);
@@ -42,7 +48,7 @@ function GroceryRow({ item, checked, onToggle, onRemove, onUpdate, onPantry, ais
         {checked ? (
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-state-success-fg)', whiteSpace: 'nowrap' }}>گرفتم</Text>
         ) : item.amount || item.unit ? (
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{toFaDigits([item.amount, item.unit].filter(Boolean).join(' '))}</Text>
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>{toFaDigits([normalizeShoppingAmount(item.amount), normalizeShoppingAmount(item.unit)].filter(Boolean).join(' '))}</Text>
         ) : null}
       </UnstyledButton>
       {/* edit — inline name/amount */}

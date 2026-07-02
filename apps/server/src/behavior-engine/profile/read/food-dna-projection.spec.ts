@@ -4,7 +4,8 @@ import { ProfileReadService } from './profile-read.service';
 
 /**
  * S2 — FOOD DNA ACTIVATION. The projection is a PII-free reshape of the frozen engine; getFoodDnaProjection
- * hydrates the observed graph from real persisted SignalObservations WITHOUT touching getLivingUserProfile.
+ * hydrates the observed graph from real persisted SignalObservations only when personalization consent is granted,
+ * WITHOUT touching getLivingUserProfile.
  */
 
 // minimal owner-scoped graph stub (only the PII-free fields the projection reads)
@@ -63,9 +64,10 @@ describe('projectFoodDna — PII-free projection of the engine (no recompute, no
 describe('ProfileReadService.getFoodDnaProjection — hydrates from real persisted SignalObservations', () => {
   const now = new Date('2026-06-18T12:00:00.000Z');
 
-  function makeService(signalRows: any[]) {
+  function makeService(signalRows: any[], granted = false) {
     const prisma: any = {
       consentLog: { findMany: jest.fn().mockResolvedValue([]) },
+      userConsent: { findMany: jest.fn().mockResolvedValue(granted ? [{ purpose: 'personalization', status: 'granted' }] : []) },
       userPreference: { findUnique: jest.fn().mockResolvedValue(null) },
       userAllergy: { findMany: jest.fn().mockResolvedValue([]) },
       signalObservation: { findMany: jest.fn().mockResolvedValue(signalRows) },
@@ -78,7 +80,7 @@ describe('ProfileReadService.getFoodDnaProjection — hydrates from real persist
   it('no persisted observations → honest cold-start (never fabricated)', async () => {
     const { svc, prisma } = makeService([]);
     const p = await svc.getFoodDnaProjection('u1', now);
-    expect(prisma.signalObservation.findMany).toHaveBeenCalled();
+    expect(prisma.signalObservation.findMany).not.toHaveBeenCalled();
     expect(p.status).toBe('cold_start');
     expect(p.evidence.observationCount).toBe(0);
     expect(p.maturity.observedConfidence).toBe(0);
@@ -92,13 +94,22 @@ describe('ProfileReadService.getFoodDnaProjection — hydrates from real persist
       rows.push({ signalName: 'effort.quick_meal_preference', weight: 0.5, observedAt: now });
       rows.push({ signalName: 'skill.technique_confidence', weight: 0.5, observedAt: now });
     }
-    const cold = (await makeService([]).svc.getFoodDnaProjection('u1', now));
-    const grown = await makeService(rows).svc.getFoodDnaProjection('u1', now);
+    const cold = (await makeService([], true).svc.getFoodDnaProjection('u1', now));
+    const grown = await makeService(rows, true).svc.getFoodDnaProjection('u1', now);
 
     expect(grown.evidence.observationCount).toBeGreaterThan(0); // the real loader picked up the rows
     expect(grown.maturity.observedConfidence).toBeGreaterThan(0); // the REAL builder produced confidence
     expect(grown.maturity.score).toBeGreaterThan(cold.maturity.score); // DNA grew from behavior
     expect(grown.status).not.toBe('cold_start');
+  });
+
+  it('does not hydrate observed behavior without personalization consent', async () => {
+    const rows = [{ signalName: 'taste.cuisine_exploration', weight: 0.9, observedAt: now }];
+    const { svc, prisma } = makeService(rows, false);
+    const p = await svc.getFoodDnaProjection('u1', now);
+    expect(prisma.signalObservation.findMany).not.toHaveBeenCalled();
+    expect(p.status).toBe('cold_start');
+    expect(p.evidence.observationCount).toBe(0);
   });
 });
 

@@ -1,13 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../lib/apiClient';
 import { useAuth } from '../context/AuthContext';
+import { invalidateProfileDomain, queryKeys } from '../lib/queryKeys';
 
 export function usePreferencesQuery() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: preferences, isLoading: loading } = useQuery({
-    queryKey: ['preferences'],
+    queryKey: queryKeys.preferences,
     queryFn: async () => {
       const { data } = await apiClient.get('/users/preferences');
       return {
@@ -31,19 +32,18 @@ export function usePreferencesQuery() {
 
   const updateMutation = useMutation({
     mutationFn: async (newPrefs) => {
-      // تضمین می‌کنیم که همیشه رشتهٔ JSON ارسال شود
       const body = {
         diet: newPrefs.diet || preferences?.diet || 'omnivore',
-        allergies: JSON.stringify(newPrefs.allergies ?? preferences?.allergies ?? []),
+        allergies: newPrefs.allergies ?? preferences?.allergies ?? [],
         skillLevel: newPrefs.skill ?? preferences?.skill ?? 'beginner',
-        cuisine: JSON.stringify(newPrefs.cuisine ?? preferences?.cuisine ?? []),
+        cuisine: newPrefs.cuisine ?? preferences?.cuisine ?? [],
         budget: newPrefs.budget ?? preferences?.budget ?? 'low',
-        healthGoals: JSON.stringify(newPrefs.healthGoals ?? preferences?.healthGoals ?? []),
+        healthGoals: newPrefs.healthGoals ?? preferences?.healthGoals ?? [],
       };
       await apiClient.put('/users/preferences', body);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['preferences'] });
+      invalidateProfileDomain(queryClient);
     },
   });
 

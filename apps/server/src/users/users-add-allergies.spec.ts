@@ -1,4 +1,6 @@
 import { UsersService } from './users.service';
+import { validate } from 'class-validator';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 
 /** Focused spec for the ADDITIVE allergy write (conversational-allergy §3). Mocks only the Prisma surface
  *  addAllergies touches; the other UsersService deps are unused here. */
@@ -49,6 +51,30 @@ describe('UsersService.addAllergies (additive §3 write)', () => {
   });
 });
 
+describe('UsersService.removeAllergies', () => {
+  it('removes only requested canonical allergens for that user', async () => {
+    const findMany = jest.fn().mockResolvedValue([{ id: 'a1', name: 'egg' }]);
+    const deleteMany = jest.fn().mockResolvedValue({ count: 1 });
+    const tx = { allergy: { findMany }, userAllergy: { deleteMany } };
+    const prisma = { $transaction: jest.fn().mockImplementation(async (cb: any) => cb(tx)) } as any;
+    const svc = new UsersService(prisma, {} as any, {} as any, {} as any);
+
+    const r = await svc.removeAllergies('u1', ['egg', 'banana', 'DROP TABLE allergies']);
+
+    expect(r.removed).toEqual(['egg']);
+    expect(findMany).toHaveBeenCalledWith({ where: { name: { in: ['egg'] } }, select: { id: true, name: true } });
+    expect(deleteMany).toHaveBeenCalledWith({ where: { userId: 'u1', allergyId: { in: ['a1'] } } });
+  });
+
+  it('all-invalid removal is a no-op that never opens a transaction', async () => {
+    const prisma = { $transaction: jest.fn() } as any;
+    const svc = new UsersService(prisma, {} as any, {} as any, {} as any);
+
+    await expect(svc.removeAllergies('u1', ['banana'])).resolves.toEqual({ removed: [] });
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+});
+
 // guardian (re-verify pass): the PRIMARY allergy write (updatePreferences, used by onboarding + settings) must
 // enforce the SAME canonical allowlist as addAllergies — else a crafted client pollutes the global Allergy table
 // and writes a non-canonical token the hard gate silently ignores.
@@ -72,5 +98,27 @@ describe('UsersService.updatePreferences allergy allowlist', () => {
 
     const upserted = allergyUpsert.mock.calls.map((c: any) => c[0].where.name).sort();
     expect(upserted).toEqual(['nut', 'peanut']); // 'free_text'/'DROP TABLE…'/typo 'penut' dropped
+  });
+});
+
+describe('UpdatePreferencesDto', () => {
+  it('accepts the settings food-profile payload with array fields', async () => {
+    const dto = Object.assign(new UpdatePreferencesDto(), {
+      diet: 'omnivore',
+      allergies: ['egg', 'gluten'],
+      cuisine: [],
+      healthGoals: [],
+    });
+
+    await expect(validate(dto)).resolves.toEqual([]);
+  });
+
+  it('rejects malformed scalar allergy fields before they reach the write path', async () => {
+    const dto = Object.assign(new UpdatePreferencesDto(), {
+      diet: 'omnivore',
+      allergies: 'egg',
+    });
+
+    await expect(validate(dto)).resolves.not.toEqual([]);
   });
 });

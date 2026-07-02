@@ -1,9 +1,10 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 
 // Mock the data hook so no network happens; we drive every status branch by hand.
 vi.mock('./useProfile', () => ({ useProfile: vi.fn() }));
 import { useProfile } from './useProfile';
+vi.mock('../../hooks/useAnalytics', () => ({ useAnalytics: () => ({ trackEvent: vi.fn() }) }));
 
 // The render harness wraps in the REAL AuthProvider, which dereferences
 // localStorage.getItem('token') unconditionally at mount. localStorage is not available
@@ -32,6 +33,8 @@ function readyShape() {
     refetch: vi.fn(),
     header: {
       name: 'تست کاربر',
+      avatar: null,
+      isGuest: false,
       initial: 'ت',
       since: 'خرداد ۱۴۰۳',
       cooksText: '۱۲ دستور پخته',
@@ -58,6 +61,11 @@ function readyShape() {
     known: {
       dietLabel: 'گیاه‌خوار',
       allergens: ['بادام‌زمینی', 'لبنیات'],
+    },
+    control: {
+      allergyGuardActive: true,
+      personalizationGranted: true,
+      completeness: 62,
     },
   };
 }
@@ -88,7 +96,16 @@ describe('ProfilePage smoke', () => {
     expect(screen.getByText('پیشرفتِ تو')).toBeInTheDocument();
     expect(screen.getByText('آنچه از تو می‌دانیم')).toBeInTheDocument();
     expect(screen.getByText('دسترسی سریع')).toBeInTheDocument();
+    expect(screen.queryByText('تاریخچهٔ پخت')).not.toBeInTheDocument();
     expect(screen.getByText('خروج از حساب')).toBeInTheDocument();
+  });
+
+  it('opens a real profile edit dialog from the pencil button', () => {
+    useProfile.mockReturnValue(readyShape());
+    renderWithProviders(<ProfilePage initialView="profile" />);
+    fireEvent.click(screen.getByRole('button', { name: 'ویرایش پروفایل' }));
+    expect(screen.getByText('ویرایش پروفایل')).toBeInTheDocument();
+    expect(screen.getByLabelText('نام نمایشی')).toHaveValue('تست کاربر');
   });
 
   it('degrades honestly when gamification is unavailable (null progress)', () => {
@@ -108,12 +125,11 @@ describe('ProfilePage smoke', () => {
     expect(screen.queryByText('پخته‌شده')).not.toBeInTheDocument();
   });
 
-  it('renders the DNA breakdown view', () => {
+  it('shows Food DNA as a summary card, not a duplicate internal detail view', () => {
     useProfile.mockReturnValue(readyShape());
     renderWithProviders(<ProfilePage initialView="dna" />);
-    // h1 + section headings verbatim from DnaView.
-    expect(screen.getByRole('heading', { level: 1, name: 'شناسهٔ ذائقه' })).toBeInTheDocument();
-    expect(screen.getByText('تفکیکِ ابعاد')).toBeInTheDocument();
-    expect(screen.getByText('آشتیِ صادقانه')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'شناسهٔ ذائقه — مشاهده جزئیات' })).toBeInTheDocument();
+    expect(screen.queryByText('تفکیکِ ابعاد')).not.toBeInTheDocument();
+    expect(screen.queryByText('آشتیِ صادقانه')).not.toBeInTheDocument();
   });
 });

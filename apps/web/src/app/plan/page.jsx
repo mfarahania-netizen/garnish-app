@@ -252,8 +252,7 @@ export default function PlanPage() {
   const heroMealKey = nextMealKey();
   const heroMeal = m.meals.find((x) => x.key === heroMealKey);
   const heroFilled = isTodaySelected && heroMeal ? m.filled[`${day.dayOfWeek}:${heroMeal.key}`] : null;
-  // the day's nutrition — sum of this day's filled dishes (per serving). ACCURACY GUARD: ~47% of Persian dishes have no
-  // nutrition data yet, so the line shows ONLY when EVERY filled dish that day has it — never a wrong/under-counted total.
+  // The day's nutrition. If only some filled dishes have nutrition, show the partial total with an explicit missing-data note.
   const dayNut = day ? m.meals.reduce((a, meal) => {
     const f = m.filled[`${day.dayOfWeek}:${meal.key}`];
     if (!f) return a;
@@ -262,7 +261,8 @@ export default function PlanPage() {
     if (n && n.calories != null) { a.cal += Number(n.calories) || 0; a.pro += Number(n.protein) || 0; a.n += 1; }
     return a;
   }, { cal: 0, pro: 0, n: 0, filled: 0 }) : { cal: 0, pro: 0, n: 0, filled: 0 };
-  const showNut = dayNut.filled > 0 && dayNut.n === dayNut.filled; // complete-only → always accurate
+  const missingNut = Math.max(0, dayNut.filled - dayNut.n);
+  const showNut = dayNut.n > 0;
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
@@ -293,7 +293,7 @@ export default function PlanPage() {
             {/* selected-day header */}
             <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: showNut ? 0 : '0 0 var(--g-space-3)' }}>{isTodaySelected ? 'امروز' : day?.label} · {day?.dayFa} {day?.monthFa}</Text>
             {showNut ? (
-              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 var(--g-space-3)' }}>≈ {toFaDigits(Math.round(dayNut.cal / 10) * 10)} کالری · پروتئین {toFaDigits(Math.round(dayNut.pro))}g</Text>
+              <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 var(--g-space-3)' }}>≈ {toFaDigits(Math.round(dayNut.cal / 10) * 10)} کالری · پروتئین {toFaDigits(Math.round(dayNut.pro))}g{missingNut ? ` · ${toFaDigits(missingNut)} مورد داده ندارد` : ''}</Text>
             ) : null}
 
             {/* "now/tonight" hero — only for today: answers "what am I cooking now?" in one glance */}

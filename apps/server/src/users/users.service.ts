@@ -1,5 +1,5 @@
 // apps/server/src/users/users.service.ts
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { ErasureService } from './erasure/erasure.service';
@@ -74,6 +74,7 @@ export class UsersService {
         isAdmin: true,
         adminRole: true,
         isGuest: true,
+        createdAt: true,
         isBanned: true, // jwt strategy rejects a banned principal
         sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)
       },
@@ -104,6 +105,27 @@ export class UsersService {
       await tx.userAllergy.createMany({ data: records.map((a) => ({ userId, allergyId: a.id })), skipDuplicates: true });
     });
     return { added: clean };
+  }
+
+  async removeAllergies(userId: string, names: string[]): Promise<{ removed: string[] }> {
+    const clean = [
+      ...new Set(
+        (names || [])
+          .map((n) => String(n ?? '').trim().toLowerCase())
+          .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
+      ),
+    ];
+    if (!clean.length) return { removed: [] };
+    const removed = await this.prisma.$transaction(async (tx) => {
+      const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true, name: true } });
+      if (records.length > 0) {
+        await tx.userAllergy.deleteMany({
+          where: { userId, allergyId: { in: records.map((a) => a.id) } },
+        });
+      }
+      return records.map((a) => a.name);
+    });
+    return { removed };
   }
 
   async getPreferences(userId: string) {
@@ -143,7 +165,7 @@ export class UsersService {
     const oldHealthGoals = (currentPrefs?.healthGoals || []).slice().sort();
 
     const safeParseArray = (value: any): string[] => {
-      if (Array.isArray(value)) return value;
+      if (Array.isArray(value)) return value.map((v) => String(v ?? '').trim()).filter(Boolean);
       if (typeof value === 'string') {
         try { const parsed = JSON.parse(value); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
       }
@@ -207,12 +229,12 @@ export class UsersService {
           historyEntries.push({ userId, fieldName: field, oldValue: JSON.stringify(oldVal), newValue: JSON.stringify(newVal), changedAt: now });
         }
       };
-      addIfChanged('diet', oldDiet, dto.diet ?? null);
-      addIfChanged('skillLevel', oldSkillLevel, dto.skillLevel ?? null);
-      addIfChanged('budget', oldBudget, dto.budget ?? null);
-      addIfChanged('allergies', oldAllergies, allergies);
-      addIfChanged('cuisine', oldCuisines, cuisine);
-      addIfChanged('healthGoals', oldHealthGoals, healthGoals);
+      if (dto.diet !== undefined) addIfChanged('diet', oldDiet, dto.diet ?? null);
+      if (dto.skillLevel !== undefined) addIfChanged('skillLevel', oldSkillLevel, dto.skillLevel ?? null);
+      if (dto.budget !== undefined) addIfChanged('budget', oldBudget, dto.budget ?? null);
+      if (dto.allergies !== undefined) addIfChanged('allergies', oldAllergies, allergies);
+      if (dto.cuisine !== undefined) addIfChanged('cuisine', oldCuisines, cuisine);
+      if (dto.healthGoals !== undefined) addIfChanged('healthGoals', oldHealthGoals, healthGoals);
       if (historyEntries.length > 0) await tx.preferenceHistory.createMany({ data: historyEntries });
     });
 
@@ -221,21 +243,79 @@ export class UsersService {
 
   async updateProfile(userId: string, name?: string, email?: string, avatar?: string) {
     const data: any = {};
-    if (name !== undefined) data.name = name;
-    if (email !== undefined) data.email = email;
-    if (avatar !== undefined) data.avatar = avatar;
+    if (name !== undefined) {
+      const clean = String(name).trim().replace(/\s+/g, ' ');
+      if (clean.length > 80) throw new BadRequestException('Name is too long');
+      data.name = clean || null;
+    }
+    if (email !== undefined) {
+      const clean = String(email).trim().toLowerCase();
+      if (clean.length > 160) throw new BadRequestException('Email is too long');
+      data.email = clean || null;
+    }
+    if (avatar !== undefined) {
+      const clean = String(avatar).trim();
+      if (clean.length > 260) throw new BadRequestException('Avatar URL is too long');
+      if (clean && !/^\/uploads\/avatars\/[A-Za-z0-9._-]+$/.test(clean) && !/^https:\/\/[^<>"'\s]+$/.test(clean)) {
+        throw new BadRequestException('Avatar URL is not allowed');
+      }
+      data.avatar = clean || null;
+    }
 
-    return this.prisma.user.update({
-      where: { id: userId },
-      data,
-    });
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data,
+      });
+    } catch (e: any) {
+      if (e?.code === 'P2002') throw new ConflictException('Email is already in use');
+      throw e;
+    }
+  }
+
+  async getConsentStatus(userId: string) {
+    const latest = new Map<string, { status: string; updatedAt: Date | null; source: string | null }>();
+    try {
+      const rows = await this.prisma.userConsent.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'asc' },
+        select: { purpose: true, status: true, updatedAt: true, source: true },
+      });
+      for (const r of rows) latest.set(r.purpose, { status: r.status, updatedAt: r.updatedAt ?? null, source: r.source ?? null });
+    } catch {
+      // Fall back to the legacy log below; absence must remain fail-closed except for core.
+    }
+
+    try {
+      const rows = await this.prisma.consentLog.findMany({
+        where: { userId },
+        orderBy: { updatedAt: 'asc' },
+        select: { type: true, purpose: true, granted: true, updatedAt: true },
+      });
+      for (const r of rows) {
+        const purpose = r.purpose || r.type;
+        if (!purpose || latest.has(purpose)) continue;
+        latest.set(purpose, { status: r.granted ? 'granted' : 'withdrawn', updatedAt: r.updatedAt ?? null, source: 'legacy' });
+      }
+    } catch {
+      // No legacy state available.
+    }
+
+    const purposes = ['core', 'analytics', 'personalization', 'notifications'];
+    return {
+      purposes: Object.fromEntries(purposes.map((purpose) => {
+        if (purpose === 'core') return [purpose, { granted: true, status: 'granted', updatedAt: null, source: 'system' }];
+        const row = latest.get(purpose);
+        return [purpose, { granted: row?.status === 'granted', status: row?.status ?? 'unknown', updatedAt: row?.updatedAt ?? null, source: row?.source ?? null }];
+      })),
+    };
   }
 
   async grantConsent(userId: string, type: string, granted: boolean, ip?: string) {
     const log = await this.prisma.consentLog.upsert({
       where: { userId_type: { userId, type } },
-      create: { userId, type, granted },
-      update: { granted, updatedAt: new Date() },
+      create: { userId, type, purpose: type, granted, ip },
+      update: { purpose: type, granted, ip, updatedAt: new Date() },
     });
     // L0/B — mirror a purpose decision into the opt-in UserConsent ledger so the personalization loop
     // (getConsentState → getLivingUserProfile hydration) actually activates on consent. ConsentLog above

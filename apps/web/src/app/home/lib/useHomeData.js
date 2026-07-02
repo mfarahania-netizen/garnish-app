@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
+import { queryKeys } from '../../../lib/queryKeys';
 import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/format';
 import { reasonLabels, fitFromScore, DNA_BAND, traitsFromProfile } from './reasons';
 import { weekdayTimeLine } from './greeting';
@@ -25,10 +26,10 @@ export function useHomeData() {
   const { token } = useAuth();
   const enabled = !!token;
 
-  const me = useQuery({ queryKey: ['home', 'me'], queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
+  const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
   const recs = useQuery({ queryKey: ['home', 'recommendations'], queryFn: () => apiClient.get('/recommendations', { params: { limit: 12 } }).then((r) => r.data), enabled });
-  const profile = useQuery({ queryKey: ['home', 'profile'], queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
-  const gamification = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
+  const profile = useQuery({ queryKey: queryKeys.profile.living, queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
+  const gamification = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
   const recipes = useQuery({ queryKey: ['home', 'recipes'], queryFn: () => apiClient.get('/recipes', { params: { limit: 60 } }).then((r) => r.data), enabled });
 
   return useMemo(() => {

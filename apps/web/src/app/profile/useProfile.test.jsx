@@ -16,12 +16,14 @@ const ME = { name: 'تست', createdAt: '2024-06-01T00:00:00Z' };
 const PROFILE = { maturity: { band: 'developing', overallScore: 0.6 } };
 const PREFS = { diet: 'vegetarian', allergies: ['peanut', 'dairy'] };
 const GAM = { stats: { totalCooks: 5 }, streak: { currentWeeks: 2 }, achievements: { earned: [{ key: 'a' }, { key: 'b' }] } };
+const CONSENT = { purposes: { personalization: { granted: true }, analytics: { granted: false } } };
 
 function routeOk(url) {
   if (url === '/users/me') return Promise.resolve({ data: ME });
   if (url === '/profile') return Promise.resolve({ data: PROFILE });
   if (url === '/users/preferences') return Promise.resolve({ data: PREFS });
   if (url === '/gamification/me') return Promise.resolve({ data: GAM });
+  if (url === '/users/consent') return Promise.resolve({ data: CONSENT });
   return Promise.reject(new Error(`unexpected ${url}`));
 }
 
@@ -40,6 +42,7 @@ describe('useProfile (real hook)', () => {
     expect(result.current.known.allergens.length).toBe(2);
     expect(result.current.progress).not.toBeNull();
     expect(result.current.progress.totalCooks).toBe(5);
+    expect(result.current.control.personalizationGranted).toBe(true);
   });
 
   it('stays ready + degrades when /gamification/me fails (progress=null, allergens still ok)', async () => {

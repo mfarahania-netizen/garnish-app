@@ -141,9 +141,44 @@ export class GamificationService {
     return { userId, streak, mastery, stats, achievements: { allEarned, newlyUnlocked: newlyUnlocked.map((a) => ({ key: a.key, title: a.title, description: a.description })) } };
   }
 
+  private async buildReadSummary(userId: string, now: Date = new Date()) {
+    const { stats, cookDates } = await this.resolveCookStats(userId);
+    const [cachedStreak, cachedProgress, earnedRows] = await Promise.all([
+      this.prisma.userStreak.findUnique({ where: { userId } }),
+      this.prisma.userProgress.findUnique({ where: { userId_track: { userId, track: 'overall' } } }),
+      this.prisma.userAchievement.findMany({ where: { userId }, select: { achievementKey: true } }),
+    ]);
+    const declaredSkill = await this.declaredSkill(userId);
+    const computedMastery = computeMastery({ totalCooks: stats.totalCooks, distinctCuisines: stats.distinctCuisines, declaredSkill });
+    const computedStreak = computeStreak(cookDates, now);
+    const streak = cachedStreak
+      ? {
+          ...computedStreak,
+          currentWeeks: cachedStreak.currentWeeks,
+          longestWeeks: cachedStreak.longestWeeks,
+          graceUsed: cachedStreak.graceUsed,
+          lastCookWeek: cachedStreak.lastCookWeek,
+        }
+      : computedStreak;
+    const mastery = cachedProgress
+      ? {
+          level: cachedProgress.level,
+          levelName: cachedProgress.levelName,
+          score: cachedProgress.score,
+          basis: cachedProgress.basis,
+        }
+      : computedMastery;
+    const allEarned = earnedRows
+      .map((row) => getAchievement(row.achievementKey))
+      .filter((achievement): achievement is NonNullable<ReturnType<typeof getAchievement>> => Boolean(achievement))
+      .map((achievement) => ({ key: achievement.key, title: achievement.title, description: achievement.description }));
+
+    return { userId, streak, mastery, stats, achievements: { allEarned, newlyUnlocked: [] } };
+  }
+
   /** Owner-only read summary (private; no other-user data is ever included). */
   async getSummary(userId: string, now: Date = new Date()) {
-    const state = await this.recomputeForUser(userId, now);
+    const state = await this.buildReadSummary(userId, now);
     // Celebrate moment: at most ONE per response (max 1/session) — the first newly-unlocked achievement.
     const celebrate = state.achievements.newlyUnlocked[0] ?? null;
     return {

@@ -105,6 +105,7 @@ export default function SettingsPage() {
 
       <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-8)' }}>
         {/* food profile */}
+        <Box id="food-profile" style={{ scrollMarginBlockStart: 80 }} />
         <SectionHead icon={IconSalad}>پروفایل غذایی</SectionHead>
         <Box style={{ ...card, padding: 'var(--g-space-4)' }}>
           <Text component="div" style={{ ...subLabel, marginBlockEnd: 'var(--g-space-2)' }}>الگوی غذایی</Text>
@@ -112,6 +113,7 @@ export default function SettingsPage() {
             {s.patternOptions.map((p) => <Chip key={p.id} label={p.label} on={s.pattern === p.id} onClick={() => s.choosePattern(p.id)} />)}
           </Box>
           <Text component="div" style={{ ...subLabel, marginBlock: 'var(--g-space-5) var(--g-space-1)' }}>حساسیت‌ها</Text>
+          <Box id="allergies" style={{ scrollMarginBlockStart: 80 }} />
           <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: '0 0 var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
             <IconShieldHalf size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0, marginBlockStart: 1 }} />پرچمِ ایمنی — اطلاع‌رسانی، نه توصیهٔ پزشکی.
           </Text>

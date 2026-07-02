@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import { queryKeys } from '../../lib/queryKeys';
 
 /**
  * useFoodDna — the Food DNA activation data layer (S2).
@@ -16,7 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 export function useFoodDnaProjection() {
   const { token } = useAuth();
   return useQuery({
-    queryKey: ['profile', 'dna'],
+    queryKey: queryKeys.profile.dna,
     queryFn: () => apiClient.get('/profile/dna').then((r) => r.data),
     enabled: !!token,
   });
@@ -32,7 +33,7 @@ export function useTaste() {
   const { token } = useAuth();
   const qc = useQueryClient();
   const list = useQuery({
-    queryKey: ['profile', 'taste'],
+    queryKey: queryKeys.profile.taste,
     queryFn: () => apiClient.get('/profile/taste').then((r) => r.data),
     enabled: !!token,
   });
@@ -40,8 +41,8 @@ export function useTaste() {
     mutationFn: ({ ingredientId, stance }) =>
       apiClient.post('/profile/taste/correct', { ingredientId, stance }).then((r) => r.data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['profile', 'taste'] });
-      qc.invalidateQueries({ queryKey: ['profile', 'dna'] });
+      qc.invalidateQueries({ queryKey: queryKeys.profile.taste });
+      qc.invalidateQueries({ queryKey: queryKeys.profile.dna });
     },
   });
   return {
@@ -56,7 +57,7 @@ export function useFoodDna() {
   const { token } = useAuth();
   const proj = useFoodDnaProjection();
   const question = useQuery({
-    queryKey: ['profile', 'next-question'],
+    queryKey: queryKeys.profile.nextQuestion,
     queryFn: () => apiClient.get('/profile/next-question').then((r) => r.data),
     enabled: !!token,
   });

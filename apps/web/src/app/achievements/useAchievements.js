@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
+import { queryKeys } from '../../lib/queryKeys';
 import {
   IconToolsKitchen2, IconChefHat, IconArrowsShuffle, IconWorld, IconFlame,
   IconCalendarEvent, IconCalendarCheck, IconBookmark, IconChartBar,
@@ -27,7 +28,7 @@ const CATALOG = [
 ];
 
 export function useAchievements() {
-  const q = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data) });
+  const q = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data) });
 
   return useMemo(() => {
     let status = 'ready';

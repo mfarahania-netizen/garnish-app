@@ -45,11 +45,23 @@ export class UsersController {
     return this.usersService.addAllergies(req.user.userId, dto.allergies);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('allergies')
+  async removeAllergies(@Req() req, @Body() dto: AddAllergiesDto) {
+    return this.usersService.removeAllergies(req.user.userId, dto.allergies);
+  }
+
   // 🆕 ثبت رضایت‌نامه GDPR
   @UseGuards(AuthGuard('jwt'))
   @Post('consent')
   async grantConsent(@Req() req, @Body() body: { type: string; granted: boolean }) {
     return this.usersService.grantConsent(req.user.userId, body.type, body.granted, req.ip);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('consent')
+  async getConsent(@Req() req) {
+    return this.usersService.getConsentStatus(req.user.userId);
   }
 
   // 🆕 GDPR Art. 20: data portability — export the CURRENT user's own data only.

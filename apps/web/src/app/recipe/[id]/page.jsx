@@ -575,7 +575,7 @@ export default function RecipeDetailPage() {
 
           {/* GRIS v2 — premium full recipe when present; otherwise the existing flat layout */}
           {recipe.isLiteFood ? <LiteRecipeBody recipe={recipe} scaled={scaled} servedFor={servedFor} scaleFactor={scaleFactor} /> : null}
-          {!recipe.isLiteFood && gris ? <GrisRecipe gris={gris} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} techniqueTip={recipe.description || null} /> : null}
+          {!recipe.isLiteFood && gris ? <GrisRecipe gris={gris} recipe={recipe} scaleFactor={scaleFactor} servedFor={servedFor} swaps={perso.swaps} onAskSwap={askSub} removed={perso.removed} onToggleRemove={toggleRemove} techniqueTip={recipe.description || null} /> : null}
           {!recipe.isLiteFood && !gris ? (<>
           {/* Ingredients */}
           {recipe.ingredients.length ? (

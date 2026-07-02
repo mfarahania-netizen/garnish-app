@@ -189,9 +189,19 @@ export default function AssistantPage() {
                     <IconShieldCheck size={15} stroke={1.8} aria-hidden="true" />افزودن به آلرژی‌هام
                   </UnstyledButton>
                 ) : null}
+                {m.suggestedAction && m.suggestedAction.type === 'remove_allergy' && !a.removed?.[i] ? (
+                  <UnstyledButton type="button" onClick={() => a.removeAllergens(i, m.suggestedAction.allergens)} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-danger-bg)', color: 'var(--g-color-state-danger-fg)', border: '1px solid var(--g-color-state-danger-fg)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>
+                    <IconTrash size={15} stroke={1.8} aria-hidden="true" />حذف از آلرژی‌ها
+                  </UnstyledButton>
+                ) : null}
                 {a.added?.[i] ? (
                   <Text component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-state-success-text, var(--g-color-brand-600))' }}>
                     <IconCheck size={14} stroke={2} aria-hidden="true" />به آلرژی‌هات اضافه شد
+                  </Text>
+                ) : null}
+                {a.removed?.[i] ? (
+                  <Text component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-state-success-text, var(--g-color-brand-600))' }}>
+                    <IconCheck size={14} stroke={2} aria-hidden="true" />از آلرژی‌ها حذف شد
                   </Text>
                 ) : null}
                 <FeedbackRow value={a.feedback[i]} onUp={() => a.rate(i, 'up')} onDown={() => a.rate(i, 'down')} />

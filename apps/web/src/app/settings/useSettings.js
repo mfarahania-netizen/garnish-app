@@ -1,10 +1,11 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
 import { getAnalyticsConsent, enableAnalytics, disableAnalytics } from '../../lib/analytics-init';
 import { PATTERN_OPTIONS, ALLERGEN_OPTIONS } from '../onboarding/steps';
+import { invalidateProfileDomain, queryKeys } from '../../lib/queryKeys';
 
 /**
  * useSettings — the food-profile + notification + consent + account editor.
@@ -12,9 +13,8 @@ import { PATTERN_OPTIONS, ALLERGEN_OPTIONS } from '../onboarding/steps';
  * Honest persistence map (the backend is frozen):
  *  - dietary pattern + allergens  → PUT /users/preferences (diet + allergies JSON). The DTO has NO
  *    dislikes/severity field, so those are NOT shown here (no dead control) — documented.
- *  - consent (personalization, analytics) → POST /users/consent {type, granted} (real revoke/grant).
- *    There is no FE endpoint to READ server consent, so toggle state is mirrored locally (localStorage;
- *    analytics reuses the real 'garnish.analyticsConsent') — revoke still truly POSTs.
+ *  - consent (personalization, analytics) → GET/POST /users/consent. Server is the source of truth;
+ *    localStorage is only an optimistic mirror for quick boot/analytics wiring.
  *  - notification prefs → localStorage (no backend prefs endpoint) — honest client-side persistence.
  *  - account: phone (GET /users/me), data export (GET /users/me/export), delete (DELETE /users/me).
  */
@@ -27,8 +27,10 @@ const DEFAULT_NOTIF = { briefing: true, streak: true, reengage: false, quiet: tr
 export function useSettings() {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const me = useQuery({ queryKey: ['home', 'me'], queryFn: () => apiClient.get('/users/me').then((r) => r.data) });
-  const prefs = useQuery({ queryKey: ['discover', 'preferences'], queryFn: () => apiClient.get('/users/preferences').then((r) => r.data) });
+  const queryClient = useQueryClient();
+  const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data) });
+  const prefs = useQuery({ queryKey: queryKeys.preferences, queryFn: () => apiClient.get('/users/preferences').then((r) => r.data) });
+  const serverConsent = useQuery({ queryKey: queryKeys.consent, queryFn: () => apiClient.get('/users/consent').then((r) => r.data) });
 
   const [pattern, setPattern] = useState('');
   const [allergens, setAllergens] = useState({}); // id → true
@@ -41,39 +43,54 @@ export function useSettings() {
   const [hydrated, setHydrated] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState(null);
+  const saveSeq = useRef(0);
 
-  // hydrate the food profile from the real preferences once
+  // hydrate the food profile from the real preferences and keep it synced after assistant/profile writes
   useEffect(() => {
-    if (hydrated || prefs.isLoading || prefs.isError) return;
+    if (busy || prefs.isLoading || prefs.isError) return;
     const allergyNames = (prefs.data?.allergies || []).map((a) => String(a).toLowerCase());
     const map = {};
     for (const o of ALLERGEN_OPTIONS) if (allergyNames.includes(o.id)) map[o.id] = true;
     setPattern(prefs.data?.diet || '');
     setAllergens(map);
     setHydrated(true);
-  }, [hydrated, prefs.isLoading, prefs.isError, prefs.data]);
+  }, [busy, prefs.isLoading, prefs.isError, prefs.data]);
+
+  useEffect(() => {
+    if (serverConsent.isLoading || serverConsent.isError || !serverConsent.data?.purposes) return;
+    const personalization = serverConsent.data.purposes.personalization?.granted === true;
+    const analytics = serverConsent.data.purposes.analytics?.granted === true;
+    setConsent({ personalization, analytics });
+    try { localStorage.setItem(PERS_KEY, JSON.stringify(personalization)); } catch { /* */ }
+    if (analytics) enableAnalytics(); else disableAnalytics();
+  }, [serverConsent.isLoading, serverConsent.isError, serverConsent.data]);
 
   const flash = useCallback((message, icon) => { setToast({ message, icon, ts: Date.now() }); }, []);
 
   const savePreferences = useCallback(async (next) => {
+    const requestId = saveSeq.current + 1;
+    saveSeq.current = requestId;
     setBusy(true);
     try {
       const body = {};
-      if (next.pattern) body.diet = next.pattern;
-      body.allergies = JSON.stringify(Object.keys(next.allergens));
-      await apiClient.put('/users/preferences', body);
+      if (Object.prototype.hasOwnProperty.call(next, 'pattern')) body.diet = next.pattern || null;
+      body.allergies = Object.keys(next.allergens);
+      const saved = await apiClient.put('/users/preferences', body).then((r) => r.data);
+      queryClient.setQueryData(queryKeys.preferences, saved);
+      invalidateProfileDomain(queryClient);
       flash('تغییرات ذخیره شد', 'ok');
     } catch {
       flash('ذخیره نشد — تغییرات محلی نگه داشته شد', 'err');
     } finally {
-      setBusy(false);
+      if (saveSeq.current === requestId) setBusy(false);
     }
-  }, [flash]);
+  }, [flash, queryClient]);
 
   const choosePattern = useCallback((id) => {
-    setPattern(id);
-    savePreferences({ pattern: id, allergens });
-  }, [allergens, savePreferences]);
+    const nextPattern = pattern === id ? '' : id;
+    setPattern(nextPattern);
+    savePreferences({ pattern: nextPattern, allergens });
+  }, [allergens, pattern, savePreferences]);
 
   const toggleAllergen = useCallback((id) => {
     setAllergens((prev) => {
@@ -102,6 +119,7 @@ export function useSettings() {
     if (key === 'personalization') { try { localStorage.setItem(PERS_KEY, JSON.stringify(nextVal)); } catch { /* */ } }
     try {
       await apiClient.post('/users/consent', { type, granted: nextVal });
+      invalidateProfileDomain(queryClient);
       flash(nextVal ? 'رضایت ثبت شد' : 'رضایت لغو شد', 'ok');
     } catch {
       // revert — never show a successful-looking consent change that did not persist server-side
@@ -110,7 +128,7 @@ export function useSettings() {
       if (key === 'personalization') { try { localStorage.setItem(PERS_KEY, JSON.stringify(prev)); } catch { /* */ } }
       flash('ثبت نشد — دوباره امتحان کن', 'err');
     }
-  }, [consent, flash]);
+  }, [consent, flash, queryClient]);
 
   const exportData = useCallback(async () => {
     setBusy(true);
@@ -145,12 +163,12 @@ export function useSettings() {
   const account = useMemo(() => ({ phone: me.data?.phone || '', email: me.data?.email || '' }), [me.data]);
 
   let status = 'ready';
-  if (me.isLoading || prefs.isLoading) status = 'loading';
+  if (me.isLoading || prefs.isLoading || serverConsent.isLoading) status = 'loading';
   else if (me.isError) status = 'error';
 
   return {
     status,
-    refetch: () => { me.refetch(); prefs.refetch(); },
+    refetch: () => { me.refetch(); prefs.refetch(); serverConsent.refetch(); },
     patternOptions: PATTERN_OPTIONS, allergenOptions: ALLERGEN_OPTIONS,
     pattern, allergens, choosePattern, toggleAllergen,
     notif, toggleNotif,

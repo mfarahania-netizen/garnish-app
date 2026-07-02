@@ -1,13 +1,27 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileReadService } from '../behavior-engine/profile/read/profile-read.service';
 import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety-filter.service';
 import { getStartOfWeek } from '../utils/date.utils';
-import { aggregateShoppingList, PlannedIngredient } from './aggregation/shopping-aggregator';
+import {
+  aggregateShoppingList,
+  PlannedIngredient,
+} from './aggregation/shopping-aggregator';
 import { splitQuantity } from './aggregation/parse-quantity';
 import { norm } from '../ai/tools/grounding-utils';
 
-const COOKS_FOR_TO_SIZE: Record<string, number> = { '1': 1, '2': 2, '3_4': 3, '5_plus': 5 };
+const COOKS_FOR_TO_SIZE: Record<string, number> = {
+  '1': 1,
+  '2': 2,
+  '3_4': 3,
+  '5_plus': 5,
+};
+const pantryKey = (name: string, ingredientId?: string | null) =>
+  ingredientId ? `id:${ingredientId}` : `n:${norm(name)}`;
 
 @Injectable()
 export class ShoppingListService {
@@ -25,7 +39,15 @@ export class ShoppingListService {
       where: { userId },
       update: {},
       create: { userId },
-      include: { items: { orderBy: [{ isChecked: 'asc' }, { sortOrder: 'asc' }, { addedAt: 'asc' }] } },
+      include: {
+        items: {
+          orderBy: [
+            { isChecked: 'asc' },
+            { sortOrder: 'asc' },
+            { addedAt: 'asc' },
+          ],
+        },
+      },
     });
   }
 
@@ -34,12 +56,32 @@ export class ShoppingListService {
    * ingredient. Now we skip anything already on the list (unchecked) or repeated within the same batch, keyed by
    * dictionary ingredientId when known, else the folded name. `source` tags provenance ('manual'|'recipe:<id>'|'plan').
    */
-  async addItems(userId: string, items: { name: string; amount?: string; unit?: string; category?: string; ingredientId?: string; source?: string }[]) {
+  async addItems(
+    userId: string,
+    items: {
+      name: string;
+      amount?: string;
+      unit?: string;
+      category?: string;
+      ingredientId?: string;
+      source?: string;
+    }[],
+  ) {
     const list = await this.getList(userId);
-    const key = (name: string, ingredientId?: string | null) => (ingredientId ? `id:${ingredientId}` : `n:${norm(name)}`);
+    const key = (name: string, ingredientId?: string | null) =>
+      ingredientId ? `id:${ingredientId}` : `n:${norm(name)}`;
     const seen = new Set<string>();
-    for (const it of list.items ?? []) if (!it.isChecked) seen.add(key(it.name, it.ingredientId));
-    const fresh = [] as { shoppingListId: string; name: string; amount: string | null; unit: string | null; category: string | null; ingredientId: string | null; source: string }[];
+    for (const it of list.items ?? [])
+      if (!it.isChecked) seen.add(key(it.name, it.ingredientId));
+    const fresh = [] as {
+      shoppingListId: string;
+      name: string;
+      amount: string | null;
+      unit: string | null;
+      category: string | null;
+      ingredientId: string | null;
+      source: string;
+    }[];
     for (const item of items) {
       const parsed = splitQuantity(String(item.name ?? '')); // «خیار دو کیلو» (typed manually) → name «خیار» + amount «دو کیلو»
       const name = parsed.name.trim();
@@ -48,9 +90,18 @@ export class ShoppingListService {
       const k = key(name, item.ingredientId);
       if (seen.has(k)) continue; // already on the list / repeated in this batch → don't duplicate
       seen.add(k);
-      fresh.push({ shoppingListId: list.id, name, amount, unit: item.unit || null, category: item.category || null, ingredientId: item.ingredientId || null, source: item.source || 'manual' });
+      fresh.push({
+        shoppingListId: list.id,
+        name,
+        amount,
+        unit: item.unit || null,
+        category: item.category || null,
+        ingredientId: item.ingredientId || null,
+        source: item.source || 'manual',
+      });
     }
-    if (fresh.length) await this.prisma.shoppingItem.createMany({ data: fresh });
+    if (fresh.length)
+      await this.prisma.shoppingItem.createMany({ data: fresh });
     return { added: fresh.length };
   }
 
@@ -64,7 +115,9 @@ export class ShoppingListService {
     let householdSize = 1;
     try {
       const profile = await this.profiles.getLivingUserProfile(userId);
-      const cooksFor = (profile as any)?.declared?.dimensions?.['context.cooks_for_count']?.value;
+      const cooksFor = (profile as any)?.declared?.dimensions?.[
+        'context.cooks_for_count'
+      ]?.value;
       householdSize = COOKS_FOR_TO_SIZE[String(cooksFor)] ?? 1;
     } catch {
       /* profile unavailable → scale 1 */
@@ -72,29 +125,56 @@ export class ShoppingListService {
 
     const plan = await this.prisma.mealPlan.findFirst({
       where: { userId, weekStart: getStartOfWeek() },
-      include: { slots: { include: { recipe: { include: { ingredients: { include: { ingredient: { select: { id: true, category: true } } } } } } } } },
+      include: {
+        slots: {
+          include: {
+            recipe: {
+              include: {
+                ingredients: {
+                  include: {
+                    ingredient: { select: { id: true, category: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     const slots = (plan?.slots ?? []).filter((s) => s.recipe);
+    const list = await this.getList(userId);
+    const removedPlan = await this.prisma.shoppingItem.deleteMany({
+      where: { shoppingListId: list.id, source: 'plan', isChecked: false },
+    });
     if (slots.length === 0) {
-      return { resultStatus: 'no_plan', added: 0, merged: 0, flagged: 0, items: [] };
+      return {
+        resultStatus: 'no_plan',
+        added: 0,
+        merged: 0,
+        flagged: 0,
+        removedPlan: removedPlan.count,
+        items: [],
+      };
     }
 
     // HARD allergy/pork gate on the OUTPUT (guardian audit): a dish planned while safe but now conflicting (the user added
     // an allergy AFTER planning) must NOT have its ingredients itemized onto the list. Re-filter every slot recipe here —
     // the gate must hold at the result of build-from-plan, not only when the dish was placed. Fail-closed, never bypassed.
-    const safe = await this.safety.filter(userId, slots.map((s) => s.recipe) as any[]); // slots already filtered to s.recipe non-null
+    const safe = await this.safety.filter(
+      userId,
+      slots.map((s) => s.recipe) as any[],
+    ); // slots already filtered to s.recipe non-null
     const safeIds = new Set((safe as any[]).map((r) => r.id));
     const safeSlots = (slots as any[]).filter((s) => safeIds.has(s.recipe.id));
 
-    // per-slot servings (new MealSlot column the generated client may not know yet → raw read, the GRIS pattern)
     const servingsById = new Map<string, number>();
-    try {
-      const rows: any[] = await this.prisma.$queryRawUnsafe('SELECT id, servings FROM "MealSlot" WHERE "mealPlanId" = $1', plan!.id);
-      for (const r of rows) if (r.servings != null) servingsById.set(r.id, Number(r.servings));
-    } catch {
-      /* column absent (older env) → every slot just uses its recipe's base servings (scale 1) */
-    }
+    const slotServingRows = await this.prisma.mealSlot.findMany({
+      where: { mealPlanId: plan!.id },
+      select: { id: true, servings: true },
+    });
+    for (const r of slotServingRows)
+      if (r.servings != null) servingsById.set(r.id, Number(r.servings));
 
     // SCALE PER SLOT: each dish's ingredients are multiplied by (this slot's servings ÷ the recipe's base servings), so
     // a dinner you set to 8 people pulls 2× a recipe written for 4, while the rest stay as written. This REPLACES the
@@ -105,7 +185,10 @@ export class ShoppingListService {
       const base = r.servings && r.servings > 0 ? r.servings : 4; // fallback when a recipe lacks a base count
       // ONE «for N people» chosen at build time scales every dish (targetServings); else a per-slot override; else the
       // recipe as written. So the list always matches how many you're actually cooking for.
-      const wantRaw = targetServings && targetServings > 0 ? targetServings : (servingsById.get(slot.id) ?? base);
+      const wantRaw =
+        targetServings && targetServings > 0
+          ? targetServings
+          : (servingsById.get(slot.id) ?? base);
       const want = Math.min(20, Math.max(1, wantRaw)); // clamp where CONSUMED (the per-slot column is only clamped at write)
       const scale = want / base;
       for (const ing of r.ingredients ?? []) {
@@ -120,12 +203,23 @@ export class ShoppingListService {
       }
     }
 
-    const list = await this.getList(userId);
-    const pantry = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
+    const pantry = await this.prisma.pantryItem.findMany({
+      where: { userId },
+      select: { name: true },
+    });
     // subtract BOTH what's already on the list AND the user's "always have" staples (pantry) — so a planned «برنج» the
     // user always keeps never lands on the list. This is the "it knows I already have rice" delight.
-    const existingNames = [...(list.items ?? []).map((i) => i.name), ...pantry.map((p) => p.name)];
-    const agg = aggregateShoppingList(planned, { scale: 1, ownedNames: existingNames }); // per-line scale already encodes servings
+    const preservedListItems = (list.items ?? []).filter(
+      (i) => !(i.source === 'plan' && !i.isChecked),
+    );
+    const existingNames = [
+      ...preservedListItems.map((i) => i.name),
+      ...pantry.map((p) => p.name),
+    ];
+    const agg = aggregateShoppingList(planned, {
+      scale: 1,
+      ownedNames: existingNames,
+    }); // per-line scale already encodes servings
 
     if (agg.items.length > 0) {
       await this.prisma.shoppingItem.createMany({
@@ -141,7 +235,15 @@ export class ShoppingListService {
       });
     }
 
-    return { resultStatus: 'ok', added: agg.items.length, merged: agg.merged, flagged: agg.flagged, householdSize, items: agg.items };
+    return {
+      resultStatus: 'ok',
+      added: agg.items.length,
+      merged: agg.merged,
+      flagged: agg.flagged,
+      removedPlan: removedPlan.count,
+      householdSize,
+      items: agg.items,
+    };
   }
 
   /**
@@ -149,21 +251,45 @@ export class ShoppingListService {
    * could never be edited and check was non-idempotent). Honors any subset of fields; sets checkedAt when checking.
    * Back-compat: an empty body still toggles isChecked (the current FE sends no payload).
    */
-  async updateItem(itemId: string, userId: string, patch: { name?: string; amount?: string; unit?: string; category?: string; isChecked?: boolean } = {}) {
+  async updateItem(
+    itemId: string,
+    userId: string,
+    patch: {
+      name?: string;
+      amount?: string;
+      unit?: string;
+      category?: string;
+      isChecked?: boolean;
+    } = {},
+  ) {
     const item = await this.prisma.shoppingItem.findUnique({
       where: { id: itemId },
       include: { shoppingList: { select: { userId: true } } },
     });
     if (!item) throw new NotFoundException('آیتم یافت نشد');
-    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به تغییر این آیتم نیستید');
+    if (item.shoppingList.userId !== userId)
+      throw new ForbiddenException('شما مجاز به تغییر این آیتم نیستید');
 
-    const data: { name?: string; amount?: string | null; unit?: string | null; category?: string | null; isChecked?: boolean; checkedAt?: Date | null } = {};
+    const data: {
+      name?: string;
+      amount?: string | null;
+      unit?: string | null;
+      category?: string | null;
+      isChecked?: boolean;
+      checkedAt?: Date | null;
+    } = {};
     if (patch.name !== undefined) data.name = String(patch.name).trim();
     if (patch.amount !== undefined) data.amount = patch.amount || null;
     if (patch.unit !== undefined) data.unit = patch.unit || null;
     if (patch.category !== undefined) data.category = patch.category || null;
-    if (patch.isChecked !== undefined) { data.isChecked = patch.isChecked; data.checkedAt = patch.isChecked ? new Date() : null; }
-    else if (Object.keys(data).length === 0) { const next = !item.isChecked; data.isChecked = next; data.checkedAt = next ? new Date() : null; } // legacy empty-body toggle
+    if (patch.isChecked !== undefined) {
+      data.isChecked = patch.isChecked;
+      data.checkedAt = patch.isChecked ? new Date() : null;
+    } else if (Object.keys(data).length === 0) {
+      const next = !item.isChecked;
+      data.isChecked = next;
+      data.checkedAt = next ? new Date() : null;
+    } // legacy empty-body toggle
 
     return this.prisma.shoppingItem.update({ where: { id: itemId }, data });
   }
@@ -175,7 +301,8 @@ export class ShoppingListService {
     });
 
     if (!item) throw new NotFoundException('آیتم یافت نشد');
-    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به حذف این آیتم نیستید');
+    if (item.shoppingList.userId !== userId)
+      throw new ForbiddenException('شما مجاز به حذف این آیتم نیستید');
 
     return this.prisma.shoppingItem.delete({ where: { id: itemId } });
   }
@@ -183,28 +310,38 @@ export class ShoppingListService {
   /** Bulk: remove every CHECKED item (the "shopping trip done" reset). Owner-scoped via the user's own list. */
   async clearChecked(userId: string) {
     const list = await this.getList(userId);
-    const res = await this.prisma.shoppingItem.deleteMany({ where: { shoppingListId: list.id, isChecked: true } });
+    const res = await this.prisma.shoppingItem.deleteMany({
+      where: { shoppingListId: list.id, isChecked: true },
+    });
     return { removed: res.count };
   }
 
   /** Bulk: empty the whole list. */
   async clearAll(userId: string) {
     const list = await this.getList(userId);
-    const res = await this.prisma.shoppingItem.deleteMany({ where: { shoppingListId: list.id } });
+    const res = await this.prisma.shoppingItem.deleteMany({
+      where: { shoppingListId: list.id },
+    });
     return { removed: res.count };
   }
 
   /** Bulk: uncheck everything (start a fresh trip without losing the list). */
   async uncheckAll(userId: string) {
     const list = await this.getList(userId);
-    const res = await this.prisma.shoppingItem.updateMany({ where: { shoppingListId: list.id, isChecked: true }, data: { isChecked: false, checkedAt: null } });
+    const res = await this.prisma.shoppingItem.updateMany({
+      where: { shoppingListId: list.id, isChecked: true },
+      data: { isChecked: false, checkedAt: null },
+    });
     return { unchecked: res.count };
   }
 
   // ── PANTRY ("از قبل دارم" staples) — wired into buildFromPlan so the user's always-have items never re-appear ──
 
   async getPantry(userId: string) {
-    return this.prisma.pantryItem.findMany({ where: { userId }, orderBy: { addedAt: 'desc' } });
+    return this.prisma.pantryItem.findMany({
+      where: { userId },
+      orderBy: { addedAt: 'desc' },
+    });
   }
 
   /** Move a shopping item into the pantry (mark it "always have") and remove it from the list. Owner-checked, deduped. */
@@ -214,10 +351,23 @@ export class ShoppingListService {
       include: { shoppingList: { select: { userId: true } } },
     });
     if (!item) throw new NotFoundException('آیتم یافت نشد');
-    if (item.shoppingList.userId !== userId) throw new ForbiddenException('شما مجاز به این کار نیستید');
-    const existing = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
-    if (!existing.some((p) => norm(p.name) === norm(item.name))) {
-      await this.prisma.pantryItem.create({ data: { userId, name: item.name, ingredientId: item.ingredientId, amount: item.amount, unit: item.unit } });
+    if (item.shoppingList.userId !== userId)
+      throw new ForbiddenException('شما مجاز به این کار نیستید');
+    const existing = await this.prisma.pantryItem.findMany({
+      where: { userId },
+      select: { name: true, ingredientId: true },
+    });
+    const key = pantryKey(item.name, item.ingredientId);
+    if (!existing.some((p) => pantryKey(p.name, p.ingredientId) === key)) {
+      await this.prisma.pantryItem.create({
+        data: {
+          userId,
+          name: item.name,
+          ingredientId: item.ingredientId,
+          amount: item.amount,
+          unit: item.unit,
+        },
+      });
     }
     await this.prisma.shoppingItem.delete({ where: { id: itemId } });
     return { ok: true };
@@ -227,15 +377,32 @@ export class ShoppingListService {
   async addPantryName(userId: string, name: string) {
     const n = String(name ?? '').trim();
     if (!n) return { ok: false };
-    const existing = await this.prisma.pantryItem.findMany({ where: { userId }, select: { name: true } });
-    if (existing.some((p) => norm(p.name) === norm(n))) return { ok: true };
-    return this.prisma.pantryItem.create({ data: { userId, name: n } });
+    const ingredient = await this.prisma.ingredient
+      .findFirst({
+        where: { OR: [{ code: n }, { nameFa: n }, { nameEn: n }] },
+        select: { id: true },
+      })
+      .catch(() => null);
+    const existing = await this.prisma.pantryItem.findMany({
+      where: { userId },
+      select: { name: true, ingredientId: true },
+    });
+    const key = pantryKey(n, ingredient?.id);
+    if (existing.some((p) => pantryKey(p.name, p.ingredientId) === key))
+      return { ok: true };
+    return this.prisma.pantryItem.create({
+      data: { userId, name: n, ingredientId: ingredient?.id ?? null },
+    });
   }
 
   async removeFromPantry(pantryId: string, userId: string) {
-    const p = await this.prisma.pantryItem.findUnique({ where: { id: pantryId }, select: { userId: true } });
+    const p = await this.prisma.pantryItem.findUnique({
+      where: { id: pantryId },
+      select: { userId: true },
+    });
     if (!p) throw new NotFoundException('یافت نشد');
-    if (p.userId !== userId) throw new ForbiddenException('شما مجاز به این کار نیستید');
+    if (p.userId !== userId)
+      throw new ForbiddenException('شما مجاز به این کار نیستید');
     return this.prisma.pantryItem.delete({ where: { id: pantryId } });
   }
 }
