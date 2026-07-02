@@ -168,10 +168,12 @@ export class ProfileReadService {
 
     let graph: UserFoodIdentityGraph | null = null;
     try {
-      const port = createPrismaShadowProfileFeedPort(this.prisma as any, () => now);
-      const loaded = await port.loadObservations(userId, 'rebuild');
-      if (loaded && Array.isArray(loaded.observations) && loaded.observations.length > 0) {
-        graph = buildUserFoodIdentityGraph(loaded.observations, { userId, now, mode: 'offline_eval' }).graph ?? null;
+      if (consent.granted.includes('personalization')) {
+        const port = createPrismaShadowProfileFeedPort(this.prisma as any, () => now);
+        const loaded = await port.loadObservations(userId, 'rebuild');
+        if (loaded && Array.isArray(loaded.observations) && loaded.observations.length > 0) {
+          graph = buildUserFoodIdentityGraph(loaded.observations, { userId, now, mode: 'offline_eval' }).graph ?? null;
+        }
       }
     } catch (err) {
       this.logger.warn(`food-dna observed graph unavailable; cold-start: ${err instanceof Error ? err.name : 'error'}`);

@@ -76,12 +76,17 @@ describe('GamificationService — honest, server-authoritative', () => {
   });
 
   it('private-only summary: marked private, no other-user data, celebrate capped at 1', async () => {
-    const { svc } = makeService({ events: [cookInWeek(0), cookInWeek(1)] });
+    const { svc, prisma } = makeService({ events: [cookInWeek(0), cookInWeek(1)], existingAchievements: ['first_cook'] });
     const summary = await svc.getSummary('u1', now);
     expect(summary.private).toBe(true);
     expect(JSON.stringify(summary)).not.toMatch(/leaderboard|rank|compare|otherUser/i);
     expect(Array.isArray(summary.achievements.newlyUnlocked)).toBe(true);
     expect(summary.celebrate === null || typeof summary.celebrate === 'object').toBe(true);
+    expect(summary.achievements.earned.map((a: any) => a.key)).toContain('first_cook');
+    expect(prisma.userStreak.upsert).not.toHaveBeenCalled();
+    expect(prisma.userAchievement.createMany).not.toHaveBeenCalled();
+    expect(prisma.userProgress.upsert).not.toHaveBeenCalled();
+    expect(prisma.gamificationEvent.createMany).not.toHaveBeenCalled();
   });
 
   it('routes streak-at-risk through the S6 INE (dry-run), never sending directly', async () => {
