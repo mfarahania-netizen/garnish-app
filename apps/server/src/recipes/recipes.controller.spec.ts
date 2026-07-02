@@ -1,8 +1,6 @@
 import { RecipesController } from './recipes.controller';
 
-// Guardian H1 rework: prove the popular/fresh rails (Home/Discover read these) are actually WIRED to the
-// hard safety gate with the logged-in user's id, and that anonymous passes through (userId undefined).
-describe('RecipesController — safety-gate wiring', () => {
+describe('RecipesController safety-gate wiring', () => {
   let controller: RecipesController;
   let safety: { filter: jest.Mock; safeIds: jest.Mock };
   let recipesService: any;
@@ -12,7 +10,7 @@ describe('RecipesController — safety-gate wiring', () => {
   beforeEach(() => {
     safety = {
       filter: jest.fn(async (_uid: any, rows: any[]) => rows),
-      safeIds: jest.fn(async (_uid: any, ids: string[]) => ids), // default: all safe (no block)
+      safeIds: jest.fn(async (_uid: any, ids: string[]) => ids),
     };
     recipesService = {
       findAll: jest.fn(async () => ({ data: [{ id: 'a' }, { id: 'b' }], total: 2 })),
@@ -25,26 +23,62 @@ describe('RecipesController — safety-gate wiring', () => {
       personalize: jest.fn(async (id: string) => ({ id, personalized: true })),
     };
     searchService = {
-      search: jest.fn(async () => ({ resultStatus: 'ok', results: [{ recipeId: 'r1', score: 1, why: { matchedTerms: [] } }] })),
+      search: jest.fn(async () => ({
+        resultStatus: 'ok',
+        results: [{ recipeId: 'r1', score: 1, why: { matchedTerms: [] } }],
+      })),
       similar: jest.fn(async () => ({ recipeId: 'x', results: [{ recipeId: 'n1' }], resultStatus: 'ok' })),
     };
     controller = new RecipesController(recipesService as any, richness as any, searchService as any, safety as any);
   });
 
-  it('findAll runs the gate with the logged-in user id (Home/Discover rail)', async () => {
+  it('findAll runs the gate with the logged-in user id', async () => {
     const res = await controller.findAll({ user: { userId: 'u1' } } as any, '1', '20');
+    expect(recipesService.findAll).toHaveBeenCalledWith(0, 1000, undefined, undefined);
     expect(safety.filter).toHaveBeenCalledWith('u1', [{ id: 'a' }, { id: 'b' }]);
     expect(res.total).toBe(2);
   });
 
-  it('findAll passes through anonymously (no req.user → userId undefined)', async () => {
-    await controller.findAll({} as any, '1', '20');
-    expect(safety.filter).toHaveBeenCalledWith(undefined, expect.any(Array));
+  it('findAll paginates after the safety gate so sparse pages are not produced', async () => {
+    const rows = Array.from({ length: 30 }, (_, i) => ({ id: `r${i + 1}` }));
+    recipesService.findAll.mockResolvedValueOnce({ data: rows, total: 30, page: 1, pageSize: 1000 });
+    safety.filter.mockResolvedValueOnce(rows.filter((_, i) => i % 2 === 0));
+
+    const res = await controller.findAll({ user: { userId: 'u1' } } as any, '2', '5');
+
+    expect(recipesService.findAll).toHaveBeenCalledWith(0, 1000, undefined, undefined);
+    expect(res.total).toBe(15);
+    expect(res.data.map((r: any) => r.id)).toEqual(['r11', 'r13', 'r15', 'r17', 'r19']);
   });
 
-  it('search runs the gate for the logged-in user', async () => {
+  it('findAll does not safety-filter anonymous listing', async () => {
+    await controller.findAll({} as any, '1', '20');
+
+    expect(recipesService.findAll).toHaveBeenCalledWith(0, 20, undefined, undefined);
+    expect(safety.filter).not.toHaveBeenCalled();
+  });
+
+  it('search runs the gate for the logged-in user with an expanded candidate pool', async () => {
     await controller.search({ user: { userId: 'u1' } } as any, { q: 'x', limit: '10' } as any);
+
+    expect(searchService.search).toHaveBeenCalledWith('x', { limit: 200 });
     expect(safety.filter).toHaveBeenCalledWith('u1', expect.any(Array));
+  });
+
+  it('search returns the requested limit after filtering a larger candidate pool', async () => {
+    const ranked = Array.from({ length: 25 }, (_, i) => ({
+      recipeId: `r${i + 1}`,
+      score: 1,
+      why: { matchedTerms: [] },
+    }));
+    const rows = ranked.map((r) => ({ id: r.recipeId }));
+    searchService.search.mockResolvedValueOnce({ resultStatus: 'ok', results: ranked });
+    recipesService.findByIdsOrdered.mockResolvedValueOnce(rows);
+    safety.filter.mockResolvedValueOnce(rows.slice(0, 12));
+
+    const res = await controller.search({ user: { userId: 'u1' } } as any, { q: 'x', limit: '10' } as any);
+
+    expect(res).toHaveLength(10);
   });
 
   it('similar runs the gate keyed by recipeId', async () => {

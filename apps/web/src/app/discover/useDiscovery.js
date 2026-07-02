@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { faDuration, faDifficulty } from '../../components/ges/format';
 import { faAllergen } from '../home/lib/reasons';
+import { queryKeys } from '../../lib/queryKeys';
 
 /**
  * useDiscovery — the کشف screen's data.
@@ -107,7 +108,7 @@ export function useDiscovery() {
     enabled: !active && !!token,
   });
   const prefs = useQuery({
-    queryKey: ['discover', 'preferences'],
+    queryKey: queryKeys.preferences,
     queryFn: () => apiClient.get('/users/preferences').then((r) => r.data),
     enabled: !!token,
   });

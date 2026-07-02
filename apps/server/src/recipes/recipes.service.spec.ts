@@ -29,6 +29,23 @@ describe('RecipesService', () => {
       expect(findMany.mock.calls[0][0].where).toMatchObject({ status: 'active', isPublic: true });
     });
 
+    it('findAll applies canonical meal and category facets', async () => {
+      const findMany = jest.fn().mockResolvedValue([]);
+      const count = jest.fn().mockResolvedValue(0);
+      const svc = new RecipesService({ recipe: { findMany, count } } as any);
+
+      await svc.findAll(0, 24, 'persian', 'lunch');
+
+      expect(findMany.mock.calls[0][0].where).toMatchObject({
+        status: 'active',
+        isPublic: true,
+        AND: expect.arrayContaining([
+          expect.objectContaining({ OR: expect.arrayContaining([expect.objectContaining({ region: { contains: 'persian' } })]) }),
+          expect.objectContaining({ OR: expect.arrayContaining([expect.objectContaining({ mealType: { contains: 'lunch' } })]) }),
+        ]),
+      });
+    });
+
     it('search queries only active + public recipes', async () => {
       const findMany = jest.fn().mockResolvedValue([]);
       const svc = new RecipesService({ recipe: { findMany } } as any);

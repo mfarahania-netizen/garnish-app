@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import {
   IconChevronDown, IconClock, IconChefHat, IconAlertTriangle, IconToolsKitchen2, IconArrowsExchange,
-  IconBook, IconFlask, IconSchool, IconHelpCircle, IconArchive, IconSparkles,
+  IconBook, IconFlask, IconSchool, IconHelpCircle, IconArchive, IconSparkles, IconListNumbers,
   IconTrash, IconArrowBackUp,
 } from '@tabler/icons-react';
 import { toFaDigits } from '../../../components/ges/format';
@@ -24,6 +24,16 @@ import { parseGrisName, stripGrisIds } from '../../../components/ges/personalize
 
 const fa = (n) => (typeof n === 'number' ? toFaDigits(n) : n);
 const list = (v) => (Array.isArray(v) ? v.filter(Boolean) : []);
+const recipeIngredientsForGris = (recipe) => list(recipe?.ingredients).map((ingredient) => ({
+  name: ingredient.name,
+  volume: ingredient.amountText || null,
+  weightG: null,
+  prepState: null,
+  component: '',
+  role: null,
+  buyTip: null,
+  swap: null,
+})).filter((ingredient) => ingredient.name);
 
 const card = { background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' };
 const h2 = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' };
@@ -57,11 +67,11 @@ export function Accordion({ icon: Icon, title, defaultOpen = false, children }) 
   );
 }
 
-export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null, removed = [], onToggleRemove = null, techniqueTip = null }) {
+export default function GrisRecipe({ gris, recipe = null, scaleFactor = 1, servedFor = null, swaps = {}, onAskSwap = null, removed = [], onToggleRemove = null, techniqueTip = null }) {
   if (!gris) return null;
   const g = gris;
   const scaled = scaleFactor !== 1;
-  const ing = list(g.ingredients);
+  const ing = list(g.ingredients).length ? list(g.ingredients) : recipeIngredientsForGris(recipe);
   // group ingredients by component
   const groups = {};
   for (const i of ing) { const k = i.component || ''; (groups[k] = groups[k] || []).push(i); }
@@ -144,6 +154,24 @@ export default function GrisRecipe({ gris, scaleFactor = 1, servedFor = null, sw
 
       {/* ── DISCLOSURE STACK — depth on demand. Everything below the shopping list is one tap away. ── */}
       <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
+        {/* STEPS — detail-page visibility for review; Cook Mode remains the guided, immersive flow. */}
+        {list(g.steps).length ? (
+          <Accordion icon={IconListNumbers} title="مراحل پخت">
+            <Box component="ol" style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+              {list(g.steps).map((s, i) => (
+                <Box component="li" key={i} style={{ ...card, padding: 'var(--g-space-3)', display: 'flex', gap: 'var(--g-space-3)' }}>
+                  <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 800, flexShrink: 0 }}>{fa(s.order || i + 1)}</Box>
+                  <Box style={{ minInlineSize: 0 }}>
+                    {s.title ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{s.title}</Text> : null}
+                    <Text component="p" style={{ ...body, margin: s.title ? '2px 0 0' : 0 }}>{s.instruction || s.text || s}</Text>
+                    {s.tip ? <Text component="p" style={{ ...muted, margin: '2px 0 0' }}>{stripGrisIds(s.tip)}</Text> : null}
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </Accordion>
+        ) : null}
+
         {/* WHY IT WORKS — the science + any relocated technique insight (the «wow», kept fully, never inline-dumped) */}
         {(techLines.length || why.length) ? (
           <Accordion icon={IconFlask} title="چرا این‌طوری؟ — علمِ آشپزی">

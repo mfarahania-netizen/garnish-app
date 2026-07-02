@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Box, Text, UnstyledButton } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IconChevronRight, IconChevronLeft, IconChefHat } from '@tabler/icons-react';
 import apiClient from '../../lib/apiClient';
 import { faDuration, faDifficulty, recipeDurationMinutes, toFaDigits } from '../../components/ges/format';
@@ -32,10 +32,14 @@ function pageWindow(page, totalPages) {
 
 export default function RecipesPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
+  const meal = searchParams.get('meal') || '';
+  const category = searchParams.get('category') || '';
+  const title = searchParams.get('title') || '';
   const q = useQuery({
-    queryKey: ['recipes', 'all', page],
-    queryFn: () => apiClient.get('/recipes', { params: { page, limit: PAGE_SIZE } }).then((r) => r.data),
+    queryKey: ['recipes', 'all', page, meal, category],
+    queryFn: () => apiClient.get('/recipes', { params: { page, limit: PAGE_SIZE, meal: meal || undefined, category: category || undefined } }).then((r) => r.data),
   });
 
   const list = Array.isArray(q.data?.data) ? q.data.data : Array.isArray(q.data) ? q.data : [];
@@ -52,6 +56,10 @@ export default function RecipesPage() {
   }, [page, total, totalPages]);
 
   useEffect(() => {
+    setPage(1);
+  }, [meal, category]);
+
+  useEffect(() => {
     if (typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '')) return;
     try {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -62,7 +70,7 @@ export default function RecipesPage() {
 
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-6)' }}>
-      <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>رسپی‌ها</Text>
+      <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{title || 'رسپی‌ها'}</Text>
       <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '2px 0 var(--g-space-4)' }}>{total ? `نمایش ${toFaDigits(from)} تا ${toFaDigits(to)} از ${toFaDigits(total)} دستور` : 'همهٔ دستورها، مرتب‌شده بر پایهٔ محبوبیت و استفاده'}</Text>
 
       {q.isLoading ? (

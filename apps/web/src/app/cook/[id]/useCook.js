@@ -8,6 +8,7 @@ import { usePersonalization } from '../../../hooks/usePersonalization';
 import { recallRecommendation } from '../../../lib/recommendationAttribution';
 import { extractBaseServings } from '../../../components/ges/scaling';
 import { patchStepText, swapsList } from '../../../components/ges/personalize';
+import { queryKeys } from '../../../lib/queryKeys';
 
 /**
  * useCook — immersive step-by-step cook flow. GRIS-aware: when the recipe has a GRIS object it cooks
@@ -56,7 +57,7 @@ export function useCook(id) {
   const detail = useRecipeDetail(id);
   const baseServings = extractBaseServings(detail.recipe?.servingsText, 4);
   const perso = usePersonalization(id, baseServings);
-  const gam = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled: !!token });
+  const gam = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled: !!token });
 
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);

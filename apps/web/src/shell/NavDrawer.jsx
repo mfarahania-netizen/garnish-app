@@ -6,6 +6,7 @@ import { DRAWER_PRIMARY, DRAWER_SECONDARY } from './navConfig';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../lib/apiClient';
 import { faPercent } from '../components/ges/format';
+import { queryKeys } from '../lib/queryKeys';
 
 /**
  * NavDrawer — the hamburger drawer, rebuilt to the approved mockup as a SINGLE clean panel:
@@ -72,7 +73,7 @@ export default function NavDrawer({ opened, onClose }) {
 
   // Maturity for the header line — shares the cache key with Home's /profile fetch (deduped).
   const profile = useQuery({
-    queryKey: ['home', 'profile'],
+    queryKey: queryKeys.profile.living,
     queryFn: () => apiClient.get('/profile').then((r) => r.data),
     enabled: !!token,
   });
@@ -88,7 +89,7 @@ export default function NavDrawer({ opened, onClose }) {
   const handleLogout = () => {
     onClose();
     logout();
-    navigate('/');
+    navigate('/login');
   };
 
   return (

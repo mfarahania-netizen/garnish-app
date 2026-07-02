@@ -8,19 +8,35 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 export class RecipesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(skip = 0, take = 20, category?: string) {
+  async findAll(skip = 0, take = 20, category?: string, meal?: string) {
     // SECURITY (advisor audit): only PUBLISHED + public recipes on the public rail. A user-authored recipe is
     // created status:'pending', so this keeps unreviewed UGC off Home/Discover until an admin sets it active.
     // All curated recipes are status:'active'+isPublic, so this is byte-identical today.
     const where: any = { status: 'active', isPublic: true };
 
-    if (category) {
-      // استفاده از هر دو روش: searchTerms (دقیق) و categories (fallback)
-      where.OR = [
-        { searchTerms: { some: { term: { contains: category } } } },
-        { categories: { contains: category } },
-      ];
+    const filters: any[] = [];
+    const categoryTerms = this.expandCategoryFacet(category);
+    if (categoryTerms.length) {
+      filters.push({
+        OR: categoryTerms.flatMap((term) => [
+          { searchTerms: { some: { term: { contains: term } } } },
+          { categories: { contains: term } },
+          { category: { contains: term } },
+          { region: { contains: term } },
+        ]),
+      });
     }
+    const mealTerms = this.expandMealFacet(meal);
+    if (mealTerms.length) {
+      filters.push({
+        OR: mealTerms.flatMap((term) => [
+          { mealType: { contains: term } },
+          { categories: { contains: term } },
+          { searchTerms: { some: { term: { contains: term } } } },
+        ]),
+      });
+    }
+    if (filters.length) where.AND = filters;
 
     const [data, total, engagement] = await Promise.all([
       this.prisma.recipe.findMany({
@@ -348,5 +364,35 @@ export class RecipesService {
     } catch {
       return fallback;
     }
+  }
+
+  private expandMealFacet(meal?: string) {
+    const key = String(meal || '').trim().toLowerCase();
+    const map: Record<string, string[]> = {
+      breakfast: ['breakfast'],
+      lunch: ['lunch'],
+      dinner: ['dinner'],
+      snack: ['snack', 'brunch'],
+      dessert: ['dessert'],
+    };
+    return [...new Set(map[key] || (key ? [key] : []))];
+  }
+
+  private expandCategoryFacet(category?: string) {
+    const key = String(category || '').trim().toLowerCase();
+    const map: Record<string, string[]> = {
+      persian: ['persian'],
+      iranian: ['persian'],
+      fastfood: ['sandwich', 'quick_meal', 'burger', 'pizza'],
+      fast_food: ['sandwich', 'quick_meal', 'burger', 'pizza'],
+      salad: ['salad'],
+      soup: ['soup', 'stew'],
+      vegetarian: ['vegetarian', 'vegan'],
+      vegan: ['vegan'],
+      pastry: ['pastry', 'sweet', 'cake'],
+      sweet: ['sweet', 'dessert', 'cake'],
+      dessert: ['dessert', 'sweet', 'cake'],
+    };
+    return [...new Set(map[key] || (key ? [key] : []))];
   }
 }

@@ -33,13 +33,24 @@ export class RecipesController {
     @Query('page') page = '1',
     @Query('limit') limit = '20',
     @Query('category') category?: string,
+    @Query('meal') meal?: string,
   ) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1); // clamp ≥1 — a negative page made skip negative → Prisma 500
     const limitNum = Math.min(1000, Math.max(1, parseInt(limit, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
-    const result = await this.recipesService.findAll(skip, limitNum, category);
-    const data = await this.safety.filter(req.user?.userId, result.data);
-    return { ...result, data };
+    const userId = req.user?.userId;
+    if (userId) {
+      const all = await this.recipesService.findAll(0, 1000, category, meal);
+      const safe = await this.safety.filter(userId, all.data);
+      return {
+        ...all,
+        data: safe.slice(skip, skip + limitNum),
+        total: safe.length,
+        page: pageNum,
+        pageSize: limitNum,
+      };
+    }
+    return this.recipesService.findAll(skip, limitNum, category, meal);
   }
 
   /**
@@ -53,15 +64,19 @@ export class RecipesController {
     const limitNum = Math.min(50, Math.max(1, parseInt(query.limit, 10) || 10)); // P1-6: clamp — a negative/huge limit was unbounded
     const userId = req.user?.userId;
     const q = normalizeSearchQuery(query.q); // قورمه→قرمه + Arabic folds so famous dishes are found by their common spelling
-    const ranked = await this.searchService.search(q, { limit: limitNum });
+    const searchLimit = userId ? Math.min(500, Math.max(limitNum * 20, limitNum)) : limitNum;
+    const ranked = await this.searchService.search(q, { limit: searchLimit });
     if (ranked.resultStatus !== 'ok') {
       // legacy fallback keeps behavior for empty_query and lets contains catch anything the index missed
-      return this.safety.filter(userId, await this.recipesService.search(q, limitNum));
+      const fallbackLimit = userId ? Math.min(500, Math.max(limitNum * 20, limitNum)) : limitNum;
+      const fallback = await this.safety.filter(userId, await this.recipesService.search(q, fallbackLimit));
+      return fallback.slice(0, limitNum);
     }
     const ordered = await this.recipesService.findByIdsOrdered(ranked.results.map((r) => r.recipeId));
     const whyById = new Map(ranked.results.map((r) => [r.recipeId, { score: r.score, matchedTerms: r.why.matchedTerms }]));
     const mapped = ordered.map((recipe: any) => ({ ...recipe, _search: whyById.get(recipe.id) ?? null }));
-    return this.safety.filter(userId, mapped); // HARD safety filter for a logged-in user (anonymous → unfiltered)
+    const filtered = await this.safety.filter(userId, mapped); // HARD safety filter for a logged-in user (anonymous → unfiltered)
+    return filtered.slice(0, limitNum);
   }
 
   /** SEARCH-L4-08: "similar recipes" / more-like-this — deterministic nearest neighbors + WHY. Optional auth. */

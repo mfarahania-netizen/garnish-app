@@ -119,12 +119,13 @@ function SectionHeader({ children }) {
 }
 
 function MealTypeRow({ onPick }) {
+  const mealIds = ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'];
   return (
     <Box component="section">
       <SectionHeader>دستهٔ وعده</SectionHeader>
       <Box className="g-norail" style={{ display: 'flex', gap: 'var(--g-space-2)', overflowX: 'auto', marginInline: 'calc(var(--g-space-4) * -1)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-1)' }}>
-        {MEAL_TYPES.map(({ label, Icon }) => (
-          <UnstyledButton key={label} type="button" onClick={onPick} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>
+        {MEAL_TYPES.map(({ label, Icon }, index) => (
+          <UnstyledButton key={label} type="button" onClick={() => onPick({ meal: mealIds[index], title: label })} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>
             <Icon size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />{label}
           </UnstyledButton>
         ))}
@@ -134,12 +135,13 @@ function MealTypeRow({ onPick }) {
 }
 
 function CuisineRow({ onPick }) {
+  const categoryIds = ['persian', 'fastfood', 'salad', 'soup', 'vegetarian', 'pastry'];
   return (
     <Box component="section">
       <SectionHeader>دستهٔ غذا</SectionHeader>
       <Box className="g-norail" style={{ display: 'flex', gap: 'var(--g-space-3)', overflowX: 'auto', marginInline: 'calc(var(--g-space-4) * -1)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-1)' }}>
-        {CUISINES.map(({ label, Icon, bg, fg }) => (
-          <UnstyledButton key={label} type="button" onClick={onPick} aria-label={label} style={{ flexShrink: 0, inlineSize: 78, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+        {CUISINES.map(({ label, Icon, bg, fg }, index) => (
+          <UnstyledButton key={label} type="button" onClick={() => onPick({ category: categoryIds[index], title: label })} aria-label={label} style={{ flexShrink: 0, inlineSize: 78, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--g-space-2)' }}>
             <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 64, blockSize: 64, borderRadius: 18, background: bg, color: fg }}>
               <Icon size={28} stroke={1.6} />
             </Box>
@@ -223,6 +225,13 @@ export default function HomePage() {
     navigate(`/recipe/${id}`);
   }, [navigate, trackEvent]);
   const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
+  const goRecipeFacet = useCallback(({ meal, category, title }) => {
+    const params = new URLSearchParams();
+    if (meal) params.set('meal', meal);
+    if (category) params.set('category', category);
+    if (title) params.set('title', title);
+    navigate(`/recipes?${params.toString()}`);
+  }, [navigate]);
   // real favorites write: confirmation toast ONLY on a successful call; revert is automatic (server truth);
   // fire the explicit `favorite_add` signal once per successful add — plus `recommendation_save` (with the
   // slate requestId, inline or recalled) when the saved recipe came from a recommendation.
@@ -280,8 +289,8 @@ export default function HomePage() {
               <AIWhisper text={whisper.text} sub={whisper.sub} onAccept={() => openRecipe(whisper.recipeId)} onDismiss={() => setWhisperDismissed(true)} />
             ) : null}
 
-            <MealTypeRow onPick={goDiscover} />
-            <CuisineRow onPick={goDiscover} />
+            <MealTypeRow onPick={goRecipeFacet} />
+            <CuisineRow onPick={goRecipeFacet} />
 
             <Box component="section">
               <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginInline: 2, marginBlockEnd: 'var(--g-space-3)' }}>
