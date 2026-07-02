@@ -8,7 +8,7 @@
  *  - scale by servings/household,
  *  - categorize (from the resolved dictionary category; 'other' when unknown),
  *  - de-dupe against items the user already has/checked.
- * Never fabricates quantities/ids — unparseable amounts are carried as a unit-less "as needed" entry.
+ * Never fabricates quantities/ids — unparseable amounts are carried as a unit-less unspecified entry.
  */
 import { norm, looseMatch } from '../../ai/tools/grounding-utils';
 
@@ -37,6 +37,7 @@ export interface AggregateOptions {
 }
 
 const UNITLESS = '';
+const UNSPECIFIED_AMOUNT_DISPLAY = 'به مقدار لازم';
 
 function parseAmount(amount: unknown): number | null {
   if (typeof amount === 'number') return Number.isFinite(amount) ? amount : null;
@@ -91,7 +92,11 @@ export function aggregateShoppingList(items: PlannedIngredient[], opts: Aggregat
     if (g.sources > 1) merged += 1;
 
     const display = quantities
-      .map((q) => (q.amount == null ? 'as needed' : `${q.amount}${q.unit ? ' ' + q.unit : ''}`))
+      .map((q) =>
+        q.amount == null
+          ? UNSPECIFIED_AMOUNT_DISPLAY
+          : `${q.amount}${q.unit ? ' ' + q.unit : ''}`,
+      )
       .join(' + ');
 
     out.push({ name: g.name, category: g.category || 'other', ingredientId: g.ingredientId, quantities, display, sources: g.sources, flags });

@@ -49,9 +49,9 @@ describe('aggregateShoppingList (PLANNER-L4-09)', () => {
     expect(tomato?.category).toBe('produce');
   });
 
-  it('carries an unparseable amount as "as needed" (no fabrication)', () => {
+  it('carries an unparseable amount as a Persian unspecified display (no fabrication)', () => {
     const { items: out } = aggregateShoppingList([{ name: 'pepper', amount: 'to taste', unit: '' }]);
-    expect(out[0].display).toContain('as needed');
+    expect(out[0].display).toContain('به مقدار لازم');
     expect(out[0].flags).toContain('some_amounts_unspecified');
   });
 });
