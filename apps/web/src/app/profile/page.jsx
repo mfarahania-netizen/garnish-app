@@ -1,29 +1,28 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Box, Text, UnstyledButton } from '@mantine/core';
+import { Box, Modal, Text, TextInput, UnstyledButton } from '@mantine/core';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
-  IconChevronLeft, IconChevronRight, IconLeaf, IconTrendingUp, IconFlame, IconToolsKitchen2,
-  IconAward, IconPlant2, IconAlertTriangle, IconBookmark, IconHistory, IconPencil, IconScale,
+  IconChevronLeft, IconLeaf, IconTrendingUp, IconFlame, IconToolsKitchen2,
+  IconAward, IconPlant2, IconAlertTriangle, IconBookmark, IconPencil,
   IconInfoCircle, IconLogout, IconSparkles,
 } from '@tabler/icons-react';
 import { useProfile } from './useProfile';
 import { useAuth } from '../../context/AuthContext';
-import { toFaDigits, faPercent } from '../../components/ges/format';
+import { toFaDigits } from '../../components/ges/format';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import ErrorState from '../../components/ges/ErrorState';
 import Toast from '../../components/ges/Toast';
 import { SkeletonLine, SkeletonCircle } from '../../components/ges/LoadingSkeleton';
+import apiClient from '../../lib/apiClient';
+import { invalidateProfileDomain } from '../../lib/queryKeys';
+import { useAnalytics } from '../../hooks/useAnalytics';
+import { EventType } from '../../lib/eventTaxonomy';
 
 const PAGE = { display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-6)' };
 const sectionTitle = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', marginBlock: 'var(--g-space-6) var(--g-space-3)', marginInline: 2 };
 const cardWrap = { background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' };
 const rowBtn = { display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 52, paddingInline: 'var(--g-space-4)' };
-
-const CONF = {
-  high: { note: 'اطمینان بالا', color: 'var(--g-color-state-success-fg)' },
-  med: { note: 'اطمینان متوسط', color: 'var(--g-color-state-warning-fg)' },
-  low: { note: 'در حال یادگیری', color: 'var(--g-color-text-muted)' },
-};
 
 function StatCard({ icon: Icon, value, label, onClick }) {
   const inner = (
@@ -62,15 +61,132 @@ function KnownRow({ icon: Icon, iconColor, children, onEdit, divider }) {
   );
 }
 
+function ControlStrip({ control, known }) {
+  const items = [
+    {
+      label: control?.allergyGuardActive ? 'پرچم ایمنی فعال' : 'حساسیت ثبت نشده',
+      tone: control?.allergyGuardActive ? 'ok' : 'warn',
+      value: control?.allergyGuardActive ? `${toFaDigits(known.allergens.length)} مورد` : 'نیازمند تکمیل',
+    },
+    {
+      label: control?.personalizationGranted ? 'شخصی‌سازی روشن' : 'شخصی‌سازی خاموش',
+      tone: control?.personalizationGranted ? 'ok' : 'muted',
+      value: control?.personalizationGranted ? 'فعال' : 'کنترل در تنظیمات',
+    },
+    {
+      label: 'کامل‌بودن پروفایل',
+      tone: (control?.completeness ?? 0) >= 60 ? 'ok' : 'warn',
+      value: `${toFaDigits(control?.completeness ?? 0)}٪`,
+    },
+  ];
+  const colors = {
+    ok: { bg: 'var(--g-color-state-success-bg)', fg: 'var(--g-color-state-success-fg)' },
+    warn: { bg: 'var(--g-color-state-warning-bg)', fg: 'var(--g-color-state-warning-fg)' },
+    muted: { bg: 'var(--g-color-bg-canvas)', fg: 'var(--g-color-text-secondary)' },
+  };
+  return (
+    <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-5)' }}>
+      {items.map((it) => {
+        const c = colors[it.tone] || colors.muted;
+        return (
+          <Box key={it.label} style={{ ...cardWrap, padding: 'var(--g-space-3)', minBlockSize: 76, background: c.bg }}>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 700, color: c.fg, lineHeight: 1.5 }}>{it.label}</Text>
+            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 800, color: 'var(--g-color-text-primary)', marginBlockStart: 5 }}>{it.value}</Text>
+          </Box>
+        );
+      })}
+    </Box>
+  );
+}
+
+function ProfileEditModal({ opened, onClose, profile, onSaved, showToast }) {
+  const queryClient = useQueryClient();
+  const { trackEvent } = useAnalytics();
+  const [name, setName] = useState(profile?.header?.name || '');
+  const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    if (opened) {
+      setName(profile?.header?.name || '');
+      setFile(null);
+    }
+  }, [opened, profile?.header?.name]);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const body = { name: name.trim() };
+      if (file) {
+        const form = new FormData();
+        form.append('file', file);
+        const uploaded = await apiClient.post('/upload/avatar', form).then((r) => r.data);
+        if (uploaded?.avatarUrl) body.avatar = uploaded.avatarUrl;
+      }
+      return apiClient.patch('/users/me', body).then((r) => r.data);
+    },
+    onSuccess: () => {
+      invalidateProfileDomain(queryClient);
+      trackEvent(EventType.PROFILE_EDIT, { action: 'save' });
+      showToast('پروفایل ذخیره شد', IconPencil);
+      onSaved();
+    },
+    onError: () => {
+      trackEvent(EventType.PROFILE_EDIT, { action: 'error' });
+      showToast('ذخیره نشد؛ دوباره امتحان کن', IconAlertTriangle);
+    },
+  });
+
+  const canSave = name.trim().length <= 80 && !mutation.isPending;
+
+  return (
+    <Modal opened={opened} onClose={onClose} centered withinPortal={false} title="ویرایش پروفایل" overlayProps={{ backgroundOpacity: 0.38, blur: 2 }} transitionProps={{ duration: 0 }} styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 800 }, content: { borderRadius: 'var(--g-radius-card)' } }}>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-4)' }}>
+        <TextInput
+          label="نام نمایشی"
+          value={name}
+          onChange={(e) => setName(e.currentTarget.value)}
+          maxLength={80}
+          styles={{ label: { fontFamily: 'var(--g-font-fa)', fontWeight: 700 }, input: { fontFamily: 'var(--g-font-fa)', textAlign: 'right' } }}
+        />
+        <Box>
+          <Text component="label" htmlFor="profile-avatar-upload" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, marginBlockEnd: 'var(--g-space-2)', color: 'var(--g-color-text-primary)' }}>آواتار</Text>
+          <input id="profile-avatar-upload" type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={(e) => setFile(e.currentTarget.files?.[0] || null)} />
+          {file ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 6 }}>{file.name}</Text> : null}
+        </Box>
+        <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
+          <UnstyledButton type="button" onClick={() => mutation.mutate()} disabled={!canSave} style={{ flex: 1, minBlockSize: 46, borderRadius: 'var(--g-radius-input)', background: canSave ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800 }}>
+            {mutation.isPending ? 'در حال ذخیره...' : 'ذخیره'}
+          </UnstyledButton>
+          <UnstyledButton type="button" onClick={onClose} disabled={mutation.isPending} style={{ minInlineSize: 92, minBlockSize: 46, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', fontFamily: 'var(--g-font-fa)', fontWeight: 700, color: 'var(--g-color-text-secondary)' }}>انصراف</UnstyledButton>
+        </Box>
+      </Box>
+    </Modal>
+  );
+}
+
 /* ── Profile view ── */
-function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
-  const { header, dna, progress, known } = p;
+function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
+  const { header, dna, progress, known, control } = p;
+  const deferNavigate = useCallback((to) => {
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(() => navigate(to));
+    } else {
+      setTimeout(() => navigate(to), 0);
+    }
+  }, [navigate]);
+  const go = useCallback((to, source) => {
+    trackEvent(EventType.PROFILE_NAVIGATE, { destination: to, source });
+    deferNavigate(to);
+  }, [deferNavigate, trackEvent]);
   return (
     <Box style={PAGE}>
       {/* header */}
       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)' }}>
         <Box style={{ position: 'relative', flexShrink: 0 }}>
-          <Box aria-hidden="true" style={{ inlineSize: 64, blockSize: 64, borderRadius: '50%', background: 'var(--g-color-brand-100)', color: 'var(--g-color-brand-700)', display: 'grid', placeItems: 'center', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-22)' }}>{header.initial}</Box>
+          {header.avatar ? (
+            <Box component="img" src={header.avatar} alt="" aria-hidden="true" style={{ inlineSize: 64, blockSize: 64, borderRadius: '50%', objectFit: 'cover', background: 'var(--g-color-brand-100)' }} />
+          ) : (
+            <Box aria-hidden="true" style={{ inlineSize: 64, blockSize: 64, borderRadius: '50%', background: 'var(--g-color-brand-100)', color: 'var(--g-color-brand-700)', display: 'grid', placeItems: 'center', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-22)' }}>{header.initial}</Box>
+          )}
           {header.streakWeeks > 0 ? (
             <Box aria-label={`${toFaDigits(header.streakWeeks)} هفته پیاپی`} style={{ position: 'absolute', insetBlockEnd: -2, insetInlineStart: -4, display: 'inline-flex', alignItems: 'center', gap: 2, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', boxShadow: '0 0 0 2px var(--g-color-bg-canvas)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-12)' }}>
               <IconFlame size={11} stroke={2} aria-hidden="true" />{toFaDigits(header.streakWeeks)}
@@ -80,16 +196,18 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
         <Box style={{ flex: 1, minInlineSize: 0 }}>
           <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{header.name}</Text>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', margin: '3px 0 0' }}>
-            {[header.since ? `عضو از ${header.since}` : '', header.cooksText].filter(Boolean).join(' · ')}
+            {[header.isGuest ? 'حساب مهمان' : '', header.since ? `عضو از ${header.since}` : '', header.cooksText].filter(Boolean).join(' · ')}
           </Text>
         </Box>
-        <UnstyledButton type="button" onClick={() => showToast('ویرایش پروفایل به‌زودی', IconPencil)} aria-label="ویرایش" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <UnstyledButton type="button" onClick={onEdit} aria-label="ویرایش پروفایل" style={{ flexShrink: 0, inlineSize: 44, blockSize: 44, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
           <IconPencil size={18} stroke={1.8} />
         </UnstyledButton>
       </Box>
 
+      <ControlStrip control={control} known={known} />
+
       {/* DNA summary card → DNA view */}
-      <UnstyledButton type="button" onClick={onOpenDna} aria-label="شناسهٔ ذائقه — تفکیک ابعاد" style={{ ...cardWrap, position: 'relative', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)', padding: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-5)', textAlign: 'start' }}>
+      <UnstyledButton type="button" onClick={() => go('/food-dna', 'dna-card')} aria-label="شناسهٔ ذائقه — مشاهده جزئیات" style={{ ...cardWrap, position: 'relative', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)', padding: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-5)', textAlign: 'start' }}>
         <Box aria-hidden="true" style={{ position: 'absolute', insetBlockStart: -40, insetInlineStart: -30, inlineSize: 150, blockSize: 150, borderRadius: '50%', background: 'radial-gradient(circle, var(--g-color-brand-50), transparent 70%)' }} />
         <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', color: 'var(--g-color-brand-700)', marginBlockEnd: 'var(--g-space-4)' }}>
           <IconLeaf size={15} stroke={1.8} aria-hidden="true" />
@@ -135,12 +253,12 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
       <Text component="h2" style={sectionTitle}>آنچه از تو می‌دانیم</Text>
       <Box style={cardWrap}>
         {known.dietLabel ? (
-          <KnownRow icon={IconPlant2} iconColor="var(--g-color-brand-600)" onEdit={() => navigate('/onboarding')}>
+          <KnownRow icon={IconPlant2} iconColor="var(--g-color-brand-600)" onEdit={() => deferNavigate('/settings#food-profile')}>
             بیشتر غذای <b>{known.dietLabel}</b> را دوست داری
           </KnownRow>
         ) : null}
         {known.allergens.map((a, i) => (
-          <KnownRow key={a} icon={IconAlertTriangle} iconColor="var(--g-color-allergen-fg)" divider={i > 0 || !!known.dietLabel} onEdit={() => navigate('/onboarding')}>
+          <KnownRow key={a} icon={IconAlertTriangle} iconColor="var(--g-color-allergen-fg)" divider={i > 0 || !!known.dietLabel} onEdit={() => deferNavigate('/settings#allergies')}>
             حساسیت به <b>{a}</b> — پرچمِ ایمنی فعال است
           </KnownRow>
         ))}
@@ -155,98 +273,15 @@ function ProfileView({ p, onOpenDna, navigate, showToast, onLogout }) {
       {/* دسترسی سریع */}
       <Text component="h2" style={sectionTitle}>دسترسی سریع</Text>
       <Box style={cardWrap}>
-        <QuickRow icon={IconBookmark} label="علاقه‌مندی‌ها" onClick={() => navigate('/favorites')} />
-        <QuickRow icon={IconHistory} label="تاریخچهٔ پخت" onClick={() => showToast('تاریخچهٔ پخت به‌زودی', IconHistory)} last />
-        <QuickRow icon={IconAward} label="دستاوردها" onClick={() => navigate('/achievements')} last />
-        <QuickRow icon={IconSparkles} label="تنظیمات و پروفایل غذایی" onClick={() => navigate('/settings')} last />
+        <QuickRow icon={IconBookmark} label="علاقه‌مندی‌ها" onClick={() => go('/favorites', 'favorites')} />
+        <QuickRow icon={IconAward} label="دستاوردها" onClick={() => go('/achievements', 'achievements')} last />
+        <QuickRow icon={IconSparkles} label="تنظیمات و پروفایل غذایی" onClick={() => go('/settings', 'settings')} last />
       </Box>
 
       {/* logout */}
       <UnstyledButton type="button" onClick={onLogout} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 52, marginBlockStart: 'var(--g-space-6)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-state-danger-fg)', background: 'var(--g-color-state-danger-bg)', color: 'var(--g-color-state-danger-fg)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
         <IconLogout size={18} stroke={1.8} aria-hidden="true" />خروج از حساب
       </UnstyledButton>
-    </Box>
-  );
-}
-
-/* ── DNA breakdown view ── */
-function DnaView({ p, onBack, navigate }) {
-  const { dna } = p;
-  return (
-    <Box style={PAGE}>
-      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-4)' }}>
-        <UnstyledButton type="button" onClick={onBack} aria-label="بازگشت" style={{ inlineSize: 44, blockSize: 44, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-secondary)' }}>
-          <IconChevronRight size={20} stroke={1.8} />
-        </UnstyledButton>
-        <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>شناسهٔ ذائقه</Text>
-      </Box>
-
-      <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-        <FoodDnaRing value={dna.score} size={140} tone={dna.forming ? 'forming' : 'mature'} caption="بلوغ ذائقه" />
-        <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-4)', paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
-          <IconTrendingUp size={14} stroke={1.8} aria-hidden="true" />{dna.bandLabel}
-        </Box>
-      </Box>
-
-      {dna.breakdown.length ? (
-        <>
-          <Text component="h2" style={sectionTitle}>تفکیکِ ابعاد</Text>
-          <Box style={{ ...cardWrap, paddingInline: 'var(--g-space-4)' }}>
-            {dna.breakdown.map((d, i) => {
-              const conf = CONF[d.band] || CONF.low;
-              return (
-                <Box key={d.key} style={{ paddingBlock: 'var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
-                  <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBlockEnd: 'var(--g-space-2)' }}>
-                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{d.label}</Text>
-                    <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
-                      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{faPercent(d.value * 100)}</Text>
-                      <UnstyledButton type="button" onClick={() => navigate('/onboarding')} aria-label="ویرایش" style={{ inlineSize: 44, blockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--g-color-text-muted)' }}>
-                        <IconPencil size={15} stroke={1.8} />
-                      </UnstyledButton>
-                    </Box>
-                  </Box>
-                  <Box aria-hidden="true" style={{ blockSize: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-border-subtle)', overflow: 'hidden' }}>
-                    <Box style={{ inlineSize: `${Math.round(d.value * 100)}%`, blockSize: '100%', background: d.band === 'low' ? 'var(--g-color-brand-300)' : 'var(--g-color-brand-500)' }} />
-                  </Box>
-                  <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-2)' }}>
-                    <Box aria-hidden="true" style={{ inlineSize: 6, blockSize: 6, borderRadius: '50%', background: conf.color }} />
-                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: conf.color }}>{conf.note}</Text>
-                  </Box>
-                </Box>
-              );
-            })}
-          </Box>
-        </>
-      ) : (
-        <Box style={{ ...cardWrap, textAlign: 'center', padding: 'var(--g-space-6)', marginBlockStart: 'var(--g-space-6)' }}>
-          <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, margin: '0 auto', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)' }}>
-            <IconLeaf size={28} stroke={1.6} />
-          </Box>
-          <Text component="h3" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-3) 0 0' }}>ذائقه‌ات تازه داره شکل می‌گیره</Text>
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-2) 0 0' }}>بیا کامل‌ترش کنیم — چند پرسشِ کوتاه.</Text>
-          <UnstyledButton type="button" onClick={() => navigate('/onboarding')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>بریم</UnstyledButton>
-        </Box>
-      )}
-
-      {/* honest reconciliation */}
-      <Box style={{ marginBlockStart: 'var(--g-space-5)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
-        <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)' }}>
-          <IconScale size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>آشتیِ صادقانه</Text>
-        </Box>
-        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-primary)', margin: 0 }}>
-          {dna.reconciliation.specific
-            ? <>گفتی <b>{dna.reconciliation.declared}</b>ی؛ ولی گاهی <b>{dna.reconciliation.observed}</b> هم انتخاب کردی. هیچ‌کدوم رو پاک نکردیم — <b>هر دو رو نگه داشتیم</b> تا پیشنهادها واقعی بمونن.</>
-            : <>هرجا گفته‌هات با رفتارت کمی فرق داشت، هیچ‌کدوم رو پاک نکردیم — <b>هر دو رو نگه داشتیم</b> تا پیشنهادها واقعی بمونن.</>}
-        </Text>
-        <UnstyledButton type="button" onClick={() => navigate('/onboarding')} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, marginBlockStart: 'var(--g-space-3)', paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
-          <IconPencil size={13} stroke={1.8} aria-hidden="true" />اصلاحش کن
-        </UnstyledButton>
-      </Box>
-      <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', margin: 'var(--g-space-4) 2px 0', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
-        <IconInfoCircle size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0, marginBlockStart: 1 }} />
-        هرچی بیشتر بپزی، دقیق‌تر می‌شه. ویرایش همیشه در دستِ توست.
-      </Text>
     </Box>
   );
 }
@@ -268,29 +303,34 @@ function ProfileLoading() {
   );
 }
 
-export default function ProfilePage({ initialView = 'profile' }) {
+export default function ProfilePage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { trackEvent } = useAnalytics();
   const p = useProfile();
-  const [view, setView] = useState(initialView);
+  const [editOpen, setEditOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
+  useEffect(() => { trackEvent(EventType.PROFILE_VIEW, { surface: 'profile' }); }, [trackEvent]);
   const showToast = useCallback((message, Icon) => {
     clearTimeout(toastTimer.current);
     setToast({ message, Icon });
     toastTimer.current = setTimeout(() => setToast(null), 2200);
   }, []);
-  const onLogout = useCallback(() => { logout(); navigate('/onboarding', { replace: true }); }, [logout, navigate]);
+  const onLogout = useCallback(() => { logout(); navigate('/login', { replace: true }); }, [logout, navigate]);
+  const openEdit = useCallback(() => {
+    trackEvent(EventType.PROFILE_EDIT, { action: 'open' });
+    setEditOpen(true);
+  }, [trackEvent]);
 
   if (p.status === 'loading') return <ProfileLoading />;
   if (p.status === 'error') return <ErrorState title="پروفایل بارگذاری نشد" body="یک اتصال کوتاه قطع شد. چیزی از دست نرفته." reassurance="اطلاعاتت امن ذخیره است" onRetry={p.refetch} />;
 
   return (
     <>
-      {view === 'dna'
-        ? <DnaView p={p} onBack={() => setView('profile')} navigate={navigate} />
-        : <ProfileView p={p} onOpenDna={() => setView('dna')} navigate={navigate} showToast={showToast} onLogout={onLogout} />}
+      <ProfileView p={p} onEdit={openEdit} navigate={navigate} trackEvent={trackEvent} onLogout={onLogout} />
+      <ProfileEditModal opened={editOpen} onClose={() => setEditOpen(false)} profile={p} onSaved={() => setEditOpen(false)} showToast={showToast} />
       <Toast toast={toast} />
     </>
   );

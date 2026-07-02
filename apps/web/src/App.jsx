@@ -183,9 +183,7 @@ export function AppRoutes() {
                         <Route index element={<HomePage />} />
                         <Route path="/discover" element={<DiscoveryPage />} />
                         <Route path="/recipes" element={<RecipesPage />} />
-                        {/* distinct keys → each route remounts ProfilePage with the right initial view
-                            («پروفایل من» = profile, «شناسهٔ ذائقه» = the Food-DNA breakdown), so the two
-                            drawer links never collapse to the same screen */}
+                        {/* Profile stays a summary/control center; Food DNA owns the detailed taste workflow. */}
                         <Route path="/profile" element={<ProfilePage key="profile" />} />
                         {/* S2: dedicated Food DNA activation screen (was ProfilePage initialView="dna") */}
                         <Route path="/food-dna" element={<FoodDnaPage />} />

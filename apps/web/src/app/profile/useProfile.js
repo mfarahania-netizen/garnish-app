@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import { queryKeys } from '../../lib/queryKeys';
 import { toFaDigits } from '../../components/ges/format';
 import { traitsFromProfile, dimensionBreakdown, tasteReconciliation, faAllergen } from '../home/lib/reasons';
 
@@ -35,10 +36,11 @@ export function useProfile() {
   const { token } = useAuth();
   const enabled = !!token;
 
-  const me = useQuery({ queryKey: ['home', 'me'], queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
-  const profile = useQuery({ queryKey: ['home', 'profile'], queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
-  const gamification = useQuery({ queryKey: ['home', 'gamification'], queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
-  const prefs = useQuery({ queryKey: ['discover', 'preferences'], queryFn: () => apiClient.get('/users/preferences').then((r) => r.data), enabled });
+  const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
+  const profile = useQuery({ queryKey: queryKeys.profile.living, queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
+  const gamification = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
+  const prefs = useQuery({ queryKey: queryKeys.preferences, queryFn: () => apiClient.get('/users/preferences').then((r) => r.data), enabled });
+  const consent = useQuery({ queryKey: queryKeys.consent, queryFn: () => apiClient.get('/users/consent').then((r) => r.data), enabled });
 
   return useMemo(() => {
     // Critical reads = identity (/users/me) + taste profile (/profile). Gamification + preferences are
@@ -79,6 +81,8 @@ export function useProfile() {
       refetch: () => { me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); },
       header: {
         name,
+        avatar: me.data?.avatar || null,
+        isGuest: !!me.data?.isGuest,
         initial: name.charAt(0) || 'گ',
         since,
         cooksText: totalCooks == null ? '' : (totalCooks > 0 ? `${toFaDigits(totalCooks)} دستور پخته` : 'هنوز دستوری ثبت نشده'),
@@ -102,6 +106,11 @@ export function useProfile() {
         // every declared allergen (localized) — a safety flag, none silently hidden
         allergens: allergies,
       },
+      control: {
+        allergyGuardActive: allergies.length > 0,
+        personalizationGranted: consent.data?.purposes?.personalization?.granted === true,
+        completeness: Math.round(Math.max(0, Math.min(1, score)) * 100),
+      },
     };
-  }, [me.data, me.isLoading, me.isError, profile.data, profile.isLoading, profile.isError, gamification.data, gamification.isLoading, gamification.isError, prefs.data, me, profile, gamification, prefs]);
+  }, [me.data, me.isLoading, me.isError, profile.data, profile.isLoading, profile.isError, gamification.data, gamification.isLoading, gamification.isError, prefs.data, consent.data, me, profile, gamification, prefs, consent]);
 }

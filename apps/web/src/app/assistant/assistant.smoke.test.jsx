@@ -40,6 +40,7 @@ function makeState(overrides = {}) {
     error: false,
     feedback: {},
     added: {},
+    removed: {},
     starters: STARTERS,
     conversations: [],
     convId: undefined,
@@ -48,6 +49,7 @@ function makeState(overrides = {}) {
     retry: vi.fn(),
     rate: vi.fn(),
     confirmAllergens: vi.fn(),
+    removeAllergens: vi.fn(),
     newChat: vi.fn(),
     openConversation: vi.fn(),
     renameConversation: vi.fn(),
@@ -142,6 +144,42 @@ describe('AssistantPage smoke', () => {
 
     expect(screen.queryByRole('button', { name: 'افزودن به آلرژی‌هام' })).not.toBeInTheDocument();
     expect(screen.getByText('به آلرژی‌هات اضافه شد')).toBeInTheDocument();
+  });
+
+  it('renders the one-tap allergy removal button and calls the remove action', () => {
+    const removeAllergens = vi.fn();
+    useAssistant.mockReturnValue(
+      makeState({
+        isEmpty: false,
+        removeAllergens,
+        messages: [
+          { role: 'user', text: 'حساسیت به تخم مرغ منو حذف کن' },
+          { role: 'ai', text: 'اگر تأیید کنی حذفش می‌کنم.', suggestedAction: { type: 'remove_allergy', allergens: [{ token: 'egg', label: 'تخم‌مرغ' }] } },
+        ],
+      }),
+    );
+    renderWithProviders(<AssistantPage />);
+
+    const btn = screen.getByRole('button', { name: 'حذف از آلرژی‌ها' });
+    fireEvent.click(btn);
+    expect(removeAllergens).toHaveBeenCalledWith(1, [{ token: 'egg', label: 'تخم‌مرغ' }]);
+  });
+
+  it('shows the removed confirmation and hides the remove button once removed', () => {
+    useAssistant.mockReturnValue(
+      makeState({
+        isEmpty: false,
+        removed: { 1: true },
+        messages: [
+          { role: 'user', text: 'حذفش کن' },
+          { role: 'ai', text: 'اگر تأیید کنی حذفش می‌کنم.', suggestedAction: { type: 'remove_allergy', allergens: [{ token: 'egg', label: 'تخم‌مرغ' }] } },
+        ],
+      }),
+    );
+    renderWithProviders(<AssistantPage />);
+
+    expect(screen.queryByRole('button', { name: 'حذف از آلرژی‌ها' })).not.toBeInTheDocument();
+    expect(screen.getByText('از آلرژی‌ها حذف شد')).toBeInTheDocument();
   });
 
   it('renders the thinking state', () => {

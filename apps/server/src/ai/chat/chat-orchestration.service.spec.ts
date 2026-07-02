@@ -631,10 +631,10 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     setDefault();
     const { svc, grounded } = makeChat();
     const out = await svc.handleChat({ userId: 'u1', prompt: 'دیگه به گردو حساس نیستم', conversationId: 'c-neg' });
-    expect(out.suggestedAction).toBeUndefined();
-    expect(grounded.composeDeterministicReply).toHaveBeenCalled();
+    expect(out.suggestedAction?.type).toBe('remove_allergy');
+    expect(out.suggestedAction?.allergens.map((x: any) => x.token)).toContain('nut');
     const out2 = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساسیت ندارم', conversationId: 'c-neg2' });
-    expect(out2.suggestedAction).toBeUndefined(); // «حساسیت ندارم» retraction
+    expect(out2.suggestedAction?.type).toBe('remove_allergy');
   });
 
   // guardian (combined pass): scope-aware negation — a real declaration carrying a SECONDARY negated clause must
@@ -652,7 +652,7 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     const { svc } = makeChat();
     for (const [i, prompt] of ['حساسیت به گردو ندارم', 'آلرژی به سویا ندارم', 'i dont have a nut allergy'].entries()) {
       const out = await svc.handleChat({ userId: 'u1', prompt, conversationId: `c-retract-${i}` });
-      expect(out.suggestedAction).toBeUndefined();
+      expect(out.suggestedAction?.type).toBe('remove_allergy');
     }
   });
 
@@ -676,7 +676,7 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     expect(b.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
     // and the real single-clause retraction is STILL suppressed
     const c = await svc.handleChat({ userId: 'u1', prompt: 'حساسیت به گردو ندارم', conversationId: 'c-2clause-3' });
-    expect(c.suggestedAction).toBeUndefined();
+    expect(c.suggestedAction?.type).toBe('remove_allergy');
   });
 
   // guardian (final audit): the window must also stop at و/که/چون (final-audit high) — but « و » is space-padded
@@ -690,7 +690,7 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
     expect(b.suggestedAction).toEqual({ type: 'add_allergy', allergens: [{ token: 'dairy', label: 'لبنیات' }] });
     // regression: « و » padding must not break the گردو retraction (گردو ends in و)
     const c = await svc.handleChat({ userId: 'u1', prompt: 'به گردو حساس نیستم', conversationId: 'c-conj-3' });
-    expect(c.suggestedAction).toBeUndefined();
+    expect(c.suggestedAction?.type).toBe('remove_allergy');
   });
 
   // guardian (final re-verify): POSITIVE-assertion-first — a real declaration that ALSO negates a DIFFERENT food
@@ -710,8 +710,8 @@ describe('ChatOrchestrationService (E47-A8 controlled live chat adapter + AI-GRO
 
     // pure retractions still suppress (no positive assertion)
     const d = await svc.handleChat({ userId: 'u1', prompt: 'حساسیت به گردو ندارم', conversationId: 'c-pos-4' });
-    expect(d.suggestedAction).toBeUndefined();
+    expect(d.suggestedAction?.type).toBe('remove_allergy');
     const e = await svc.handleChat({ userId: 'u1', prompt: 'دیگه به گردو حساس نیستم', conversationId: 'c-pos-5' });
-    expect(e.suggestedAction).toBeUndefined();
+    expect(e.suggestedAction?.type).toBe('remove_allergy');
   });
 });
