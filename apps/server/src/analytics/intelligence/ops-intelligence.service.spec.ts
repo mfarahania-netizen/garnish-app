@@ -6,7 +6,7 @@ function makePrisma(opts: { calls?: any[]; events?: any[]; consent?: any[] } = {
   return {
     aICallLog: { findMany: jest.fn().mockResolvedValue(opts.calls ?? []) },
     userEvent: { findMany: jest.fn().mockResolvedValue(opts.events ?? []) },
-    consentLog: { groupBy: jest.fn().mockResolvedValue(opts.consent ?? []) },
+    userConsent: { findMany: jest.fn().mockResolvedValue(opts.consent ?? []) },
   };
 }
 
@@ -49,9 +49,9 @@ describe('OpsIntelligenceService — deterministic + HONEST', () => {
 
   it('SAFETY: consent posture aggregates counts per purpose with NO PII', async () => {
     const consent = [
-      { purpose: 'analytics', granted: true, _count: { _all: 5 } },
-      { purpose: 'analytics', granted: false, _count: { _all: 2 } },
-      { purpose: 'personalization', granted: true, _count: { _all: 3 } },
+      ...Array.from({ length: 5 }, (_, i) => ({ userId: `analytics-granted-${i}`, purpose: 'analytics', status: 'granted', updatedAt: new Date(NOW.getTime() + i) })),
+      ...Array.from({ length: 2 }, (_, i) => ({ userId: `analytics-withdrawn-${i}`, purpose: 'analytics', status: 'withdrawn', updatedAt: new Date(NOW.getTime() + i) })),
+      ...Array.from({ length: 3 }, (_, i) => ({ userId: `personalization-granted-${i}`, purpose: 'personalization', status: 'granted', updatedAt: new Date(NOW.getTime() + i) })),
     ];
     const svc = new OpsIntelligenceService(makePrisma({ consent }));
     const s = await svc.getSafetyCompliance(NOW);

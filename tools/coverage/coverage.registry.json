@@ -49,6 +49,18 @@
       "status": "must-render",
       "reason": "FE-RESET-A wipe removed the recipe-detail page; re-map to frontend:recipe-detail/RecipeHero when it is rebuilt. Primary category badge in the hero."
     },
+    "Recipe.chefTips": {
+      "status": "frontend:recipe-detail/GrisRecipe",
+      "reason": "GRIS/detail rich tips are rendered inside the full recipe disclosure stack when present."
+    },
+    "Recipe.commonMistakes": {
+      "status": "frontend:recipe-detail/GrisRecipe",
+      "reason": "GRIS/detail troubleshooting and mistake guidance are rendered in the recipe detail disclosure stack when present."
+    },
+    "Recipe.containsPork": {
+      "status": "internal",
+      "reason": "Dietary/safety flag used by filters and planners; not rendered as raw data."
+    },
     "Recipe.cookingTime": {
       "status": "must-render",
       "reason": "FE-RESET-A wipe removed the recipe-detail page; re-map to frontend:recipe-detail/TimingCard when it is rebuilt. Cook time in the timing card."
@@ -73,9 +85,17 @@
       "status": "must-render",
       "reason": "FE-RESET-A wipe removed the recipe-detail page; re-map to frontend:recipe-detail/FeaturesCard when it is rebuilt. Difficulty badge in the features card."
     },
+    "Recipe.dishType": {
+      "status": "frontend:recipe-detail/RecipeByline",
+      "reason": "Dish classification supports recipe chips/facets and detail metadata."
+    },
     "Recipe.faq": {
       "status": "must-render",
       "reason": "FE-RESET-A wipe removed the recipe-detail page; re-map to frontend:recipe-detail/FaqSection when it is rebuilt. FAQ accordion section."
+    },
+    "Recipe.gris": {
+      "status": "frontend:recipe-detail/GrisRecipe",
+      "reason": "Structured GRIS content drives ingredients, steps, story, science, tips, and disclosure sections on recipe detail."
     },
     "Recipe.id": {
       "status": "must-render",
@@ -109,9 +129,17 @@
       "status": "must-render",
       "reason": "FE-RESET-A wipe removed the recipe-detail page; re-map to frontend:recipe-detail/TimingCard when it is rebuilt. Servings in the timing card."
     },
+    "Recipe.servingSuggestions": {
+      "status": "frontend:recipe-detail/GrisRecipe",
+      "reason": "Serving suggestions are rendered from GRIS/detail sections when present."
+    },
     "Recipe.status": {
       "status": "admin",
       "reason": "Recipe moderation status; admin approval workflow."
+    },
+    "Recipe.substitutions": {
+      "status": "frontend:recipe-detail/GrisRecipe",
+      "reason": "Substitution guidance is rendered through personalization/swap surfaces on recipe detail."
     },
     "Recipe.tips": {
       "status": "must-render",
@@ -139,6 +167,14 @@
     }
   },
   "endpoints": {
+    "DELETE /admin/users/:id": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "DELETE /ai/conversations/:id": {
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "Assistant conversation drawer can remove a thread."
+    },
     "DELETE /favorites/:recipeId": {
       "status": "frontend:favorites/FavoritesPage",
       "reason": "Favorites surface (also the recipe-detail favorite toggle)."
@@ -155,9 +191,25 @@
       "status": "frontend:shopping-list/ShoppingListPage",
       "reason": "Shopping-list surface."
     },
+    "DELETE /shopping-list/pantry/:id": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping list removes pantry staples."
+    },
+    "DELETE /users/allergies": {
+      "status": "frontend:assistant/ProfileSettings",
+      "reason": "Allergies can be removed from assistant/profile settings."
+    },
     "DELETE /users/me": {
       "status": "frontend:settings/SettingsPage",
       "reason": "FE-SETTINGS: GDPR account deletion (2-step confirm → logout); useSettings.deleteAccount."
+    },
+    "GET /admin/ai/insights": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/analytics/add-source": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
     },
     "GET /admin/analytics/ai-interaction": {
       "status": "admin",
@@ -170,6 +222,10 @@
     "GET /admin/analytics/cohorts": {
       "status": "admin",
       "reason": "ANALYTICS-L4-16: admin-gated cohort/retention math (honest awaiting_pilot pre-pilot); for the S13 dashboard."
+    },
+    "GET /admin/analytics/content-gaps": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
     },
     "GET /admin/analytics/events": {
       "status": "admin",
@@ -195,6 +251,10 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /admin/analytics/recommendation-funnel": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
     "GET /admin/analytics/search-queries": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
@@ -219,9 +279,57 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /admin/audit-logs": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
     "GET /admin/dashboard": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/insights/behavior": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/me/permissions": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/counters": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/recsys-health": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/ai-calls": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/consent": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/events": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/observations": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/profile-trace": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/observability/user/:userId/tickets": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/ops/ai-observability": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
     },
     "GET /admin/ops/economics": {
       "status": "admin",
@@ -243,9 +351,57 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /admin/tickets/:id": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/tickets/metrics": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
     "GET /admin/users": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /admin/users/:id": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/users/:id/sessions": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/users/stats": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/workflows": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/workflows/:key/runs": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /admin/workflows/alerts": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "GET /ai/conversations": {
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "Assistant conversation drawer lists saved conversations."
+    },
+    "GET /ai/conversations/:id": {
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "Assistant loads a selected conversation thread."
+    },
+    "GET /ai/opener": {
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "Assistant loads a contextual opener."
+    },
+    "GET /ai/recipes/:id/technique": {
+      "status": "frontend:cook/CookPage",
+      "reason": "FE-COOK: grounded per-step «کمک برای این مرحله» help in Cook Mode (useCook → GET /ai/recipes/:id/technique?step=); disclosed + hedged. Also the future ai-chat GroundedAssist."
     },
     "GET /attribution": {
       "status": "admin",
@@ -279,6 +435,10 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "GET /ingredients/search": {
+      "status": "frontend:onboarding/TasteBuilder",
+      "reason": "Ingredient search powers onboarding taste correction."
+    },
     "GET /lifestyle": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
@@ -286,6 +446,10 @@
     "GET /meal-plans": {
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
+    },
+    "GET /meal-plans/dish-options": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Plan slot picker fetches safe dish options."
     },
     "GET /metrics": {
       "status": "admin",
@@ -302,6 +466,22 @@
     "GET /outcomes": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "GET /profile": {
+      "status": "frontend:home/HomePage",
+      "reason": "Living taste-profile read — Home Food DNA maturity ring (FE-HOME: useHomeData on HomePage)."
+    },
+    "GET /profile/dna": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2 Food DNA activation: PII-free DNA projection (4 dimensions + safeExplanation + behavior-hydrated maturity) consumed by the Food DNA screen + Home card (useFoodDna)."
+    },
+    "GET /profile/next-question": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2: onboarding question engine surfaced as the Food DNA screen's question entry (useFoodDna)."
+    },
+    "GET /profile/taste": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "Food DNA and onboarding read taste corrections."
     },
     "GET /recipes": {
       "status": "frontend:recipes/RecipesPage",
@@ -320,8 +500,8 @@
       "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:recipe-detail/SimilarRecipes when rebuilt. SEARCH-L4-08 deterministic 'similar recipes' (TF-IDF nearest-neighbor); rendered by the recipe-detail SimilarRecipes component."
     },
     "GET /recipes/my": {
-      "status": "frontend:my-recipes/MyRecipesPage",
-      "reason": "A user’s own submitted recipes."
+      "status": "deferred:E-my-recipes-ui",
+      "reason": "Owned recipe management endpoint exists; dedicated My Recipes UI is deferred and currently has no frontend caller."
     },
     "GET /recipes/search": {
       "status": "frontend:discover/DiscoveryPage",
@@ -371,6 +551,10 @@
       "status": "frontend:shopping-list/ShoppingListPage",
       "reason": "Shopping-list surface."
     },
+    "GET /shopping-list/pantry": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping list reads pantry staples."
+    },
     "GET /signals": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
@@ -386,6 +570,10 @@
     "GET /support/tickets/:id": {
       "status": "deferred:E-support-ticket-detail",
       "reason": "Single-ticket detail endpoint; the support UI uses the ticket list + replies, with no dedicated detail view yet."
+    },
+    "GET /users/consent": {
+      "status": "frontend:settings/SettingsPage",
+      "reason": "Settings/profile read server consent state."
     },
     "GET /users/me": {
       "status": "frontend:profile/ProfilePage",
@@ -407,9 +595,25 @@
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
+    "PATCH /admin/tickets/:id": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
     "PATCH /admin/tickets/:id/status": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
+    },
+    "PATCH /admin/users/:id": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "PATCH /admin/users/:id/password": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "PATCH /ai/conversations/:id": {
+      "status": "frontend:assistant/AssistantPage",
+      "reason": "Assistant conversation drawer can rename a thread."
     },
     "PATCH /notifications/:id/read": {
       "status": "frontend:notifications/NotificationsPage",
@@ -427,21 +631,65 @@
       "status": "frontend:support/SupportPage",
       "reason": "Support tickets surface."
     },
+    "PATCH /support/tickets/:id/rate": {
+      "status": "frontend:support/SupportPage",
+      "reason": "Support ticket satisfaction rating endpoint."
+    },
     "PATCH /users/me": {
       "status": "frontend:profile/ProfilePage",
       "reason": "Profile edit."
+    },
+    "POST /admin/tickets/:id/notes": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
     },
     "POST /admin/tickets/:id/respond": {
       "status": "admin",
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
-    "GET /ai/recipes/:id/technique": {
-      "status": "frontend:cook/CookPage",
-      "reason": "FE-COOK: grounded per-step «کمک برای این مرحله» help in Cook Mode (useCook → GET /ai/recipes/:id/technique?step=); disclosed + hedged. Also the future ai-chat GroundedAssist."
+    "POST /admin/users": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/users/:id/ban": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/users/:id/export": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/users/:id/force-logout": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/users/:id/reveal": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/workflows/:key/run": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/workflows/alerts/:id/ack": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/workflows/alerts/:id/resolve": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
+    },
+    "POST /admin/workflows/alerts/:id/snooze": {
+      "status": "admin",
+      "reason": "Admin-only endpoint behind admin/ops/observability/workflow surfaces; not user-facing."
     },
     "POST /ai/chat": {
       "status": "frontend:assistant/AssistantPage",
       "reason": "FE-AICOMPANION: the L3 AI assistant chat (server-guarded reply; disclosed + hedged + kind-refusal). useAssistant.send."
+    },
+    "POST /ai/conversations": {
+      "status": "deferred:E-assistant-thread-create-ui",
+      "reason": "Conversation persistence supports explicit thread creation, but the current assistant flow creates/touches threads via chat orchestration instead of this standalone endpoint."
     },
     "POST /ai/pairings": {
       "status": "frontend:ai-chat/AIChatPage",
@@ -455,25 +703,13 @@
       "status": "frontend:ai-chat/AIChatPage",
       "reason": "E47-L4 allergen-aware ingredient substitutions; called by features/ai-chat GroundedAssist."
     },
-    "GET /profile": {
-      "status": "frontend:home/HomePage",
-      "reason": "Living taste-profile read — Home Food DNA maturity ring (FE-HOME: useHomeData on HomePage)."
-    },
-    "GET /profile/dna": {
-      "status": "frontend:food-dna/FoodDnaPage",
-      "reason": "S2 Food DNA activation: PII-free DNA projection (4 dimensions + safeExplanation + behavior-hydrated maturity) consumed by the Food DNA screen + Home card (useFoodDna)."
-    },
-    "GET /profile/next-question": {
-      "status": "frontend:food-dna/FoodDnaPage",
-      "reason": "S2: onboarding question engine surfaced as the Food DNA screen's question entry (useFoodDna)."
-    },
-    "POST /profile/answer": {
-      "status": "frontend:food-dna/FoodDnaPage",
-      "reason": "S2: declared-answer submit (consent-gated, banded) wired to the Food DNA screen's question entry (useFoodDna)."
-    },
     "POST /analytics/event": {
       "status": "frontend:_global/useAnalytics",
       "reason": "App-wide analytics event ingestion (useAnalytics hook)."
+    },
+    "POST /auth/guest": {
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "Guest auth is used by onboarding/session bootstrap."
     },
     "POST /auth/login": {
       "status": "frontend:auth/AuthPage",
@@ -495,6 +731,14 @@
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
     },
+    "POST /meal-plans/clear-week": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly plan clear action."
+    },
+    "POST /meal-plans/copy": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Weekly plan copy action."
+    },
     "POST /meal-plans/generate": {
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
@@ -507,13 +751,37 @@
       "status": "frontend:plan/PlanPage",
       "reason": "Weekly meal-plan surface."
     },
+    "POST /meal-plans/slots/:dayOfWeek/:mealType/cooked": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Plan slot can be marked cooked."
+    },
+    "POST /meal-plans/slots/:dayOfWeek/:mealType/servings": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Plan slot servings are editable."
+    },
+    "POST /meal-plans/slots/swap": {
+      "status": "frontend:plan/PlanPage",
+      "reason": "Plan slot swap action."
+    },
     "POST /notifications/generate": {
       "status": "frontend:notifications/NotificationsPage",
       "reason": "Notifications surface."
     },
+    "POST /profile/answer": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "S2: declared-answer submit (consent-gated, banded) wired to the Food DNA screen's question entry (useFoodDna)."
+    },
+    "POST /profile/taste/correct": {
+      "status": "frontend:food-dna/FoodDnaPage",
+      "reason": "Food DNA/onboarding write taste corrections."
+    },
     "POST /recipes": {
       "status": "frontend:add-recipe/AddRecipePage",
       "reason": "Create a recipe."
+    },
+    "POST /recipes/:id/personalize": {
+      "status": "frontend:recipe-detail/RecipeDetailPage",
+      "reason": "Recipe detail recomputes personalized cascade when servings/swaps/removals change."
     },
     "POST /recommendations/build-identity": {
       "status": "admin",
@@ -531,6 +799,14 @@
       "status": "admin",
       "reason": "Admin maintenance trigger (signal detector)."
     },
+    "POST /shopping-list/clear-all": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping list clear-all action."
+    },
+    "POST /shopping-list/clear-checked": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping list clears checked items."
+    },
     "POST /shopping-list/from-plan": {
       "status": "frontend:shopping-list/ShoppingListPage",
       "reason": "FE-SHOPPING: «از روی برنامه» builds/syncs the list from the week's meal plan (aggregate+merge+scale+categorize); useShopping.buildFromPlan."
@@ -538,6 +814,18 @@
     "POST /shopping-list/items": {
       "status": "frontend:shopping-list/ShoppingListPage",
       "reason": "Shopping-list surface."
+    },
+    "POST /shopping-list/items/:id/to-pantry": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping item can be moved to pantry."
+    },
+    "POST /shopping-list/pantry": {
+      "status": "frontend:shopping-list/ShoppingListPage",
+      "reason": "Shopping list adds pantry staples."
+    },
+    "POST /shopping-list/uncheck-all": {
+      "status": "deferred:E-shopping-bulk-uncheck-ui",
+      "reason": "Bulk uncheck endpoint exists for the shopping list, but the current UI exposes clear checked/clear all instead."
     },
     "POST /support/tickets": {
       "status": "frontend:support/SupportPage",
@@ -550,6 +838,10 @@
     "POST /upload/avatar": {
       "status": "deferred:E-fe-reset-a",
       "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:profile/ProfilePage when rebuilt. Avatar upload from the profile page."
+    },
+    "POST /users/allergies": {
+      "status": "frontend:assistant/ProfileSettings",
+      "reason": "Allergies can be added from onboarding/assistant/profile settings."
     },
     "POST /users/consent": {
       "status": "frontend:onboarding/OnboardingPage",

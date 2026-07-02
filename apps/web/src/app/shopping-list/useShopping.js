@@ -196,7 +196,7 @@ export function useShopping() {
     setBusy(true);
     try {
       const qs = servings && servings > 0 ? `?servings=${servings}` : ''; // «for N people» → scales the list
-      const res = await apiClient.post(`/shopping-list/from-plan${qs}`).then((r) => r.data);
+      const res = await apiClient.post('/shopping-list/from-plan' + qs).then((r) => r.data);
       try { trackEvent('shopping_add_from_plan', { added: res?.added ?? 0 }); } catch { /* non-blocking */ } // revived emitter (source: meal-plan)
       setOverrides({});
       setRemoved({});
