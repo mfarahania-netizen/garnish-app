@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
-import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/format';
+import { faDuration, faDifficulty, toFaDigits, recipeDurationMinutes } from '../../../components/ges/format';
 import { FIT_LABEL, recipeFitReasons, faAllergen, faCategory } from '../../home/lib/reasons';
 
 const asText = (s) => (typeof s === 'string' ? s : s?.text || s?.instruction || s?.description || s?.step || s?.body || '');
@@ -73,7 +73,7 @@ export function useRecipeDetail(id) {
       categories: [...new Set((Array.isArray(r.categories) ? r.categories : []).map(faCategory).filter(Boolean))].slice(0, 3),
       // time source-of-truth: GRIS glance is the authored, accurate time; the legacy cookingTime field is
       // unreliable across the corpus (founder: wrong for every dish). Fall back to legacy only when no GRIS.
-      cookTimeText: faDuration(r.gris?.glance?.totalTimeMin ?? r.gris?.glance?.activeTimeMin ?? r.cookingTime ?? r.totalTime),
+      cookTimeText: faDuration(recipeDurationMinutes(r)),
       difficultyText: faDifficulty(r.difficulty),
       servingsText: r.servings ? `${toFaDigits(r.servings)} نفر` : '',
       description: r.description || '',

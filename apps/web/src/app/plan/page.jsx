@@ -7,7 +7,7 @@ import {
   IconArrowsExchange, IconFlame, IconChevronRight, IconCopy,
 } from '@tabler/icons-react';
 import { useMealPlan } from './useMealPlan';
-import { faDuration, toFaDigits } from '../../components/ges/format';
+import { faDuration, toFaDigits, recipeDurationMinutes } from '../../components/ges/format';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import Toast from '../../components/ges/Toast';
@@ -143,7 +143,7 @@ function DishPicker({ open, day, meal, onClose, onPick, fetchOptions }) {
           ) : options.length === 0 ? (
             <Text component="p" style={{ textAlign: 'center', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-muted)', paddingBlock: 'var(--g-space-6)' }}>{q ? 'غذایی پیدا نشد — یه اسمِ دیگه امتحان کن' : 'در حال آماده‌سازی…'}</Text>
           ) : options.map((o) => {
-            const time = faDuration(o.cookingTime || Number(o.totalTime) || 0);
+            const time = faDuration(recipeDurationMinutes(o));
             return (
               <UnstyledButton key={o.recipeId} type="button" disabled={!!busyId} onClick={async () => { setBusyId(o.recipeId); const ok = await onPick(o.recipeId); if (!ok) setBusyId(null); }} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', textAlign: 'start', minBlockSize: 56, paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)' }}>
                 <Thumb title={o.title} size={40} />

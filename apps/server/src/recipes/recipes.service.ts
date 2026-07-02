@@ -22,24 +22,32 @@ export class RecipesService {
       ];
     }
 
-    const [data, total] = await Promise.all([
+    const [data, total, engagement] = await Promise.all([
       this.prisma.recipe.findMany({
         where,
-        skip,
-        take,
         include: {
           ingredients: { include: { ingredient: true } },
           steps: true,
           searchTerms: true,
           nutrition: true,
         },
-        orderBy: { createdAt: 'desc' },
       }),
       this.prisma.recipe.count({ where }),
+      this.getRecipeEngagement(),
     ]);
+    const sorted = data
+      .map((recipe) => ({
+        ...recipe,
+        _engagement: engagement.get(recipe.id) ?? { views: 0, cooks: 0, mealPlans: 0, score: 0 },
+      }))
+      .sort((a, b) => this.compareByEngagement(a, b));
+    const paged = sorted.slice(skip, skip + take);
 
     return {
-      data: data.map((recipe) => this.presentRecipe(recipe)),
+      data: paged.map((recipe) => {
+        const { _engagement, ...publicRecipe } = recipe;
+        return this.presentRecipe(publicRecipe);
+      }),
       total,
       page: Math.floor(skip / take) + 1,
       pageSize: take,
@@ -227,6 +235,60 @@ export class RecipesService {
       mealType: this.parseJsonField(recipe.mealType, recipe.mealType),
       adminNote: this.parseJsonField(recipe.adminNote, recipe.adminNote),
     };
+  }
+
+  private async getRecipeEngagement() {
+    const engagement = new Map<string, { views: number; cooks: number; mealPlans: number; score: number }>();
+    const ensure = (recipeId: string) => {
+      const current = engagement.get(recipeId) ?? { views: 0, cooks: 0, mealPlans: 0, score: 0 };
+      engagement.set(recipeId, current);
+      return current;
+    };
+    const eventTypes = ['recipe_view', 'recipe_viewed', 'recommendation_click', 'cook_complete', 'recipe_cooked', 'recommendation_cook', 'mealplan_add'];
+    const eventGroups = (this.prisma as any).userEvent?.groupBy
+      ? await (this.prisma as any).userEvent.groupBy({
+          by: ['recipeId', 'type'],
+          where: { recipeId: { not: null }, type: { in: eventTypes } },
+          _count: { _all: true },
+        } as any).catch(() => [])
+      : [];
+    for (const group of eventGroups as any[]) {
+      const recipeId = group.recipeId;
+      if (!recipeId) continue;
+      const count = Number(group._count?._all ?? 0);
+      const item = ensure(recipeId);
+      if (['recipe_view', 'recipe_viewed', 'recommendation_click'].includes(group.type)) item.views += count;
+      if (['cook_complete', 'recipe_cooked', 'recommendation_cook'].includes(group.type)) item.cooks += count;
+      if (group.type === 'mealplan_add') item.mealPlans += count;
+    }
+    const slotGroups = (this.prisma as any).mealSlot?.groupBy
+      ? await (this.prisma as any).mealSlot.groupBy({
+          by: ['recipeId'],
+          where: { recipeId: { not: null } },
+          _count: { _all: true },
+        } as any).catch(() => [])
+      : [];
+    for (const group of slotGroups as any[]) {
+      const recipeId = group.recipeId;
+      if (!recipeId) continue;
+      ensure(recipeId).mealPlans += Number(group._count?._all ?? 0);
+    }
+    for (const item of engagement.values()) {
+      item.score = item.views + item.cooks + item.mealPlans;
+    }
+    return engagement;
+  }
+
+  private compareByEngagement(a: Record<string, any>, b: Record<string, any>) {
+    const ea = a._engagement ?? { views: 0, cooks: 0, mealPlans: 0, score: 0 };
+    const eb = b._engagement ?? { views: 0, cooks: 0, mealPlans: 0, score: 0 };
+    return (
+      Number(eb.views || 0) - Number(ea.views || 0) ||
+      Number(eb.cooks || 0) - Number(ea.cooks || 0) ||
+      Number(eb.mealPlans || 0) - Number(ea.mealPlans || 0) ||
+      String(a.title || '').localeCompare(String(b.title || ''), 'fa') ||
+      String(a.id || '').localeCompare(String(b.id || ''))
+    );
   }
 
   private presentIngredient(ingredient: Record<string, any>) {

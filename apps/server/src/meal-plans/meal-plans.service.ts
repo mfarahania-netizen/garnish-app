@@ -358,7 +358,7 @@ export class MealPlansService {
     // first-glance picker lead with قرمه‌سبزی/کباب instead of obscure regional stews.
     const rank = (r: any) => titleHit(r) * 8 + (mt && r.mealType?.includes(mt) ? 0 : 4) + (isFamiliarDish(r.title) ? 0 : 2) + (isPersian(r) ? 0 : 1);
     recipes.sort((a: any, b: any) => rank(a) - rank(b) || String(a.title).localeCompare(String(b.title), 'fa'));
-    return recipes.slice(0, limit).map((r: any) => ({ recipeId: r.id, title: r.title, cookingTime: r.cookingTime ?? null, totalTime: r.totalTime ?? null }));
+    return recipes.slice(0, limit).map((r: any) => ({ recipeId: r.id, title: r.title, cookingTime: r.cookingTime ?? null, prepTime: r.prepTime ?? null, totalTime: r.totalTime ?? null, gris: r.gris ?? null }));
   }
 
   // ===== افزودن اسلات با تراکنش (بدون race condition) =====

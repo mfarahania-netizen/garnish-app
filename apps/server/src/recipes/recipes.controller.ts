@@ -35,7 +35,7 @@ export class RecipesController {
     @Query('category') category?: string,
   ) {
     const pageNum = Math.max(1, parseInt(page, 10) || 1); // clamp ≥1 — a negative page made skip negative → Prisma 500
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const limitNum = Math.min(1000, Math.max(1, parseInt(limit, 10) || 20));
     const skip = (pageNum - 1) * limitNum;
     const result = await this.recipesService.findAll(skip, limitNum, category);
     const data = await this.safety.filter(req.user?.userId, result.data);

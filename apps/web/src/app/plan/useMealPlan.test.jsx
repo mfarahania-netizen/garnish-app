@@ -75,4 +75,13 @@ describe('useMealPlan — breakfast + delete (real hook)', () => {
     expect(result.current.filled['2:lunch'].title).toBe('قورمه‌سبزی');
     expect(result.current.hasPlan).toBe(true);
   });
+
+  it('uses the full GRIS total time for saved slots instead of the short cookingTime field', async () => {
+    get.mockResolvedValue({ data: { slots: [
+      { dayOfWeek: 1, mealType: 'lunch', recipeId: 'joojeh', recipe: { title: 'جوجه کباب زعفرانی', cookingTime: 14, totalTime: '284', gris: { glance: { totalTimeMin: 300 } } } },
+    ] } });
+    const { result } = renderHook(() => useMealPlan(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(result.current.filled['1:lunch'].cookTimeText).toBe('۵ ساعت');
+  });
 });

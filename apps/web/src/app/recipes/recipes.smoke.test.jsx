@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 
 // Mock the HTTP client so the catalogue query is deterministic (no network). `post` covers the AuthProvider guest
@@ -19,6 +19,17 @@ describe('RecipesPage smoke', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'رسپی‌ها' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('قورمه سبزی')).toBeInTheDocument());
     expect(screen.getByText('کوکو سبزی')).toBeInTheDocument();
+    expect(get).toHaveBeenCalledWith('/recipes', { params: { page: 1, limit: 24 } });
+  });
+
+  it('renders numbered pagination from the API total and requests the next page', async () => {
+    const pageOne = Array.from({ length: 24 }, (_, i) => ({ id: `r${i}`, title: `رسپی ${i + 1}`, cookingTime: 30, difficulty: 'easy' }));
+    get.mockResolvedValue({ data: { data: pageOne, total: 589, page: 1, pageSize: 24 } });
+    renderWithProviders(<RecipesPage />, { route: '/recipes' });
+    await waitFor(() => expect(screen.getByText('نمایش ۱ تا ۲۴ از ۵۸۹ دستور')).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: 'صفحهٔ ۲۵' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'صفحهٔ بعد' }));
+    await waitFor(() => expect(get).toHaveBeenCalledWith('/recipes', { params: { page: 2, limit: 24 } }));
   });
 
   it('renders the empty state when there are no recipes', async () => {
