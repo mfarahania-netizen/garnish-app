@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "global_143_sample_render_v0.1",
+  "generatedAt": "2026-07-01T13:16:40.137Z",
+  "baseUrl": "http://localhost:5173",
+  "results": [
+    {
+      "category": "Batch 01",
+      "slug": "classic-bakers-croissant",
+      "id": "garnish_recipe_global_143_001_758db93a",
+      "ok": true,
+      "bodyLength": 690,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "کروسان کلاسیک لایه‌ای"
+    },
+    {
+      "category": "Batch 02",
+      "slug": "smashed-avocado-toast",
+      "id": "garnish_recipe_global_143_022_a1009be1",
+      "ok": true,
+      "bodyLength": 579,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "آووکادو تست له‌شده"
+    },
+    {
+      "category": "Batch 03",
+      "slug": "korean-napa-cabbage-kimchi",
+      "id": "garnish_recipe_global_143_041_33abbd3b",
+      "ok": true,
+      "bodyLength": 763,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "کیمچی کلم چینی"
+    },
+    {
+      "category": "Batch 04",
+      "slug": "grilled-halloumi-lemon-herbs",
+      "id": "garnish_recipe_global_143_061_6a6023a1",
+      "ok": true,
+      "bodyLength": 734,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "حلومی گریل‌شده با لیمو و سبزی"
+    },
+    {
+      "category": "Batch 05 dessert",
+      "slug": "umm-ali-egyptian-bread-pudding",
+      "id": "garnish_recipe_global_143_083_233e9bde",
+      "ok": true,
+      "bodyLength": 681,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "اُم علی مصری"
+    },
+    {
+      "category": "Batch 06 complex main",
+      "slug": "murgh-makhani-butter-chicken",
+      "id": "garnish_recipe_global_143_101_f007a227",
+      "ok": true,
+      "bodyLength": 700,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "مرغ کره‌ای هندی"
+    },
+    {
+      "category": "Batch 07",
+      "slug": "peruvian-lomo-saltado",
+      "id": "garnish_recipe_global_143_121_ee99f013",
+      "ok": true,
+      "bodyLength": 613,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "لومو سالتادوی پرویی"
+    },
+    {
+      "category": "containsPork",
+      "slug": "pan-fried-pork-gyoza",
+      "id": "garnish_recipe_global_143_040_dcfd7c46",
+      "ok": true,
+      "bodyLength": 641,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "گیوزای خوک و کلم"
+    },
+    {
+      "category": "dessert",
+      "slug": "chocolate-lava-cake",
+      "id": "garnish_recipe_global_143_092_87b53529",
+      "ok": true,
+      "bodyLength": 676,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "کیک لاوای شکلاتی"
+    },
+    {
+      "category": "complex main",
+      "slug": "classic-beef-wellington",
+      "id": "garnish_recipe_global_143_130_c4a5fa79",
+      "ok": true,
+      "bodyLength": 617,
+      "hasCookCta": true,
+      "loadingFailed": false,
+      "title": "بیف ولینگتون کلاسیک"
+    }
+  ],
+  "pass": true,
+  "note": "Render criterion: visible title, cook CTA, no load-failure state, non-empty page body. GRIS pages may not use the literal ingredients heading on the read page."
+}

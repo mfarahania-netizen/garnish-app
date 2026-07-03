@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "global_143_master_qa_v0.1",
+  "generatedAt": "2026-07-01T13:10:01.218Z",
+  "productionApply": false,
+  "mode": "apply",
+  "inputPath": "garnish_import_handoffs\\garnish_global_143_master_review_handoff_v0_1\\recipes.global-143.all.schema-patched-preview.NOT_IMPORT_READY.v0.1.json",
+  "recipeValidation": {
+    "ok": true,
+    "errors": [],
+    "warnings": [],
+    "blocked": {
+      "recipeCount": false,
+      "duplicateRecipeId": 0,
+      "duplicateSlug": 0,
+      "duplicateSequence": 0,
+      "missingSequences": 0,
+      "unresolvedIngredients": 0,
+      "ingredientProblems": 0,
+      "ingredientIdCodeMismatch": 0,
+      "malformedJson": 0,
+      "inactiveStatus": 0,
+      "languageNotFa": 0,
+      "displayForbiddenTerms": 0,
+      "displayLatinLeaks": 0,
+      "genericRepeatedDisplayCopy": 0,
+      "containsPorkNonBoolean": 0,
+      "nutritionPolicyCopy": 0,
+      "placeholderLikeRecipes": 0
+    },
+    "details": {
+      "seqMin": 355,
+      "seqMax": 497,
+      "duplicateRecipeIds": [],
+      "duplicateSlugs": [],
+      "duplicateSequences": [],
+      "missingSequences": [],
+      "forbiddenHits": [],
+      "latinLeaks": [],
+      "repeatedCopy": []
+    }
+  },
+  "ingredientExpansionDedupe": {
+    "ok": true,
+    "ingredientExpansionCount": 63,
+    "duplicateIngredientId": 0,
+    "duplicateCode": 0,
+    "conflicts": [],
+    "aliasCollisions": [],
+    "safetyBadCount": 0,
+    "duplicateResolution": [
+      {
+        "code": "water",
+        "action": "skip_duplicate_keep_existing",
+        "keptCanonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+        "skippedFrom": "ingredient-expansion-global-143-batch-02.v0.2.json"
+      },
+      {
+        "code": "water",
+        "action": "skip_duplicate_keep_existing",
+        "keptCanonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+        "skippedFrom": "ingredient-expansion-global-143-batch-03.v0.1.json"
+      },
+      {
+        "code": "water",
+        "action": "skip_duplicate_keep_existing",
+        "keptCanonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+        "skippedFrom": "ingredient-expansion-global-143-batch-04.v0.1.json"
+      },
+      {
+        "code": "honey",
+        "action": "skip_duplicate_keep_existing",
+        "keptCanonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+        "skippedFrom": "ingredient-expansion-global-143-batch-04.v0.1.json"
+      },
+      {
+        "code": "ice_cubes",
+        "action": "skip_duplicate_keep_existing",
+        "keptCanonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+        "skippedFrom": "ingredient-expansion-global-143-batch-04.v0.1.json"
+      }
+    ]
+  },
+  "sourceAudit": {
+    "total": 143,
+    "blockedCount": 0,
+    "blocked": []
+  },
+  "requiredFinalCounters": {
+    "recipes": 143,
+    "ingredientExpansion": "deduped",
+    "duplicateRecipeId": 0,
+    "duplicateSlug": 0,
+    "duplicateIngredientId": 0,
+    "duplicateCode": 0,
+    "unresolvedIngredientLines": 0,
+    "displayForbiddenTerms": 0,
+    "displayLatinLeaks": 0,
+    "genericRepeatedDisplayCopyBlockers": 0,
+    "containsPorkNonBoolean": 0,
+    "medicalNutritionClaims": 0,
+    "recipeImportConflicts": 0,
+    "productionApply": false
+  },
+  "dryRunSkipped": false,
+  "db": {
+    "databaseName": "garnish_db",
+    "host": "localhost",
+    "local": true
+  },
+  "ingredientExpansionPlan": {
+    "input": 63,
+    "toCreate": 60,
+    "toSkipExistingOrUpsert": 3
+  },
+  "recipeImportPlan": {
+    "input": 143,
+    "existingRecipeCount": 446,
+    "toCreate": 143,
+    "toSkipExistingOurTag": 0,
+    "conflicts": []
+  },
+  "dryRunOnly": false,
+  "dbWritesPerformed": true,
+  "createdIngredients": 60,
+  "createdRecipes": 143,
+  "recipeCountAfter": 589,
+  "ingredientCountAfter": 1084,
+  "expectedRecipeCountAfter": 589,
+  "expectedRecipeCountMatched": true,
+  "destructiveOperationUsed": false
+}

@@ -1,0 +1,6902 @@
+[
+  {
+    "ingredientId": "ing_honey",
+    "code": "honey",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_DEP_LITE_EXP_001",
+      "batchSequence": 9,
+      "batchRecordNumber": 1,
+      "expansionBase": "lite_food_96_expansion_dependency_for_global_batch_01"
+    },
+    "names": {
+      "fa": {
+        "canonical": "عسل",
+        "normalized": "عسل",
+        "display": "عسل"
+      },
+      "en": {
+        "canonical": "honey",
+        "normalized": "honey",
+        "display": "Honey"
+      },
+      "ar": {
+        "canonical": "عسل نحل",
+        "normalized": "عسل نحل",
+        "display": "عسل نحل"
+      },
+      "tr": {
+        "canonical": "bal",
+        "normalized": "bal",
+        "display": "bal"
+      },
+      "de": {
+        "canonical": "Honig",
+        "normalized": "honig",
+        "display": "Honig"
+      },
+      "fr": {
+        "canonical": "miel",
+        "normalized": "miel",
+        "display": "miel"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "عسل",
+        "عسل طبیعی",
+        "عسل صبحانه"
+      ],
+      "en": [
+        "honey",
+        "bee honey"
+      ],
+      "ar": [
+        "عسل",
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "commonTypos": {
+      "fa": [
+        "اسل",
+        "عصل",
+        "عسلل"
+      ],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "عسل",
+        "شیرین‌کننده",
+        "صبحانه"
+      ],
+      "en": [
+        "honey",
+        "sweetener",
+        "breakfast"
+      ],
+      "ar": [
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "taxonomy": {
+      "category": "sweetener",
+      "parentCategory": "carbohydrate",
+      "subCategory": "syrup",
+      "family": "bee_honey"
+    },
+    "origin": {
+      "animalSource": "bee",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "shelf_stable"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "halal",
+      "gluten_free",
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 304,
+      "protein": 0.3,
+      "fat": 0,
+      "carbs": 82.4,
+      "fiber": 0.2,
+      "sugar": 82.1,
+      "sodium": 4
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "honey",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "lite_food_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until an exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 5,
+      "salty": 0,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 0,
+      "fatty": 0,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 1,
+      "creamy": 1,
+      "chewy": 0,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "sweetening",
+        "breakfast",
+        "drizzle",
+        "drink_sweetener"
+      ],
+      "commonCookingMethods": [
+        "ready_to_use",
+        "mixed",
+        "added_to_recipe"
+      ],
+      "heatSensitivity": "medium",
+      "prepDifficulty": "easy",
+      "typicalPrepForms": [
+        "liquid",
+        "drizzled",
+        "measured"
+      ]
+    },
+    "healthContext": {
+      "benefits": [],
+      "cautions": [],
+      "goodForGoals": [],
+      "avoidForGoals": []
+    },
+    "substitutionOptions": [],
+    "media": {
+      "image": "/media/ingredients/honey.webp",
+      "thumbnail": "/media/ingredients/honey-thumb.webp"
+    },
+    "aiContext": {
+      "summaryForAI": "عسل / honey یک ماده افزوده‌شده برای Lite Food است. اعداد تغذیه‌ای تخمینی و برای کاربرد عمومی هستند؛ استفاده پزشکی یا رژیم دقیق ممنوع است تا منبع قفل شود.",
+      "distinguishFrom": [],
+      "typoHandling": [
+        "اسل",
+        "عصل",
+        "عسلل"
+      ],
+      "usageNotes": [
+        "برای محاسبات حساس رژیمی از این رکورد استفاده نشود تا nutrition source lock کامل شود.",
+        "برای برندهای آماده، برچسب محصول محلی می‌تواند آلرژن و تغذیه را تغییر دهد."
+      ]
+    },
+    "marketAvailability": {
+      "global": true,
+      "regions": [
+        "global",
+        "EU",
+        "NL",
+        "US",
+        "IR"
+      ],
+      "commonRetailForms": [
+        "jar",
+        "squeeze_bottle"
+      ],
+      "seasonality": "year_round"
+    },
+    "cuisineRelevance": {
+      "global": 5,
+      "persian": 5,
+      "dutch": 4,
+      "american": 5
+    },
+    "translationQuality": {
+      "fa": "complete_machine_curated_needs_native_review",
+      "en": "complete_machine_curated_needs_native_review",
+      "ar": "complete_machine_curated_needs_native_review",
+      "tr": "complete_machine_curated_needs_native_review",
+      "de": "complete_machine_curated_needs_native_review",
+      "fr": "complete_machine_curated_needs_native_review"
+    },
+    "taxonomyRefs": {
+      "foodOnId": null,
+      "foodEx2Code": null,
+      "langualCodes": [],
+      "usdaFdcId": null,
+      "nevoId": null,
+      "cofidId": null
+    },
+    "dataQuality": {
+      "structureVerified": true,
+      "resolverReady": true,
+      "translationComplete": true,
+      "translationVerifiedForMvp": true,
+      "nativeTranslationReviewRecommended": true,
+      "garnishTaxonomyVerified": true,
+      "externalTaxonomyRefsLocked": false,
+      "nutritionSourceLocked": false,
+      "readyForRecipeImport": true,
+      "readyForGeneralRecommendation": true,
+      "readyForMealPlannerMvp": true,
+      "readyForStrictDietPlanning": false,
+      "needsHumanReview": true,
+      "reviewReasons": [
+        "nutrition_source_id_pending",
+        "native_translation_review_recommended_for_production_localization"
+      ],
+      "qualityScore": 0.78,
+      "qualityScoreMeaning": "workflow score, not strict medical nutrition score",
+      "strictDietPlanningAllowed": false,
+      "readyForMedicalNutritionClaims": false
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "عسل",
+        "عسل طبیعی",
+        "عسل صبحانه"
+      ],
+      "en": [
+        "honey",
+        "bee honey"
+      ],
+      "ar": [
+        "عسل",
+        "عسل نحل"
+      ],
+      "tr": [
+        "bal"
+      ],
+      "de": [
+        "Honig"
+      ],
+      "fr": [
+        "miel"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultForRecipeWhenStateOmitted": true,
+      "defaultStateApplied": "liquid",
+      "defaultPreparationStateApplied": "ready_to_use",
+      "resolutionPriority": "canonical_state_match_then_recipe_input_alias_then_search_keyword",
+      "notes": [
+        "Lite Food expansion record. Use exact code/ingredientId; do not collapse into nearby existing ingredients."
+      ]
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_short_grain_rice_raw",
+    "code": "short_grain_rice_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 1,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "برنج دانه‌کوتاه خام",
+        "normalized": "برنج دانه‌کوتاه خام",
+        "display": "برنج دانه‌کوتاه خام"
+      },
+      "en": {
+        "canonical": "short-grain rice, raw",
+        "normalized": "short-grain rice, raw",
+        "display": "short-grain rice, raw"
+      },
+      "ar": {
+        "canonical": "short-grain rice, raw",
+        "normalized": "short-grain rice, raw",
+        "display": "short-grain rice, raw"
+      },
+      "tr": {
+        "canonical": "short-grain rice, raw",
+        "normalized": "short-grain rice, raw",
+        "display": "short-grain rice, raw"
+      },
+      "de": {
+        "canonical": "short-grain rice, raw",
+        "normalized": "short-grain rice, raw",
+        "display": "short-grain rice, raw"
+      },
+      "fr": {
+        "canonical": "short-grain rice, raw",
+        "normalized": "short-grain rice, raw",
+        "display": "short-grain rice, raw"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "برنج دانه‌کوتاه خام"
+      ],
+      "en": [
+        "short-grain rice, raw",
+        "short grain rice raw"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "برنج دانه‌کوتاه خام",
+        "grain",
+        "rice"
+      ],
+      "en": [
+        "short-grain rice, raw",
+        "grain",
+        "rice"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "grain",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "rice",
+      "family": "rice"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "rice",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dry",
+      "ediblePortion": "edible_portion",
+      "preparationState": "raw",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 356,
+      "protein": 6.5,
+      "fat": 0.7,
+      "carbs": 79,
+      "fiber": 1.3,
+      "sugar": 0.1,
+      "sodium": 1
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "short-grain rice, raw",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: short-grain rice, raw.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "برنج دانه‌کوتاه خام"
+      ],
+      "en": [
+        "short-grain rice, raw",
+        "short grain rice raw"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "raw",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_english_muffin",
+    "code": "english_muffin",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 2,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "مافین انگلیسی",
+        "normalized": "مافین انگلیسی",
+        "display": "مافین انگلیسی"
+      },
+      "en": {
+        "canonical": "English muffin",
+        "normalized": "english muffin",
+        "display": "English muffin"
+      },
+      "ar": {
+        "canonical": "English muffin",
+        "normalized": "english muffin",
+        "display": "English muffin"
+      },
+      "tr": {
+        "canonical": "English muffin",
+        "normalized": "english muffin",
+        "display": "English muffin"
+      },
+      "de": {
+        "canonical": "English muffin",
+        "normalized": "english muffin",
+        "display": "English muffin"
+      },
+      "fr": {
+        "canonical": "English muffin",
+        "normalized": "english muffin",
+        "display": "English muffin"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "مافین انگلیسی"
+      ],
+      "en": [
+        "English muffin",
+        "english muffin"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "مافین انگلیسی",
+        "grain",
+        "bread"
+      ],
+      "en": [
+        "English muffin",
+        "grain",
+        "bread"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "grain",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "bread",
+      "family": "wheat"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "wheat",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "baked",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "halal"
+    ],
+    "allergens": {
+      "eu14": [
+        "gluten"
+      ],
+      "us9": [
+        "gluten"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 235,
+      "protein": 8,
+      "fat": 2,
+      "carbs": 46,
+      "fiber": 2,
+      "sugar": 2,
+      "sodium": 450
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "English muffin",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: English muffin.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "مافین انگلیسی"
+      ],
+      "en": [
+        "English muffin",
+        "english muffin"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_canadian_bacon_slices",
+    "code": "canadian_bacon_slices",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 3,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "بیکن کانادایی ورقه‌ای",
+        "normalized": "بیکن کانادایی ورقه‌ای",
+        "display": "بیکن کانادایی ورقه‌ای"
+      },
+      "en": {
+        "canonical": "Canadian bacon slices",
+        "normalized": "canadian bacon slices",
+        "display": "Canadian bacon slices"
+      },
+      "ar": {
+        "canonical": "Canadian bacon slices",
+        "normalized": "canadian bacon slices",
+        "display": "Canadian bacon slices"
+      },
+      "tr": {
+        "canonical": "Canadian bacon slices",
+        "normalized": "canadian bacon slices",
+        "display": "Canadian bacon slices"
+      },
+      "de": {
+        "canonical": "Canadian bacon slices",
+        "normalized": "canadian bacon slices",
+        "display": "Canadian bacon slices"
+      },
+      "fr": {
+        "canonical": "Canadian bacon slices",
+        "normalized": "canadian bacon slices",
+        "display": "Canadian bacon slices"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "بیکن کانادایی ورقه‌ای"
+      ],
+      "en": [
+        "Canadian bacon slices",
+        "canadian bacon slices"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "بیکن کانادایی ورقه‌ای",
+        "processed_food",
+        "processed_meat"
+      ],
+      "en": [
+        "Canadian bacon slices",
+        "processed_food",
+        "processed_meat"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "processed_meat",
+      "family": "pork"
+    },
+    "origin": {
+      "animalSource": "pig",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "processed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_heat",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 145,
+      "protein": 20,
+      "fat": 5,
+      "carbs": 2,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 1100
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "Canadian bacon slices",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: Canadian bacon slices.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "بیکن کانادایی ورقه‌ای"
+      ],
+      "en": [
+        "Canadian bacon slices",
+        "canadian bacon slices"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_heat",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_pork_back_bacon_raw",
+    "code": "pork_back_bacon_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 4,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "بیکن پشت خوک خام",
+        "normalized": "بیکن پشت خوک خام",
+        "display": "بیکن پشت خوک خام"
+      },
+      "en": {
+        "canonical": "pork back bacon, raw",
+        "normalized": "pork back bacon, raw",
+        "display": "pork back bacon, raw"
+      },
+      "ar": {
+        "canonical": "pork back bacon, raw",
+        "normalized": "pork back bacon, raw",
+        "display": "pork back bacon, raw"
+      },
+      "tr": {
+        "canonical": "pork back bacon, raw",
+        "normalized": "pork back bacon, raw",
+        "display": "pork back bacon, raw"
+      },
+      "de": {
+        "canonical": "pork back bacon, raw",
+        "normalized": "pork back bacon, raw",
+        "display": "pork back bacon, raw"
+      },
+      "fr": {
+        "canonical": "pork back bacon, raw",
+        "normalized": "pork back bacon, raw",
+        "display": "pork back bacon, raw"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "بیکن پشت خوک خام"
+      ],
+      "en": [
+        "pork back bacon, raw",
+        "pork back bacon raw"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "بیکن پشت خوک خام",
+        "processed_food",
+        "processed_meat"
+      ],
+      "en": [
+        "pork back bacon, raw",
+        "processed_food",
+        "processed_meat"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "processed_meat",
+      "family": "pork"
+    },
+    "origin": {
+      "animalSource": "pig",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "raw",
+      "ediblePortion": "edible_portion",
+      "preparationState": "raw",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 250,
+      "protein": 18,
+      "fat": 20,
+      "carbs": 1,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 900
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "pork back bacon, raw",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: pork back bacon, raw.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "بیکن پشت خوک خام"
+      ],
+      "en": [
+        "pork back bacon, raw",
+        "pork back bacon raw"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "raw",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_black_pudding",
+    "code": "black_pudding",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 5,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "بلک پودینگ",
+        "normalized": "بلک پودینگ",
+        "display": "بلک پودینگ"
+      },
+      "en": {
+        "canonical": "black pudding",
+        "normalized": "black pudding",
+        "display": "black pudding"
+      },
+      "ar": {
+        "canonical": "black pudding",
+        "normalized": "black pudding",
+        "display": "black pudding"
+      },
+      "tr": {
+        "canonical": "black pudding",
+        "normalized": "black pudding",
+        "display": "black pudding"
+      },
+      "de": {
+        "canonical": "black pudding",
+        "normalized": "black pudding",
+        "display": "black pudding"
+      },
+      "fr": {
+        "canonical": "black pudding",
+        "normalized": "black pudding",
+        "display": "black pudding"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "بلک پودینگ"
+      ],
+      "en": [
+        "black pudding",
+        "black pudding"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "بلک پودینگ",
+        "processed_food",
+        "blood_sausage"
+      ],
+      "en": [
+        "black pudding",
+        "processed_food",
+        "blood_sausage"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "blood_sausage",
+      "family": "pork"
+    },
+    "origin": {
+      "animalSource": "pig",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "processed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_heat",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "dairy_free"
+    ],
+    "allergens": {
+      "eu14": [
+        "gluten"
+      ],
+      "us9": [
+        "gluten"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 290,
+      "protein": 14,
+      "fat": 18,
+      "carbs": 16,
+      "fiber": 2,
+      "sugar": 1,
+      "sodium": 900
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "black pudding",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: black pudding.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "بلک پودینگ"
+      ],
+      "en": [
+        "black pudding",
+        "black pudding"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_heat",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_hp_brown_sauce",
+    "code": "hp_brown_sauce",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 6,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سس براون اچ‌پی",
+        "normalized": "سس براون اچ‌پی",
+        "display": "سس براون اچ‌پی"
+      },
+      "en": {
+        "canonical": "HP-style brown sauce",
+        "normalized": "hp-style brown sauce",
+        "display": "HP-style brown sauce"
+      },
+      "ar": {
+        "canonical": "HP-style brown sauce",
+        "normalized": "hp-style brown sauce",
+        "display": "HP-style brown sauce"
+      },
+      "tr": {
+        "canonical": "HP-style brown sauce",
+        "normalized": "hp-style brown sauce",
+        "display": "HP-style brown sauce"
+      },
+      "de": {
+        "canonical": "HP-style brown sauce",
+        "normalized": "hp-style brown sauce",
+        "display": "HP-style brown sauce"
+      },
+      "fr": {
+        "canonical": "HP-style brown sauce",
+        "normalized": "hp-style brown sauce",
+        "display": "HP-style brown sauce"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سس براون اچ‌پی"
+      ],
+      "en": [
+        "HP-style brown sauce",
+        "hp brown sauce"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "سس براون اچ‌پی",
+        "condiment",
+        "sauce"
+      ],
+      "en": [
+        "HP-style brown sauce",
+        "condiment",
+        "sauce"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "condiment",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "sauce",
+      "family": "brown_sauce"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "sauce",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 110,
+      "protein": 1,
+      "fat": 0,
+      "carbs": 26,
+      "fiber": 1,
+      "sugar": 20,
+      "sodium": 1200
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "HP-style brown sauce",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: HP-style brown sauce.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سس براون اچ‌پی"
+      ],
+      "en": [
+        "HP-style brown sauce",
+        "hp brown sauce"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_natto",
+    "code": "natto",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 7,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ناتو",
+        "normalized": "ناتو",
+        "display": "ناتو"
+      },
+      "en": {
+        "canonical": "natto fermented soybeans",
+        "normalized": "natto fermented soybeans",
+        "display": "natto fermented soybeans"
+      },
+      "ar": {
+        "canonical": "natto fermented soybeans",
+        "normalized": "natto fermented soybeans",
+        "display": "natto fermented soybeans"
+      },
+      "tr": {
+        "canonical": "natto fermented soybeans",
+        "normalized": "natto fermented soybeans",
+        "display": "natto fermented soybeans"
+      },
+      "de": {
+        "canonical": "natto fermented soybeans",
+        "normalized": "natto fermented soybeans",
+        "display": "natto fermented soybeans"
+      },
+      "fr": {
+        "canonical": "natto fermented soybeans",
+        "normalized": "natto fermented soybeans",
+        "display": "natto fermented soybeans"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ناتو"
+      ],
+      "en": [
+        "natto fermented soybeans",
+        "natto"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "ناتو",
+        "legume",
+        "fermented_soy"
+      ],
+      "en": [
+        "natto fermented soybeans",
+        "legume",
+        "fermented_soy"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "legume",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "fermented_soy",
+      "family": "soy"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "soybean",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "fermented",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [
+        "soy"
+      ],
+      "us9": [
+        "soy"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 211,
+      "protein": 19,
+      "fat": 11,
+      "carbs": 13,
+      "fiber": 5,
+      "sugar": 4,
+      "sodium": 7
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "natto fermented soybeans",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: natto fermented soybeans.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ناتو"
+      ],
+      "en": [
+        "natto fermented soybeans",
+        "natto"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_turkish_kaymak",
+    "code": "turkish_kaymak",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 8,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "کایماک ترکی",
+        "normalized": "کایماک ترکی",
+        "display": "کایماک ترکی"
+      },
+      "en": {
+        "canonical": "Turkish kaymak",
+        "normalized": "turkish kaymak",
+        "display": "Turkish kaymak"
+      },
+      "ar": {
+        "canonical": "Turkish kaymak",
+        "normalized": "turkish kaymak",
+        "display": "Turkish kaymak"
+      },
+      "tr": {
+        "canonical": "Turkish kaymak",
+        "normalized": "turkish kaymak",
+        "display": "Turkish kaymak"
+      },
+      "de": {
+        "canonical": "Turkish kaymak",
+        "normalized": "turkish kaymak",
+        "display": "Turkish kaymak"
+      },
+      "fr": {
+        "canonical": "Turkish kaymak",
+        "normalized": "turkish kaymak",
+        "display": "Turkish kaymak"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "کایماک ترکی"
+      ],
+      "en": [
+        "Turkish kaymak",
+        "turkish kaymak"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "کایماک ترکی",
+        "dairy",
+        "clotted_cream"
+      ],
+      "en": [
+        "Turkish kaymak",
+        "dairy",
+        "clotted_cream"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "dairy",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "clotted_cream",
+      "family": "milk"
+    },
+    "origin": {
+      "animalSource": "cow_or_buffalo",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "cream",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [
+        "milk"
+      ],
+      "us9": [
+        "milk"
+      ],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 585,
+      "protein": 2,
+      "fat": 60,
+      "carbs": 3,
+      "fiber": 0,
+      "sugar": 3,
+      "sodium": 30
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "Turkish kaymak",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: Turkish kaymak.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "کایماک ترکی"
+      ],
+      "en": [
+        "Turkish kaymak",
+        "turkish kaymak"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_beef_sucuk_sausage",
+    "code": "beef_sucuk_sausage",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 9,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سوجوک گوشت گاو",
+        "normalized": "سوجوک گوشت گاو",
+        "display": "سوجوک گوشت گاو"
+      },
+      "en": {
+        "canonical": "beef sucuk sausage",
+        "normalized": "beef sucuk sausage",
+        "display": "beef sucuk sausage"
+      },
+      "ar": {
+        "canonical": "beef sucuk sausage",
+        "normalized": "beef sucuk sausage",
+        "display": "beef sucuk sausage"
+      },
+      "tr": {
+        "canonical": "beef sucuk sausage",
+        "normalized": "beef sucuk sausage",
+        "display": "beef sucuk sausage"
+      },
+      "de": {
+        "canonical": "beef sucuk sausage",
+        "normalized": "beef sucuk sausage",
+        "display": "beef sucuk sausage"
+      },
+      "fr": {
+        "canonical": "beef sucuk sausage",
+        "normalized": "beef sucuk sausage",
+        "display": "beef sucuk sausage"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سوجوک گوشت گاو"
+      ],
+      "en": [
+        "beef sucuk sausage",
+        "beef sucuk sausage"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "سوجوک گوشت گاو",
+        "processed_food",
+        "sausage"
+      ],
+      "en": [
+        "beef sucuk sausage",
+        "processed_food",
+        "sausage"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "processed_food",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "sausage",
+      "family": "beef"
+    },
+    "origin": {
+      "animalSource": "cow",
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "processed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_heat",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "dairy_free",
+      "gluten_free",
+      "halal"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 330,
+      "protein": 20,
+      "fat": 27,
+      "carbs": 2,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 1600
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "beef sucuk sausage",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: beef sucuk sausage.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سوجوک گوشت گاو"
+      ],
+      "en": [
+        "beef sucuk sausage",
+        "beef sucuk sausage"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_heat",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_canned_fava_beans",
+    "code": "canned_fava_beans",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 10,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "باقالی کنسروی",
+        "normalized": "باقالی کنسروی",
+        "display": "باقالی کنسروی"
+      },
+      "en": {
+        "canonical": "canned fava beans",
+        "normalized": "canned fava beans",
+        "display": "canned fava beans"
+      },
+      "ar": {
+        "canonical": "canned fava beans",
+        "normalized": "canned fava beans",
+        "display": "canned fava beans"
+      },
+      "tr": {
+        "canonical": "canned fava beans",
+        "normalized": "canned fava beans",
+        "display": "canned fava beans"
+      },
+      "de": {
+        "canonical": "canned fava beans",
+        "normalized": "canned fava beans",
+        "display": "canned fava beans"
+      },
+      "fr": {
+        "canonical": "canned fava beans",
+        "normalized": "canned fava beans",
+        "display": "canned fava beans"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "باقالی کنسروی"
+      ],
+      "en": [
+        "canned fava beans",
+        "canned fava beans"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "باقالی کنسروی",
+        "legume",
+        "canned_legume"
+      ],
+      "en": [
+        "canned fava beans",
+        "legume",
+        "canned_legume"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "legume",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "canned_legume",
+      "family": "fava"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "fava_bean",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "canned",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_heat",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 88,
+      "protein": 7.5,
+      "fat": 0.7,
+      "carbs": 16,
+      "fiber": 5,
+      "sugar": 1,
+      "sodium": 280
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "canned fava beans",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: canned fava beans.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "باقالی کنسروی"
+      ],
+      "en": [
+        "canned fava beans",
+        "canned fava beans"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_heat",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_fenugreek_seeds",
+    "code": "fenugreek_seeds",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 11,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "دانه شنبلیله",
+        "normalized": "دانه شنبلیله",
+        "display": "دانه شنبلیله"
+      },
+      "en": {
+        "canonical": "fenugreek seeds",
+        "normalized": "fenugreek seeds",
+        "display": "fenugreek seeds"
+      },
+      "ar": {
+        "canonical": "fenugreek seeds",
+        "normalized": "fenugreek seeds",
+        "display": "fenugreek seeds"
+      },
+      "tr": {
+        "canonical": "fenugreek seeds",
+        "normalized": "fenugreek seeds",
+        "display": "fenugreek seeds"
+      },
+      "de": {
+        "canonical": "fenugreek seeds",
+        "normalized": "fenugreek seeds",
+        "display": "fenugreek seeds"
+      },
+      "fr": {
+        "canonical": "fenugreek seeds",
+        "normalized": "fenugreek seeds",
+        "display": "fenugreek seeds"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "دانه شنبلیله"
+      ],
+      "en": [
+        "fenugreek seeds",
+        "fenugreek seeds"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "دانه شنبلیله",
+        "spice",
+        "seed_spice"
+      ],
+      "en": [
+        "fenugreek seeds",
+        "spice",
+        "seed_spice"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "spice",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "seed_spice",
+      "family": "fenugreek"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "fenugreek",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "seed",
+      "ediblePortion": "edible_portion",
+      "preparationState": "dry",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 323,
+      "protein": 23,
+      "fat": 6.4,
+      "carbs": 58,
+      "fiber": 25,
+      "sugar": 0,
+      "sodium": 67
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "fenugreek seeds",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: fenugreek seeds.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "دانه شنبلیله"
+      ],
+      "en": [
+        "fenugreek seeds",
+        "fenugreek seeds"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "dry",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_idli_rice_raw",
+    "code": "idli_rice_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 12,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "برنج ایدلی خام",
+        "normalized": "برنج ایدلی خام",
+        "display": "برنج ایدلی خام"
+      },
+      "en": {
+        "canonical": "idli rice, raw",
+        "normalized": "idli rice, raw",
+        "display": "idli rice, raw"
+      },
+      "ar": {
+        "canonical": "idli rice, raw",
+        "normalized": "idli rice, raw",
+        "display": "idli rice, raw"
+      },
+      "tr": {
+        "canonical": "idli rice, raw",
+        "normalized": "idli rice, raw",
+        "display": "idli rice, raw"
+      },
+      "de": {
+        "canonical": "idli rice, raw",
+        "normalized": "idli rice, raw",
+        "display": "idli rice, raw"
+      },
+      "fr": {
+        "canonical": "idli rice, raw",
+        "normalized": "idli rice, raw",
+        "display": "idli rice, raw"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "برنج ایدلی خام"
+      ],
+      "en": [
+        "idli rice, raw",
+        "idli rice raw"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "برنج ایدلی خام",
+        "grain",
+        "rice"
+      ],
+      "en": [
+        "idli rice, raw",
+        "grain",
+        "rice"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "grain",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "rice",
+      "family": "rice"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": "rice",
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "dry",
+      "ediblePortion": "edible_portion",
+      "preparationState": "raw",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 356,
+      "protein": 6.5,
+      "fat": 0.7,
+      "carbs": 79,
+      "fiber": 1.3,
+      "sugar": 0.1,
+      "sodium": 1
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "idli rice, raw",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: idli rice, raw.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "برنج ایدلی خام"
+      ],
+      "en": [
+        "idli rice, raw",
+        "idli rice raw"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "raw",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_sambar_powder",
+    "code": "sambar_powder",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 13,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پودر سامبار",
+        "normalized": "پودر سامبار",
+        "display": "پودر سامبار"
+      },
+      "en": {
+        "canonical": "sambar powder",
+        "normalized": "sambar powder",
+        "display": "sambar powder"
+      },
+      "ar": {
+        "canonical": "sambar powder",
+        "normalized": "sambar powder",
+        "display": "sambar powder"
+      },
+      "tr": {
+        "canonical": "sambar powder",
+        "normalized": "sambar powder",
+        "display": "sambar powder"
+      },
+      "de": {
+        "canonical": "sambar powder",
+        "normalized": "sambar powder",
+        "display": "sambar powder"
+      },
+      "fr": {
+        "canonical": "sambar powder",
+        "normalized": "sambar powder",
+        "display": "sambar powder"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پودر سامبار"
+      ],
+      "en": [
+        "sambar powder",
+        "sambar powder"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "پودر سامبار",
+        "spice",
+        "spice_blend"
+      ],
+      "en": [
+        "sambar powder",
+        "spice",
+        "spice_blend"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "spice",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "spice_blend",
+      "family": "south_indian"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "powder",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 320,
+      "protein": 14,
+      "fat": 9,
+      "carbs": 46,
+      "fiber": 18,
+      "sugar": 5,
+      "sodium": 80
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "sambar powder",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: sambar powder.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پودر سامبار"
+      ],
+      "en": [
+        "sambar powder",
+        "sambar powder"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_water",
+    "code": "water",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GFD_V2_GLOBAL_143_B01_EXP_001",
+      "batchSequence": 10,
+      "batchRecordNumber": 14,
+      "expansionBase": "global_143_batch_01_researched_recipe_import_v0_2"
+    },
+    "names": {
+      "fa": {
+        "canonical": "آب",
+        "normalized": "آب",
+        "display": "آب"
+      },
+      "en": {
+        "canonical": "water",
+        "normalized": "water",
+        "display": "water"
+      },
+      "ar": {
+        "canonical": "water",
+        "normalized": "water",
+        "display": "water"
+      },
+      "tr": {
+        "canonical": "water",
+        "normalized": "water",
+        "display": "water"
+      },
+      "de": {
+        "canonical": "water",
+        "normalized": "water",
+        "display": "water"
+      },
+      "fr": {
+        "canonical": "water",
+        "normalized": "water",
+        "display": "water"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "آب"
+      ],
+      "en": [
+        "water",
+        "water"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "commonTypos": {
+      "fa": [],
+      "en": [],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "searchKeywords": {
+      "fa": [
+        "آب",
+        "liquid",
+        "water"
+      ],
+      "en": [
+        "water",
+        "liquid",
+        "water"
+      ],
+      "ar": [],
+      "tr": [],
+      "de": [],
+      "fr": []
+    },
+    "taxonomy": {
+      "category": "liquid",
+      "parentCategory": "global_recipe_expansion",
+      "subCategory": "water",
+      "family": "water"
+    },
+    "origin": {
+      "animalSource": null,
+      "plantSource": null,
+      "part": null
+    },
+    "ingredientState": {
+      "physicalState": "liquid",
+      "ediblePortion": "edible_portion",
+      "preparationState": "ready_to_use",
+      "waterState": "unknown"
+    },
+    "dietFlags": [
+      "vegan",
+      "vegetarian",
+      "halal",
+      "gluten_free"
+    ],
+    "allergens": {
+      "eu14": [],
+      "us9": [],
+      "other": [],
+      "mayContain": []
+    },
+    "nutritionPer100g": {
+      "calories": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 0
+    },
+    "nutritionConfidence": "estimated_source_id_pending",
+    "sourceBackedNutrition": {
+      "isSourceBacked": false,
+      "primarySource": "pending_exact_source_id_lock",
+      "sourceFoodId": null,
+      "sourceFoodName": null,
+      "sourceFoodDescription": null,
+      "sourceSearchQuery": "water",
+      "crossCheckSources": [
+        "USDA_FDC_RECOMMENDED",
+        "NEVO_RECOMMENDED_FOR_NL_EU",
+        "LOCAL_PRODUCT_LABEL_RECOMMENDED_WHEN_BRANDED"
+      ],
+      "valuesPer": "100g edible portion",
+      "lastCheckedAt": null,
+      "extractionMethod": "global_143_batch_01_dictionary_expansion_seed_pending_exact_source_id_lock",
+      "confidence": "estimated_pending_source_id_lock",
+      "exactSourceIdLocked": false,
+      "requiresFinalSourceIdLock": true,
+      "sourceDataType": null,
+      "lockEvidence": null,
+      "lockStatus": "pending_exact_source_id_lock",
+      "allowedUseCases": [
+        "recipe_import",
+        "general_ai_context",
+        "general_recommendation",
+        "meal_planner_mvp"
+      ],
+      "strictDietPlanningAllowed": false,
+      "strictDietPlanningNote": "Estimated starter values only. Do not use for strict diet, medical nutrition, or regulated claims until exact sourceFoodId/product-label audit is locked.",
+      "lastPolicyReviewedAt": "2026-07-01T00:00:00Z"
+    },
+    "tasteProfile": {
+      "spicy": 0,
+      "sweet": 0,
+      "salty": 1,
+      "sour": 0,
+      "bitter": 0,
+      "umami": 1,
+      "fatty": 1,
+      "fresh": 1
+    },
+    "textureProfile": {
+      "crispy": 0,
+      "soft": 2,
+      "creamy": 1,
+      "chewy": 1,
+      "juicy": 1
+    },
+    "cookingBehavior": {
+      "commonUses": [
+        "global_recipe_import"
+      ],
+      "commonCookingMethods": [],
+      "heatSensitivity": "medium",
+      "absorbsLiquid": false,
+      "releasesLiquid": false,
+      "thickeningPower": "none"
+    },
+    "healthContext": {
+      "phaseOneMedicalClaimsAllowed": false,
+      "notes": "No medical, strict diet, or regulated nutrition claims."
+    },
+    "substitutionOptions": [],
+    "media": {
+      "imagePath": null,
+      "icon": null
+    },
+    "aiContext": {
+      "disambiguationNotes": "Added for researched global recipe batch 01: water.",
+      "defaultUse": [],
+      "avoidConfusionWith": []
+    },
+    "marketAvailability": {
+      "iran": "specialty_or_imported",
+      "netherlands": "available_in_specialty_or_supermarket",
+      "europe": "available_in_specialty_or_supermarket",
+      "usa": "available_in_specialty_or_supermarket"
+    },
+    "cuisineRelevance": [
+      "global"
+    ],
+    "translationQuality": {
+      "fa": "human_review_required",
+      "en": "human_review_required"
+    },
+    "taxonomyRefs": [],
+    "dataQuality": {
+      "identityVerified": true,
+      "nutritionSourceLocked": false,
+      "resolverSafe": true,
+      "requiresHumanReview": true,
+      "reviewReason": "New global ingredient; source/nutrition lock pending."
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "آب"
+      ],
+      "en": [
+        "water",
+        "water"
+      ]
+    },
+    "resolverDefaults": {
+      "defaultUnit": "g",
+      "defaultState": "ready_to_use",
+      "allowAsRecipeIngredient": true
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-01.v0.3.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_ice_cubes",
+    "code": "ice_cubes",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "یخ",
+        "normalized": "یخ",
+        "display": "یخ"
+      },
+      "en": {
+        "canonical": "ice cubes",
+        "normalized": "ice cubes",
+        "display": "ice cubes"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "یخ"
+      ],
+      "en": [
+        "ice cubes"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "یخ"
+      ],
+      "en": [
+        "ice cubes"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_black_tea_leaves",
+    "code": "black_tea_leaves",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "برگ چای سیاه",
+        "normalized": "برگ چای سیاه",
+        "display": "برگ چای سیاه"
+      },
+      "en": {
+        "canonical": "black tea leaves",
+        "normalized": "black tea leaves",
+        "display": "black tea leaves"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "برگ چای سیاه"
+      ],
+      "en": [
+        "black tea leaves"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "برگ چای سیاه"
+      ],
+      "en": [
+        "black tea leaves"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_matcha_powder",
+    "code": "matcha_powder",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پودر ماچا",
+        "normalized": "پودر ماچا",
+        "display": "پودر ماچا"
+      },
+      "en": {
+        "canonical": "matcha powder",
+        "normalized": "matcha powder",
+        "display": "matcha powder"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پودر ماچا"
+      ],
+      "en": [
+        "matcha powder"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پودر ماچا"
+      ],
+      "en": [
+        "matcha powder"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_boba_tapioca_pearls",
+    "code": "boba_tapioca_pearls",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "مروارید تاپیوکای بوبا",
+        "normalized": "مروارید تاپیوکای بوبا",
+        "display": "مروارید تاپیوکای بوبا"
+      },
+      "en": {
+        "canonical": "boba tapioca pearls",
+        "normalized": "boba tapioca pearls",
+        "display": "boba tapioca pearls"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "مروارید تاپیوکای بوبا"
+      ],
+      "en": [
+        "boba tapioca pearls"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "مروارید تاپیوکای بوبا"
+      ],
+      "en": [
+        "boba tapioca pearls"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "processed_food",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_yerba_mate_dried",
+    "code": "yerba_mate_dried",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "یربا ماته خشک",
+        "normalized": "یربا ماته خشک",
+        "display": "یربا ماته خشک"
+      },
+      "en": {
+        "canonical": "dried yerba mate",
+        "normalized": "dried yerba mate",
+        "display": "dried yerba mate"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "یربا ماته خشک"
+      ],
+      "en": [
+        "dried yerba mate"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "یربا ماته خشک"
+      ],
+      "en": [
+        "dried yerba mate"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_gunpowder_green_tea",
+    "code": "gunpowder_green_tea",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "چای سبز گان‌پودر",
+        "normalized": "چای سبز گان‌پودر",
+        "display": "چای سبز گان‌پودر"
+      },
+      "en": {
+        "canonical": "gunpowder green tea",
+        "normalized": "gunpowder green tea",
+        "display": "gunpowder green tea"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "چای سبز گان‌پودر"
+      ],
+      "en": [
+        "gunpowder green tea"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "چای سبز گان‌پودر"
+      ],
+      "en": [
+        "gunpowder green tea"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_thai_tea_mix",
+    "code": "thai_tea_mix",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "مخلوط چای تایلندی",
+        "normalized": "مخلوط چای تایلندی",
+        "display": "مخلوط چای تایلندی"
+      },
+      "en": {
+        "canonical": "Thai tea mix",
+        "normalized": "thai tea mix",
+        "display": "Thai tea mix"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "مخلوط چای تایلندی"
+      ],
+      "en": [
+        "Thai tea mix"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "مخلوط چای تایلندی"
+      ],
+      "en": [
+        "Thai tea mix"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_coffee_ground_dark_roast",
+    "code": "coffee_ground_dark_roast",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_02_EXPANSION",
+      "batchSequence": 2,
+      "expansionBase": "1008_plus_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "قهوه آسیاب‌شده تیره",
+        "normalized": "قهوه آسیاب‌شده تیره",
+        "display": "قهوه آسیاب‌شده تیره"
+      },
+      "en": {
+        "canonical": "dark roast ground coffee",
+        "normalized": "dark roast ground coffee",
+        "display": "dark roast ground coffee"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "قهوه آسیاب‌شده تیره"
+      ],
+      "en": [
+        "dark roast ground coffee"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "قهوه آسیاب‌شده تیره"
+      ],
+      "en": [
+        "dark roast ground coffee"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "beverage",
+      "secondaryCategory": "global_batch_02"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 02 expansion; not nutrition locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-02.v0.2.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_gochugaru",
+    "code": "gochugaru",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "گوچوگارو",
+        "normalized": "گوچوگارو",
+        "display": "گوچوگارو"
+      },
+      "en": {
+        "canonical": "Korean red pepper flakes",
+        "normalized": "korean red pepper flakes",
+        "display": "Korean red pepper flakes"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "گوچوگارو"
+      ],
+      "en": [
+        "Korean red pepper flakes",
+        "gochugaru"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "گوچوگارو"
+      ],
+      "en": [
+        "Korean red pepper flakes",
+        "gochugaru"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "spice",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_wheat_starch",
+    "code": "wheat_starch",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "نشاسته گندم",
+        "normalized": "نشاسته گندم",
+        "display": "نشاسته گندم"
+      },
+      "en": {
+        "canonical": "wheat starch",
+        "normalized": "wheat starch",
+        "display": "wheat starch"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "نشاسته گندم"
+      ],
+      "en": [
+        "wheat starch",
+        "wheat starch"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "نشاسته گندم"
+      ],
+      "en": [
+        "wheat starch",
+        "wheat starch"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_lumpia_wrappers",
+    "code": "lumpia_wrappers",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ورق لومپیا",
+        "normalized": "ورق لومپیا",
+        "display": "ورق لومپیا"
+      },
+      "en": {
+        "canonical": "lumpia wrappers",
+        "normalized": "lumpia wrappers",
+        "display": "lumpia wrappers"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ورق لومپیا"
+      ],
+      "en": [
+        "lumpia wrappers",
+        "lumpia wrappers"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ورق لومپیا"
+      ],
+      "en": [
+        "lumpia wrappers",
+        "lumpia wrappers"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_tortilla_chips",
+    "code": "tortilla_chips",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "چیپس تورتیلا",
+        "normalized": "چیپس تورتیلا",
+        "display": "چیپس تورتیلا"
+      },
+      "en": {
+        "canonical": "tortilla chips",
+        "normalized": "tortilla chips",
+        "display": "tortilla chips"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "چیپس تورتیلا"
+      ],
+      "en": [
+        "tortilla chips",
+        "tortilla chips"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "چیپس تورتیلا"
+      ],
+      "en": [
+        "tortilla chips",
+        "tortilla chips"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_hot_sauce_cayenne",
+    "code": "hot_sauce_cayenne",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سس تند فلفل کاین",
+        "normalized": "سس تند فلفل کاین",
+        "display": "سس تند فلفل کاین"
+      },
+      "en": {
+        "canonical": "cayenne hot sauce",
+        "normalized": "cayenne hot sauce",
+        "display": "cayenne hot sauce"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سس تند فلفل کاین"
+      ],
+      "en": [
+        "cayenne hot sauce",
+        "hot sauce cayenne"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سس تند فلفل کاین"
+      ],
+      "en": [
+        "cayenne hot sauce",
+        "hot sauce cayenne"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "condiment",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_padron_peppers",
+    "code": "padron_peppers",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "فلفل پادرون",
+        "normalized": "فلفل پادرون",
+        "display": "فلفل پادرون"
+      },
+      "en": {
+        "canonical": "Padrón peppers",
+        "normalized": "padrón peppers",
+        "display": "Padrón peppers"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "فلفل پادرون"
+      ],
+      "en": [
+        "Padrón peppers",
+        "padron peppers"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "فلفل پادرون"
+      ],
+      "en": [
+        "Padrón peppers",
+        "padron peppers"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "vegetable",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_serrano_ham",
+    "code": "serrano_ham",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ژامبون خشک اسپانیایی",
+        "normalized": "ژامبون خشک اسپانیایی",
+        "display": "ژامبون خشک اسپانیایی"
+      },
+      "en": {
+        "canonical": "Serrano ham",
+        "normalized": "serrano ham",
+        "display": "Serrano ham"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ژامبون خشک اسپانیایی"
+      ],
+      "en": [
+        "Serrano ham",
+        "serrano ham"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ژامبون خشک اسپانیایی"
+      ],
+      "en": [
+        "Serrano ham",
+        "serrano ham"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "processed_meat",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_roasted_red_peppers",
+    "code": "roasted_red_peppers",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_03_EXPANSION",
+      "batchSequence": 3,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "فلفل قرمز کبابی",
+        "normalized": "فلفل قرمز کبابی",
+        "display": "فلفل قرمز کبابی"
+      },
+      "en": {
+        "canonical": "roasted red peppers",
+        "normalized": "roasted red peppers",
+        "display": "roasted red peppers"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "فلفل قرمز کبابی"
+      ],
+      "en": [
+        "roasted red peppers",
+        "roasted red peppers"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "فلفل قرمز کبابی"
+      ],
+      "en": [
+        "roasted red peppers",
+        "roasted red peppers"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "vegetable",
+      "secondaryCategory": "global_batch_03"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 03 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-03.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_glutinous_rice_raw",
+    "code": "glutinous_rice_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_04_EXPANSION",
+      "batchSequence": 4,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "برنج چسبناک خام",
+        "normalized": "برنج چسبناک خام",
+        "display": "برنج چسبناک خام"
+      },
+      "en": {
+        "canonical": "glutinous rice raw",
+        "normalized": "glutinous rice raw",
+        "display": "glutinous rice raw"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "برنج چسبناک خام"
+      ],
+      "en": [
+        "glutinous rice raw",
+        "glutinous rice raw"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "برنج چسبناک خام"
+      ],
+      "en": [
+        "glutinous rice raw",
+        "glutinous rice raw"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_04"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 04 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-04.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_sweet_red_bean_paste",
+    "code": "sweet_red_bean_paste",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_04_EXPANSION",
+      "batchSequence": 4,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "خمیر لوبیای قرمز شیرین",
+        "normalized": "خمیر لوبیای قرمز شیرین",
+        "display": "خمیر لوبیای قرمز شیرین"
+      },
+      "en": {
+        "canonical": "sweet red bean paste",
+        "normalized": "sweet red bean paste",
+        "display": "sweet red bean paste"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "خمیر لوبیای قرمز شیرین"
+      ],
+      "en": [
+        "sweet red bean paste",
+        "sweet red bean paste"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "خمیر لوبیای قرمز شیرین"
+      ],
+      "en": [
+        "sweet red bean paste",
+        "sweet red bean paste"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sweet_spread",
+      "secondaryCategory": "global_batch_04"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 04 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-04.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_marsala_wine",
+    "code": "marsala_wine",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_04_EXPANSION",
+      "batchSequence": 4,
+      "expansionBase": "1008_plus_prior_global_batch_import"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شراب مارسالا",
+        "normalized": "شراب مارسالا",
+        "display": "شراب مارسالا"
+      },
+      "en": {
+        "canonical": "Marsala wine",
+        "normalized": "marsala wine",
+        "display": "Marsala wine"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شراب مارسالا"
+      ],
+      "en": [
+        "Marsala wine",
+        "marsala wine"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شراب مارسالا"
+      ],
+      "en": [
+        "Marsala wine",
+        "marsala wine"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "alcohol",
+      "secondaryCategory": "global_batch_04"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 04 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-04.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_kataifi_pastry",
+    "code": "kataifi_pastry",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "رشته کنافه",
+        "normalized": "رشته کنافه",
+        "display": "رشته کنافه"
+      },
+      "en": {
+        "canonical": "kataifi pastry",
+        "normalized": "kataifi pastry",
+        "display": "kataifi pastry"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "رشته کنافه"
+      ],
+      "en": [
+        "kataifi pastry",
+        "kataifi pastry"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "رشته کنافه"
+      ],
+      "en": [
+        "kataifi pastry",
+        "kataifi pastry"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "bakery",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_akkawi_cheese",
+    "code": "akkawi_cheese",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "پنیر عکاوی",
+        "normalized": "پنیر عکاوی",
+        "display": "پنیر عکاوی"
+      },
+      "en": {
+        "canonical": "akkawi cheese",
+        "normalized": "akkawi cheese",
+        "display": "akkawi cheese"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "پنیر عکاوی"
+      ],
+      "en": [
+        "akkawi cheese",
+        "akkawi cheese"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "پنیر عکاوی"
+      ],
+      "en": [
+        "akkawi cheese",
+        "akkawi cheese"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "dairy",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [
+      "dairy"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_dulce_de_leche",
+    "code": "dulce_de_leche",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "دولسه د لچه",
+        "normalized": "دولسه د لچه",
+        "display": "دولسه د لچه"
+      },
+      "en": {
+        "canonical": "dulce de leche",
+        "normalized": "dulce de leche",
+        "display": "dulce de leche"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "دولسه د لچه"
+      ],
+      "en": [
+        "dulce de leche",
+        "dulce de leche"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "دولسه د لچه"
+      ],
+      "en": [
+        "dulce de leche",
+        "dulce de leche"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sweet_spread",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [
+      "dairy"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_corn_syrup_light",
+    "code": "corn_syrup_light",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت ذرت روشن",
+        "normalized": "شربت ذرت روشن",
+        "display": "شربت ذرت روشن"
+      },
+      "en": {
+        "canonical": "light corn syrup",
+        "normalized": "light corn syrup",
+        "display": "light corn syrup"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت ذرت روشن"
+      ],
+      "en": [
+        "light corn syrup",
+        "corn syrup light"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت ذرت روشن"
+      ],
+      "en": [
+        "light corn syrup",
+        "corn syrup light"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sweetener",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_massaman_curry_paste",
+    "code": "massaman_curry_paste",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "خمیر کاری ماسامان",
+        "normalized": "خمیر کاری ماسامان",
+        "display": "خمیر کاری ماسامان"
+      },
+      "en": {
+        "canonical": "massaman curry paste",
+        "normalized": "massaman curry paste",
+        "display": "massaman curry paste"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "خمیر کاری ماسامان"
+      ],
+      "en": [
+        "massaman curry paste",
+        "massaman curry paste"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "خمیر کاری ماسامان"
+      ],
+      "en": [
+        "massaman curry paste",
+        "massaman curry paste"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sauce",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_thai_basil_fresh",
+    "code": "thai_basil_fresh",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ریحان تایلندی تازه",
+        "normalized": "ریحان تایلندی تازه",
+        "display": "ریحان تایلندی تازه"
+      },
+      "en": {
+        "canonical": "fresh Thai basil",
+        "normalized": "fresh thai basil",
+        "display": "fresh Thai basil"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ریحان تایلندی تازه"
+      ],
+      "en": [
+        "fresh Thai basil",
+        "thai basil fresh"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ریحان تایلندی تازه"
+      ],
+      "en": [
+        "fresh Thai basil",
+        "thai basil fresh"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "herb",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_beef_bones_raw",
+    "code": "beef_bones_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "استخوان گاو خام",
+        "normalized": "استخوان گاو خام",
+        "display": "استخوان گاو خام"
+      },
+      "en": {
+        "canonical": "raw beef bones",
+        "normalized": "raw beef bones",
+        "display": "raw beef bones"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "استخوان گاو خام"
+      ],
+      "en": [
+        "raw beef bones",
+        "beef bones raw"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "استخوان گاو خام"
+      ],
+      "en": [
+        "raw beef bones",
+        "beef bones raw"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "meat",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_sushi_grade_salmon_raw",
+    "code": "sushi_grade_salmon_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ماهی سالمون خام مناسب سوشی",
+        "normalized": "ماهی سالمون خام مناسب سوشی",
+        "display": "ماهی سالمون خام مناسب سوشی"
+      },
+      "en": {
+        "canonical": "sushi-grade raw salmon",
+        "normalized": "sushi-grade raw salmon",
+        "display": "sushi-grade raw salmon"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ماهی سالمون خام مناسب سوشی"
+      ],
+      "en": [
+        "sushi-grade raw salmon",
+        "sushi grade salmon raw"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ماهی سالمون خام مناسب سوشی"
+      ],
+      "en": [
+        "sushi-grade raw salmon",
+        "sushi grade salmon raw"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "seafood",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [
+      "fish"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_sushi_grade_tuna_raw",
+    "code": "sushi_grade_tuna_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ماهی تن خام مناسب سوشی",
+        "normalized": "ماهی تن خام مناسب سوشی",
+        "display": "ماهی تن خام مناسب سوشی"
+      },
+      "en": {
+        "canonical": "sushi-grade raw tuna",
+        "normalized": "sushi-grade raw tuna",
+        "display": "sushi-grade raw tuna"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ماهی تن خام مناسب سوشی"
+      ],
+      "en": [
+        "sushi-grade raw tuna",
+        "sushi grade tuna raw"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ماهی تن خام مناسب سوشی"
+      ],
+      "en": [
+        "sushi-grade raw tuna",
+        "sushi grade tuna raw"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "seafood",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [
+      "fish"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_pickled_daikon_carrot",
+    "code": "pickled_daikon_carrot",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_05_EXPANSION",
+      "batchSequence": 5,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_04"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ترشی هویج و ترب سفید",
+        "normalized": "ترشی هویج و ترب سفید",
+        "display": "ترشی هویج و ترب سفید"
+      },
+      "en": {
+        "canonical": "pickled daikon and carrot",
+        "normalized": "pickled daikon and carrot",
+        "display": "pickled daikon and carrot"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ترشی هویج و ترب سفید"
+      ],
+      "en": [
+        "pickled daikon and carrot",
+        "pickled daikon carrot"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ترشی هویج و ترب سفید"
+      ],
+      "en": [
+        "pickled daikon and carrot",
+        "pickled daikon carrot"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "pickle",
+      "secondaryCategory": "global_batch_05"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 05 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-05.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_tandoori_masala",
+    "code": "tandoori_masala",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ادویه تندوری",
+        "normalized": "ادویه تندوری",
+        "display": "ادویه تندوری"
+      },
+      "en": {
+        "canonical": "tandoori masala",
+        "normalized": "tandoori masala",
+        "display": "tandoori masala"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ادویه تندوری"
+      ],
+      "en": [
+        "tandoori masala",
+        "tandoori masala"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ادویه تندوری"
+      ],
+      "en": [
+        "tandoori masala",
+        "tandoori masala"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "spice",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_maltose_syrup",
+    "code": "maltose_syrup",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شربت مالتوز",
+        "normalized": "شربت مالتوز",
+        "display": "شربت مالتوز"
+      },
+      "en": {
+        "canonical": "maltose syrup",
+        "normalized": "maltose syrup",
+        "display": "maltose syrup"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شربت مالتوز"
+      ],
+      "en": [
+        "maltose syrup",
+        "maltose syrup"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شربت مالتوز"
+      ],
+      "en": [
+        "maltose syrup",
+        "maltose syrup"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sweetener",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_kecap_manis",
+    "code": "kecap_manis",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سس سویای شیرین اندونزیایی",
+        "normalized": "سس سویای شیرین اندونزیایی",
+        "display": "سس سویای شیرین اندونزیایی"
+      },
+      "en": {
+        "canonical": "kecap manis",
+        "normalized": "kecap manis",
+        "display": "kecap manis"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سس سویای شیرین اندونزیایی"
+      ],
+      "en": [
+        "kecap manis",
+        "kecap manis"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سس سویای شیرین اندونزیایی"
+      ],
+      "en": [
+        "kecap manis",
+        "kecap manis"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sauce",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [
+      "soy",
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_candlenuts",
+    "code": "candlenuts",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "مغز کندل‌نات",
+        "normalized": "مغز کندل‌نات",
+        "display": "مغز کندل‌نات"
+      },
+      "en": {
+        "canonical": "candlenuts",
+        "normalized": "candlenuts",
+        "display": "candlenuts"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "مغز کندل‌نات"
+      ],
+      "en": [
+        "candlenuts",
+        "candlenuts"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "مغز کندل‌نات"
+      ],
+      "en": [
+        "candlenuts",
+        "candlenuts"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "nuts",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [
+      "tree_nuts"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_laksa_paste",
+    "code": "laksa_paste",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "خمیر لاکسا",
+        "normalized": "خمیر لاکسا",
+        "display": "خمیر لاکسا"
+      },
+      "en": {
+        "canonical": "laksa paste",
+        "normalized": "laksa paste",
+        "display": "laksa paste"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "خمیر لاکسا"
+      ],
+      "en": [
+        "laksa paste",
+        "laksa paste"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "خمیر لاکسا"
+      ],
+      "en": [
+        "laksa paste",
+        "laksa paste"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sauce",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [
+      "shellfish"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_jameed",
+    "code": "jameed",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "کشک خشک جَمید",
+        "normalized": "کشک خشک جَمید",
+        "display": "کشک خشک جَمید"
+      },
+      "en": {
+        "canonical": "jameed",
+        "normalized": "jameed",
+        "display": "jameed"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "کشک خشک جَمید"
+      ],
+      "en": [
+        "jameed",
+        "jameed"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "کشک خشک جَمید"
+      ],
+      "en": [
+        "jameed",
+        "jameed"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "dairy",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [
+      "dairy"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_injera_flatbread",
+    "code": "injera_flatbread",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "نان اینجرا",
+        "normalized": "نان اینجرا",
+        "display": "نان اینجرا"
+      },
+      "en": {
+        "canonical": "injera flatbread",
+        "normalized": "injera flatbread",
+        "display": "injera flatbread"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "نان اینجرا"
+      ],
+      "en": [
+        "injera flatbread",
+        "injera flatbread"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "نان اینجرا"
+      ],
+      "en": [
+        "injera flatbread",
+        "injera flatbread"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "bread",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [
+      "gluten"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_aji_amarillo_paste",
+    "code": "aji_amarillo_paste",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "خمیر فلفل آخی آماریا",
+        "normalized": "خمیر فلفل آخی آماریا",
+        "display": "خمیر فلفل آخی آماریا"
+      },
+      "en": {
+        "canonical": "aji amarillo paste",
+        "normalized": "aji amarillo paste",
+        "display": "aji amarillo paste"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "خمیر فلفل آخی آماریا"
+      ],
+      "en": [
+        "aji amarillo paste",
+        "aji amarillo paste"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "خمیر فلفل آخی آماریا"
+      ],
+      "en": [
+        "aji amarillo paste",
+        "aji amarillo paste"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "sauce",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_farofa_toasted_cassava",
+    "code": "farofa_toasted_cassava",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "آرد کاساوای برشته",
+        "normalized": "آرد کاساوای برشته",
+        "display": "آرد کاساوای برشته"
+      },
+      "en": {
+        "canonical": "toasted cassava flour",
+        "normalized": "toasted cassava flour",
+        "display": "toasted cassava flour"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "آرد کاساوای برشته"
+      ],
+      "en": [
+        "toasted cassava flour",
+        "farofa toasted cassava"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "آرد کاساوای برشته"
+      ],
+      "en": [
+        "toasted cassava flour",
+        "farofa toasted cassava"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_manioc_flour",
+    "code": "manioc_flour",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_06_EXPANSION",
+      "batchSequence": 6,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_05"
+    },
+    "names": {
+      "fa": {
+        "canonical": "آرد مانیوک",
+        "normalized": "آرد مانیوک",
+        "display": "آرد مانیوک"
+      },
+      "en": {
+        "canonical": "manioc flour",
+        "normalized": "manioc flour",
+        "display": "manioc flour"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "آرد مانیوک"
+      ],
+      "en": [
+        "manioc flour",
+        "manioc flour"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "آرد مانیوک"
+      ],
+      "en": [
+        "manioc flour",
+        "manioc flour"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "grain",
+      "secondaryCategory": "global_batch_06"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 06 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-06.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_dry_red_wine",
+    "code": "dry_red_wine",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شراب قرمز خشک آشپزی",
+        "normalized": "شراب قرمز خشک آشپزی",
+        "display": "شراب قرمز خشک آشپزی"
+      },
+      "en": {
+        "canonical": "dry red wine",
+        "normalized": "dry red wine",
+        "display": "dry red wine"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شراب قرمز خشک آشپزی"
+      ],
+      "en": [
+        "dry red wine",
+        "dry red wine"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شراب قرمز خشک آشپزی"
+      ],
+      "en": [
+        "dry red wine",
+        "dry red wine"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "liquid",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_dry_white_wine",
+    "code": "dry_white_wine",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "شراب سفید خشک آشپزی",
+        "normalized": "شراب سفید خشک آشپزی",
+        "display": "شراب سفید خشک آشپزی"
+      },
+      "en": {
+        "canonical": "dry white wine",
+        "normalized": "dry white wine",
+        "display": "dry white wine"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "شراب سفید خشک آشپزی"
+      ],
+      "en": [
+        "dry white wine",
+        "dry white wine"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "شراب سفید خشک آشپزی"
+      ],
+      "en": [
+        "dry white wine",
+        "dry white wine"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "liquid",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_andouille_sausage",
+    "code": "andouille_sausage",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سوسیس اندویی",
+        "normalized": "سوسیس اندویی",
+        "display": "سوسیس اندویی"
+      },
+      "en": {
+        "canonical": "andouille sausage",
+        "normalized": "andouille sausage",
+        "display": "andouille sausage"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سوسیس اندویی"
+      ],
+      "en": [
+        "andouille sausage",
+        "andouille sausage"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سوسیس اندویی"
+      ],
+      "en": [
+        "andouille sausage",
+        "andouille sausage"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "meat",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [
+      "pork"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_cheese_curds",
+    "code": "cheese_curds",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "دلمه پنیر تازه",
+        "normalized": "دلمه پنیر تازه",
+        "display": "دلمه پنیر تازه"
+      },
+      "en": {
+        "canonical": "cheese curds",
+        "normalized": "cheese curds",
+        "display": "cheese curds"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "دلمه پنیر تازه"
+      ],
+      "en": [
+        "cheese curds",
+        "cheese curds"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "دلمه پنیر تازه"
+      ],
+      "en": [
+        "cheese curds",
+        "cheese curds"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "dairy",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [
+      "dairy"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_guanciale_cured_pork",
+    "code": "guanciale_cured_pork",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "گوآنچاله",
+        "normalized": "گوآنچاله",
+        "display": "گوآنچاله"
+      },
+      "en": {
+        "canonical": "guanciale",
+        "normalized": "guanciale",
+        "display": "guanciale"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "گوآنچاله"
+      ],
+      "en": [
+        "guanciale",
+        "guanciale cured pork"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "گوآنچاله"
+      ],
+      "en": [
+        "guanciale",
+        "guanciale cured pork"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "meat",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [
+      "pork"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_veal_shank_raw",
+    "code": "veal_shank_raw",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "ماهیچه گوساله با استخوان",
+        "normalized": "ماهیچه گوساله با استخوان",
+        "display": "ماهیچه گوساله با استخوان"
+      },
+      "en": {
+        "canonical": "veal shank",
+        "normalized": "veal shank",
+        "display": "veal shank"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "ماهیچه گوساله با استخوان"
+      ],
+      "en": [
+        "veal shank",
+        "veal shank raw"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "ماهیچه گوساله با استخوان"
+      ],
+      "en": [
+        "veal shank",
+        "veal shank raw"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "meat",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_juniper_berries",
+    "code": "juniper_berries",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "دانه سرو کوهی",
+        "normalized": "دانه سرو کوهی",
+        "display": "دانه سرو کوهی"
+      },
+      "en": {
+        "canonical": "juniper berries",
+        "normalized": "juniper berries",
+        "display": "juniper berries"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "دانه سرو کوهی"
+      ],
+      "en": [
+        "juniper berries",
+        "juniper berries"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "دانه سرو کوهی"
+      ],
+      "en": [
+        "juniper berries",
+        "juniper berries"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "spice",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_chorizo_sausage",
+    "code": "chorizo_sausage",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "سوسیس چوریتسو",
+        "normalized": "سوسیس چوریتسو",
+        "display": "سوسیس چوریتسو"
+      },
+      "en": {
+        "canonical": "chorizo sausage",
+        "normalized": "chorizo sausage",
+        "display": "chorizo sausage"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "سوسیس چوریتسو"
+      ],
+      "en": [
+        "chorizo sausage",
+        "chorizo sausage"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "سوسیس چوریتسو"
+      ],
+      "en": [
+        "chorizo sausage",
+        "chorizo sausage"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "meat",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [
+      "pork"
+    ],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  },
+  {
+    "ingredientId": "ing_cornichons_pickled",
+    "code": "cornichons_pickled",
+    "status": "active",
+    "version": 2,
+    "batch": {
+      "batchId": "GLOBAL_143_BATCH_07_EXPANSION",
+      "batchSequence": 7,
+      "expansionBase": "1008_plus_prior_lite_global_batches_01_06"
+    },
+    "names": {
+      "fa": {
+        "canonical": "خیارشور ریز فرانسوی",
+        "normalized": "خیارشور ریز فرانسوی",
+        "display": "خیارشور ریز فرانسوی"
+      },
+      "en": {
+        "canonical": "cornichons",
+        "normalized": "cornichons",
+        "display": "cornichons"
+      }
+    },
+    "aliases": {
+      "fa": [
+        "خیارشور ریز فرانسوی"
+      ],
+      "en": [
+        "cornichons",
+        "cornichons pickled"
+      ]
+    },
+    "recipeInputAliases": {
+      "fa": [
+        "خیارشور ریز فرانسوی"
+      ],
+      "en": [
+        "cornichons",
+        "cornichons pickled"
+      ]
+    },
+    "taxonomy": {
+      "primaryCategory": "pickle",
+      "secondaryCategory": "global_batch_07"
+    },
+    "allergens": [],
+    "nutritionPer100g": null,
+    "nutritionConfidence": "pending_source_lock",
+    "sourceBackedNutrition": false,
+    "healthContext": {
+      "medicalClaimsAllowed": false,
+      "strictDietPlanningAllowed": false
+    },
+    "aiContext": {
+      "resolverSafe": true,
+      "notes": "Batch 07 expansion; identity locked, nutrition not source locked."
+    },
+    "dataQuality": {
+      "identityLocked": true,
+      "nutritionLocked": false,
+      "resolverCanBeUsed": true
+    },
+    "resolverDefaults": {
+      "allowGenericMapping": false
+    },
+    "masterMerge": {
+      "canonicalFrom": "ingredient-expansion-global-143-batch-07.v0.1.json",
+      "global143FinalVersion": "v0.3"
+    }
+  }
+]

@@ -141,6 +141,7 @@ describe('Recommendation requestId capstone', () => {
 
     await waitUntil(() => h.attributionRows.some((row) => row.eventType === 'recommendation_impression'), 'impression attribution');
     expect(JSON.parse(h.userEvents[0].payload)).toMatchObject({ recipeId: 'r1', requestId: 'req-123' });
+    await waitUntil(() => [...h.outboxRows.values()][0]?.status === 'done', 'outbox fast-path completion');
     expect([...h.outboxRows.values()][0]).toMatchObject({ status: 'done', eventId: 'ev1' });
     expect(h.attributionRows[0]).toMatchObject({
       userId: 'u1',
