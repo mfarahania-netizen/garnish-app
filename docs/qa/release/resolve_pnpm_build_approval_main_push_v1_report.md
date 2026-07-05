@@ -1,7 +1,7 @@
 # Resolve pnpm Build Approval Gate and Continue Safe Main Push v1 Report
 
 ## 1. Verdict
-IN PROGRESS
+PASS
 
 ## 2. Starting Branch / Head
 - Branch: `checkpoint/current-app-ok-before-main-push`
@@ -155,10 +155,11 @@ Tests: 11 passed, 11 total
 ```
 
 ## 10. Approval Commit Hash
-Pending.
+- `c2bc5115`
 
 ## 11. Integration Branch
-Pending.
+- `release/main-current-app-ok`
+- Integration HEAD before final report update: `58c909cf`
 
 Important repo note:
 
@@ -167,10 +168,43 @@ Important repo note:
 - Integration should therefore use `origin/master` unless `origin/main` appears later.
 
 ## 12. Merge Result
-Pending.
+PASS
+
+Merge command:
+
+```bash
+git merge --no-ff checkpoint/current-app-ok-before-main-push -m "merge: current launch-ready app checkpoint"
+```
+
+Result:
+
+- Merge succeeded with no conflicts.
+- Base used: `origin/master`
 
 ## 13. Main Push Result
-Pending.
+PASS
+
+Remote branch pushed:
+
+- `origin/release/main-current-app-ok`
+
+Mainline push:
+
+```bash
+git push origin HEAD:master
+```
+
+Result:
+
+```text
+91c071f8..58c909cf  HEAD -> master
+```
+
+Important naming note:
+
+- The repository uses `master`, not `main`.
+- No `origin/main` branch was present.
+- No force push was used.
 
 ## 14. Remaining Risks
 - Full web/server test commands timed out; targeted tests passed, but this is not equivalent to full test green.
@@ -184,10 +218,10 @@ Pending.
 | only `@prisma/client` approved | PASS |
 | no unrelated package approval | PASS |
 | backup file untouched | PASS |
-| no secret/env/dump/large binary committed in approval step | PENDING STAGED CHECK |
+| no secret/env/dump/large binary committed in approval step | PASS |
 | web build PASS | PASS |
 | server build PASS | PASS |
-| merge against latest base clean | PENDING |
-| no force push | PENDING |
-| main/master push succeeded | PENDING |
+| merge against latest base clean | PASS |
+| no force push | PASS |
+| main/master push succeeded | PASS |
 | report created | PASS |
