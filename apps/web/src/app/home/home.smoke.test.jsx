@@ -5,6 +5,18 @@ import { renderWithProviders } from '../../test/renderWithProviders';
 vi.mock('./lib/useHomeData', () => ({ useHomeData: vi.fn() }));
 import { useHomeData } from './lib/useHomeData';
 
+vi.mock('../food-dna/useFoodDna', () => ({
+  useFoodDnaProjection: () => ({ data: null }),
+}));
+
+vi.mock('../../hooks/useFavoritesQuery', () => ({
+  useFavoritesQuery: () => ({
+    isFavorite: () => false,
+    addFavorite: vi.fn(),
+    removeFavorite: vi.fn(),
+  }),
+}));
+
 // The render harness wraps in the REAL AuthProvider, which dereferences
 // localStorage.getItem('token') unconditionally at mount. localStorage is not available
 // in this vitest/jsdom run (node warns: "--localstorage-file was not provided"), so the
@@ -73,17 +85,17 @@ const railItem = (id) => ({
 
 // A complete "ready" shape — every field/array the page reads is present.
 function readyShape() {
+  const hero = { ...pick('hero1'), source: 'recommendation', label: 'پیشنهاد امروز' };
   return {
     status: 'ready',
     greeting,
     dna,
     gam,
-    whisper,
+    hero,
     picks: [pick('r1'), pick('r2'), pick('r3')],
     rails: {
-      pantry: [railItem('p1'), railItem('p2')],
+      more: [railItem('p1'), railItem('p2')],
       popular: [railItem('q1'), railItem('q2')],
-      fresh: [railItem('f1'), railItem('f2')],
     },
     resume: null,
     refetch: vi.fn(),
@@ -98,9 +110,9 @@ function emptyShape() {
     greeting,
     dna,
     gam,
-    whisper: null,
+    hero: null,
     picks: [],
-    rails: { pantry: [], popular: [], fresh: [] },
+    rails: { more: [], popular: [] },
     resume: null,
     refetch: vi.fn(),
   };
@@ -112,9 +124,9 @@ function errorShape() {
     greeting,
     dna,
     gam,
-    whisper: null,
+    hero: null,
     picks: [],
-    rails: { pantry: [], popular: [], fresh: [] },
+    rails: { more: [], popular: [] },
     resume: null,
     refetch: vi.fn(),
   };
@@ -126,9 +138,9 @@ function loadingShape() {
     greeting,
     dna,
     gam,
-    whisper: null,
+    hero: null,
     picks: [],
-    rails: { pantry: [], popular: [], fresh: [] },
+    rails: { more: [], popular: [] },
     resume: null,
     refetch: vi.fn(),
   };
@@ -165,13 +177,20 @@ describe('HomePage smoke', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the ready command-center branch', () => {
+  it('renders the ready launch decision branch without fake/immature surfaces', () => {
     useHomeData.mockReturnValue(readyShape());
     renderWithProviders(<HomePage />);
-    // Food DNA card label + the "for you, tonight" section heading are stable landmarks.
+    expect(screen.getByRole('button', { name: 'چی می‌خوای بپزی؟ — جستجو در دستورها' })).toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'پیشنهاد امروز' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /دیدن دستور/ }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: 'لیست خرید' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'پیشنهادهای بیشتر' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'محبوب‌ها' })).toBeInTheDocument();
+    expect(screen.queryByText(/به‌زودی/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/بر اساس آشپزخونه‌ات/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/درمان|کاهش وزن|دیابت|فشار خون|خرید خودکار/)).not.toBeInTheDocument();
+    expect(screen.queryByText('ادامهٔ پخت')).not.toBeInTheDocument();
     expect(screen.getByText('شناسهٔ ذائقهٔ تو')).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'برای تو، امشب' }),
-    ).toBeInTheDocument();
   });
 });

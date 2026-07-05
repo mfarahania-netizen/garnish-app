@@ -31,6 +31,7 @@ function Meta({ cookTimeText, difficultyText, servingsText }) {
 }
 
 export default function RecipeCard({
+  variant = 'standard',
   title,
   placeholderSeed = 0,
   fit = null,
@@ -51,6 +52,8 @@ export default function RecipeCard({
   mediaHeight = compact ? 110 : 140,
 }) {
   const SaveIcon = saved ? IconBookmarkFilled : IconBookmark;
+  const isHero = variant === 'hero';
+  const resolvedMediaHeight = isHero ? Math.max(mediaHeight, 154) : mediaHeight;
   return (
     <Box
       style={{
@@ -67,7 +70,7 @@ export default function RecipeCard({
           `mediaHeight` (140px picks / smaller for rails) — NO aspect-ratio that scales tall with width.
           The branded placeholder + overlays fill it via position:absolute inset:0; the glyph is a small
           FIXED size. */}
-      <Box style={{ position: 'relative', inlineSize: '100%', blockSize: mediaHeight, overflow: 'hidden' }}>
+      <Box style={{ position: 'relative', inlineSize: '100%', blockSize: resolvedMediaHeight, overflow: 'hidden' }}>
         <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
 
         <UnstyledButton
@@ -147,19 +150,50 @@ export default function RecipeCard({
       </Box>
 
       <Box style={{ padding: compact ? 'var(--g-space-3)' : 'var(--g-space-4)' }}>
-        <Text
-          component="h3"
-          style={{
-            fontFamily: 'var(--g-font-fa)', fontSize: compact ? 'var(--g-font-size-14)' : 'var(--g-font-size-16)',
-            fontWeight: 700, lineHeight: 'var(--g-leading-heading)', color: 'var(--g-color-text-primary)',
-            textWrap: 'balance', margin: 0,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-          }}
+        <UnstyledButton
+          type="button"
+          onClick={onOpen}
+          aria-label={`${title} — دیدن دستور`}
+          style={{ display: 'block', inlineSize: '100%', textAlign: 'start', color: 'inherit' }}
         >
-          {title}
-        </Text>
+          <Text
+            component="h3"
+            style={{
+              fontFamily: 'var(--g-font-fa)', fontSize: compact ? 'var(--g-font-size-14)' : isHero ? 'var(--g-font-size-18)' : 'var(--g-font-size-16)',
+              fontWeight: 800, lineHeight: 'var(--g-leading-heading)', color: 'var(--g-color-text-primary)',
+              textWrap: 'balance', margin: 0,
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            }}
+          >
+            {title}
+          </Text>
 
-        <Meta cookTimeText={cookTimeText} difficultyText={difficultyText} servingsText={servingsText} />
+          <Meta cookTimeText={cookTimeText} difficultyText={difficultyText} servingsText={servingsText} />
+        </UnstyledButton>
+
+        {isHero ? (
+          <UnstyledButton
+            type="button"
+            onClick={onOpen}
+            aria-label={`دیدن دستور ${title}`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minBlockSize: 44,
+              marginBlockStart: 'var(--g-space-3)',
+              paddingInline: 'var(--g-space-4)',
+              borderRadius: 'var(--g-radius-input)',
+              background: 'var(--g-color-brand-600)',
+              color: 'var(--g-color-text-inverse)',
+              fontFamily: 'var(--g-font-fa)',
+              fontSize: 'var(--g-font-size-14)',
+              fontWeight: 800,
+            }}
+          >
+            دیدن دستور
+          </UnstyledButton>
+        ) : null}
 
         {!compact && caution ? (
           <Box style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-warning-bg)' }}>

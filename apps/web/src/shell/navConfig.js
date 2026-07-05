@@ -26,9 +26,9 @@ import {
 // BottomNav — 5 primary tabs (RTL order: first item renders at the inline-start / right).
 export const BOTTOM_TABS = [
   { label: 'خانه', to: '/', Icon: IconHome, end: true },
-  { label: 'برنامه', to: '/plan', Icon: IconCalendarEvent },
   { label: 'کشف', to: '/discover', Icon: IconCompass },
-  { label: 'علاقه‌مندی‌ها', to: '/favorites', Icon: IconHeart },
+  { label: 'برنامه', to: '/plan', Icon: IconCalendarEvent },
+  { label: 'خرید', to: '/shopping-list', Icon: IconShoppingCart },
   { label: 'پروفایل', to: '/profile', Icon: IconUser },
 ];
 
@@ -40,6 +40,7 @@ export const DRAWER_PRIMARY = [
   { label: 'رسپی‌ها', to: '/recipes', Icon: IconChefHat },
   { label: 'برنامهٔ هفتگی', to: '/plan', Icon: IconCalendarWeek },
   { label: 'لیست خرید', to: '/shopping-list', Icon: IconShoppingCart },
+  { label: 'ذخیره‌ها', to: '/favorites', Icon: IconHeart },
   { label: 'دستیار آشپزی', to: '/assistant', Icon: IconSparkles },
 ];
 
