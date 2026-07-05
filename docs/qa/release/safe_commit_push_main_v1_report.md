@@ -28,7 +28,7 @@ Run "pnpm approve-builds" to pick which dependencies should be allowed to run sc
 
 ## 5. Checkpoint Commit Hash
 - Initial checkpoint commit: `452c1692`
-- Final report commit: pending at report write time
+- Final report commit before push: `775fb0e2`
 
 ## 6. Integration Branch
 Not created.
@@ -133,9 +133,17 @@ Not run.
 Reason: required build gate failed first; continuing to tests would not satisfy the release gate.
 
 ## 14. Push Result
-- checkpoint branch pushed: pending after final report commit
+- checkpoint branch pushed: yes
 - integration branch pushed: no
 - main pushed: no
+
+Checkpoint remote:
+
+- `origin/checkpoint/current-app-ok-before-main-push`
+
+GitHub PR helper URL from remote:
+
+- `https://github.com/mfarahania-netizen/garnish-app/pull/new/checkpoint/current-app-ok-before-main-push`
 
 ## 15. If Main Not Pushed, Exact Reason
 [قطعی] `main` was not pushed because required web/server build validation failed on the checkpoint branch.
