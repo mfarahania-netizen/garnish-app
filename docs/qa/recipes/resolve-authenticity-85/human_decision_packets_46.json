@@ -1,0 +1,1156 @@
+{
+  "generatedAt": "2026-07-04T17:14:13.652Z",
+  "count": 46,
+  "packets": [
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "slug": "abgoosht-kashk",
+      "titleFa": "آبگوشت کشک",
+      "currentIdentity": "آبگوشت کشک",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "soup persian [\"soup\",\"main_course\"] [\"soup\",\"main_course\",\"آبگوشت کشک\",\"کشک\",\"گوشت\",\"حبوبات\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_095_c9024579",
+      "slug": "avgolemono",
+      "titleFa": "آوگولمونو",
+      "currentIdentity": "آوگولمونو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "soup international [\"soup\"] [\"soup\",\"آوگولمونو\",\"تخم‌مرغ\",\"لیمو\",\"یونانی\",\"protein_forward\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_028_ecdcc65f",
+      "slug": "stamppot",
+      "titleFa": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "currentIdentity": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"استامپوت\",\"سیب‌زمینی\",\"کلم ترش\",\"هلندی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_123_e8fa3267",
+      "slug": "spaghetti-al-limone",
+      "titleFa": "اسپاگتی آل لیمونه",
+      "currentIdentity": "اسپاگتی آل لیمونه",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"pasta\"] [\"main_course\",\"pasta\",\"اسپاگتی\",\"لیمو\",\"پاستا\",\"ایتالیایی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_062_ce31c267",
+      "slug": "spaghetti-aglio-e-olio",
+      "titleFa": "اسپاگتی سیر و روغن",
+      "currentIdentity": "اسپاگتی سیر و روغن",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"pasta\"] [\"main_course\",\"pasta\",\"اسپاگتی\",\"سیر\",\"روغن زیتون\",\"ایتالیایی\",\"vegan\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "slug": "meat-strudel",
+      "titleFa": "اشترودل گوشت",
+      "currentIdentity": "اشترودل گوشت",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1072_b55bdfe7",
+      "slug": "eshkeneh",
+      "titleFa": "اشکنه",
+      "currentIdentity": "اشکنه",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"ساده\",\"فوری\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_012_46d4828e",
+      "slug": "imam-bayildi",
+      "titleFa": "امام بایلدی",
+      "currentIdentity": "امام بایلدی",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"vegetable_dish\"] [\"main_course\",\"vegetable_dish\",\"امام بایلدی\",\"بادمجان\",\"روغن زیتون\",\"ترکی\",\"vegan\",\"vegetarian\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_121_b6f01192",
+      "slug": "omelet-rob",
+      "titleFa": "املت رب",
+      "currentIdentity": "املت رب",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main_course persian [\"main_course\"] [\"main_course\",\"املت رب\",\"رب گوجه\",\"سریع\",\"صبحانه\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_066_d22397d4",
+      "slug": "borscht",
+      "titleFa": "بورش",
+      "currentIdentity": "بورش",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "soup international [\"soup\"] [\"soup\",\"بورش\",\"چغندر\",\"کلم\",\"اروپای شرقی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_115_ba80ef7c",
+      "slug": "tahandaz-morgh",
+      "titleFa": "ته‌انداز مرغ",
+      "currentIdentity": "ته‌انداز مرغ",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "rice persian [\"rice\",\"main_course\"] [\"rice\",\"main_course\",\"ته‌انداز مرغ\",\"ته‌دیگ مرغ\",\"زعفرانی\",\"مجلسی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_164_8367ec24",
+      "slug": "tahchin-goosht-bademjan",
+      "titleFa": "ته‌چین گوشت و بادمجان",
+      "currentIdentity": "ته‌چین گوشت و بادمجان",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "rice persian [\"rice\",\"main_course\"] [\"rice\",\"main_course\",\"ته‌چین\",\"ماست و زعفران\",\"بادمجان\",\"مجلسی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1290_f5fc285f",
+      "slug": "halim-bademjan",
+      "titleFa": "حلیم بادمجان",
+      "currentIdentity": "حلیم بادمجان",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"حلیم\",\"بادمجان\",\"کشک\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "slug": "halim-gandom",
+      "titleFa": "حلیم گندم",
+      "currentIdentity": "حلیم گندم",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"حلیم\",\"صبحانه\",\"گندم\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+      "slug": "chicken-and-mushroom",
+      "titleFa": "خوراک مرغ و قارچ",
+      "currentIdentity": "خوراک مرغ و قارچ",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "slug": "cream-of-chicken-soup",
+      "titleFa": "سوپ شیر",
+      "currentIdentity": "سوپ شیر",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "slug": "red-lentil-soup",
+      "titleFa": "سوپ عدس قرمز ترکی",
+      "currentIdentity": "سوپ عدس قرمز ترکی",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "soup international [\"soup\"] [\"soup\",\"سوپ عدس\",\"عدس قرمز\",\"نعناع\",\"ترکی\",\"vegan\",\"vegetarian\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "slug": "miso-soup",
+      "titleFa": "سوپ میسو",
+      "currentIdentity": "سوپ میسو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "soup international [\"soup\"] [\"soup\",\"سوپ میسو\",\"داشی\",\"توفو\",\"ژاپنی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "slug": "minestrone-soup",
+      "titleFa": "سوپ مینسترونه",
+      "currentIdentity": "سوپ مینسترونه",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "soup international [\"soup\"] [\"soup\",\"مینسترونه\",\"سبزیجات\",\"لوبیا\",\"ایتالیایی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_128_22442750",
+      "slug": "fatteh",
+      "titleFa": "فته",
+      "currentIdentity": "فته",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"فته\",\"نخود\",\"ماست\",\"شامی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2054_be491f02",
+      "slug": "gheymeh-sibzamini",
+      "titleFa": "قیمه سیب زمینی",
+      "currentIdentity": "قیمه سیب زمینی",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "slug": "lasagna",
+      "titleFa": "لازانیا",
+      "currentIdentity": "لازانیا",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"فرپز\",\"پاستا\",\"گوشت\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "slug": "fish-and-chips",
+      "titleFa": "ماهی و چیپس",
+      "currentIdentity": "ماهی و چیپس",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"fried\"] [\"main_course\",\"fried\",\"ماهی و چیپس\",\"فیله ماهی\",\"سرخ‌کردنی\",\"بریتانیایی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1195_4b547f19",
+      "slug": "persian-makaroni",
+      "titleFa": "ماکارونی",
+      "currentIdentity": "ماکارونی",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"ماکارونی\",\"ته‌دیگ\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "slug": "fried-chicken",
+      "titleFa": "مرغ سوخاری",
+      "currentIdentity": "مرغ سوخاری",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\",\"میان‌وعده\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_101_b76754a7",
+      "slug": "piri-piri-chicken",
+      "titleFa": "مرغ پیری‌پیری",
+      "currentIdentity": "مرغ پیری‌پیری",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"grilled\"] [\"main_course\",\"grilled\",\"پیری‌پیری\",\"مرغ\",\"تند\",\"پرتغالی\",\"protein_forward\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "slug": "maqluba",
+      "titleFa": "مقلوبه",
+      "currentIdentity": "مقلوبه",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"مقلوبه\",\"پلوی وارونه\",\"مرغ\",\"شامی\",\"protein_forward\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "slug": "mirza-ghasemi",
+      "titleFa": "میرزا قاسمی",
+      "currentIdentity": "میرزا قاسمی",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"گیلانی\",\"بادمجان\",\"دودی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "vavishka",
+      "titleFa": "واویشکا",
+      "currentIdentity": "واویشکا",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main_course persian [\"main_course\"] [\"main_course\",\"واویشکا\",\"گیلانی\",\"جگر مرغ\",\"تند\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "slug": "alfredo-pasta",
+      "titleFa": "پاستا آلفردو",
+      "currentIdentity": "پاستا آلفردو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main international [\"main\",\"pasta\"] [\"main\",\"pasta\",\"پاستا\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_094_a48d62c1",
+      "slug": "pasta-e-fagioli",
+      "titleFa": "پاستا ای فاجولی",
+      "currentIdentity": "پاستا ای فاجولی",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"soup\"] [\"main_course\",\"soup\",\"پاستا\",\"لوبیا\",\"ایتالیایی\",\"نیمه‌سوپ\",\"vegan\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "slug": "pesto-pasta",
+      "titleFa": "پاستا پستو",
+      "currentIdentity": "پاستا پستو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main international [\"main\",\"pasta\"] [\"main\",\"pasta\",\"پاستا\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_061_0bfbb206",
+      "slug": "polenta-con-funghi",
+      "titleFa": "پلنتا با قارچ",
+      "currentIdentity": "پلنتا با قارچ",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"پلنتا\",\"قارچ\",\"آرد ذرت\",\"ایتالیایی\",\"vegetarian\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_136_76743d5b",
+      "slug": "pot-au-feu",
+      "titleFa": "پوت‌او‌فو",
+      "currentIdentity": "پوت‌او‌فو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\",\"stew\"] [\"main_course\",\"stew\",\"پوت‌او‌فو\",\"گوشتِ آب‌پز\",\"عصاره\",\"فرانسوی\",\"protein_forward\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_118_9ecd21c7",
+      "slug": "pollo-al-ajillo",
+      "titleFa": "پویو آل آخیو",
+      "currentIdentity": "پویو آل آخیو",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"پویو آل آخیو\",\"مرغ\",\"سیر\",\"اسپانیایی\",\"protein_forward\",\"gluten_free\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_040_7d7b90a1",
+      "slug": "pierogi",
+      "titleFa": "پیروگی لهستانی",
+      "currentIdentity": "پیروگی لهستانی",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"پیروگی\",\"سیب‌زمینی\",\"پنیر\",\"لهستانی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_197_dbaa9b9a",
+      "slug": "chelo-mahicheh",
+      "titleFa": "چلو ماهیچه",
+      "currentIdentity": "چلو ماهیچه",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main_course persian [\"main_course\",\"rice\"] [\"main_course\",\"rice\",\"چلو ماهیچه\",\"ماهیچه گوسفند\",\"زعفران\",\"مجلسی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "slug": "kaleh-joosh",
+      "titleFa": "کاله‌جوش (کله‌جوش)",
+      "currentIdentity": "کاله‌جوش (کله‌جوش)",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"کشک\",\"سریع\",\"سنتی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "slug": "kotlet-goosht",
+      "titleFa": "کتلت گوشت",
+      "currentIdentity": "کتلت گوشت",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"کتلت\",\"سرخ‌کردنی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_111_4cb37a1a",
+      "slug": "kateh-shomali",
+      "titleFa": "کته شمالی",
+      "currentIdentity": "کته شمالی",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "rice persian [\"rice\"] [\"rice\",\"کته شمالی\",\"برنج جذبی\",\"ته‌دیگ\",\"شمالی\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1743_005c3739",
+      "slug": "kashk-bademjan",
+      "titleFa": "کشک بادمجان",
+      "currentIdentity": "کشک بادمجان",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1528_32041352",
+      "slug": "kaleh-pacheh",
+      "titleFa": "کله پاچه",
+      "currentIdentity": "کله پاچه",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_120_ae775732",
+      "slug": "koenigsberger-klopse",
+      "titleFa": "کونیگسبرگر کلوپسه",
+      "currentIdentity": "کونیگسبرگر کلوپسه",
+      "ambiguityReason": "International/common dish where title may be generic, localized, simplified, or variant-specific.",
+      "currentSignals": "main_course international [\"main_course\"] [\"main_course\",\"کونیگسبرگر\",\"کوفته\",\"کبر\",\"آلمانی\",\"protein_forward\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_134_34e1816f",
+      "slug": "kuku-bademjan",
+      "titleFa": "کوکو بادمجان",
+      "currentIdentity": "کوکو بادمجان",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main_course persian [\"main_course\"] [\"main_course\",\"کوکو بادمجان\",\"تخم‌مرغ\",\"بادمجان\",\"سبک\",\"vegetarian\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2049_765e338a",
+      "slug": "kuku-sabzi",
+      "titleFa": "کوکو سبزی",
+      "currentIdentity": "کوکو سبزی",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"غذای اصلی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1270_70cc3cff",
+      "slug": "yatimcheh",
+      "titleFa": "یتیمچه",
+      "currentIdentity": "یتیمچه",
+      "ambiguityReason": "Iranian home/regional recipe with multiple valid household or regional variants.",
+      "currentSignals": "main persian [\"main\"] [\"main\",\"ساده\",\"گیاهی\"]",
+      "likelyValidVariants": [
+        "keep current as home-style/simplified variant if product accepts naming",
+        "patch to a stricter canonical version after source-backed review",
+        "split into regional/canonical variants later",
+        "hide until culinary review if trust risk is considered too high"
+      ],
+      "productChoices": [
+        "keep as current but rename/qualify",
+        "patch to canonical version",
+        "split into multiple recipes later",
+        "hide/unpublish until culinary review",
+        "mark as simplified/home-style variant"
+      ],
+      "recommendedDecision": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING",
+      "riskIfLeftPublic": "Medium: not proven wrong, but not defensible as fully authentic.",
+      "dbPatchSafeNow": false,
+      "finalState": "NEEDS_MANUAL_EXTERNAL_REVIEW_REMAINING"
+    }
+  ]
+}

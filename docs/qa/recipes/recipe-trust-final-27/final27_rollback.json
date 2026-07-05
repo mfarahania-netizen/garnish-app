@@ -1,0 +1,256 @@
+{
+  "generatedAt": "2026-07-04T22:10:51.223Z",
+  "databaseUrl": "postgresql://***@localhost:5432/garnish_db?schema=public",
+  "counts": {
+    "totalRecipes": 639,
+    "activePublic": 562,
+    "draftPrivate": 77,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "entries": [
+    {
+      "recipeId": "garnish_recipe_intl_095_c9024579",
+      "slug": "avgolemono",
+      "titleFa": "آوگولمونو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_095\",\"phaseOneSequence\":299,\"slug\":\"avgolemono\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"آوگولمونو\",\"avgolemono\",\"سوپِ تخم‌مرغ و لیموی یونانی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_stock_liquid\",\"ing_whole_egg_raw\",\"ing_lemon_raw\",\"ing_white_rice_raw\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"medium\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"light_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/avgolemono/cover.webp\",\"thumbnail\":\"/data/media/recipes/avgolemono/thumb.webp\",\"video\":\"/data/media/recipes/avgolemono/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_028_ecdcc65f",
+      "slug": "stamppot",
+      "titleFa": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_028\",\"phaseOneSequence\":232,\"slug\":\"stamppot\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"استامپوت\",\"dutch stamppot\",\"پورهٔ سیب‌زمینی و کلمِ ترشِ هلندی با سوسیس\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":3,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_potato_raw\",\"ing_sauerkraut\",\"ing_beef_sausage_raw\",\"ing_butter_unsalted\"],\"cuisineSignal\":\"dutch\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"cold_weather\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/stamppot/cover.webp\",\"thumbnail\":\"/data/media/recipes/stamppot/thumb.webp\",\"video\":\"/data/media/recipes/stamppot/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_868_c97331a5",
+      "slug": "estamboli-polo",
+      "titleFa": "استانبولی پلو بدون گوشت",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"868\",\"phaseOneSequence\":9,\"slug\":\"estamboli-polo\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"استانبولی پلو بدون گوشت\",\"استانبولی پلو\",\"پلو گوجه\",\"بدون گوشت\",\"غذای ساده\"],\"tasteProfile\":{\"sweet\":2,\"sour\":2,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":3},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_tomato_raw\",\"ing_potato_raw\",\"ing_tomato_paste\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[\"quick_family_meal\",\"budget_friendly\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/estamboli-polo/cover.webp\",\"thumbnail\":\"/data/media/recipes/estamboli-polo/thumb.webp\",\"video\":\"/data/media/recipes/estamboli-polo/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_123_e8fa3267",
+      "slug": "spaghetti-al-limone",
+      "titleFa": "اسپاگتی آل لیمونه",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_123\",\"phaseOneSequence\":327,\"slug\":\"spaghetti-al-limone\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"اسپاگتی لیمو\",\"spaghetti al limone\",\"پاستای لیموییِ کرمیِ ایتالیایی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_spaghetti_dry\",\"ing_lemon_raw\",\"ing_parmesan_cheese\",\"ing_butter_unsalted\"],\"cuisineSignal\":\"italian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"weeknight\",\"quick_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/spaghetti-al-limone/cover.webp\",\"thumbnail\":\"/data/media/recipes/spaghetti-al-limone/thumb.webp\",\"video\":\"/data/media/recipes/spaghetti-al-limone/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_062_ce31c267",
+      "slug": "spaghetti-aglio-e-olio",
+      "titleFa": "اسپاگتی سیر و روغن",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_062\",\"phaseOneSequence\":266,\"slug\":\"spaghetti-aglio-e-olio\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"اسپاگتی سیر و روغن\",\"spaghetti aglio e olio\",\"پاستای سادهٔ سیر و روغن زیتون\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":1,\"umami\":1,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_spaghetti_dry\",\"ing_garlic_raw\",\"ing_olive_oil\",\"ing_parsley_fresh\"],\"cuisineSignal\":\"italian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"weeknight\",\"quick_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/spaghetti-aglio-e-olio/cover.webp\",\"thumbnail\":\"/data/media/recipes/spaghetti-aglio-e-olio/thumb.webp\",\"video\":\"/data/media/recipes/spaghetti-aglio-e-olio/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "slug": "meat-strudel",
+      "titleFa": "اشترودل گوشت",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1334\",\"phaseOneSequence\":65,\"slug\":\"meat-strudel\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[],\"contentPatchVersion\":\"v0.4.9\"},\"aiContext\":{\"searchKeywordsFa\":[\"اشترودل گوشت\",\"meat strudel\",\"meat-strudel\",\"اشترودل گوشت با مایه کم‌آب و خمیر برشته\",\"غذای اصلی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_puff_pastry\",\"ing_ground_beef_raw\",\"ing_onion_raw\",\"ing_garlic_raw\",\"ing_carrot_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[],\"mealTypeSignal\":[\"lunch\",\"dinner\"],\"recommendationContextSignal\":[\"main_meal_recommendation\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false},\"servingContext\":[\"برش مورب کنار سالاد ترش\"],\"recommendationContext\":[\"main_meal_recommendation\"],\"classification\":{\"mealType\":[\"lunch\",\"dinner\"],\"category\":\"main_course\",\"categories\":[\"main_course\"],\"dishType\":[\"main\"],\"tags\":[\"غذای اصلی\"],\"mealTypes\":[\"lunch\",\"dinner\"]},\"usageMetadata\":{\"phase\":\"phase_one_remaining\",\"productUse\":\"recommendation_and_search\",\"classificationReviewed\":\"v0.4.9\",\"contentReviewed\":\"v0.4.9\"}},\"media\":{\"cover\":\"/data/media/recipes/meat-strudel/cover.webp\",\"thumbnail\":\"/data/media/recipes/meat-strudel/thumb.webp\",\"video\":\"/data/media/recipes/meat-strudel/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_012_46d4828e",
+      "slug": "imam-bayildi",
+      "titleFa": "امام بایلدی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_012\",\"phaseOneSequence\":216,\"slug\":\"imam-bayildi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"امام بایلدی\",\"imam bayildi\",\"بادمجانِ پُرشدهٔ ترکی در روغن زیتون\"],\"tasteProfile\":{\"sweet\":2,\"sour\":1,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_eggplant_raw\",\"ing_onion_raw\",\"ing_tomato_raw\",\"ing_olive_oil\"],\"cuisineSignal\":\"turkish\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"make_ahead\",\"vegetarian_friendly\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/imam-bayildi/cover.webp\",\"thumbnail\":\"/data/media/recipes/imam-bayildi/thumb.webp\",\"video\":\"/data/media/recipes/imam-bayildi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_066_d22397d4",
+      "slug": "borscht",
+      "titleFa": "بورش",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_066\",\"phaseOneSequence\":270,\"slug\":\"borscht\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"بورش\",\"borscht\",\"سوپِ سرخِ چغندر با خامهٔ ترش\"],\"tasteProfile\":{\"sweet\":2,\"sour\":2,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":1,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_beetroot_raw\",\"ing_cabbage_raw\",\"ing_sour_cream\",\"ing_potato_raw\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"cold_weather\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/borscht/cover.webp\",\"thumbnail\":\"/data/media/recipes/borscht/thumb.webp\",\"video\":\"/data/media/recipes/borscht/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_098_0fbf4374",
+      "slug": "irish-stew",
+      "titleFa": "خورش ایرلندی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_098\",\"phaseOneSequence\":302,\"slug\":\"irish-stew\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"خورش ایرلندی\",\"irish stew\",\"خوراکِ گوسفند و سیب‌زمینیِ ایرلندی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lamb_shoulder_raw\",\"ing_potato_raw\",\"ing_carrot_raw\",\"ing_onion_raw\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"cold_weather\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/irish-stew/cover.webp\",\"thumbnail\":\"/data/media/recipes/irish-stew/thumb.webp\",\"video\":\"/data/media/recipes/irish-stew/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "slug": "red-lentil-soup",
+      "titleFa": "سوپ عدس قرمز ترکی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_046\",\"phaseOneSequence\":250,\"slug\":\"red-lentil-soup\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"سوپ عدس قرمز\",\"turkish red lentil soup\",\"سوپِ مخملیِ عدسِ قرمز با نعناع و لیمو\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":1,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_red_lentils_dry\",\"ing_onion_raw\",\"ing_carrot_raw\",\"ing_paprika_ground\"],\"cuisineSignal\":\"turkish\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"light_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/red-lentil-soup/cover.webp\",\"thumbnail\":\"/data/media/recipes/red-lentil-soup/thumb.webp\",\"video\":\"/data/media/recipes/red-lentil-soup/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "slug": "miso-soup",
+      "titleFa": "سوپ میسو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_014\",\"phaseOneSequence\":218,\"slug\":\"miso-soup\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"سوپ میسو\",\"miso soup\",\"سوپِ اومامیِ ژاپنی با توفو و واکامه\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":3,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_dashi_powder\",\"ing_white_miso\",\"ing_tofu_firm\",\"ing_wakame_seaweed\"],\"cuisineSignal\":\"japanese\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"light_meal\",\"comfort_food\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/miso-soup/cover.webp\",\"thumbnail\":\"/data/media/recipes/miso-soup/thumb.webp\",\"video\":\"/data/media/recipes/miso-soup/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "slug": "minestrone-soup",
+      "titleFa": "سوپ مینسترونه",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_032\",\"phaseOneSequence\":236,\"slug\":\"minestrone-soup\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"مینسترونه\",\"minestrone soup\",\"سوپِ پُرمایهٔ سبزیجات و لوبیای ایتالیایی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_cannellini_beans_dry\",\"ing_macaroni_dry\",\"ing_tomato_passata\",\"ing_carrot_raw\"],\"cuisineSignal\":\"italian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"weeknight\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/minestrone-soup/cover.webp\",\"thumbnail\":\"/data/media/recipes/minestrone-soup/thumb.webp\",\"video\":\"/data/media/recipes/minestrone-soup/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_128_22442750",
+      "slug": "fatteh",
+      "titleFa": "فته",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_128\",\"phaseOneSequence\":332,\"slug\":\"fatteh\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"فته\",\"fatteh\",\"خوراکِ لایه‌ایِ نخود و ماست و نانِ شامی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":1,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chickpeas_dry\",\"ing_greek_yogurt_plain\",\"ing_pita_bread\",\"ing_garlic_raw\"],\"cuisineSignal\":\"levantine\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"vegetarian_friendly\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/fatteh/cover.webp\",\"thumbnail\":\"/data/media/recipes/fatteh/thumb.webp\",\"video\":\"/data/media/recipes/fatteh/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "slug": "lasagna",
+      "titleFa": "لازانیا",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1323\",\"phaseOneSequence\":60,\"slug\":\"lasagna\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"لازانیا\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lasagna_sheets_dry\",\"ing_ground_beef_raw\",\"ing_onion_raw\",\"ing_button_mushroom_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/lasagna/cover.webp\",\"thumbnail\":\"/data/media/recipes/lasagna/thumb.webp\",\"video\":\"/data/media/recipes/lasagna/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "slug": "fish-and-chips",
+      "titleFa": "ماهی و چیپس",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_025\",\"phaseOneSequence\":229,\"slug\":\"fish-and-chips\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"ماهی و چیپس\",\"fish and chips\",\"فیلهٔ ماهیِ تُردِ سرخ‌شده با چیپس\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":3,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_cod_fillet_raw\",\"ing_potato_raw\",\"ing_all_purpose_flour\",\"ing_cornstarch\"],\"cuisineSignal\":\"british\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"weekend\",\"comfort_food\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/fish-and-chips/cover.webp\",\"thumbnail\":\"/data/media/recipes/fish-and-chips/thumb.webp\",\"video\":\"/data/media/recipes/fish-and-chips/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_101_b76754a7",
+      "slug": "piri-piri-chicken",
+      "titleFa": "مرغ پیری‌پیری",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_101\",\"phaseOneSequence\":305,\"slug\":\"piri-piri-chicken\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"مرغ پیری‌پیری\",\"piri piri chicken\",\"مرغِ تندِ کبابیِ پرتغالی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":1,\"bitter\":0,\"spicy\":3,\"umami\":2,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_thigh_raw\",\"ing_chili_pepper_raw\",\"ing_paprika_ground\",\"ing_lemon_raw\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"grill\",\"spicy_lover\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/piri-piri-chicken/cover.webp\",\"thumbnail\":\"/data/media/recipes/piri-piri-chicken/thumb.webp\",\"video\":\"/data/media/recipes/piri-piri-chicken/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "slug": "maqluba",
+      "titleFa": "مقلوبه",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_127\",\"phaseOneSequence\":331,\"slug\":\"maqluba\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"مقلوبه\",\"maqluba\",\"پلوی وارونهٔ مرغ و بادمجانِ شامی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":2,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_thigh_raw\",\"ing_white_rice_raw\",\"ing_eggplant_raw\",\"ing_cauliflower_raw\"],\"cuisineSignal\":\"levantine\",\"difficultySignal\":\"hard\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"special_occasion\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/maqluba/cover.webp\",\"thumbnail\":\"/data/media/recipes/maqluba/thumb.webp\",\"video\":\"/data/media/recipes/maqluba/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "slug": "alfredo-pasta",
+      "titleFa": "پاستا آلفردو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"2103\",\"phaseOneSequence\":122,\"slug\":\"alfredo-pasta\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[],\"contentPatchVersion\":\"v0.4.9\"},\"aiContext\":{\"searchKeywordsFa\":[\"پاستا آلفردو\",\"alfredo pasta\",\"alfredo-pasta\",\"پاستا آلفردو با سس خامه‌ای و مرغ\",\"پاستا\",\"غذای اصلی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_spaghetti_dry\",\"ing_chicken_breast_raw\",\"ing_garlic_raw\",\"ing_heavy_cream\",\"ing_whole_milk\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[],\"mealTypeSignal\":[\"lunch\",\"dinner\"],\"recommendationContextSignal\":[\"main_meal_recommendation\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false},\"servingContext\":[\"ناهار یا شام سریع\"],\"recommendationContext\":[\"main_meal_recommendation\"],\"classification\":{\"mealType\":[\"lunch\",\"dinner\"],\"category\":\"pasta\",\"categories\":[\"pasta\"],\"dishType\":[\"main\",\"pasta\"],\"tags\":[\"پاستا\",\"غذای اصلی\"],\"mealTypes\":[\"lunch\",\"dinner\"]},\"usageMetadata\":{\"phase\":\"phase_one_remaining\",\"productUse\":\"recommendation_and_search\",\"classificationReviewed\":\"v0.4.9\",\"contentReviewed\":\"v0.4.9\"}},\"media\":{\"cover\":\"/data/media/recipes/alfredo-pasta/cover.webp\",\"thumbnail\":\"/data/media/recipes/alfredo-pasta/thumb.webp\",\"video\":\"/data/media/recipes/alfredo-pasta/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_094_a48d62c1",
+      "slug": "pasta-e-fagioli",
+      "titleFa": "پاستا ای فاجولی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_094\",\"phaseOneSequence\":298,\"slug\":\"pasta-e-fagioli\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"پاستا ای فاجولی\",\"pasta e fagioli\",\"خوراکِ پاستا و لوبیای ایتالیایی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_cannellini_beans_dry\",\"ing_macaroni_dry\",\"ing_tomato_paste\",\"ing_vegetable_stock_liquid\"],\"cuisineSignal\":\"italian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"cold_weather\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/pasta-e-fagioli/cover.webp\",\"thumbnail\":\"/data/media/recipes/pasta-e-fagioli/thumb.webp\",\"video\":\"/data/media/recipes/pasta-e-fagioli/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "slug": "pesto-pasta",
+      "titleFa": "پاستا پستو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"2064\",\"phaseOneSequence\":113,\"slug\":\"pesto-pasta\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[],\"contentPatchVersion\":\"v0.4.9\"},\"aiContext\":{\"searchKeywordsFa\":[\"پاستا پستو\",\"pesto pasta\",\"pesto-pasta\",\"پاستا پستو با سس سبز و پاستای آل‌دنته\",\"پاستا\",\"غذای اصلی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_breast_raw\",\"ing_spaghetti_dry\",\"ing_basil_fresh\",\"ing_garlic_raw\",\"ing_walnuts_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[],\"mealTypeSignal\":[\"lunch\",\"dinner\"],\"recommendationContextSignal\":[\"main_meal_recommendation\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false},\"servingContext\":[\"ناهار سریع با پنیر رنده‌شده\"],\"recommendationContext\":[\"main_meal_recommendation\"],\"classification\":{\"mealType\":[\"lunch\",\"dinner\"],\"category\":\"pasta\",\"categories\":[\"pasta\"],\"dishType\":[\"main\",\"pasta\"],\"tags\":[\"پاستا\",\"غذای اصلی\"],\"mealTypes\":[\"lunch\",\"dinner\"]},\"usageMetadata\":{\"phase\":\"phase_one_remaining\",\"productUse\":\"recommendation_and_search\",\"classificationReviewed\":\"v0.4.9\",\"contentReviewed\":\"v0.4.9\"}},\"media\":{\"cover\":\"/data/media/recipes/pesto-pasta/cover.webp\",\"thumbnail\":\"/data/media/recipes/pesto-pasta/thumb.webp\",\"video\":\"/data/media/recipes/pesto-pasta/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_061_0bfbb206",
+      "slug": "polenta-con-funghi",
+      "titleFa": "پلنتا با قارچ",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_061\",\"phaseOneSequence\":265,\"slug\":\"polenta-con-funghi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"پلنتا با قارچ\",\"polenta con funghi\",\"پلنتای کرمی با قارچِ تفت‌داده\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_cornmeal\",\"ing_button_mushroom_raw\",\"ing_parmesan_cheese\",\"ing_vegetable_stock_liquid\"],\"cuisineSignal\":\"italian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"vegetarian_friendly\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/polenta-con-funghi/cover.webp\",\"thumbnail\":\"/data/media/recipes/polenta-con-funghi/thumb.webp\",\"video\":\"/data/media/recipes/polenta-con-funghi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_136_76743d5b",
+      "slug": "pot-au-feu",
+      "titleFa": "پوت‌او‌فو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_136\",\"phaseOneSequence\":340,\"slug\":\"pot-au-feu\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"پوت‌او‌فو\",\"pot au feu\",\"خوراکِ گوشتِ آب‌پز و سبزیجاتِ فرانسوی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_beef_chuck_raw\",\"ing_leek_raw\",\"ing_turnip_raw\",\"ing_carrot_raw\"],\"cuisineSignal\":\"french\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"cold_weather\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/pot-au-feu/cover.webp\",\"thumbnail\":\"/data/media/recipes/pot-au-feu/thumb.webp\",\"video\":\"/data/media/recipes/pot-au-feu/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_118_9ecd21c7",
+      "slug": "pollo-al-ajillo",
+      "titleFa": "پویو آل آخیو",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_118\",\"phaseOneSequence\":322,\"slug\":\"pollo-al-ajillo\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"پویو آل آخیو\",\"pollo al ajillo\",\"مرغِ سیریِ اسپانیایی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_thigh_raw\",\"ing_garlic_raw\",\"ing_paprika_ground\",\"ing_lemon_raw\"],\"cuisineSignal\":\"spanish\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"weeknight\",\"tapas\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/pollo-al-ajillo/cover.webp\",\"thumbnail\":\"/data/media/recipes/pollo-al-ajillo/thumb.webp\",\"video\":\"/data/media/recipes/pollo-al-ajillo/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_040_7d7b90a1",
+      "slug": "pierogi",
+      "titleFa": "پیروگی لهستانی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_040\",\"phaseOneSequence\":244,\"slug\":\"pierogi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"پیروگی\",\"polish pierogi\",\"خمیریِ شکم‌پُرِ لهستانی با سیب‌زمینی و پنیر\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":2,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_all_purpose_flour\",\"ing_potato_raw\",\"ing_cheddar_cheese\",\"ing_onion_raw\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"hard\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"family_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/pierogi/cover.webp\",\"thumbnail\":\"/data/media/recipes/pierogi/thumb.webp\",\"video\":\"/data/media/recipes/pierogi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_038_16764713",
+      "slug": "swedish-meatballs",
+      "titleFa": "کوفته سوئدی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_038\",\"phaseOneSequence\":242,\"slug\":\"swedish-meatballs\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کوفته سوئدی\",\"swedish meatballs\",\"کوفتهٔ گاوِ سوئدی با سسِ خامه‌ای\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":3,\"fatty\":3,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_beef_raw\",\"ing_breadcrumbs\",\"ing_heavy_cream\",\"ing_beef_stock_liquid\"],\"cuisineSignal\":\"other_european\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"family_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/swedish-meatballs/cover.webp\",\"thumbnail\":\"/data/media/recipes/swedish-meatballs/thumb.webp\",\"video\":\"/data/media/recipes/swedish-meatballs/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_077_40b61937",
+      "slug": "kofte",
+      "titleFa": "کوفتهٔ ترکی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_077\",\"phaseOneSequence\":281,\"slug\":\"kofte\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کوفتهٔ ترکی\",\"turkish kofte\",\"کوفتهٔ گوشتِ ادویه‌خوردهٔ کبابی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_beef_raw\",\"ing_onion_raw\",\"ing_cumin_ground\",\"ing_paprika_ground\"],\"cuisineSignal\":\"turkish\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"grill\",\"family_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kofte/cover.webp\",\"thumbnail\":\"/data/media/recipes/kofte/thumb.webp\",\"video\":\"/data/media/recipes/kofte/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_120_ae775732",
+      "slug": "koenigsberger-klopse",
+      "titleFa": "کونیگسبرگر کلوپسه",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"international-core-150-v0.6.0\",\"legacyId\":\"international_core_150_v0_1_0_seq_120\",\"phaseOneSequence\":324,\"slug\":\"koenigsberger-klopse\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کونیگسبرگر کلوپسه\",\"koenigsberger klopse\",\"کوفته‌های آلمانی در سسِ سفیدِ کبر\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_beef_raw\",\"ing_capers\",\"ing_heavy_cream\",\"ing_breadcrumbs\"],\"cuisineSignal\":\"german\",\"difficultySignal\":\"hard\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"comfort_food\",\"family_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/koenigsberger-klopse/cover.webp\",\"thumbnail\":\"/data/media/recipes/koenigsberger-klopse/thumb.webp\",\"video\":\"/data/media/recipes/koenigsberger-klopse/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.0\",\"corpus\":\"international_core_150\",\"sourceFolder\":\"garnish_recipe_international_core_150_draft_candidate_v0_6_0\",\"sequenceRange\":\"205-354\",\"importedAt\":\"2026-06-14T16:51:29.680Z\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    }
+  ]
+}

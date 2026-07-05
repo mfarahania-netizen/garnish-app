@@ -4,11 +4,19 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [dark, setDark] = useState(() => {
-    return localStorage.getItem('garnish_dark_mode') === 'true';
+    if (typeof window === 'undefined') return false;
+    return window.localStorage?.getItem('garnish_dark_mode') === 'true';
   });
 
   useEffect(() => {
-    localStorage.setItem('garnish_dark_mode', dark);
+    const theme = dark ? 'dark' : 'light';
+    try {
+      window.localStorage?.setItem('garnish_dark_mode', String(dark));
+    } catch {
+      // Storage can be unavailable in private/test contexts; the DOM theme still applies.
+    }
+    document.documentElement.dataset.theme = theme;
+    document.body.dataset.theme = theme;
   }, [dark]);
 
   const toggleDark = () => setDark(!dark);

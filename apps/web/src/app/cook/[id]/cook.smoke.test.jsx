@@ -115,4 +115,28 @@ describe('CookPage smoke', () => {
     expect(screen.getByText('خورش قورمه‌سبزی')).toBeInTheDocument();
     expect(screen.getByText('مرحلهٔ ۱ از ۳')).toBeInTheDocument();
   });
+
+  it('keeps optional guided notes collapsed by default', () => {
+    useCook.mockReturnValue(readyValue({
+      currentStep: {
+        order: 1,
+        title: 'نیم‌پز کردن لپه',
+        instruction: 'لپه را جداگانه بجوشانید و کف روی آب را بگیرید.',
+        caveats: [],
+        flame: 'medium',
+        tempC: null,
+        durationMin: 15,
+        sees: 'لپه باید نرم ولی شکل‌دار باشد.',
+        recovery: 'اگر زیادی پخت، آن را در دقیقه‌های پایانی اضافه کنید.',
+        doneness: 'حدود هفتاد درصد پخته باشد.',
+        tip: 'کف آب را دور بریزید.',
+      },
+    }));
+    renderPage();
+
+    expect(screen.getByText('لپه را جداگانه بجوشانید و کف روی آب را بگیرید.')).toBeInTheDocument();
+    expect(screen.getByText('نشانهٔ ظاهری')).toBeInTheDocument();
+    expect(screen.queryByText('لپه باید نرم ولی شکل‌دار باشد.')).not.toBeInTheDocument();
+    expect(screen.getByText('تایمر ۱۵ دقیقه')).toBeInTheDocument();
+  });
 });

@@ -1,0 +1,754 @@
+{
+  "id": "garnish_recipe_fa_170_44f0d2ad",
+  "title": "قیمه‌ریزه اصفهانی",
+  "description": "تفاوتِ قیمه‌ریزه با قیمهٔ معمولی در ریز و نگینی‌بودنِ گوشت است که خورش را یک‌دست‌تر می‌کند. لپه باید جدا و تا نرمیِ سالم بپزد تا در خورش وا نرود و لیمو عمانی عطر و ترشیِ اصفهانی می‌دهد.",
+  "category": "stew",
+  "region": "persian",
+  "difficulty": "medium",
+  "cookingTime": 90,
+  "servings": 4,
+  "imageUrl": "/data/media/recipes/gheymeh-rizeh-esfahani/cover.webp",
+  "videoUrl": "/data/media/recipes/gheymeh-rizeh-esfahani/video.mp4",
+  "authorId": null,
+  "isPublic": true,
+  "createdAt": "2026-06-13T20:04:45.867Z",
+  "updatedAt": "2026-06-18T21:05:45.793Z",
+  "status": "active",
+  "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_170\",\"phaseOneSequence\":179,\"slug\":\"gheymeh-rizeh-esfahani\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"قیمه‌ریزه اصفهانی\",\"gheymeh-rizeh-esfahani\",\"خورشِ گوشتِ ریزْنگینی و لپه با لیمو عمانی\"],\"tasteProfile\":{\"sweet\":0,\"sour\":2,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lamb_meat_raw\",\"ing_split_peas_dry\",\"ing_dried_lime_whole\",\"ing_tomato_paste\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/gheymeh-rizeh-esfahani/cover.webp\",\"thumbnail\":\"/data/media/recipes/gheymeh-rizeh-esfahani/thumb.webp\",\"video\":\"/data/media/recipes/gheymeh-rizeh-esfahani/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+  "prepTime": "25",
+  "totalTime": "115",
+  "tools": "[\"قابلمه\",\"کفگیر\",\"قابلمهٔ دردار\",\"قابلمهٔ کوچک\",\"ظرف سرو\"]",
+  "tips": "[\"گوشت را ریز و نگینی ببُرید تا بافتِ قیمه‌ریزه درست شود.\",\"لپه را جدا بپزید تا در خورش وا نرود.\",\"لیموعمانیِ درستهٔ قیمه‌ریزه را فقط سوراخ کنید، نکوبید.\",\"روی برنج با کمی سیب‌زمینیِ سرخ‌شده سرو شود.\",\"خیارشور و سالادِ فصل در کنارِ قیمه‌ریزه می‌چسبد.\",\"تکه‌ای نان برای جمع‌کردنِ سسِ قیمه‌ریزه خوب است.\",\"Common mistake: گوشتِ درشت، بافتِ ریزهٔ مخصوص را از بین می‌برد.\",\"Common mistake: پختنِ لپه با خورش از ابتدا، آن را لِه و خورش را خمیری می‌کند.\",\"Common mistake: لیموعمانیِ کوبیده، قیمه‌ریزه را تلخ می‌کند.\",\"Substitution: می‌توان روی قیمه‌ریزه کمی سیب‌زمینیِ خلالیِ سرخ‌شده ریخت، هرچند نسخهٔ ریزه اغلب ساده‌تر است.\",\"Substitution: به‌محضِ تلخ‌شدنِ لیموعمانی، از قیمه‌ریزه جدایش کنید.\",\"Substitution: گوشتِ نگینیِ هم‌اندازه بافتِ یک‌دست‌تری می‌دهد.\"]",
+  "faq": "[{\"question\":\"قیمه‌ریزه با قیمهٔ معمولی چه فرقی دارد؟\",\"answer\":\"در قیمه‌ریزه گوشت ریز و نگینی خرد می‌شود، نه تکه‌ای؛ همین خورش را یک‌دست‌تر و بافتش را متفاوت می‌کند.\"},{\"question\":\"چرا لپه را جدا می‌پزند؟\",\"answer\":\"تا تا نرمیِ سالم برسد و وقتی به خورش اضافه شد وا نرود و خورش را خمیری نکند.\"},{\"question\":\"لیموعمانی را در چه شکلی به قیمه‌ریزه اضافه کنم؟\",\"answer\":\"سوراخ‌شده و درسته، تا عطر و ترشیِ ملایمش در خورش پخش شود؛ نباید کوبیده شود تا تلخی ندهد.\"}]",
+  "mealType": "[\"lunch\",\"dinner\"]",
+  "diet": "high_protein",
+  "categories": "[\"stew\",\"قیمه‌ریزه\",\"اصفهانی\",\"لپه\",\"لیمو عمانی\",\"protein_forward\"]",
+  "allergens": "[]",
+  "occasion": "[\"family_meal\",\"everyday\"]",
+  "cost": null,
+  "chefTips": "[\"گوشت را ریز و نگینی ببُرید تا بافتِ قیمه‌ریزه درست شود.\",\"لپه را جدا بپزید تا در خورش وا نرود.\",\"لیموعمانیِ درستهٔ قیمه‌ریزه را فقط سوراخ کنید، نکوبید.\"]",
+  "commonMistakes": "[\"گوشتِ درشت، بافتِ ریزهٔ مخصوص را از بین می‌برد.\",\"پختنِ لپه با خورش از ابتدا، آن را لِه و خورش را خمیری می‌کند.\",\"لیموعمانیِ کوبیده، قیمه‌ریزه را تلخ می‌کند.\"]",
+  "servingSuggestions": "[\"روی برنج با کمی سیب‌زمینیِ سرخ‌شده سرو شود.\",\"خیارشور و سالادِ فصل در کنارِ قیمه‌ریزه می‌چسبد.\",\"تکه‌ای نان برای جمع‌کردنِ سسِ قیمه‌ریزه خوب است.\"]",
+  "substitutions": "[\"می‌توان روی قیمه‌ریزه کمی سیب‌زمینیِ خلالیِ سرخ‌شده ریخت، هرچند نسخهٔ ریزه اغلب ساده‌تر است.\",\"به‌محضِ تلخ‌شدنِ لیموعمانی، از قیمه‌ریزه جدایش کنید.\",\"گوشتِ نگینیِ هم‌اندازه بافتِ یک‌دست‌تری می‌دهد.\"]",
+  "dishType": "[\"stew\"]",
+  "gris": {
+    "faq": [
+      {
+        "a": "در قیمه‌ریزه گوشت به‌جای خلال، نگینیِ ریز خرد می‌شود؛ این کار خورش را لطیف‌تر و یک‌دست‌تر می‌کند و در هر قاشق هم گوشت هست هم لپه.",
+        "q": "تفاوتِ قیمه‌ریزه با قیمهٔ معمولی چیست؟"
+      },
+      {
+        "a": "تا فقط تا نرمیِ سالم بپزد و در خورش وا نرود؛ پختِ طولانیِ لپه با گوشت آن را له و خورش را لزج می‌کند.",
+        "q": "چرا لپه را جدا می‌پزیم؟"
+      },
+      {
+        "a": "هنگام افزودنِ آب، سوراخ‌شده؛ تا عطر و ترشیِ آن آرام در خورش حل شود. زیاد نجوشانید تا تلخ نشود.",
+        "q": "لیمو عمانی را کِی بریزم؟"
+      }
+    ],
+    "keep": {
+      "freeze": "تا ۲ ماه مناسبِ فریز است؛ پیش از سرو کامل گرم کنید.",
+      "reheat": "روی شعلهٔ ملایم تا جوشِ کامل گرم کنید؛ در صورت غلیظ‌شدن کمی آبِ گرم بزنید.",
+      "storage": "در ظرفِ دربسته در یخچال (≤۴ درجه) ۳ تا ۴ روز.",
+      "makeAhead": "خورش را می‌توان یک روز قبل پخت؛ طعمش بعد از یک شب در یخچال جاافتاده‌تر می‌شود."
+    },
+    "steps": [
+      {
+        "tip": "گوشت اگر کمی فریزر‌خنک باشد راحت‌تر نگینی می‌شود.",
+        "sees": "تکه‌های گوشتِ هم‌اندازه، پیازِ ریز، و لیمو عمانیِ سوراخ‌دار",
+        "flame": "none",
+        "order": 1,
+        "title": "آماده‌سازی و خردکردنِ مواد",
+        "doneness": "همهٔ مواد خرد و آمادهٔ کنار اجاق",
+        "recovery": "اگر تکه‌ها ناهماهنگ شدند، بزرگ‌ترها را دوباره خرد کنید تا یک‌اندازه شوند.",
+        "durationMin": 10,
+        "instruction": "گوشت گوسفند را روی تخته بگذارید و با چاقوی تیز به نگین‌های ریزِ حدود ۱ سانتی‌متری خرد کنید—هرچه یک‌اندازه‌تر، خورش یک‌دست‌تر. پیاز را هم ریز و نگینی خرد کنید. لیمو عمانی را بشویید و با نوک چاقو یا چنگال چند جای هرکدام را سوراخ کنید.",
+        "usesIngredientIds": [
+          "ing_lamb_meat_raw",
+          "ing_onion_raw",
+          "ing_dried_lime_whole"
+        ]
+      },
+      {
+        "tip": "زردچوبه را روی شعلهٔ زیاد نریزید؛ زود تلخ و سوخته می‌شود.",
+        "sees": "پیازِ طلایی و نرم، رنگِ زردِ یکدستِ زردچوبه روی پیاز",
+        "flame": "medium",
+        "order": 2,
+        "title": "تفت‌دادنِ پیاز با زردچوبه",
+        "doneness": "پیاز شفاف و طلایی شده، بوی خامیِ آن رفته",
+        "recovery": "اگر پیاز ته گرفت، شعله را کم کنید و یک قاشق آب بزنید و ته‌قابلمه را بتراشید.",
+        "durationMin": 8,
+        "instruction": "روغن آفتابگردان را در قابلمه روی شعلهٔ متوسط داغ کنید. پیاز را بریزید و هم بزنید تا نرم و طلایی شود. زردچوبه را اضافه کنید و چند ثانیه با پیاز تفت دهید تا عطرش باز شود (نسوزد).",
+        "usesIngredientIds": [
+          "ing_sunflower_oil",
+          "ing_onion_raw",
+          "ing_turmeric_ground"
+        ]
+      },
+      {
+        "tip": "گوشت را یک‌جا و انبوه نریزید؛ به‌جای تفت، بخار‌پز می‌شود.",
+        "sees": "سطحِ گوشت قهوه‌ای‌شده و دیگر صورتی نیست",
+        "flame": "medium-high",
+        "order": 3,
+        "title": "تفت‌دادنِ گوشتِ نگینی",
+        "doneness": "همهٔ تکه‌ها رنگ بسته‌اند و آبِ گوشت تبخیر شده (این تفت است؛ پختِ کامل در مرحلهٔ بعد)",
+        "recovery": "اگر آب زیاد افتاد، چند دقیقه با شعلهٔ بالاتر بجوشانید تا آب بکشد و گوشت تفت بخورد.",
+        "durationMin": 7,
+        "instruction": "گوشت گوسفندِ نگینی را به پیاز اضافه کنید. شعله را روی متوسط‌رو‌به‌بالا ببرید و مدام هم بزنید تا رنگِ گوشت از صورتی به قهوه‌ایِ روشن تغییر کند و آبی که انداخته جمع شود.",
+        "usesIngredientIds": [
+          "ing_lamb_meat_raw"
+        ]
+      },
+      {
+        "tip": "مدام هم بزنید؛ رب سریع ته می‌گیرد.",
+        "sees": "ربِ پررنگ‌تر و براق، با بویی شیرین و پخته به‌جای بوی خامِ تیز",
+        "flame": "medium",
+        "order": 4,
+        "title": "بلوم‌کردنِ رب گوجه",
+        "doneness": "خامیِ رب رفته و رنگِ روغن سرخ‌فام شده",
+        "recovery": "اگر رب کمی ته گرفت، با ریختنِ آبِ مرحلهٔ بعد فوراً ته‌قابلمه را بتراشید.",
+        "durationMin": 3,
+        "instruction": "شعله را روی متوسط بیاورید. رب گوجه‌فرنگی را وسطِ قابلمه بریزید و ۲ تا ۳ دقیقه در روغن تفت دهید تا رنگش تیره‌تر و طعمش پخته شود، سپس با گوشت مخلوط کنید.",
+        "usesIngredientIds": [
+          "ing_tomato_paste"
+        ]
+      },
+      {
+        "tip": "اگر آب خیلی کم شد و گوشت هنوز سفت بود، کمی آبِ گرم اضافه کنید.",
+        "sees": "جوشِ آرام و حباب‌های ریز، آبی که کم‌کم غلیظ و خوش‌رنگ می‌شود",
+        "flame": "low",
+        "order": 5,
+        "title": "افزودنِ آب و لیمو عمانی و پختِ آرامِ گوشت",
+        "doneness": "گوشت با فشارِ قاشق به‌راحتی له می‌شود و لطیف است",
+        "recovery": "اگر خورش زود ته گرفت یا تند جوشید، شعله را کمتر کنید و آبِ گرم بیفزایید.",
+        "mediaHint": "عکسِ نقطهٔ لطیف‌شدنِ گوشت اینجا کمک می‌کند",
+        "durationMin": 45,
+        "instruction": "حدود ۳ پیمانه آبِ گرم بریزید تا روی گوشت را بگیرد. لیمو عمانیِ سوراخ‌شده را اضافه کنید. درِ قابلمه را بگذارید، شعله را ملایم کنید و بگذارید آرام بجوشد تا گوشت کاملاً لطیف شود.",
+        "usesIngredientIds": [
+          "ing_dried_lime_whole",
+          "ing_lamb_meat_raw"
+        ]
+      },
+      {
+        "tip": "لپه را جدا می‌پزیم تا در خورش وا نرود و خورش لجن نشود.",
+        "sees": "لپهٔ نرم که دانه‌هایش هنوز شکل دارند و له نشده‌اند",
+        "flame": "medium",
+        "order": 6,
+        "title": "پختِ جداگانهٔ لپه تا «نرمیِ سالم»",
+        "doneness": "یک دانه لپه را امتحان کنید؛ باید نرم باشد ولی بین انگشت کاملاً پودر نشود",
+        "recovery": "اگر لپه زیادی نرم شد، فوراً آبکش و با آبِ سرد بشویید تا پخت متوقف شود.",
+        "durationMin": 25,
+        "instruction": "هم‌زمان، لپه را در قابلمهٔ کوچکِ جدا با آبِ جوش بپزید تا نرم اما سالم و وانرفته شود. کفِ روی آب را بگیرید. وقتی نرم شد، آبکش کنید.",
+        "usesIngredientIds": [
+          "ing_split_peas_dry"
+        ]
+      },
+      {
+        "tip": "نمک را در همین مرحله و بعد از حل‌شدنِ لیمو عمانی تنظیم کنید.",
+        "sees": "خورشِ غلیظ و یک‌دست با لپه‌های سالمِ پراکنده و روغنی که روی خورش می‌افتد",
+        "flame": "low",
+        "order": 7,
+        "title": "ترکیب و جاافتادنِ خورش",
+        "doneness": "خورش جا افتاده، نه آبکی و نه خشک؛ مزه‌اش متعادلِ ترش و نمکی است",
+        "recovery": "اگر آبکی بود، چند دقیقه با درِ باز بجوشانید؛ اگر غلیظ شد، کمی آبِ گرم بزنید.",
+        "durationMin": 12,
+        "instruction": "لپهٔ آبکش‌شده، دارچین، نمک و فلفل سیاه را به خورش اضافه کنید. آرام هم بزنید و با شعلهٔ ملایم و درِ نیمه‌باز ۱۰ تا ۱۵ دقیقه بگذارید جا بیفتد تا طعم‌ها یکی شود و خورش به غلظتِ دلخواه برسد.",
+        "usesIngredientIds": [
+          "ing_split_peas_dry",
+          "ing_cinnamon_ground",
+          "ing_salt_table",
+          "ing_black_pepper_ground"
+        ]
+      }
+    ],
+    "story": {
+      "hook": "قیمه‌ریزه نسخهٔ ظریف و یک‌دستِ قیمه است؛ به‌جای خلال‌های درشت، گوشت را نگینیِ ریز خرد می‌کنید تا خورش لطیف و هم‌بافت شود و در هر قاشق هم گوشت باشد هم لپه.",
+      "origin": "قیمه‌ریزه به‌عنوان یک سبکِ خانگی و مجلسیِ قیمه در اصفهان شناخته می‌شود؛ مثل خودِ قیمه، خورشی است بر پایهٔ لپه، گوشت، رب و لیمو عمانی.",
+      "lineage": "سنتِ مستندِ آشپزی ایرانی (سبک اصفهانی)؛ نسبتِ منشأ دقیق به یک شهر را با احتیاط بیان می‌کنیم، چون قیمه در سراسر ایران پخته می‌شود.",
+      "occasion": "غذای ناهار و شام خانوادگی و میهمانی‌های ساده؛ در اصل از غذاهای نذری و دیزی‌خانه‌ای ریشه دارد."
+    },
+    "finish": {
+      "plating": "در ظرفِ گود بکشید، لیمو عمانی‌ها را روی خورش بگذارید و کنارِ چلوی زعفرانی سرو کنید.",
+      "finalLook": "خورشی غلیظ و سرخ‌فام با گوشتِ نگینیِ لطیف و لپه‌های سالم که در آن پخش شده‌اند؛ لایهٔ نازکی از روغنِ خوش‌رنگ روی سطح و لیمو عمانیِ پُف‌کرده در گوشهٔ ظرف.",
+      "chefSecret": "دو حرکتِ کلیدی: لپه را جدا و فقط تا «نرمیِ سالم» بپزید تا خورش وا نرود، و رب را قبل از آب حتماً در روغن بلوم کنید تا طعمِ خام نگیرد و رنگِ سرخ بدهد."
+    },
+    "glance": {
+      "goodFor": [
+        "ناهار خانوادگی",
+        "میهمانی ساده",
+        "غذای مجلسی روزمره"
+      ],
+      "promise": "خورشی غلیظ و یک‌دست با گوشتِ نگینیِ لطیف و لپهٔ سالم، با عطرِ ترشِ لیمو عمانی و رنگِ گرمِ رب و زردچوبه.",
+      "costBand": "متوسط",
+      "servings": 4,
+      "difficulty": "متوسط",
+      "handsOffMin": 55,
+      "keyEquipment": [
+        "قابلمهٔ متوسط",
+        "قابلمهٔ کوچک برای پختِ لپه",
+        "چاقوی تیز",
+        "کفگیر یا قاشق چوبی"
+      ],
+      "totalTimeMin": 90,
+      "activeTimeMin": 30,
+      "equipmentIdeal": [
+        "قابلمهٔ ته‌ضخیم — پخش یکنواختِ حرارت و جلوگیری از ته‌گرفتنِ رب و خورش"
+      ]
+    },
+    "dietary": {
+      "vegan": false,
+      "dairyFree": true,
+      "freezable": true,
+      "glutenFree": true,
+      "vegetarian": false,
+      "containsPork": false
+    },
+    "allergens": [],
+    "serveWith": [
+      "چلوی زعفرانی",
+      "سبزی خوردن",
+      "ترشی",
+      "ماست"
+    ],
+    "variations": [
+      {
+        "how": "چند بادمجانِ کوچک را سرخ کنید و در ۱۵ دقیقهٔ آخر روی خورش بچینید یا لای آن بگذارید—سنتِ قیمه بادمجانی.",
+        "name": "قیمه‌ریزهٔ بادمجان",
+        "swapsIngredientIds": [
+          "ing_eggplant_raw"
+        ]
+      },
+      {
+        "how": "به‌جای گوشت گوسفند از گوشت گوساله استفاده کنید؛ کم‌چرب‌تر و سبک‌تر.",
+        "name": "نسخهٔ گوساله",
+        "swapsIngredientIds": [
+          "ing_lamb_meat_raw→ing_veal_meat_raw"
+        ]
+      },
+      {
+        "how": "گوشت را با قارچ دکمه‌ای جایگزین کنید؛ قارچ را جدا تفت دهید تا آبش بکشد و اومامی بدهد.",
+        "name": "نسخهٔ گیاهی با قارچ",
+        "swapsIngredientIds": [
+          "ing_lamb_meat_raw→ing_button_mushroom_raw"
+        ]
+      }
+    ],
+    "whyItWorks": [
+      {
+        "point": "پختِ جداگانهٔ لپه، خورشِ وانرفته می‌دهد",
+        "explanation": "نشاستهٔ لپه حدود ۶۰ تا ۸۰ درجهٔ سانتی‌گراد ژلاتینه و نرم می‌شود؛ اگر لپه را از همان اول با گوشت بجوشانید، تا نرم‌شدنِ گوشت بیش‌از‌حد می‌پزد و وا می‌رود. پختِ جدا تا «نرمیِ سالم» و افزودنِ دیرهنگام، دانه‌ها را سالم نگه می‌دارد.",
+        "testedBecause": "McGee — ژلاتیناسیون نشاسته"
+      },
+      {
+        "point": "تفت‌دادنِ گوشتِ نگینی رنگ و عطر می‌سازد",
+        "explanation": "وقتی سطحِ خشکِ گوشت در روغنِ داغ (حدود ۱۴۰ تا ۱۶۵ درجه به‌بالا) قهوه‌ای می‌شود، واکنش میلارد ترکیبات عطر و طعمِ گوشتی می‌سازد؛ این طعم است، نه «بستنِ آب گوشت». ریز بودنِ نگین‌ها سطحِ بیشتری برای این واکنش می‌دهد.",
+        "testedBecause": "López-Alt — واکنش میلارد"
+      },
+      {
+        "point": "تفت‌دادنِ رب خامیِ آن را می‌گیرد",
+        "explanation": "چند دقیقه تفتِ رب گوجه در روغن، آبِ آن را تبخیر و قندهایش را کمی کاراملی می‌کند؛ این کار طعمِ تیز و خامِ رب را به طعمی عمیق و رنگی روشن تبدیل می‌کند. رنگ‌دانهٔ گوجه (لیکوپن) چربی‌دوست است و در روغن بهتر آزاد می‌شود.",
+        "testedBecause": "ATK — بلوم‌کردنِ رب در چربی"
+      },
+      {
+        "point": "جوشِ ملایم گوشت را نرم می‌کند، جوشِ تند سفت",
+        "explanation": "گوشتِ خورشی پُر از کلاژن است؛ در پختِ آرامِ مرطوب حدود ۸۰ تا ۹۵ درجه، کلاژن آرام‌آرام به ژلاتین تبدیل می‌شود و گوشت لطیف می‌شود. جوشِ تند ماهیچه‌ها را زود منقبض و خشک می‌کند.",
+        "testedBecause": "McGee — تبدیل کلاژن به ژلاتین"
+      },
+      {
+        "point": "سوراخ‌کردنِ لیمو عمانی، عطرِ آن را آزاد می‌کند",
+        "explanation": "لیمو عمانی پوستهٔ سفت و خشکی دارد؛ سوراخ‌کردنِ آن اجازه می‌دهد آبِ خورش به درون نفوذ کند و ترکیبات معطر و اسیدهای داخلش به‌مرور در خورش حل شود، بدون اینکه تلخیِ هسته‌ها یک‌جا آزاد شود."
+      }
+    ],
+    "ingredients": [
+      {
+        "name": "گوشت گوسفند",
+        "role": "پروتئین اصلی",
+        "swap": "گوشت گوساله یا سردست گاو (هم‌نقش پروتئینی)؛ گیاهی: قارچ دکمه‌ای",
+        "swaps": [
+          {
+            "name": "گوشت گوساله",
+            "note": "هم‌نقش؛ کمی کم‌چرب‌تر، زمان پخت مشابه",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_veal_meat_raw"
+          },
+          {
+            "name": "سردست گاو",
+            "note": "هم‌نقش؛ ممکن است کمی بیشتر بپزد",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_beef_chuck_raw"
+          },
+          {
+            "name": "ران بوقلمون",
+            "note": "گزینهٔ کم‌چرب‌تر؛ خشک‌تر است، روغن بیشتری بزنید و کمتر بپزید",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_turkey_thigh_raw"
+          },
+          {
+            "name": "قارچ دکمه‌ای",
+            "note": "گزینهٔ گیاهی؛ اومامی می‌دهد ولی پروتئین کمتر، آب بیشتری دارد—جدا تفت دهید",
+            "ratio": "۱.۵:۱",
+            "ingredientId": "ing_button_mushroom_raw"
+          }
+        ],
+        "buyTip": "گوشتِ سردست یا ماهیچهٔ گوسفند با کمی چربی بهترین نتیجه را می‌دهد؛ چربیِ کم خورش را خشک می‌کند.",
+        "volume": "حدود ۲ پیمانه نگینیِ ریز",
+        "weightG": 400,
+        "optional": false,
+        "component": "خورش",
+        "prepState": "نگینیِ ریز خردشده (حدود ۱ سانتی‌متر)",
+        "criticalRole": true,
+        "ingredientId": "ing_lamb_meat_raw"
+      },
+      {
+        "name": "لپه",
+        "role": "حبوبات / بافت‌دهنده",
+        "swap": "دال چانا یا لپه سبز (هم‌بافت)؛ عدس قرمز مناسب نیست چون وا می‌رود",
+        "swaps": [
+          {
+            "name": "دال چانا",
+            "note": "نزدیک‌ترین جایگزین؛ شکل و بافتِ مشابه نگه می‌دارد",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_chana_dal_dry"
+          },
+          {
+            "name": "لپه سبز",
+            "note": "هم‌نقش؛ کمی سبزتر و زودپزتر",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_green_split_peas_dry"
+          },
+          {
+            "name": "دال توور",
+            "note": "هم‌خانواده؛ بافتِ مشابه، کمی نرم‌تر",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_toor_dal_dry"
+          }
+        ],
+        "buyTip": "لپهٔ تازه و یک‌اندازه بخرید تا یکنواخت بپزد؛ لپهٔ کهنه دیر و ناهماهنگ نرم می‌شود.",
+        "volume": "حدود ۲/۳ پیمانه",
+        "weightG": 120,
+        "optional": false,
+        "component": "خورش",
+        "prepState": "خشک؛ شسته و در صورت امکان ۱ ساعت خیسانده",
+        "criticalRole": true,
+        "ingredientId": "ing_split_peas_dry"
+      },
+      {
+        "name": "پیاز",
+        "role": "آروماتیک / پایه",
+        "swap": "شالوت یا تره‌فرنگی (هم‌نقش پایهٔ آروماتیک)",
+        "swaps": [
+          {
+            "name": "شالوت",
+            "note": "ملایم‌تر و کمی شیرین‌تر؛ هم‌نقش پایه‌ای",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_shallot_raw"
+          },
+          {
+            "name": "تره‌فرنگی",
+            "note": "ملایم‌تر؛ فقط قسمت سفید را استفاده کنید",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_leek_raw"
+          }
+        ],
+        "buyTip": "پیازِ سفت و خشک با لایه‌های متراکم بهتر و یکنواخت‌تر تفت می‌خورد.",
+        "volume": "۲ عدد متوسط",
+        "weightG": 220,
+        "optional": false,
+        "component": "پایهٔ خورش",
+        "prepState": "ریز خردشده یا نگینی",
+        "criticalRole": false,
+        "ingredientId": "ing_onion_raw"
+      },
+      {
+        "name": "رب گوجه‌فرنگی",
+        "role": "رنگ و طعمِ پایه / اسید",
+        "swap": "پاساتای گوجه‌فرنگی (با تبخیر بیشتر تا غلیظ شود)",
+        "swaps": [
+          {
+            "name": "پاساتای گوجه‌فرنگی",
+            "note": "رقیق‌تر است؛ مقدار بیشتری بزنید و بیشتر بجوشانید تا غلیظ شود",
+            "ratio": "۳:۱",
+            "ingredientId": "ing_tomato_passata"
+          }
+        ],
+        "buyTip": "ربِ غلیظ و سرخ‌رنگ بدون آبِ اضافه، رنگ و طعمِ بهتری می‌دهد.",
+        "volume": "۲ قاشق غذاخوری",
+        "weightG": 36,
+        "optional": false,
+        "component": "پایهٔ خورش",
+        "prepState": "آماده؛ بدون نیاز به آماده‌سازی",
+        "criticalRole": false,
+        "ingredientId": "ing_tomato_paste"
+      },
+      {
+        "name": "لیمو عمانی",
+        "role": "اسید / آروماتیک",
+        "swap": "آبِ لیموی تازه یا تمر هندی (ترشیِ جایگزین؛ عمقِ عمانی کامل نمی‌شود)",
+        "swaps": [
+          {
+            "name": "لیمو سبز تازه",
+            "note": "آب و رندهٔ پوست بزنید؛ تازگی دارد اما عمقِ تخمیریِ لیمو عمانی را ندارد",
+            "ratio": "۱ لیمو ≈ ۱ عمانی",
+            "ingredientId": "ing_lime_raw"
+          },
+          {
+            "name": "تمر هندی",
+            "note": "ترشیِ عمیق می‌دهد؛ کم‌کم اضافه کنید",
+            "ratio": "کم",
+            "ingredientId": "ing_tamarind_paste"
+          },
+          {
+            "name": "سماق",
+            "note": "ترشیِ ملایم؛ جایگزینِ ضعیف‌تر، در انتها بزنید",
+            "ratio": "کم",
+            "ingredientId": "ing_sumac_ground"
+          }
+        ],
+        "buyTip": "لیمو عمانیِ سبک و توخالی عطرِ بهتری دارد؛ نمونه‌های سنگین و خیلی تیره ممکن است تلخ باشند.",
+        "volume": "۳ عدد",
+        "weightG": 12,
+        "optional": false,
+        "component": "طعم‌دهندهٔ اصلی",
+        "prepState": "شسته و چند جای آن سوراخ‌شده",
+        "criticalRole": false,
+        "ingredientId": "ing_dried_lime_whole"
+      },
+      {
+        "name": "روغن آفتابگردان",
+        "role": "چربی / محیطِ سرخ‌کردن",
+        "swap": "روغن حیوانی/گی (چربیِ سنتی، عطر بیشتر)",
+        "swaps": [
+          {
+            "name": "روغن حیوانی (گی)",
+            "note": "سنتی‌تر؛ عطر و طعمِ بیشتری می‌دهد",
+            "ratio": "۱:۱",
+            "ingredientId": "ing_ghee"
+          }
+        ],
+        "buyTip": "روغنی با نقطهٔ دودِ بالا برای تفتِ پیاز و رب مناسب‌تر است.",
+        "volume": "۳ قاشق غذاخوری",
+        "weightG": 41,
+        "optional": false,
+        "component": "پایهٔ خورش",
+        "prepState": "آماده",
+        "criticalRole": false,
+        "ingredientId": "ing_sunflower_oil"
+      },
+      {
+        "name": "زردچوبه",
+        "role": "رنگ و عطرِ پایه",
+        "swap": "بدونِ جایگزینِ واقعی؛ عطرِ زردچوبه یکتاست",
+        "swaps": [],
+        "buyTip": "زردچوبهٔ تازه و خوش‌رنگ عطرِ خاکی‌تری دارد؛ زردچوبهٔ کهنه بی‌اثر می‌شود.",
+        "volume": "۱ قاشق چای‌خوری",
+        "weightG": null,
+        "optional": false,
+        "component": "ادویه",
+        "prepState": "آسیاب‌شده",
+        "criticalRole": false,
+        "ingredientId": "ing_turmeric_ground"
+      },
+      {
+        "name": "دارچین",
+        "role": "عطرِ گرم (اختیاری)",
+        "swap": "اختیاری؛ می‌توان حذف کرد",
+        "swaps": [],
+        "buyTip": "دارچینِ تازه‌آسیاب عطرِ قوی‌تری دارد؛ کم بزنید تا بر خورش غالب نشود.",
+        "volume": "۱/۲ قاشق چای‌خوری",
+        "weightG": null,
+        "optional": true,
+        "component": "ادویه",
+        "prepState": "آسیاب‌شده",
+        "criticalRole": false,
+        "ingredientId": "ing_cinnamon_ground"
+      },
+      {
+        "name": "نمک",
+        "role": "چاشنی",
+        "swap": "—",
+        "swaps": [],
+        "buyTip": "نمک را در انتهای پخت تنظیم کنید؛ لیمو عمانی و رب هم شوری را تغییر می‌دهند.",
+        "volume": "حدود ۱ قاشق چای‌خوری (به‌مزه)",
+        "weightG": null,
+        "optional": false,
+        "component": "ادویه",
+        "prepState": "آماده",
+        "criticalRole": false,
+        "ingredientId": "ing_salt_table"
+      },
+      {
+        "name": "فلفل سیاه",
+        "role": "چاشنی / تندیِ ملایم",
+        "swap": "—",
+        "swaps": [],
+        "buyTip": "فلفلِ تازه‌آسیاب عطرِ بیشتری دارد.",
+        "volume": "۱/۲ قاشق چای‌خوری",
+        "weightG": null,
+        "optional": true,
+        "component": "ادویه",
+        "prepState": "آسیاب‌شده",
+        "criticalRole": false,
+        "ingredientId": "ing_black_pepper_ground"
+      }
+    ],
+    "nourishment": {
+      "note": "ترکیبِ گوشت و لپه پروتئین و فیبرِ خوبی می‌دهد؛ برای کم‌کردنِ چربی می‌توان گوشتِ کم‌چرب‌تر یا قارچ استفاده کرد.",
+      "attributes": [
+        "پُرپروتئین",
+        "منبع فیبر گیاهی"
+      ],
+      "disclaimer": "این اطلاعات عمومی و آشپزی است، نه توصیهٔ پزشکی."
+    },
+    "schemaVersion": "2.1",
+    "skillsLearned": [
+      "نگینی خردکردنِ یکنواختِ گوشت",
+      "بلوم‌کردن (تفت‌دادن) رب گوجه برای گرفتنِ خامی",
+      "پختِ جداگانهٔ حبوبات تا «نرمیِ سالم» بدون وارفتن",
+      "تنظیمِ شعله برای جوشِ ملایم در خورش"
+    ],
+    "troubleshooting": [
+      {
+        "fix": "لپه را دفعهٔ بعد جدا بپزید و فقط در انتها اضافه کنید؛ پختِ طولانیِ لپه با گوشت آن را وا می‌برد.",
+        "problem": "خورش لجن و لزج شد",
+        "stepRef": 6
+      },
+      {
+        "fix": "با شعلهٔ ملایم و آبِ کافی بیشتر بجوشانید؛ جوشِ تند گوشت را سفت می‌کند.",
+        "problem": "گوشت سفت و خشک ماند",
+        "stepRef": 5
+      },
+      {
+        "fix": "دفعهٔ بعد رب را ۲ تا ۳ دقیقه پیش از افزودنِ آب در روغن خوب تفت دهید.",
+        "problem": "خورش طعمِ تیز و خام رب می‌دهد",
+        "stepRef": 4
+      },
+      {
+        "fix": "لیمو عمانی را زیادی نجوشانید و اگر شکست، هسته‌هایش را درآورید؛ تلخیِ هسته در خورش می‌نشیند.",
+        "problem": "خورش تلخ شد",
+        "stepRef": 5
+      }
+    ]
+  },
+  "containsPork": false,
+  "ingredients": [
+    {
+      "id": "248f226f-86e6-4e76-acff-db6b3e38816f",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_black_pepper_ground",
+      "name": "فلفل سیاه آسیاب‌شده",
+      "amount": "0.5",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"line\":\"فلفل سیاه آسیاب‌شده\",\"ingredientId\":\"ing_black_pepper_ground\",\"code\":\"black_pepper_ground\",\"unit\":\"tsp\",\"preparation\":\"تازه آسیاب‌شده\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 10
+    },
+    {
+      "id": "8470b852-8cf3-49ce-9ea2-5a270edb9876",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_salt_table",
+      "name": "نمک خوراکی",
+      "amount": "1",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"line\":\"نمک\",\"ingredientId\":\"ing_salt_table\",\"code\":\"salt_table\",\"unit\":\"tsp\",\"preparation\":\"برای تنظیم\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 9
+    },
+    {
+      "id": "293ed92f-5f06-4d25-af10-14ed7ed781d0",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_sunflower_oil",
+      "name": "روغن آفتابگردان",
+      "amount": "3",
+      "unit": "قاشق غذاخوری",
+      "notes": "{\"line\":\"روغن آفتابگردان\",\"ingredientId\":\"ing_sunflower_oil\",\"code\":\"sunflower_oil\",\"unit\":\"tbsp\",\"preparation\":\"برای تفت\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 8
+    },
+    {
+      "id": "a54b5adc-4317-49b5-bea9-d091a6f987e0",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_turmeric_ground",
+      "name": "زردچوبه آسیاب‌شده",
+      "amount": "1",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"line\":\"زردچوبه\",\"ingredientId\":\"ing_turmeric_ground\",\"code\":\"turmeric_ground\",\"unit\":\"tsp\",\"preparation\":\"برای پایه\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 7
+    },
+    {
+      "id": "912c55dc-86bd-4213-8899-c13deaf6a9bd",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_cinnamon_ground",
+      "name": "دارچین آسیاب‌شده",
+      "amount": "0.5",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"line\":\"دارچین آسیاب‌شده\",\"ingredientId\":\"ing_cinnamon_ground\",\"code\":\"cinnamon_ground\",\"unit\":\"tsp\",\"preparation\":\"برای عطر\",\"optional\":true,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 6
+    },
+    {
+      "id": "ca3dcf71-258e-48ed-83e0-e920f1ff1e74",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_onion_raw",
+      "name": "پیاز خام",
+      "amount": "2",
+      "unit": "عدد",
+      "notes": "{\"line\":\"پیاز زرد\",\"ingredientId\":\"ing_onion_raw\",\"code\":\"onion_raw\",\"unit\":\"piece\",\"preparation\":\"ریز خرد\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 5
+    },
+    {
+      "id": "152195d7-8203-428e-a200-c865c256bc85",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_dried_lime_whole",
+      "name": "لیموعمانی کامل",
+      "amount": "3",
+      "unit": "عدد",
+      "notes": "{\"line\":\"لیمو عمانی\",\"ingredientId\":\"ing_dried_lime_whole\",\"code\":\"dried_lime_whole\",\"unit\":\"piece\",\"preparation\":\"سوراخ‌شده\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 4
+    },
+    {
+      "id": "6d0226a4-d407-4757-9ff9-c5624ba4c735",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_tomato_paste",
+      "name": "رب گوجه‌فرنگی",
+      "amount": "2",
+      "unit": "قاشق غذاخوری",
+      "notes": "{\"line\":\"رب گوجه فرنگی\",\"ingredientId\":\"ing_tomato_paste\",\"code\":\"tomato_paste\",\"unit\":\"tbsp\",\"preparation\":\"برای رنگ و طعم\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 3
+    },
+    {
+      "id": "33ec89ef-6632-42ad-9a21-77e7b93e108e",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_split_peas_dry",
+      "name": "لپه خشک",
+      "amount": "120",
+      "unit": "گرم",
+      "notes": "{\"line\":\"لپه\",\"ingredientId\":\"ing_split_peas_dry\",\"code\":\"split_peas_dry\",\"unit\":\"g\",\"preparation\":\"شسته\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 2
+    },
+    {
+      "id": "109d18d5-cafc-4dd1-8f5d-c7050bb849f1",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "ingredientId": "ing_lamb_meat_raw",
+      "name": "گوشت گوسفند خام",
+      "amount": "400",
+      "unit": "گرم",
+      "notes": "{\"line\":\"گوشت گوسفند\",\"ingredientId\":\"ing_lamb_meat_raw\",\"code\":\"lamb_meat_raw\",\"unit\":\"g\",\"preparation\":\"ریزْنگینی خردشده\",\"optional\":false,\"confidence\":0.96,\"resolverNote\":\"manual_verified_dictionary_code_match\"}",
+      "order": 1
+    }
+  ],
+  "steps": [
+    {
+      "id": "451cac86-25a0-4d7f-803f-c45c6729e753",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "تفت پیاز و گوشت",
+      "instruction": "پیازِ ریز را با زردچوبه نرم کنید و گوشتِ نگینی را تفت دهید تا رنگ ببندد.",
+      "duration": 10,
+      "imageUrl": null,
+      "order": 1
+    },
+    {
+      "id": "1cd3b6fe-7e22-4ff1-97d9-b077eebb4004",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "بلوم‌کردن رب",
+      "instruction": "رب گوجه را چند لحظه در روغن تفت دهید تا خامی‌اش برود و رنگ باز کند.",
+      "duration": 3,
+      "imageUrl": null,
+      "order": 2
+    },
+    {
+      "id": "caa19696-c828-4616-ae3d-a1fab1570632",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "پختِ گوشت با لیمو عمانی",
+      "instruction": "آب و لیموعمانیِ سوراخ‌شده را بریزید و گوشت را با شعلهٔ ملایم نرم کنید.",
+      "duration": 45,
+      "imageUrl": null,
+      "order": 3
+    },
+    {
+      "id": "5a826d66-8ecb-45e1-9c54-31e84ff16f99",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "پختِ جداگانهٔ لپه",
+      "instruction": "لپه را جداگانه تا نرمیِ سالم بپزید و سپس به خورش اضافه کنید تا وا نرود.",
+      "duration": 20,
+      "imageUrl": null,
+      "order": 4
+    },
+    {
+      "id": "93c28ba2-7524-46c3-84a4-54cb3b879908",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "جاافتادن و سرو",
+      "instruction": "دارچین (در صورت تمایل)، نمک و فلفل را بزنید، بگذارید خورش جا بیفتد و با برنج سرو کنید.",
+      "duration": 10,
+      "imageUrl": null,
+      "order": 5
+    }
+  ],
+  "searchTerms": [
+    {
+      "id": "064a105a-7ee4-4ae0-9fe4-c6b6954c8867",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "gheymeh-rizeh-esfahani"
+    },
+    {
+      "id": "9fa14cff-c426-468b-acc8-89c743481fd5",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "persian"
+    },
+    {
+      "id": "30e81435-6a44-4637-a17b-daefc2819bb8",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "lunch"
+    },
+    {
+      "id": "1bd4f153-5455-4d20-8972-53f3eacf3c2e",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "dinner"
+    },
+    {
+      "id": "a248f651-6b63-430e-9f9e-6470e34a9c2b",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "stew"
+    },
+    {
+      "id": "44319819-2e7b-4739-a8d3-8b199f4188f1",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "قیمه‌ریزه"
+    },
+    {
+      "id": "f9dcac07-f1ea-471a-ac80-134c79e20b53",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "اصفهانی"
+    },
+    {
+      "id": "64e73935-24c8-4841-9193-598c8ff68faa",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "لپه"
+    },
+    {
+      "id": "a5c1be85-5155-4f9d-b5f1-b472c7e92eaf",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "لیمو عمانی"
+    },
+    {
+      "id": "6446e87a-eaff-44ae-b284-742663bffe7a",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "protein_forward"
+    },
+    {
+      "id": "33a38fe9-7530-44f6-9180-94579a82a7cb",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "قیمه‌ریزه اصفهانی"
+    },
+    {
+      "id": "a386bb62-3eed-42c8-81ef-16ccbc7b18d2",
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "term": "خورشِ گوشتِ ریزْنگینی و لپه با لیمو عمانی"
+    }
+  ],
+  "nutrition": {
+    "id": "099d2c49-72f1-4677-81fb-1d2d35d83aa7",
+    "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+    "calories": 390,
+    "protein": 27,
+    "carbs": 30,
+    "fat": 17,
+    "fiber": null,
+    "source": null
+  }
+}

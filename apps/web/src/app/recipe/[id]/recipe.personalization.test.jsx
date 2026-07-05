@@ -6,7 +6,7 @@ import { renderWithProviders } from '../../../test/renderWithProviders';
 const READY = {
   id: '1', title: 'کوکو سبزی', imageUrl: null, categories: [], cookTimeText: '۹۰ دقیقه',
   difficultyText: 'متوسط', servingsText: '۴ نفر', description: '', author: '',
-  ingredients: [{ name: 'کره', amountText: '۲ قاشق' }, { name: 'پیاز', amountText: '۱ عدد' }],
+  ingredients: [{ name: 'کره', amountText: '۲ قاشق' }, { name: 'پیاز', amountText: '۱ عدد' }, { name: 'جعفری اختیاری', amountText: 'کمی' }],
   steps: [], tips: [], faq: [], tools: [], mealTypes: [],
   chefTips: [], commonMistakes: [], servingSuggestions: [], authoredSwaps: [],
 };
@@ -39,17 +39,18 @@ describe('Recipe Detail — apply substitution (Phase 2)', () => {
     // grounded option + its WHY appear
     const option = await screen.findByText('روغن زیتون');
     expect(screen.getByText('جایگزین ثبت‌شده برای کره')).toBeInTheDocument();
-    // apply it → the recipe now shows the swapped name, marked «به‌جای کره»
     fireEvent.click(option);
+    expect(screen.getByRole('button', { name: /اعمال جایگزین/ })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: /اعمال جایگزین/ }));
     expect(await screen.findByText('جایگزین شد: کره ← روغن زیتون')).toBeInTheDocument();
     expect(screen.getByText('به‌جای کره')).toBeInTheDocument();
   });
 
   it('removing an ingredient marks it «حذف شد» and offers an undo', async () => {
     renderPage();
-    fireEvent.click(screen.getByRole('button', { name: 'حذف پیاز' }));
+    fireEvent.click(screen.getByRole('button', { name: 'حذف جعفری اختیاری' }));
     expect(await screen.findByText('حذف شد')).toBeInTheDocument();
     // the action flips to a restore affordance
-    expect(screen.getByRole('button', { name: 'برگرداندن پیاز' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'برگرداندن جعفری اختیاری' })).toBeInTheDocument();
   });
 });

@@ -13,6 +13,10 @@ describe('tokenize', () => {
     expect(tokenize('غذا با مرغ و برنج')).toEqual(['مرغ', 'برنج']);
     expect(tokenize('')).toEqual([]);
   });
+  it('normalizes Persian ZWNJ so common spaced searches match half-space titles', () => {
+    expect(tokenize('مرغ شکم‌پر')).toEqual(['مرغ', 'شکم', 'پر']);
+    expect(tokenize('مرغ شکم پر')).toEqual(['مرغ', 'شکم', 'پر']);
+  });
 });
 
 describe('buildTfidfIndex', () => {
@@ -47,6 +51,17 @@ describe('searchIndex — meaning-aware ranking + WHY + honest empty', () => {
   });
   it('multi-term query weights rare terms (lentil → vegan soup top)', () => {
     expect(searchIndex(idx, 'lentil soup')[0].id).toBe('r2');
+  });
+  it('finds a Persian half-space recipe by the user-typed spaced phrase', () => {
+    const persianIdx = buildTfidfIndex([
+      { id: 'stuffed-chicken', title: 'مرغ شکم‌پر', text: 'مرغ شکم‌پر مرغ شکم‌پر گردو زرشک رب انار' },
+      { id: 'chicken-kebab', title: 'کباب مرغ', text: 'کباب مرغ مرغ سیخ زعفران' },
+      { id: 'stuffed-date', title: 'خرما پر شده', text: 'خرما پر شده پنیر خامه‌ای' },
+    ]);
+
+    const hits = searchIndex(persianIdx, 'مرغ شکم پر');
+    expect(hits[0].id).toBe('stuffed-chicken');
+    expect(hits[0].matchedTerms).toEqual(expect.arrayContaining(['مرغ', 'شکم', 'پر']));
   });
 });
 

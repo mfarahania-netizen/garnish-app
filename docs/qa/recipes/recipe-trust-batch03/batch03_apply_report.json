@@ -1,0 +1,226 @@
+{
+  "generatedAt": "2026-07-04T20:02:48.874Z",
+  "countsBefore": {
+    "totalRecipes": 639,
+    "activePublic": 542,
+    "draftPrivate": 97,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "countsAfter": {
+    "totalRecipes": 639,
+    "activePublic": 562,
+    "draftPrivate": 77,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "restored": 20,
+  "patched": 2,
+  "stillReviewOnly": 0,
+  "usedMarkers": [
+    {
+      "slug": "ghanbar-polo-shirazi",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "label": "گردو خام"
+    },
+    {
+      "slug": "ghanbar-polo-shirazi",
+      "ingredientId": "ing_pomegranate_molasses",
+      "code": "pomegranate_molasses",
+      "label": "رب انار"
+    },
+    {
+      "slug": "vavishka",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "label": "تخم‌مرغ کامل"
+    }
+  ],
+  "regression": {
+    "gamaj": "PASS",
+    "qeymeh": "PASS"
+  },
+  "rows": [
+    {
+      "scope": "A",
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "slug": "ghanbar-polo-shirazi",
+      "titleFa": "قنبرپلو شیرازی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": true
+    },
+    {
+      "scope": "A",
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "vavishka",
+      "titleFa": "واویشکا",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": true
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1072_b55bdfe7",
+      "slug": "eshkeneh",
+      "titleFa": "اشکنه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_121_b6f01192",
+      "slug": "omelet-rob",
+      "titleFa": "املت رب",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1290_f5fc285f",
+      "slug": "halim-bademjan",
+      "titleFa": "حلیم بادمجان",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "slug": "halim-gandom",
+      "titleFa": "حلیم گندم",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+      "slug": "chicken-and-mushroom",
+      "titleFa": "خوراک مرغ و قارچ",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "slug": "cream-of-chicken-soup",
+      "titleFa": "سوپ شیر",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_2054_be491f02",
+      "slug": "gheymeh-sibzamini",
+      "titleFa": "قیمه سیب زمینی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1195_4b547f19",
+      "slug": "persian-makaroni",
+      "titleFa": "ماکارونی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_197_dbaa9b9a",
+      "slug": "chelo-mahicheh",
+      "titleFa": "چلو ماهیچه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "slug": "kotlet-goosht",
+      "titleFa": "کتلت گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1743_005c3739",
+      "slug": "kashk-bademjan",
+      "titleFa": "کشک بادمجان",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1528_32041352",
+      "slug": "kaleh-pacheh",
+      "titleFa": "کله پاچه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_134_34e1816f",
+      "slug": "kuku-bademjan",
+      "titleFa": "کوکو بادمجان",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_2049_765e338a",
+      "slug": "kuku-sabzi",
+      "titleFa": "کوکو سبزی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1270_70cc3cff",
+      "slug": "yatimcheh",
+      "titleFa": "یتیمچه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_115_ba80ef7c",
+      "slug": "tahandaz-morgh",
+      "titleFa": "ته‌انداز مرغ",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_164_8367ec24",
+      "slug": "tahchin-goosht-bademjan",
+      "titleFa": "ته‌چین گوشت و بادمجان",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "slug": "fried-chicken",
+      "titleFa": "مرغ سوخاری",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    }
+  ]
+}

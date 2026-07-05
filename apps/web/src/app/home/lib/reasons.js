@@ -153,7 +153,7 @@ const CATEGORY_LABELS = {
   side_dish: 'مخلفات', side: 'مخلفات', appetizer: 'پیش‌غذا', starter: 'پیش‌غذا',
   dessert: 'دسر', sweet: 'شیرینی', drink: 'نوشیدنی', beverage: 'نوشیدنی', smoothie: 'اسموتی',
   soup: 'سوپ', stew: 'خورشت', salad: 'سالاد', bread: 'نان', sauce: 'سس', dip: 'دیپ',
-  snack: 'میان‌وعده', condiment: 'چاشنی', pickle: 'ترشی',
+  snack: 'میان‌وعده', condiment: 'ادویه و چاشنی', seasoning: 'ادویه و چاشنی', spice: 'ادویه و چاشنی', spices: 'ادویه و چاشنی', salt: 'ادویه و چاشنی', pickle: 'ترشی',
   // meal type
   breakfast: 'صبحانه', brunch: 'بنونه', lunch: 'ناهار', dinner: 'شام', supper: 'شام',
   // diet / attributes

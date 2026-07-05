@@ -3,6 +3,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { tokenize } from './search/tfidf';
 
 @Injectable()
 export class RecipesService {
@@ -71,21 +72,55 @@ export class RecipesService {
   }
 
   async search(q: string, limit = 10) {
+    const query = String(q || '').trim();
+    const tokens = tokenize(query).slice(0, 6);
+    if (!query || tokens.length === 0) return [];
+
     const recipes = await this.prisma.recipe.findMany({
       where: {
         // SECURITY (advisor audit): unreviewed UGC (status:'pending') must not surface in public search.
         status: 'active',
         isPublic: true,
-        OR: [
-          { title: { contains: q } },
-          { description: { contains: q } },
-          { ingredients: { some: { name: { contains: q } } } },
-        ],
+        OR: tokens.flatMap((term) => [
+          { title: { contains: term } },
+          { description: { contains: term } },
+          { ingredients: { some: { name: { contains: term } } } },
+          { searchTerms: { some: { term: { contains: term } } } },
+        ]),
       },
-      take: limit,
-      include: { ingredients: { include: { ingredient: true }, take: 3 } },
+      take: Math.min(500, Math.max(limit * 8, limit)),
+      include: { ingredients: { include: { ingredient: true }, take: 5 }, searchTerms: true, nutrition: true },
     });
-    return recipes.map((recipe) => this.presentRecipe(recipe));
+    const qTokens = new Set(tokens);
+    const scored = recipes
+      .map((recipe) => {
+        const titleTokens = tokenize(recipe.title);
+        const searchTermTokens = (recipe.searchTerms || []).flatMap((t: any) => tokenize(t.term));
+        const ingredientTokens = (recipe.ingredients || []).flatMap((ing: any) => tokenize(ing.name || ing.ingredient?.nameFa || ing.ingredient?.nameEn));
+        const allTokens = [...titleTokens, ...searchTermTokens, ...ingredientTokens, ...tokenize(recipe.description)];
+        const all = new Set(allTokens);
+        const title = new Set(titleTokens);
+        const termSet = new Set(searchTermTokens);
+        let coverage = 0;
+        let titleCoverage = 0;
+        let searchTermCoverage = 0;
+        for (const term of qTokens) {
+          if (all.has(term)) coverage += 1;
+          if (title.has(term)) titleCoverage += 1;
+          if (termSet.has(term)) searchTermCoverage += 1;
+        }
+        const titlePhrase = titleTokens.join(' ');
+        const queryPhrase = tokens.join(' ');
+        const exactTitle = titlePhrase === queryPhrase ? 100 : titlePhrase.includes(queryPhrase) ? 40 : 0;
+        return {
+          recipe,
+          score: exactTitle + titleCoverage * 10 + searchTermCoverage * 5 + coverage,
+        };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score || String(a.recipe.title || '').localeCompare(String(b.recipe.title || ''), 'fa') || String(a.recipe.id).localeCompare(String(b.recipe.id)));
+
+    return scored.slice(0, limit).map(({ recipe }) => this.presentRecipe(recipe));
   }
 
   async findOne(id: string) {

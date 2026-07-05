@@ -1,0 +1,513 @@
+{
+  "generatedAt": "2026-07-04T16:32:32.921Z",
+  "databaseUrlMasked": "postgresql://***@localhost:5432/garnish_db?schema=public",
+  "productionTouched": false,
+  "counts": {
+    "totalRecipes": 639,
+    "activePublic": 589,
+    "draftPrivate": 50,
+    "ingredientCount": 1084,
+    "mezeTotal": 50,
+    "mezePublic": 0,
+    "mezeNonDraft": 0
+  },
+  "candidateRecipes": [
+    {
+      "id": "garnish_recipe_global_143_135_2919e78e",
+      "slug": "roman-spaghetti-carbonara",
+      "title": "اسپاگتی کاربونارای رومی",
+      "status": "active",
+      "isPublic": true,
+      "ingredients": 6,
+      "steps": 6
+    },
+    {
+      "id": "garnish_recipe_fa_170_44f0d2ad",
+      "slug": "gheymeh-rizeh-esfahani",
+      "title": "قیمه‌ریزه اصفهانی",
+      "status": "active",
+      "isPublic": true,
+      "ingredients": 13,
+      "steps": 7
+    },
+    {
+      "id": "garnish_lite_fa_079_999c19be",
+      "slug": "napa-cabbage-kimchi",
+      "title": "کیمچی کلم آماده",
+      "status": "active",
+      "isPublic": true,
+      "ingredients": 1,
+      "steps": 3
+    },
+    {
+      "id": "garnish_recipe_global_143_041_33abbd3b",
+      "slug": "korean-napa-cabbage-kimchi",
+      "title": "کیمچی کلم چینی",
+      "status": "active",
+      "isPublic": true,
+      "ingredients": 12,
+      "steps": 5
+    },
+    {
+      "id": "garnish_recipe_fa_104_7b4ced78",
+      "slug": "gamaj-kabab",
+      "title": "گمج کباب",
+      "status": "active",
+      "isPublic": true,
+      "ingredients": 13,
+      "steps": 7
+    }
+  ],
+  "meze": [
+    {
+      "id": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "title": "دیپ فتا و زیتون با سیر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 6,
+      "steps": 4
+    },
+    {
+      "id": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "title": "فتای همزده با عسل تند و پسته",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "title": "تیرکافتری؛ دیپ فتای تند یونانی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_04_labneh-with-zaatar-and-olive-oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "title": "لبنه با زعتر و روغن زیتون",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 4
+    },
+    {
+      "id": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "title": "لبنه چغندر و گردو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "title": "محمره فلفل کبابی و گردو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "title": "دیپ هویج کبابی و هریسا",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "title": "دیپ لوبیا سفید با رزماری",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "title": "قارچ کره ای سیر و لیمو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 4
+    },
+    {
+      "id": "meze50_10_halloumi-bites-with-honey-sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "title": "مکعب های هالومی با عسل و کنجد",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 4
+    },
+    {
+      "id": "meze50_11_crispy-feta-phyllo-bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "title": "لقمه فتا در خمیر فیلو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "title": "فلفل مینی شکم پر با فتا و سبزی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "title": "ازمه ترکی؛ سالسای تند سبزیجات",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "title": "حیدری؛ دیپ ماست و نعناع",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_15_skordalia-garlic-potato-dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "title": "اسکوردالیا؛ دیپ سیب زمینی و سیر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "title": "کروستینی قارچ و آویشن",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_17_fried-mozzarella-bites",
+      "slug": "fried-mozzarella-bites",
+      "title": "موتزارلای سوخاری لقمه ای",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_18_dutch-cheese-souffle-bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "title": "کاسوفله پنیر هلندی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_19_chili-cheese-potato-wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "title": "قاچ سیب زمینی چیلی چیز",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "title": "گل کلم با سس بوفالو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_21_zaatar-crispy-chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "title": "نخود برشته زعتر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "title": "آجیل بوداده تند و دودی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "title": "خیارشور سریع خانگی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_24_jalapeno-popper-bites",
+      "slug": "jalapeno-popper-bites",
+      "title": "لقمه هالوپینو پاپر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "title": "کِسو فوندیدو قارچ و فلفل",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "title": "دیپ لوبیای هفت لایه کوچک",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "title": "پنکیک کیمچی و پنیر لقمه ای",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "title": "خیار کره ای گوچوجانگ",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "title": "ادامامه سیر و چیلی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "title": "کاپ خیار با سس بادام زمینی تایلندی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "title": "تخم مرغ شیطانی زعتر و سماق",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_32_herbed-cheese-ball-bites",
+      "slug": "herbed-cheese-ball-bites",
+      "title": "توپک پنیر و سبزی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_33_chickpea-sesame-crackers",
+      "slug": "chickpea-sesame-crackers",
+      "title": "کراکر نخود و کنجد",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 6
+    },
+    {
+      "id": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "title": "پیاز حلقه ای سوخاری با سس ماست",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 6
+    },
+    {
+      "id": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "title": "ناچوی بادمجان با ماست سیر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_36_parmesan-zucchini-chips",
+      "slug": "parmesan-zucchini-chips",
+      "title": "چیپس کدو سبز پارمزانی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 6
+    },
+    {
+      "id": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "title": "کباب کوفته کوچک با ماست نعناع",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 6
+    },
+    {
+      "id": "meze50_38_grilled-cheese-and-cherry-tomato-skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "title": "پنیر کبابی با گوجه گیلاسی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 6
+    },
+    {
+      "id": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "title": "گل کلم هریسایی با ماست لیمویی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 6
+    },
+    {
+      "id": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "title": "سیب زمینی شیرین با تاهینی و لیمو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_41_turkish-feta-herb-borek-cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "title": "بورک سیگاری پنیر و سبزی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "title": "فریتر ذرت و پیازچه",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "title": "لقمه کوفته عدس با کاهو",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "title": "بروکلی کبابی با سس تاهینی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 6,
+      "steps": 5
+    },
+    {
+      "id": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "title": "سیخ توفو کنجدی و خیار",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_46_herbed-cheese-stuffed-mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "title": "قارچ شکم پر پنیر و سبزی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "title": "چیپس پیتا سماق و ماست سیر",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "title": "سالاد لوبیا چیتی و فلفل دودی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 5,
+      "steps": 5
+    },
+    {
+      "id": "meze50_49_mini-cheesy-chicken-taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "title": "تاکیتوی مرغ پنیری کوچک",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    },
+    {
+      "id": "meze50_50_caramelized-onion-yogurt-dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "title": "دیپ پیاز کاراملی و ماست یونانی",
+      "status": "draft",
+      "isPublic": false,
+      "ingredients": 4,
+      "steps": 5
+    }
+  ]
+}

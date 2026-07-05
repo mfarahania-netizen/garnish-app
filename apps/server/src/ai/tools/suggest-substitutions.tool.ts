@@ -61,6 +61,15 @@ type CuratedOption = {
 };
 
 const CONFIDENCE_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 };
+const IDENTITY_CRITICAL_TERMS = [
+  'نعناع', 'لیمو', 'زیتون', 'فتا', 'لبنه', 'زعتر', 'گردو', 'رب انار', 'تخم مرغ',
+  'mint', 'lime', 'lemon', 'olive', 'feta', 'labneh', 'zaatar', 'walnut', 'pomegranate molasses', 'egg',
+];
+
+function isIdentityCriticalQuery(value: string) {
+  const folded = foldPersian(value);
+  return IDENTITY_CRITICAL_TERMS.some((term) => folded.includes(foldPersian(term)));
+}
 
 /** Accepts the rich object form AND the legacy bare-string form (a string becomes {name}). */
 function parseCuratedOptions(raw: unknown): CuratedOption[] {
@@ -107,6 +116,16 @@ export class SuggestSubstitutionsTool implements AiTool {
 
     if (query.length < 2) {
       return { tool: this.name, ingredient: query, resolved: null, substitutions: [], resultStatus: 'empty_query' };
+    }
+    if (isIdentityCriticalQuery(rawTerm)) {
+      return {
+        tool: this.name,
+        ingredient: query,
+        resolved: null,
+        substitutions: [],
+        note: 'برای این ماده جایگزین مطمئن پیشنهاد نمی‌شود؛ احتمال تغییر هویت غذا بالاست.',
+        resultStatus: 'identity_critical_no_safe_substitution',
+      };
     }
 
     const select = {
