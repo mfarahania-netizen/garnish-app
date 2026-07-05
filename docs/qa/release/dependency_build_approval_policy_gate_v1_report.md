@@ -1,7 +1,7 @@
 # Dependency Build Approval Policy Gate v1 Report
 
 ## 1. Verdict
-IN PROGRESS
+PASS
 
 ## 2. Base Branch / Hash
 - Base branch: `origin/master`
@@ -130,13 +130,22 @@ Tests: 11 passed, 11 total
 ```
 
 ## 13. Approval Commit Hash
-Pending.
+- `1b2487ee`
 
 ## 14. Integration Branch
-Pending.
+- `release/dependency-build-approval-policy-v1`
+- Merge commit before final report update: `c831a9b5`
 
 ## 15. Master Push Result
-Pending.
+PASS
+
+Push result:
+
+```text
+a1d7e216..c831a9b5  HEAD -> master
+```
+
+No force push was used.
 
 ## 16. Remaining Risks
 - Full test suite was not run in this gate.
@@ -144,7 +153,9 @@ Pending.
 - This gate changes dependency build approval policy only; it does not validate the homepage redesign itself.
 
 ## 17. Homepage Sprint Allowed Next
-Pending final merge/push.
+YES.
+
+[قطعی] Dependency build approval policy is now on `origin/master`; Homepage Launch Redesign Sprint v1 can be retried from a fresh `origin/master` worktree.
 
 ## 18. Hard PASS Criteria
 
@@ -158,7 +169,7 @@ Pending final merge/push.
 | dependency rebuild PASS | PASS |
 | web build PASS | PASS |
 | server build PASS | PASS |
-| merge with origin/master clean | PENDING |
-| no force push | PENDING |
-| master push PASS | PENDING |
+| merge with origin/master clean | PASS |
+| no force push | PASS |
+| master push PASS | PASS |
 | report created | PASS |
