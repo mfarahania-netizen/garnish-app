@@ -1,0 +1,241 @@
+{
+  "generatedAt": "2026-07-04T19:43:38.264Z",
+  "countsBefore": {
+    "totalRecipes": 639,
+    "activePublic": 541,
+    "draftPrivate": 98,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "countsAfter": {
+    "totalRecipes": 639,
+    "activePublic": 542,
+    "draftPrivate": 97,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "restored": 21,
+  "patched": 1,
+  "stillReviewOnly": 2,
+  "usedMarkers": [
+    {
+      "slug": "ash-sabzi-shirazi",
+      "ingredientId": "ing_basmati_rice_raw",
+      "code": "basmati_rice_raw",
+      "label": "برنج نیم‌دانه"
+    }
+  ],
+  "regression": {
+    "gamaj": "PASS",
+    "qeymeh": "PASS"
+  },
+  "rows": [
+    {
+      "scope": "A",
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "slug": "ash-dandooni",
+      "titleFa": "آش دندونی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "A",
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "ash-sabzi-shirazi",
+      "titleFa": "آش سبزی شیرازی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": true
+    },
+    {
+      "scope": "A",
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "khoresh-havij-tabrizi",
+      "titleFa": "خورشت هویج تبریزی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1261_99e02971",
+      "slug": "dampokhtak-mash-polo",
+      "titleFa": "دمپختک (ماش‌پلو تهرانی)",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1280_13a22528",
+      "slug": "reshteh-polo-shirazi",
+      "titleFa": "رشته‌پلو شیرازی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1272_b3180a59",
+      "slug": "zireh-polo-kermani",
+      "titleFa": "زیره‌پلو کرمانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1767_4e6ed616",
+      "slug": "shami-kabab-lorestan",
+      "titleFa": "شامی کباب لرستانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_154_cdfcadf7",
+      "slug": "sholeh-mashhadi",
+      "titleFa": "شله مشهدی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1250_cb9a971c",
+      "slug": "shirin-polo",
+      "titleFa": "شیرین‌پلو (مرصع‌پلو)",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_864_37673192",
+      "slug": "adas-polo-ba-goosht",
+      "titleFa": "عدس‌پلو با گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "slug": "ghanbar-polo-shirazi",
+      "titleFa": "قنبرپلو شیرازی",
+      "finalState": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "exactBlocker": "قنبرپلو باید گوشت قلقلی/چرخ‌کرده، گردو، کشمش، رب انار و هویت شیرازی داشته باشد. Missing signals: walnut / گردو ; pomegranate_paste / رب انار",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1239_1be04a64",
+      "slug": "gheymeh-nesar",
+      "titleFa": "قیمه نثار",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_866_9986ddf5",
+      "slug": "loobia-polo-ba-goosht",
+      "titleFa": "لوبیا پلو با گوشت چرخ‌کرده",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1296_5d4fca2c",
+      "slug": "morgh-torsh-gilani",
+      "titleFa": "مرغ ترش گیلانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_86_ffcd0713",
+      "slug": "kabab-bonab",
+      "titleFa": "کباب بناب",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1197_73204fa8",
+      "slug": "kabab-tabei-morgh",
+      "titleFa": "کباب تابه‌ای مرغ",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1196_6cbbd3af",
+      "slug": "kabab-tabei-goosht",
+      "titleFa": "کباب تابه‌ای گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_112_9764d4aa",
+      "slug": "kadoo-polo-mazandarani",
+      "titleFa": "کدو پلو مازندرانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_139_012333bd",
+      "slug": "kufteh-berenji",
+      "titleFa": "کوفته برنجی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "slug": "mirza-ghasemi",
+      "titleFa": "میرزا قاسمی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "vavishka",
+      "titleFa": "واویشکا",
+      "finalState": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "exactBlocker": "واویشکا باید variant روشن گوشت/گوجه/پیاز و هویت شمالی داشته باشد. Missing signals: egg / تخم",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_111_4cb37a1a",
+      "slug": "kateh-shomali",
+      "titleFa": "کته شمالی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    },
+    {
+      "scope": "B",
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "slug": "kaleh-joosh",
+      "titleFa": "کاله‌جوش (کله‌جوش)",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": "",
+      "patched": false
+    }
+  ]
+}

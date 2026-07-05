@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-07-03T14:37:56.738Z",
+  "counts": {
+    "recipeCount": 639,
+    "ingredientCount": 1084,
+    "meze": 50,
+    "mezePublic": 0,
+    "mezeNonDraft": 0
+  },
+  "badAmountCount": 0,
+  "badAmountSamples": [],
+  "ok": true
+}

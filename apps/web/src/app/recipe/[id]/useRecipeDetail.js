@@ -8,8 +8,43 @@ import { FIT_LABEL, recipeFitReasons, faAllergen, faCategory } from '../../home/
 const asText = (s) => (typeof s === 'string' ? s : s?.text || s?.instruction || s?.description || s?.step || s?.body || '');
 const toolText = (s) => (typeof s === 'string' ? s : s?.name || s?.title || s?.label || s?.tool || '');
 const faqItem = (f) => ({ q: asText(f?.question || f?.q || f?.title) || asText(f), a: asText(f?.answer || f?.a || f?.body) });
-const asList = (v) => (Array.isArray(v) ? v : []);
+const asList = (v) => {
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string') {
+    const trimmed = v.trim();
+    if (!trimmed) return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      return trimmed.split(',').map((x) => x.trim()).filter(Boolean);
+    }
+  }
+  return [];
+};
 const hasTag = (v, tag) => Array.isArray(v) && v.includes(tag);
+const minutesText = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? faDuration(n) : '';
+};
+const normalizeStep = (s, index) => {
+  if (typeof s === 'string') {
+    const instruction = s.trim();
+    return instruction ? { order: index + 1, title: '', instruction, durationText: '', imageUrl: null } : null;
+  }
+  if (!s || typeof s !== 'object') return null;
+  const instruction = asText(s).trim();
+  if (!instruction) return null;
+  const durationText = s.durationText || s.duration || s.time || minutesText(s.durationMin ?? s.minutes ?? s.durationMinutes);
+  return {
+    order: Number.isFinite(Number(s.order)) ? Number(s.order) : index + 1,
+    title: asText(s.title || s.name || s.heading),
+    instruction,
+    durationText: typeof durationText === 'string' ? durationText : '',
+    imageUrl: s.imageUrl || s.image || s.photoUrl || null,
+    tip: asText(s.tip || s.note),
+  };
+};
 const isLiteFoodRecipe = (r) => {
   const adminNote = r?.adminNote && typeof r.adminNote === 'object' ? r.adminNote : {};
   const lite = adminNote?.lite || adminNote?.aiContext?.lite || {};
@@ -22,6 +57,7 @@ const isLiteFoodRecipe = (r) => {
 };
 // localized meal types — never a raw enum key like "dinner"
 const FA_MEAL = { breakfast: 'صبحانه', brunch: 'میان‌وعده', lunch: 'ناهار', dinner: 'شام', supper: 'شام', snack: 'میان‌وعده', dessert: 'دسر', appetizer: 'پیش‌غذا', side: 'مخلفات', drink: 'نوشیدنی', beverage: 'نوشیدنی' };
+const FA_COST = { low: 'اقتصادی', medium: 'متوسط', high: 'گران‌تر', budget: 'اقتصادی', cheap: 'اقتصادی' };
 const calorieOf = (n) =>
   n && typeof n === 'object'
     ? n.calories ?? n.kcal ?? n.energy ?? n.perServing?.calories ?? n.perServing?.kcal ?? null
@@ -70,7 +106,7 @@ export function useRecipeDetail(id) {
       title: r.title || 'دستور',
       imageUrl: r.imageUrl || null,
       // localized to Persian — never a raw enum key like "main_course"
-      categories: [...new Set((Array.isArray(r.categories) ? r.categories : []).map(faCategory).filter(Boolean))].slice(0, 3),
+      categories: [...new Set(asList(r.categories).map(faCategory).filter(Boolean))].slice(0, 3),
       // time source-of-truth: GRIS glance is the authored, accurate time; the legacy cookingTime field is
       // unreliable across the corpus (founder: wrong for every dish). Fall back to legacy only when no GRIS.
       cookTimeText: faDuration(recipeDurationMinutes(r)),
@@ -82,7 +118,6 @@ export function useRecipeDetail(id) {
         name: ing?.name || '',
         amountText: ing?.amount ? `${toFaDigits(ing.amount)} ${ing.displayUnit || ing.unit || ''}`.trim() : '',
       })).filter((i) => i.name),
-      steps: asList(r.steps).map(asText).filter(Boolean),
       tips: asList(r.tips).map(asText).filter(Boolean),
       // S3 Option-2 — the four authored arrays, now persisted separately (were merged into `tips`). Rendered
       // as distinct sections when present; the merged `tips` accordion is the back-compat fallback.
@@ -91,9 +126,18 @@ export function useRecipeDetail(id) {
       servingSuggestions: asList(r.servingSuggestions).map(asText).filter(Boolean),
       authoredSwaps: asList(r.substitutions).map(asText).filter(Boolean),
       faq: asList(r.faq).map(faqItem).filter((f) => f.q),
+      steps: asList(r.steps).map(normalizeStep).filter(Boolean),
       // tools + mealType: persisted + returned by the API but the UI previously never rendered them
       tools: asList(r.tools).map(toolText).filter(Boolean),
-      mealTypes: [...new Set((Array.isArray(r.mealType) ? r.mealType : r.mealType ? [r.mealType] : []).map((m) => FA_MEAL[String(m).toLowerCase().trim()]).filter(Boolean))],
+      mealTypes: [...new Set(asList(r.mealType).map((m) => FA_MEAL[String(m).toLowerCase().trim()] || faCategory(m)).filter(Boolean))],
+      detailChips: [
+        ...asList(r.region || r.cuisineOrigin || r.cuisine).map(faCategory),
+        ...asList(r.dishType || r.category).map(faCategory),
+        ...asList(r.occasion).map(faCategory),
+      ].filter(Boolean).slice(0, 4),
+      prepTimeText: minutesText(r.prepTime),
+      totalTimeText: minutesText(r.totalTime),
+      costText: FA_COST[String(r.cost || '').toLowerCase().trim()] || faCategory(r.cost) || (typeof r.cost === 'string' && /[آ-ی]/.test(r.cost) ? r.cost : ''),
     };
 
     // grounded substitutions the /full read ALREADY computes (allergen/dislike swaps) — UI previously dropped

@@ -1,0 +1,188 @@
+{
+  "generatedAt": "2026-07-04T18:23:41.482Z",
+  "countsBefore": {
+    "totalRecipes": 639,
+    "activePublic": 504,
+    "draftPrivate": 135,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "countsAfter": {
+    "totalRecipes": 639,
+    "activePublic": 521,
+    "draftPrivate": 118,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "restored": 17,
+  "patched": 0,
+  "reframed": 0,
+  "stillReviewOnly": 3,
+  "publicUnresolved": 0,
+  "regression": {
+    "gamaj": "PASS",
+    "qeymeh": "PASS"
+  },
+  "rows": [
+    {
+      "recipeId": "garnish_recipe_fa_95_0962d2a9",
+      "slug": "abgoosht-ghanbid",
+      "titleFa": "آبگوشت قنبید",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "slug": "abgoosht-matanjaneh-kermani",
+      "titleFa": "آبگوشت متنجنه کرمانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "slug": "abgoosht-kashk",
+      "titleFa": "آبگوشت کشک",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_148_554e136f",
+      "slug": "ash-e-anar",
+      "titleFa": "آش انار",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_147_3b1b07c5",
+      "slug": "ash-e-jo",
+      "titleFa": "آش جو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "slug": "ash-dandooni",
+      "titleFa": "آش دندونی",
+      "finalState": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "restored": false,
+      "exactBlocker": "هویت آش دندونی تنوع غله و حبوبات است؛ یک آش ساده کافی نیست. Missing/failed signals: rice / برنج"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1235_f91ccc6d",
+      "slug": "ash-doogh",
+      "titleFa": "آش دوغ",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "ash-sabzi-shirazi",
+      "titleFa": "آش سبزی شیرازی",
+      "finalState": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "restored": false,
+      "exactBlocker": "آش سبزی شیرازی بدون گوشت، برنج، تره و ترخون کافی نیست. Missing/failed signals: lamb / meat / گوشت ; tarragon / ترخون"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "slug": "ash-sholeh-ghalamkar",
+      "titleFa": "آش شله قلمکار",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_870_d37ad654",
+      "slug": "albaloo-polo-ba-morgh",
+      "titleFa": "آلبالو پلو با مرغ یا گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_113_2a1debd0",
+      "slug": "anar-polo-shirazi",
+      "titleFa": "انارپلو شیرازی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_862_dbf3d4d5",
+      "slug": "baghali-polo-ba-goosht",
+      "titleFa": "باقالی پلو با گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_96_730b7817",
+      "slug": "boz-ghormeh-kermani",
+      "titleFa": "بزقرمه کرمانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1276_cdef73d2",
+      "slug": "tas-kabab",
+      "titleFa": "تاس‌کباب",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "slug": "saffron-joojeh-kabab",
+      "titleFa": "جوجه کباب زعفرانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_101_877a41d3",
+      "slug": "khoresh-aloo",
+      "titleFa": "خورش آلو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_190_49162ac2",
+      "slug": "khoresh-morgh-qeysi",
+      "titleFa": "خورش مرغ قیسی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1251_3f83f105",
+      "slug": "khoresh-bademjan",
+      "titleFa": "خورشت بادمجان",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_99_14f1018b",
+      "slug": "khoresh-rivas",
+      "titleFa": "خورشت ریواس",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "restored": true,
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "khoresh-havij-tabrizi",
+      "titleFa": "خورشت هویج تبریزی",
+      "finalState": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "restored": false,
+      "exactBlocker": "بدون هویج، آلو و هویت ملس تبریزی، restore امن نیست. Missing/failed signals: saffron / زعفران"
+    }
+  ]
+}

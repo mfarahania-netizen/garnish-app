@@ -8,11 +8,40 @@ import { RecipeSafetyFilterService } from './intelligence/recipe-safety-filter.s
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { SearchRecipesDto } from './dto/search-recipes.dto'; // ← جدید
+import { tokenize } from './search/tfidf';
 
 // Fold common Persian spelling variants so a famous dish is found by its most-typed spelling: قورمه↔قرمه (Iran's most
 // famous stew — the corpus indexes «قرمه‌سبزی»), plus the Arabic→Persian letter folds. Applied to every search query.
 function normalizeSearchQuery(q?: string): string {
   return String(q ?? '').replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ة/g, 'ه').replace(/قورمه/g, 'قرمه').trim();
+}
+
+function isStrongTitleMatch(recipe: any, query: string): boolean {
+  const qTokens = tokenize(query);
+  if (qTokens.length < 2) return false;
+  const titleTokens = tokenize(recipe?.title);
+  if (!titleTokens.length) return false;
+  const titleSet = new Set(titleTokens);
+  return qTokens.every((term) => titleSet.has(term));
+}
+
+function mergeSearchRows(primary: any[], secondary: any[]): any[] {
+  const seen = new Set<string>();
+  const out: any[] = [];
+  for (const row of [...primary, ...secondary]) {
+    const id = row?.id;
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    out.push(row);
+  }
+  return out;
+}
+
+function withLexicalSearchMeta(recipe: any, query: string, semanticMeta?: any): any {
+  if (recipe?._search || semanticMeta) return { ...recipe, _search: recipe?._search ?? semanticMeta };
+  const titleTokens = new Set(tokenize(recipe?.title));
+  const matchedTerms = tokenize(query).filter((term) => titleTokens.has(term));
+  return { ...recipe, _search: { score: 1, matchedTerms } };
 }
 
 @Controller('recipes')
@@ -66,16 +95,20 @@ export class RecipesController {
     const q = normalizeSearchQuery(query.q); // قورمه→قرمه + Arabic folds so famous dishes are found by their common spelling
     const searchLimit = userId ? Math.min(500, Math.max(limitNum * 20, limitNum)) : limitNum;
     const ranked = await this.searchService.search(q, { limit: searchLimit });
+    const lexicalLimit = userId ? searchLimit : Math.max(limitNum, 50);
+    const lexical = await this.recipesService.search(q, lexicalLimit);
+    const strongLexical = lexical.filter((recipe: any) => isStrongTitleMatch(recipe, q)).map((recipe: any) => withLexicalSearchMeta(recipe, q));
     if (ranked.resultStatus !== 'ok') {
       // legacy fallback keeps behavior for empty_query and lets contains catch anything the index missed
-      const fallbackLimit = userId ? Math.min(500, Math.max(limitNum * 20, limitNum)) : limitNum;
-      const fallback = await this.safety.filter(userId, await this.recipesService.search(q, fallbackLimit));
+      const fallback = await this.safety.filter(userId, mergeSearchRows(strongLexical, lexical));
       return fallback.slice(0, limitNum);
     }
     const ordered = await this.recipesService.findByIdsOrdered(ranked.results.map((r) => r.recipeId));
     const whyById = new Map(ranked.results.map((r) => [r.recipeId, { score: r.score, matchedTerms: r.why.matchedTerms }]));
     const mapped = ordered.map((recipe: any) => ({ ...recipe, _search: whyById.get(recipe.id) ?? null }));
-    const filtered = await this.safety.filter(userId, mapped); // HARD safety filter for a logged-in user (anonymous → unfiltered)
+    const strongWithSemanticMeta = strongLexical.map((recipe: any) => withLexicalSearchMeta(recipe, q, whyById.get(recipe.id)));
+    const merged = mergeSearchRows(strongWithSemanticMeta, mapped);
+    const filtered = await this.safety.filter(userId, merged); // HARD safety filter for a logged-in user (anonymous → unfiltered)
     return filtered.slice(0, limitNum);
   }
 

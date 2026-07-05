@@ -1,0 +1,36 @@
+{
+  "carbonara": [
+    {
+      "title": "Accademia Italiana della Cucina - Carbonara identity",
+      "url": "https://www.accademiaitalianacucina.it/en/recipes/recipe/spaghetti-carbonara",
+      "note": "Traditional carbonara centers pasta, eggs, cured pork, cheese, black pepper; no cream."
+    },
+    {
+      "title": "La Cucina Italiana - Carbonara",
+      "url": "https://www.lacucinaitaliana.com/recipe/pasta/spaghetti-carbonara",
+      "note": "Established Italian food publication; technique depends on eggs/cheese and pasta water."
+    },
+    {
+      "title": "Serious Eats - Pasta Carbonara",
+      "url": "https://www.seriouseats.com/pasta-carbonara-sauce-recipe",
+      "note": "Food education source; explains off-heat emulsion and no cream requirement for classic style."
+    }
+  ],
+  "kimchi": [
+    {
+      "title": "Maangchi - Tongbaechu-kimchi",
+      "url": "https://www.maangchi.com/recipe/tongbaechu-kimchi",
+      "note": "Canonical home-cooking source: napa cabbage, salting, gochugaru, garlic, ginger, fermented paste."
+    },
+    {
+      "title": "Korean Bapsang - Mak Kimchi / Napa Cabbage Kimchi",
+      "url": "https://www.koreanbapsang.com/mak-kimchi-simple-kimchi/",
+      "note": "Korean recipe source: salting cabbage and chili-garlic-ginger seasoning are core."
+    },
+    {
+      "title": "The Korean Vegan / Kimchi basics",
+      "url": "https://thekoreanvegan.com/vegan-kimchi/",
+      "note": "Shows acceptable variation: vegan kimchi can omit fish sauce, but still needs cabbage, salting, chili, garlic, ginger."
+    }
+  ]
+}

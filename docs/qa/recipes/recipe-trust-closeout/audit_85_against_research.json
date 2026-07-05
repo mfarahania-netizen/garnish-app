@@ -1,0 +1,792 @@
+{
+  "generatedAt": "2026-07-04T17:53:56.665Z",
+  "counts": {
+    "totalRecipes": 639,
+    "activePublic": 504,
+    "draftPrivate": 135,
+    "ingredientCount": 1084,
+    "mezeTotal": 50,
+    "mezePublic": 0,
+    "mezeNonDraft": 0
+  },
+  "statusCounts": {
+    "KEEP_REVIEWONLY": 85
+  },
+  "regression": {
+    "gamaj": {
+      "status": "PASS",
+      "failures": []
+    },
+    "qeymeh": {
+      "status": "PASS",
+      "failures": []
+    }
+  },
+  "rows": [
+    {
+      "recipeId": "garnish_recipe_fa_95_0962d2a9",
+      "slug": "abgoosht-ghanbid",
+      "titleFa": "آبگوشت قنبید",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "slug": "abgoosht-matanjaneh-kermani",
+      "titleFa": "آبگوشت متنجنه کرمانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_148_554e136f",
+      "slug": "ash-e-anar",
+      "titleFa": "آش انار",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_147_3b1b07c5",
+      "slug": "ash-e-jo",
+      "titleFa": "آش جو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "slug": "ash-dandooni",
+      "titleFa": "آش دندونی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1235_f91ccc6d",
+      "slug": "ash-doogh",
+      "titleFa": "آش دوغ",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "ash-sabzi-shirazi",
+      "titleFa": "آش سبزی شیرازی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "slug": "ash-sholeh-ghalamkar",
+      "titleFa": "آش شله قلمکار",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_870_d37ad654",
+      "slug": "albaloo-polo-ba-morgh",
+      "titleFa": "آلبالو پلو با مرغ یا گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_868_c97331a5",
+      "slug": "estamboli-polo",
+      "titleFa": "استانبولی پلو بدون گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_113_2a1debd0",
+      "slug": "anar-polo-shirazi",
+      "titleFa": "انارپلو شیرازی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_862_dbf3d4d5",
+      "slug": "baghali-polo-ba-goosht",
+      "titleFa": "باقالی پلو با گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_96_730b7817",
+      "slug": "boz-ghormeh-kermani",
+      "titleFa": "بزقرمه کرمانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1276_cdef73d2",
+      "slug": "tas-kabab",
+      "titleFa": "تاس‌کباب",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "slug": "saffron-joojeh-kabab",
+      "titleFa": "جوجه کباب زعفرانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_101_877a41d3",
+      "slug": "khoresh-aloo",
+      "titleFa": "خورش آلو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_098_0fbf4374",
+      "slug": "irish-stew",
+      "titleFa": "خورش ایرلندی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_190_49162ac2",
+      "slug": "khoresh-morgh-qeysi",
+      "titleFa": "خورش مرغ قیسی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1251_3f83f105",
+      "slug": "khoresh-bademjan",
+      "titleFa": "خورشت بادمجان",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_99_14f1018b",
+      "slug": "khoresh-rivas",
+      "titleFa": "خورشت ریواس",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "khoresh-havij-tabrizi",
+      "titleFa": "خورشت هویج تبریزی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1261_99e02971",
+      "slug": "dampokhtak-mash-polo",
+      "titleFa": "دمپختک (ماش‌پلو تهرانی)",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1280_13a22528",
+      "slug": "reshteh-polo-shirazi",
+      "titleFa": "رشته‌پلو شیرازی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1272_b3180a59",
+      "slug": "zireh-polo-kermani",
+      "titleFa": "زیره‌پلو کرمانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1767_4e6ed616",
+      "slug": "shami-kabab-lorestan",
+      "titleFa": "شامی کباب لرستانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_154_cdfcadf7",
+      "slug": "sholeh-mashhadi",
+      "titleFa": "شله مشهدی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1250_cb9a971c",
+      "slug": "shirin-polo",
+      "titleFa": "شیرین‌پلو (مرصع‌پلو)",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_864_37673192",
+      "slug": "adas-polo-ba-goosht",
+      "titleFa": "عدس‌پلو با گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "slug": "ghanbar-polo-shirazi",
+      "titleFa": "قنبرپلو شیرازی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1239_1be04a64",
+      "slug": "gheymeh-nesar",
+      "titleFa": "قیمه نثار",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_866_9986ddf5",
+      "slug": "loobia-polo-ba-goosht",
+      "titleFa": "لوبیا پلو با گوشت چرخ‌کرده",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1296_5d4fca2c",
+      "slug": "morgh-torsh-gilani",
+      "titleFa": "مرغ ترش گیلانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_86_ffcd0713",
+      "slug": "kabab-bonab",
+      "titleFa": "کباب بناب",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1197_73204fa8",
+      "slug": "kabab-tabei-morgh",
+      "titleFa": "کباب تابه‌ای مرغ",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1196_6cbbd3af",
+      "slug": "kabab-tabei-goosht",
+      "titleFa": "کباب تابه‌ای گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_112_9764d4aa",
+      "slug": "kadoo-polo-mazandarani",
+      "titleFa": "کدو پلو مازندرانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_139_012333bd",
+      "slug": "kufteh-berenji",
+      "titleFa": "کوفته برنجی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_038_16764713",
+      "slug": "swedish-meatballs",
+      "titleFa": "کوفته سوئدی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_077_40b61937",
+      "slug": "kofte",
+      "titleFa": "کوفتهٔ ترکی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "slug": "abgoosht-kashk",
+      "titleFa": "آبگوشت کشک",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_095_c9024579",
+      "slug": "avgolemono",
+      "titleFa": "آوگولمونو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_028_ecdcc65f",
+      "slug": "stamppot",
+      "titleFa": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_123_e8fa3267",
+      "slug": "spaghetti-al-limone",
+      "titleFa": "اسپاگتی آل لیمونه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_062_ce31c267",
+      "slug": "spaghetti-aglio-e-olio",
+      "titleFa": "اسپاگتی سیر و روغن",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "slug": "meat-strudel",
+      "titleFa": "اشترودل گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1072_b55bdfe7",
+      "slug": "eshkeneh",
+      "titleFa": "اشکنه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_012_46d4828e",
+      "slug": "imam-bayildi",
+      "titleFa": "امام بایلدی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_121_b6f01192",
+      "slug": "omelet-rob",
+      "titleFa": "املت رب",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_066_d22397d4",
+      "slug": "borscht",
+      "titleFa": "بورش",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_115_ba80ef7c",
+      "slug": "tahandaz-morgh",
+      "titleFa": "ته‌انداز مرغ",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_164_8367ec24",
+      "slug": "tahchin-goosht-bademjan",
+      "titleFa": "ته‌چین گوشت و بادمجان",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1290_f5fc285f",
+      "slug": "halim-bademjan",
+      "titleFa": "حلیم بادمجان",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "slug": "halim-gandom",
+      "titleFa": "حلیم گندم",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+      "slug": "chicken-and-mushroom",
+      "titleFa": "خوراک مرغ و قارچ",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "slug": "cream-of-chicken-soup",
+      "titleFa": "سوپ شیر",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "slug": "red-lentil-soup",
+      "titleFa": "سوپ عدس قرمز ترکی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "slug": "miso-soup",
+      "titleFa": "سوپ میسو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "slug": "minestrone-soup",
+      "titleFa": "سوپ مینسترونه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_128_22442750",
+      "slug": "fatteh",
+      "titleFa": "فته",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2054_be491f02",
+      "slug": "gheymeh-sibzamini",
+      "titleFa": "قیمه سیب زمینی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "slug": "lasagna",
+      "titleFa": "لازانیا",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "slug": "fish-and-chips",
+      "titleFa": "ماهی و چیپس",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1195_4b547f19",
+      "slug": "persian-makaroni",
+      "titleFa": "ماکارونی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "slug": "fried-chicken",
+      "titleFa": "مرغ سوخاری",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_101_b76754a7",
+      "slug": "piri-piri-chicken",
+      "titleFa": "مرغ پیری‌پیری",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "slug": "maqluba",
+      "titleFa": "مقلوبه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "slug": "mirza-ghasemi",
+      "titleFa": "میرزا قاسمی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "vavishka",
+      "titleFa": "واویشکا",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "slug": "alfredo-pasta",
+      "titleFa": "پاستا آلفردو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_094_a48d62c1",
+      "slug": "pasta-e-fagioli",
+      "titleFa": "پاستا ای فاجولی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "slug": "pesto-pasta",
+      "titleFa": "پاستا پستو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_061_0bfbb206",
+      "slug": "polenta-con-funghi",
+      "titleFa": "پلنتا با قارچ",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_136_76743d5b",
+      "slug": "pot-au-feu",
+      "titleFa": "پوت‌او‌فو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_118_9ecd21c7",
+      "slug": "pollo-al-ajillo",
+      "titleFa": "پویو آل آخیو",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_040_7d7b90a1",
+      "slug": "pierogi",
+      "titleFa": "پیروگی لهستانی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_197_dbaa9b9a",
+      "slug": "chelo-mahicheh",
+      "titleFa": "چلو ماهیچه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "slug": "kaleh-joosh",
+      "titleFa": "کاله‌جوش (کله‌جوش)",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "slug": "kotlet-goosht",
+      "titleFa": "کتلت گوشت",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_111_4cb37a1a",
+      "slug": "kateh-shomali",
+      "titleFa": "کته شمالی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1743_005c3739",
+      "slug": "kashk-bademjan",
+      "titleFa": "کشک بادمجان",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1528_32041352",
+      "slug": "kaleh-pacheh",
+      "titleFa": "کله پاچه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_intl_120_ae775732",
+      "slug": "koenigsberger-klopse",
+      "titleFa": "کونیگسبرگر کلوپسه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_134_34e1816f",
+      "slug": "kuku-bademjan",
+      "titleFa": "کوکو بادمجان",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2049_765e338a",
+      "slug": "kuku-sabzi",
+      "titleFa": "کوکو سبزی",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1270_70cc3cff",
+      "slug": "yatimcheh",
+      "titleFa": "یتیمچه",
+      "classification": "KEEP_REVIEWONLY",
+      "exactBlocker": "No three-source reputable evidence packet is attached for this recipe. No documented product-decision pass proves the current public identity is safe.",
+      "status": "reviewOnly",
+      "isPublic": false
+    }
+  ]
+}

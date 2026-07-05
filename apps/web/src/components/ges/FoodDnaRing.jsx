@@ -15,7 +15,7 @@ import { toFaDigits } from './format';
  * isn't. Fills via framer-motion (no extra CSS keyframe — base.css reserves those for the
  * shimmer) and is disabled under prefers-reduced-motion. Token-pure.
  */
-export default function FoodDnaRing({ value = 0, size = 104, caption = 'بلوغ ذائقه', tone = 'mature', label, showValue = true, centerIcon: CenterIcon }) {
+export default function FoodDnaRing({ value = 0, size = 104, caption = 'شناسهٔ ذائقهٔ تو', tone = 'mature', label, showValue = true, centerIcon: CenterIcon }) {
   const gid = `dnaArc${useId().replace(/:/g, '')}`; // sanitize React useId for use in SVG url(#…)
   const clamped = Math.max(0, Math.min(1, Number(value) || 0));
   const sw = Math.max(7, Math.round(size * 0.096));

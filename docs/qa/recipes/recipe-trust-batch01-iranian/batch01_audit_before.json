@@ -1,0 +1,287 @@
+{
+  "generatedAt": "2026-07-04T18:23:25.901Z",
+  "counts": {
+    "totalRecipes": 639,
+    "activePublic": 504,
+    "draftPrivate": 135,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "statusCounts": {
+    "RESTORE_PUBLIC_AS_IS": 17,
+    "KEEP_REVIEWONLY_WITH_EXACT_REASON": 3
+  },
+  "regression": {
+    "gamaj": "PASS",
+    "qeymeh": "PASS"
+  },
+  "rows": [
+    {
+      "recipeId": "garnish_recipe_fa_95_0962d2a9",
+      "slug": "abgoosht-ghanbid",
+      "titleFa": "آبگوشت قنبید",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "slug": "abgoosht-matanjaneh-kermani",
+      "titleFa": "آبگوشت متنجنه کرمانی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 12,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "slug": "abgoosht-kashk",
+      "titleFa": "آبگوشت کشک",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_148_554e136f",
+      "slug": "ash-e-anar",
+      "titleFa": "آش انار",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 11,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_147_3b1b07c5",
+      "slug": "ash-e-jo",
+      "titleFa": "آش جو",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "slug": "ash-dandooni",
+      "titleFa": "آش دندونی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "missingSignals": [
+        "rice / برنج"
+      ],
+      "forbiddenSignals": [],
+      "exactBlocker": "هویت آش دندونی تنوع غله و حبوبات است؛ یک آش ساده کافی نیست. Missing/failed signals: rice / برنج",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1235_f91ccc6d",
+      "slug": "ash-doogh",
+      "titleFa": "آش دوغ",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 8,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "ash-sabzi-shirazi",
+      "titleFa": "آش سبزی شیرازی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "missingSignals": [
+        "lamb / meat / گوشت",
+        "tarragon / ترخون"
+      ],
+      "forbiddenSignals": [],
+      "exactBlocker": "آش سبزی شیرازی بدون گوشت، برنج، تره و ترخون کافی نیست. Missing/failed signals: lamb / meat / گوشت ; tarragon / ترخون",
+      "ingredientCount": 9,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "slug": "ash-sholeh-ghalamkar",
+      "titleFa": "آش شله قلمکار",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 13,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_870_d37ad654",
+      "slug": "albaloo-polo-ba-morgh",
+      "titleFa": "آلبالو پلو با مرغ یا گوشت",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 15,
+      "stepCount": 8
+    },
+    {
+      "recipeId": "garnish_recipe_fa_113_2a1debd0",
+      "slug": "anar-polo-shirazi",
+      "titleFa": "انارپلو شیرازی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 15,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_862_dbf3d4d5",
+      "slug": "baghali-polo-ba-goosht",
+      "titleFa": "باقالی پلو با گوشت",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 12,
+      "stepCount": 7
+    },
+    {
+      "recipeId": "garnish_recipe_fa_96_730b7817",
+      "slug": "boz-ghormeh-kermani",
+      "titleFa": "بزقرمه کرمانی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1276_cdef73d2",
+      "slug": "tas-kabab",
+      "titleFa": "تاس‌کباب",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 12,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "slug": "saffron-joojeh-kabab",
+      "titleFa": "جوجه کباب زعفرانی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 11,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_101_877a41d3",
+      "slug": "khoresh-aloo",
+      "titleFa": "خورش آلو",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_190_49162ac2",
+      "slug": "khoresh-morgh-qeysi",
+      "titleFa": "خورش مرغ قیسی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 10,
+      "stepCount": 5
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1251_3f83f105",
+      "slug": "khoresh-bademjan",
+      "titleFa": "خورشت بادمجان",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 11,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_99_14f1018b",
+      "slug": "khoresh-rivas",
+      "titleFa": "خورشت ریواس",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "RESTORE_PUBLIC_AS_IS",
+      "missingSignals": [],
+      "forbiddenSignals": [],
+      "exactBlocker": "",
+      "ingredientCount": 9,
+      "stepCount": 6
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "khoresh-havij-tabrizi",
+      "titleFa": "خورشت هویج تبریزی",
+      "currentStatus": "reviewOnly",
+      "currentIsPublic": false,
+      "classification": "KEEP_REVIEWONLY_WITH_EXACT_REASON",
+      "missingSignals": [
+        "saffron / زعفران"
+      ],
+      "forbiddenSignals": [],
+      "exactBlocker": "بدون هویج، آلو و هویت ملس تبریزی، restore امن نیست. Missing/failed signals: saffron / زعفران",
+      "ingredientCount": 10,
+      "stepCount": 6
+    }
+  ]
+}

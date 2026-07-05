@@ -34,7 +34,8 @@ describe('AISheet — in-context, proposes-not-auto', () => {
     fireEvent.click(screen.getByRole('button', { name: 'جایگزینِ مواد' }));
     expect(screen.getByText('کدام ماده را جایگزین کنم؟')).toBeInTheDocument();
     // propose-not-auto: the apply button exists but is disabled with nothing picked; no route to the assistant
-    expect(screen.getByRole('button', { name: /اعمالِ این جایگزین/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /اعمال جایگزین/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /فعلاً تغییر نده/ })).toBeInTheDocument();
     expect(screen.queryByText(/دستیار گارنیش/)).not.toBeInTheDocument();
   });
 
@@ -48,7 +49,7 @@ describe('AISheet — in-context, proposes-not-auto', () => {
     expect(screen.getByText('جایگزین ثبت‌شده برای کره')).toBeInTheDocument();
     // apply is armed only after picking the option
     fireEvent.click(option);
-    fireEvent.click(screen.getByRole('button', { name: /اعمالِ این جایگزین/ }));
+    fireEvent.click(screen.getByRole('button', { name: /اعمال جایگزین/ }));
     expect(onApplySwap).toHaveBeenCalledWith('کره', 'روغن زیتون', expect.objectContaining({ basis: 'explicit_option' }));
   });
 

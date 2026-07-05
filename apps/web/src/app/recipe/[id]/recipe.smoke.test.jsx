@@ -108,11 +108,31 @@ describe('RecipeDetailPage smoke', () => {
     expect(
       screen.getByRole('heading', { name: 'مواد لازم' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'روش پخت' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('سبزی را تفت بده.')).toBeInTheDocument();
     // nutrition is now a quiet, default-closed disclosure (was a big always-on block)
     expect(
       screen.getByRole('button', { name: /غذایی/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('بپز')).toBeInTheDocument();
+    expect(screen.getByText('شروع پخت')).toBeInTheDocument();
+    expect(screen.getByText('۲ مرحله پخت')).toBeInTheDocument();
+  });
+
+  it('does not show the cook CTA for a simple no-cook recipe', () => {
+    const v = readyValue();
+    v.recipe.title = 'پنیر و گردو';
+    v.recipe.categories = ['میان‌وعده'];
+    v.recipe.description = 'یک بشقاب ساده و بدون پخت.';
+    v.recipe.ingredients = [{ name: 'پنیر' }, { name: 'گردو' }];
+    v.recipe.steps = ['پنیر و گردو را در بشقاب بچین و سرو کن.'];
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+
+    expect(screen.queryByText('بپز')).not.toBeInTheDocument();
+    expect(screen.getByText('جزئیات آماده‌سازی')).toBeInTheDocument();
+    expect(screen.getByText('۱ مرحله آماده‌سازی')).toBeInTheDocument();
   });
 
   it('omits richness sections gracefully when empty (no swaps/tools headings, no fabricated content)', () => {

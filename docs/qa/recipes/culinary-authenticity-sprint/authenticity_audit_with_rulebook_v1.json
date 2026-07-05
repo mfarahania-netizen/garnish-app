@@ -1,0 +1,4142 @@
+{
+  "generatedAt": "2026-07-04T16:41:06.085Z",
+  "counts": {
+    "totalRecipes": 639,
+    "activePublic": 589,
+    "draftPrivate": 50,
+    "ingredientCount": 1084,
+    "mezeTotal": 50,
+    "mezePublic": 0,
+    "mezeNonDraft": 0
+  },
+  "statusCounts": {
+    "AUTH_MINOR_METADATA": 469,
+    "NOT_RULED_NEEDS_RESEARCH": 116,
+    "AUTH_PASS": 4
+  },
+  "rows": [
+    {
+      "recipeId": "garnish_recipe_fa_1289_dccb626e",
+      "title": "آب دوغ خیار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_057_c1cfff50",
+      "title": "آب پرتقال تازه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_93_657f87d7",
+      "title": "آبگوشت بزباش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_95_0962d2a9",
+      "title": "آبگوشت قنبید",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "title": "آبگوشت متنجنه کرمانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_94_78034c8a",
+      "title": "آبگوشت کشک",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_068_37fec2fb",
+      "title": "آب‌انار تازه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_061_a11935fe",
+      "title": "آب‌میوه هندوانه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_022_918e1afd",
+      "title": "آجیل و کشمش و خرما (مخلوط صبحانه)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_108_c446d87d",
+      "title": "آدوبوی مرغ فیلیپینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_034_3035ba70",
+      "title": "آرانچینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_123_a69d6cde",
+      "title": "آرپای ذرتی با پنیر و لوبیا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_122_fef6d7d8",
+      "title": "آسادوی آرژانتینی با چیمی‌چوری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_148_554e136f",
+      "title": "آش انار",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_78_26989900",
+      "title": "آش ترش گیلانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_147_3b1b07c5",
+      "title": "آش جو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "title": "آش دندونی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1235_f91ccc6d",
+      "title": "آش دوغ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1208_434b3a9a",
+      "title": "آش رشته",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "title": "آش سبزی شیرازی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "title": "آش شله قلمکار",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_119_2a846a21",
+      "title": "آش شولی یزدی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_870_d37ad654",
+      "title": "آلبالو پلو با مرغ یا گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_088_e5346ddb",
+      "title": "آلفاخورس با دولسه د لچه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_022_a1009be1",
+      "title": "آووکادو تست له‌شده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_095_c9024579",
+      "title": "آوگولمونو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_033_4844ee49",
+      "title": "آگوا فرسکای هندوانه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_031_1302a859",
+      "title": "آیران ترکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_054_40007b8f",
+      "title": "آیس ماچا لاته",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_064_769340cd",
+      "title": "آیس چای سبز با لیمو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_112_cb59927d",
+      "title": "اتن مس",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_052_fd0a302b",
+      "title": "ادامامه نمکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_104_31c06413",
+      "title": "اردک پکنی خانگی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_028_ecdcc65f",
+      "title": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_868_c97331a5",
+      "title": "استانبولی پلو بدون گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_070_ef1a1272",
+      "title": "استروپ‌وافل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_052_cbf1699d",
+      "title": "اسموتی آناناس و نارگیل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_066_09614bdf",
+      "title": "اسموتی آووکادو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_018_03b6b930",
+      "title": "اسموتی انبه و ماست",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1563_68a06056",
+      "title": "اسموتی توت‌فرنگی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_019_37a117f6",
+      "title": "اسموتی خرما و کاکائو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_062_0b593690",
+      "title": "اسموتی شکلات و موز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1554_6e31eecc",
+      "title": "اسموتی طالبی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_056_6f618741",
+      "title": "اسموتی هلو و ماست",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1564_e9a872de",
+      "title": "اسموتی هندوانه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_143_6060b21f",
+      "title": "اسموربرود دانمارکی با شاه‌ماهی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_036_e0780696",
+      "title": "اسپاناکوپیتا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_123_e8fa3267",
+      "title": "اسپاگتی آل لیمونه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_062_ce31c267",
+      "title": "اسپاگتی سیر و روغن",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_135_2919e78e",
+      "title": "اسپاگتی کاربونارای رومی",
+      "status": "AUTH_PASS",
+      "reason": "",
+      "ruleStatus": "RULED"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_024_194514e6",
+      "title": "اسپرسوی دوبل خانگی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_039_d8dc5a96",
+      "title": "اسپرینگ رول تازه ویتنامی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_047_8830766d",
+      "title": "اسپرینگ‌رول تایلندی سرخ‌شده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_115_bd72c652",
+      "title": "اسپکولاس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_117_d8d3d0ac",
+      "title": "اسپیناکاس کن گاربانثوس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_106_81b42fa9",
+      "title": "اسکندر کباب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_084_fb10b1a9",
+      "title": "اسکونز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_069_b980b37b",
+      "title": "اشترودل سیب",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "title": "اشترودل گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1072_b55bdfe7",
+      "title": "اشکنه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_012_46d4828e",
+      "title": "امام بایلدی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_121_b6f01192",
+      "title": "املت رب",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_120_502ae408",
+      "title": "املت قهوه‌خانه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1521_13feed66",
+      "title": "املت پنیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1325_87da9b04",
+      "title": "املت گوجه فرنگی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_049_9785e6eb",
+      "title": "امپانادای گوشت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_113_2a1debd0",
+      "title": "انارپلو شیرازی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_033_980e9629",
+      "title": "انجیر خشک با گردو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_100_da23be37",
+      "title": "انچیلادای مرغ با سس قرمز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_136_0ebb92f9",
+      "title": "اوسوبوکو میلانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_116_c3a0982f",
+      "title": "اولی‌بولن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_108_d102f5f2",
+      "title": "اوکونومی‌یاکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_048_5b5471e4",
+      "title": "اویاکودون (کاسه مرغ و تخم‌مرغ)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_083_233e9bde",
+      "title": "اُم علی مصری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_89_292dde1d",
+      "title": "اکبر جوجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_063_b14ec21c",
+      "title": "اکلر شکلاتی کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_013_d4a1df19",
+      "title": "ایدلی با سامبار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_117_be424535",
+      "title": "اینجرا با دورو وات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_044_051125e5",
+      "title": "بائوی بخارپز شکم‌پر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_010_0e45be4c",
+      "title": "بابا غنوج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_033_8acac046",
+      "title": "بادمجان پارمیجانا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_035_3483033b",
+      "title": "باقالی شور",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_862_dbf3d4d5",
+      "title": "باقالی پلو با گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1224_c65df148",
+      "title": "باقلاقاتُق",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_078_c3975f3a",
+      "title": "باقلوا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_053_7f9d9df9",
+      "title": "بال مرغ بوفالو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_071_32ff2f21",
+      "title": "بانوفی پای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_118_67f4b795",
+      "title": "بانی چاو آفریقای جنوبی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_134_b4cc12b5",
+      "title": "باکالائو آ براس پرتغالی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_068_2f672fa4",
+      "title": "براونی شکلاتی فاجی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_017_5b23f5df",
+      "title": "برتشن آلمانی با صبحانه سرد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_007_34f16382",
+      "title": "برنج سرخ‌شده با تخم‌مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_004_e65ccfe3",
+      "title": "بروسکتا با گوجه و ریحان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1291_b4dad1f1",
+      "title": "بریان ماهی (ماهی شکم‌پر)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_90_85d9aaf0",
+      "title": "بریانی اصفهان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_102_36229b49",
+      "title": "بریانی مرغ هندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_089_59f271c3",
+      "title": "بریگادیرو شکلاتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_96_730b7817",
+      "title": "بزقرمه کرمانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_173_ab17534c",
+      "title": "بستنی سنتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_058_33c6e1fc",
+      "title": "بشقاب آنتی‌پاستوی ایتالیایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_007_f1109425",
+      "title": "بشقاب صبحانه پنیر و سبزی و گوجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_088_be94fc3b",
+      "title": "بشقاب مزه (پنیر، کراکر، میوه، آجیل)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_059_1049b27a",
+      "title": "بلینی گندم سیاه با خاویار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_003_e6033f62",
+      "title": "بندیکت تخم‌مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_126_76675c2f",
+      "title": "بورانی اسفناج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_127_38980a7f",
+      "title": "بورانی بادمجان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_066_d22397d4",
+      "title": "بورش",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_132_32880128",
+      "title": "بوف بورگینیون",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_098_0f8fbedd",
+      "title": "بولگوگی گوشت کره‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_097_4fa8c5e5",
+      "title": "بیبیمباپ کره‌ای با گوشت و سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_056_1509959b",
+      "title": "بیتربالن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_018_285f8e1b",
+      "title": "بیرچر میوزلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_124_ee006e03",
+      "title": "بیستکا آلا فیورنتینا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_040_167f7ab7",
+      "title": "بیسکویت با شیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_065_d91803a7",
+      "title": "بیف استروگانف",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_130_c4a5fa79",
+      "title": "بیف ولینگتون کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_091_88b57d1e",
+      "title": "بینگسو با لوبیای قرمز و میوه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_004_44168530",
+      "title": "بیگل با لاکس و پنیر خامه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_065_c4cb085e",
+      "title": "تارت تاتن سیب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_140_e00e3df2",
+      "title": "تارتا د سانتیاگو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1276_cdef73d2",
+      "title": "تاس‌کباب",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_019_629698d5",
+      "title": "تام کا گای (سوپ مرغ و نارگیل)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_049_04e612cd",
+      "title": "تام یوم گونگ (سوپ تند میگو)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_008_22e17e44",
+      "title": "تاماگویاکی ژاپنی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_114_cc474629",
+      "title": "تاژین مراکشی مرغ و زردآلو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_099_2a8c35d1",
+      "title": "تاکوی گوشت با سالسای تازه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_009_ab044ed1",
+      "title": "تبوله",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_010_5402d628",
+      "title": "تخم‌مرغ عسلی با نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_082_5e31f95b",
+      "title": "تربچه و خیار با نمک و آبلیمو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_106_d9e3968a",
+      "title": "ترش‌تره",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1262_9f42258a",
+      "title": "ترش‌شامی گیلانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_037_7cf2e346",
+      "title": "تزاتزیکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_012_c3da9856",
+      "title": "تست ریکوتا و عسل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_016_565be283",
+      "title": "تست پنیر خامه‌ای و خیار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_013_374a5ddc",
+      "title": "تست کره بادام و توت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_080_5dbc4315",
+      "title": "تمپورا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_138_4f5d8e11",
+      "title": "تمپوس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1084_8f35205e",
+      "title": "ته چین مرغ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_115_ba80ef7c",
+      "title": "ته‌انداز مرغ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_164_8367ec24",
+      "title": "ته‌چین گوشت و بادمجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_032_f43fdf8e",
+      "title": "توت خشک و گردو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_111_248a08a4",
+      "title": "تود این د هول",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_022_ac4d3143",
+      "title": "تورتیای اسپانیایی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_031_7e902faf",
+      "title": "تیرامیسو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_074_7b07ce2a",
+      "title": "جلاتوی وانیلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_116_d25d42e2",
+      "title": "جلوف رایس غرب آفریقا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "title": "جوجه کباب زعفرانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_92_397baf20",
+      "title": "جگر کبابی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1483_557ee839",
+      "title": "حلوا زعفرانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_008_c8ddf724",
+      "title": "حلوا شکری روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_061_6a6023a1",
+      "title": "حلومی گریل‌شده با لیمو و سبزی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1290_f5fc285f",
+      "title": "حلیم بادمجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "title": "حلیم گندم",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_043_fbe26aba",
+      "title": "حمص",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_109_997edbdb",
+      "title": "خائو سوی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_025_cff0018f",
+      "title": "خامه و خرما روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_009_2268aef8",
+      "title": "خامه و مربا روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1548_dc89130d",
+      "title": "خاگینه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_039_f5062366",
+      "title": "خرما با گردو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_051_25696db8",
+      "title": "خرما و پنیر و گردو (لقمه)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_021_da2f107f",
+      "title": "خرما پر شده با پنیر خامه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2014_249aa268",
+      "title": "خمیر پیتزا ایتالیایی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1077_1b3eec19",
+      "title": "خوراک لوبیا چیتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1342_ce4a8da3",
+      "title": "خوراک مرغ زعفرانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+      "title": "خوراک مرغ و قارچ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_101_877a41d3",
+      "title": "خورش آلو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_098_0fbf4374",
+      "title": "خورش ایرلندی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_109_7c2e92a0",
+      "title": "خورش غوره بادمجان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_094_ebb15b77",
+      "title": "خورش ماسامان تایلندی با مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_190_49162ac2",
+      "title": "خورش مرغ قیسی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_107_5765c9eb",
+      "title": "خورش چغرتمه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_108_441adb29",
+      "title": "خورش کدو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1052_8bde566e",
+      "title": "خورشت آلو اسفناج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_102_1994bb32",
+      "title": "خورشت اناربیج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1251_3f83f105",
+      "title": "خورشت بادمجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1053_29566b67",
+      "title": "خورشت بامیه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_100_ce2b0c24",
+      "title": "خورشت به",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1059_32ca5280",
+      "title": "خورشت خلال",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_99_14f1018b",
+      "title": "خورشت ریواس",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_110_847e93ad",
+      "title": "خورشت سیب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_228_09a631f3",
+      "title": "خورشت فسنجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_224_c9d0355d",
+      "title": "خورشت قرمه‌سبزی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_97_b033ed16",
+      "title": "خورشت لوبیا سبز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1314_7f39d182",
+      "title": "خورشت ماست",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "title": "خورشت هویج تبریزی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1051_68dd60e0",
+      "title": "خورشت کرفس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_072_dad6a14e",
+      "title": "خیارشور و زیتون و گوجه (مزه کنار غذا)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_141_12664fc7",
+      "title": "خینکالی گرجی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1315_c324442d",
+      "title": "دال عدس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_105_a30b590b",
+      "title": "دامپلینگ سوپی چینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_005_1bc32e70",
+      "title": "دامپلینگ مرغ چینی (جیائوزی)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_875_f2ddeb1c",
+      "title": "دلمه بادمجان / دلمه کلم",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_872_529097b4",
+      "title": "دلمه برگ مو (دلمه‌ی برگ انگور)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_161_b79bdd11",
+      "title": "دمپخت ماهی جنوبی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1261_99e02971",
+      "title": "دمپختک (ماش‌پلو تهرانی)",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_87_b75c560e",
+      "title": "دنده‌کباب کرمانشاهی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_079_060db242",
+      "title": "دورایاکی با خمیر لوبیا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_014_8a86b8a0",
+      "title": "دوسا ماسالا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_059_c1594c61",
+      "title": "دوغ نعنا خانگی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_087_3d227836",
+      "title": "دونات مخمری لعابی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1297_aaa24704",
+      "title": "دوپیازه آلو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_125_31716f89",
+      "title": "دوپیازه میگو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_123_a52aadf1",
+      "title": "دویماج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1553_fc9a29b8",
+      "title": "دیتاکس واتر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_230_332dd922",
+      "title": "دیزی (آبگوشت)",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_048_89204b05",
+      "title": "دیپ ماست و لبو (بورانی سرد)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_078_578dd342",
+      "title": "دیپ گواکاموله با نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_042_9be6a738",
+      "title": "ذرت مکزیکی فنجانی (الوته آماده)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_020_a0837273",
+      "title": "راتاتویی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_079_bc51f8e5",
+      "title": "رامن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2039_b49f818c",
+      "title": "رد موهیتو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_184_e616db37",
+      "title": "رشته خشکار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1280_13a22528",
+      "title": "رشته‌پلو شیرازی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_107_dbd1eb92",
+      "title": "رندانگ گوشت اندونزیایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1496_5705c3de",
+      "title": "رنگینک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_039_29544b7d",
+      "title": "روشتی سوئیسی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_883_4b80bbcf",
+      "title": "رولت گوشت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_124_ce358cac",
+      "title": "روپا ویه‌خای کوبایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_087_61b3189b",
+      "title": "رپ بوقلمون و پنیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_091_be3a7a1d",
+      "title": "رپ سالاد یونانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_085_7e285172",
+      "title": "رپ هوموس و سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_093_936a36ff",
+      "title": "رپ پنیر خامه‌ای و سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_121_c6d25626",
+      "title": "ریبولیتا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_001_a95ca931",
+      "title": "ریزوتو میلانی زعفرانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_150_951c615d",
+      "title": "ریسالاماند",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_075_83dba9bf",
+      "title": "زاخر تورته شکلاتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_059_1736c8ad",
+      "title": "زاوربراتن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_878_85458912",
+      "title": "زرشک پلو با مرغ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_142_44b006d6",
+      "title": "زمل‌کنودل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_141_16bce5b8",
+      "title": "زنف‌آیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_179_9cb4bccf",
+      "title": "زولبیا و بامیه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_128_80595bf3",
+      "title": "زیتون پرورده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_038_de0f96b1",
+      "title": "زیتون پرورده با نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1272_b3180a59",
+      "title": "زیره‌پلو کرمانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_110_d9922059",
+      "title": "ساته مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_076_cd5d8bb9",
+      "title": "سالاد آووکادو و گوجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1324_2b0dbfd9",
+      "title": "سالاد الویه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1747_23e0a898",
+      "title": "سالاد اندونزی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_080_532aebff",
+      "title": "سالاد ذرت و لوبیا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1761_4f9171a7",
+      "title": "سالاد رنگینک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_074_821a3098",
+      "title": "سالاد سبز ساده با سس وینگرت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2071_5391bddf",
+      "title": "سالاد سزار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1762_ecb03b4e",
+      "title": "سالاد سیب زمینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_027_8a794c67",
+      "title": "سالاد سیب‌زمینی آلمانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2056_099d047a",
+      "title": "سالاد شیرازی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1808_788119ed",
+      "title": "سالاد ماکارونی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1751_cd7bc7b8",
+      "title": "سالاد مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_085_31af330d",
+      "title": "سالاد نیسواز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_075_a94612da",
+      "title": "سالاد هندوانه و فتا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_081_1fb39818",
+      "title": "سالاد کارائیب کلم و آناناس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_002_ca22fd2f",
+      "title": "سالاد کاپرزه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_073_9481977d",
+      "title": "سالاد کلم بنفش و هویج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_077_2c5659c2",
+      "title": "سالاد کینوا آماده با سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_070_fad47a28",
+      "title": "سالاد گوجه و خیار و پیاز شیرازی‌وار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_029_0cafb54c",
+      "title": "سالاد یونانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_046_b111554d",
+      "title": "ساموسای سیب‌زمینی هندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_096_2d866197",
+      "title": "ساندویچ آووکادو و گوجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_096_0e548c27",
+      "title": "ساندویچ بان می با گوشت و ترشی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_084_b1b75380",
+      "title": "ساندویچ تخم‌مرغ و مایونز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_083_a0f30266",
+      "title": "ساندویچ پنیر و گوجه و خیار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_094_fde3c956",
+      "title": "ساندویچ کالباس و پنیر سرد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_090_0e727d97",
+      "title": "ساندویچ کره بادام‌زمینی و عسل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_144_5774ae78",
+      "title": "ساگاناکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1220_6429319c",
+      "title": "سبزی پلو با ماهی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2018_2572b935",
+      "title": "سس بشامل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2028_1932b5ee",
+      "title": "سس فلافل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2035_e1080e79",
+      "title": "سس مارینارا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2032_c2aacc2c",
+      "title": "سس همبرگر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2022_ed370352",
+      "title": "سس پستو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2075_3d9b2098",
+      "title": "سمبوسه آبادانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2079_5543499b",
+      "title": "سمبوسه در فر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_185_c892351b",
+      "title": "سمنو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_010_8626885f",
+      "title": "سوجوک با تخم‌مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1768_7a1c6699",
+      "title": "سوسیس بندری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_051_38dcc2df",
+      "title": "سوسیس و پورهٔ سیب‌زمینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_093_bf5fab4c",
+      "title": "سوشی رول خانگی با سالمون و تن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_176_60f55560",
+      "title": "سوهان قم",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_067_995a81a6",
+      "title": "سوولاکی مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_042_c2aaf822",
+      "title": "سوپ ترش و تند",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "title": "سوپ شیر",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "title": "سوپ عدس قرمز ترکی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "title": "سوپ میسو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "title": "سوپ مینسترونه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_055_0182b616",
+      "title": "سوپ نخود سبز هلندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_021_6914ecb7",
+      "title": "سوپ پیاز فرانسوی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_120_8da4e4b0",
+      "title": "سویچه ماهی پرویی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1332_682d694b",
+      "title": "سیب زمینی سرخ کرده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_105_606b3bee",
+      "title": "سیر قلیه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_146_5a7a3b3f",
+      "title": "سیرنیکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_006_10cd2dcc",
+      "title": "سیومای کانتونی دیم‌سام",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1767_4e6ed616",
+      "title": "شامی کباب لرستانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1820_41034bbe",
+      "title": "شاورما",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_053_03f59ac8",
+      "title": "شربت آبلیمو و نعنا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_058_9891c764",
+      "title": "شربت آلبالو خانگی با یخ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1513_1e7a7b4f",
+      "title": "شربت بهار نارنج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1510_2d1f8557",
+      "title": "شربت خیار سکنجبین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_060_0a0758f2",
+      "title": "شربت زعفران و بهارنارنج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_067_65bc28c4",
+      "title": "شربت سکنجبین با خیار",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1514_82bb4541",
+      "title": "شربت گلاب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1482_782462e9",
+      "title": "شله زرد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_154_cdfcadf7",
+      "title": "شله مشهدی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_026_b9f5a392",
+      "title": "شنیتسل مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_137_6a99342c",
+      "title": "شنیتسل وینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_024_ff4dc9ab",
+      "title": "شپرد پای (پای گوشت و سیب‌زمینی)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_044_2e127ee1",
+      "title": "شکشوکا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1491_0553f941",
+      "title": "شیر برنج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_026_0f726e6c",
+      "title": "شیر برنج آماده با دارچین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_055_dce52169",
+      "title": "شیر طلایی سرد با عسل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1555_00844d92",
+      "title": "شیر پسته",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_065_cda75133",
+      "title": "شیر پسته سرد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_002_6f0bd5c3",
+      "title": "شیره انگور و ارده روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_003_84eb3049",
+      "title": "شیره خرما و ارده روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1250_cb9a971c",
+      "title": "شیرین‌پلو (مرصع‌پلو)",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1207_5b8c823a",
+      "title": "شیشلیک (کباب دنده)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_002_5f663504",
+      "title": "صبحانه کامل انگلیسی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_062_f288b067",
+      "title": "صدف تازه روی نیم‌پوسته",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1562_0d149539",
+      "title": "عدسی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_864_37673192",
+      "title": "عدس‌پلو با گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_128_22442750",
+      "title": "فته",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_075_adf77e6a",
+      "title": "فتوش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_021_7cee5181",
+      "title": "فرنچ تست کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1492_08a81971",
+      "title": "فرنی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_008_df43915b",
+      "title": "فلافل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2086_c02ef228",
+      "title": "فلافل آبادانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_076_72b1d9d1",
+      "title": "فلان کاراملی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_055_f8fbb75e",
+      "title": "فلفل پادرون تاول‌زده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_095_65c4e5ac",
+      "title": "فو گوشت ویتنامی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_011_0fce0e09",
+      "title": "فول مدمس مصری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_138_ce0f10ba",
+      "title": "فوندوی پنیر سوئیسی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_064_1aa2311f",
+      "title": "فوکاچا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_119_e71710d8",
+      "title": "فیجوآدای برزیلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_177_c8caf164",
+      "title": "قطاب یزدی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1306_a212d523",
+      "title": "قلیه ماهی سیرافی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1307_4401749e",
+      "title": "قلیه میگو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "title": "قنبرپلو شیرازی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_035_10b9f67b",
+      "title": "قهوه سرد ویتنامی با شیر عسلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_112_ea1e7e26",
+      "title": "قوزی عراقی با بره و برنج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2054_be491f02",
+      "title": "قیمه سیب زمینی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1239_1be04a64",
+      "title": "قیمه نثار",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_170_44f0d2ad",
+      "title": "قیمه‌ریزه اصفهانی",
+      "status": "AUTH_PASS",
+      "reason": "",
+      "ruleStatus": "RULED"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_082_7d443f56",
+      "title": "لارب مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "title": "لازانیا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_149_71c64832",
+      "title": "لانگوش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_045_88dbb554",
+      "title": "لاهماجون",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_193_35a54c20",
+      "title": "لاوانگی مرغ تالش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_109_3275e597",
+      "title": "لاکسا نارگیلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_032_0bd00218",
+      "title": "لسی انبه و هل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_866_9986ddf5",
+      "title": "لوبیا پلو با گوشت چرخ‌کرده",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_121_ee99f013",
+      "title": "لومو سالتادوی پرویی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_048_2f232e7c",
+      "title": "لومپیای فیلیپینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_085_cb35078b",
+      "title": "لوکوم پسته‌ای با گلاب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1520_8cec648d",
+      "title": "لیموناد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_063_ac0a3894",
+      "title": "لیموناد کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_030_4f8b9a24",
+      "title": "لیمونانای نعناع",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_034_51a63c81",
+      "title": "ماته سنتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_135_6e8e303d",
+      "title": "مادلن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_043_fe50cdbf",
+      "title": "ماست با خیار و گردو (دیپ)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_015_d850a87c",
+      "title": "ماست با کره بادام‌زمینی و موز",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_071_ddaeef9b",
+      "title": "ماست و اسفناج آماده (بورانی سرد)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_006_0ad8d5a5",
+      "title": "ماست و عسل و دارچین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_114_4d182f15",
+      "title": "ماش‌پلو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_084_87b7230c",
+      "title": "مالوا پودینگ با سس گرم",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_013_4bcde1bc",
+      "title": "مانتی ترکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_080_f488debf",
+      "title": "مانگو استیکی رایس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "title": "ماهی و چیپس",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_073_b02d8fd5",
+      "title": "ماپو توفو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_026_e631bbb6",
+      "title": "ماچا لاته گرم",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_064_71576bec",
+      "title": "ماکارون وانیلی فرانسوی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1195_4b547f19",
+      "title": "ماکارونی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_060_17a8b6d3",
+      "title": "متبل بادمجان دودی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_076_aee6a297",
+      "title": "مجدّره",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_130_95dea58b",
+      "title": "مرجیمک کوفته‌سی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_041_cd57d47e",
+      "title": "مرغ ترش و شیرین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1296_5d4fca2c",
+      "title": "مرغ ترش گیلانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_015_bd5b6369",
+      "title": "مرغ تریاکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_103_bc22d718",
+      "title": "مرغ تیکا ماسالا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_125_d0851524",
+      "title": "مرغ جرک جامائیکایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "title": "مرغ سوخاری",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_91_a3224405",
+      "title": "مرغ شکم‌پر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_124_c0616f8d",
+      "title": "مرغ ناردونی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_126_dc234f18",
+      "title": "مرغ و برنج هایننی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_096_697dba10",
+      "title": "مرغ پاپریکاش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_101_b76754a7",
+      "title": "مرغ پیری‌پیری",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_093_1d61d86b",
+      "title": "مرغ کاچیاتورا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_101_f007a227",
+      "title": "مرغ کره‌ای هندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_006_0abe82db",
+      "title": "مرغ کونگ پائو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1484_ccebf63e",
+      "title": "مسقطی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_069_6bd00b08",
+      "title": "معجون انرژی‌زا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "title": "مقلوبه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_192_fe533328",
+      "title": "ملابیج گیلانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_111_f81cb103",
+      "title": "منسف اردنی با بره و جمید",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_011_5a1d0ef8",
+      "title": "منمن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_045_42ab7334",
+      "title": "موز با عسل و گردو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_066_4fc69a4a",
+      "title": "موس شکلات تلخ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_035_d46eacaf",
+      "title": "موساکا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1519_9d69f5f1",
+      "title": "موهیتو کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_078_0b996a59",
+      "title": "موچی دایفوکو با خمیر لوبیا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_127_380e9b65",
+      "title": "مک‌اندچیز کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "title": "میرزا قاسمی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1279_e3e99c0f",
+      "title": "میگو پلو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_058_f01bc84b",
+      "title": "میگوی سیر اسپانیایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_007_578cc354",
+      "title": "ناتو با برنج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_130_45602c10",
+      "title": "نازخاتون",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_106_6371564f",
+      "title": "ناسی گورنگ اندونزیایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_180_c301e88a",
+      "title": "نان برنجی کرمانشاهی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_044_ee2f79ac",
+      "title": "نان تست با عسل و کنجد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_181_40d368f2",
+      "title": "نان نخودچی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_001_6f1166ee",
+      "title": "نان و خرما و کنجد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_148_2f745b64",
+      "title": "نانِ سودا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_054_5c472b48",
+      "title": "ناچوی پنیری لایه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_034_396e101d",
+      "title": "نخودچی کشمش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_122_dc5bb310",
+      "title": "نرگسی اسفناج",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2090_ea20119c",
+      "title": "نودل سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_003_5ed6583e",
+      "title": "نیوکی سیب‌زمینی با سس گوجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_131_76428aa8",
+      "title": "نیکوجاگا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_029_c3687330",
+      "title": "هات چاکلت کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_072_60d498d9",
+      "title": "هاخه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_043_4f0736e0",
+      "title": "هار گائو میگوی کانتونی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1341_6b4ba753",
+      "title": "همبرگر (چیز‌برگر)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_037_976fda08",
+      "title": "هورچاتای برنج و دارچین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1706_34be3c2d",
+      "title": "هویج پلو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_147_bb62e7e1",
+      "title": "واترزویی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_020_0b2a0961",
+      "title": "وافل باترمیلک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_100_b2b7f06b",
+      "title": "وافل بلژیکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "title": "واویشکا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_134_a0dcc7ea",
+      "title": "ولش ربیت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_057_64cc7ff7",
+      "title": "پاتاتاس براواس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_042_f549dcd3",
+      "title": "پاجون پیازچه کره‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_012_17b7b915",
+      "title": "پاراتای سیب‌زمینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_091_7dcadc00",
+      "title": "پاستا آلا آرابیاتا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_092_3046ff5e",
+      "title": "پاستا آلا نورما",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "title": "پاستا آلفردو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_094_a48d62c1",
+      "title": "پاستا ای فاجولی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "title": "پاستا پستو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_068_c9d33098",
+      "title": "پاستل د ناتا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_016_1e4df1c0",
+      "title": "پان کن توماته",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_063_30b082f3",
+      "title": "پانا کوتا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_072_62482f8c",
+      "title": "پاولوا با خامه و میوه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_050_ad49d256",
+      "title": "پاپ‌کورن با پنیر پارمزان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_028_37e48787",
+      "title": "پاپ‌کورن کاراملی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_045_c37fb32d",
+      "title": "پاکورای سبزیجات ترد",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_069_28c65edb",
+      "title": "پای سیب آمریکایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_087_afad4d60",
+      "title": "پایلا",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_018_2d829900",
+      "title": "پد تای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_132_71d57108",
+      "title": "پد سی‌اِو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_081_d8416e42",
+      "title": "پد کاپرائو مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_089_91d816cb",
+      "title": "پرتزل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_037_836bac22",
+      "title": "پرتزل با خردل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_086_a2184266",
+      "title": "پروفیترول",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_031_1ee0fadc",
+      "title": "پسته و کشمش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_061_0bfbb206",
+      "title": "پلنتا با قارچ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_142_bd27951b",
+      "title": "پلوف ازبکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1780_c3b8ce04",
+      "title": "پنکیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_019_c41b07d2",
+      "title": "پنکیک آمریکایی با شربت افرا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_024_b668a688",
+      "title": "پنیر تبریزی و گردو با چای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_004_ab5fbe9d",
+      "title": "پنیر و گردو و عسل روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_011_8be28048",
+      "title": "پنیر کاتیج با گوجه و نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_129_0a9a316a",
+      "title": "پوتین کانادایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_136_76743d5b",
+      "title": "پوت‌او‌فو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_052_a57a621f",
+      "title": "پودینگ تافی خرما",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_071_48a67e24",
+      "title": "پوفِرتیِس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_118_9ecd21c7",
+      "title": "پویو آل آخیو",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2082_eaf326bf",
+      "title": "پیتزا استیک گوشت",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2107_5f30a146",
+      "title": "پیتزا بیکن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2099_2ce15e17",
+      "title": "پیتزا مارگاریتا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2094_845c07e3",
+      "title": "پیتزا مرغ و پستو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_040_7d7b90a1",
+      "title": "پیروگی لهستانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_074_79385dd1",
+      "title": "چاو مین",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_028_d4b2bfd8",
+      "title": "چای حبابی شیری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_038_c723f599",
+      "title": "چای سرد تایلندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_027_355acc01",
+      "title": "چای ماسالای هندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_036_bc4e7808",
+      "title": "چای نعناع مراکشی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_197_dbaa9b9a",
+      "title": "چلو ماهیچه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_235_3d02f3ae",
+      "title": "چلو کباب کوبیده",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_047_a6f6b289",
+      "title": "چوب‌شور با پنیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_015_39a2f209",
+      "title": "چورو با شکلات داغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_088_7da35d2c",
+      "title": "چوروس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_067_843321b7",
+      "title": "چیزکیک نیویورکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_128_7b502579",
+      "title": "چیلی کان کارنه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_029_eff8d609",
+      "title": "چیپس ذرت با گواکاموله",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_036_35d377a6",
+      "title": "چیپس و دیپ پنیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_047_f6cbcbb5",
+      "title": "کاتسوی مرغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_107_41491dea",
+      "title": "کاراآگه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_119_9dd64dfc",
+      "title": "کارتوفل‌پوفر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_140_78d46576",
+      "title": "کارنیاریک ترکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_057_6f8924e9",
+      "title": "کارپاچوی گوشت با روکا و پارمزان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_017_6bc0bdc6",
+      "title": "کاری سبز تایلندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_050_23b57a98",
+      "title": "کاری قرمز تایلندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_060_9fe40da5",
+      "title": "کازه‌اشپتسله",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_089_7d03e966",
+      "title": "کاسه برنج باقی‌مانده با تن و سبزیجات",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_086_89bab8fc",
+      "title": "کاسه تن ماهی و لوبیا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_092_c4c10a13",
+      "title": "کاسه ماست و گرانولا و میوه (وعده سبک)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_017_eda0ea67",
+      "title": "کاسه پنیر کاتیج با میوه و آجیل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_014_d55fff42",
+      "title": "کاسه چیا پودینگ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_095_315eb78a",
+      "title": "کاسه کاتیج‌چیز و تن ماهی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_027_fe3a950f",
+      "title": "کاسه کفیر با میوه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_020_131860ac",
+      "title": "کاسه گرانولا با شیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_133_b9eae9ad",
+      "title": "کاسوله فرانسوی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_131_abd5e2d6",
+      "title": "کال کباب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_139_fb85376e",
+      "title": "کالاماره",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_102_44ec3a0b",
+      "title": "کالدو ورده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "title": "کاله‌جوش (کله‌جوش)",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_073_99c342ec",
+      "title": "کانولی ریکوتای سیسیلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_122_2f006614",
+      "title": "کاپوناتا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_025_7119c557",
+      "title": "کاپوچینوی کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1547_eade852f",
+      "title": "کاچی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_023_07bead9c",
+      "title": "کایا تست سنگاپوری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_145_098dd406",
+      "title": "کایزرشمارن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_009_6df91ec8",
+      "title": "کایماک و عسل ترکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1209_7bd0ff68",
+      "title": "کباب بختیاری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_84_52c11d43",
+      "title": "کباب برگ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_86_ffcd0713",
+      "title": "کباب بناب",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1197_73204fa8",
+      "title": "کباب تابه‌ای مرغ",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1196_6cbbd3af",
+      "title": "کباب تابه‌ای گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1214_189349a1",
+      "title": "کباب ترش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1353_5d0ac837",
+      "title": "کباب ترکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_166_41ac7f2f",
+      "title": "کباب حسینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_85_575ccb7a",
+      "title": "کباب سلطانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_88_c20a5f8b",
+      "title": "کباب وزیری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1215_673014ad",
+      "title": "کباب چنجه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_110_9b1cffdd",
+      "title": "کبسه مرغ عربی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_105_f093f056",
+      "title": "کبه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "title": "کتلت گوشت",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_111_4cb37a1a",
+      "title": "کته شمالی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_191_de46bbb6",
+      "title": "کدو بره مازندرانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_112_9764d4aa",
+      "title": "کدو پلو مازندرانی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_030_0341963d",
+      "title": "کراکر با پنیر خامه‌ای و مربا فلفل",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_053_54c002d0",
+      "title": "کرم بروله",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_049_91d7f7f4",
+      "title": "کره بادام‌زمینی روی کراکر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_023_82c3c28e",
+      "title": "کره و خرما روی نان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_005_c5ef5d2a",
+      "title": "کره و پنیر روی نان داغ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_001_758db93a",
+      "title": "کروسان کلاسیک لایه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_056_c9972b5b",
+      "title": "کروکتای ژامبون اسپانیایی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_113_e0e7753e",
+      "title": "کرپ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_090_6c4df1b6",
+      "title": "کرپ سوزت با سس پرتقالی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_051_3e8df432",
+      "title": "کسادیا پنیر",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_113_dcc8b929",
+      "title": "کشری مصری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1743_005c3739",
+      "title": "کشک بادمجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "Tier 1 canonical dish needs source-backed rule.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_lite_fa_046_5acd7ef7",
+      "title": "کشک و گردو با نان (دیپ سرد)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_139_91cb38b4",
+      "title": "کلفتیکوی یونانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_182_37f081ea",
+      "title": "کلمپه کرمانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1252_3d200c70",
+      "title": "کلم‌پلو شیرازی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1528_32041352",
+      "title": "کله پاچه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_196_9e48ca8f",
+      "title": "کله گنجشکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_183_6fb2ab4a",
+      "title": "کلوچه فومن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_125_19f26215",
+      "title": "کلوچهٔ پیازچه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_005_6deeb347",
+      "title": "کنجی صبحانه چینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_083_57ce313d",
+      "title": "کورنیش پستی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_139_012333bd",
+      "title": "کوفته برنجی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_880_6164abab",
+      "title": "کوفته تبریزی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_038_16764713",
+      "title": "کوفته سوئدی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_077_40b61937",
+      "title": "کوفتهٔ ترکی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_099_594a1fb5",
+      "title": "کولکانن",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_082_4a659652",
+      "title": "کونافه پنیری با شربت عطری",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_120_ae775732",
+      "title": "کونیگسبرگر کلوپسه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_131_e8f2c6f0",
+      "title": "کوک او ون فرانسوی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_134_34e1816f",
+      "title": "کوکو بادمجان",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2049_765e338a",
+      "title": "کوکو سبزی",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_133_139b05e2",
+      "title": "کوکو سیب‌زمینی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_070_eaf9a5f5",
+      "title": "کوکی چیپس شکلاتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_115_0cc3ef7b",
+      "title": "کُسکُس سبزیجات شمال آفریقا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_137_46d41946",
+      "title": "کیبلینگ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_114_6e7c743d",
+      "title": "کیش",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_079_999c19be",
+      "title": "کیمچی کلم آماده",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_041_33abbd3b",
+      "title": "کیمچی کلم چینی",
+      "status": "AUTH_PASS",
+      "reason": "",
+      "ruleStatus": "RULED"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_077_de99681c",
+      "title": "کیک تره‌لچس",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_090_07e88d0b",
+      "title": "کیک جنگل سیاه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_086_6c72c640",
+      "title": "کیک عسلی روسی لایه‌ای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_092_87b53529",
+      "title": "کیک لاوای شکلاتی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_133_db15257e",
+      "title": "کیک ویکتوریا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_lite_fa_041_4c94bb3f",
+      "title": "کیک یزدی با چای",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LITE_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_023_bc7c6f90",
+      "title": "گازپاچو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_143_7a372ddf",
+      "title": "گالاکتوبوریکو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_126_038964de",
+      "title": "گامبوی مرغ و میگو",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_054_7d3ead5b",
+      "title": "گراتن دوفینوآ",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_175_51f87cb3",
+      "title": "گز اصفهان",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_081_a178a755",
+      "title": "گلاب جامون با شربت هل و گلاب",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "گمج کباب",
+      "status": "AUTH_PASS",
+      "reason": "",
+      "ruleStatus": "RULED"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_050_8a9f951a",
+      "title": "گواکاموله کلاسیک",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_129_382f9727",
+      "title": "گوزلمه",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_104_f1da6144",
+      "title": "گوشت و بروکلی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_030_16d9e454",
+      "title": "گولاش مجارستانی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_097_428092c3",
+      "title": "گومبکی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_142_3215f0b5",
+      "title": "گوندی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_016_a22d4b1d",
+      "title": "گیودون (کاسه گوشت و برنج)",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_040_dcfd7c46",
+      "title": "گیوزای خوک و کلم",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1270_70cc3cff",
+      "title": "یتیمچه",
+      "status": "NOT_RULED_NEEDS_RESEARCH",
+      "reason": "No source-backed rule yet.",
+      "ruleStatus": "NEEDS_RESEARCH"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_167_fc027a91",
+      "title": "یخنی نخود شیرازی",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    },
+    {
+      "recipeId": "garnish_recipe_intl_103_ab3619d0",
+      "title": "یمیستا",
+      "status": "AUTH_MINOR_METADATA",
+      "reason": "",
+      "ruleStatus": "LOW_RISK_SIMPLE"
+    }
+  ]
+}

@@ -1,0 +1,218 @@
+{
+  "generatedAt": "2026-07-04T22:11:02.793Z",
+  "countsBefore": {
+    "totalRecipes": 639,
+    "activePublic": 562,
+    "draftPrivate": 77,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "countsAfter": {
+    "totalRecipes": 639,
+    "activePublic": 589,
+    "draftPrivate": 50,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "restored": 27,
+  "patched": 0,
+  "renamedOrReframed": 0,
+  "stillReviewOnly": 0,
+  "deletedRecipes": 0,
+  "newIngredients": 0,
+  "regression": {
+    "gamaj": "PASS",
+    "qeymeh": "PASS"
+  },
+  "rows": [
+    {
+      "recipeId": "garnish_recipe_intl_095_c9024579",
+      "slug": "avgolemono",
+      "titleFa": "آوگولمونو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_028_ecdcc65f",
+      "slug": "stamppot",
+      "titleFa": "استامپوت (پوره سیب‌زمینی و کلم ترش)",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_868_c97331a5",
+      "slug": "estamboli-polo",
+      "titleFa": "استانبولی پلو بدون گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_123_e8fa3267",
+      "slug": "spaghetti-al-limone",
+      "titleFa": "اسپاگتی آل لیمونه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_062_ce31c267",
+      "slug": "spaghetti-aglio-e-olio",
+      "titleFa": "اسپاگتی سیر و روغن",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1334_8963bd85",
+      "slug": "meat-strudel",
+      "titleFa": "اشترودل گوشت",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_012_46d4828e",
+      "slug": "imam-bayildi",
+      "titleFa": "امام بایلدی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_066_d22397d4",
+      "slug": "borscht",
+      "titleFa": "بورش",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_098_0fbf4374",
+      "slug": "irish-stew",
+      "titleFa": "خورش ایرلندی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "slug": "red-lentil-soup",
+      "titleFa": "سوپ عدس قرمز ترکی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_014_33ae62d8",
+      "slug": "miso-soup",
+      "titleFa": "سوپ میسو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_032_a150e5b1",
+      "slug": "minestrone-soup",
+      "titleFa": "سوپ مینسترونه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_128_22442750",
+      "slug": "fatteh",
+      "titleFa": "فته",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1323_cf6bcb5c",
+      "slug": "lasagna",
+      "titleFa": "لازانیا",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_025_b9bdfd91",
+      "slug": "fish-and-chips",
+      "titleFa": "ماهی و چیپس",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_101_b76754a7",
+      "slug": "piri-piri-chicken",
+      "titleFa": "مرغ پیری‌پیری",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_127_65e78281",
+      "slug": "maqluba",
+      "titleFa": "مقلوبه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "slug": "alfredo-pasta",
+      "titleFa": "پاستا آلفردو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_094_a48d62c1",
+      "slug": "pasta-e-fagioli",
+      "titleFa": "پاستا ای فاجولی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "slug": "pesto-pasta",
+      "titleFa": "پاستا پستو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_061_0bfbb206",
+      "slug": "polenta-con-funghi",
+      "titleFa": "پلنتا با قارچ",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_136_76743d5b",
+      "slug": "pot-au-feu",
+      "titleFa": "پوت‌او‌فو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_118_9ecd21c7",
+      "slug": "pollo-al-ajillo",
+      "titleFa": "پویو آل آخیو",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_040_7d7b90a1",
+      "slug": "pierogi",
+      "titleFa": "پیروگی لهستانی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_038_16764713",
+      "slug": "swedish-meatballs",
+      "titleFa": "کوفته سوئدی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_077_40b61937",
+      "slug": "kofte",
+      "titleFa": "کوفتهٔ ترکی",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    },
+    {
+      "recipeId": "garnish_recipe_intl_120_ae775732",
+      "slug": "koenigsberger-klopse",
+      "titleFa": "کونیگسبرگر کلوپسه",
+      "finalState": "RESTORE_PUBLIC_AS_IS",
+      "exactBlocker": ""
+    }
+  ]
+}

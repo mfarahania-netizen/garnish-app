@@ -1,0 +1,582 @@
+{
+  "id": "garnish_recipe_fa_104_7b4ced78",
+  "title": "گمج کباب",
+  "description": "گمج کباب یک خوراک گیلانیِ جاافتاده با گوشت تکه‌ای، گردو، رب انار و سبزی محلی است. این نسخه تخم‌مرغ ندارد؛ مزهٔ اصلی از پخت آرام گوشت در سس ترش و غلیظ گردو و انار می‌آید.",
+  "category": "main_course",
+  "region": "persian",
+  "difficulty": "medium",
+  "cookingTime": 75,
+  "servings": 4,
+  "imageUrl": "/data/media/recipes/gamaj-kabab/cover.webp",
+  "videoUrl": "/data/media/recipes/gamaj-kabab/video.mp4",
+  "authorId": null,
+  "isPublic": true,
+  "createdAt": "2026-06-13T20:04:45.262Z",
+  "updatedAt": "2026-07-03T19:15:42.603Z",
+  "status": "active",
+  "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_104\",\"phaseOneSequence\":152,\"slug\":\"gamaj-kabab\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"گمج کباب\",\"gamaj-kabab\",\"خوراک گیلانی با گوشت تکه‌ای گردو رب انار و سبزی محلی\",\"بدون تخم‌مرغ\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lamb_meat_raw\",\"ing_walnuts_raw\",\"ing_pomegranate_molasses\",\"ing_tareh_fresh\",\"ing_parsley_fresh\",\"ing_cilantro_fresh\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/gamaj-kabab/cover.webp\",\"thumbnail\":\"/data/media/recipes/gamaj-kabab/thumb.webp\",\"video\":\"/data/media/recipes/gamaj-kabab/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\",\"contentFix\":{\"fixedAt\":\"2026-07-03T19:15:42.491Z\",\"reason\":\"Corrected Gamaj Kabab from egg-topped ground-meat dish to Gilan-style walnut-pomegranate herb stew; removed egg.\"}}",
+  "prepTime": "20",
+  "totalTime": "95",
+  "tools": "[\"گمج سفالی یا قابلمه ضخیم\",\"کفگیر\",\"چاقو\",\"تخته\",\"درپوش\"]",
+  "tips": "[\"گوشت تکه‌ای استفاده کنید، نه چرخ‌کرده.\",\"گردو را کوتاه تفت دهید تا بوی خامی کم شود اما نسوزد.\",\"سبزی محلی را نزدیک پایان اضافه کنید تا عطرش بماند.\",\"اگر چوچاق یا خالواش ندارید، تره و جعفری و گشنیز جایگزین عملی هستند.\",\"غذا باید غلیظ و جاافتاده باشد، نه آبکی.\"]",
+  "faq": "[{\"question\":\"آیا گمج کباب تخم‌مرغ دارد؟\",\"answer\":\"در این نسخه اصیل گیلانی نه؛ پایه غذا گوشت تکه‌ای، گردو، رب انار و سبزی محلی است.\"},{\"question\":\"اگر چوچاق نداشته باشم چه کنم؟\",\"answer\":\"از تره، جعفری و گشنیز استفاده کنید؛ عطر دقیق محلی کمتر می‌شود، اما ساختار غذا درست می‌ماند.\"},{\"question\":\"با نان بهتر است یا برنج؟\",\"answer\":\"هر دو ممکن است، اما کنار کته شمالی یا نان تازه رایج و خوش‌خوراک است.\"}]",
+  "mealType": "[\"lunch\",\"dinner\"]",
+  "diet": "high_protein",
+  "categories": "[\"main_course\",\"گمج کباب\",\"گیلانی\",\"گردو\",\"رب انار\",\"سبزی محلی\",\"protein_forward\"]",
+  "allergens": "[\"tree_nut\"]",
+  "occasion": "[\"family_meal\",\"everyday\"]",
+  "cost": null,
+  "chefTips": "[\"از گوشت تکه‌ای خورشتی استفاده کنید، نه گوشت چرخ‌کرده.\",\"اگر گمج سفالی ندارید، قابلمه چدنی یا ضخیم با حرارت کم بهتر از تابه نازک است.\",\"چوچاق یا خالواش عطر را محلی‌تر می‌کند، اما نبودنش دستور را متوقف نمی‌کند.\"]",
+  "commonMistakes": "[\"اضافه‌کردن تخم‌مرغ؛ این مدل، گمج کباب اصیل نیست.\",\"جوشاندن تند که گوشت را سفت و سس گردویی را دو فاز می‌کند.\",\"اضافه‌کردن سبزی از اول پخت که عطر شمالی را کم می‌کند.\"]",
+  "servingSuggestions": "[\"کته شمالی\",\"سبزی خوردن\",\"زیتون پرورده\",\"ترشی محلی\"]",
+  "substitutions": "[\"گوشت گوساله خورشتی می‌تواند جای گوشت گوسفند بیاید، اما زمان پخت ممکن است بیشتر شود.\",\"اگر رب انار خیلی ترش است، مقدار را کمتر کنید و در پایان تنظیم کنید.\",\"به جای چوچاق، ترکیب تره، جعفری و گشنیز قابل قبول‌تر از حذف کامل سبزی است.\"]",
+  "dishType": "[\"main_course\"]",
+  "gris": {
+    "faq": [
+      {
+        "a": "در این نسخه اصیل گیلانی نه؛ پایه غذا گوشت تکه‌ای، گردو، رب انار و سبزی محلی است.",
+        "q": "آیا گمج کباب تخم‌مرغ دارد؟"
+      },
+      {
+        "a": "از تره، جعفری و گشنیز استفاده کنید؛ عطر دقیق محلی کمتر می‌شود، اما ساختار غذا درست می‌ماند.",
+        "q": "اگر چوچاق نداشته باشم چه کنم؟"
+      },
+      {
+        "a": "هر دو ممکن است، اما کنار کته شمالی یا نان تازه رایج و خوش‌خوراک است.",
+        "q": "با نان بهتر است یا برنج؟"
+      }
+    ],
+    "keep": {
+      "freeze": "بدون سبزی تازه بهتر فریز می‌شود؛ با سبزی هم ممکن است عطر و رنگ افت کند.",
+      "reheat": "با حرارت کم و کمی آب داغ گرم کنید تا سس دوباره باز شود.",
+      "storage": "در ظرف دربسته تا ۳ روز در یخچال.",
+      "makeAhead": "پایه گوشت و گردو را می‌توان از قبل پخت و سبزی را نزدیک سرو اضافه کرد."
+    },
+    "steps": [
+      {
+        "flame": "medium",
+        "order": 1,
+        "title": "آماده‌کردن پایه",
+        "durationMin": 8,
+        "instruction": "پیاز را با روغن روی حرارت متوسط تفت دهید تا نرم و طلایی روشن شود. سیر و زردچوبه را اضافه کنید و کوتاه هم بزنید تا عطرشان باز شود."
+      },
+      {
+        "flame": "medium",
+        "order": 2,
+        "title": "تفت‌دادن گوشت تکه‌ای",
+        "durationMin": 10,
+        "instruction": "گوشت تکه‌ای را اضافه کنید و چند دقیقه تفت دهید تا سطح قطعات از حالت خام خارج شود و کمی رنگ بگیرد. این غذا با گوشت چرخ‌کرده و تخم‌مرغ نیست."
+      },
+      {
+        "flame": "medium",
+        "order": 3,
+        "title": "افزودن گردو و رب‌ها",
+        "durationMin": 6,
+        "instruction": "گردوی آسیاب‌شده را اضافه کنید و ۲ تا ۳ دقیقه آرام تفت دهید تا بوی خامی گردو کمتر شود. رب انار و در صورت استفاده رب گوجه را اضافه کنید و کوتاه تفت دهید."
+      },
+      {
+        "flame": "low",
+        "order": 4,
+        "title": "آرام‌پز کردن",
+        "durationMin": 45,
+        "instruction": "حدود ۲ پیمانه آب داغ اضافه کنید، نمک و فلفل را بزنید و در ظرف را بگذارید. خوراک را با حرارت کم بپزید تا گوشت نرم شود و سس گردو و رب انار جا بیفتد."
+      },
+      {
+        "flame": "low",
+        "order": 5,
+        "title": "افزودن سبزی گیلانی",
+        "durationMin": 15,
+        "instruction": "تره، جعفری و گشنیز خردشده را اضافه کنید. اگر چوچاق یا خالواش دارید، کمی از آن را در همین مرحله اضافه کنید. ۱۲ تا ۱۵ دقیقه دیگر بپزید تا سبزی عطر بدهد اما نسوزد."
+      },
+      {
+        "flame": "medium",
+        "order": 6,
+        "title": "تنظیم غلظت و مزه",
+        "durationMin": 8,
+        "instruction": "در پایان سس باید غلیظ، براق و ترش‌مزه باشد. اگر زیادی ترش بود کمی آب داغ و چند دقیقه پخت بیشتر کمک می‌کند؛ اگر رقیق بود در ظرف را بردارید تا غلیظ شود."
+      },
+      {
+        "flame": "none",
+        "order": 7,
+        "title": "سرو",
+        "durationMin": 2,
+        "instruction": "گمج کباب را داغ، در همان ظرف سفالی یا قابلمه گرم، با کته شمالی یا نان و سبزی خوردن سرو کنید."
+      }
+    ],
+    "story": {
+      "hook": "گمج کباب اسمش از ظرف سفالی گمج می‌آید، اما هویت مزه‌اش از گردو، رب انار، سبزی محلی و پخت آرام گوشت ساخته می‌شود.",
+      "origin": "خوراکی گیلانی و خانگی که در روایت‌های مختلف با گوشت گوسفند یا گوساله، گردو، رب انار و سبزی‌های محلی مثل چوچاق و خالواش پخته می‌شود.",
+      "occasion": "برای وعده‌های خانوادگی و غذاهای شمالیِ جاافتاده؛ بیشتر کنار کته یا نان سرو می‌شود."
+    },
+    "title": "گمج کباب",
+    "finish": {
+      "plating": "در گمج یا ظرف گرم سرو کنید؛ کنار آن کته، سبزی و زیتون بگذارید.",
+      "finalLook": "خوراکی قهوه‌ای-اناری، غلیظ و براق با تکه‌های گوشت نرم و سبزی معطر.",
+      "chefSecret": "سس را عجله‌ای رقیق برندارید؛ گمج کباب وقتی خوب است که گردو و رب انار به غلظت خوراک جاافتاده برسند."
+    },
+    "glance": {
+      "goodFor": [
+        "ناهار گیلانی",
+        "غذای مجلسی",
+        "سرو با کته"
+      ],
+      "promise": "گوشت نرم در سس گردو و رب انار با عطر سبزی شمالی.",
+      "costBand": "متوسط رو به بالا",
+      "servings": 4,
+      "difficulty": "متوسط",
+      "handsOffMin": 55,
+      "totalTimeMin": 95,
+      "activeTimeMin": 30
+    },
+    "dietary": {
+      "allergens": [
+        "tree_nut"
+      ],
+      "containsPork": false
+    },
+    "chefTips": [
+      "از گوشت تکه‌ای خورشتی استفاده کنید، نه گوشت چرخ‌کرده.",
+      "اگر گمج سفالی ندارید، قابلمه چدنی یا ضخیم با حرارت کم بهتر از تابه نازک است.",
+      "چوچاق یا خالواش عطر را محلی‌تر می‌کند، اما نبودنش دستور را متوقف نمی‌کند."
+    ],
+    "recipeId": "garnish_recipe_fa_104_7b4ced78",
+    "firstLook": "خوراک گیلانیِ گوشت تکه‌ای با گردو، رب انار و سبزی محلی؛ ترش، غلیظ و جاافتاده، بدون تخم‌مرغ.",
+    "whyItWorks": [
+      {
+        "point": "گردو با پخت آرام سس را غلیظ و براق می‌کند.",
+        "explanation": "تفت کوتاه گردو بوی خامی را کم می‌کند و پخت آرام، چربی و بافت آن را وارد سس می‌کند."
+      },
+      {
+        "point": "رب انار باید زودتر وارد شود.",
+        "explanation": "رب انار در تماس با گوشت و چربی، مزه ترش و ملس را در پایه غذا پخش می‌کند."
+      },
+      {
+        "point": "سبزی در پایان می‌آید.",
+        "explanation": "سبزی محلی اگر خیلی زود اضافه شود عطرش می‌پرد و رنگش تیره می‌شود."
+      }
+    ],
+    "ingredients": [
+      {
+        "code": "lamb_meat_raw",
+        "name": "گوشت گوسفند خام",
+        "unit": "گرم",
+        "amount": "500",
+        "optional": false,
+        "prepState": "خورشتی و تکه‌ای خردشده",
+        "displayUnit": "گرم",
+        "ingredientId": "ing_lamb_meat_raw"
+      },
+      {
+        "code": "onion_raw",
+        "name": "پیاز خام",
+        "unit": "عدد بزرگ",
+        "amount": "1",
+        "optional": false,
+        "prepState": "رنده یا ریز خردشده",
+        "displayUnit": "عدد بزرگ",
+        "ingredientId": "ing_onion_raw"
+      },
+      {
+        "code": "garlic_raw",
+        "name": "سیر خام",
+        "unit": "حبه",
+        "amount": "3",
+        "optional": true,
+        "prepState": "رنده‌شده",
+        "displayUnit": "حبه",
+        "ingredientId": "ing_garlic_raw"
+      },
+      {
+        "code": "walnuts_raw",
+        "name": "گردو خام",
+        "unit": "گرم",
+        "amount": "200",
+        "optional": false,
+        "prepState": "آسیاب‌شده",
+        "displayUnit": "گرم",
+        "ingredientId": "ing_walnuts_raw"
+      },
+      {
+        "code": "pomegranate_molasses",
+        "name": "رب انار",
+        "unit": "قاشق غذاخوری",
+        "amount": "3",
+        "optional": false,
+        "prepState": "ترجیحاً ترش یا ملس",
+        "displayUnit": "قاشق غذاخوری",
+        "ingredientId": "ing_pomegranate_molasses"
+      },
+      {
+        "code": "tomato_paste",
+        "name": "رب گوجه‌فرنگی",
+        "unit": "قاشق غذاخوری",
+        "amount": "1",
+        "optional": true,
+        "prepState": "اختیاری، برای رنگ و تعادل",
+        "displayUnit": "قاشق غذاخوری",
+        "ingredientId": "ing_tomato_paste"
+      },
+      {
+        "code": "tareh_fresh",
+        "name": "تره تازه",
+        "unit": "گرم",
+        "amount": "80",
+        "optional": false,
+        "prepState": "ریز خردشده",
+        "displayUnit": "گرم",
+        "ingredientId": "ing_tareh_fresh"
+      },
+      {
+        "code": "parsley_fresh",
+        "name": "جعفری تازه",
+        "unit": "گرم",
+        "amount": "80",
+        "optional": false,
+        "prepState": "ریز خردشده",
+        "displayUnit": "گرم",
+        "ingredientId": "ing_parsley_fresh"
+      },
+      {
+        "code": "cilantro_fresh",
+        "name": "گشنیز تازه",
+        "unit": "گرم",
+        "amount": "60",
+        "optional": false,
+        "prepState": "ریز خردشده؛ اگر چوچاق یا خالواش داری کمی جایگزین کن",
+        "displayUnit": "گرم",
+        "ingredientId": "ing_cilantro_fresh"
+      },
+      {
+        "code": "sunflower_oil",
+        "name": "روغن آفتابگردان",
+        "unit": "قاشق غذاخوری",
+        "amount": "3",
+        "optional": false,
+        "prepState": "برای تفت‌دادن",
+        "displayUnit": "قاشق غذاخوری",
+        "ingredientId": "ing_sunflower_oil"
+      },
+      {
+        "code": "turmeric_ground",
+        "name": "زردچوبه آسیاب‌شده",
+        "unit": "قاشق چای‌خوری",
+        "amount": "1",
+        "optional": false,
+        "prepState": null,
+        "displayUnit": "قاشق چای‌خوری",
+        "ingredientId": "ing_turmeric_ground"
+      },
+      {
+        "code": "salt_table",
+        "name": "نمک خوراکی",
+        "unit": "قاشق چای‌خوری",
+        "amount": "1.25",
+        "optional": false,
+        "prepState": "به ذائقه تنظیم شود",
+        "displayUnit": "قاشق چای‌خوری",
+        "ingredientId": "ing_salt_table"
+      },
+      {
+        "code": "black_pepper_ground",
+        "name": "فلفل سیاه آسیاب‌شده",
+        "unit": "قاشق چای‌خوری",
+        "amount": "0.5",
+        "optional": false,
+        "prepState": null,
+        "displayUnit": "قاشق چای‌خوری",
+        "ingredientId": "ing_black_pepper_ground"
+      }
+    ],
+    "substitutions": [
+      "گوشت گوساله خورشتی می‌تواند جای گوشت گوسفند بیاید، اما زمان پخت ممکن است بیشتر شود.",
+      "اگر رب انار خیلی ترش است، مقدار را کمتر کنید و در پایان تنظیم کنید.",
+      "به جای چوچاق، ترکیب تره، جعفری و گشنیز قابل قبول‌تر از حذف کامل سبزی است."
+    ],
+    "commonMistakes": [
+      "اضافه‌کردن تخم‌مرغ؛ این مدل، گمج کباب اصیل نیست.",
+      "جوشاندن تند که گوشت را سفت و سس گردویی را دو فاز می‌کند.",
+      "اضافه‌کردن سبزی از اول پخت که عطر شمالی را کم می‌کند."
+    ],
+    "servingSuggestions": [
+      "کته شمالی",
+      "سبزی خوردن",
+      "زیتون پرورده",
+      "ترشی محلی"
+    ]
+  },
+  "containsPork": false,
+  "ingredients": [
+    {
+      "id": "d37621f5-636e-4d69-a3cb-a0c39248a290",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_lamb_meat_raw",
+      "name": "گوشت گوسفند خام",
+      "amount": "500",
+      "unit": "گرم",
+      "notes": "{\"ingredientId\":\"ing_lamb_meat_raw\",\"code\":\"lamb_meat_raw\",\"preparation\":\"خورشتی و تکه‌ای خردشده\",\"optional\":false,\"unit\":\"گرم\",\"line\":\"500 گرم گوشت گوسفند خام، خورشتی و تکه‌ای خردشده\"}",
+      "order": 1
+    },
+    {
+      "id": "9f019f44-5928-42ca-be27-d1ae7cf208cd",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_onion_raw",
+      "name": "پیاز خام",
+      "amount": "1",
+      "unit": "عدد بزرگ",
+      "notes": "{\"ingredientId\":\"ing_onion_raw\",\"code\":\"onion_raw\",\"preparation\":\"رنده یا ریز خردشده\",\"optional\":false,\"unit\":\"عدد بزرگ\",\"line\":\"1 عدد بزرگ پیاز خام، رنده یا ریز خردشده\"}",
+      "order": 2
+    },
+    {
+      "id": "94df4051-b84a-4f74-bd06-81c7ee4778b9",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_garlic_raw",
+      "name": "سیر خام",
+      "amount": "3",
+      "unit": "حبه",
+      "notes": "{\"ingredientId\":\"ing_garlic_raw\",\"code\":\"garlic_raw\",\"preparation\":\"رنده‌شده\",\"optional\":true,\"unit\":\"حبه\",\"line\":\"3 حبه سیر خام، رنده‌شده\"}",
+      "order": 3
+    },
+    {
+      "id": "29bf767d-ca27-48d2-84fd-eac1863cae52",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_walnuts_raw",
+      "name": "گردو خام",
+      "amount": "200",
+      "unit": "گرم",
+      "notes": "{\"ingredientId\":\"ing_walnuts_raw\",\"code\":\"walnuts_raw\",\"preparation\":\"آسیاب‌شده\",\"optional\":false,\"unit\":\"گرم\",\"line\":\"200 گرم گردو خام، آسیاب‌شده\"}",
+      "order": 4
+    },
+    {
+      "id": "fd3f45e4-f5a2-493f-b803-d535a4d8a7ed",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_pomegranate_molasses",
+      "name": "رب انار",
+      "amount": "3",
+      "unit": "قاشق غذاخوری",
+      "notes": "{\"ingredientId\":\"ing_pomegranate_molasses\",\"code\":\"pomegranate_molasses\",\"preparation\":\"ترجیحاً ترش یا ملس\",\"optional\":false,\"unit\":\"قاشق غذاخوری\",\"line\":\"3 قاشق غذاخوری رب انار، ترجیحاً ترش یا ملس\"}",
+      "order": 5
+    },
+    {
+      "id": "926c4643-a85c-4ae4-adc6-16b42180a80c",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_tomato_paste",
+      "name": "رب گوجه‌فرنگی",
+      "amount": "1",
+      "unit": "قاشق غذاخوری",
+      "notes": "{\"ingredientId\":\"ing_tomato_paste\",\"code\":\"tomato_paste\",\"preparation\":\"اختیاری، برای رنگ و تعادل\",\"optional\":true,\"unit\":\"قاشق غذاخوری\",\"line\":\"1 قاشق غذاخوری رب گوجه‌فرنگی، اختیاری، برای رنگ و تعادل\"}",
+      "order": 6
+    },
+    {
+      "id": "972413b3-a21e-4a34-ab48-1e18bb5f7d68",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_tareh_fresh",
+      "name": "تره تازه",
+      "amount": "80",
+      "unit": "گرم",
+      "notes": "{\"ingredientId\":\"ing_tareh_fresh\",\"code\":\"tareh_fresh\",\"preparation\":\"ریز خردشده\",\"optional\":false,\"unit\":\"گرم\",\"line\":\"80 گرم تره تازه، ریز خردشده\"}",
+      "order": 7
+    },
+    {
+      "id": "f7274bcd-a725-4783-94ea-5ca7549980f1",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_parsley_fresh",
+      "name": "جعفری تازه",
+      "amount": "80",
+      "unit": "گرم",
+      "notes": "{\"ingredientId\":\"ing_parsley_fresh\",\"code\":\"parsley_fresh\",\"preparation\":\"ریز خردشده\",\"optional\":false,\"unit\":\"گرم\",\"line\":\"80 گرم جعفری تازه، ریز خردشده\"}",
+      "order": 8
+    },
+    {
+      "id": "2b70ddf9-e1b4-40b2-bf8e-869554536bdd",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_cilantro_fresh",
+      "name": "گشنیز تازه",
+      "amount": "60",
+      "unit": "گرم",
+      "notes": "{\"ingredientId\":\"ing_cilantro_fresh\",\"code\":\"cilantro_fresh\",\"preparation\":\"ریز خردشده؛ اگر چوچاق یا خالواش داری کمی جایگزین کن\",\"optional\":false,\"unit\":\"گرم\",\"line\":\"60 گرم گشنیز تازه، ریز خردشده؛ اگر چوچاق یا خالواش داری کمی جایگزین کن\"}",
+      "order": 9
+    },
+    {
+      "id": "ac5b5456-b550-40df-a3a8-528f9ababe7a",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_sunflower_oil",
+      "name": "روغن آفتابگردان",
+      "amount": "3",
+      "unit": "قاشق غذاخوری",
+      "notes": "{\"ingredientId\":\"ing_sunflower_oil\",\"code\":\"sunflower_oil\",\"preparation\":\"برای تفت‌دادن\",\"optional\":false,\"unit\":\"قاشق غذاخوری\",\"line\":\"3 قاشق غذاخوری روغن آفتابگردان، برای تفت‌دادن\"}",
+      "order": 10
+    },
+    {
+      "id": "1a3be2d0-cbb1-435e-965f-9c82a2978329",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_turmeric_ground",
+      "name": "زردچوبه آسیاب‌شده",
+      "amount": "1",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"ingredientId\":\"ing_turmeric_ground\",\"code\":\"turmeric_ground\",\"preparation\":null,\"optional\":false,\"unit\":\"قاشق چای‌خوری\",\"line\":\"1 قاشق چای‌خوری زردچوبه آسیاب‌شده\"}",
+      "order": 11
+    },
+    {
+      "id": "28e6e847-be2e-4d4b-b539-5caaf9a2bf5a",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_salt_table",
+      "name": "نمک خوراکی",
+      "amount": "1.25",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"ingredientId\":\"ing_salt_table\",\"code\":\"salt_table\",\"preparation\":\"به ذائقه تنظیم شود\",\"optional\":false,\"unit\":\"قاشق چای‌خوری\",\"line\":\"1.25 قاشق چای‌خوری نمک خوراکی، به ذائقه تنظیم شود\"}",
+      "order": 12
+    },
+    {
+      "id": "a054301e-e933-4f5a-9a33-7f6199eadb37",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "ingredientId": "ing_black_pepper_ground",
+      "name": "فلفل سیاه آسیاب‌شده",
+      "amount": "0.5",
+      "unit": "قاشق چای‌خوری",
+      "notes": "{\"ingredientId\":\"ing_black_pepper_ground\",\"code\":\"black_pepper_ground\",\"preparation\":null,\"optional\":false,\"unit\":\"قاشق چای‌خوری\",\"line\":\"0.5 قاشق چای‌خوری فلفل سیاه آسیاب‌شده\"}",
+      "order": 13
+    }
+  ],
+  "steps": [
+    {
+      "id": "216b5f6f-9b33-4253-bf5e-2827f5f319e3",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "آماده‌کردن پایه",
+      "instruction": "پیاز را با روغن روی حرارت متوسط تفت دهید تا نرم و طلایی روشن شود. سیر و زردچوبه را اضافه کنید و کوتاه هم بزنید تا عطرشان باز شود.",
+      "duration": 8,
+      "imageUrl": null,
+      "order": 1
+    },
+    {
+      "id": "e1bab0b2-d742-4e7a-bdb2-47d00f1ff36c",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "تفت‌دادن گوشت تکه‌ای",
+      "instruction": "گوشت تکه‌ای را اضافه کنید و چند دقیقه تفت دهید تا سطح قطعات از حالت خام خارج شود و کمی رنگ بگیرد. این غذا با گوشت چرخ‌کرده و تخم‌مرغ نیست.",
+      "duration": 10,
+      "imageUrl": null,
+      "order": 2
+    },
+    {
+      "id": "223acc1f-06be-4191-ab4b-5d9baacd186f",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "افزودن گردو و رب‌ها",
+      "instruction": "گردوی آسیاب‌شده را اضافه کنید و ۲ تا ۳ دقیقه آرام تفت دهید تا بوی خامی گردو کمتر شود. رب انار و در صورت استفاده رب گوجه را اضافه کنید و کوتاه تفت دهید.",
+      "duration": 6,
+      "imageUrl": null,
+      "order": 3
+    },
+    {
+      "id": "0e685058-4495-4609-93e1-4bb92f28e1aa",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "آرام‌پز کردن",
+      "instruction": "حدود ۲ پیمانه آب داغ اضافه کنید، نمک و فلفل را بزنید و در ظرف را بگذارید. خوراک را با حرارت کم بپزید تا گوشت نرم شود و سس گردو و رب انار جا بیفتد.",
+      "duration": 45,
+      "imageUrl": null,
+      "order": 4
+    },
+    {
+      "id": "90f7a075-ac07-4f33-99a3-eadeb4dc0a49",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "افزودن سبزی گیلانی",
+      "instruction": "تره، جعفری و گشنیز خردشده را اضافه کنید. اگر چوچاق یا خالواش دارید، کمی از آن را در همین مرحله اضافه کنید. ۱۲ تا ۱۵ دقیقه دیگر بپزید تا سبزی عطر بدهد اما نسوزد.",
+      "duration": 15,
+      "imageUrl": null,
+      "order": 5
+    },
+    {
+      "id": "81ecdbcd-5ad4-40cb-a8df-481bf6a37d64",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "تنظیم غلظت و مزه",
+      "instruction": "در پایان سس باید غلیظ، براق و ترش‌مزه باشد. اگر زیادی ترش بود کمی آب داغ و چند دقیقه پخت بیشتر کمک می‌کند؛ اگر رقیق بود در ظرف را بردارید تا غلیظ شود.",
+      "duration": 8,
+      "imageUrl": null,
+      "order": 6
+    },
+    {
+      "id": "50904bef-64f9-4a96-acc8-998510753b93",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "title": "سرو",
+      "instruction": "گمج کباب را داغ، در همان ظرف سفالی یا قابلمه گرم، با کته شمالی یا نان و سبزی خوردن سرو کنید.",
+      "duration": 2,
+      "imageUrl": null,
+      "order": 7
+    }
+  ],
+  "searchTerms": [
+    {
+      "id": "9d5b5311-69bb-4c8e-88f5-3fcc4df80b44",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "gamaj-kabab"
+    },
+    {
+      "id": "7089d818-0741-4fcb-9de4-26b7f456d7f3",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "گمج کباب"
+    },
+    {
+      "id": "87ffa628-f620-4daf-b6d6-c2901b39971d",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "گیلانی"
+    },
+    {
+      "id": "f0bd41bc-014f-4c75-b3b1-b330349c110c",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "گوشت تکه‌ای"
+    },
+    {
+      "id": "bc5ac2d5-5851-4cb7-a16b-d25999051182",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "گردو"
+    },
+    {
+      "id": "e9c93097-f85b-4d92-9eb0-08902d461cdc",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "رب انار"
+    },
+    {
+      "id": "ea597ad4-5687-4322-9cbe-4c63ba7ef52f",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "سبزی محلی"
+    },
+    {
+      "id": "b0d140fe-69ed-4484-8097-b9a0daa0cafc",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "چوچاق"
+    },
+    {
+      "id": "965bae1a-6907-4d82-a89a-3c2ccb73bdea",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "خوراک گیلانی"
+    },
+    {
+      "id": "b7e73f83-268a-4f86-b2ce-121b2cea0ee8",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "main_course"
+    },
+    {
+      "id": "136c9510-171c-4470-949d-a86072e2eec0",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "lunch"
+    },
+    {
+      "id": "98f463cf-817b-405a-b6b6-8037a5a192ff",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "dinner"
+    },
+    {
+      "id": "7dee9254-2bcc-41e5-8fa6-626817a8f378",
+      "recipeId": "garnish_recipe_fa_104_7b4ced78",
+      "term": "persian"
+    }
+  ],
+  "nutrition": {
+    "id": "cb822b35-7a45-473a-8f21-377da71b889a",
+    "recipeId": "garnish_recipe_fa_104_7b4ced78",
+    "calories": 430,
+    "protein": 27,
+    "carbs": 12,
+    "fat": 31,
+    "fiber": 3,
+    "source": null
+  }
+}

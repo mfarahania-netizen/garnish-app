@@ -1,0 +1,1888 @@
+{
+  "generatedAt": "2026-07-03T14:00:21.989Z",
+  "ok": true,
+  "totalLines": 235,
+  "missing": [],
+  "rows": [
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "زیتون سبز بدون هسته",
+      "ingredientId": "ing_green_olives_pitted",
+      "code": "green_olives_pitted",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_01_olive-feta-garlic-dip",
+      "slug": "olive-feta-garlic-dip",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "name": "عسل",
+      "ingredientId": "ing_honey",
+      "code": "honey",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "name": "پرک فلفل قرمز",
+      "ingredientId": "ing_red_pepper_flakes",
+      "code": "red_pepper_flakes",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_02_whipped-feta-with-chili-honey-and-pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "name": "پسته خام",
+      "ingredientId": "ing_pistachios_raw",
+      "code": "pistachios_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "name": "فلفل قرمز کبابی آماده",
+      "ingredientId": "ing_roasted_red_peppers_jarred",
+      "code": "roasted_red_peppers_jarred",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "name": "پرک فلفل قرمز",
+      "ingredientId": "ing_red_pepper_flakes",
+      "code": "red_pepper_flakes",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_03_tirokafteri-spicy-feta-spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_04_labneh-with-zaatar-and-olive-oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "name": "لبنه",
+      "ingredientId": "ing_labneh",
+      "code": "labneh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_04_labneh-with-zaatar-and-olive-oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "name": "زعتر",
+      "ingredientId": "ing_zaatar",
+      "code": "zaatar",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_04_labneh-with-zaatar-and-olive-oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_04_labneh-with-zaatar-and-olive-oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "name": "سماق",
+      "ingredientId": "ing_sumac_ground",
+      "code": "sumac_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "name": "لبنه",
+      "ingredientId": "ing_labneh",
+      "code": "labneh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "name": "چغندر خام",
+      "ingredientId": "ing_beetroot_raw",
+      "code": "beetroot_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_05_beet-labneh-with-walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "name": "گردو خام",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "name": "فلفل قرمز کبابی آماده",
+      "ingredientId": "ing_roasted_red_peppers_jarred",
+      "code": "roasted_red_peppers_jarred",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "name": "گردو خام",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "name": "آرد سوخاری یا نان خشک خردشده",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "name": "رب انار",
+      "ingredientId": "ing_pomegranate_molasses",
+      "code": "pomegranate_molasses",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_06_muhammara-walnut-pepper-dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "name": "هویج خام",
+      "ingredientId": "ing_carrot_raw",
+      "code": "carrot_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "name": "هریسا",
+      "ingredientId": "ing_harissa_paste",
+      "code": "harissa_paste",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_07_roasted-carrot-harissa-dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "name": "لوبیا سفید خشک",
+      "ingredientId": "ing_white_beans_dry",
+      "code": "white_beans_dry",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "name": "رزماری خشک",
+      "ingredientId": "ing_rosemary_dried",
+      "code": "rosemary_dried",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_08_smoky-white-bean-rosemary-dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "name": "قارچ دکمه‌ای خام",
+      "ingredientId": "ing_button_mushroom_raw",
+      "code": "button_mushroom_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "name": "کره بدون نمک",
+      "ingredientId": "ing_butter_unsalted",
+      "code": "butter_unsalted",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_09_lemon-garlic-butter-mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_10_halloumi-bites-with-honey-sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "name": "پنیر هالومی",
+      "ingredientId": "ing_halloumi_cheese",
+      "code": "halloumi_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_10_halloumi-bites-with-honey-sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "name": "عسل",
+      "ingredientId": "ing_honey",
+      "code": "honey",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_10_halloumi-bites-with-honey-sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "name": "کنجد برشته",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_10_halloumi-bites-with-honey-sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_11_crispy-feta-phyllo-bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "name": "خمیر فیلو",
+      "ingredientId": "ing_phyllo_dough",
+      "code": "phyllo_dough",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_11_crispy-feta-phyllo-bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_11_crispy-feta-phyllo-bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "name": "عسل",
+      "ingredientId": "ing_honey",
+      "code": "honey",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_11_crispy-feta-phyllo-bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "name": "فلفل دلمه‌ای کوچک یا تکه‌های فلفل دلمه‌ای",
+      "ingredientId": "ing_bell_pepper_raw",
+      "code": "bell_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "name": "پنیر خامه‌ای",
+      "ingredientId": "ing_cream_cheese",
+      "code": "cream_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_12_feta-herb-stuffed-mini-peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "name": "گوجه‌فرنگی",
+      "ingredientId": "ing_tomato_raw",
+      "code": "tomato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "name": "فلفل دلمه‌ای",
+      "ingredientId": "ing_bell_pepper_raw",
+      "code": "bell_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "name": "پیاز",
+      "ingredientId": "ing_onion_raw",
+      "code": "onion_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_13_turkish-ezme",
+      "slug": "turkish-ezme",
+      "name": "رب انار",
+      "ingredientId": "ing_pomegranate_molasses",
+      "code": "pomegranate_molasses",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "name": "نعناع تازه",
+      "ingredientId": "ing_mint_fresh",
+      "code": "mint_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_14_haydari-yogurt-mint-dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "name": "گردو",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_15_skordalia-garlic-potato-dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "name": "سیب‌زمینی",
+      "ingredientId": "ing_potato_raw",
+      "code": "potato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_15_skordalia-garlic-potato-dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_15_skordalia-garlic-potato-dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_15_skordalia-garlic-potato-dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "name": "باگت",
+      "ingredientId": "ing_baguette",
+      "code": "baguette",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "name": "قارچ دکمه‌ای",
+      "ingredientId": "ing_button_mushroom_raw",
+      "code": "button_mushroom_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "name": "آویشن خشک",
+      "ingredientId": "ing_thyme_dried",
+      "code": "thyme_dried",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "name": "پنیر خامه‌ای",
+      "ingredientId": "ing_cream_cheese",
+      "code": "cream_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_16_mushroom-thyme-crostini",
+      "slug": "mushroom-thyme-crostini",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_17_fried-mozzarella-bites",
+      "slug": "fried-mozzarella-bites",
+      "name": "موتزارلا",
+      "ingredientId": "ing_mozzarella_cheese",
+      "code": "mozzarella_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_17_fried-mozzarella-bites",
+      "slug": "fried-mozzarella-bites",
+      "name": "آرد سفید",
+      "ingredientId": "ing_all_purpose_flour",
+      "code": "all_purpose_flour",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_17_fried-mozzarella-bites",
+      "slug": "fried-mozzarella-bites",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_17_fried-mozzarella-bites",
+      "slug": "fried-mozzarella-bites",
+      "name": "آرد سوخاری",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_18_dutch-cheese-souffle-bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_18_dutch-cheese-souffle-bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "name": "خمیر پفکی",
+      "ingredientId": "ing_puff_pastry",
+      "code": "puff_pastry",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_18_dutch-cheese-souffle-bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_18_dutch-cheese-souffle-bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "name": "آرد سوخاری",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_19_chili-cheese-potato-wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "name": "سیب‌زمینی",
+      "ingredientId": "ing_potato_raw",
+      "code": "potato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_19_chili-cheese-potato-wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "name": "چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_19_chili-cheese-potato-wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "name": "فلفل قرمز پرک",
+      "ingredientId": "ing_red_pepper_flakes",
+      "code": "red_pepper_flakes",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_19_chili-cheese-potato-wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "name": "خامه ترش",
+      "ingredientId": "ing_sour_cream",
+      "code": "sour_cream",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "name": "گل‌کلم",
+      "ingredientId": "ing_cauliflower_raw",
+      "code": "cauliflower_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "name": "سس تند کاین",
+      "ingredientId": "ing_hot_sauce_cayenne",
+      "code": "hot_sauce_cayenne",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "name": "کره بدون نمک",
+      "ingredientId": "ing_butter_unsalted",
+      "code": "butter_unsalted",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_20_buffalo-cauliflower-bites",
+      "slug": "buffalo-cauliflower-bites",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_21_zaatar-crispy-chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "name": "نخود پخته و آبکش‌شده",
+      "ingredientId": "ing_chickpeas_canned_drained",
+      "code": "chickpeas_canned_drained",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_21_zaatar-crispy-chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_21_zaatar-crispy-chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "name": "زعتر",
+      "ingredientId": "ing_zaatar",
+      "code": "zaatar",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_21_zaatar-crispy-chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "name": "سماق",
+      "ingredientId": "ing_sumac_ground",
+      "code": "sumac_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "name": "بادام خام",
+      "ingredientId": "ing_almonds_raw",
+      "code": "almonds_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "name": "گردو خام",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "name": "بادام‌هندی خام",
+      "ingredientId": "ing_cashews_raw",
+      "code": "cashews_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "name": "پاپریکا دودی",
+      "ingredientId": "ing_paprika_ground",
+      "code": "paprika_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_22_smoky-spiced-roasted-nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "name": "عسل",
+      "ingredientId": "ing_honey",
+      "code": "honey",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "name": "خیار",
+      "ingredientId": "ing_cucumber_raw",
+      "code": "cucumber_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "name": "سرکه سفید",
+      "ingredientId": "ing_white_vinegar",
+      "code": "white_vinegar",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "name": "نمک خوراکی",
+      "ingredientId": "ing_salt_table",
+      "code": "salt_table",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_23_quick-cucumber-pickles",
+      "slug": "quick-cucumber-pickles",
+      "name": "شوید تازه",
+      "ingredientId": "ing_dill_fresh",
+      "code": "dill_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_24_jalapeno-popper-bites",
+      "slug": "jalapeno-popper-bites",
+      "name": "فلفل هالوپینو",
+      "ingredientId": "ing_jalapeno_pepper_raw",
+      "code": "jalapeno_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_24_jalapeno-popper-bites",
+      "slug": "jalapeno-popper-bites",
+      "name": "پنیر خامه‌ای",
+      "ingredientId": "ing_cream_cheese",
+      "code": "cream_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_24_jalapeno-popper-bites",
+      "slug": "jalapeno-popper-bites",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_24_jalapeno-popper-bites",
+      "slug": "jalapeno-popper-bites",
+      "name": "آرد سوخاری",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "name": "قارچ دکمه‌ای",
+      "ingredientId": "ing_button_mushroom_raw",
+      "code": "button_mushroom_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "name": "فلفل دلمه‌ای",
+      "ingredientId": "ing_bell_pepper_raw",
+      "code": "bell_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "name": "پیاز",
+      "ingredientId": "ing_onion_raw",
+      "code": "onion_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_25_queso-fundido-with-mushrooms-and-peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "name": "تورتیلای ذرت",
+      "ingredientId": "ing_corn_tortilla",
+      "code": "corn_tortilla",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "name": "لوبیای قرمز پخته و آبکش‌شده",
+      "ingredientId": "ing_red_kidney_beans_canned_drained",
+      "code": "red_kidney_beans_canned_drained",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "name": "خامه ترش",
+      "ingredientId": "ing_sour_cream",
+      "code": "sour_cream",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "name": "آووکادو",
+      "ingredientId": "ing_avocado_raw",
+      "code": "avocado_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_26_seven-layer-bean-dip-cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "name": "گوجه‌فرنگی",
+      "ingredientId": "ing_tomato_raw",
+      "code": "tomato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "name": "کیمچی",
+      "ingredientId": "ing_kimchi",
+      "code": "kimchi",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "name": "آرد سفید",
+      "ingredientId": "ing_all_purpose_flour",
+      "code": "all_purpose_flour",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_27_kimchi-cheese-pancake-bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "name": "پیازچه",
+      "ingredientId": "ing_chives_fresh",
+      "code": "chives_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "name": "خیار",
+      "ingredientId": "ing_cucumber_raw",
+      "code": "cucumber_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "name": "گوچوجانگ",
+      "ingredientId": "ing_gochujang",
+      "code": "gochujang",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "name": "سرکه برنج",
+      "ingredientId": "ing_rice_vinegar",
+      "code": "rice_vinegar",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_28_gochujang-cucumber-cups",
+      "slug": "gochujang-cucumber-cups",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "name": "ادامامه منجمد",
+      "ingredientId": "ing_edamame_frozen",
+      "code": "edamame_frozen",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "name": "سیر",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "name": "پرک فلفل قرمز",
+      "ingredientId": "ing_red_pepper_flakes",
+      "code": "red_pepper_flakes",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "name": "سس سویا",
+      "ingredientId": "ing_soy_sauce",
+      "code": "soy_sauce",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_29_garlic-chili-edamame",
+      "slug": "garlic-chili-edamame",
+      "name": "روغن کنجد بوداده",
+      "ingredientId": "ing_toasted_sesame_oil",
+      "code": "toasted_sesame_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "name": "خیار",
+      "ingredientId": "ing_cucumber_raw",
+      "code": "cucumber_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "name": "کره بادام‌زمینی نرم",
+      "ingredientId": "ing_peanut_butter_smooth",
+      "code": "peanut_butter_smooth",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "name": "آب لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "name": "سس سویا",
+      "ingredientId": "ing_soy_sauce",
+      "code": "soy_sauce",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_30_thai-peanut-cucumber-cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "name": "فلفل چیلی",
+      "ingredientId": "ing_chili_pepper_raw",
+      "code": "chili_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "name": "سس مایونز",
+      "ingredientId": "ing_mayonnaise",
+      "code": "mayonnaise",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "name": "خردل دیژون",
+      "ingredientId": "ing_dijon_mustard",
+      "code": "dijon_mustard",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "name": "زعتر",
+      "ingredientId": "ing_zaatar",
+      "code": "zaatar",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_31_zaatar-sumac-deviled-eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "name": "سماق",
+      "ingredientId": "ing_sumac_ground",
+      "code": "sumac_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_32_herbed-cheese-ball-bites",
+      "slug": "herbed-cheese-ball-bites",
+      "name": "پنیر خامه‌ای",
+      "ingredientId": "ing_cream_cheese",
+      "code": "cream_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_32_herbed-cheese-ball-bites",
+      "slug": "herbed-cheese-ball-bites",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_32_herbed-cheese-ball-bites",
+      "slug": "herbed-cheese-ball-bites",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_32_herbed-cheese-ball-bites",
+      "slug": "herbed-cheese-ball-bites",
+      "name": "گردو خام",
+      "ingredientId": "ing_walnuts_raw",
+      "code": "walnuts_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_33_chickpea-sesame-crackers",
+      "slug": "chickpea-sesame-crackers",
+      "name": "آرد نخود",
+      "ingredientId": "ing_chickpea_flour",
+      "code": "chickpea_flour",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_33_chickpea-sesame-crackers",
+      "slug": "chickpea-sesame-crackers",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_33_chickpea-sesame-crackers",
+      "slug": "chickpea-sesame-crackers",
+      "name": "نمک خوراکی",
+      "ingredientId": "ing_salt_table",
+      "code": "salt_table",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_33_chickpea-sesame-crackers",
+      "slug": "chickpea-sesame-crackers",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "name": "پیاز",
+      "ingredientId": "ing_onion_raw",
+      "code": "onion_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "name": "آرد سفید",
+      "ingredientId": "ing_all_purpose_flour",
+      "code": "all_purpose_flour",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "name": "آرد سوخاری",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_34_crispy-onion-rings-with-yogurt-dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "name": "بادمجان",
+      "ingredientId": "ing_eggplant_raw",
+      "code": "eggplant_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "name": "گوجه‌فرنگی",
+      "ingredientId": "ing_tomato_raw",
+      "code": "tomato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_35_eggplant-nachos-with-garlic-yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_36_parmesan-zucchini-chips",
+      "slug": "parmesan-zucchini-chips",
+      "name": "کدو سبز",
+      "ingredientId": "ing_zucchini_raw",
+      "code": "zucchini_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_36_parmesan-zucchini-chips",
+      "slug": "parmesan-zucchini-chips",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_36_parmesan-zucchini-chips",
+      "slug": "parmesan-zucchini-chips",
+      "name": "پنیر پارمزان",
+      "ingredientId": "ing_parmesan_cheese",
+      "code": "parmesan_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_36_parmesan-zucchini-chips",
+      "slug": "parmesan-zucchini-chips",
+      "name": "آرد سوخاری",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "name": "گوشت چرخ‌کرده گاو",
+      "ingredientId": "ing_ground_beef_raw",
+      "code": "ground_beef_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "name": "پیاز",
+      "ingredientId": "ing_onion_raw",
+      "code": "onion_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_37_mini-kofta-skewers-with-mint-yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "name": "نعناع تازه",
+      "ingredientId": "ing_mint_fresh",
+      "code": "mint_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_38_grilled-cheese-and-cherry-tomato-skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_38_grilled-cheese-and-cherry-tomato-skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "name": "گوجه گیلاسی",
+      "ingredientId": "ing_cherry_tomato_raw",
+      "code": "cherry_tomato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_38_grilled-cheese-and-cherry-tomato-skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "name": "ریحان تازه",
+      "ingredientId": "ing_basil_fresh",
+      "code": "basil_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_38_grilled-cheese-and-cherry-tomato-skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "name": "گل‌کلم",
+      "ingredientId": "ing_cauliflower_raw",
+      "code": "cauliflower_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "name": "هریسا",
+      "ingredientId": "ing_harissa_paste",
+      "code": "harissa_paste",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_39_harissa-cauliflower-florets-with-lemon-yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "name": "آب‌لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "name": "سیب‌زمینی شیرین",
+      "ingredientId": "ing_sweet_potato_raw",
+      "code": "sweet_potato_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "name": "تاهینی",
+      "ingredientId": "ing_tahini",
+      "code": "tahini",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "name": "آب‌لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_40_sweet-potato-wedges-with-lemon-tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_41_turkish-feta-herb-borek-cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "name": "خمیر فیلو",
+      "ingredientId": "ing_phyllo_dough",
+      "code": "phyllo_dough",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_41_turkish-feta-herb-borek-cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "name": "پنیر فتا",
+      "ingredientId": "ing_feta_cheese",
+      "code": "feta_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_41_turkish-feta-herb-borek-cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_41_turkish-feta-herb-borek-cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "name": "دانه ذرت منجمد",
+      "ingredientId": "ing_frozen_corn_kernels",
+      "code": "frozen_corn_kernels",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "name": "پیازچه یا ساقه سبز پیاز",
+      "ingredientId": "ing_chives_fresh",
+      "code": "chives_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "name": "آرد سفید",
+      "ingredientId": "ing_all_purpose_flour",
+      "code": "all_purpose_flour",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "name": "تخم‌مرغ",
+      "ingredientId": "ing_whole_egg_raw",
+      "code": "whole_egg_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_42_corn-scallion-fritter-bites",
+      "slug": "corn-scallion-fritter-bites",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "name": "عدس قرمز",
+      "ingredientId": "ing_red_lentils_dry",
+      "code": "red_lentils_dry",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "name": "بلغور ریز خشک",
+      "ingredientId": "ing_bulgur_fine_dry",
+      "code": "bulgur_fine_dry",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "name": "رب گوجه‌فرنگی",
+      "ingredientId": "ing_tomato_paste",
+      "code": "tomato_paste",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_43_lentil-kofta-lettuce-cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "name": "کاهو رومی",
+      "ingredientId": "ing_romaine_lettuce_raw",
+      "code": "romaine_lettuce_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "بروکلی",
+      "ingredientId": "ing_broccoli_raw",
+      "code": "broccoli_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "ارده",
+      "ingredientId": "ing_tahini",
+      "code": "tahini",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "آب‌لیمو",
+      "ingredientId": "ing_lemon_juice_bottled",
+      "code": "lemon_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_44_charred-broccoli-with-lemon-tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "name": "توفوی سفت",
+      "ingredientId": "ing_tofu_firm",
+      "code": "tofu_firm",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "name": "سس سویا",
+      "ingredientId": "ing_soy_sauce",
+      "code": "soy_sauce",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "name": "زنجبیل تازه",
+      "ingredientId": "ing_ginger_root_raw",
+      "code": "ginger_root_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "name": "کنجد بوداده",
+      "ingredientId": "ing_roasted_sesame_seeds",
+      "code": "roasted_sesame_seeds",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_45_sesame-tofu-cucumber-skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "name": "خیار",
+      "ingredientId": "ing_cucumber_raw",
+      "code": "cucumber_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_46_herbed-cheese-stuffed-mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "name": "قارچ دکمه‌ای",
+      "ingredientId": "ing_button_mushroom_raw",
+      "code": "button_mushroom_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_46_herbed-cheese-stuffed-mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "name": "پنیر خامه‌ای",
+      "ingredientId": "ing_cream_cheese",
+      "code": "cream_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_46_herbed-cheese-stuffed-mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "name": "جعفری تازه",
+      "ingredientId": "ing_parsley_fresh",
+      "code": "parsley_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_46_herbed-cheese-stuffed-mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "name": "آرد سوخاری یا خرده‌نان",
+      "ingredientId": "ing_breadcrumbs",
+      "code": "breadcrumbs",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "name": "نان پیتا",
+      "ingredientId": "ing_pita_bread",
+      "code": "pita_bread",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "name": "سماق",
+      "ingredientId": "ing_sumac_ground",
+      "code": "sumac_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "name": "روغن زیتون",
+      "ingredientId": "ing_olive_oil",
+      "code": "olive_oil",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_47_sumac-pita-chips-with-garlic-yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "name": "لوبیا چیتی پخته یا کنسروی",
+      "ingredientId": "ing_canned_pinto_beans",
+      "code": "canned_pinto_beans",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "name": "فلفل دلمه‌ای",
+      "ingredientId": "ing_bell_pepper_raw",
+      "code": "bell_pepper_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "name": "گشنیز تازه",
+      "ingredientId": "ing_cilantro_fresh",
+      "code": "cilantro_fresh",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "name": "آب لایم",
+      "ingredientId": "ing_lime_juice_bottled",
+      "code": "lime_juice_bottled",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_48_smoky-pinto-bean-salad",
+      "slug": "smoky-pinto-bean-salad",
+      "name": "پاپریکا دودی",
+      "ingredientId": "ing_paprika_ground",
+      "code": "paprika_ground",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_49_mini-cheesy-chicken-taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "name": "تورتیلای ذرت",
+      "ingredientId": "ing_corn_tortilla",
+      "code": "corn_tortilla",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_49_mini-cheesy-chicken-taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "name": "سینه مرغ خام",
+      "ingredientId": "ing_chicken_breast_raw",
+      "code": "chicken_breast_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_49_mini-cheesy-chicken-taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "name": "پنیر چدار",
+      "ingredientId": "ing_cheddar_cheese",
+      "code": "cheddar_cheese",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_49_mini-cheesy-chicken-taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "name": "خامه ترش",
+      "ingredientId": "ing_sour_cream",
+      "code": "sour_cream",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_50_caramelized-onion-yogurt-dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "name": "پیاز خام",
+      "ingredientId": "ing_onion_raw",
+      "code": "onion_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_50_caramelized-onion-yogurt-dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "name": "سیر خام",
+      "ingredientId": "ing_garlic_raw",
+      "code": "garlic_raw",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_50_caramelized-onion-yogurt-dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "name": "ماست یونانی ساده",
+      "ingredientId": "ing_greek_yogurt_plain",
+      "code": "greek_yogurt_plain",
+      "ok": true
+    },
+    {
+      "recipeId": "meze50_50_caramelized-onion-yogurt-dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "name": "پیازچه تازه",
+      "ingredientId": "ing_chives_fresh",
+      "code": "chives_fresh",
+      "ok": true
+    }
+  ]
+}

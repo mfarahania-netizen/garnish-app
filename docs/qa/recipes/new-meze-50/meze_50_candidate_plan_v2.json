@@ -1,0 +1,4025 @@
+{
+  "summary": {
+    "generatedAt": "2026-07-03T11:12:21.036Z",
+    "source": "local/dev PostgreSQL via Prisma read-only + existing candidate/duplicate files",
+    "dbWrites": 0,
+    "recipesCreated": 0,
+    "importsRun": 0,
+    "originalFinalCount": 50,
+    "retainedOriginalCount": 47,
+    "rawPoolReplacementCount": 3,
+    "replacedDuplicateCount": 3,
+    "approvedSafeNewCount": 34,
+    "approvedDistinctButCloseCount": 16,
+    "missingIngredientBlockedCount": 0,
+    "finalV2Count": 50,
+    "validation": {
+      "finalCount": 50,
+      "duplicateSlugs": [],
+      "duplicateTitleFa": [],
+      "duplicateTitleEn": [],
+      "blockedMissingIngredientRows": [],
+      "unresolvedRows": []
+    }
+  },
+  "top15RecommendedFirst": [
+    {
+      "order": 1,
+      "rank": 1,
+      "slug": "olive-feta-garlic-dip",
+      "titleFa": "دیپ فتا و زیتون با سیر",
+      "titleEn": "Olive Feta Garlic Dip",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 2,
+      "rank": 2,
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "titleFa": "فتای همزده با عسل تند و پسته",
+      "titleEn": "Whipped Feta with Chili Honey and Pistachio",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 3,
+      "rank": 3,
+      "slug": "tirokafteri-spicy-feta-spread",
+      "titleFa": "تیرکافتری؛ دیپ فتای تند یونانی",
+      "titleEn": "Tirokafteri Spicy Feta Spread",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 4,
+      "rank": 4,
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "titleFa": "لبنه با زعتر و روغن زیتون",
+      "titleEn": "Labneh with Zaatar and Olive Oil",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 5,
+      "rank": 5,
+      "slug": "beet-labneh-with-walnuts",
+      "titleFa": "لبنه چغندر و گردو",
+      "titleEn": "Beet Labneh with Walnuts",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 6,
+      "rank": 6,
+      "slug": "muhammara-walnut-pepper-dip",
+      "titleFa": "محمره فلفل کبابی و گردو",
+      "titleEn": "Muhammara Walnut Pepper Dip",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 7,
+      "rank": 7,
+      "slug": "roasted-carrot-harissa-dip",
+      "titleFa": "دیپ هویج کبابی و هریسا",
+      "titleEn": "Roasted Carrot Harissa Dip",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 8,
+      "rank": 8,
+      "slug": "smoky-white-bean-rosemary-dip",
+      "titleFa": "دیپ لوبیا سفید با رزماری",
+      "titleEn": "Smoky White Bean Rosemary Dip",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 9,
+      "rank": 9,
+      "slug": "lemon-garlic-butter-mushrooms",
+      "titleFa": "قارچ کره ای سیر و لیمو",
+      "titleEn": "Lemon Garlic Butter Mushrooms",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 10,
+      "rank": 10,
+      "slug": "halloumi-bites-with-honey-sesame",
+      "titleFa": "مکعب های هالومی با عسل و کنجد",
+      "titleEn": "Halloumi Bites with Honey Sesame",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 11,
+      "rank": 11,
+      "slug": "crispy-feta-phyllo-bites",
+      "titleFa": "لقمه فتا در خمیر فیلو",
+      "titleEn": "Crispy Feta Phyllo Bites",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 12,
+      "rank": 12,
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "titleFa": "فلفل مینی شکم پر با فتا و سبزی",
+      "titleEn": "Feta Herb Stuffed Mini Peppers",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 13,
+      "rank": 13,
+      "slug": "turkish-ezme",
+      "titleFa": "ازمه ترکی؛ سالسای تند سبزیجات",
+      "titleEn": "Turkish Ezme",
+      "reason": "new low-risk candidate"
+    },
+    {
+      "order": 14,
+      "rank": 14,
+      "slug": "haydari-yogurt-mint-dip",
+      "titleFa": "حیدری؛ دیپ ماست و نعناع",
+      "titleEn": "Haydari Yogurt Mint Dip",
+      "reason": "close but controllably distinct"
+    },
+    {
+      "order": 15,
+      "rank": 15,
+      "slug": "skordalia-garlic-potato-dip",
+      "titleFa": "اسکوردالیا؛ دیپ سیب زمینی و سیر",
+      "titleEn": "Skordalia Garlic Potato Dip",
+      "reason": "new low-risk candidate"
+    }
+  ],
+  "removedFromV1": [
+    {
+      "slug": "mexican-elote-cups",
+      "titleFa": "کاپ الوت مکزیکی",
+      "titleEn": "Mexican Elote Cups",
+      "verdict": "REPLACE_DUPLICATE",
+      "reason": "Same user intent and format as existing mexican-street-corn-cup; elote cup wording is not enough differentiation.",
+      "closest": {
+        "recipeId": "garnish_lite_fa_042_9be6a738",
+        "slug": "mexican-street-corn-cup",
+        "titleFa": "ذرت مکزیکی فنجانی (الوته آماده)",
+        "titleEn": ""
+      },
+      "replacementSlug": "smoky-pinto-bean-salad"
+    },
+    {
+      "slug": "mini-tomato-basil-arancini",
+      "titleFa": "آرانچینی کوچک گوجه و ریحان",
+      "titleEn": "Mini Tomato Basil Arancini",
+      "verdict": "REPLACE_DUPLICATE",
+      "reason": "Existing arancini already covers the same fried rice ball intent; mini tomato-basil is a variant, not a new app concept.",
+      "closest": {
+        "recipeId": "garnish_recipe_intl_034_3035ba70",
+        "slug": "arancini",
+        "titleFa": "آرانچینی",
+        "titleEn": ""
+      },
+      "replacementSlug": "mini-cheesy-chicken-taquitos"
+    },
+    {
+      "slug": "mini-spinach-feta-triangles",
+      "titleFa": "مثلث اسفناج و فتا",
+      "titleEn": "Mini Spinach Feta Triangles",
+      "verdict": "REPLACE_DUPLICATE",
+      "reason": "Spinach + feta + phyllo snack intent is too close to existing spanakopita; mini form is insufficient differentiation.",
+      "closest": {
+        "recipeId": "garnish_recipe_intl_036_e0780696",
+        "slug": "spanakopita",
+        "titleFa": "اسپاناکوپیتا",
+        "titleEn": ""
+      },
+      "replacementSlug": "caramelized-onion-yogurt-dip"
+    }
+  ],
+  "finalCandidates": [
+    {
+      "rank": 1,
+      "titleFa": "دیپ فتا و زیتون با سیر",
+      "titleEn": "Olive Feta Garlic Dip",
+      "slug": "olive-feta-garlic-dip",
+      "cuisine": "Mediterranean",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "salty/creamy/garlicky/tangy",
+      "coreIngredients": [
+        "feta cheese",
+        "olive",
+        "garlic",
+        "olive oil",
+        "lemon",
+        "parsley"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "olive",
+          "ingredientId": "ing_green_olives_pitted",
+          "code": "green_olives_pitted",
+          "nameFa": "زیتون سبز بدون هسته",
+          "nameEn": "pitted green olives",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_038_de0f96b1",
+        "slug": "marinated-olive-and-herb-dip-with-bread",
+        "titleFa": "زیتون پرورده با نان",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to olive dips, but approved only if feta is the dominant creamy base and olives are a flavor-in, not zeytoon parvardeh.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 2,
+      "titleFa": "فتای همزده با عسل تند و پسته",
+      "titleEn": "Whipped Feta with Chili Honey and Pistachio",
+      "slug": "whipped-feta-with-chili-honey-and-pistachio",
+      "cuisine": "Greek",
+      "type": "spread",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/salty/sweet/spicy",
+      "coreIngredients": [
+        "feta cheese",
+        "honey",
+        "chili flakes",
+        "pistachio",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "honey",
+          "ingredientId": "ing_honey",
+          "code": "honey",
+          "nameFa": "عسل",
+          "nameEn": "Honey",
+          "substitution": null
+        },
+        {
+          "term": "chili flakes",
+          "ingredientId": "ing_red_pepper_flakes",
+          "code": "red_pepper_flakes",
+          "nameFa": "پرک فلفل قرمز",
+          "nameEn": "red pepper flakes",
+          "substitution": null
+        },
+        {
+          "term": "pistachio",
+          "ingredientId": "ing_pistachios_raw",
+          "code": "pistachios_raw",
+          "nameFa": "پسته خام",
+          "nameEn": "pistachios, raw",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_004_ab5fbe9d",
+        "slug": "feta-walnut-and-honey-on-bread",
+        "titleFa": "پنیر و گردو و عسل روی نان",
+        "titleEn": ""
+      },
+      "whyDistinct": "Feta and honey exist in breakfast/snack content, but this must remain a whipped dip with chili honey and pistachio.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 3,
+      "titleFa": "تیرکافتری؛ دیپ فتای تند یونانی",
+      "titleEn": "Tirokafteri Spicy Feta Spread",
+      "slug": "tirokafteri-spicy-feta-spread",
+      "cuisine": "Greek",
+      "type": "spread",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/spicy/tangy",
+      "coreIngredients": [
+        "feta cheese",
+        "roasted pepper",
+        "yogurt",
+        "chili flakes",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "roasted pepper",
+          "ingredientId": "ing_roasted_red_peppers_jarred",
+          "code": "roasted_red_peppers_jarred",
+          "nameFa": "فلفل قرمز کبابی شیشه‌ای",
+          "nameEn": "jarred roasted red peppers",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "chili flakes",
+          "ingredientId": "ing_red_pepper_flakes",
+          "code": "red_pepper_flakes",
+          "nameFa": "پرک فلفل قرمز",
+          "nameEn": "red pepper flakes",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "score": 0.16666666666666666,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_139_91cb38b4",
+        "slug": "greek-kleftiko-lamb",
+        "titleFa": "کلفتیکوی یونانی",
+        "titleEn": ""
+      },
+      "whyDistinct": "In the feta spread family, but distinct as a spicy Greek pepper-feta spread.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 4,
+      "titleFa": "لبنه با زعتر و روغن زیتون",
+      "titleEn": "Labneh with Zaatar and Olive Oil",
+      "slug": "labneh-with-zaatar-and-olive-oil",
+      "cuisine": "Levantine",
+      "type": "spread",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/tangy/herby",
+      "coreIngredients": [
+        "labneh",
+        "zaatar",
+        "olive oil",
+        "sumac"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "labneh",
+          "ingredientId": "ing_labneh",
+          "code": "labneh",
+          "nameFa": "لبنه",
+          "nameEn": "labneh",
+          "substitution": null
+        },
+        {
+          "term": "zaatar",
+          "ingredientId": "ing_zaatar",
+          "code": "zaatar",
+          "nameFa": "زعتر",
+          "nameEn": "za’atar",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "sumac",
+          "ingredientId": "ing_sumac_ground",
+          "code": "sumac_ground",
+          "nameFa": "سماق آسیاب‌شده",
+          "nameEn": "ground sumac",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "score": 0.3,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_038_de0f96b1",
+        "slug": "marinated-olive-and-herb-dip-with-bread",
+        "titleFa": "زیتون پرورده با نان",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to yogurt dips, but distinct if it keeps thick labneh, zaatar, and olive-oil Levant profile.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 5,
+      "titleFa": "لبنه چغندر و گردو",
+      "titleEn": "Beet Labneh with Walnuts",
+      "slug": "beet-labneh-with-walnuts",
+      "cuisine": "Levantine",
+      "type": "spread",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/earthy/crunchy",
+      "coreIngredients": [
+        "labneh",
+        "beetroot",
+        "walnut",
+        "garlic",
+        "lemon"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "labneh",
+          "ingredientId": "ing_labneh",
+          "code": "labneh",
+          "nameFa": "لبنه",
+          "nameEn": "labneh",
+          "substitution": null
+        },
+        {
+          "term": "beetroot",
+          "ingredientId": "ing_beetroot_raw",
+          "code": "beetroot_raw",
+          "nameFa": "چغندر خام",
+          "nameEn": "beetroot, raw",
+          "substitution": null
+        },
+        {
+          "term": "walnut",
+          "ingredientId": "ing_walnuts_raw",
+          "code": "walnuts_raw",
+          "nameFa": "گردو خام",
+          "nameEn": "walnuts, raw",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_048_89204b05",
+        "slug": "beet-yogurt-dip",
+        "titleFa": "دیپ ماست و لبو (بورانی سرد)",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to beet-yogurt-dip; approved only with labneh texture, walnut, and lemon so it does not become generic beet borani.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 6,
+      "titleFa": "محمره فلفل کبابی و گردو",
+      "titleEn": "Muhammara Walnut Pepper Dip",
+      "slug": "muhammara-walnut-pepper-dip",
+      "cuisine": "Levantine",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "smoky/sour/nutty",
+      "coreIngredients": [
+        "roasted red pepper",
+        "walnut",
+        "bread crumbs",
+        "pomegranate molasses",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "roasted red pepper",
+          "ingredientId": "ing_roasted_red_peppers_jarred",
+          "code": "roasted_red_peppers_jarred",
+          "nameFa": "فلفل قرمز کبابی شیشه‌ای",
+          "nameEn": "jarred roasted red peppers",
+          "substitution": null
+        },
+        {
+          "term": "walnut",
+          "ingredientId": "ing_walnuts_raw",
+          "code": "walnuts_raw",
+          "nameFa": "گردو خام",
+          "nameEn": "walnuts, raw",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        },
+        {
+          "term": "pomegranate molasses",
+          "ingredientId": "ing_pomegranate_molasses",
+          "code": "pomegranate_molasses",
+          "nameFa": "رب انار",
+          "nameEn": "pomegranate molasses",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_043_fe50cdbf",
+        "slug": "cucumber-walnut-yogurt-dip",
+        "titleFa": "ماست با خیار و گردو (دیپ)",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 7,
+      "titleFa": "دیپ هویج کبابی و هریسا",
+      "titleEn": "Roasted Carrot Harissa Dip",
+      "slug": "roasted-carrot-harissa-dip",
+      "cuisine": "North African",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "smoky/spicy/creamy",
+      "coreIngredients": [
+        "carrot",
+        "harissa",
+        "yogurt",
+        "lemon",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "carrot",
+          "ingredientId": "ing_carrot_raw",
+          "code": "carrot_raw",
+          "nameFa": "هویج خام",
+          "nameEn": "carrot, raw",
+          "substitution": null
+        },
+        {
+          "term": "harissa",
+          "ingredientId": "ing_harissa_paste",
+          "code": "harissa_paste",
+          "nameFa": "خمیر هریسا",
+          "nameEn": "harissa paste",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_1706_34be3c2d",
+        "slug": "havij-polo",
+        "titleFa": "هویج پلو",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 8,
+      "titleFa": "دیپ لوبیا سفید با رزماری",
+      "titleEn": "Smoky White Bean Rosemary Dip",
+      "slug": "smoky-white-bean-rosemary-dip",
+      "cuisine": "Italian",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/garlicky/herby",
+      "coreIngredients": [
+        "white beans",
+        "rosemary",
+        "garlic",
+        "lemon",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "white beans",
+          "ingredientId": "ing_white_beans_dry",
+          "code": "white_beans_dry",
+          "nameFa": "لوبیا سفید خشک",
+          "nameEn": "white beans, dry",
+          "substitution": null
+        },
+        {
+          "term": "rosemary",
+          "ingredientId": "ing_rosemary_dried",
+          "code": "rosemary_dried",
+          "nameFa": "رزماری خشک",
+          "nameEn": "dried rosemary",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_078_578dd342",
+        "slug": "guacamole-with-bread",
+        "titleFa": "دیپ گواکاموله با نان",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 9,
+      "titleFa": "قارچ کره ای سیر و لیمو",
+      "titleEn": "Lemon Garlic Butter Mushrooms",
+      "slug": "lemon-garlic-butter-mushrooms",
+      "cuisine": "European",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "garlicky/buttery/tangy",
+      "coreIngredients": [
+        "mushroom",
+        "butter",
+        "garlic",
+        "lemon",
+        "parsley"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "mushroom",
+          "ingredientId": "ing_button_mushroom_raw",
+          "code": "button_mushroom_raw",
+          "nameFa": "قارچ دکمه‌ای خام",
+          "nameEn": "button mushroom, raw",
+          "substitution": null
+        },
+        {
+          "term": "butter",
+          "ingredientId": "ing_butter_unsalted",
+          "code": "butter_unsalted",
+          "nameFa": "کره بدون نمک",
+          "nameEn": "unsalted butter",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_042_f549dcd3",
+        "slug": "korean-scallion-pajeon",
+        "titleFa": "پاجون پیازچه کره‌ای",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 10,
+      "titleFa": "مکعب های هالومی با عسل و کنجد",
+      "titleEn": "Halloumi Bites with Honey Sesame",
+      "slug": "halloumi-bites-with-honey-sesame",
+      "cuisine": "Greek",
+      "type": "cheese",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "salty/cheesy/sweet/crisp",
+      "coreIngredients": [
+        "halloumi",
+        "honey",
+        "sesame",
+        "lemon"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "halloumi",
+          "ingredientId": "ing_halloumi_cheese",
+          "code": "halloumi_cheese",
+          "nameFa": "پنیر حلومی",
+          "nameEn": "halloumi cheese",
+          "substitution": null
+        },
+        {
+          "term": "honey",
+          "ingredientId": "ing_honey",
+          "code": "honey",
+          "nameFa": "عسل",
+          "nameEn": "Honey",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.375,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_044_ee2f79ac",
+        "slug": "honey-sesame-toast",
+        "titleFa": "نان تست با عسل و کنجد",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 11,
+      "titleFa": "لقمه فتا در خمیر فیلو",
+      "titleEn": "Crispy Feta Phyllo Bites",
+      "slug": "crispy-feta-phyllo-bites",
+      "cuisine": "Greek",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy/salty",
+      "coreIngredients": [
+        "feta cheese",
+        "phyllo dough",
+        "honey",
+        "sesame"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "phyllo dough",
+          "ingredientId": "ing_phyllo_dough",
+          "code": "phyllo_dough",
+          "nameFa": "خمیر فیلو",
+          "nameEn": "phyllo dough",
+          "substitution": null
+        },
+        {
+          "term": "honey",
+          "ingredientId": "ing_honey",
+          "code": "honey",
+          "nameFa": "عسل",
+          "nameEn": "Honey",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_intl_036_e0780696",
+        "slug": "spanakopita",
+        "titleFa": "اسپاناکوپیتا",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to phyllo/feta territory, but without spinach and as crisp feta bites; must not drift into spanakopita.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 12,
+      "titleFa": "فلفل مینی شکم پر با فتا و سبزی",
+      "titleEn": "Feta Herb Stuffed Mini Peppers",
+      "slug": "feta-herb-stuffed-mini-peppers",
+      "cuisine": "Mediterranean",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/crunchy/sweet",
+      "coreIngredients": [
+        "mini pepper",
+        "feta cheese",
+        "cream cheese",
+        "parsley",
+        "lemon"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "mini pepper",
+          "ingredientId": "ing_bell_pepper_raw",
+          "code": "bell_pepper_raw",
+          "nameFa": "فلفل دلمه‌ای خام",
+          "nameEn": "bell pepper, raw",
+          "substitution": "bell pepper raw"
+        },
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "cream cheese",
+          "ingredientId": "ing_cream_cheese",
+          "code": "cream_cheese",
+          "nameFa": "پنیر خامه‌ای",
+          "nameEn": "cream cheese",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [
+        "mini pepper -> bell pepper raw"
+      ],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_91_a3224405",
+        "slug": "morgh-shekam-por",
+        "titleFa": "مرغ شکم‌پر",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY_WITH_SUBSTITUTION",
+      "priority": "HIGH",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 13,
+      "titleFa": "ازمه ترکی؛ سالسای تند سبزیجات",
+      "titleEn": "Turkish Ezme",
+      "slug": "turkish-ezme",
+      "cuisine": "Turkish",
+      "type": "salad",
+      "category": "سالاد",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "spicy/sour/fresh",
+      "coreIngredients": [
+        "tomato",
+        "pepper",
+        "onion",
+        "parsley",
+        "pomegranate molasses"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "tomato",
+          "ingredientId": "ing_tomato_raw",
+          "code": "tomato_raw",
+          "nameFa": "گوجه‌فرنگی خام",
+          "nameEn": "tomato, raw",
+          "substitution": null
+        },
+        {
+          "term": "pepper",
+          "ingredientId": "ing_bell_pepper_raw",
+          "code": "bell_pepper_raw",
+          "nameFa": "فلفل دلمه‌ای خام",
+          "nameEn": "bell pepper, raw",
+          "substitution": null
+        },
+        {
+          "term": "onion",
+          "ingredientId": "ing_onion_raw",
+          "code": "onion_raw",
+          "nameFa": "پیاز خام",
+          "nameEn": "onion, raw",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "pomegranate molasses",
+          "ingredientId": "ing_pomegranate_molasses",
+          "code": "pomegranate_molasses",
+          "nameFa": "رب انار",
+          "nameEn": "pomegranate molasses",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_031_1302a859",
+        "slug": "turkish-ayran",
+        "titleFa": "آیران ترکی",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 14,
+      "titleFa": "حیدری؛ دیپ ماست و نعناع",
+      "titleEn": "Haydari Yogurt Mint Dip",
+      "slug": "haydari-yogurt-mint-dip",
+      "cuisine": "Turkish",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/tangy/herby",
+      "coreIngredients": [
+        "yogurt",
+        "mint",
+        "garlic",
+        "olive oil",
+        "walnut"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "mint",
+          "ingredientId": "ing_mint_fresh",
+          "code": "mint_fresh",
+          "nameFa": "نعناع تازه",
+          "nameEn": "fresh mint",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "walnut",
+          "ingredientId": "ing_walnuts_raw",
+          "code": "walnuts_raw",
+          "nameFa": "گردو خام",
+          "nameEn": "walnuts, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_fa_126_76675c2f",
+        "slug": "borani-esfenaj",
+        "titleFa": "بورانی اسفناج",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to borani/yogurt dips; must be Turkish haydari with strained yogurt, mint, garlic, olive oil, optional walnut, no cucumber/beet/spinach.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 15,
+      "titleFa": "اسکوردالیا؛ دیپ سیب زمینی و سیر",
+      "titleEn": "Skordalia Garlic Potato Dip",
+      "slug": "skordalia-garlic-potato-dip",
+      "cuisine": "Greek",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "garlicky/creamy/tangy",
+      "coreIngredients": [
+        "potato",
+        "garlic",
+        "olive oil",
+        "lemon"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "potato",
+          "ingredientId": "ing_potato_raw",
+          "code": "potato_raw",
+          "nameFa": "سیب‌زمینی خام",
+          "nameEn": "potato, raw",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_133_139b05e2",
+        "slug": "kuku-sibzamini",
+        "titleFa": "کوکو سیب‌زمینی",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 16,
+      "titleFa": "کروستینی قارچ و آویشن",
+      "titleEn": "Mushroom Thyme Crostini",
+      "slug": "mushroom-thyme-crostini",
+      "cuisine": "Italian",
+      "type": "bread-based",
+      "category": "نان و لقمه",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/creamy/earthy",
+      "coreIngredients": [
+        "baguette",
+        "mushroom",
+        "thyme",
+        "cream cheese",
+        "garlic"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "baguette",
+          "ingredientId": "ing_baguette",
+          "code": "baguette",
+          "nameFa": "باگت",
+          "nameEn": "baguette",
+          "substitution": null
+        },
+        {
+          "term": "mushroom",
+          "ingredientId": "ing_button_mushroom_raw",
+          "code": "button_mushroom_raw",
+          "nameFa": "قارچ دکمه‌ای خام",
+          "nameEn": "button mushroom, raw",
+          "substitution": null
+        },
+        {
+          "term": "thyme",
+          "ingredientId": "ing_thyme_dried",
+          "code": "thyme_dried",
+          "nameFa": "آویشن خشک",
+          "nameEn": "dried thyme",
+          "substitution": null
+        },
+        {
+          "term": "cream cheese",
+          "ingredientId": "ing_cream_cheese",
+          "code": "cream_cheese",
+          "nameFa": "پنیر خامه‌ای",
+          "nameEn": "cream cheese",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_1343_5bf8151c",
+        "slug": "chicken-and-mushroom",
+        "titleFa": "خوراک مرغ و قارچ",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 17,
+      "titleFa": "موتزارلای سوخاری لقمه ای",
+      "titleEn": "Fried Mozzarella Bites",
+      "slug": "fried-mozzarella-bites",
+      "cuisine": "Italian-American",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy",
+      "coreIngredients": [
+        "mozzarella",
+        "egg",
+        "bread crumbs",
+        "flour"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "mozzarella",
+          "ingredientId": "ing_mozzarella_cheese",
+          "code": "mozzarella_cheese",
+          "nameFa": "پنیر موزارلا",
+          "nameEn": "mozzarella cheese",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        },
+        {
+          "term": "flour",
+          "ingredientId": "ing_all_purpose_flour",
+          "code": "all_purpose_flour",
+          "nameFa": "آرد گندم سفید",
+          "nameEn": "all-purpose wheat flour",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_1333_db68905d",
+        "slug": "fried-chicken",
+        "titleFa": "مرغ سوخاری",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 18,
+      "titleFa": "کاسوفله پنیر هلندی",
+      "titleEn": "Dutch Cheese Souffle Bites",
+      "slug": "dutch-cheese-souffle-bites",
+      "cuisine": "Dutch",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy",
+      "coreIngredients": [
+        "cheese",
+        "puff pastry",
+        "egg",
+        "bread crumbs"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "puff pastry",
+          "ingredientId": "ing_puff_pastry",
+          "code": "puff_pastry",
+          "nameFa": "خمیر هزارلا",
+          "nameEn": "puff pastry",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_1521_13feed66",
+        "slug": "cheese-omelet",
+        "titleFa": "املت پنیر",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 19,
+      "titleFa": "قاچ سیب زمینی چیلی چیز",
+      "titleEn": "Chili Cheese Potato Wedges",
+      "slug": "chili-cheese-potato-wedges",
+      "cuisine": "American",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy/spicy",
+      "coreIngredients": [
+        "potato",
+        "cheddar cheese",
+        "chili powder",
+        "sour cream"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "potato",
+          "ingredientId": "ing_potato_raw",
+          "code": "potato_raw",
+          "nameFa": "سیب‌زمینی خام",
+          "nameEn": "potato, raw",
+          "substitution": null
+        },
+        {
+          "term": "cheddar cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "chili powder",
+          "ingredientId": "ing_red_pepper_flakes",
+          "code": "red_pepper_flakes",
+          "nameFa": "پرک فلفل قرمز",
+          "nameEn": "red pepper flakes",
+          "substitution": null
+        },
+        {
+          "term": "sour cream",
+          "ingredientId": "ing_sour_cream",
+          "code": "sour_cream",
+          "nameFa": "خامه ترش",
+          "nameEn": "sour cream",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_fa_1332_682d694b",
+        "slug": "french-fries",
+        "titleFa": "سیب زمینی سرخ کرده",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to french fries; approved only with wedge cut, chili-cheese topping, and explicit bake/fry method.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 20,
+      "titleFa": "گل کلم با سس بوفالو",
+      "titleEn": "Buffalo Cauliflower Bites",
+      "slug": "buffalo-cauliflower-bites",
+      "cuisine": "American",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "spicy/crispy/tangy",
+      "coreIngredients": [
+        "cauliflower",
+        "hot sauce",
+        "butter",
+        "garlic",
+        "yogurt"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cauliflower",
+          "ingredientId": "ing_cauliflower_raw",
+          "code": "cauliflower_raw",
+          "nameFa": "گل‌کلم خام",
+          "nameEn": "cauliflower, raw",
+          "substitution": null
+        },
+        {
+          "term": "hot sauce",
+          "ingredientId": "ing_hot_sauce_cayenne",
+          "code": "hot_sauce_cayenne",
+          "nameFa": "سس تند فلفل کاین",
+          "nameEn": "cayenne hot sauce",
+          "substitution": null
+        },
+        {
+          "term": "butter",
+          "ingredientId": "ing_butter_unsalted",
+          "code": "butter_unsalted",
+          "nameFa": "کره بدون نمک",
+          "nameEn": "unsalted butter",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_084_87b7230c",
+        "slug": "malva-pudding-caramel-sauce",
+        "titleFa": "مالوا پودینگ با سس گرم",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 21,
+      "titleFa": "نخود برشته زعتر",
+      "titleEn": "Zaatar Crispy Chickpeas",
+      "slug": "zaatar-crispy-chickpeas",
+      "cuisine": "Levantine",
+      "type": "nut",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/salty/herby",
+      "coreIngredients": [
+        "chickpeas",
+        "zaatar",
+        "olive oil",
+        "sumac"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "chickpeas",
+          "ingredientId": "ing_chickpeas_canned_drained",
+          "code": "chickpeas_canned_drained",
+          "nameFa": "نخود کنسروی آبکش‌شده",
+          "nameEn": "canned chickpeas, drained",
+          "substitution": null
+        },
+        {
+          "term": "zaatar",
+          "ingredientId": "ing_zaatar",
+          "code": "zaatar",
+          "nameFa": "زعتر",
+          "nameEn": "za’atar",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "sumac",
+          "ingredientId": "ing_sumac_ground",
+          "code": "sumac_ground",
+          "nameFa": "سماق آسیاب‌شده",
+          "nameEn": "ground sumac",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_034_396e101d",
+        "slug": "roasted-chickpeas-and-raisins",
+        "titleFa": "نخودچی کشمش",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to chickpea snack mix; approved only as cooked/crisped seasoned chickpeas, not ready snack mix.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 22,
+      "titleFa": "آجیل بوداده تند و دودی",
+      "titleEn": "Smoky Spiced Roasted Nuts",
+      "slug": "smoky-spiced-roasted-nuts",
+      "cuisine": "American",
+      "type": "nut",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/spicy/smoky",
+      "coreIngredients": [
+        "almond",
+        "walnut",
+        "cashew",
+        "smoked paprika",
+        "honey"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "almond",
+          "ingredientId": "ing_almonds_raw",
+          "code": "almonds_raw",
+          "nameFa": "بادام خام",
+          "nameEn": "almonds, raw",
+          "substitution": null
+        },
+        {
+          "term": "walnut",
+          "ingredientId": "ing_walnuts_raw",
+          "code": "walnuts_raw",
+          "nameFa": "گردو خام",
+          "nameEn": "walnuts, raw",
+          "substitution": null
+        },
+        {
+          "term": "cashew",
+          "ingredientId": "ing_cashews_raw",
+          "code": "cashews_raw",
+          "nameFa": "بادام هندی خام",
+          "nameEn": "cashews, raw",
+          "substitution": null
+        },
+        {
+          "term": "smoked paprika",
+          "ingredientId": "ing_paprika_ground",
+          "code": "paprika_ground",
+          "nameFa": "پاپریکا آسیاب‌شده",
+          "nameEn": "ground paprika",
+          "substitution": null
+        },
+        {
+          "term": "honey",
+          "ingredientId": "ing_honey",
+          "code": "honey",
+          "nameFa": "عسل",
+          "nameEn": "Honey",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.16666666666666666,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_060_17a8b6d3",
+        "slug": "smoky-mutabbal-eggplant-tahini",
+        "titleFa": "متبل بادمجان دودی",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 23,
+      "titleFa": "خیارشور سریع خانگی",
+      "titleEn": "Quick Cucumber Pickles",
+      "slug": "quick-cucumber-pickles",
+      "cuisine": "Iranian",
+      "type": "pickle",
+      "category": "ترشی و مزه",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "sour/crunchy/salty",
+      "coreIngredients": [
+        "cucumber",
+        "vinegar",
+        "salt",
+        "garlic",
+        "dill"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cucumber",
+          "ingredientId": "ing_cucumber_raw",
+          "code": "cucumber_raw",
+          "nameFa": "خیار خام",
+          "nameEn": "cucumber, raw",
+          "substitution": null
+        },
+        {
+          "term": "vinegar",
+          "ingredientId": "ing_white_vinegar",
+          "code": "white_vinegar",
+          "nameFa": "سرکه سفید",
+          "nameEn": "white vinegar",
+          "substitution": null
+        },
+        {
+          "term": "salt",
+          "ingredientId": "ing_salt_table",
+          "code": "salt_table",
+          "nameFa": "نمک خوراکی",
+          "nameEn": "table salt",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "dill",
+          "ingredientId": "ing_dill_fresh",
+          "code": "dill_fresh",
+          "nameFa": "شوید تازه",
+          "nameEn": "fresh dill",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_059_c1594c61",
+        "slug": "mint-yogurt-drink",
+        "titleFa": "دوغ نعنا خانگی",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 24,
+      "titleFa": "لقمه هالوپینو پاپر",
+      "titleEn": "Jalapeno Popper Bites",
+      "slug": "jalapeno-popper-bites",
+      "cuisine": "American",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "spicy/cheesy/crispy",
+      "coreIngredients": [
+        "jalapeno",
+        "cream cheese",
+        "cheddar cheese",
+        "bread crumbs"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "jalapeno",
+          "ingredientId": "ing_jalapeno_pepper_raw",
+          "code": "jalapeno_pepper_raw",
+          "nameFa": "فلفل هالاپینو خام",
+          "nameEn": "jalapeño pepper, raw",
+          "substitution": null
+        },
+        {
+          "term": "cream cheese",
+          "ingredientId": "ing_cream_cheese",
+          "code": "cream_cheese",
+          "nameFa": "پنیر خامه‌ای",
+          "nameEn": "cream cheese",
+          "substitution": null
+        },
+        {
+          "term": "cheddar cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.16666666666666666,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_051_25696db8",
+        "slug": "date-cheese-and-walnut-bite",
+        "titleFa": "خرما و پنیر و گردو (لقمه)",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 25,
+      "titleFa": "کِسو فوندیدو قارچ و فلفل",
+      "titleEn": "Queso Fundido with Mushrooms and Peppers",
+      "slug": "queso-fundido-with-mushrooms-and-peppers",
+      "cuisine": "Mexican",
+      "type": "cheese",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "melty/cheesy/savory",
+      "coreIngredients": [
+        "cheese",
+        "mushroom",
+        "pepper",
+        "onion",
+        "tortilla"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "mushroom",
+          "ingredientId": "ing_button_mushroom_raw",
+          "code": "button_mushroom_raw",
+          "nameFa": "قارچ دکمه‌ای خام",
+          "nameEn": "button mushroom, raw",
+          "substitution": null
+        },
+        {
+          "term": "pepper",
+          "ingredientId": "ing_bell_pepper_raw",
+          "code": "bell_pepper_raw",
+          "nameFa": "فلفل دلمه‌ای خام",
+          "nameEn": "bell pepper, raw",
+          "substitution": null
+        },
+        {
+          "term": "onion",
+          "ingredientId": "ing_onion_raw",
+          "code": "onion_raw",
+          "nameFa": "پیاز خام",
+          "nameEn": "onion, raw",
+          "substitution": null
+        },
+        {
+          "term": "tortilla",
+          "ingredientId": "ing_corn_tortilla",
+          "code": "corn_tortilla",
+          "nameFa": "تورتیلای ذرت",
+          "nameEn": "corn tortilla",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2222222222222222,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_001_6f1166ee",
+        "slug": "bread-with-dates-and-sesame",
+        "titleFa": "نان و خرما و کنجد",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 26,
+      "titleFa": "دیپ لوبیای هفت لایه کوچک",
+      "titleEn": "Seven Layer Bean Dip Cups",
+      "slug": "seven-layer-bean-dip-cups",
+      "cuisine": "Mexican-American",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/salty/fresh",
+      "coreIngredients": [
+        "beans",
+        "sour cream",
+        "avocado",
+        "cheese",
+        "tomato"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "beans",
+          "ingredientId": "ing_red_kidney_beans_canned_drained",
+          "code": "red_kidney_beans_canned_drained",
+          "nameFa": "لوبیا قرمز کنسروی آبکش‌شده",
+          "nameEn": "canned kidney beans, drained",
+          "substitution": null
+        },
+        {
+          "term": "sour cream",
+          "ingredientId": "ing_sour_cream",
+          "code": "sour_cream",
+          "nameFa": "خامه ترش",
+          "nameEn": "sour cream",
+          "substitution": null
+        },
+        {
+          "term": "avocado",
+          "ingredientId": "ing_avocado_raw",
+          "code": "avocado_raw",
+          "nameFa": "آووکادو خام",
+          "nameEn": "avocado, raw",
+          "substitution": null
+        },
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "tomato",
+          "ingredientId": "ing_tomato_raw",
+          "code": "tomato_raw",
+          "nameFa": "گوجه‌فرنگی خام",
+          "nameEn": "tomato, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.14285714285714285,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_036_35d377a6",
+        "slug": "chips-with-cheese-dip",
+        "titleFa": "چیپس و دیپ پنیر",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 27,
+      "titleFa": "پنکیک کیمچی و پنیر لقمه ای",
+      "titleEn": "Kimchi Cheese Pancake Bites",
+      "slug": "kimchi-cheese-pancake-bites",
+      "cuisine": "Korean",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/spicy/tangy",
+      "coreIngredients": [
+        "kimchi",
+        "flour",
+        "egg",
+        "cheese",
+        "green onion"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "kimchi",
+          "ingredientId": "ing_kimchi",
+          "code": "kimchi",
+          "nameFa": "کیمچی",
+          "nameEn": "kimchi",
+          "substitution": null
+        },
+        {
+          "term": "flour",
+          "ingredientId": "ing_all_purpose_flour",
+          "code": "all_purpose_flour",
+          "nameFa": "آرد گندم سفید",
+          "nameEn": "all-purpose wheat flour",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "green onion",
+          "ingredientId": "ing_chives_fresh",
+          "code": "chives_fresh",
+          "nameFa": "تره پیازی تازه",
+          "nameEn": "fresh chives",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_051_25696db8",
+        "slug": "date-cheese-and-walnut-bite",
+        "titleFa": "خرما و پنیر و گردو (لقمه)",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 28,
+      "titleFa": "خیار کره ای گوچوجانگ",
+      "titleEn": "Gochujang Cucumber Cups",
+      "slug": "gochujang-cucumber-cups",
+      "cuisine": "Korean",
+      "type": "salad",
+      "category": "سالاد",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "spicy/crunchy/sour",
+      "coreIngredients": [
+        "cucumber",
+        "gochujang",
+        "sesame",
+        "rice vinegar",
+        "garlic"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cucumber",
+          "ingredientId": "ing_cucumber_raw",
+          "code": "cucumber_raw",
+          "nameFa": "خیار خام",
+          "nameEn": "cucumber, raw",
+          "substitution": null
+        },
+        {
+          "term": "gochujang",
+          "ingredientId": "ing_gochujang",
+          "code": "gochujang",
+          "nameFa": "گوچوجانگ",
+          "nameEn": "gochujang",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        },
+        {
+          "term": "rice vinegar",
+          "ingredientId": "ing_rice_vinegar",
+          "code": "rice_vinegar",
+          "nameFa": "سرکه برنج",
+          "nameEn": "rice vinegar",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_042_f549dcd3",
+        "slug": "korean-scallion-pajeon",
+        "titleFa": "پاجون پیازچه کره‌ای",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 29,
+      "titleFa": "ادامامه سیر و چیلی",
+      "titleEn": "Garlic Chili Edamame",
+      "slug": "garlic-chili-edamame",
+      "cuisine": "Japanese",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "salty/spicy/garlicky",
+      "coreIngredients": [
+        "edamame",
+        "garlic",
+        "chili flakes",
+        "soy sauce",
+        "sesame oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "edamame",
+          "ingredientId": "ing_edamame_frozen",
+          "code": "edamame_frozen",
+          "nameFa": "ادامامه منجمد",
+          "nameEn": "edamame, frozen",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "chili flakes",
+          "ingredientId": "ing_red_pepper_flakes",
+          "code": "red_pepper_flakes",
+          "nameFa": "پرک فلفل قرمز",
+          "nameEn": "red pepper flakes",
+          "substitution": null
+        },
+        {
+          "term": "soy sauce",
+          "ingredientId": "ing_soy_sauce",
+          "code": "soy_sauce",
+          "nameFa": "سس سویا",
+          "nameEn": "soy sauce",
+          "substitution": null
+        },
+        {
+          "term": "sesame oil",
+          "ingredientId": "ing_toasted_sesame_oil",
+          "code": "toasted_sesame_oil",
+          "nameFa": "روغن کنجد بوداده",
+          "nameEn": "toasted sesame oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_global_143_052_fd0a302b",
+        "slug": "salted-edamame",
+        "titleFa": "ادامامه نمکی",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to salted edamame; distinct only as cooked garlic-chili sesame snack.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 30,
+      "titleFa": "کاپ خیار با سس بادام زمینی تایلندی",
+      "titleEn": "Thai Peanut Cucumber Cups",
+      "slug": "thai-peanut-cucumber-cups",
+      "cuisine": "Thai",
+      "type": "salad",
+      "category": "سالاد",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/creamy/spicy",
+      "coreIngredients": [
+        "cucumber",
+        "peanut butter",
+        "lime",
+        "soy sauce",
+        "chili"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cucumber",
+          "ingredientId": "ing_cucumber_raw",
+          "code": "cucumber_raw",
+          "nameFa": "خیار خام",
+          "nameEn": "cucumber, raw",
+          "substitution": null
+        },
+        {
+          "term": "peanut butter",
+          "ingredientId": "ing_peanut_butter_smooth",
+          "code": "peanut_butter_smooth",
+          "nameFa": "کره بادام‌زمینی نرم",
+          "nameEn": "smooth peanut butter",
+          "substitution": null
+        },
+        {
+          "term": "lime",
+          "ingredientId": "ing_lime_juice_bottled",
+          "code": "lime_juice_bottled",
+          "nameFa": "آب لیموی سبز بطری",
+          "nameEn": "bottled lime juice",
+          "substitution": null
+        },
+        {
+          "term": "soy sauce",
+          "ingredientId": "ing_soy_sauce",
+          "code": "soy_sauce",
+          "nameFa": "سس سویا",
+          "nameEn": "soy sauce",
+          "substitution": null
+        },
+        {
+          "term": "chili",
+          "ingredientId": "ing_chili_pepper_raw",
+          "code": "chili_pepper_raw",
+          "nameFa": "فلفل تند خام",
+          "nameEn": "chili pepper, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_015_d850a87c",
+        "slug": "yogurt-with-peanut-butter-and-banana",
+        "titleFa": "ماست با کره بادام‌زمینی و موز",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 31,
+      "titleFa": "تخم مرغ شیطانی زعتر و سماق",
+      "titleEn": "Zaatar Sumac Deviled Eggs",
+      "slug": "zaatar-sumac-deviled-eggs",
+      "cuisine": "Levantine-American",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/tangy/salty",
+      "coreIngredients": [
+        "egg",
+        "mayonnaise",
+        "mustard",
+        "zaatar",
+        "sumac"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "mayonnaise",
+          "ingredientId": "ing_mayonnaise",
+          "code": "mayonnaise",
+          "nameFa": "مایونز",
+          "nameEn": "mayonnaise",
+          "substitution": null
+        },
+        {
+          "term": "mustard",
+          "ingredientId": "ing_dijon_mustard",
+          "code": "dijon_mustard",
+          "nameFa": "خردل دیژون",
+          "nameEn": "Dijon mustard",
+          "substitution": null
+        },
+        {
+          "term": "zaatar",
+          "ingredientId": "ing_zaatar",
+          "code": "zaatar",
+          "nameFa": "زعتر",
+          "nameEn": "za’atar",
+          "substitution": null
+        },
+        {
+          "term": "sumac",
+          "ingredientId": "ing_sumac_ground",
+          "code": "sumac_ground",
+          "nameFa": "سماق آسیاب‌شده",
+          "nameEn": "ground sumac",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_recipe_global_143_003_e6033f62",
+        "slug": "eggs-benedict",
+        "titleFa": "بندیکت تخم‌مرغ",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 32,
+      "titleFa": "توپک پنیر و سبزی",
+      "titleEn": "Herbed Cheese Ball Bites",
+      "slug": "herbed-cheese-ball-bites",
+      "cuisine": "American",
+      "type": "cheese",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/cheesy/crunchy",
+      "coreIngredients": [
+        "cream cheese",
+        "cheddar cheese",
+        "parsley",
+        "walnut"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cream cheese",
+          "ingredientId": "ing_cream_cheese",
+          "code": "cream_cheese",
+          "nameFa": "پنیر خامه‌ای",
+          "nameEn": "cream cheese",
+          "substitution": null
+        },
+        {
+          "term": "cheddar cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "walnut",
+          "ingredientId": "ing_walnuts_raw",
+          "code": "walnuts_raw",
+          "nameFa": "گردو خام",
+          "nameEn": "walnuts, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_007_f1109425",
+        "slug": "persian-breakfast-plate",
+        "titleFa": "بشقاب صبحانه پنیر و سبزی و گوجه",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 33,
+      "titleFa": "کراکر نخود و کنجد",
+      "titleEn": "Chickpea Sesame Crackers",
+      "slug": "chickpea-sesame-crackers",
+      "cuisine": "Mediterranean",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/salty/nutty",
+      "coreIngredients": [
+        "chickpea flour",
+        "sesame",
+        "olive oil",
+        "salt"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "chickpea flour",
+          "ingredientId": "ing_chickpea_flour",
+          "code": "chickpea_flour",
+          "nameFa": "آرد نخودچی",
+          "nameEn": "chickpea flour",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        },
+        {
+          "term": "salt",
+          "ingredientId": "ing_salt_table",
+          "code": "salt_table",
+          "nameFa": "نمک خوراکی",
+          "nameEn": "table salt",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_001_6f1166ee",
+        "slug": "bread-with-dates-and-sesame",
+        "titleFa": "نان و خرما و کنجد",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 34,
+      "titleFa": "پیاز حلقه ای سوخاری با سس ماست",
+      "titleEn": "Crispy Onion Rings with Yogurt Dip",
+      "slug": "crispy-onion-rings-with-yogurt-dip",
+      "cuisine": "American",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/sweet/tangy",
+      "coreIngredients": [
+        "onion",
+        "flour",
+        "egg",
+        "bread crumbs",
+        "yogurt"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "onion",
+          "ingredientId": "ing_onion_raw",
+          "code": "onion_raw",
+          "nameFa": "پیاز خام",
+          "nameEn": "onion, raw",
+          "substitution": null
+        },
+        {
+          "term": "flour",
+          "ingredientId": "ing_all_purpose_flour",
+          "code": "all_purpose_flour",
+          "nameFa": "آرد گندم سفید",
+          "nameEn": "all-purpose wheat flour",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_048_89204b05",
+        "slug": "beet-yogurt-dip",
+        "titleFa": "دیپ ماست و لبو (بورانی سرد)",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 35,
+      "titleFa": "ناچوی بادمجان با ماست سیر",
+      "titleEn": "Eggplant Nachos with Garlic Yogurt",
+      "slug": "eggplant-nachos-with-garlic-yogurt",
+      "cuisine": "Fusion",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "smoky/creamy/crispy",
+      "coreIngredients": [
+        "eggplant",
+        "yogurt",
+        "garlic",
+        "tomato",
+        "cheese"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "eggplant",
+          "ingredientId": "ing_eggplant_raw",
+          "code": "eggplant_raw",
+          "nameFa": "بادمجان خام",
+          "nameEn": "eggplant, raw",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "tomato",
+          "ingredientId": "ing_tomato_raw",
+          "code": "tomato_raw",
+          "nameFa": "گوجه‌فرنگی خام",
+          "nameEn": "tomato, raw",
+          "substitution": null
+        },
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_006_0ad8d5a5",
+        "slug": "yogurt-with-honey-and-cinnamon",
+        "titleFa": "ماست و عسل و دارچین",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 36,
+      "titleFa": "چیپس کدو سبز پارمزانی",
+      "titleEn": "Parmesan Zucchini Chips",
+      "slug": "parmesan-zucchini-chips",
+      "cuisine": "Italian-American",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy",
+      "coreIngredients": [
+        "zucchini",
+        "parmesan",
+        "bread crumbs",
+        "egg"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "zucchini",
+          "ingredientId": "ing_zucchini_raw",
+          "code": "zucchini_raw",
+          "nameFa": "کدو سبز خام",
+          "nameEn": "zucchini, raw",
+          "substitution": null
+        },
+        {
+          "term": "parmesan",
+          "ingredientId": "ing_parmesan_cheese",
+          "code": "parmesan_cheese",
+          "nameFa": "پنیر پارمزان",
+          "nameEn": "Parmesan cheese",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_050_ad49d256",
+        "slug": "parmesan-popcorn",
+        "titleFa": "پاپ‌کورن با پنیر پارمزان",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 37,
+      "titleFa": "کباب کوفته کوچک با ماست نعناع",
+      "titleEn": "Mini Kofta Skewers with Mint Yogurt",
+      "slug": "mini-kofta-skewers-with-mint-yogurt",
+      "cuisine": "Middle Eastern",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "savory/juicy/tangy",
+      "coreIngredients": [
+        "ground beef",
+        "onion",
+        "parsley",
+        "yogurt",
+        "mint"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "ground beef",
+          "ingredientId": "ing_ground_beef_raw",
+          "code": "ground_beef_raw",
+          "nameFa": "گوشت چرخ‌کرده گاو خام",
+          "nameEn": "ground beef, raw",
+          "substitution": null
+        },
+        {
+          "term": "onion",
+          "ingredientId": "ing_onion_raw",
+          "code": "onion_raw",
+          "nameFa": "پیاز خام",
+          "nameEn": "onion, raw",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "mint",
+          "ingredientId": "ing_mint_fresh",
+          "code": "mint_fresh",
+          "nameFa": "نعناع تازه",
+          "nameEn": "fresh mint",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_059_c1594c61",
+        "slug": "mint-yogurt-drink",
+        "titleFa": "دوغ نعنا خانگی",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 38,
+      "titleFa": "پنیر کبابی با گوجه گیلاسی",
+      "titleEn": "Grilled Cheese and Cherry Tomato Skewers",
+      "slug": "grilled-cheese-and-cherry-tomato-skewers",
+      "cuisine": "Mediterranean",
+      "type": "cheese",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "cheesy/fresh/salty",
+      "coreIngredients": [
+        "cheese",
+        "cherry tomato",
+        "basil",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "cherry tomato",
+          "ingredientId": "ing_cherry_tomato_raw",
+          "code": "cherry_tomato_raw",
+          "nameFa": "گوجه گیلاسی خام",
+          "nameEn": "cherry tomato, raw",
+          "substitution": null
+        },
+        {
+          "term": "basil",
+          "ingredientId": "ing_basil_fresh",
+          "code": "basil_fresh",
+          "nameFa": "ریحان تازه",
+          "nameEn": "fresh basil",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.42857142857142855,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_011_8be28048",
+        "slug": "cottage-cheese-with-tomato-toast",
+        "titleFa": "پنیر کاتیج با گوجه و نان",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 39,
+      "titleFa": "گل کلم هریسایی با ماست لیمویی",
+      "titleEn": "Harissa Cauliflower Florets with Lemon Yogurt",
+      "slug": "harissa-cauliflower-florets-with-lemon-yogurt",
+      "cuisine": "North African",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "spicy/creamy/roasted",
+      "coreIngredients": [
+        "cauliflower",
+        "harissa",
+        "yogurt",
+        "lemon",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "cauliflower",
+          "ingredientId": "ing_cauliflower_raw",
+          "code": "cauliflower_raw",
+          "nameFa": "گل‌کلم خام",
+          "nameEn": "cauliflower, raw",
+          "substitution": null
+        },
+        {
+          "term": "harissa",
+          "ingredientId": "ing_harissa_paste",
+          "code": "harissa_paste",
+          "nameFa": "خمیر هریسا",
+          "nameEn": "harissa paste",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2222222222222222,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_006_0ad8d5a5",
+        "slug": "yogurt-with-honey-and-cinnamon",
+        "titleFa": "ماست و عسل و دارچین",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 40,
+      "titleFa": "سیب زمینی شیرین با تاهینی و لیمو",
+      "titleEn": "Sweet Potato Wedges with Lemon Tahini",
+      "slug": "sweet-potato-wedges-with-lemon-tahini",
+      "cuisine": "Mediterranean",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "sweet/sour/nutty",
+      "coreIngredients": [
+        "sweet potato",
+        "tahini",
+        "lemon",
+        "sesame",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "sweet potato",
+          "ingredientId": "ing_sweet_potato_raw",
+          "code": "sweet_potato_raw",
+          "nameFa": "سیب‌زمینی شیرین خام",
+          "nameEn": "sweet potato, raw",
+          "substitution": null
+        },
+        {
+          "term": "tahini",
+          "ingredientId": "ing_tahini",
+          "code": "tahini",
+          "nameFa": "ارده",
+          "nameEn": "tahini",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_fa_1332_682d694b",
+        "slug": "french-fries",
+        "titleFa": "سیب زمینی سرخ کرده",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to potato snacks, but sweet potato plus lemon tahini changes ingredient center and sauce.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 41,
+      "titleFa": "بورک سیگاری پنیر و سبزی",
+      "titleEn": "Turkish Feta Herb Borek Cigars",
+      "slug": "turkish-feta-herb-borek-cigars",
+      "cuisine": "Turkish",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy/herby",
+      "coreIngredients": [
+        "yufka",
+        "feta cheese",
+        "parsley",
+        "egg"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "yufka",
+          "ingredientId": "ing_phyllo_dough",
+          "code": "phyllo_dough",
+          "nameFa": "خمیر فیلو",
+          "nameEn": "phyllo dough",
+          "substitution": "phyllo dough"
+        },
+        {
+          "term": "feta cheese",
+          "ingredientId": "ing_feta_cheese",
+          "code": "feta_cheese",
+          "nameFa": "پنیر فتا",
+          "nameEn": "feta cheese",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [
+        "yufka -> phyllo dough"
+      ],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_intl_129_382f9727",
+        "slug": "gozleme",
+        "titleFa": "گوزلمه",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to Turkish dough/cheese items, but cigar borek format and herb-feta filling are distinct.",
+      "feasibility": "READY_WITH_SUBSTITUTION",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 42,
+      "titleFa": "فریتر ذرت و پیازچه",
+      "titleEn": "Corn Scallion Fritter Bites",
+      "slug": "corn-scallion-fritter-bites",
+      "cuisine": "American",
+      "type": "fried",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/sweet/savory",
+      "coreIngredients": [
+        "corn",
+        "green onion",
+        "flour",
+        "egg",
+        "yogurt"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "corn",
+          "ingredientId": "ing_frozen_corn_kernels",
+          "code": "frozen_corn_kernels",
+          "nameFa": "ذرت منجمد",
+          "nameEn": "frozen corn kernels",
+          "substitution": null
+        },
+        {
+          "term": "green onion",
+          "ingredientId": "ing_chives_fresh",
+          "code": "chives_fresh",
+          "nameFa": "تره پیازی تازه",
+          "nameEn": "fresh chives",
+          "substitution": null
+        },
+        {
+          "term": "flour",
+          "ingredientId": "ing_all_purpose_flour",
+          "code": "all_purpose_flour",
+          "nameFa": "آرد گندم سفید",
+          "nameEn": "all-purpose wheat flour",
+          "substitution": null
+        },
+        {
+          "term": "egg",
+          "ingredientId": "ing_whole_egg_raw",
+          "code": "whole_egg_raw",
+          "nameFa": "تخم‌مرغ کامل خام",
+          "nameEn": "whole egg, raw",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_recipe_intl_125_19f26215",
+        "slug": "scallion-pancakes",
+        "titleFa": "کلوچهٔ پیازچه",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 43,
+      "titleFa": "لقمه کوفته عدس با کاهو",
+      "titleEn": "Lentil Kofta Lettuce Cups",
+      "slug": "lentil-kofta-lettuce-cups",
+      "cuisine": "Turkish",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "fresh/spiced/soft",
+      "coreIngredients": [
+        "red lentils",
+        "bulgur",
+        "lettuce",
+        "tomato paste",
+        "parsley"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "red lentils",
+          "ingredientId": "ing_red_lentils_dry",
+          "code": "red_lentils_dry",
+          "nameFa": "عدس قرمز خشک",
+          "nameEn": "dry red lentils",
+          "substitution": null
+        },
+        {
+          "term": "bulgur",
+          "ingredientId": "ing_bulgur_fine_dry",
+          "code": "bulgur_fine_dry",
+          "nameFa": "بلغور ریز خشک",
+          "nameEn": "fine bulgur, dry",
+          "substitution": null
+        },
+        {
+          "term": "lettuce",
+          "ingredientId": "ing_romaine_lettuce_raw",
+          "code": "romaine_lettuce_raw",
+          "nameFa": "کاهوی رومی خام",
+          "nameEn": "romaine lettuce, raw",
+          "substitution": null
+        },
+        {
+          "term": "tomato paste",
+          "ingredientId": "ing_tomato_paste",
+          "code": "tomato_paste",
+          "nameFa": "رب گوجه‌فرنگی",
+          "nameEn": "tomato paste",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2857142857142857,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_864_37673192",
+        "slug": "adas-polo-ba-goosht",
+        "titleFa": "عدس‌پلو با گوشت",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 44,
+      "titleFa": "بروکلی کبابی با سس تاهینی",
+      "titleEn": "Charred Broccoli with Lemon Tahini",
+      "slug": "charred-broccoli-with-lemon-tahini",
+      "cuisine": "Mediterranean",
+      "type": "side",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "smoky/sour/nutty",
+      "coreIngredients": [
+        "broccoli",
+        "tahini",
+        "lemon",
+        "garlic",
+        "sesame"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "broccoli",
+          "ingredientId": "ing_broccoli_raw",
+          "code": "broccoli_raw",
+          "nameFa": "بروکلی خام",
+          "nameEn": "broccoli, raw",
+          "substitution": null
+        },
+        {
+          "term": "tahini",
+          "ingredientId": "ing_tahini",
+          "code": "tahini",
+          "nameFa": "ارده",
+          "nameEn": "tahini",
+          "substitution": null
+        },
+        {
+          "term": "lemon",
+          "ingredientId": "ing_lemon_juice_bottled",
+          "code": "lemon_juice_bottled",
+          "nameFa": "آبلیموی بطری",
+          "nameEn": "bottled lemon juice",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.25,
+        "exact": false,
+        "recipeId": "garnish_lite_fa_064_769340cd",
+        "slug": "iced-green-tea-with-lemon",
+        "titleFa": "آیس چای سبز با لیمو",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 45,
+      "titleFa": "سیخ توفو کنجدی و خیار",
+      "titleEn": "Sesame Tofu Cucumber Skewers",
+      "slug": "sesame-tofu-cucumber-skewers",
+      "cuisine": "Asian",
+      "type": "bite",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "fresh/salty/nutty",
+      "coreIngredients": [
+        "tofu",
+        "cucumber",
+        "sesame",
+        "soy sauce",
+        "ginger"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "tofu",
+          "ingredientId": "ing_tofu_firm",
+          "code": "tofu_firm",
+          "nameFa": "توفوی سفت",
+          "nameEn": "firm tofu",
+          "substitution": null
+        },
+        {
+          "term": "cucumber",
+          "ingredientId": "ing_cucumber_raw",
+          "code": "cucumber_raw",
+          "nameFa": "خیار خام",
+          "nameEn": "cucumber, raw",
+          "substitution": null
+        },
+        {
+          "term": "sesame",
+          "ingredientId": "ing_roasted_sesame_seeds",
+          "code": "roasted_sesame_seeds",
+          "nameFa": "کنجد بوداده",
+          "nameEn": "roasted sesame seeds",
+          "substitution": null
+        },
+        {
+          "term": "soy sauce",
+          "ingredientId": "ing_soy_sauce",
+          "code": "soy_sauce",
+          "nameFa": "سس سویا",
+          "nameEn": "soy sauce",
+          "substitution": null
+        },
+        {
+          "term": "ginger",
+          "ingredientId": "ing_ginger_root_raw",
+          "code": "ginger_root_raw",
+          "nameFa": "زنجبیل تازه",
+          "nameEn": "fresh ginger root",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.2,
+        "exact": false,
+        "recipeId": "garnish_recipe_intl_073_b02d8fd5",
+        "slug": "mapo-tofu",
+        "titleFa": "ماپو توفو",
+        "titleEn": ""
+      },
+      "whyDistinct": "تکرار مستقیم در عنوان/اسلاگ/ترکیب اصلی پیدا نشد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 46,
+      "titleFa": "قارچ شکم پر پنیر و سبزی",
+      "titleEn": "Herbed Cheese Stuffed Mushrooms",
+      "slug": "herbed-cheese-stuffed-mushrooms",
+      "cuisine": "European",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/earthy/crisp",
+      "coreIngredients": [
+        "mushroom",
+        "cream cheese",
+        "parsley",
+        "bread crumbs"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "mushroom",
+          "ingredientId": "ing_button_mushroom_raw",
+          "code": "button_mushroom_raw",
+          "nameFa": "قارچ دکمه‌ای خام",
+          "nameEn": "button mushroom, raw",
+          "substitution": null
+        },
+        {
+          "term": "cream cheese",
+          "ingredientId": "ing_cream_cheese",
+          "code": "cream_cheese",
+          "nameFa": "پنیر خامه‌ای",
+          "nameEn": "cream cheese",
+          "substitution": null
+        },
+        {
+          "term": "parsley",
+          "ingredientId": "ing_parsley_fresh",
+          "code": "parsley_fresh",
+          "nameFa": "جعفری تازه",
+          "nameEn": "fresh parsley",
+          "substitution": null
+        },
+        {
+          "term": "bread crumbs",
+          "ingredientId": "ing_breadcrumbs",
+          "code": "breadcrumbs",
+          "nameFa": "آرد سوخاری",
+          "nameEn": "breadcrumbs",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_SAFE_NEW",
+      "closestExistingRecipe": {
+        "score": 0.3333333333333333,
+        "exact": false,
+        "recipeId": "garnish_recipe_fa_91_a3224405",
+        "slug": "morgh-shekam-por",
+        "titleFa": "مرغ شکم‌پر",
+        "titleEn": ""
+      },
+      "whyDistinct": "از نظر فرم سرو، کاربرد میان وعده و ترکیب مزه با نزدیک ترین دستور فعلی تفاوت دارد.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_SAFE_NEW",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 47,
+      "titleFa": "چیپس پیتا سماق و ماست سیر",
+      "titleEn": "Sumac Pita Chips with Garlic Yogurt",
+      "slug": "sumac-pita-chips-with-garlic-yogurt",
+      "cuisine": "Levantine",
+      "type": "bread-based",
+      "category": "نان و لقمه",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crunchy/tangy/garlicky",
+      "coreIngredients": [
+        "pita bread",
+        "sumac",
+        "yogurt",
+        "garlic",
+        "olive oil"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "pita bread",
+          "ingredientId": "ing_pita_bread",
+          "code": "pita_bread",
+          "nameFa": "نان پیتا",
+          "nameEn": "pita bread",
+          "substitution": null
+        },
+        {
+          "term": "sumac",
+          "ingredientId": "ing_sumac_ground",
+          "code": "sumac_ground",
+          "nameFa": "سماق آسیاب‌شده",
+          "nameEn": "ground sumac",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "olive oil",
+          "ingredientId": "ing_olive_oil",
+          "code": "olive_oil",
+          "nameFa": "روغن زیتون",
+          "nameEn": "olive oil",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_036_35d377a6",
+        "slug": "chips-with-cheese-dip",
+        "titleFa": "چیپس و دیپ پنیر",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to chips-and-dip; approved only with homemade pita chips, sumac, and garlic yogurt.",
+      "feasibility": "READY",
+      "priority": "LOW",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "ORIGINAL_50_RETAINED"
+    },
+    {
+      "rank": 48,
+      "titleFa": "سالاد لوبیا چیتی و فلفل دودی",
+      "titleEn": "Smoky Pinto Bean Salad",
+      "slug": "smoky-pinto-bean-salad",
+      "cuisine": "Mexican-inspired",
+      "type": "salad",
+      "category": "سالاد",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "smoky/sour/fresh",
+      "coreIngredients": [
+        "pinto beans",
+        "pepper",
+        "lime",
+        "cilantro",
+        "smoked paprika"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "pinto beans",
+          "ingredientId": "ing_canned_pinto_beans",
+          "code": "canned_pinto_beans",
+          "nameFa": "کنسرو لوبیا چیتی",
+          "nameEn": "canned pinto beans",
+          "substitution": null
+        },
+        {
+          "term": "pepper",
+          "ingredientId": "ing_bell_pepper_raw",
+          "code": "bell_pepper_raw",
+          "nameFa": "فلفل دلمه‌ای خام",
+          "nameEn": "bell pepper, raw",
+          "substitution": null
+        },
+        {
+          "term": "lime",
+          "ingredientId": "ing_lime_juice_bottled",
+          "code": "lime_juice_bottled",
+          "nameFa": "آب لیموی سبز بطری",
+          "nameEn": "bottled lime juice",
+          "substitution": null
+        },
+        {
+          "term": "cilantro",
+          "ingredientId": "ing_cilantro_fresh",
+          "code": "cilantro_fresh",
+          "nameFa": "گشنیز تازه",
+          "nameEn": "fresh cilantro",
+          "substitution": null
+        },
+        {
+          "term": "smoked paprika",
+          "ingredientId": "ing_paprika_ground",
+          "code": "paprika_ground",
+          "nameFa": "پاپریکا آسیاب‌شده",
+          "nameEn": "ground paprika",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_080_532aebff",
+        "slug": "corn-and-bean-salad",
+        "titleFa": "سالاد ذرت و لوبیا",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to bean salad, but pinto beans, smoked pepper, lime, and cilantro must lead; it should not become corn-heavy.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "RAW_POOL_REPLACEMENT"
+    },
+    {
+      "rank": 49,
+      "titleFa": "تاکیتوی مرغ پنیری کوچک",
+      "titleEn": "Mini Cheesy Chicken Taquitos",
+      "slug": "mini-cheesy-chicken-taquitos",
+      "cuisine": "Mexican-American",
+      "type": "baked",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "crispy/cheesy/savory",
+      "coreIngredients": [
+        "tortilla",
+        "chicken",
+        "cheese",
+        "sour cream"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "tortilla",
+          "ingredientId": "ing_corn_tortilla",
+          "code": "corn_tortilla",
+          "nameFa": "تورتیلای ذرت",
+          "nameEn": "corn tortilla",
+          "substitution": null
+        },
+        {
+          "term": "chicken",
+          "ingredientId": "ing_chicken_breast_raw",
+          "code": "chicken_breast_raw",
+          "nameFa": "سینه مرغ خام",
+          "nameEn": "chicken breast, raw",
+          "substitution": null
+        },
+        {
+          "term": "cheese",
+          "ingredientId": "ing_cheddar_cheese",
+          "code": "cheddar_cheese",
+          "nameFa": "پنیر چدار",
+          "nameEn": "cheddar cheese",
+          "substitution": null
+        },
+        {
+          "term": "sour cream",
+          "ingredientId": "ing_sour_cream",
+          "code": "sour_cream",
+          "nameFa": "خامه ترش",
+          "nameEn": "sour cream",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_recipe_global_143_051_3e8df432",
+        "slug": "cheese-quesadilla",
+        "titleFa": "کسادیا پنیر",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to tortilla-cheese family, but rolled crispy chicken-cheese taquitos are distinct from flat quesadilla or layered nachos.",
+      "feasibility": "READY",
+      "priority": "HIGH",
+      "mediaDifficulty": "MEDIUM",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "RAW_POOL_REPLACEMENT"
+    },
+    {
+      "rank": 50,
+      "titleFa": "دیپ پیاز کاراملی و ماست یونانی",
+      "titleEn": "Caramelized Onion Yogurt Dip",
+      "slug": "caramelized-onion-yogurt-dip",
+      "cuisine": "American",
+      "type": "dip",
+      "category": "پیش غذا",
+      "mealTypes": [
+        "میان وعده",
+        "پیش غذا"
+      ],
+      "craveProfile": "creamy/sweet/savory",
+      "coreIngredients": [
+        "onion",
+        "yogurt",
+        "garlic",
+        "chives"
+      ],
+      "matchedIngredientIds": [
+        {
+          "term": "onion",
+          "ingredientId": "ing_onion_raw",
+          "code": "onion_raw",
+          "nameFa": "پیاز خام",
+          "nameEn": "onion, raw",
+          "substitution": null
+        },
+        {
+          "term": "yogurt",
+          "ingredientId": "ing_greek_yogurt_plain",
+          "code": "greek_yogurt_plain",
+          "nameFa": "ماست یونانی ساده",
+          "nameEn": "plain Greek yogurt",
+          "substitution": null
+        },
+        {
+          "term": "garlic",
+          "ingredientId": "ing_garlic_raw",
+          "code": "garlic_raw",
+          "nameFa": "سیر خام",
+          "nameEn": "garlic, raw",
+          "substitution": null
+        },
+        {
+          "term": "chives",
+          "ingredientId": "ing_chives_fresh",
+          "code": "chives_fresh",
+          "nameFa": "تره پیازی تازه",
+          "nameEn": "fresh chives",
+          "substitution": null
+        }
+      ],
+      "missingIngredientIds": [],
+      "substitutions": [],
+      "duplicateClassification": "APPROVED_DISTINCT_BUT_CLOSE",
+      "closestExistingRecipe": {
+        "recipeId": "garnish_lite_fa_048_89204b05",
+        "slug": "beet-yogurt-dip",
+        "titleFa": "دیپ ماست و لبو (بورانی سرد)",
+        "titleEn": ""
+      },
+      "whyDistinct": "Close to yogurt dips, but caramelized onion is the main sweet-savory driver and it does not overlap with beet/cucumber/spinach borani.",
+      "feasibility": "READY",
+      "priority": "MEDIUM",
+      "mediaDifficulty": "LOW",
+      "finalStatus": "APPROVED_DISTINCT_BUT_CLOSE",
+      "source": "RAW_POOL_REPLACEMENT"
+    }
+  ]
+}

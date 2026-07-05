@@ -17,10 +17,15 @@ import { usePersonalizedCascade } from '../../../hooks/usePersonalizedCascade';
 import { useAuth } from '../../../context/AuthContext';
 import apiClient from '../../../lib/apiClient';
 import { toFaDigits } from '../../../components/ges/format';
-import { extractBaseServings, scaleAmountText, parseQuantity } from '../../../components/ges/scaling';
+import { getRecipeAction, RecipeInteractionMode } from './recipeInteractionMode';
+import { extractBaseServings, scaleAmountText } from '../../../components/ges/scaling';
 import { fetchSubstitutions, qualityOf as subQualityOf } from '../../../components/ges/substitution';
 import { isStructural } from '../../../components/ges/ingredientRoles';
 import { personalizationSummary } from '../../../components/ges/personalize';
+import { getIngredientEditGuard } from './ingredientEditGuard';
+import { presentIngredientSectionsV3 } from './ingredientDisplayPresenterV3';
+import IngredientListSection from './IngredientListSection.jsx';
+import { filterSafeSubstitutions } from './substitutionSafety';
 import PlatePlaceholder from '../../../components/ges/PlatePlaceholder';
 import WhyChip from '../../../components/ges/WhyChip';
 import AISheet from '../../../components/ges/AISheet';
@@ -36,16 +41,19 @@ const Column = ({ children }) => (
   </Box>
 );
 
-function CircleBtn({ icon: Icon, label, onClick, accent }) {
+function CircleBtn({ icon: Icon, label, onClick, accent, disabled = false }) {
   return (
     <UnstyledButton
       type="button"
       onClick={onClick}
+      disabled={disabled}
+      aria-disabled={disabled}
       aria-label={label}
       style={{
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 42, blockSize: 42,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 44, blockSize: 44,
         borderRadius: '50%', background: 'color-mix(in srgb, var(--g-color-text-inverse) 92%, transparent)',
         color: accent ? 'var(--g-color-brand-600)' : 'var(--g-color-text-primary)', boxShadow: 'var(--g-shadow-1)',
+        opacity: disabled ? 0.55 : 1,
       }}
     >
       <Icon size={20} stroke={1.8} />
@@ -87,6 +95,57 @@ function RichList({ items }) {
     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
       {items.map((t, i) => <Text key={i} component="p" style={{ ...stepText, margin: 0 }}>{t}</Text>)}
     </Box>
+  );
+}
+
+const stepInstruction = (step) => (typeof step === 'string' ? step : step?.instruction || step?.text || step?.description || '');
+
+function CookingStepsSection({ steps = [], title = 'روش پخت', compact = false }) {
+  const normalized = (Array.isArray(steps) ? steps : [])
+    .map((step, index) => {
+      const instruction = stepInstruction(step).trim();
+      if (!instruction) return null;
+      const order = typeof step === 'object' && Number.isFinite(Number(step.order)) ? Number(step.order) : index + 1;
+      return {
+        order,
+        title: typeof step === 'object' ? (step.title || '') : '',
+        instruction,
+        durationText: typeof step === 'object' ? (step.durationText || '') : '',
+        imageUrl: typeof step === 'object' ? (step.imageUrl || '') : '',
+        tip: typeof step === 'object' ? (step.tip || '') : '',
+      };
+    })
+    .filter(Boolean);
+
+  if (!normalized.length) {
+    return (
+      <Box style={{ marginBlockStart: 'var(--g-space-6)', padding: 'var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-state-info-bg)', border: '1px solid var(--g-color-border-subtle)' }}>
+        <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{title}</Text>
+        <Text component="p" style={{ ...stepText, margin: 'var(--g-space-2) 0 0' }}>مراحل این دستور هنوز ثبت نشده‌اند. برای پخت دقیق، فعلاً از این دستور استفاده نکن.</Text>
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>{title}</Text>
+      <Box component="ol" style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
+        {normalized.map((step) => (
+          <Box component="li" key={`${step.order}-${step.instruction}`} style={{ display: 'flex', gap: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)' }}>
+            <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 30, blockSize: 30, borderRadius: '50%', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 800, flexShrink: 0 }}>{toFaDigits(step.order)}</Box>
+            <Box style={{ minInlineSize: 0, flex: 1 }}>
+              {step.imageUrl ? <img src={step.imageUrl} alt={step.title || `مرحله ${toFaDigits(step.order)}`} loading="lazy" decoding="async" style={{ inlineSize: '100%', aspectRatio: '16 / 9', objectFit: 'cover', borderRadius: 'var(--g-radius-input)', marginBlockEnd: 'var(--g-space-2)' }} /> : null}
+              <Box style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--g-space-2)', flexWrap: 'wrap' }}>
+                {step.title ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>{step.title}</Text> : null}
+                {step.durationText ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>{step.durationText}</Text> : null}
+              </Box>
+              <Text component="p" style={{ ...stepText, margin: step.title || step.durationText ? '2px 0 0' : 0, color: compact ? 'var(--g-color-text-primary)' : 'var(--g-color-text-secondary)' }}>{step.instruction}</Text>
+              {step.tip ? <Text component="p" style={{ ...stepText, fontSize: 'var(--g-font-size-12)', margin: '2px 0 0', color: 'var(--g-color-text-muted)' }}>{step.tip}</Text> : null}
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    </>
   );
 }
 
@@ -140,21 +199,37 @@ function NutritionSection({ gris, cascade, nutrition }) {
         ) : null}
         {partial ? <Text component="p" style={tinyMuted}>(تخمینی)</Text> : null}
         {(cascade?.notes || []).map((note, i) => <Text key={i} component="p" style={tinyMuted}>⚠️ {note}</Text>)}
-        <Text component="p" style={tinyMuted}>{nour?.disclaimer || (per ? 'از وزنِ موادِ قفل‌شده به منبع (USDA) — اطلاعات عمومی، نه توصیهٔ پزشکی.' : 'اطلاعات عمومی، نه توصیهٔ پزشکی.')}</Text>
+        <Text component="p" style={tinyMuted}>{nour?.disclaimer || 'ارزش غذایی تقریبی است و جای توصیهٔ پزشکی را نمی‌گیرد.'}</Text>
       </Accordion>
     </Box>
   );
 }
 
-// the recipe amount, rescaled for the chosen serving count. Non-numeric amounts («به‌مزه») can't be
-// scaled honestly — they show unchanged with a quiet «(ثابت)» note only while a non-1 scale is active.
-function ScaledAmount({ amountText, factor }) {
-  const display = scaleAmountText(amountText, factor);
-  const fixed = factor !== 1 && !parseQuantity(amountText).scalable;
+function RecipeIngredientList({ recipe, scaleFactor = 1, perso = null, askSub = null, toggleRemove = null }) {
+  const sections = presentIngredientSectionsV3(recipe.ingredients || [], { recipe }).sections;
+  if (!sections.length) return null;
+
   return (
-    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', whiteSpace: 'nowrap' }}>
-      {display}{fixed ? <Text component="span" style={{ marginInlineStart: 4, opacity: 0.75 }}>(ثابت)</Text> : null}
-    </Text>
+    <IngredientListSection
+      sections={sections}
+      renderItemProps={(item) => {
+        const ing = item.source || {};
+        const display = item.titleFa;
+        const rawAmount = ing.amountText || (item.amountLabel || '').replace(/^مقدار:\s*/, '');
+        const scaledAmount = rawAmount ? scaleAmountText(rawAmount, scaleFactor) : '';
+        const sw = perso?.swapFor?.(display) || null;
+        const removed = Boolean(perso?.isRemoved?.(display));
+        return {
+          amountLabelOverride: scaledAmount ? `مقدار: ${scaledAmount}` : item.amountLabel,
+          applied: sw,
+          gone: removed,
+          canAskSwap: Boolean(askSub && !removed && item.canSubstitute),
+          canRemove: item.canRemove,
+          onAskSwap: askSub && !removed && item.canSubstitute ? () => askSub(display) : null,
+          onToggleRemove: toggleRemove && (removed || item.canRemove) ? () => toggleRemove(display) : null,
+        };
+      }}
+    />
   );
 }
 
@@ -168,31 +243,11 @@ function LiteRecipeBody({ recipe, scaled, servedFor, scaleFactor }) {
             <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>مواد لازم</Text>
             {scaled ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>تنظیم‌شده برای {toFaDigits(servedFor)} نفر</Text> : null}
           </Box>
-          <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
-            {recipe.ingredients.map((ing, i) => (
-              <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none' }}>
-                <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
-                <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{ing.name}</Text>
-                {ing.amountText ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
-              </Box>
-            ))}
-          </Box>
+          <RecipeIngredientList recipe={recipe} scaleFactor={scaleFactor} />
         </>
       ) : null}
 
-      {steps.length ? (
-        <>
-          <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>روش سریع</Text>
-          <Box component="ol" style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
-            {steps.map((step, i) => (
-              <Box component="li" key={`${step}-${i}`} style={{ display: 'flex', gap: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)' }}>
-                <Box aria-hidden="true" style={{ display: 'grid', placeItems: 'center', inlineSize: 26, blockSize: 26, borderRadius: '50%', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 800, flexShrink: 0 }}>{toFaDigits(i + 1)}</Box>
-                <Text component="p" style={{ ...stepText, margin: 0 }}>{step}</Text>
-              </Box>
-            ))}
-          </Box>
-        </>
-      ) : null}
+      {steps.length ? <CookingStepsSection steps={steps} title="روش سریع" compact /> : null}
 
       <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-5)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-info-bg)' }}>
         <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-secondary)', flexShrink: 0, marginBlockStart: 1 }} />
@@ -239,9 +294,8 @@ function RecipeLoading() {
 
 /**
  * HeroMedia — the recipe photo when it actually loads, else the branded placeholder.
- * A bad/relative imageUrl would otherwise render the browser's broken-image glyph + alt
- * text (the "۱:۲ … 📷" strip): onError swaps to the placeholder, and alt="" keeps the hero
- * decorative (the real title is a heading below) so no broken-alt text ever shows.
+ * The real image is meaningful, so it carries the recipe title as alt text; the generated
+ * placeholder remains decorative.
  */
 function HeroMedia({ imageUrl, title }) {
   const [broken, setBroken] = useState(false);
@@ -251,7 +305,10 @@ function HeroMedia({ imageUrl, title }) {
       {showImg ? (
         <img
           src={imageUrl}
-          alt=""
+          alt={title || 'دستور غذا'}
+          loading="eager"
+          decoding="async"
+          sizes="(max-width: 480px) 100vw, 480px"
           onError={() => setBroken(true)}
           style={{ position: 'absolute', inset: 0, inlineSize: '100%', blockSize: '100%', objectFit: 'cover' }}
         />
@@ -289,22 +346,21 @@ function PlanPickerSheet({ opened, onClose, busy, onConfirm }) {
 }
 
 // one tappable substitution option (dish-authored or corpus). Tap to apply; tap the applied one to remove.
-function SubOptionRow({ it, applied, ingredient, onApply, onRemove }) {
-  const q = subQualityOf(it.basis);
+function SubOptionRow({ it, selected, applied, onSelect }) {
+  const q = it.safety ? { label: it.safety.badge, rank: 0 } : subQualityOf(it.basis);
   return (
     <UnstyledButton
       type="button"
-      aria-pressed={applied}
-      onClick={() => (applied ? onRemove(ingredient) : onApply(ingredient, it.name, { basis: it.basis, reason: it.reason }))}
-      style={{ textAlign: 'start', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${applied ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: applied ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}
+      aria-pressed={selected || applied}
+      onClick={() => onSelect(it)}
+      style={{ textAlign: 'start', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', border: `1px solid ${selected || applied ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)'}`, background: selected || applied ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)' }}
     >
       <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
-        {applied ? <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconArrowsExchange size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />}
+        {selected || applied ? <IconCircleCheck size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} /> : <IconArrowsExchange size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />}
         <Text component="span" style={{ flex: 1, minInlineSize: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: applied ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)' }}>{it.name}</Text>
         <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-2)', paddingBlock: 2, borderRadius: 'var(--g-radius-chip)', background: it.basis === 'authored' ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)', border: `1px solid ${it.basis === 'authored' ? 'var(--g-color-brand-200)' : 'var(--g-color-border-strong)'}`, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', fontWeight: 600, color: it.basis === 'authored' ? 'var(--g-color-brand-700)' : 'var(--g-color-text-muted)' }}>{q.label}</Box>
       </Box>
-      {it.reason ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>{it.reason}</Text> : null}
-      {applied ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-brand-700)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>اعمال شد — برای برداشتن دوباره بزن</Text> : null}
+      {(it.safety?.reason || it.reason) ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: '4px 0 0', paddingInlineStart: 'calc(16px + var(--g-space-2))' }}>{it.safety?.reason || it.reason}</Text> : null}
     </UnstyledButton>
   );
 }
@@ -313,6 +369,13 @@ function SubOptionRow({ it, applied, ingredient, onApply, onRemove }) {
 // («پیشنهادِ این دستور» — e.g. potato in قیمه → بادمجان), then grounded same-role swaps from the corpus
 // (POST /ai/substitutions). Tapping applies; declared allergies always stay filtered server-side.
 function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
+  const [picked, setPicked] = useState(null);
+  useEffect(() => setPicked(null), [sub?.ingredient]);
+  const options = [...(sub?.authored || []), ...(sub?.items || [])];
+  const applyPicked = () => {
+    if (!picked?.safety?.canApply) return;
+    onApply(sub.ingredient, picked.name, { basis: picked.basis, reason: picked.safety.reason || picked.reason });
+  };
   return (
     <Drawer
       opened={!!sub}
@@ -321,7 +384,7 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
       zIndex={400}
       withCloseButton
       closeButtonProps={{ 'aria-label': 'بستن', size: 'lg' }}
-      title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>جایگزین برای {sub?.ingredient}</Text>}
+      title={<Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)' }}>جایگزین امن برای {sub?.ingredient}</Text>}
       overlayProps={{ backgroundOpacity: 0.42, blur: 1 }}
       transitionProps={{ transition: 'slide-up', duration: 240 }}
       styles={bottomSheetStyles({ content: { height: 'auto', maxHeight: '85vh', borderStartStartRadius: 'var(--g-radius-sheet)', borderStartEndRadius: 'var(--g-radius-sheet)', background: 'var(--g-color-bg-surface)' }, header: { background: 'var(--g-color-bg-surface)' }, body: { paddingInline: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' } })}
@@ -330,7 +393,7 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
       {sub?.authored?.length ? (
         <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', paddingBlockStart: 'var(--g-space-2)' }}>
           {sub.authored.map((it, i) => (
-            <SubOptionRow key={`a-${it.name}-${i}`} it={it} applied={appliedTo === it.name} ingredient={sub.ingredient} onApply={onApply} onRemove={onRemoveSwap} />
+            <SubOptionRow key={`a-${it.name}-${i}`} it={it} selected={picked?.name === it.name} applied={appliedTo === it.name} onSelect={setPicked} />
           ))}
         </Box>
       ) : null}
@@ -348,7 +411,7 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
       ) : sub?.items?.length ? (
         <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)', marginBlockStart: sub?.authored?.length ? 'var(--g-space-2)' : 0, paddingBlockStart: 'var(--g-space-2)' }}>
           {sub.items.map((it, i) => (
-            <SubOptionRow key={`${it.name}-${i}`} it={it} applied={appliedTo === it.name} ingredient={sub.ingredient} onApply={onApply} onRemove={onRemoveSwap} />
+            <SubOptionRow key={`${it.name}-${i}`} it={it} selected={picked?.name === it.name} applied={appliedTo === it.name} onSelect={setPicked} />
           ))}
         </Box>
       ) : !sub?.authored?.length ? (
@@ -356,9 +419,16 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
       ) : null}
 
       {(sub?.authored?.length || sub?.items?.length) ? (
-        <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
-          <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>جای‌گزین‌های هم‌نقش از پایگاه مواد — راهنمایی آشپزی، نه توصیهٔ پزشکی. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
+        <Box style={{ marginBlockStart: 'var(--g-space-3)' }}>
+          {picked ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: '0 0 var(--g-space-3)' }}>{sub.ingredient} با {picked.name} جایگزین می‌شود. ممکن است طعم یا بافت کمی تغییر کند.</Text> : null}
+          <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
+            <UnstyledButton type="button" onClick={onClose} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>فعلاً تغییر نده</UnstyledButton>
+            <UnstyledButton type="button" onClick={appliedTo ? () => onRemoveSwap(sub.ingredient) : applyPicked} disabled={!picked && !appliedTo} aria-disabled={!picked && !appliedTo} style={{ flex: 1, minBlockSize: 48, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', opacity: picked || appliedTo ? 1 : 0.5, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>{appliedTo ? 'برداشتن جایگزین' : 'اعمال جایگزین'}</UnstyledButton>
+          </Box>
+          <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
+            <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>فقط گزینه‌های کم‌ریسک یا قابل قبول نمایش داده می‌شوند. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
+          </Box>
         </Box>
       ) : null}
     </Drawer>
@@ -426,6 +496,26 @@ export default function RecipeDetailPage() {
     }
   }, [id, showToast, trackEvent]);
 
+  const shareRecipe = useCallback(async () => {
+    if (!recipe || typeof window === 'undefined') return;
+    const url = window.location?.href || `/recipe/${id}`;
+    const payload = { title: recipe.title, text: recipe.title, url };
+    try {
+      if (navigator.share) {
+        await navigator.share(payload);
+        trackEvent('recipe_share', { recipeId: id, method: 'native' });
+        return;
+      }
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        showToast('لینک دستور کپی شد', IconShare2);
+        trackEvent('recipe_share', { recipeId: id, method: 'clipboard' });
+      }
+    } catch (error) {
+      if (error?.name !== 'AbortError') showToast('هم‌رسانی انجام نشد', IconShare2);
+    }
+  }, [id, recipe, showToast, trackEvent]);
+
   // real grounded substitution for one ingredient → POST /ai/substitutions (deterministic, no live LLM).
   // declared allergies stay a hard filter server-side; this only proposes same-role swaps from the corpus.
   // AbortController cancels an in-flight lookup when the user taps another ingredient quickly (M10), and a
@@ -441,16 +531,20 @@ export default function RecipeDetailPage() {
     const authoredItems = (Array.isArray(authored) ? authored : [])
       .filter((a) => a && a.name)
       .map((a) => ({ name: a.name, basis: 'authored', reason: a.note || 'پیشنهادِ این دستور', ingredientId: a.ingredientId || null }));
+    const initialAuthored = filterSafeSubstitutions(name, authoredItems, recipe);
     const names = new Set(authoredItems.map((a) => a.name));
-    setSub({ ingredient: name, loading: true, items: null, error: false, authored: authoredItems });
+    setSub({ ingredient: name, loading: true, items: null, error: false, authored: initialAuthored });
     try {
-      const { items } = await fetchSubstitutions(name, { limit: 6, signal: controller.signal });
-      setSub({ ingredient: name, loading: false, items: items.filter((it) => !names.has(it.name)), error: false, authored: authoredItems });
+      const safeAuthored = filterSafeSubstitutions(name, authoredItems, recipe);
+      const { items } = await fetchSubstitutions(name, { limit: 8, signal: controller.signal });
+      const safeItems = filterSafeSubstitutions(name, items.filter((it) => !names.has(it.name)), recipe);
+      setSub({ ingredient: name, loading: false, items: safeItems, error: false, authored: safeAuthored });
     } catch {
       if (controller.signal.aborted) return; // superseded by a newer lookup
-      setSub({ ingredient: name, loading: false, items: null, error: authoredItems.length === 0, authored: authoredItems });
+      const safeAuthored = filterSafeSubstitutions(name, authoredItems, recipe);
+      setSub({ ingredient: name, loading: false, items: null, error: safeAuthored.length === 0, authored: safeAuthored });
     }
-  }, []);
+  }, [recipe]);
   useEffect(() => () => subAbort.current?.abort(), []);
 
   // apply / remove a swap on the shared personalization layer (the displayed recipe derives from it)
@@ -469,16 +563,22 @@ export default function RecipeDetailPage() {
   // silently dropping it (H10/M6) — the user can still proceed, but is nudged toward a swap.
   const toggleRemove = useCallback((name, role = '') => {
     if (perso.isRemoved(name)) { perso.toggleRemoved(name); showToast(`${name} برگشت`, IconArrowBackUp); return; }
+    const guard = getIngredientEditGuard({ name, role }, recipe);
+    if (!guard.canRemoveDirectly) {
+      showToast(guard.message, IconAlertTriangle);
+      return;
+    }
     perso.toggleRemoved(name);
     if (isStructural(name, role)) showToast(`${name} حذف شد — نقشِ ساختاری دارد؛ شاید جایگزین بهتر باشد`, IconAlertTriangle);
     else showToast(`${name} حذف شد`, IconTrash);
-  }, [perso, showToast]);
+  }, [perso, recipe, showToast]);
 
   // stable handlers so the memoized AISheet doesn't re-render on unrelated page state (P1)
   const applyServings = useCallback((n) => { perso.setServedFor(n); showToast(`برای ${toFaDigits(n)} نفر تنظیم شد — مقدارها هم تنظیم شدند`, IconUsers); }, [perso, showToast]);
   const closeSheet = useCallback(() => setSheetOpen(false), []);
 
   const saved = isFavorite(id);
+  const canShareRecipe = typeof navigator !== 'undefined' && !!(navigator.share || navigator.clipboard?.writeText);
 
   if (status === 'loading') return <RecipeLoading />;
   if (status === 'error' || status === 'empty' || !recipe) return <RecipeError onRetry={() => (status === 'empty' ? back() : refetch())} />;
@@ -486,8 +586,10 @@ export default function RecipeDetailPage() {
   const isAllergen = fit?.recommendation === 'avoid_allergen';
   const isGreat = fit?.recommendation === 'great_fit';
   const scaled = scaleFactor !== 1;
-  // steps now live in Cook Mode — surface the count on «بپز» so the move is discoverable
+  // steps now live in guided mode — surface the count on the action CTA so the move is discoverable
   const stepCount = (Array.isArray(gris?.steps) ? gris.steps.length : 0) || (recipe.steps?.length || 0);
+  const recipeAction = getRecipeAction({ ...recipe, gris });
+  const ActionIcon = recipeAction.mode === RecipeInteractionMode.COOK ? IconFlame : IconToolsKitchen2;
 
   return (
     <Column>
@@ -499,7 +601,7 @@ export default function RecipeDetailPage() {
             <CircleBtn icon={IconChevronRight} label="بازگشت" onClick={back} />
             <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
               <CircleBtn icon={saved ? IconBookmarkFilled : IconBookmark} label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'} accent onClick={toggleSave} />
-              <CircleBtn icon={IconShare2} label="هم‌رسانی" onClick={() => showToast('هم‌رسانی به‌زودی', IconShare2)} />
+              <CircleBtn icon={IconShare2} label="هم‌رسانی" onClick={shareRecipe} disabled={!canShareRecipe} />
             </Box>
           </Box>
         </Box>
@@ -523,6 +625,17 @@ export default function RecipeDetailPage() {
               ))}
               {recipe.mealTypes.map((m) => (
                 <Box key={m} style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 4, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{m}</Box>
+              ))}
+            </Box>
+          ) : null}
+
+          {(recipe.detailChips?.length || recipe.prepTimeText || recipe.totalTimeText || recipe.costText) ? (
+            <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-2)' }}>
+              {recipe.prepTimeText ? <Box style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>آماده‌سازی: {recipe.prepTimeText}</Box> : null}
+              {recipe.totalTimeText ? <Box style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>کل زمان: {recipe.totalTimeText}</Box> : null}
+              {recipe.costText ? <Box style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>هزینه: {recipe.costText}</Box> : null}
+              {(recipe.detailChips || []).map((chip) => (
+                <Box key={chip} style={{ paddingInline: 'var(--g-space-3)', paddingBlock: 5, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{chip}</Box>
               ))}
             </Box>
           ) : null}
@@ -584,25 +697,7 @@ export default function RecipeDetailPage() {
                 <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>مواد لازم</Text>
                 {scaled ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>تنظیم‌شده برای {toFaDigits(servedFor)} نفر</Text> : null}
               </Box>
-              <Box component="ul" style={{ listStyle: 'none', margin: 0, padding: 0, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' }}>
-                {recipe.ingredients.map((ing, i) => {
-                  const sw = perso.swapFor(ing.name);
-                  const removed = perso.isRemoved(ing.name);
-                  return (
-                  <Box component="li" key={`${ing.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', padding: 'var(--g-space-3) var(--g-space-4)', borderBlockStart: i ? '1px solid var(--g-color-border-subtle)' : 'none', opacity: removed ? 0.6 : 1 }}>
-                    <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: removed ? 'var(--g-color-text-muted)' : sw ? 'var(--g-color-brand-500)' : 'var(--g-color-brand-300)', flexShrink: 0 }} />
-                    <Box style={{ flex: 1, minInlineSize: 0 }}>
-                      <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: sw && !removed ? 700 : 500, color: sw && !removed ? 'var(--g-color-brand-700)' : 'var(--g-color-text-primary)', textDecoration: removed ? 'line-through' : 'none' }}>{sw ? sw.to : ing.name}</Text>
-                      {sw && !removed ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>به‌جای {ing.name}</Text> : null}
-                      {removed ? <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>حذف شد</Text> : null}
-                    </Box>
-                    {!removed ? <UnstyledButton type="button" onClick={() => askSub(ing.name)} aria-label={`جایگزین برای ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${sw ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-200)'}`, background: sw ? 'var(--g-color-brand-50)' : 'transparent', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>{sw ? 'تغییر' : 'جایگزین؟'}</UnstyledButton> : null}
-                    {ing.amountText && !removed ? <ScaledAmount amountText={ing.amountText} factor={scaleFactor} /> : null}
-                    <UnstyledButton type="button" onClick={() => toggleRemove(ing.name)} aria-label={removed ? `برگرداندن ${ing.name}` : `حذف ${ing.name}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 36, minBlockSize: 44, flexShrink: 0, color: removed ? 'var(--g-color-brand-600)' : 'var(--g-color-text-muted)' }}>{removed ? <IconArrowBackUp size={17} stroke={1.8} /> : <IconTrash size={16} stroke={1.8} />}</UnstyledButton>
-                  </Box>
-                  );
-                })}
-              </Box>
+              <RecipeIngredientList recipe={recipe} scaleFactor={scaleFactor} perso={perso} askSub={askSub} toggleRemove={toggleRemove} />
             </>
           ) : null}
 
@@ -655,7 +750,9 @@ export default function RecipeDetailPage() {
             </Box>
           ) : null}
 
-          {/* Method richness — steps now live in Cook Mode («بپز»); only the read-on-the-page extras remain, disclosed */}
+          <CookingStepsSection steps={recipe.steps} title="روش پخت" />
+
+          {/* Method richness */}
           {(recipe.tips.length || recipe.faq.length || recipe.chefTips.length || recipe.commonMistakes.length || recipe.servingSuggestions.length || recipe.authoredSwaps.length) ? (
             <>
               <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>بیشتر دربارهٔ این دستور</Text>
@@ -698,10 +795,17 @@ export default function RecipeDetailPage() {
         <UnstyledButton type="button" aria-label="به برنامه" onClick={() => setPlanOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 46, blockSize: 46, flexShrink: 0, borderRadius: '50%', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)' }}>
           <IconCalendarPlus size={19} stroke={1.8} />
         </UnstyledButton>
-        <UnstyledButton type="button" onClick={() => navigate(`/cook/${id}`)} style={{ flex: 1, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
-          <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}><IconFlame size={18} stroke={1.8} aria-hidden="true" />بپز</Box>
-          {stepCount ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, color: 'var(--g-color-text-inverse)', opacity: 0.85 }}>{toFaDigits(stepCount)} مرحله</Text> : null}
-        </UnstyledButton>
+        {!recipeAction.shouldShowStickyCta ? (
+          <Box style={{ flex: 1, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, minBlockSize: 52, borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)' }}>
+            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconToolsKitchen2 size={18} stroke={1.8} aria-hidden="true" />{recipeAction.primaryLabel}</Box>
+            {recipeAction.stepLabel ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, color: 'var(--g-color-text-muted)' }}>{recipeAction.stepLabel}</Text> : null}
+          </Box>
+        ) : (
+          <UnstyledButton type="button" aria-label={recipeAction.primaryLabel} onClick={() => (recipeAction.shouldOpenGuidedMode ? navigate(`/cook/${id}`) : null)} style={{ flex: 1, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>
+            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)' }}><ActionIcon size={18} stroke={1.8} aria-hidden="true" />{recipeAction.primaryLabel}</Box>
+            {recipeAction.stepLabel ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 500, color: 'var(--g-color-text-inverse)', opacity: 0.85 }}>{recipeAction.stepLabel}</Text> : null}
+          </UnstyledButton>
+        )}
       </Box>
 
       <AISheet

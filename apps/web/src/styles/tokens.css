@@ -19,7 +19,7 @@
   --g-color-bg-surface-raised:#FFFFFF;
   --g-color-text-primary:#1F1B16;
   --g-color-text-secondary:#57534E;
-  --g-color-text-muted:#8A817A;
+  --g-color-text-muted:#6F665E;
   --g-color-text-inverse:#FFF9F2;
   --g-color-border-subtle:#EDE7DF;
   --g-color-border-strong:#D8D1C7;
@@ -41,7 +41,7 @@
   /* ── Nutrition / safety states ── */
   --g-color-nutrition-verified-fg:#3F7A4E; --g-color-nutrition-verified-bg:#EBF4EE;
   --g-color-nutrition-estimate-fg:#C98A1B; --g-color-nutrition-estimate-bg:#FBF3E2;
-  --g-color-nutrition-unavailable-fg:#8A817A; --g-color-nutrition-unavailable-bg:#F2EEE8;
+  --g-color-nutrition-unavailable-fg:#6F665E; --g-color-nutrition-unavailable-bg:#F2EEE8;
   --g-color-allergen-fg:var(--g-color-state-danger-fg); --g-color-allergen-bg:#FBF0EE;
   --g-color-skeleton-shimmer: rgba(255,255,255,.45); /* highlight sweep for the approved g-shimmer */
 
@@ -90,7 +90,7 @@
   --g-color-bg-surface-raised:#2A241E;
   --g-color-text-primary:#F4EEE6;
   --g-color-text-secondary:#C7BEB2;
-  --g-color-text-muted:#94897C;
+  --g-color-text-muted:#B8ADA0;
   --g-color-text-inverse:#1F1B16;
   --g-color-border-subtle:#352E26;
   --g-color-border-strong:#4A4138;

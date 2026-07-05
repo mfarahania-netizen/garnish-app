@@ -1,0 +1,356 @@
+{
+  "schemaVersion": "gris_final_19_patch_report_v1",
+  "generatedAt": "2026-07-03T00:22:02.229Z",
+  "mode": "apply",
+  "db": {
+    "database": "garnish_db",
+    "host": "localhost",
+    "redacted": "postgresql://garnish:***@localhost:5432/garnish_db"
+  },
+  "targetCount": 19,
+  "recipeCountBefore": 589,
+  "recipeCountAfter": 589,
+  "plannedUpdateCount": 19,
+  "updatedCount": 19,
+  "createdCount": 0,
+  "deletedCount": 0,
+  "recipes": [
+    {
+      "recipeId": "garnish_recipe_fa_1342_ce4a8da3",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1333_db68905d",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2064_b5a2a37a",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_intl_019_629698d5",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2054_be491f02",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "nourishment.disclaimer"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_216_1bfdfe55",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1071_6e0696a6",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1224_c65df148",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2071_5391bddf",
+      "repairTypes": [
+        "LEAK_CLEANUP"
+      ],
+      "patchedPaths": [
+        "whyItWorks.1.testedBecause",
+        "whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1077_1b3eec19",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "troubleshooting.4.fix",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1270_70cc3cff",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "steps.5.tip",
+        "ingredients.9.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1237_3dff9aba",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.12.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_intl_046_0c90256b",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.4.buyTip"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1238_296fbec3",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.3.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1315_c324442d",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.10.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1816_dec0afbb",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.12.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_2103_d26d79d5",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "keep.makeAhead",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.1.testedBecause",
+        "source-sanitize:whyItWorks.3.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_fa_168_8b2d9b86",
+      "repairTypes": [
+        "GENERIC_COPY_PATCH"
+      ],
+      "patchedPaths": [
+        "ingredients.11.buyTip",
+        "source-sanitize:whyItWorks.0.testedBecause",
+        "source-sanitize:whyItWorks.2.testedBecause",
+        "source-sanitize:whyItWorks.4.testedBecause"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    },
+    {
+      "recipeId": "garnish_recipe_global_143_001_758db93a",
+      "repairTypes": [
+        "SECTION_COMPLETION"
+      ],
+      "patchedPaths": [
+        "variations",
+        "keep",
+        "serveWith",
+        "faq"
+      ],
+      "postPatchOk": true,
+      "validation": {
+        "forbidden": [],
+        "generic": [],
+        "missingCroissantSections": []
+      }
+    }
+  ],
+  "errors": [],
+  "ok": true
+}

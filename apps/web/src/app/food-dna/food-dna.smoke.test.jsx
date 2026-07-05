@@ -2,17 +2,25 @@ import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import FoodDnaPage from './page';
 
-if (!globalThis.localStorage) {
-  const store = new Map();
-  globalThis.localStorage = {
-    getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)),
-    removeItem: (k) => store.delete(k), clear: () => store.clear(), key: (i) => Array.from(store.keys())[i] ?? null,
-    get length() { return store.size; },
+// minimal localStorage/sessionStorage shim (jsdom in this config exposes no Storage).
+if (!('localStorage' in globalThis) || globalThis.localStorage == null) {
+  const makeStore = () => {
+    const map = new Map();
+    return {
+      getItem: (k) => (map.has(k) ? map.get(k) : null),
+      setItem: (k, v) => map.set(k, String(v)),
+      removeItem: (k) => map.delete(k),
+      clear: () => map.clear(),
+      key: (i) => [...map.keys()][i] ?? null,
+      get length() { return map.size; },
+    };
   };
+  Object.defineProperty(globalThis, 'localStorage', { value: makeStore(), configurable: true });
+  Object.defineProperty(globalThis, 'sessionStorage', { value: makeStore(), configurable: true });
 }
 
 // Mock the data hook; each test sets the state under test (mirrors the plan/home smoke pattern).
-// useTaste (FI-4.1) is stubbed empty so the page's «ذائقهٔ مواد» section stays hidden in these smokes.
+// useTaste (FI-4.1) is stubbed empty so the page's taste section stays empty in these smokes.
 vi.mock('./useFoodDna', () => ({
   useFoodDna: vi.fn(),
   useFoodDnaProjection: vi.fn(),
@@ -21,14 +29,21 @@ vi.mock('./useFoodDna', () => ({
 import { useFoodDna } from './useFoodDna';
 
 const DIMS = [
-  { key: 'taste', status: 'usable', confidence: 0.6, evidenceCount: 5, safeExplanation: 'به طعم‌های دودی و گیاهی گرایش داری', summary: '', limitations: [], metrics: [{ key: 'flavorPattern', value: 'smoky/herby' }], affinities: ['بادمجان'] },
-  { key: 'effort', status: 'usable', confidence: 0.5, evidenceCount: 4, safeExplanation: 'بیشتر غذای سریع می‌پزی', summary: '', limitations: [], metrics: [{ key: 'quickMeal', value: 0.7 }] },
-  { key: 'skill', status: 'emerging', confidence: 0.4, evidenceCount: 3, safeExplanation: 'مهارتت رو به رشده', summary: '', limitations: [], metrics: [] },
-  { key: 'routine', status: 'emerging', confidence: 0.4, evidenceCount: 3, safeExplanation: 'بیشتر آخر هفته آشپزی می‌کنی', summary: '', limitations: [], metrics: [] },
+  { key: 'taste', status: 'usable', confidence: 0.6, evidenceCount: 5, safeExplanation: 'ENGINE ENGLISH STRING SHOULD NEVER RENDER', summary: '', limitations: [], metrics: [{ key: 'flavorPattern', value: 'smoky/herby' }], affinities: ['بادمجان'], avoidances: ['کرفس'] },
+  { key: 'effort', status: 'usable', confidence: 0.5, evidenceCount: 4, safeExplanation: 'another engine string', summary: '', limitations: [], metrics: [{ key: 'quickMeal', value: 0.7 }] },
+  { key: 'skill', status: 'emerging', confidence: 0.4, evidenceCount: 3, safeExplanation: 'x', summary: '', limitations: [], metrics: [] },
+  { key: 'routine', status: 'empty', confidence: 0, evidenceCount: 0, safeExplanation: '', summary: '', limitations: [], metrics: [] },
 ];
 const READY = {
   status: 'ready',
-  dna: { status: 'partial', maturity: { band: 'developing', score: 0.48, trustGuidance: 'Profile is developing — reasonable to personalize.', observedConfidence: 0.6, declaredCoverage: 0.1 }, dimensions: DIMS, strongestDimensions: ['taste'], weakestDimensions: ['skill'], evidence: { observationCount: 12, sourceSignalCount: 12 } },
+  dna: {
+    status: 'partial',
+    maturity: { band: 'developing', score: 0.48, trustGuidance: 'Profile is developing — reasonable to personalize.', observedConfidence: 0.6, declaredCoverage: 0.1 },
+    dimensions: DIMS,
+    strongestDimensions: ['taste'],
+    weakestDimensions: ['routine'],
+    evidence: { observationCount: 12, sourceSignalCount: 12 },
+  },
   refetch: vi.fn(), question: null, questionRemaining: 0, submitAnswer: vi.fn().mockResolvedValue(true), submitting: false,
 };
 
@@ -48,44 +63,105 @@ describe('FoodDnaPage', () => {
     expect(screen.getByRole('button', { name: 'تلاش دوباره' })).toBeInTheDocument();
   });
 
-  it('renders the FOUR dimensions + the engine safeExplanation (no invented traits)', () => {
+  it('NEVER leaks the English trustGuidance or safeExplanation — derives Persian from band instead', () => {
     useFoodDna.mockReturnValue(READY);
-    renderWithProviders(<FoodDnaPage />);
-    for (const label of ['ذائقه', 'زمان و تلاش', 'مهارت', 'روال']) expect(screen.getByText(label)).toBeInTheDocument();
-    expect(screen.getByText('به طعم‌های دودی و گیاهی گرایش داری')).toBeInTheDocument();
-    expect(screen.getByText('بیشتر غذای سریع می‌پزی')).toBeInTheDocument();
+    const { container } = renderWithProviders(<FoodDnaPage />);
+    // the page MUST NOT render the raw English engine strings
+    expect(screen.queryByText(/Profile is developing/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/reasonable to personalize/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/ENGINE ENGLISH STRING/)).not.toBeInTheDocument();
+    // and MUST show a Persian band-derived line
+    expect(screen.getByText(/بر اساسِ ۱۲ وعده/)).toBeInTheDocument();
+    // header uses ONE consistent Persian title
+    expect(screen.getByRole('heading', { name: 'شناسهٔ ذائقهٔ تو' })).toBeInTheDocument();
+    // no leftover English word leaks anywhere on the page
+    expect(container.textContent).not.toMatch(/reasonable to personalize/i);
   });
 
-  it('ring shows the REAL maturity band (not a hardcoded %)', () => {
+  it('maps the flavor metric to Persian (never leaks "smoky/herby")', () => {
     useFoodDna.mockReturnValue(READY);
     renderWithProviders(<FoodDnaPage />);
-    // FoodDnaRing renders an accessible label from the real band caption ("در حال رشد") + the real score.
-    expect(screen.getByRole('img', { name: /در حال رشد/ })).toBeInTheDocument();
-    expect(screen.getByText(/Profile is developing/)).toBeInTheDocument(); // engine trustGuidance surfaced
+    expect(screen.getByText('طعم‌های پسندیده: دودی و گیاهی')).toBeInTheDocument();
+    expect(screen.queryByText(/smoky\/herby/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/smoky/)).not.toBeInTheDocument();
   });
 
-  it('cold-start → honest forming state (no fake %)', () => {
+  it('ring shows the band caption (Persian), not the raw English band label', () => {
+    useFoodDna.mockReturnValue(READY);
+    renderWithProviders(<FoodDnaPage />);
+    expect(screen.getByRole('img', { name: /در حالِ رشد/ })).toBeInTheDocument();
+  });
+
+  it('HIDES the silent dimension (routine, confidence 0) instead of an empty card', () => {
+    useFoodDna.mockReturnValue(READY);
+    renderWithProviders(<FoodDnaPage />);
+    // taste/effort/skill cards render their Persian labels...
+    for (const label of ['ذائقه و طعم', 'زمان و تلاش', 'مهارتِ آشپزی']) expect(screen.getByText(label)).toBeInTheDocument();
+    // ...but the silent routine card is NOT rendered (no empty "روال" card)
+    expect(screen.queryByText('روالِ آشپزی')).not.toBeInTheDocument();
+  });
+
+  it('promotes affinities + avoidances to first-class chip sections', () => {
+    useFoodDna.mockReturnValue(READY);
+    renderWithProviders(<FoodDnaPage />);
+    expect(screen.getByRole('heading', { name: 'موادی که بهشون گرایش داری' })).toBeInTheDocument();
+    expect(screen.getByText('بادمجان')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'موادی که کمتر دوست داری' })).toBeInTheDocument();
+    expect(screen.getByText('کرفس')).toBeInTheDocument();
+  });
+
+  it('cold-start: no demoralizing 0% — ring uses showValue={false} with a calm caption', () => {
     useFoodDna.mockReturnValue({
       ...READY,
-      dna: { status: 'cold_start', maturity: { band: 'empty', score: 0, trustGuidance: 'Not enough profile signal yet.', observedConfidence: 0, declaredCoverage: 0 }, dimensions: DIMS.map((d) => ({ ...d, confidence: 0, safeExplanation: '' })), strongestDimensions: [], weakestDimensions: [], evidence: { observationCount: 0, sourceSignalCount: 0 } },
+      dna: {
+        status: 'cold_start',
+        maturity: { band: 'empty', score: 0, trustGuidance: 'Not enough profile signal yet.', observedConfidence: 0, declaredCoverage: 0 },
+        dimensions: DIMS.map((d) => ({ ...d, confidence: 0, safeExplanation: '', metrics: [] })),
+        strongestDimensions: [], weakestDimensions: [], evidence: { observationCount: 0, sourceSignalCount: 0 },
+      },
     });
     renderWithProviders(<FoodDnaPage />);
-    expect(screen.getByText(/تازه داره شکل می‌گیره/)).toBeInTheDocument();
-    // dimensions with no signal show the honest "not enough yet" line, NOT a fabricated trait
-    expect(screen.getAllByText(/هنوز نشانهٔ کافی/).length).toBeGreaterThan(0);
+    // calm Persian forming line
+    expect(screen.getByText(/تازه شروع شده/)).toBeInTheDocument();
+    // a 0% / ۰٪ must not appear as a big ring value (no "۰٪" aria-label as a percentage)
+    expect(screen.queryByRole('img', { name: /۰٪/ })).not.toBeInTheDocument();
+    // no raw English trustGuidance
+    expect(screen.queryByText(/Not enough profile signal/)).not.toBeInTheDocument();
+    // silent dimensions collapsed into one calm empty-state block
+    expect(screen.getAllByText(/نشانهٔ کافی از آشپزیت ندارم/).length).toBeGreaterThan(0);
   });
 
-  it('onboarding entry: answering an option calls the real engine (submitAnswer with key+value)', async () => {
+  it('onboarding options are Persian; submitting keeps the raw enum KEY but shows the Persian LABEL', async () => {
     const submitAnswer = vi.fn().mockResolvedValue(true);
     useFoodDna.mockReturnValue({
       ...READY, submitAnswer,
-      question: { id: 'dietary.pattern', dimensionKey: 'dietary.pattern', prompt: 'الگوی غذایی‌ات چیه؟', options: ['omnivore', 'vegetarian'] },
+      question: { id: 'dietary.pattern', dimensionKey: 'dietary.pattern', prompt: 'Which dietary pattern best describes how you eat?', options: ['omnivore', 'vegetarian'] },
       questionRemaining: 3,
     });
     renderWithProviders(<FoodDnaPage />);
-    expect(screen.getByText('الگوی غذایی‌ات چیه؟')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'vegetarian' }));
-    expect(submitAnswer).toHaveBeenCalledWith('dietary.pattern', 'vegetarian');
+    // Persian labels render, NOT the raw English prompts/options
+    expect(screen.getByText('الگوی غذایی‌ات رو چطور توصیف می‌کنی؟')).toBeInTheDocument();
+    expect(screen.getByText('همه‌چیزخوار')).toBeInTheDocument();
+    expect(screen.getByText('گیاهی با تخم‌مرغ و لبنیات')).toBeInTheDocument();
+    expect(screen.queryByText(/Which dietary pattern/)).not.toBeInTheDocument();
+    expect(screen.queryByText('omnivore')).not.toBeInTheDocument();
+    // submitting keeps the raw enum key (the backend contract)
+    fireEvent.click(screen.getByRole('button', { name: 'همه‌چیزخوار' }));
+    expect(submitAnswer).toHaveBeenCalledWith('dietary.pattern', 'omnivore');
     expect(await screen.findByText('ثبت شد')).toBeInTheDocument();
+    expect(screen.getByText(/۳ سؤال دیگه/)).toBeInTheDocument();
+  });
+
+  it('renders the primary CTA that navigates to discovery', () => {
+    useFoodDna.mockReturnValue(READY);
+    renderWithProviders(<FoodDnaPage />);
+    expect(screen.getByRole('button', { name: /غذاهای مناسب ذائقه‌ات/ })).toBeInTheDocument();
+  });
+
+  it('the taste section shows a calm empty-state invitation when nothing is inferred', () => {
+    useFoodDna.mockReturnValue(READY); // useTaste is globally stubbed empty
+    renderWithProviders(<FoodDnaPage />);
+    expect(screen.getByRole('heading', { name: 'مواد و سلیقهٔ تو' })).toBeInTheDocument();
+    expect(screen.getByText(/حدسِ مشخصی از سلیقه‌ات در مواد ندارم/)).toBeInTheDocument();
   });
 });

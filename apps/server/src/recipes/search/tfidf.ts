@@ -22,6 +22,12 @@ export function tokenize(text: unknown): string[] {
   if (text == null) return [];
   return String(text)
     .toLowerCase()
+    .normalize('NFKC')
+    .replace(/\u064a/g, '\u06cc') // Arabic Yeh -> Persian Yeh
+    .replace(/\u0643/g, '\u06a9') // Arabic Kaf -> Persian Kaf
+    .replace(/\u0629/g, '\u0647')
+    .replace(/[\u064b-\u065f\u0670]/g, '') // Arabic/Persian diacritics
+    .replace(/[\u200c\u200d\u200e\u200f]/g, ' ') // ZWNJ/RTL marks: شکم‌پر must match شکم پر
     .replace(/[[\]{}"'`,.!?()/\\:;|]/g, ' ')
     .split(/[\s_\-–—]+/)
     .map((t) => t.trim())

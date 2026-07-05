@@ -22,7 +22,7 @@ const mmss = (sec) => {
   return `${toFaDigits(String(m).padStart(2, '0'))}:${toFaDigits(String(s).padStart(2, '0'))}`;
 };
 
-// GRIS step affordances — a metadata chip (flame/temp/time) and a sensory hint line (sees/doneness/tip/recovery)
+// GRIS step affordances — compact metadata and collapsed secondary guidance.
 function StepChip({ icon: Icon, children }) {
   return (
     <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 4, paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>
@@ -36,6 +36,20 @@ function StepHint({ icon: Icon, tone, children }) {
     <Box style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
       <Icon size={17} stroke={1.8} aria-hidden="true" style={{ color, flexShrink: 0, marginBlockStart: 2 }} />
       <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>{children}</Text>
+    </Box>
+  );
+}
+
+function StepDisclosure({ title, children }) {
+  const [open, setOpen] = useState(false);
+  if (!children) return null;
+  return (
+    <Box style={{ marginBlockStart: 'var(--g-space-2)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-bg-surface)' }}>
+      <UnstyledButton type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} style={{ inlineSize: '100%', minBlockSize: 42, paddingInline: 'var(--g-space-3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-secondary)', textAlign: 'right' }}>
+        {title}
+        <Text component="span" aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }}>{open ? '−' : '+'}</Text>
+      </UnstyledButton>
+      {open ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 0, padding: '0 var(--g-space-3) var(--g-space-3)', textAlign: 'right' }}>{children}</Text> : null}
     </Box>
   );
 }
@@ -66,9 +80,9 @@ function StepTimer({ minutes, onDone }) {
 
   const done = remaining === 0;
   const toggle = () => { if (done) { setRemaining(minutes * 60); return; } setRunning((x) => !x); };
-  const label = done ? 'تمام' : running ? mmss(remaining) : `شروع تایمر · ${mmss(remaining)}`;
+  const label = done ? 'تمام' : running ? mmss(remaining) : `تایمر ${toFaDigits(minutes)} دقیقه`;
   return (
-    <UnstyledButton type="button" onClick={toggle} aria-label={done ? 'تنظیم دوبارهٔ تایمر' : running ? 'مکث تایمر' : 'شروع تایمر'} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-5)', paddingInline: 'var(--g-space-5)', minBlockSize: 52, borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, inlineSize: 'max-content' }}>
+    <UnstyledButton type="button" onClick={toggle} aria-label={done ? 'تنظیم دوبارهٔ تایمر' : running ? 'مکث تایمر' : `تایمر ${toFaDigits(minutes)} دقیقه`} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)', paddingInline: 'var(--g-space-4)', minBlockSize: 44, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, inlineSize: 'max-content' }}>
       {done ? <IconRefresh size={22} stroke={1.8} aria-hidden="true" /> : running ? <IconPlayerPause size={22} stroke={1.8} aria-hidden="true" /> : <IconClockPlay size={22} stroke={1.8} aria-hidden="true" />}
       {label}
     </UnstyledButton>
@@ -184,8 +198,8 @@ export default function CookPage() {
         </Box>
       </Box>
 
-      {/* big step — GRIS-aware: flame/temp/duration chips + the instruction + sensory hints */}
-      <Box component="main" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-3)' }}>
+      {/* focused step — main instruction visible, optional guidance collapsed. */}
+      <Box component="main" dir="rtl" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-5)', paddingBlock: 'var(--g-space-3)', textAlign: 'right' }}>
         {persoItems.length ? (
           <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockEnd: 'var(--g-space-2)', paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', alignSelf: 'flex-start' }}>
             <IconSparkles size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
@@ -204,19 +218,21 @@ export default function CookPage() {
               {s.durationMin ? <StepChip icon={IconClock}>{toFaDigits(s.durationMin)} دقیقه</StepChip> : null}
             </Box>
           ) : null}
-          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', textWrap: 'pretty', color: 'var(--g-color-text-primary)', margin: 'var(--g-space-5) 0 0' }}>{s.instruction}</Text>
+          <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 650, lineHeight: 1.9, textWrap: 'pretty', color: 'var(--g-color-text-primary)', margin: 'var(--g-space-5) 0 0', textAlign: 'right' }}>{s.instruction}</Text>
           {s.caveats?.length ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-brand-700)', margin: 'var(--g-space-2) 0 0' }}>↳ {s.caveats.join(' · ')}</Text> : null}
-          {s.sees ? <StepHint icon={IconEye}>{s.sees}</StepHint> : null}
-          {s.doneness ? <StepHint icon={IconCircleCheck} tone="success">{s.doneness}</StepHint> : null}
-          {s.tip ? <StepHint icon={IconBulb}>{s.tip}</StepHint> : null}
-          {s.recovery ? <StepHint icon={IconLifebuoy} tone="warn">اگر خراب شد: {s.recovery}</StepHint> : null}
+          <Box data-testid="guided-secondary-notes" style={{ marginBlockStart: 'var(--g-space-4)' }}>
+            <StepDisclosure title="نشانهٔ ظاهری">{s.sees}</StepDisclosure>
+            <StepDisclosure title="از کجا بفهمم آماده است؟">{s.doneness}</StepDisclosure>
+            <StepDisclosure title="نکتهٔ کوتاه">{s.tip}</StepDisclosure>
+            <StepDisclosure title="اگر خراب شد">{s.recovery}</StepDisclosure>
+          </Box>
           {mins > 0 ? <StepTimer key={c.step} minutes={mins} onDone={() => showToast('تایمر تمام شد', IconClockPlay)} /> : null}
         </Box>
       </Box>
 
       {/* bottom controls */}
       <Box style={{ flexShrink: 0, paddingInline: 'var(--g-space-5)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface-raised)', boxShadow: 'var(--g-shadow-2)' }}>
-        <UnstyledButton type="button" onClick={c.openHelp} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 44, marginBlockEnd: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>
+        <UnstyledButton type="button" onClick={c.openHelp} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 40, marginBlockEnd: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'transparent', border: '1px solid var(--g-color-border-subtle)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>
           <IconSparkles size={16} stroke={1.8} aria-hidden="true" />کمک برای این مرحله
         </UnstyledButton>
         <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>

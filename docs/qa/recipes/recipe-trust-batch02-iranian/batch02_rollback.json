@@ -1,0 +1,220 @@
+{
+  "generatedAt": "2026-07-04T19:40:51.448Z",
+  "databaseUrl": "postgresql://***@localhost:5432/garnish_db?schema=public",
+  "countsBefore": {
+    "totalRecipes": 639,
+    "activePublic": 521,
+    "draftPrivate": 118,
+    "ingredientCount": 1084,
+    "mezePublic": 0
+  },
+  "entries": [
+    {
+      "recipeId": "garnish_recipe_fa_79_792d1196",
+      "slug": "ash-dandooni",
+      "titleFa": "آش دندونی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_79\",\"phaseOneSequence\":194,\"slug\":\"ash-dandooni\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"آش دندونی\",\"ash-dandooni\",\"آشِ نرمِ گندم و حبوبات برای دندانِ کودک\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":2,\"fatty\":1,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_wheat_berries_dry\",\"ing_chickpeas_dry\",\"ing_lentils_dry\",\"ing_white_beans_dry\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"religious_occasion\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/ash-dandooni/cover.webp\",\"thumbnail\":\"/data/media/recipes/ash-dandooni/thumb.webp\",\"video\":\"/data/media/recipes/ash-dandooni/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T18:23:49.710Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_77_3adf94d4",
+      "slug": "ash-sabzi-shirazi",
+      "titleFa": "آش سبزی شیرازی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_77\",\"phaseOneSequence\":141,\"slug\":\"ash-sabzi-shirazi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"آش سبزی شیرازی\",\"ash-sabzi-shirazi\",\"آشِ سبکِ سبزی‌محورِ شیرازی با نخود و لپه\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":2,\"fatty\":1,\"fresh\":3},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ash_sabzi_mix\",\"ing_chickpeas_dry\",\"ing_split_peas_dry\",\"ing_cilantro_fresh\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/ash-sabzi-shirazi/cover.webp\",\"thumbnail\":\"/data/media/recipes/ash-sabzi-shirazi/thumb.webp\",\"video\":\"/data/media/recipes/ash-sabzi-shirazi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T18:23:49.710Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_98_601bddc6",
+      "slug": "khoresh-havij-tabrizi",
+      "titleFa": "خورشت هویج تبریزی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_98\",\"phaseOneSequence\":147,\"slug\":\"khoresh-havij-tabrizi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"خورشت هویج تبریزی\",\"khoresh-havij-tabrizi\",\"خورشِ ملسِ هویج و آلو به‌سبکِ تبریز\"],\"tasteProfile\":{\"sweet\":2,\"sour\":2,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":2,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lamb_meat_raw\",\"ing_carrot_raw\",\"ing_prunes\",\"ing_onion_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/khoresh-havij-tabrizi/cover.webp\",\"thumbnail\":\"/data/media/recipes/khoresh-havij-tabrizi/thumb.webp\",\"video\":\"/data/media/recipes/khoresh-havij-tabrizi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T18:23:49.710Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1261_99e02971",
+      "slug": "dampokhtak-mash-polo",
+      "titleFa": "دمپختک (ماش‌پلو تهرانی)",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1261\",\"phaseOneSequence\":43,\"slug\":\"dampokhtak-mash-polo\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"دمپختک (ماش‌پلو تهرانی)\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_basmati_rice_raw\",\"ing_mung_beans_dry\",\"ing_onion_raw\",\"ing_butter_unsalted\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/dampokhtak-mash-polo/cover.webp\",\"thumbnail\":\"/data/media/recipes/dampokhtak-mash-polo/thumb.webp\",\"video\":\"/data/media/recipes/dampokhtak-mash-polo/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1280_13a22528",
+      "slug": "reshteh-polo-shirazi",
+      "titleFa": "رشته‌پلو شیرازی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1280\",\"phaseOneSequence\":50,\"slug\":\"reshteh-polo-shirazi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"رشته‌پلو شیرازی\"],\"tasteProfile\":{\"sweet\":4,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_basmati_rice_raw\",\"ing_reshteh_polo_noodles\",\"ing_golden_raisins\",\"ing_date_dried\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/reshteh-polo-shirazi/cover.webp\",\"thumbnail\":\"/data/media/recipes/reshteh-polo-shirazi/thumb.webp\",\"video\":\"/data/media/recipes/reshteh-polo-shirazi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1272_b3180a59",
+      "slug": "zireh-polo-kermani",
+      "titleFa": "زیره‌پلو کرمانی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1272\",\"phaseOneSequence\":47,\"slug\":\"zireh-polo-kermani\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"زیره‌پلو کرمانی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_basmati_rice_raw\",\"ing_black_cumin_seeds\",\"ing_lamb_meat_raw\",\"ing_onion_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/zireh-polo-kermani/cover.webp\",\"thumbnail\":\"/data/media/recipes/zireh-polo-kermani/thumb.webp\",\"video\":\"/data/media/recipes/zireh-polo-kermani/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1767_4e6ed616",
+      "slug": "shami-kabab-lorestan",
+      "titleFa": "شامی کباب لرستانی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1767\",\"phaseOneSequence\":97,\"slug\":\"shami-kabab-lorestan\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[],\"contentPatchVersion\":\"v0.4.9\"},\"aiContext\":{\"searchKeywordsFa\":[\"شامی کباب لرستانی\",\"shami kabab lorestan\",\"shami-kabab-lorestan\",\"شامی کباب لرستانی با مایه چسبنده و سرخ‌کردن آرام\",\"غذای اصلی\",\"میان‌وعده\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_beef_raw\",\"ing_onion_raw\",\"ing_parsley_fresh\",\"ing_cilantro_fresh\",\"ing_whole_egg_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[],\"mealTypeSignal\":[\"lunch\",\"dinner\"],\"recommendationContextSignal\":[\"main_meal_recommendation\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false},\"servingContext\":[\"کنار نان، سبزی و ترشی\"],\"recommendationContext\":[\"main_meal_recommendation\"],\"classification\":{\"mealType\":[\"lunch\",\"dinner\"],\"category\":\"street_food\",\"categories\":[\"street_food\",\"fried\"],\"dishType\":[\"main\"],\"tags\":[\"غذای اصلی\",\"میان‌وعده\"],\"mealTypes\":[\"lunch\",\"dinner\"]},\"usageMetadata\":{\"phase\":\"phase_one_remaining\",\"productUse\":\"recommendation_and_search\",\"classificationReviewed\":\"v0.4.9\",\"contentReviewed\":\"v0.4.9\"}},\"media\":{\"cover\":\"/data/media/recipes/shami-kabab-lorestan/cover.webp\",\"thumbnail\":\"/data/media/recipes/shami-kabab-lorestan/thumb.webp\",\"video\":\"/data/media/recipes/shami-kabab-lorestan/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_154_cdfcadf7",
+      "slug": "sholeh-mashhadi",
+      "titleFa": "شله مشهدی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_154\",\"phaseOneSequence\":172,\"slug\":\"sholeh-mashhadi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"شله مشهدی\",\"sholeh-mashhadi\",\"خوراکِ درهم‌جوشِ برنج و گوشت و حبوبات\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_lamb_meat_raw\",\"ing_white_rice_raw\",\"ing_lentils_dry\",\"ing_mung_beans_dry\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"winter\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/sholeh-mashhadi/cover.webp\",\"thumbnail\":\"/data/media/recipes/sholeh-mashhadi/thumb.webp\",\"video\":\"/data/media/recipes/sholeh-mashhadi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1250_cb9a971c",
+      "slug": "shirin-polo",
+      "titleFa": "شیرین‌پلو (مرصع‌پلو)",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1250\",\"phaseOneSequence\":40,\"slug\":\"shirin-polo\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"شیرین‌پلو (مرصع‌پلو)\"],\"tasteProfile\":{\"sweet\":4,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_basmati_rice_raw\",\"ing_chicken_thigh_raw\",\"ing_candied_orange_peel\",\"ing_carrot_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"hard\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/shirin-polo/cover.webp\",\"thumbnail\":\"/data/media/recipes/shirin-polo/thumb.webp\",\"video\":\"/data/media/recipes/shirin-polo/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_864_37673192",
+      "slug": "adas-polo-ba-goosht",
+      "titleFa": "عدس‌پلو با گوشت",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"864\",\"phaseOneSequence\":5,\"slug\":\"adas-polo-ba-goosht\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"عدس‌پلو با گوشت\",\"عدس پلو\",\"پلو ایرانی\",\"گوشت چرخ کرده\",\"کشمش\"],\"tasteProfile\":{\"sweet\":3,\"sour\":0,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_lentils_dry\",\"ing_ground_beef_raw\",\"ing_raisins\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"meal_prep\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/adas-polo-ba-goosht/cover.webp\",\"thumbnail\":\"/data/media/recipes/adas-polo-ba-goosht/thumb.webp\",\"video\":\"/data/media/recipes/adas-polo-ba-goosht/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_129_5d8a7866",
+      "slug": "ghanbar-polo-shirazi",
+      "titleFa": "قنبرپلو شیرازی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_129\",\"phaseOneSequence\":164,\"slug\":\"ghanbar-polo-shirazi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"قنبرپلو شیرازی\",\"ghanbar-polo-shirazi\",\"پلوی مجلسیِ شیرین‌وشور با خرما و خلال بادام\"],\"tasteProfile\":{\"sweet\":2,\"sour\":0,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":2,\"fatty\":2,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_lamb_meat_raw\",\"ing_pitted_dates\",\"ing_slivered_almonds\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"party\",\"celebration\",\"family_meal\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/ghanbar-polo-shirazi/cover.webp\",\"thumbnail\":\"/data/media/recipes/ghanbar-polo-shirazi/thumb.webp\",\"video\":\"/data/media/recipes/ghanbar-polo-shirazi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1239_1be04a64",
+      "slug": "gheymeh-nesar",
+      "titleFa": "قیمه نثار",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1239\",\"phaseOneSequence\":39,\"slug\":\"gheymeh-nesar\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"قیمه نثار\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_basmati_rice_raw\",\"ing_lamb_meat_raw\",\"ing_barberries_dry\",\"ing_slivered_almonds\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"hard\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/gheymeh-nesar/cover.webp\",\"thumbnail\":\"/data/media/recipes/gheymeh-nesar/thumb.webp\",\"video\":\"/data/media/recipes/gheymeh-nesar/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_866_9986ddf5",
+      "slug": "loobia-polo-ba-goosht",
+      "titleFa": "لوبیا پلو با گوشت چرخ‌کرده",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"866\",\"phaseOneSequence\":8,\"slug\":\"loobia-polo-ba-goosht\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"لوبیا پلو با گوشت چرخ‌کرده\",\"لوبیا پلو\",\"گوشت چرخ کرده\",\"برنج ایرانی\",\"ته دیگ\"],\"tasteProfile\":{\"sweet\":2,\"sour\":2,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":4,\"fatty\":3,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_green_beans_raw\",\"ing_ground_beef_raw\",\"ing_tomato_paste\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"meal_prep\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/loobia-polo-ba-goosht/cover.webp\",\"thumbnail\":\"/data/media/recipes/loobia-polo-ba-goosht/thumb.webp\",\"video\":\"/data/media/recipes/loobia-polo-ba-goosht/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1296_5d4fca2c",
+      "slug": "morgh-torsh-gilani",
+      "titleFa": "مرغ ترش گیلانی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1296\",\"phaseOneSequence\":54,\"slug\":\"morgh-torsh-gilani\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"مرغ ترش گیلانی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":4,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_thigh_raw\",\"ing_walnuts_raw\",\"ing_pomegranate_molasses\",\"ing_parsley_fresh\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/morgh-torsh-gilani/cover.webp\",\"thumbnail\":\"/data/media/recipes/morgh-torsh-gilani/thumb.webp\",\"video\":\"/data/media/recipes/morgh-torsh-gilani/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_86_ffcd0713",
+      "slug": "kabab-bonab",
+      "titleFa": "کباب بناب",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_86\",\"phaseOneSequence\":126,\"slug\":\"kabab-bonab\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کباب بناب\",\"kabab-bonab\",\"کباب کوبیدهٔ تبریزی با گوشت گوسفند و پیاز\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":3,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_lamb_raw\",\"ing_onion_raw\",\"ing_sumac_ground\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"grill\",\"family_meal\",\"street_food\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kabab-bonab/cover.webp\",\"thumbnail\":\"/data/media/recipes/kabab-bonab/thumb.webp\",\"video\":\"/data/media/recipes/kabab-bonab/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1197_73204fa8",
+      "slug": "kabab-tabei-morgh",
+      "titleFa": "کباب تابه‌ای مرغ",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1197\",\"phaseOneSequence\":27,\"slug\":\"kabab-tabei-morgh\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کباب تابه‌ای مرغ\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":4,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_chicken_raw\",\"ing_onion_raw\",\"ing_saffron\",\"ing_breadcrumbs\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kabab-tabei-morgh/cover.webp\",\"thumbnail\":\"/data/media/recipes/kabab-tabei-morgh/thumb.webp\",\"video\":\"/data/media/recipes/kabab-tabei-morgh/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1196_6cbbd3af",
+      "slug": "kabab-tabei-goosht",
+      "titleFa": "کباب تابه‌ای گوشت",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1196\",\"phaseOneSequence\":26,\"slug\":\"kabab-tabei-goosht\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کباب تابه‌ای گوشت\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":4,\"fatty\":3,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_beef_raw\",\"ing_onion_raw\",\"ing_tomato_raw\",\"ing_sumac_ground\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kabab-tabei-goosht/cover.webp\",\"thumbnail\":\"/data/media/recipes/kabab-tabei-goosht/thumb.webp\",\"video\":\"/data/media/recipes/kabab-tabei-goosht/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_112_9764d4aa",
+      "slug": "kadoo-polo-mazandarani",
+      "titleFa": "کدو پلو مازندرانی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_112\",\"phaseOneSequence\":155,\"slug\":\"kadoo-polo-mazandarani\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کدو پلو مازندرانی\",\"kadoo-polo-mazandarani\",\"برنجِ لایه‌ای با کدوسبزِ آب‌گرفته و گوشت\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":2,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_zucchini_raw\",\"ing_ground_lamb_raw\",\"ing_onion_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"medium\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kadoo-polo-mazandarani/cover.webp\",\"thumbnail\":\"/data/media/recipes/kadoo-polo-mazandarani/thumb.webp\",\"video\":\"/data/media/recipes/kadoo-polo-mazandarani/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_139_012333bd",
+      "slug": "kufteh-berenji",
+      "titleFa": "کوفته برنجی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_139\",\"phaseOneSequence\":168,\"slug\":\"kufteh-berenji\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کوفته برنجی\",\"kufteh-berenji\",\"گلولهٔ گوشت و برنج و لپه در سسِ گوجه\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":1,\"umami\":3,\"fatty\":2,\"fresh\":2},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_ground_lamb_raw\",\"ing_white_rice_raw\",\"ing_split_peas_dry\",\"ing_parsley_fresh\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"hard\",\"timeSignal\":\"slow\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kufteh-berenji/cover.webp\",\"thumbnail\":\"/data/media/recipes/kufteh-berenji/thumb.webp\",\"video\":\"/data/media/recipes/kufteh-berenji/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1225_159208a2",
+      "slug": "mirza-ghasemi",
+      "titleFa": "میرزا قاسمی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1225\",\"phaseOneSequence\":35,\"slug\":\"mirza-ghasemi\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"میرزا قاسمی\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_eggplant_raw\",\"ing_tomato_raw\",\"ing_garlic_raw\",\"ing_whole_egg_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/mirza-ghasemi/cover.webp\",\"thumbnail\":\"/data/media/recipes/mirza-ghasemi/thumb.webp\",\"video\":\"/data/media/recipes/mirza-ghasemi/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_103_066b318c",
+      "slug": "vavishka",
+      "titleFa": "واویشکا",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_103\",\"phaseOneSequence\":151,\"slug\":\"vavishka\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"واویشکا\",\"vavishka\",\"جگر و دلِ مرغِ تندِ گیلانی با گوجه\"],\"tasteProfile\":{\"sweet\":0,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":2,\"umami\":3,\"fatty\":2,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_chicken_liver_raw\",\"ing_onion_raw\",\"ing_tomato_raw\",\"ing_garlic_raw\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"quick\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/vavishka/cover.webp\",\"thumbnail\":\"/data/media/recipes/vavishka/thumb.webp\",\"video\":\"/data/media/recipes/vavishka/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_111_4cb37a1a",
+      "slug": "kateh-shomali",
+      "titleFa": "کته شمالی",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"iranian_core_200_v1_3_1_seq_111\",\"phaseOneSequence\":154,\"slug\":\"kateh-shomali\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کته شمالی\",\"kateh-shomali\",\"برنجِ جذبیِ شمالی با ته‌دیگ\"],\"tasteProfile\":{\"sweet\":0,\"sour\":0,\"salty\":1,\"bitter\":0,\"spicy\":0,\"umami\":1,\"fatty\":2,\"fresh\":0},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_white_rice_raw\",\"ing_butter_unsalted\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"moderate\",\"healthSignal\":[],\"occasionSignal\":[\"family_meal\",\"everyday\"]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kateh-shomali/cover.webp\",\"thumbnail\":\"/data/media/recipes/kateh-shomali/thumb.webp\",\"video\":\"/data/media/recipes/kateh-shomali/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    },
+    {
+      "recipeId": "garnish_recipe_fa_1263_0e8a8255",
+      "slug": "kaleh-joosh",
+      "titleFa": "کاله‌جوش (کله‌جوش)",
+      "status": "reviewOnly",
+      "isPublic": false,
+      "adminNote": "{\"source\":\"phase-one-v0.6.1\",\"legacyId\":\"1263\",\"phaseOneSequence\":45,\"slug\":\"kaleh-joosh\",\"language\":\"fa\",\"quality\":{\"ingredientIdsResolved\":true,\"hasRequiredMediaPaths\":true,\"readyForImport\":true,\"needsHumanReview\":false,\"reviewReasons\":[]},\"aiContext\":{\"searchKeywordsFa\":[\"کاله‌جوش (کله‌جوش)\"],\"tasteProfile\":{\"sweet\":1,\"sour\":1,\"salty\":2,\"bitter\":0,\"spicy\":0,\"umami\":2,\"fatty\":1,\"fresh\":1},\"behaviorSignals\":{\"primaryIngredientIds\":[\"ing_kashk_liquid\",\"ing_walnuts_raw\",\"ing_onion_raw\",\"ing_dried_mint\"],\"cuisineSignal\":\"persian\",\"difficultySignal\":\"easy\",\"timeSignal\":\"normal\",\"healthSignal\":[],\"occasionSignal\":[]},\"recommendationUse\":{\"readyForGeneralRecommendation\":true,\"readyForMealPlannerMvp\":true,\"readyForStrictDietPlanning\":false,\"readyForMedicalNutritionClaims\":false}},\"media\":{\"cover\":\"/data/media/recipes/kaleh-joosh/cover.webp\",\"thumbnail\":\"/data/media/recipes/kaleh-joosh/thumb.webp\",\"video\":\"/data/media/recipes/kaleh-joosh/video.mp4\",\"steps\":[]},\"datasetVersion\":\"v0.6.1\"}",
+      "updatedAt": "2026-07-04T17:28:21.054Z"
+    }
+  ]
+}

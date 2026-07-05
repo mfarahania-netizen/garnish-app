@@ -42,9 +42,10 @@ describe('Recipe Detail — GRIS dish-aware swap sheet (v2.1)', () => {
     // dish-authored swaps render immediately (no fetch needed) with the dish label
     expect(await screen.findByText('گردن گوسفند')).toBeInTheDocument();
     expect(screen.getByText('ماهیچه گاو')).toBeInTheDocument();
-    expect(screen.getAllByText('پیشنهادِ این دستور').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/کم‌تغییر|قابل قبول/).length).toBeGreaterThan(0);
     // applying one swaps the ingredient on the recipe
     fireEvent.click(screen.getByText('گردن گوسفند'));
+    fireEvent.click(screen.getByRole('button', { name: /اعمال جایگزین/ }));
     expect(await screen.findByText('جایگزین شد: ماهیچه گوسفندی ← گردن گوسفند')).toBeInTheDocument();
   });
 });

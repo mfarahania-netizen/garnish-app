@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart, IconLeaf } from '@tabler/icons-react';
+import { IconSalad, IconMeat, IconWheat, IconMilk, IconShoppingCart, IconLeaf, IconPepper } from '@tabler/icons-react';
 
 /**
  * useShopping — the grocery list (GET /shopping-list), grouped by aisle/category. Check-off toggles
@@ -20,6 +20,8 @@ const GROUPS = {
   protein: 'protein', meat: 'protein', poultry: 'protein', fish: 'protein', seafood: 'protein', egg: 'protein', eggs: 'protein',
   grain: 'grain', grains: 'grain', legume: 'grain', legumes: 'grain', pantry: 'grain', rice: 'grain', pasta: 'grain', bread: 'grain',
   dairy: 'dairy', milk: 'dairy', cheese: 'dairy',
+  spice: 'seasoning', spices: 'seasoning', seasoning: 'seasoning', seasonings: 'seasoning', salt: 'seasoning',
+  condiment: 'seasoning', condiments: 'seasoning', sauce: 'seasoning', sauces: 'seasoning',
 };
 const GROUP_META = {
   herbs: { label: 'سبزی و سبزیجاتِ معطر', Icon: IconLeaf, order: 1 },
@@ -27,7 +29,8 @@ const GROUP_META = {
   protein: { label: 'گوشت و پروتئین', Icon: IconMeat, order: 3 },
   grain: { label: 'غلات و حبوبات', Icon: IconWheat, order: 4 },
   dairy: { label: 'لبنیات', Icon: IconMilk, order: 5 },
-  other: { label: 'سایر', Icon: IconShoppingCart, order: 6 },
+  seasoning: { label: 'ادویه و چاشنی', Icon: IconPepper, order: 6 },
+  other: { label: 'سایر', Icon: IconShoppingCart, order: 7 },
 };
 const groupKey = (category) => {
   const c = String(category || '').trim().toLowerCase();
@@ -43,6 +46,7 @@ const NAME_AISLES = [
   ['dairy', ['شیر', 'ماست', 'پنیر', 'خامه', 'کره', 'دوغ', 'کشک', 'بستنی']],
   ['protein', ['مرغ', 'گوشت', 'ماهی', 'میگو', 'گوساله', 'گوسفند', 'بوقلمون', 'کالباس', 'سوسیس', 'تخم‌مرغ', 'تخم مرغ', 'تخم‌ مرغ', 'ژامبون']],
   ['grain', ['برنج', 'نان', 'ماکارونی', 'اسپاگتی', 'رشته', 'عدس', 'لوبیا', 'نخود', 'ماش', 'لپه', 'آرد', 'جو', 'بلغور', 'گندم', 'کینوا', 'بیسکویت', 'بلغور']],
+  ['seasoning', ['نمک', 'ادویه', 'فلفل', 'زردچوبه', 'زعفران', 'دارچین', 'هل', 'پاپریکا', 'زنجبیل', 'سماق', 'زیره', 'آویشن', 'وانیل', 'چاشنی', 'سس', 'رب', 'آبلیمو', 'آب‌لیمو', 'آبغوره', 'سرکه', 'خردل']],
   ['produce', ['سبزی', 'کاهو', 'گوجه', 'پیاز', 'سیر', 'هویج', 'کدو', 'بادمجان', 'فلفل', 'اسفناج', 'کرفس', 'جعفری', 'گشنیز', 'نعنا', 'ریحان', 'تره', 'قارچ', 'خیار', 'لیمو', 'سیب', 'موز', 'پرتقال', 'انار', 'انگور', 'توت', 'میوه', 'کلم', 'شلغم', 'چغندر', 'ذرت', 'هندوانه', 'خربزه', 'آلو', 'هلو', 'زردآلو', 'انجیر', 'نارنگی']],
 ];
 // plant-based "milks" carry a dairy keyword (شیر) but are NOT dairy — don't mislabel them.
