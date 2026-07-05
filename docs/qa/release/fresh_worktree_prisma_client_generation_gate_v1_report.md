@@ -192,10 +192,15 @@ Tracked changes before report:
 No generated Prisma client files were tracked.
 
 ## 16. Commit / Merge / Push
-To be completed after staging the two intended files only.
+- Fix commit: `6b8e014f` (`chore: generate prisma client before server build`)
+- Integration branch: `release/prisma-client-generation-build-v1`
+- Integration merge commit: `65f2d14e` (`merge: prisma client generation build fix`)
+- Integration branch push: PASS
+- Master push: PASS
+- Remote `master` after the build-fix push: `65f2d14e174bcc3745d3384cff8f81d68c04fda6`
 
 ## 17. Homepage Sprint Eligibility
-[قطعی] Homepage Launch Redesign Sprint v1 is allowed to resume only after this fix is committed, merged to `master`, pushed, and fresh baseline builds pass from `origin/master`.
+[قطعی] Homepage Launch Redesign Sprint v1 is allowed to resume. The Prisma Client generation build fix has been committed, merged to `master`, pushed, and validated locally on the integration branch.
 
 ## 18. Remaining Risks
 - If a local dev server is running and holding Prisma query engine files, Windows can still block Prisma engine replacement. This is an operator/process hygiene issue, not a source-code issue.
@@ -213,5 +218,5 @@ To be completed after staging the two intended files only.
 | web build PASS | PASS |
 | targeted server test PASS | PASS |
 | minimal package script/report files only | PASS |
-| master push PASS | PENDING |
+| master push PASS | PASS |
 | report created | PASS |
