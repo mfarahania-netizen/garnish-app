@@ -3,10 +3,10 @@ import { Box, Text, UnstyledButton } from '@mantine/core';
 import { MotionConfig, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  IconLeaf, IconFlame, IconUser, IconSparkles, IconFridge,
+  IconLeaf, IconFlame, IconUser, IconSparkles,
   IconSunrise, IconSun, IconMoon, IconCookie, IconCake,
   IconBowlSpoon, IconBurger, IconSalad, IconSoup, IconPlant2, IconCandy,
-  IconBookmark, IconCalendarHeart,
+  IconBookmark, IconCompass, IconCalendarEvent, IconShoppingCart,
 } from '@tabler/icons-react';
 import { useHomeData } from './lib/useHomeData';
 import { useFoodDnaProjection } from '../food-dna/useFoodDna';
@@ -17,13 +17,10 @@ import { useDismissRecommendation } from '../../hooks/useDismissRecommendation';
 import { rememberRecommendation, recallRecommendation } from '../../lib/recommendationAttribution';
 import { toFaDigits } from '../../components/ges/format';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
-import AIWhisper from '../../components/ges/AIWhisper';
 import RecipeCard from '../../components/ges/RecipeCard';
 import RecipeRail from '../../components/ges/RecipeRail';
 import GamificationStrip from '../../components/ges/GamificationStrip';
 import SearchField from '../../components/ges/SearchField';
-import OccasionCard from '../../components/ges/OccasionCard';
-import ResumeCard from '../../components/ges/ResumeCard';
 import PlatePlaceholder from '../../components/ges/PlatePlaceholder';
 import EmptyState from '../../components/ges/EmptyState';
 import ErrorState from '../../components/ges/ErrorState';
@@ -118,6 +115,45 @@ function SectionHeader({ children }) {
   return <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: '0 2px var(--g-space-3)' }}>{children}</Text>;
 }
 
+function QuickActions({ onGo }) {
+  const actions = [
+    { label: 'کشف غذاها', to: '/discover', Icon: IconCompass },
+    { label: 'برنامه', to: '/plan', Icon: IconCalendarEvent },
+    { label: 'لیست خرید', to: '/shopping-list', Icon: IconShoppingCart },
+    { label: 'از دستیار بپرس', to: '/assistant', Icon: IconSparkles },
+  ];
+  return (
+    <Box component="section" aria-label="میانبرهای اصلی" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 'var(--g-space-2)' }}>
+      {actions.map(({ label, to, Icon }) => (
+        <UnstyledButton
+          key={to}
+          type="button"
+          onClick={() => onGo(to)}
+          aria-label={label}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--g-space-2)',
+            minBlockSize: 48,
+            paddingInline: 'var(--g-space-3)',
+            borderRadius: 'var(--g-radius-input)',
+            background: 'var(--g-color-bg-surface)',
+            border: '1px solid var(--g-color-border-subtle)',
+            boxShadow: 'var(--g-shadow-1)',
+            color: 'var(--g-color-text-primary)',
+            fontFamily: 'var(--g-font-fa)',
+            fontSize: 'var(--g-font-size-13)',
+            fontWeight: 700,
+          }}
+        >
+          <Icon size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'inherit' }}>{label}</Text>
+        </UnstyledButton>
+      ))}
+    </Box>
+  );
+}
+
 function MealTypeRow({ onPick }) {
   const mealIds = ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'];
   return (
@@ -187,7 +223,7 @@ function HomeLoading() {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { status, greeting, dna, gam, whisper, picks, rails, resume, refetch } = useHomeData();
+  const { status, greeting, dna, gam, hero, picks, rails, refetch } = useHomeData();
   // S2: show the REAL (behavior-hydrated) maturity from GET /profile/dna when available; fall back to the
   // /profile maturity otherwise (keeps the card honest + consistent with the Food DNA screen it links to).
   const dnaProjection = useFoodDnaProjection();
@@ -195,7 +231,6 @@ export default function HomePage() {
   const cardDna = dnaMaturity
     ? { ...dna, score: dnaMaturity.score, tone: dnaMaturity.band === 'developing' || dnaMaturity.band === 'mature' ? 'mature' : 'forming' }
     : dna;
-  const [whisperDismissed, setWhisperDismissed] = useState(false);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   // server-truth favorites (no local fake state); honest favorite signal; viewport impression telemetry
@@ -225,6 +260,7 @@ export default function HomePage() {
     navigate(`/recipe/${id}`);
   }, [navigate, trackEvent]);
   const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
+  const goPath = useCallback((path) => navigate(path), [navigate]);
   const goRecipeFacet = useCallback(({ meal, category, title }) => {
     const params = new URLSearchParams();
     if (meal) params.set('meal', meal);
@@ -260,9 +296,9 @@ export default function HomePage() {
   return (
     <MotionConfig reducedMotion="user">
       <Box style={PAGE}>
-        <SearchField onClick={goDiscover} />
-
         <Greeting greeting={greeting} subtitle={status === 'empty' ? 'خوش اومدی' : 'امشب چی بپزیم؟'} showStreak={status === 'ready'} />
+
+        <SearchField label="چی می‌خوای بپزی؟" placeholder="جستجو در دستورها" onClick={goDiscover} />
 
         {status === 'error' ? (
           <ErrorState title="یه مشکلی پیش اومد" body="نتونستیم پیشنهادِ امشب رو بیاریم. چیزی از دست نرفته." retryLabel="دوباره امتحان کن" onRetry={refetch} />
@@ -281,20 +317,44 @@ export default function HomePage() {
 
         {status === 'ready' ? (
           <>
-            <FoodDnaCard dna={cardDna} onOpen={() => navigate('/food-dna')} />
-
-            {gam.show ? <GamificationStrip headline={gam.headline} progressLabel={gam.progressLabel} progress={gam.progress} /> : null}
-
-            {whisper && !whisperDismissed ? (
-              <AIWhisper text={whisper.text} sub={whisper.sub} onAccept={() => openRecipe(whisper.recipeId)} onDismiss={() => setWhisperDismissed(true)} />
+            {hero ? (
+              <Box component="section" aria-label={hero.label}>
+                <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginInline: 2, marginBlockEnd: 'var(--g-space-3)' }}>
+                  <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{hero.label}</Text>
+                  {hero.source === 'recommendation' && hero.reasons?.length ? (
+                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>با سیگنال واقعی</Text>
+                  ) : null}
+                </Box>
+                <Box ref={observe(hero.recipeId, hero.requestId)}>
+                  <RecipeCard
+                    variant="hero"
+                    title={hero.title}
+                    placeholderSeed={hero.seed}
+                    fit={hero.fit}
+                    cookTimeText={hero.cookTimeText}
+                    difficultyText={hero.difficultyText}
+                    servingsText={hero.servingsText}
+                    reasons={hero.source === 'recommendation' ? hero.reasons : []}
+                    reasonText={hero.reasonText}
+                    saved={isFavorite(hero.recipeId)}
+                    onSave={() => toggleSave(hero.recipeId, hero.requestId)}
+                    onOpen={() => openRecipe(hero.recipeId, hero.requestId)}
+                  />
+                </Box>
+              </Box>
             ) : null}
 
-            <MealTypeRow onPick={goRecipeFacet} />
-            <CuisineRow onPick={goRecipeFacet} />
+            <QuickActions onGo={goPath} />
 
-            <Box component="section">
+            <Box component="section" aria-label="دسته‌ها" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-4)' }}>
+              <MealTypeRow onPick={goRecipeFacet} />
+              <CuisineRow onPick={goRecipeFacet} />
+            </Box>
+
+            {picks.filter((p) => !dismissed.has(p.recipeId)).length ? (
+              <Box component="section">
               <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginInline: 2, marginBlockEnd: 'var(--g-space-3)' }}>
-                <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>برای تو، امشب</Text>
+                <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>پیشنهادهای بیشتر</Text>
                 <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>{`${toFaDigits(picks.filter((p) => !dismissed.has(p.recipeId)).length)} پیشنهاد`}</Text>
               </Box>
               <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
@@ -304,21 +364,14 @@ export default function HomePage() {
                   </Box>
                 ))}
               </Box>
-            </Box>
-
-            <RecipeRail title="بر اساس آشپزخونه‌ات" icon={IconFridge} items={rails.pantry} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
-            <RecipeRail title="محبوب‌ها" icon={IconFlame} items={rails.popular} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
-            <RecipeRail title="تازه‌ها" icon={IconSparkles} items={rails.fresh} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
-
-            <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
-              <OccasionCard title="حال‌وهوای شب یلدا" badge="مناسبتی" onClick={() => showToast('مجموعهٔ مناسبتی به‌زودی', IconCalendarHeart)} />
-            </Box>
-
-            {resume ? (
-              <Box style={{ marginBlockStart: 'var(--g-space-5)' }}>
-                <ResumeCard title={resume.title} seed={resume.seed} stepLabel={resume.stepLabel} progress={resume.progress} onClick={openRecipe} />
               </Box>
             ) : null}
+
+            <RecipeRail title="محبوب‌ها" icon={IconFlame} items={rails.popular} isSaved={isFavorite} registerImpression={observe} onSeeAll={goDiscover} onOpen={openRecipe} onSave={toggleSave} />
+
+            <FoodDnaCard dna={cardDna} onOpen={() => navigate('/food-dna')} />
+
+            {gam.show ? <GamificationStrip headline={gam.headline} progressLabel={gam.progressLabel} progress={gam.progress} /> : null}
           </>
         ) : null}
       </Box>

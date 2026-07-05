@@ -2,16 +2,15 @@ import { Text, UnstyledButton } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 
 /**
- * SearchField — the Home search affordance. Per the mockup it's a tappable field-styled
- * button (the real query input lives on Discovery); tapping navigates there. Search glyph
- * at the inline-start (right in RTL). Token-pure, ≥44px (50px) target.
+ * SearchField — the Home search action. It is intentionally a button/link-like action,
+ * not a fake editable input; the real query input lives on Discovery.
  */
-export default function SearchField({ placeholder = 'جستجوی غذا، ماده، یا دستور…', onClick }) {
+export default function SearchField({ label = 'چی می‌خوای بپزی؟', placeholder = 'جستجو در دستورها', onClick }) {
   return (
     <UnstyledButton
       type="button"
       onClick={onClick}
-      aria-label={placeholder}
+      aria-label={`${label} — ${placeholder}`}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -27,9 +26,14 @@ export default function SearchField({ placeholder = 'جستجوی غذا، ما�
       }}
     >
       <IconSearch size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
-      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-muted)' }}>
-        {placeholder}
-      </Text>
+      <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minInlineSize: 0 }}>
+        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)', lineHeight: 1.35 }}>
+          {label}
+        </Text>
+        <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', lineHeight: 1.35 }}>
+          {placeholder}
+        </Text>
+      </span>
     </UnstyledButton>
   );
 }

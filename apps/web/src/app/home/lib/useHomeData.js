@@ -13,8 +13,8 @@ import { weekdayTimeLine } from './greeting';
  * 401 redirect). Literal paths so the coverage scanner detects the calls.
  *
  * /users/me        → greeting name        /profile          → Food DNA maturity ring
- * /gamification/me → streak + mastery     /recommendations  → picks + AI Whisper + pantry rail
- * /recipes         → popular + fresh rails (fresh sorted by createdAt; no imageUrl → placeholder)
+ * /gamification/me → streak + mastery     /recommendations  → real hero/more suggestions
+ * /recipes         → fallback hero + popular rail (no imageUrl → placeholder)
  */
 const stableSeed = (id) => {
   let s = 0;
@@ -73,8 +73,7 @@ export function useHomeData() {
       progress: typeof mastery?.progressToNext === 'number' ? mastery.progressToNext : 0,
     };
 
-    // ── Picks (top 3 recommendations) — honest fit + localized reasons + branded media ──
-    const picks = recList.slice(0, 3).map((r) => {
+    const recommendationCard = (r) => {
       const recipe = catalogById.get(String(r.recipeId));
       const labels = reasonLabels(r.matchedSignals || r.reasonSignals || [], 3);
       return {
@@ -91,26 +90,32 @@ export function useHomeData() {
         reasons: labels,
         reasonText: '',
       };
+    };
+
+    const catalogCard = (r) => ({
+      recipeId: r.id,
+      requestId: null,
+      title: r.title || 'دستور',
+      seed: stableSeed(r.id),
+      fit: null,
+      cookTimeText: faDuration(r.cookingTime || r.totalTime),
+      difficultyText: faDifficulty(r.difficulty),
+      servingsText: r.servings ? `${toFaDigits(r.servings)} نفر` : '',
+      reasons: [],
+      reasonText: '',
     });
 
-    // ── Rails (omit gracefully when thin) ──
-    const pantry = recList.slice(3, 11).map((r) => ({
-      recipeId: r.recipeId,
-      requestId: r.requestId || null,
-      title: r.title || catalogById.get(String(r.recipeId))?.title || 'دستور',
-      seed: stableSeed(r.recipeId),
-      cookTimeText: faDuration(catalogById.get(String(r.recipeId))?.cookingTime),
-      difficultyText: faDifficulty(catalogById.get(String(r.recipeId))?.difficulty),
-    }));
-    const popular = catalog.slice(0, 8).map(railItem);
-    const fresh = [...catalog]
-      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-      .slice(0, 8)
-      .map(railItem);
+    // ── Hero and rails: one decision-first hero + max two rails. Recommendations are used
+    // only when real; otherwise the public catalog fallback is labelled non-personally.
+    const hero = recList[0]
+      ? { ...recommendationCard(recList[0]), source: 'recommendation', label: 'پیشنهاد امروز' }
+      : catalog[0]
+        ? { ...catalogCard(catalog[0]), source: 'fallback', label: 'برای شروع' }
+        : null;
 
-    const whisper = recList[0]
-      ? { recipeId: recList[0].recipeId, text: `برای امشب: ${recList[0].title || 'یک پیشنهاد تازه'}`, sub: 'بر اساس انتخاب‌های اخیر تو' }
-      : null;
+    const picks = (recList.length ? recList.slice(1, 7).map(recommendationCard) : catalog.slice(1, 7).map(catalogCard));
+
+    const popular = catalog.slice(0, 8).map(railItem);
 
     const greeting = {
       name,
@@ -121,18 +126,18 @@ export function useHomeData() {
 
     let status = 'ready';
     if (!enabled) status = 'empty';
-    else if (recs.isLoading || profile.isLoading) status = 'loading';
+    else if (recs.isLoading || profile.isLoading || recipes.isLoading) status = 'loading';
     else if (recs.isError) status = 'error';
-    else if (recList.length === 0) status = 'empty';
+    else if (!hero) status = 'empty';
 
     return {
       status,
       greeting,
       dna,
       gam,
-      whisper,
+      hero,
       picks,
-      rails: { pantry, popular, fresh },
+      rails: { more: picks, popular },
       // Resume "ادامهٔ پخت" — null until Cook Mode writes in-progress-cook state; the section
       // is wired in Home and renders only when this is present (never fabricated).
       resume: null,

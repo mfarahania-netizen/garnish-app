@@ -8,6 +8,23 @@ import RecipeCard from './RecipeCard';
  * + optimistically remove the card) and does NOT trigger onOpen.
  */
 describe('RecipeCard — not-interested control (FI-STEP-1)', () => {
+  it('opens the recipe from media and title/body surfaces', () => {
+    const onOpen = vi.fn();
+    renderWithProviders(<RecipeCard title="قورمه سبزی" cookTimeText="۶۰ دقیقه" onOpen={onOpen} />);
+    fireEvent.click(screen.getByRole('button', { name: 'قورمه سبزی — مشاهدهٔ دستور' }));
+    fireEvent.click(screen.getByRole('button', { name: 'قورمه سبزی — دیدن دستور' }));
+    expect(onOpen).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not open the recipe when save is tapped', () => {
+    const onOpen = vi.fn();
+    const onSave = vi.fn();
+    renderWithProviders(<RecipeCard title="قورمه سبزی" onOpen={onOpen} onSave={onSave} />);
+    fireEvent.click(screen.getByRole('button', { name: /ذخیرهٔ/ }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
   it('renders the dismiss control when onDismiss is provided and calls it on tap (not onOpen)', () => {
     const onDismiss = vi.fn();
     const onOpen = vi.fn();
