@@ -126,4 +126,11 @@ Confirmed:
 
 ## Push Status
 
-Pending at report creation. Branch push is allowed only after explicit staged-file allow-list verification.
+PUSHED
+
+- Branch: `release/recipe-detail-card-ux-rebuild-v1`
+- Implementation commit: `fce7f09c`
+- Remote: `origin/release/recipe-detail-card-ux-rebuild-v1`
+- Master push: not performed.
+
+Note: local push output reported that `gitleaks` is not installed, so the hook-level staged secret scan was skipped. No secrets or production config files were changed in this sprint.
