@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import {
   IconClock, IconChartBar, IconUsers, IconBookmark, IconBookmarkFilled, IconHeartCheck,
@@ -22,7 +23,7 @@ function Meta({ cookTimeText, difficultyText, servingsText }) {
     </Box>
   );
   return (
-    <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-2)', color: 'var(--g-color-text-muted)' }}>
+    <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-2)', color: 'var(--g-color-text-muted)', minBlockSize: 18 }}>
       {cookTimeText ? item(IconClock, cookTimeText) : null}
       {difficultyText ? item(IconChartBar, difficultyText) : null}
       {servingsText ? item(IconUsers, servingsText) : null}
@@ -33,6 +34,7 @@ function Meta({ cookTimeText, difficultyText, servingsText }) {
 export default function RecipeCard({
   variant = 'standard',
   title,
+  imageUrl = '',
   placeholderSeed = 0,
   fit = null,
   fitLabel = 'عالی برای تو',
@@ -48,12 +50,20 @@ export default function RecipeCard({
   onOpen,
   onDismiss = null, // recommendation surfaces only: "علاقه ندارم" — emits recommendation_dismiss + removes the card
   compact = false,
-  // Short fixed media height: full-width picks = 140px; compact (rails/grids) = 110px. Callers can override.
-  mediaHeight = compact ? 110 : 140,
+  // Fixed media slots avoid layout jumps; full-width cards get more image room than compact grid cards.
+  mediaHeight = compact ? 132 : 188,
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const SaveIcon = saved ? IconBookmarkFilled : IconBookmark;
   const isHero = variant === 'hero';
-  const resolvedMediaHeight = isHero ? Math.max(mediaHeight, 154) : mediaHeight;
+  const resolvedMediaHeight = isHero ? Math.max(mediaHeight, 252) : mediaHeight;
+  const bodyPadding = compact ? 'var(--g-space-3)' : isHero ? 'var(--g-space-3) var(--g-space-4) var(--g-space-4)' : 'var(--g-space-3) var(--g-space-4) var(--g-space-4)';
+  const showImage = Boolean(imageUrl) && !imageFailed;
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [imageUrl]);
+
   return (
     <Box
       style={{
@@ -65,13 +75,22 @@ export default function RecipeCard({
         blockSize: '100%',
       }}
     >
-      {/* SHORT FIXED-HEIGHT media (founder-approved deviation from a 16:9 hero): a full-width pick at
-          16:9 is physically too tall on mobile, so the image is a short wide banner of a fixed
-          `mediaHeight` (140px picks / smaller for rails) — NO aspect-ratio that scales tall with width.
-          The branded placeholder + overlays fill it via position:absolute inset:0; the glyph is a small
-          FIXED size. */}
+      {/* Fixed-height media: real recipe images render when available; the branded plate stays as fallback. */}
       <Box style={{ position: 'relative', inlineSize: '100%', blockSize: resolvedMediaHeight, overflow: 'hidden' }}>
-        <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
+        {showImage ? (
+          <Box
+            component="img"
+            src={imageUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setImageFailed(true)}
+            aria-hidden="true"
+            style={{ position: 'absolute', inset: 0, inlineSize: '100%', blockSize: '100%', objectFit: 'cover', background: 'var(--g-color-bg-muted)' }}
+          />
+        ) : (
+          <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
+        )}
 
         <UnstyledButton
           type="button"
@@ -149,7 +168,7 @@ export default function RecipeCard({
         ) : null}
       </Box>
 
-      <Box style={{ padding: compact ? 'var(--g-space-3)' : 'var(--g-space-4)' }}>
+      <Box style={{ padding: bodyPadding }}>
         <UnstyledButton
           type="button"
           onClick={onOpen}
@@ -181,7 +200,7 @@ export default function RecipeCard({
               alignItems: 'center',
               justifyContent: 'center',
               minBlockSize: 44,
-              marginBlockStart: 'var(--g-space-3)',
+              marginBlockStart: 'var(--g-space-2)',
               paddingInline: 'var(--g-space-4)',
               borderRadius: 'var(--g-radius-input)',
               background: 'var(--g-color-brand-600)',
@@ -213,7 +232,7 @@ export default function RecipeCard({
         ) : null}
 
         {!compact && !caution && !allergen && (reasonText || reasons.length) ? (
-          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)', paddingBlockStart: 'var(--g-space-3)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: isHero ? 'var(--g-space-2)' : 'var(--g-space-3)', paddingBlockStart: isHero ? 'var(--g-space-2)' : 'var(--g-space-3)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
             {reasonText ? (
               <>
                 <IconInfoCircle size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)', flexShrink: 0 }} />
