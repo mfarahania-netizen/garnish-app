@@ -63,10 +63,10 @@ function CircleBtn({ icon: Icon, label, onClick, accent, disabled = false }) {
 
 function MetaCell({ icon: Icon, value, label }) {
   return (
-    <Box style={{ flex: 1, textAlign: 'center', paddingInline: 'var(--g-space-1)', paddingBlock: 'var(--g-space-3)' }}>
-      <Icon size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, marginBlockStart: 4, color: 'var(--g-color-text-primary)' }}>{value}</Text>
-      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>{label}</Text>
+    <Box style={{ flex: 1, textAlign: 'center', paddingInline: 'var(--g-space-1)', paddingBlock: 'var(--g-space-2)' }}>
+      <Icon size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
+      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 800, marginBlockStart: 2, color: 'var(--g-color-text-primary)' }}>{value}</Text>
+      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-11)', color: 'var(--g-color-text-muted)' }}>{label}</Text>
     </Box>
   );
 }
@@ -595,11 +595,11 @@ export default function RecipeDetailPage() {
     <Column>
       <Box component="main" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {/* HERO */}
-        <Box style={{ position: 'relative', blockSize: 248 }}>
+        <Box style={{ position: 'relative', blockSize: 320 }}>
           <HeroMedia imageUrl={recipe.imageUrl} title={recipe.title} />
           <Box style={{ position: 'absolute', insetBlockStart: 0, insetInline: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingInline: 'var(--g-space-3)', paddingBlockEnd: 'var(--g-space-3)', paddingBlockStart: 'calc(var(--g-space-3) + env(safe-area-inset-top))' }}>
             <CircleBtn icon={IconChevronRight} label="بازگشت" onClick={back} />
-            <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
+            <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-2)' }}>
               <CircleBtn icon={saved ? IconBookmarkFilled : IconBookmark} label={saved ? 'برداشتن از ذخیره‌ها' : 'ذخیره'} accent onClick={toggleSave} />
               <CircleBtn icon={IconShare2} label="هم‌رسانی" onClick={shareRecipe} disabled={!canShareRecipe} />
             </Box>
@@ -608,7 +608,7 @@ export default function RecipeDetailPage() {
 
         <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-6)' }}>
           {/* META row (overlaps hero) */}
-          <Box style={{ display: 'flex', alignItems: 'stretch', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', boxShadow: 'var(--g-shadow-1)', marginBlockStart: -30, position: 'relative' }}>
+          <Box style={{ display: 'flex', alignItems: 'stretch', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', boxShadow: 'var(--g-shadow-1)', marginBlockStart: -10, position: 'relative' }}>
             <MetaCell icon={IconClock} value={recipe.cookTimeText || '—'} label="زمان" />
             <Box style={{ inlineSize: 1, background: 'var(--g-color-border-subtle)', marginBlock: 'var(--g-space-3)' }} />
             <MetaCell icon={IconChartBar} value={recipe.difficultyText || '—'} label="سختی" />

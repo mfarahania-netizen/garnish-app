@@ -35,6 +35,7 @@ export default function RecipeRail({ title, icon: Icon, items = [], onSeeAll, on
             <RecipeCard
               compact
               title={it.title}
+              imageUrl={it.imageUrl}
               placeholderSeed={it.seed}
               cookTimeText={it.cookTimeText}
               difficultyText={it.difficultyText}

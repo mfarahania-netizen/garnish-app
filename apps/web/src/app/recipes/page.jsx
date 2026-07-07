@@ -89,6 +89,7 @@ export default function RecipesPage() {
                 key={r.id}
                 compact
                 title={r.title}
+                imageUrl={r.imageUrl}
                 placeholderSeed={stableSeed(r.id)}
                 cookTimeText={faDuration(recipeDurationMinutes(r))}
                 difficultyText={faDifficulty(r.difficulty)}
