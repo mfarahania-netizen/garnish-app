@@ -16,9 +16,12 @@ export interface SafeUser {
   name: string | null;
   email?: string | null;
   avatar?: string | null;
+  avatarUrl?: string | null;
   isAdmin?: boolean;
   adminRole?: string;
   isGuest?: boolean;
+  onboardingCompletedAt?: Date | null;
+  onboardingComplete?: boolean;
   createdAt?: Date;
 }
 
@@ -29,9 +32,12 @@ const SAFE_FIELDS = [
   'name',
   'email',
   'avatar',
+  'avatarUrl',
   'isAdmin',
   'adminRole',
   'isGuest', // first-run gate: the client routes an un-onboarded guest through onboarding (not sensitive)
+  'onboardingCompletedAt',
+  'onboardingComplete',
   'createdAt',
 ] as const;
 
@@ -44,6 +50,12 @@ export function sanitizeUser(
     if (field in user && user[field] !== undefined) {
       out[field] = user[field];
     }
+  }
+  if (!('onboardingComplete' in out)) {
+    out.onboardingComplete = Boolean(user.onboardingCompletedAt);
+  }
+  if (!('avatarUrl' in out) && user.avatar) {
+    out.avatarUrl = user.avatar;
   }
   return out as SafeUser;
 }

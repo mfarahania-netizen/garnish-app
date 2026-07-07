@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 
 // TRUTH-AND-SAFETY FIX 1: PostHog identify must carry the opaque user id ONLY — never PII.
@@ -13,6 +13,17 @@ beforeEach(() => {
   get.mockReset();
   posthog.identify.mockReset();
   globalThis.localStorage?.clear?.();
+});
+
+describe('AuthContext — launch auth entry', () => {
+  it('does not silently call /auth/guest when no token is present and guest flag is disabled', async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.token).toBe('');
+    expect(result.current.user).toBeNull();
+    expect(post).not.toHaveBeenCalledWith('/auth/guest', expect.anything());
+    expect(post).not.toHaveBeenCalledWith('/auth/guest', undefined);
+  });
 });
 
 describe('AuthContext — PostHog identify is PII-FREE', () => {

@@ -18,6 +18,7 @@
 const PLACEHOLDER_VALUES = new Set<string>([
   'your-strong-random-secret-here',
   'your-gemini-api-key',
+  'PUT_REAL_KEY_IN_ENV_ONLY',
   'changeme',
   'secret',
   'postgresql://username:password@localhost:5432/garnish_db',
@@ -40,6 +41,15 @@ function isLiveGeminiSelected(env: NodeJS.ProcessEnv): boolean {
     && (env.AI_LIVE_ENABLED ?? '').trim().toLowerCase() === 'true';
 }
 
+function isMelipayamakSmsEnabled(env: NodeJS.ProcessEnv): boolean {
+  return (env.SMS_PROVIDER ?? '').trim().toLowerCase() === 'melipayamak'
+    && (env.MELIPAYAMAK_ENABLED ?? '').trim().toLowerCase() === 'true';
+}
+
+function isGoogleAuthEnabled(env: NodeJS.ProcessEnv): boolean {
+  return (env.GOOGLE_AUTH_ENABLED ?? '').trim().toLowerCase() === 'true';
+}
+
 function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
   return [
     { key: 'DATABASE_URL', required: true },
@@ -50,6 +60,17 @@ function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
     { key: 'REDIS_PORT', required: false },
     { key: 'FRONTEND_URL', required: false },
     { key: 'PORT', required: false },
+    { key: 'SMS_PROVIDER', required: false },
+    { key: 'MELIPAYAMAK_USERNAME', required: isMelipayamakSmsEnabled(env) },
+    { key: 'MELIPAYAMAK_API_KEY', required: isMelipayamakSmsEnabled(env), minLength: 16 },
+    { key: 'MELIPAYAMAK_PATTERN_BODY_ID', required: isMelipayamakSmsEnabled(env) },
+    { key: 'MELIPAYAMAK_ENABLED', required: false },
+    { key: 'OTP_TTL_SECONDS', required: false },
+    { key: 'OTP_RESEND_COOLDOWN_SECONDS', required: false },
+    { key: 'OTP_MAX_ATTEMPTS', required: false },
+    { key: 'OTP_DAILY_LIMIT_PER_PHONE', required: false },
+    { key: 'GOOGLE_AUTH_ENABLED', required: false },
+    { key: 'GOOGLE_CLIENT_ID', required: isGoogleAuthEnabled(env), minLength: 20 },
   ];
 }
 
