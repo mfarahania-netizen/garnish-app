@@ -1,38 +1,42 @@
-// Shared auth form — clean, minimal, dynamic login/signup (phone + password). Used by /login AND the /admin
-// gate. Filled borderless fields (no box-in-box), focus ring, centered SVG eye toggle, animated checkbox,
-// framer-motion entrance + button press. Token-pure, RTL, Vazirmatn. Calls AuthContext.login/register.
-import { useState } from 'react';
+// Shared auth form - single passwordless phone OTP entry for /login.
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import { IconLeaf, IconEye, IconEyeOff, IconAlertTriangle, IconCheck } from '@tabler/icons-react';
+import { IconAlertTriangle, IconLeaf, IconShieldCheck, IconSparkles } from '@tabler/icons-react';
 import { useAuth } from '../../context/AuthContext';
+import GoogleSignInButton from './GoogleSignInButton';
 
 const FA = '۰۱۲۳۴۵۶۷۸۹';
-const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => FA.indexOf(d));
+const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => String(FA.indexOf(d)));
+const toFaDigits = (s) => String(s ?? '').replace(/\d/g, (d) => FA[Number(d)]);
 const PHONE_RE = /^09\d{9}$/;
-const normalizePhone = (s) => {
-  let d = toLatin(s).replace(/[\s\-()]/g, '');
-  if (d.startsWith('+98')) d = '0' + d.slice(3);
-  else if (d.startsWith('0098')) d = '0' + d.slice(4);
-  else if (d.startsWith('98') && d.length === 12) d = '0' + d.slice(2);
-  return d;
-};
+const normalizePhone = (s) => toLatin(s).replace(/[\s\-()]/g, '');
 
-// Scoped CSS for the states inline styles can't express: focus-within ring, placeholder + autofill colour,
-// eye hover. Token-driven so it follows the Garnish theme. Idempotent (only one AuthForm mounts at a time).
 const CSS = `
-.gz-auth .gz-fld{display:flex;align-items:center;gap:8px;block-size:50px;padding-inline:15px;background:var(--g-color-bg-canvas);border:1.5px solid transparent;border-radius:13px;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease}
-.gz-auth .gz-fld:focus-within{background:var(--g-color-bg-surface);border-color:var(--g-color-brand-600);box-shadow:0 0 0 3.5px var(--g-color-brand-100)}
-.gz-auth .gz-fld input{flex:1;min-inline-size:0;border:none;outline:none;background:transparent;font-family:var(--g-font-fa);font-size:14.5px;color:var(--g-color-text-primary)}
+.gz-auth *{box-sizing:border-box}
+.gz-auth .gz-fld{display:flex;align-items:center;gap:8px;block-size:50px;padding-inline:15px;background:var(--g-color-bg-canvas);border:1px solid transparent;border-radius:15px;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.gz-auth .gz-fld:focus-within{background:var(--g-color-bg-surface);border-color:rgba(234,96,0,.55);box-shadow:0 0 0 4px rgba(234,96,0,.10);transform:translateY(-1px)}
+.gz-auth input{border:0!important;outline:0!important;box-shadow:none!important}
+.gz-auth input:focus,.gz-auth input:focus-visible{border:0!important;outline:0!important;box-shadow:none!important}
+.gz-auth .gz-fld input{flex:1;min-inline-size:0;background:transparent;font-family:var(--g-font-fa);font-size:14.5px;color:var(--g-color-text-primary)}
 .gz-auth .gz-fld input::placeholder{color:var(--g-color-text-muted);opacity:1}
-.gz-auth .gz-fld input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--g-color-bg-canvas) inset;box-shadow:0 0 0 1000px var(--g-color-bg-canvas) inset;-webkit-text-fill-color:var(--g-color-text-primary)}
-.gz-auth .gz-fld:focus-within input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--g-color-bg-surface) inset;box-shadow:0 0 0 1000px var(--g-color-bg-surface) inset}
-.gz-auth .gz-eye{inline-size:28px;block-size:28px;flex-shrink:0;display:grid;place-items:center;border:none;background:transparent;color:var(--g-color-text-muted);border-radius:8px;cursor:pointer;transition:color .15s ease}
-.gz-auth .gz-eye:hover{color:var(--g-color-brand-600)}
+.gz-auth .gz-fld input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--g-color-bg-canvas) inset!important;box-shadow:0 0 0 1000px var(--g-color-bg-canvas) inset!important;-webkit-text-fill-color:var(--g-color-text-primary)}
+.gz-auth .gz-fld:focus-within input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--g-color-bg-surface) inset!important;box-shadow:0 0 0 1000px var(--g-color-bg-surface) inset!important}
+.gz-auth .gz-otp{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;direction:ltr}
+.gz-auth .gz-otp-box{block-size:48px;border-radius:14px;border:1px solid var(--g-color-border-subtle);background:var(--g-color-bg-canvas);display:grid;place-items:center;font-family:var(--g-font-fa);font-size:19px;font-weight:800;color:var(--g-color-text-primary);transition:border-color .16s ease,box-shadow .16s ease,background .16s ease,transform .16s ease}
+.gz-auth .gz-otp-box.is-filled{background:var(--g-color-bg-surface);border-color:rgba(234,96,0,.36);box-shadow:0 8px 22px rgba(234,96,0,.08)}
+.gz-auth .gz-otp-box.is-active{border-color:var(--g-color-brand-600);box-shadow:0 0 0 4px rgba(234,96,0,.12);transform:translateY(-1px)}
+.gz-auth .gz-otp-input{position:absolute;inset:0;inline-size:100%;block-size:100%;opacity:.01;color:transparent;background:transparent;caret-color:transparent}
+.gz-auth .gz-secondary-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gz-auth .gz-soft-btn{min-block-size:42px;border-radius:13px;border:1px solid var(--g-color-border-subtle);background:var(--g-color-bg-surface);font-family:var(--g-font-fa);font-size:12.2px;font-weight:600;color:var(--g-color-text-secondary);display:grid;place-items:center;text-align:center;transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease}
+.gz-auth .gz-soft-btn:not(:disabled):hover{background:var(--g-color-brand-50);border-color:rgba(234,96,0,.28);color:var(--g-color-brand-700);transform:translateY(-1px)}
+.gz-auth .gz-soft-btn:disabled{opacity:.48;cursor:not-allowed}
+.gz-auth .gz-divider{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;color:var(--g-color-text-muted);font-family:var(--g-font-fa);font-size:11px}
+.gz-auth .gz-divider:before,.gz-auth .gz-divider:after{content:"";block-size:1px;background:var(--g-color-border-subtle)}
 `;
 
-const lblStyle = { display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 500, color: 'var(--g-color-text-secondary)', marginBlockEnd: 6, paddingInlineStart: 3 };
-const hintStyle = { fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', margin: '5px 3px 0' };
+const lblStyle = { display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 700, color: 'var(--g-color-text-secondary)', marginBlockEnd: 7, paddingInlineStart: 3 };
+const hintStyle = { fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', margin: '6px 3px 0', lineHeight: 1.7 };
 
 function Field({ label, hint, children }) {
   return (
@@ -44,40 +48,146 @@ function Field({ label, hint, children }) {
   );
 }
 
-export default function AuthForm({ initialMode = 'login', allowSignup = true, onSuccess, heading, sub, badge, icon: Icon = IconLeaf, accent = 'brand', footer }) {
-  const { login, register } = useAuth();
-  const [mode, setMode] = useState(initialMode);
+function OtpInput({ value, onChange, onSubmit }) {
+  const inputRef = useRef(null);
+  const digits = value.padEnd(6, ' ').slice(0, 6).split('');
+  const activeIndex = Math.min(value.length, 5);
+  return (
+    <Box>
+      <Text component="label" style={lblStyle}>کد ورود</Text>
+      <Box className="gz-otp" onClick={() => inputRef.current?.focus()}>
+        {digits.map((digit, index) => (
+          <motion.div
+            key={index}
+            className={`gz-otp-box ${digit.trim() ? 'is-filled' : ''} ${index === activeIndex ? 'is-active' : ''}`}
+            initial={false}
+            animate={digit.trim() ? { scale: [1, 1.04, 1] } : { scale: 1 }}
+            transition={{ duration: 0.18 }}
+          >
+            {digit.trim() ? toFaDigits(digit) : ''}
+          </motion.div>
+        ))}
+        <input
+          ref={inputRef}
+          className="gz-otp-input"
+          dir="ltr"
+          type="text"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          aria-label="کد ورود"
+          value={value}
+          onChange={(e) => onChange(toLatin(e.target.value).replace(/\D/g, '').slice(0, 6))}
+          onKeyDown={(e) => { if (e.key === 'Enter') onSubmit?.(); }}
+        />
+      </Box>
+      <Text component="p" style={hintStyle}>کد تا ۲ دقیقه معتبر است؛ ارسال دوباره بعد از ۳ دقیقه فعال می‌شود.</Text>
+    </Box>
+  );
+}
+
+function errorMessage(error, fallback) {
+  const raw = error?.response?.data?.message;
+  const msg = Array.isArray(raw) ? raw[0] : raw;
+  if (msg === 'otp_resend_cooldown') return 'کد قبلی هنوز معتبر است. کمی صبر کن و دوباره تلاش کن.';
+  if (msg === 'otp_daily_limit_reached') return 'برای امروز بیش از حد کد درخواست شده است. بعداً دوباره تلاش کن.';
+  if (msg === 'sms_provider_disabled' || msg === 'sms_provider_not_configured') return 'ارسال پیامک هنوز در سرور فعال نشده است. تنظیمات ملی‌پیامک را کامل کن و دوباره تلاش کن.';
+  if (/Too Many Requests|ThrottlerException/i.test(String(msg))) return 'درخواست‌ها زیاد شد. حدود یک دقیقه صبر کن و دوباره تلاش کن.';
+  if (/Internal server error/i.test(String(msg))) return fallback;
+  return typeof msg === 'string' && msg.trim() ? msg : fallback;
+}
+
+export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = IconLeaf, accent = 'brand', footer }) {
+  const { requestOtp, verifyOtp } = useAuth();
+  const [step, setStep] = useState('phone');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [name, setName] = useState('');
-  const [consent, setConsent] = useState(false);
-  const [showPass, setShowPass] = useState(false);
+  const [notice, setNotice] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const isSignup = mode === 'signup';
+  const [resendSeconds, setResendSeconds] = useState(0);
+  const [lastRequestedPhone, setLastRequestedPhone] = useState('');
+  const normalizedPhone = useMemo(() => normalizePhone(phone), [phone]);
+  const googleEnabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === 'true';
   const accentBg = accent === 'admin' ? 'var(--g-color-state-info-bg)' : 'var(--g-color-brand-50)';
   const accentFg = accent === 'admin' ? 'var(--g-color-text-secondary)' : 'var(--g-color-brand-600)';
 
-  const submit = async () => {
-    if (submitting) return;
-    setError(null);
-    const ph = normalizePhone(phone);
-    if (!PHONE_RE.test(ph)) { setError('شمارهٔ موبایل را کامل و درست وارد کن — مثل ۰۹۱۲۳۴۵۶۷۸۹.'); return; }
-    if (isSignup && password.length < 6) { setError('برای امنیت، رمز باید حداقل ۶ کاراکتر باشد.'); return; }
-    if (!isSignup && !password) { setError('رمزت را وارد کن.'); return; }
-    if (isSignup && !consent) { setError('برای ساختِ حساب، با شرایط و حریم خصوصی موافقت کن.'); return; }
+  useEffect(() => {
+    if (resendSeconds <= 0) return undefined;
+    const id = window.setInterval(() => setResendSeconds((s) => Math.max(0, s - 1)), 1000);
+    return () => window.clearInterval(id);
+  }, [resendSeconds]);
+
+  useEffect(() => {
+    if (step !== 'code' || code) return undefined;
+    if (typeof window === 'undefined' || !('OTPCredential' in window) || !navigator.credentials?.get) return undefined;
+    const controller = new AbortController();
+    navigator.credentials.get({ otp: { transport: ['sms'] }, signal: controller.signal })
+      .then((credential) => {
+        const nextCode = String(credential?.code || '').replace(/\D/g, '').slice(0, 6);
+        if (nextCode) setCode(nextCode);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [step, code]);
+
+  const requestCode = async ({ force = false } = {}) => {
+    if (!PHONE_RE.test(normalizedPhone)) {
+      setError('شماره موبایل را فقط با فرمت ۰۹ وارد کن؛ مثل ۰۹۱۲۳۴۵۶۷۸۹.');
+      return;
+    }
+    if (resendSeconds > 0 && normalizedPhone === lastRequestedPhone) {
+      setStep('code');
+      setNotice('کد قبلی هنوز معتبر است. برای ارسال دوباره، تایمر باید تمام شود.');
+      return;
+    }
+    if (!force && resendSeconds > 0 && step === 'code') return;
     setSubmitting(true);
+    setError(null);
+    setNotice(null);
     try {
-      if (isSignup) await register(ph, password, name.trim() || undefined);
-      else await login(ph, password);
-      onSuccess?.();
+      const res = await requestOtp(normalizedPhone);
+      setNotice(res?.message || 'کد ورود برای شما ارسال شد.');
+      setLastRequestedPhone(normalizedPhone);
+      setResendSeconds(Number(res?.resendCooldownSeconds || 180));
+      setStep('code');
     } catch (e) {
-      const m = e?.response?.data?.message;
-      setError(Array.isArray(m) && m.length ? m[0] : (typeof m === 'string' && m.trim() ? m : (isSignup ? 'ثبت‌نام ناموفق بود. دوباره تلاش کن.' : 'ورود ناموفق — شماره یا رمز درست نیست.')));
+      setError(errorMessage(e, 'ارسال کد ورود ناموفق بود. اگر پیامک فعال است، تنظیمات ملی‌پیامک یا اتصال سرور را چک کن.'));
+    } finally {
       setSubmitting(false);
     }
   };
-  const onKey = (e) => { if (e.key === 'Enter') submit(); };
+
+  const verifyCode = async () => {
+    if (!/^\d{6}$/.test(code)) {
+      setError('کد ورود باید ۶ رقم باشد.');
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const nextUser = await verifyOtp(normalizedPhone, code, name.trim() || undefined);
+      onSuccess?.(nextUser);
+    } catch (e) {
+      setError(errorMessage(e, 'کد ورود معتبر نیست یا منقضی شده است.'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submit = () => {
+    if (submitting) return;
+    if (step === 'phone') requestCode();
+    else verifyCode();
+  };
+
+  const resetPhone = () => {
+    setStep('phone');
+    setCode('');
+    setName('');
+    setNotice(null);
+    setError(null);
+  };
 
   return (
     <motion.div
@@ -85,60 +195,49 @@ export default function AuthForm({ initialMode = 'login', allowSignup = true, on
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      style={{ inlineSize: '100%', maxInlineSize: 360, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: '22px', padding: '28px 24px', boxShadow: 'var(--g-shadow-2, 0 12px 36px rgba(60,50,30,0.07))' }}
+      style={{ inlineSize: '100%', maxInlineSize: 360, background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 22, padding: '26px 24px', boxShadow: '0 14px 34px rgba(31,24,10,.075)' }}
     >
       <style>{CSS}</style>
 
       <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBlockEnd: 22 }}>
-        <Box aria-hidden="true" style={{ inlineSize: 54, blockSize: 54, borderRadius: '16px', background: accentBg, color: accentFg, display: 'grid', placeItems: 'center' }}><Icon size={28} stroke={1.7} /></Box>
-        {badge ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', fontWeight: 500, color: accentFg, background: accentBg, paddingInline: 9, paddingBlock: 3, borderRadius: '7px', marginBlockStart: 11 }}>{badge}</Text> : null}
-        <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '20px', fontWeight: 700, color: 'var(--g-color-text-primary)', margin: '13px 0 0' }}>{heading || (isSignup ? 'ساختِ حساب' : 'ورود')}</Text>
-        {sub ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-secondary)', margin: '5px 0 0', lineHeight: 1.6 }}>{sub}</Text> : null}
+        <Box aria-hidden="true" style={{ inlineSize: 52, blockSize: 52, borderRadius: 17, background: accentBg, color: accentFg, display: 'grid', placeItems: 'center', boxShadow: '0 8px 18px rgba(234,96,0,.08)' }}><Icon size={28} stroke={1.7} /></Box>
+        {badge ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 11, fontWeight: 700, color: accentFg, background: accentBg, paddingInline: 9, paddingBlock: 3, borderRadius: 8, marginBlockStart: 11 }}>{badge}</Text> : null}
+        <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 21, fontWeight: 850, color: 'var(--g-color-text-primary)', margin: '14px 0 0' }}>{heading || 'ورود به گارنیش'}</Text>
+        <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 12.3, color: 'var(--g-color-text-secondary)', margin: '6px 0 0', lineHeight: 1.75 }}>
+          {sub || 'ورود امن و بی‌رمز، فقط با کد پیامکی.'}
+        </Text>
       </Box>
 
-      <Box style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <Box style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+        <Field label="موبایل" hint="مثل ۰۹۱۲۳۴۵۶۷۸۹">
+          <input dir="ltr" type="tel" inputMode="numeric" autoComplete="tel" placeholder="۰۹..." value={phone} disabled={step === 'code'} onChange={(e) => setPhone(toLatin(e.target.value).replace(/[^\d\s\-()]/g, '').slice(0, 14))} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} style={{ textAlign: 'start' }} />
+        </Field>
+
         <AnimatePresence initial={false} mode="popLayout">
-          {isSignup ? (
-            <motion.div key="name" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.22 }} style={{ overflow: 'hidden' }}>
-              <Field label={<>نام <Text component="span" style={{ color: 'var(--g-color-text-muted)', fontWeight: 400 }}>(اختیاری)</Text></>}>
-                <input type="text" autoComplete="name" placeholder="نام" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={onKey} />
+          {step === 'code' ? (
+            <motion.div key="otp-fields" initial={{ opacity: 0, y: -8, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: -6, height: 0 }} transition={{ duration: 0.24 }} style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 15 }}>
+              <OtpInput value={code} onChange={setCode} onSubmit={verifyCode} />
+              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 11.2, lineHeight: 1.75, color: 'var(--g-color-text-muted)', margin: '-6px 3px 0', textAlign: 'center' }}>
+                اگر پیامک نیامد، پوشه هرزنامه یا Spam را هم چک کن.
+              </Text>
+              <Field label={<>نام <Text component="span" style={{ color: 'var(--g-color-text-muted)', fontWeight: 500 }}>(اختیاری)</Text></>} hint="اگر شماره جدید باشد، حساب با همین نام ساخته می‌شود.">
+                <input type="text" autoComplete="name" placeholder="نام" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} />
               </Field>
             </motion.div>
           ) : null}
         </AnimatePresence>
 
-        <Field label="موبایل" hint="مثل ۰۹۱۲۳۴۵۶۷۸۹">
-          <input dir="ltr" type="tel" inputMode="numeric" autoComplete="tel" placeholder="۰۹..." value={phone} onChange={(e) => setPhone(e.target.value)} onKeyDown={onKey} style={{ textAlign: 'start' }} />
-        </Field>
-
-        <Field label="گذرواژه" hint={isSignup ? 'حداقل ۶ کاراکتر' : undefined}>
-          <input type={showPass ? 'text' : 'password'} autoComplete={isSignup ? 'new-password' : 'current-password'} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={onKey} />
-          <UnstyledButton type="button" className="gz-eye" onClick={() => setShowPass((s) => !s)} aria-label={showPass ? 'پنهان کردن گذرواژه' : 'نمایش گذرواژه'}>
-            {showPass ? <IconEyeOff size={18} stroke={1.8} /> : <IconEye size={18} stroke={1.8} />}
-          </UnstyledButton>
-        </Field>
-
-        <AnimatePresence initial={false}>
-          {isSignup ? (
-            <motion.div key="consent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 9, inlineSize: '100%', cursor: 'pointer', paddingBlock: 4, textAlign: 'start' }}>
-                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
-                <Box aria-hidden="true" style={{ inlineSize: 19, blockSize: 19, flexShrink: 0, borderRadius: '6px', display: 'grid', placeItems: 'center', border: `1.5px solid ${consent ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)'}`, background: consent ? 'var(--g-color-brand-600)' : 'transparent', transition: 'background .16s ease, border-color .16s ease' }}>
-                  <AnimatePresence>{consent ? <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: 'spring', stiffness: 520, damping: 22 }} style={{ display: 'grid', placeItems: 'center' }}><IconCheck size={13} stroke={2.6} style={{ color: 'var(--g-color-text-inverse)' }} /></motion.span> : null}</AnimatePresence>
-                </Box>
-                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', lineHeight: 1.6, color: 'var(--g-color-text-secondary)' }}>
-                  با <a href="/terms" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: 'var(--g-color-brand-700)', fontWeight: 500 }}>شرایط استفاده</a> و <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: 'var(--g-color-brand-700)', fontWeight: 500 }}>حریم خصوصی</a> موافقم
-                </Text>
-              </label>
+        <AnimatePresence>
+          {notice ? (
+            <motion.div key="notice" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="status" style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '12px 13px', borderRadius: 13, background: 'var(--g-color-state-success-bg, #eaf7ef)' }}>
+              <IconShieldCheck size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-success-fg, #1b7f45)', flexShrink: 0, marginBlockStart: 1 }} />
+              <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 12.5, lineHeight: 1.7, color: 'var(--g-color-state-success-fg, #1b7f45)' }}>{notice}</Text>
             </motion.div>
           ) : null}
-        </AnimatePresence>
-
-        <AnimatePresence>
           {error ? (
-            <motion.div key="err" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: 11, borderRadius: '11px', background: 'var(--g-color-state-danger-bg, #fdeceb)' }}>
-              <IconAlertTriangle size={15} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', flexShrink: 0, marginBlockStart: 1 }} />
-              <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', lineHeight: 1.6, color: 'var(--g-color-state-danger-fg, #b3261e)' }}>{error}</Text>
+            <motion.div key="err" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="alert" style={{ display: 'flex', alignItems: 'flex-start', gap: 8, padding: '12px 13px', borderRadius: 13, background: 'var(--g-color-state-danger-bg, #fdeceb)' }}>
+              <IconAlertTriangle size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-danger-fg, #b3261e)', flexShrink: 0, marginBlockStart: 1 }} />
+              <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 12.5, lineHeight: 1.7, color: 'var(--g-color-state-danger-fg, #b3261e)' }}>{error}</Text>
             </motion.div>
           ) : null}
         </AnimatePresence>
@@ -147,18 +246,38 @@ export default function AuthForm({ initialMode = 'login', allowSignup = true, on
           type="button"
           onClick={submit}
           disabled={submitting}
-          whileHover={submitting ? {} : { filter: 'brightness(0.96)' }}
+          whileHover={submitting ? {} : { y: -1, filter: 'brightness(0.98)' }}
           whileTap={submitting ? {} : { scale: 0.985 }}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 50, marginBlockStart: 4, border: 'none', borderRadius: '13px', background: submitting ? 'var(--g-color-border-strong)' : 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: '15px', fontWeight: 600, cursor: submitting ? 'default' : 'pointer', boxShadow: submitting ? 'none' : 'var(--g-shadow-1, 0 4px 14px rgba(0,0,0,0.08))' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 52, marginBlockStart: 3, border: 'none', borderRadius: 15, background: submitting ? 'var(--g-color-border-strong)' : 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 15.5, fontWeight: 850, cursor: submitting ? 'default' : 'pointer', boxShadow: submitting ? 'none' : '0 14px 28px rgba(234,96,0,.24)' }}
         >
-          {submitting ? 'لطفاً صبر کن…' : isSignup ? 'ثبت‌نام و شروع' : 'ورود'}
+          {submitting ? 'لطفاً صبر کن…' : step === 'phone' ? 'ارسال کد ورود' : 'ورود / ساخت حساب'}
         </motion.button>
 
-        {allowSignup ? (
-          <UnstyledButton type="button" onClick={() => { setError(null); setMode((mm) => (mm === 'signup' ? 'login' : 'signup')); }} style={{ inlineSize: '100%', paddingBlock: 6, fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 500, color: 'var(--g-color-text-secondary)', textAlign: 'center' }}>
-            {isSignup ? <>حساب داری؟ <Text component="span" style={{ color: 'var(--g-color-brand-700)', fontWeight: 600 }}>ورود</Text></> : <>حساب نداری؟ <Text component="span" style={{ color: 'var(--g-color-brand-700)', fontWeight: 600 }}>ثبت‌نام</Text></>}
-          </UnstyledButton>
+        {step === 'code' ? (
+          <Box className="gz-secondary-actions">
+            <UnstyledButton type="button" className="gz-soft-btn" onClick={resetPhone}>
+              تغییر شماره
+            </UnstyledButton>
+            <UnstyledButton type="button" className="gz-soft-btn" disabled={submitting || resendSeconds > 0} onClick={() => requestCode({ force: true })}>
+              {resendSeconds > 0 ? `ارسال دوباره · ${toFaDigits(resendSeconds)} ثانیه` : 'ارسال دوباره'}
+            </UnstyledButton>
+          </Box>
         ) : null}
+
+        {googleEnabled ? (
+          <>
+            <Box className="gz-divider">یا</Box>
+            <GoogleSignInButton
+              onSuccess={onSuccess}
+              onError={(e) => setError(errorMessage(e, 'ورود با گوگل ناموفق بود. دوباره تلاش کن.'))}
+            />
+          </>
+        ) : null}
+
+        <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--g-color-text-muted)', paddingBlockStart: 2 }}>
+          <IconSparkles size={14} stroke={1.8} aria-hidden="true" />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 11.5 }}>بدون رمز عبور؛ ورود فقط با کد پیامکی</Text>
+        </Box>
         {footer}
       </Box>
     </motion.div>

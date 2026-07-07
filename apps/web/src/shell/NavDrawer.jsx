@@ -68,7 +68,7 @@ function DrawerLink({ item, onNavigate, secondary }) {
 }
 
 export default function NavDrawer({ opened, onClose }) {
-  const { token, user, logout } = useAuth();
+  const { token, user, logout, guestEnabled } = useAuth();
   const navigate = useNavigate();
 
   // Maturity for the header line — shares the cache key with Home's /profile fetch (deduped).
@@ -83,7 +83,7 @@ export default function NavDrawer({ opened, onClose }) {
   const score = typeof maturity?.overallScore === 'number' ? maturity.overallScore : null;
   const pct = score == null ? null : score <= 1 ? score * 100 : score;
 
-  const name = (user?.name || '').trim() || 'مهمان';
+  const name = (user?.name || '').trim() || (user?.isGuest && guestEnabled ? 'حالت دمو' : 'کاربر');
   const initial = name.charAt(0) || 'گ';
 
   const handleLogout = () => {
@@ -181,16 +181,16 @@ export default function NavDrawer({ opened, onClose }) {
         ) : null}
       </Box>
 
-      {/* Footer — a GUEST gets a prominent ورود/ثبت‌نام (the real auth entry point); a signed-in user gets خروج. */}
-      {user?.isGuest ? (
+      {/* Footer — guest is hidden by default; if explicitly enabled for dev/demo, label it honestly. */}
+      {user?.isGuest && guestEnabled ? (
         <Box style={{ paddingInline: 'var(--g-space-5)', paddingBlockStart: 'var(--g-space-3)', paddingBlockEnd: 'calc(var(--g-space-4) + env(safe-area-inset-bottom))', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
           <UnstyledButton
             type="button"
-            onClick={() => { onClose(); navigate('/login'); }}
+            onClick={() => { onClose(); logout(); navigate('/login'); }}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 46, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}
           >
             <IconLogin2 size={19} stroke={1.8} aria-hidden="true" />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-14)', color: 'inherit' }}>ورود / ثبت‌نام</Text>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-14)', color: 'inherit' }}>خروج از حالت دمو</Text>
           </UnstyledButton>
         </Box>
       ) : token ? (
