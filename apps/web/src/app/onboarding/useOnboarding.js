@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
-import { useAuth, ONBOARDED_KEY } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { deriveTraits } from './steps';
 
 /**
@@ -64,13 +64,13 @@ function authError(err, mode) {
   return mode === 'signup' ? 'ثبت‌نام ناموفق بود. دوباره تلاش کن.' : 'ورود ناموفق بود. شماره یا گذرواژه را بررسی کن.';
 }
 
-// STEP_COUNT: 1 Welcome · 2 Allergy · 3 Taste&Time · 4 Goal&Style · 5 Reveal · 6 Account
-const LAST_STEP = 6;
+// STEP_COUNT: 1 Welcome · 2 Allergy · 3 Taste&Time · 4 Goal&Style · 5 Reveal
+const LAST_STEP = 5;
 
 export function useOnboarding() {
   const navigate = useNavigate();
-  const { register, login, token } = useAuth();
-  const authed = !!token; // re-entry: an already signed-in user revisiting onboarding
+  const { register, login, token, refreshUser } = useAuth();
+  const authed = !!token;
 
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState(initialAnswers);
@@ -209,14 +209,18 @@ export function useOnboarding() {
   }, [buildPreferences, answers.taste, answers.workdayTime, answers.goals, answers.style]);
 
   const finish = useCallback(async () => {
+    if (!token) {
+      navigate('/login?mode=signup&from=/onboarding', { replace: true });
+      return;
+    }
     setSubmitting(true);
     try { await persist(); } finally {
-      // ALWAYS free the button + move on, even if persist threw — the save is best-effort, never a dead-end.
-      try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
+      await apiClient.patch('/users/me/onboarding-complete').catch(() => null);
+      await refreshUser?.().catch(() => null);
       setSubmitting(false);
       navigate('/', { replace: true });
     }
-  }, [persist, navigate]);
+  }, [token, persist, refreshUser, navigate]);
 
   const submit = useCallback(async () => {
     if (submitting) return;
@@ -243,10 +247,11 @@ export function useOnboarding() {
       const allergyIds = Object.keys(answers.allergens);
       if (allergyIds.length) await apiClient.post('/users/allergies', { allergies: allergyIds }).catch(() => {});
     }
-    try { localStorage.setItem(ONBOARDED_KEY, 'true'); } catch { /* private mode */ }
+    await apiClient.patch('/users/me/onboarding-complete').catch(() => null);
+    await refreshUser?.().catch(() => null);
     setSubmitting(false);
     navigate('/', { replace: true });
-  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, navigate, answers.allergens]);
+  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, refreshUser, navigate, answers.allergens]);
 
   return {
     step, go, next, back, skip,

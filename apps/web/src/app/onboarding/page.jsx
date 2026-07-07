@@ -287,7 +287,7 @@ function Reveal({ o }) {
         ) : null}
       </Box>
       <Box style={{ paddingBlockEnd: 'calc(var(--g-space-6) + env(safe-area-inset-bottom))' }}>
-        <UnstyledButton type="button" onClick={o.authed ? o.finish : o.next} disabled={o.submitting} aria-disabled={o.submitting} style={primaryBtn(o.submitting)}>
+        <UnstyledButton type="button" onClick={o.finish} disabled={o.submitting} aria-disabled={o.submitting} style={primaryBtn(o.submitting)}>
           <IconArrowLeft size={18} stroke={1.8} aria-hidden="true" />{o.submitting ? 'در حال ذخیره…' : 'ذخیره و ادامه'}
         </UnstyledButton>
       </Box>
@@ -425,7 +425,6 @@ export default function OnboardingPage() {
       ) : null}
 
       {o.step === 5 ? <Reveal o={o} /> : null}
-      {o.step === 6 ? <Auth o={o} /> : null}
     </Column>
   );
 }
