@@ -25,6 +25,12 @@ export class UsersService {
     });
   }
 
+  async createPasswordlessUser(phone: string, name?: string) {
+    return this.prisma.user.create({
+      data: { phone, password: null, isGuest: false, name },
+    });
+  }
+
   async findByPhone(phone: string) {
     return this.prisma.user.findUnique({ where: { phone } });
   }
