@@ -14,7 +14,7 @@ import { weekdayTimeLine } from './greeting';
  *
  * /users/me        → greeting name        /profile          → Food DNA maturity ring
  * /gamification/me → streak + mastery     /recommendations  → real hero/more suggestions
- * /recipes         → fallback hero + popular rail (no imageUrl → placeholder)
+ * /recipes         → fallback hero + popular rail with imageUrl when media exists
  */
 const stableSeed = (id) => {
   let s = 0;
@@ -43,6 +43,7 @@ export function useHomeData() {
     const railItem = (r) => ({
       recipeId: r.id,
       title: r.title,
+      imageUrl: r.imageUrl || '',
       seed: stableSeed(r.id),
       cookTimeText: faDuration(r.cookingTime),
       difficultyText: faDifficulty(r.difficulty),
@@ -80,6 +81,7 @@ export function useHomeData() {
         recipeId: r.recipeId,
         requestId: r.requestId || null,
         title: r.title || recipe?.title || 'دستور پیشنهادی',
+        imageUrl: recipe?.imageUrl || r.imageUrl || '',
         seed: stableSeed(r.recipeId),
         fit: fitFromScore(r.finalScore),
         cookTimeText: faDuration(recipe?.cookingTime),
@@ -96,6 +98,7 @@ export function useHomeData() {
       recipeId: r.id,
       requestId: null,
       title: r.title || 'دستور',
+      imageUrl: r.imageUrl || '',
       seed: stableSeed(r.id),
       fit: null,
       cookTimeText: faDuration(r.cookingTime || r.totalTime),

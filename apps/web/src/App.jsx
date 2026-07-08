@@ -1,5 +1,5 @@
 import { Component, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { DirectionProvider, MantineProvider, createTheme } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@mantine/core/styles.css';
@@ -168,6 +168,7 @@ export function AppRoutes() {
                     {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
                     <Route path="/onboarding" element={<OnboardingPage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<Navigate to="/login?mode=signup" replace />} />
                     {/* Public legal pages — opened (target=_blank) from the onboarding consent links */}
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />

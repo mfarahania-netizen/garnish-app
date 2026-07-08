@@ -25,7 +25,7 @@ export function useFavorites() {
     return arr
       .map((f) => f?.recipe)
       .filter((r) => r && r.id && !removed[r.id])
-      .map((r) => ({ recipeId: r.id, title: r.title || 'دستور', seed: seed(r.id), cookTimeText: faDuration(r.cookingTime || r.totalTime), difficultyText: faDifficulty(r.difficulty) }));
+      .map((r) => ({ recipeId: r.id, title: r.title || 'دستور', imageUrl: r.imageUrl || '', seed: seed(r.id), cookTimeText: faDuration(r.cookingTime || r.totalTime), difficultyText: faDifficulty(r.difficulty) }));
   }, [favs.data, removed]);
 
   const isEmpty = !favs.isLoading && !favs.isError && saved.length === 0;
@@ -38,7 +38,7 @@ export function useFavorites() {
   });
   const suggestions = useMemo(() => {
     const list = Array.isArray(recs.data) ? recs.data : [];
-    return list.filter((r) => r && r.recipeId).slice(0, 3).map((r) => ({ recipeId: r.recipeId, title: r.title || 'دستور پیشنهادی', seed: seed(r.recipeId) }));
+    return list.filter((r) => r && r.recipeId).slice(0, 3).map((r) => ({ recipeId: r.recipeId, title: r.title || 'دستور پیشنهادی', imageUrl: r.imageUrl || '', seed: seed(r.recipeId) }));
   }, [recs.data]);
 
   const unsave = useCallback(async (recipeId) => {
