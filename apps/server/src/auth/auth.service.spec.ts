@@ -75,6 +75,7 @@ describe('AuthService phone normalization', () => {
     expect(usersService.findByPhone).toHaveBeenCalledWith('09125859634');
     expect(res.token).toBe('tok');
     expect(res.user?.phone).toBe('09125859634');
+    expect(res.user?.onboardingComplete).toBe(true);
   });
 
   it('registers +98 mobile input as the canonical 09 DB phone', async () => {
@@ -223,6 +224,7 @@ describe('AuthService OTP login/signup', () => {
     expect(jwtService.sign).toHaveBeenCalledWith({ sub: 'u-new', epoch: 0 });
     expect(res.token).toBe('tok');
     expect(res.created).toBe(true);
+    expect(res.user?.onboardingComplete).toBe(false);
     expect((res.user as any).password).toBeUndefined();
   });
 });

@@ -26,6 +26,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Patch('me/onboarding-complete')
+  async completeOnboarding(@Req() req) {
+    return sanitizeUser(await this.usersService.completeOnboarding(req.user.userId));
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get('preferences')
   async getPreferences(@Req() req) {
     return this.usersService.getPreferences(req.user.userId);

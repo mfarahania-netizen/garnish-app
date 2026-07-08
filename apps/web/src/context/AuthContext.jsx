@@ -145,6 +145,12 @@ export function AuthProvider({ children }) {
     return data;
   }, []);
 
+  const completeOnboarding = useCallback(async () => {
+    const { data } = await apiClient.patch('/users/me/onboarding-complete');
+    setUser(data || null);
+    return data || null;
+  }, []);
+
   const logout = useCallback(() => {
     if (posthog?.__loaded) posthog.reset();
     localStorage.removeItem(ONBOARDED_KEY);
@@ -164,6 +170,7 @@ export function AuthProvider({ children }) {
     loginWithGoogle,
     requestPasswordReset,
     confirmPasswordReset,
+    completeOnboarding,
     logout,
     refreshUser,
     clearAuth,

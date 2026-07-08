@@ -69,7 +69,7 @@ const LAST_STEP = 5;
 
 export function useOnboarding() {
   const navigate = useNavigate();
-  const { register, login, token, refreshUser } = useAuth();
+  const { register, login, token, refreshUser, completeOnboarding } = useAuth();
   const authed = !!token;
 
   const [step, setStep] = useState(1);
@@ -215,12 +215,15 @@ export function useOnboarding() {
     }
     setSubmitting(true);
     try { await persist(); } finally {
-      await apiClient.patch('/users/me/onboarding-complete').catch(() => null);
-      await refreshUser?.().catch(() => null);
+      if (completeOnboarding) await completeOnboarding();
+      else {
+        await apiClient.patch('/users/me/onboarding-complete');
+        await refreshUser?.();
+      }
       setSubmitting(false);
       navigate('/', { replace: true });
     }
-  }, [token, persist, refreshUser, navigate]);
+  }, [token, persist, completeOnboarding, refreshUser, navigate]);
 
   const submit = useCallback(async () => {
     if (submitting) return;
@@ -247,11 +250,14 @@ export function useOnboarding() {
       const allergyIds = Object.keys(answers.allergens);
       if (allergyIds.length) await apiClient.post('/users/allergies', { allergies: allergyIds }).catch(() => {});
     }
-    await apiClient.patch('/users/me/onboarding-complete').catch(() => null);
-    await refreshUser?.().catch(() => null);
+    if (completeOnboarding) await completeOnboarding();
+    else {
+      await apiClient.patch('/users/me/onboarding-complete');
+      await refreshUser?.();
+    }
     setSubmitting(false);
     navigate('/', { replace: true });
-  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, refreshUser, navigate, answers.allergens]);
+  }, [submitting, isSignup, phone, password, consent, register, login, authMode, persist, completeOnboarding, refreshUser, navigate, answers.allergens]);
 
   return {
     step, go, next, back, skip,
