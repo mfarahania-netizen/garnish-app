@@ -80,6 +80,7 @@ export class UsersService {
         isAdmin: true,
         adminRole: true,
         isGuest: true,
+        onboardingCompletedAt: true,
         createdAt: true,
         isBanned: true, // jwt strategy rejects a banned principal
         sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)
@@ -277,6 +278,25 @@ export class UsersService {
       if (e?.code === 'P2002') throw new ConflictException('Email is already in use');
       throw e;
     }
+  }
+
+  async completeOnboarding(userId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { onboardingCompletedAt: new Date() },
+      select: {
+        id: true,
+        phone: true,
+        name: true,
+        email: true,
+        avatar: true,
+        isAdmin: true,
+        adminRole: true,
+        isGuest: true,
+        onboardingCompletedAt: true,
+        createdAt: true,
+      },
+    });
   }
 
   async getConsentStatus(userId: string) {

@@ -4,9 +4,9 @@ import { MemoryRouter } from 'react-router-dom';
 // REAL-hook test for the auth submit-validation (the part that made the button feel "dead").
 // Executes the actual useOnboarding body — a mocked-hook smoke test could never reach this logic.
 
-const { registerSpy, loginSpy, refreshUserSpy, authState } = vi.hoisted(() => ({ registerSpy: vi.fn(), loginSpy: vi.fn(), refreshUserSpy: vi.fn(), authState: { token: '' } }));
+const { registerSpy, loginSpy, refreshUserSpy, completeOnboardingSpy, authState } = vi.hoisted(() => ({ registerSpy: vi.fn(), loginSpy: vi.fn(), refreshUserSpy: vi.fn(), completeOnboardingSpy: vi.fn(), authState: { token: '' } }));
 vi.mock('../../context/AuthContext', () => ({
-  useAuth: () => ({ register: registerSpy, login: loginSpy, refreshUser: refreshUserSpy, token: authState.token }),
+  useAuth: () => ({ register: registerSpy, login: loginSpy, refreshUser: refreshUserSpy, completeOnboarding: completeOnboardingSpy, token: authState.token }),
 }));
 const apiMock = vi.hoisted(() => ({ post: vi.fn(), put: vi.fn(), get: vi.fn(), patch: vi.fn() }));
 vi.mock('../../lib/apiClient', () => ({ default: apiMock }));
@@ -19,6 +19,7 @@ beforeEach(() => {
   registerSpy.mockReset().mockResolvedValue(undefined);
   loginSpy.mockReset().mockResolvedValue(undefined);
   refreshUserSpy.mockReset().mockResolvedValue(undefined);
+  completeOnboardingSpy.mockReset().mockResolvedValue({ id: 'u1', onboardingComplete: true });
   authState.token = '';
   apiMock.post.mockReset().mockResolvedValue({ data: {} });
   apiMock.put.mockReset().mockResolvedValue({ data: {} });
@@ -80,7 +81,7 @@ describe('useOnboarding auth submit', () => {
     const { result } = renderHook(() => useOnboarding(), { wrapper });
     await act(async () => { await result.current.finish(); });
     expect(apiMock.put).toHaveBeenCalledWith('/users/preferences', expect.any(Object));
-    expect(apiMock.patch).toHaveBeenCalledWith('/users/me/onboarding-complete');
-    expect(refreshUserSpy).toHaveBeenCalled();
+    expect(completeOnboardingSpy).toHaveBeenCalled();
+    expect(apiMock.patch).not.toHaveBeenCalledWith('/users/me/onboarding-complete');
   });
 });
