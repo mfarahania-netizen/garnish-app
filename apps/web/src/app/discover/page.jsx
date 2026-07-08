@@ -101,7 +101,7 @@ function Results({ d, openRecipe }) {
 
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
         {safe.filter((r) => !dismissed.has(r.id)).map((r) => (
-          <RecipeCard key={r.id} title={r.title} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} reasons={r.reasons} onOpen={() => openRecipe(r.id)} onDismiss={() => dismiss(r.id)} />
+          <RecipeCard key={r.id} title={r.title} imageUrl={r.imageUrl} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} reasons={r.reasons} onOpen={() => openRecipe(r.id)} onDismiss={() => dismiss(r.id)} />
         ))}
       </Box>
 

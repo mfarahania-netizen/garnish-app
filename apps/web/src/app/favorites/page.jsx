@@ -42,7 +42,7 @@ function FavEmpty({ suggestions, onOpen, onSave, onDiscover }) {
       {suggestions.length ? (
         <Box style={{ ...grid2, marginBlockStart: 'var(--g-space-5)' }}>
           {suggestions.filter((r) => !dismissed.has(r.recipeId)).map((r) => (
-            <RecipeCard key={r.recipeId} compact title={r.title} placeholderSeed={r.seed} saved={false} onSave={() => onSave(r.recipeId)} onOpen={() => onOpen(r.recipeId)} onDismiss={() => dismiss(r.recipeId)} />
+            <RecipeCard key={r.recipeId} compact title={r.title} imageUrl={r.imageUrl} placeholderSeed={r.seed} saved={false} onSave={() => onSave(r.recipeId)} onOpen={() => onOpen(r.recipeId)} onDismiss={() => dismiss(r.recipeId)} />
           ))}
         </Box>
       ) : null}
@@ -81,7 +81,7 @@ export default function FavoritesPage() {
                 </Box>
                 <Box style={grid2}>
                   {f.saved.map((r) => (
-                    <RecipeCard key={r.recipeId} compact title={r.title} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} saved onSave={() => onUnsave(r.recipeId)} onOpen={() => openRecipe(r.recipeId)} />
+                    <RecipeCard key={r.recipeId} compact title={r.title} imageUrl={r.imageUrl} placeholderSeed={r.seed} cookTimeText={r.cookTimeText} difficultyText={r.difficultyText} saved onSave={() => onUnsave(r.recipeId)} onOpen={() => openRecipe(r.recipeId)} />
                   ))}
                 </Box>
               </Box>

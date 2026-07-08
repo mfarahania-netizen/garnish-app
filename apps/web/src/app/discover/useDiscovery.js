@@ -128,6 +128,7 @@ export function useDiscovery() {
   const toCard = useCallback((r) => ({
     id: r.id,
     title: r.title || 'دستور',
+    imageUrl: r.imageUrl || '',
     seed: stableSeed(r.id),
     cookTimeText: faDuration(r.cookingTime || r.totalTime),
     difficultyText: faDifficulty(r.difficulty),
@@ -136,14 +137,14 @@ export function useDiscovery() {
   // browse rails (RecipeRail keys on recipeId)
   const catalogList = useMemo(() => (Array.isArray(catalog.data?.data) ? catalog.data.data : Array.isArray(catalog.data) ? catalog.data : []), [catalog.data]);
   const popular = useMemo(() => catalogList.slice(0, 10).map((r) => ({
-    recipeId: r.id, title: r.title || 'دستور', seed: stableSeed(r.id), cookTimeText: faDuration(r.cookingTime || r.totalTime), difficultyText: faDifficulty(r.difficulty),
+    recipeId: r.id, title: r.title || 'دستور', imageUrl: r.imageUrl || '', seed: stableSeed(r.id), cookTimeText: faDuration(r.cookingTime || r.totalTime), difficultyText: faDifficulty(r.difficulty),
   })), [catalogList]);
   const forYou = useMemo(() => {
     const byId = new Map(catalogList.map((r) => [String(r.id), r]));
     const list = Array.isArray(recs.data) ? recs.data : [];
     return list.slice(0, 10).map((rec) => {
       const r = byId.get(String(rec.recipeId)) || {};
-      return { recipeId: rec.recipeId, title: rec.title || r.title || 'دستور پیشنهادی', seed: stableSeed(rec.recipeId), cookTimeText: faDuration(r.cookingTime), difficultyText: faDifficulty(r.difficulty) };
+      return { recipeId: rec.recipeId, title: rec.title || r.title || 'دستور پیشنهادی', imageUrl: r.imageUrl || rec.imageUrl || '', seed: stableSeed(rec.recipeId), cookTimeText: faDuration(r.cookingTime), difficultyText: faDifficulty(r.difficulty) };
     });
   }, [recs.data, catalogList]);
 
