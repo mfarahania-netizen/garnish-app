@@ -27,10 +27,10 @@ export function useHomeData() {
   const enabled = !!token;
 
   const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
-  const recs = useQuery({ queryKey: ['home', 'recommendations'], queryFn: () => apiClient.get('/recommendations', { params: { limit: 12 } }).then((r) => r.data), enabled });
+  const recs = useQuery({ queryKey: ['home', 'recommendations'], queryFn: () => apiClient.get('/recommendations', { params: { limit: 12 } }).then((r) => r.data), enabled, staleTime: 60_000 });
   const profile = useQuery({ queryKey: queryKeys.profile.living, queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
   const gamification = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
-  const recipes = useQuery({ queryKey: ['home', 'recipes'], queryFn: () => apiClient.get('/recipes', { params: { limit: 60 } }).then((r) => r.data), enabled });
+  const recipes = useQuery({ queryKey: ['home', 'recipes'], queryFn: () => apiClient.get('/recipes', { params: { limit: 60 } }).then((r) => r.data), enabled, staleTime: 60_000 });
 
   return useMemo(() => {
     const name = me.data?.name || '';
@@ -127,10 +127,13 @@ export function useHomeData() {
       initial: name ? name.trim().charAt(0) : null,
     };
 
+    const hasCriticalContent = !!hero;
+    const criticalLoading = !hasCriticalContent && (recs.isLoading || recipes.isLoading);
+
     let status = 'ready';
     if (!enabled) status = 'empty';
-    else if (recs.isLoading || profile.isLoading || recipes.isLoading) status = 'loading';
-    else if (recs.isError) status = 'error';
+    else if (criticalLoading) status = 'loading';
+    else if (!hasCriticalContent && recs.isError && recipes.isError) status = 'error';
     else if (!hero) status = 'empty';
 
     return {
@@ -146,5 +149,5 @@ export function useHomeData() {
       resume: null,
       refetch: () => { recs.refetch(); profile.refetch(); recipes.refetch(); },
     };
-  }, [enabled, me.data, recs.data, recs.isLoading, recs.isError, profile.data, profile.isLoading, gamification.data, recipes.data, recs, profile, recipes]);
+  }, [enabled, me.data, recs.data, recs.isLoading, recs.isError, profile.data, gamification.data, recipes.data, recipes.isLoading, recipes.isError, recs, profile, recipes]);
 }

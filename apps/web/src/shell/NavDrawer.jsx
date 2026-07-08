@@ -96,7 +96,7 @@ export default function NavDrawer({ opened, onClose }) {
     <Drawer
       opened={opened}
       onClose={onClose}
-      position="left"
+      position="right"
       size={306}
       zIndex={400}
       withCloseButton={false}
@@ -198,6 +198,7 @@ export default function NavDrawer({ opened, onClose }) {
           <UnstyledButton
             type="button"
             onClick={handleLogout}
+            aria-label="Ø®Ø±ÙˆØ¬ Ø§Ø² Ø­Ø³Ø§Ø¨"
             style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 44, color: 'var(--g-color-state-danger-fg)' }}
           >
             <IconLogout size={20} stroke={1.8} aria-hidden="true" />

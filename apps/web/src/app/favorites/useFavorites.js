@@ -13,7 +13,7 @@ const seed = (id) => { const s = String(id ?? ''); let h = 0; for (let i = 0; i 
 
 export function useFavorites() {
   const queryClient = useQueryClient();
-  const favs = useQuery({ queryKey: ['favorites', 'list'], queryFn: () => apiClient.get('/favorites').then((r) => r.data) });
+  const favs = useQuery({ queryKey: ['favorites', 'list'], queryFn: () => apiClient.get('/favorites').then((r) => r.data), staleTime: 30_000 });
   const [removed, setRemoved] = useState({}); // optimistic unsave overlay
   const inFlight = useRef(new Set()); // recipeIds whose save is in flight (double-tap guard)
   // sync BOTH favorites cache keys (the Home/Detail `['favorites']` AND this screen's `['favorites','list']`) so a
@@ -35,6 +35,7 @@ export function useFavorites() {
     queryKey: ['home', 'recommendations'],
     queryFn: () => apiClient.get('/recommendations', { params: { limit: 12 } }).then((r) => r.data),
     enabled: isEmpty,
+    staleTime: 60_000,
   });
   const suggestions = useMemo(() => {
     const list = Array.isArray(recs.data) ? recs.data : [];
