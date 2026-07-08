@@ -11,6 +11,14 @@ const toLatin = (s) => String(s ?? '').replace(/[۰-۹]/g, (d) => String(FA.inde
 const toFaDigits = (s) => String(s ?? '').replace(/\d/g, (d) => FA[Number(d)]);
 const PHONE_RE = /^09\d{9}$/;
 const normalizePhone = (s) => toLatin(s).replace(/[\s\-()]/g, '');
+const safeSeconds = (value, fallback) => {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric > 0 ? Math.floor(numeric) : fallback;
+};
+const otpValidityCopy = (ttlSeconds) => {
+  const minutes = Math.max(1, Math.round(safeSeconds(ttlSeconds, 120) / 60));
+  return `کد تا ${toFaDigits(minutes)} دقیقه معتبر است.`;
+};
 
 const CSS = `
 .gz-auth *{box-sizing:border-box}
@@ -48,7 +56,7 @@ function Field({ label, hint, children }) {
   );
 }
 
-function OtpInput({ value, onChange, onSubmit }) {
+function OtpInput({ value, onChange, onSubmit, ttlSeconds }) {
   const inputRef = useRef(null);
   const digits = value.padEnd(6, ' ').slice(0, 6).split('');
   const activeIndex = Math.min(value.length, 5);
@@ -80,7 +88,7 @@ function OtpInput({ value, onChange, onSubmit }) {
           onKeyDown={(e) => { if (e.key === 'Enter') onSubmit?.(); }}
         />
       </Box>
-      <Text component="p" style={hintStyle}>کد تا ۲ دقیقه معتبر است؛ ارسال دوباره بعد از ۳ دقیقه فعال می‌شود.</Text>
+      <Text component="p" style={hintStyle}>{otpValidityCopy(ttlSeconds)}</Text>
     </Box>
   );
 }
@@ -105,6 +113,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
   const [notice, setNotice] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [otpTtlSeconds, setOtpTtlSeconds] = useState(120);
   const [resendSeconds, setResendSeconds] = useState(0);
   const [lastRequestedPhone, setLastRequestedPhone] = useState('');
   const normalizedPhone = useMemo(() => normalizePhone(phone), [phone]);
@@ -149,7 +158,8 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
       const res = await requestOtp(normalizedPhone);
       setNotice(res?.message || 'کد ورود برای شما ارسال شد.');
       setLastRequestedPhone(normalizedPhone);
-      setResendSeconds(Number(res?.resendCooldownSeconds || 180));
+      setOtpTtlSeconds(safeSeconds(res?.ttlSeconds, 120));
+      setResendSeconds(safeSeconds(res?.resendCooldownSeconds, 60));
       setStep('code');
     } catch (e) {
       setError(errorMessage(e, 'ارسال کد ورود ناموفق بود. اگر پیامک فعال است، تنظیمات ملی‌پیامک یا اتصال سرور را چک کن.'));
@@ -216,7 +226,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
         <AnimatePresence initial={false} mode="popLayout">
           {step === 'code' ? (
             <motion.div key="otp-fields" initial={{ opacity: 0, y: -8, height: 0 }} animate={{ opacity: 1, y: 0, height: 'auto' }} exit={{ opacity: 0, y: -6, height: 0 }} transition={{ duration: 0.24 }} style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 15 }}>
-              <OtpInput value={code} onChange={setCode} onSubmit={verifyCode} />
+              <OtpInput value={code} onChange={setCode} onSubmit={verifyCode} ttlSeconds={otpTtlSeconds} />
               <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 11.2, lineHeight: 1.75, color: 'var(--g-color-text-muted)', margin: '-6px 3px 0', textAlign: 'center' }}>
                 اگر پیامک نیامد، پوشه هرزنامه یا Spam را هم چک کن.
               </Text>

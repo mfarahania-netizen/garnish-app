@@ -188,6 +188,8 @@ describe('AuthService OTP login/signup', () => {
     const res = await makeAuth(usersService, { sign: jest.fn() }, prisma, sms).requestOtp('+989125859634');
 
     expect(res.ok).toBe(true);
+    expect(res.ttlSeconds).toBe(120);
+    expect(res.resendCooldownSeconds).toBe(60);
     expect(prisma.authOtpCode.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         phone: '09125859634',
@@ -197,6 +199,28 @@ describe('AuthService OTP login/signup', () => {
       }),
     });
     expect(sms.sendOtpCode).toHaveBeenCalledWith('09125859634', expect.stringMatching(/^\d{6}$/));
+  });
+
+  it('uses launch OTP defaults when env does not override ttl or cooldown', async () => {
+    delete process.env.OTP_TTL_SECONDS;
+    delete process.env.OTP_RESEND_COOLDOWN_SECONDS;
+    const usersService: any = { findByPhone: jest.fn().mockResolvedValue(null) };
+    const sms: any = { sendOtpCode: jest.fn() };
+    const prisma: any = {
+      authOtpCode: {
+        count: jest.fn().mockResolvedValue(0),
+        findFirst: jest.fn().mockResolvedValue(null),
+        updateMany: jest.fn(),
+        create: jest.fn().mockResolvedValue({ id: 'otp-defaults' }),
+      },
+      $transaction: jest.fn(async (fn) => fn({ authOtpCode: prisma.authOtpCode })),
+      userEvent: { create: jest.fn() },
+    };
+
+    const res = await makeAuth(usersService, { sign: jest.fn() }, prisma, sms).requestOtp('09125859634');
+
+    expect(res.ttlSeconds).toBe(120);
+    expect(res.resendCooldownSeconds).toBe(60);
   });
 
   it('verifies OTP, creates a passwordless user when phone is new, and signs in', async () => {

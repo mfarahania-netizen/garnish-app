@@ -93,13 +93,26 @@ describe('AuthForm OTP behavior', () => {
   });
 
   it('disables resend while the countdown is active', async () => {
-    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', resendCooldownSeconds: 180 });
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', ttlSeconds: 120, resendCooldownSeconds: 60 });
     render(<AuthForm />);
 
     fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '09125859634' } });
     fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
 
     await waitFor(() => expect(screen.getByRole('button', { name: /ارسال دوباره ·/ })).toBeDisabled());
+    expect(document.body.textContent).toContain('\u06f2');
+    expect(screen.getByRole('button', { name: /\u06f6\u06f0/ })).toBeDisabled();
+  });
+
+  it('renders OTP validity copy from backend ttlSeconds', async () => {
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', ttlSeconds: 180, resendCooldownSeconds: 60 });
+    render(<AuthForm />);
+
+    fireEvent.change(document.querySelector('input[type="tel"]'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getAllByRole('button')[0]);
+
+    await waitFor(() => expect(auth.requestOtp).toHaveBeenCalled());
+    expect(document.body.textContent).toContain('\u06f3');
   });
 
   it('does not request another OTP when the user changes back to the same phone during cooldown', async () => {
