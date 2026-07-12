@@ -1,7 +1,7 @@
 # Garnish Household OS v1 — Program Progress
 
 - Status: `STAGE_A_COMPLETE_IMPLEMENTATION_BLOCKED_BY_PREREQUISITE`
-- Current phase: final report verification, adversarial recheck, commit and branch push
+- Current phase: report-closeout commit and final branch push
 - Program branch: `program/household-os-v1`
 - Base/current `origin/master`: `1631dc5dbf0f0d5b9699399ed8f50ebef4b053ab`
 - Worktree: `C:\Users\mfara\.codex\worktrees\5464\garnish-app`
@@ -46,8 +46,12 @@ Full structured evidence: `test_results.json`.
 
 ## Commit/push
 
-Pending final report existence/size/diff/adversarial checks. Will be updated after explicit commit and push; master will not be pushed.
+- Stage A commit: `7b25a9ba` (`docs: design household OS v1 program`).
+- Branch push: PASS; `origin/program/household-os-v1` created and upstream configured.
+- Closeout: final report/progress/test evidence is committed as current branch HEAD and pushed after this update.
+- Master: untouched; `origin/master` remains `1631dc5d`.
+- Gitleaks hook: unavailable; targeted common secret-pattern scan over changed files found no matches, but is not equivalent to a full gitleaks scan.
 
 ## Next exact action
 
-Validate the final diff, explicitly stage only the 34 household Stage A documents, commit, push `program/household-os-v1`, update commit/push evidence, then finish P0-A before any H1 work.
+Push the report-closeout commit, verify branch parity/report sizes, then finish and merge P0-A before any H1 work.

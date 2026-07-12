@@ -19,7 +19,7 @@
 | Production touched | no |
 | Database/migration/seed touched | no |
 | Product code changed | no |
-| Commit/push status | pending final report verification; to be updated after explicit commit/push |
+| Commit/push status | Stage A commit `7b25a9ba` pushed to `origin/program/household-os-v1`; report-closeout commit is the final branch HEAD |
 
 ## Phase completion
 
@@ -176,6 +176,14 @@ Only new Stage A documentation/report files under these paths:
 - `docs/qa/household/`
 
 Exact files are listed in `docs/qa/household/changed_files.csv`.
+
+## Commit and push evidence
+
+- Stage A documentation commit: `7b25a9ba` (`docs: design household OS v1 program`).
+- Initial branch push: PASS; `origin/program/household-os-v1` created and set as upstream.
+- Report closeout: this updated report/progress/test evidence is committed as the final branch HEAD after the Stage A commit and pushed to the same branch.
+- `origin/master` remains `1631dc5d`; master was not checked out, committed, or pushed.
+- Commit hook warning: `gitleaks` was not installed, so that hook scan did not run. A targeted scan for common API/private-key token patterns over the 34 changed files returned no matches; this is narrower than gitleaks and is not represented as a full secret-audit PASS.
 
 ## Open risks
 

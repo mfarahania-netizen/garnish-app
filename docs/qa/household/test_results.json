@@ -62,6 +62,12 @@
       "durationSeconds": 10.61,
       "testFiles": { "failed": 2, "total": 2 },
       "tests": { "passed": 15, "failed": 4, "total": 19 }
+    },
+    {
+      "id": "targeted-secret-pattern-scan",
+      "command": "git grep common API/private-key token patterns over the 34 Stage A files",
+      "status": "PASS_NO_MATCHES_LIMITED_SCOPE",
+      "summary": "No common Gemini/GitHub/OpenAI/private-key pattern matched. The commit hook reported gitleaks was not installed, so this is not a full secret-audit PASS."
     }
   ],
   "requiredButNotRun": [
