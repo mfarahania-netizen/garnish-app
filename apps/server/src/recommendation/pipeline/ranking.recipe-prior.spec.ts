@@ -1,110 +1,157 @@
 import { RankingService } from './ranking.service';
 import type { RecipePriorSource } from './recipe-prior.source';
 
-// L1 step 4 — the recipePrior SEAM is wired but its weight is pinned to 0.0. These tests prove the
-// activation-SAFETY invariant: registering a prior source (even one returning extreme values) must NOT change
-// the ranked order or finalScores until the weight is raised — i.e. shipping the seam is byte-identical.
+// P0-A Option B: RecipePriorSource currently returns only Map<recipeId, number>.
+// It carries no observation time, purpose, policy version, or grant epoch, so it
+// is not an authorization-bearing source. Ranking must stay neutral even when a
+// legacy source is registered and scoring flags are set.
 const RECIPES = [
   { id: 'protein-bowl', title: 'Protein Bowl', cookingTime: 20, difficulty: 'easy', cost: 'medium', diet: 'omnivore', mealType: 'lunch', servings: 4, categories: '["protein"]', createdAt: new Date('2026-06-01'), ingredients: [{ name: 'chicken' }], searchTerms: [{ term: 'protein' }] },
   { id: 'budget-pasta', title: 'Budget Pasta', cookingTime: 20, difficulty: 'easy', cost: 'low', diet: 'vegetarian', mealType: 'dinner', servings: 2, categories: '["budget"]', createdAt: new Date('2026-05-15'), ingredients: [{ name: 'pasta' }], searchTerms: [{ term: 'cheap' }] },
   { id: 'family-stew', title: 'Family Stew', cookingTime: 110, difficulty: 'medium', cost: 'low', diet: 'omnivore', mealType: 'dinner', servings: 6, categories: '["family"]', createdAt: new Date('2025-12-20'), ingredients: [{ name: 'beef' }], searchTerms: [{ term: 'family' }] },
 ];
-const IDS = RECIPES.map((r) => r.id);
+const IDS = RECIPES.map((recipe) => recipe.id);
+const GRANT_EPOCH = new Date('2026-07-13T00:00:00.000Z');
 
-function mocks() {
+function mocks(grantEpoch: Date | null = GRANT_EPOCH) {
   return {
-    prisma: { recipe: { findMany: jest.fn().mockResolvedValue(RECIPES) }, userEvent: { count: jest.fn().mockResolvedValue(0) }, favoriteRecipe: { count: jest.fn().mockResolvedValue(0) } } as any,
-    featureStore: { getFeatureVector: jest.fn().mockResolvedValue({ signal_likes_high_protein: 0.9 }) } as any,
-    contributionCalculator: { calculate: jest.fn((s) => s) } as any,
+    prisma: {
+      recipe: { findMany: jest.fn().mockResolvedValue(RECIPES) },
+      userEvent: { count: jest.fn().mockResolvedValue(0) },
+      favoriteRecipe: { count: jest.fn().mockResolvedValue(0) },
+      userFeatureVector: {
+        findUnique: jest.fn().mockResolvedValue({
+          updatedAt: new Date(GRANT_EPOCH.getTime() + 1_000),
+        }),
+      },
+    } as any,
+    featureStore: {
+      getFeatureVector: jest.fn().mockResolvedValue({ signal_likes_high_protein: 0.9 }),
+    } as any,
+    contributionCalculator: { calculate: jest.fn((scores) => scores) } as any,
     experimentEngine: { getWeights: jest.fn().mockResolvedValue(null) } as any,
-    exposureTracking: { getPenalty: jest.fn().mockResolvedValue(0) } as any,
-    tasteAffinityBuilder: { build: jest.fn().mockReturnValue({ score: 0.7, matchedSignals: [] }) } as any,
+    exposureTracking: { getPenalties: jest.fn().mockResolvedValue(new Map()) } as any,
+    tasteAffinityBuilder: {
+      build: jest.fn().mockReturnValue({ score: 0.7, matchedSignals: [] }),
+    } as any,
     recipeEmbedding: { buildEmbedding: jest.fn().mockReturnValue([0.5, 0.5, 0, 0]) } as any,
+    consent: { currentGrantEpoch: jest.fn().mockResolvedValue(grantEpoch) } as any,
   };
 }
+
 const build = (m: ReturnType<typeof mocks>, prior?: RecipePriorSource) =>
-  new RankingService(m.prisma, m.featureStore, m.contributionCalculator, m.experimentEngine, m.exposureTracking, m.tasteAffinityBuilder, m.recipeEmbedding, undefined, prior);
+  new RankingService(
+    m.prisma,
+    m.featureStore,
+    m.contributionCalculator,
+    m.experimentEngine,
+    m.exposureTracking,
+    m.tasteAffinityBuilder,
+    m.recipeEmbedding,
+    m.consent,
+    undefined,
+    prior,
+  );
 
-const shape = (ranked: any[]) => ranked.map((r) => ({ id: r.recipeId, finalScore: r.finalScore, rawScore: r.rawScore }));
+const shape = (ranked: any[]) => ranked.map((item) => ({
+  id: item.recipeId,
+  finalScore: item.finalScore,
+  rawScore: item.rawScore,
+  recipePrior: item.scores.recipePrior,
+}));
 
-describe('RankingService — recipePrior seam (L1 step 4)', () => {
-  it('default weight is exactly 0.0', () => {
+describe('RankingService — recipe-prior provenance decision (P0-A Option B)', () => {
+  afterEach(() => {
+    delete process.env.L1_PRIOR_STEP5_WEIGHT;
+    delete process.env.L1_RECIPE_PRIOR_ENABLED;
+  });
+
+  it('keeps the linear recipe-prior component weight at exactly zero', () => {
     expect((build(mocks()) as any).defaultWeights.recipePrior).toBe(0);
   });
 
-  it('a registered prior source returning EXTREME values does not change order or finalScores (weight 0)', async () => {
-    const baseline = shape(await build(mocks()).rank('u1', IDS));
+  it('does not call or consume a registered value-only source, even with current joint consent', async () => {
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockResolvedValue(new Map([
+        ['protein-bowl', 0],
+        ['budget-pasta', 1],
+        ['family-stew', 0],
+      ])),
+    };
 
-    // extreme/adversarial values — would dominate if the weight were non-zero
-    const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 0.0], ['budget-pasta', 1.0], ['family-stew', 0.0]])) };
+    const ranked = await build(mocks(), prior).rank('u1', IDS);
+
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(ranked.map((item: any) => item.scores.recipePrior)).toEqual([0.5, 0.5, 0.5]);
+  });
+
+  it('is byte-identical to no source when an extreme unprovenanced source is registered', async () => {
+    const baseline = shape(await build(mocks()).rank('u1', IDS));
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockResolvedValue(new Map([
+        ['protein-bowl', 0],
+        ['budget-pasta', 1],
+        ['family-stew', 0],
+      ])),
+    };
+
     const withPrior = shape(await build(mocks(), prior).rank('u1', IDS));
 
-    expect(withPrior).toEqual(baseline); // byte-identical: order + finalScore + rawScore unchanged
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(withPrior).toEqual(baseline);
   });
 
-  it('flows the prior VALUE into the scores breakdown, neutral 0.5 when unregistered', async () => {
-    const unreg = await build(mocks()).rank('u1', IDS);
-    expect((unreg.find((r: any) => r.recipeId === 'protein-bowl') as any).scores.recipePrior).toBe(0.5);
-
-    const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['budget-pasta', 0.83]])) };
-    const reg = await build(mocks(), prior).rank('u1', IDS);
-    expect((reg.find((r: any) => r.recipeId === 'budget-pasta') as any).scores.recipePrior).toBe(0.83);
-    expect((reg.find((r: any) => r.recipeId === 'protein-bowl') as any).scores.recipePrior).toBe(0.5); // not in map → neutral
-  });
-
-  it('calls the source exactly ONCE per rank for the whole slate (no N+1)', async () => {
-    const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map()) };
-    await build(mocks(), prior).rank('u1', IDS);
-    expect(prior.valuesForSlate).toHaveBeenCalledTimes(1);
-    expect((prior.valuesForSlate as jest.Mock).mock.calls[0][1]).toEqual(IDS);
-  });
-
-  it('is fail-safe: a throwing source degrades to neutral (request still succeeds, byte-identical)', async () => {
+  it('cannot be activated by flags while the source lacks the future evidence envelope', async () => {
+    process.env.L1_RECIPE_PRIOR_ENABLED = 'true';
+    process.env.L1_PRIOR_STEP5_WEIGHT = '0.3';
     const baseline = shape(await build(mocks()).rank('u1', IDS));
-    const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockRejectedValue(new Error('boom')) };
-    const withThrow = shape(await build(mocks(), prior).rank('u1', IDS));
-    expect(withThrow).toEqual(baseline);
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockResolvedValue(new Map([
+        ['protein-bowl', 1],
+        ['budget-pasta', 0],
+        ['family-stew', 1],
+      ])),
+    };
+
+    const attemptedActivation = shape(await build(mocks(), prior).rank('u1', IDS));
+
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(attemptedActivation).toEqual(baseline);
+    expect(attemptedActivation.every((item) => item.recipePrior === 0.5)).toBe(true);
   });
 
-  // L1 step 5 — activation smoke (the minority-protection invariant end-to-end)
-  describe('step 5 activation (L1_PRIOR_STEP5_WEIGHT > 0, lift-only)', () => {
-    afterEach(() => { delete process.env.L1_PRIOR_STEP5_WEIGHT; });
+  it('performs no legacy prior read when current joint consent is absent', async () => {
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1]])),
+    };
 
-    it('lifts a crowd-loved dish UP and never drops any dish below its no-prior finalScore', async () => {
-      const baseline = shape(await build(mocks()).rank('u1', IDS));
-      const byId = (s: any[], id: string) => s.find((r) => r.id === id)!;
+    const ranked = await build(mocks(null), prior).rank('u1', IDS);
 
-      process.env.L1_PRIOR_STEP5_WEIGHT = '0.08';
-      // protein-bowl loved in cohort (prior 1.0); budget-pasta disliked-in-cohort (0.0) but must NOT drop.
-      const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1.0], ['budget-pasta', 0.0], ['family-stew', 0.5]])) };
-      const activated = shape(await build(mocks(), prior).rank('u1', IDS));
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(ranked.every((item: any) => item.scores.recipePrior === 0.5)).toBe(true);
+  });
 
-      expect(byId(activated, 'protein-bowl').finalScore).toBeGreaterThan(byId(baseline, 'protein-bowl').finalScore); // crowd lift
-      for (const id of IDS) {
-        expect(byId(activated, id).finalScore).toBeGreaterThanOrEqual(byId(baseline, id).finalScore - 1e-9); // invariant: score never drops
-      }
-    });
+  it('does not treat a new re-grant epoch as provenance for legacy aggregate values', async () => {
+    const regrantEpoch = new Date(GRANT_EPOCH.getTime() + 86_400_000);
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1]])),
+    };
 
-    // guardian: the invariant must survive applyDiversity's order-dependent penalty. Two recipes sharing
-    // mealType+diet; lifting the lower one reorders it above the other — the other must NOT drop below baseline.
-    it('survives diversity reorder: lifting a same-group peer never drops the other below its baseline', async () => {
-      const sameGroup = () => {
-        const m = mocks();
-        const r = (id: string) => ({ id, title: id, cookingTime: 30, difficulty: 'easy', cost: 'low', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-06-01'), ingredients: [{ name: 'x' }], searchTerms: [] });
-        m.prisma.recipe.findMany = jest.fn().mockResolvedValue([r('A'), r('B')]);
-        return m;
-      };
-      const fs = (s: any[], id: string) => s.find((x) => x.recipeId === id)!.finalScore;
+    const ranked = await build(mocks(regrantEpoch), prior).rank('u1', IDS);
 
-      const baseline = await build(sameGroup()).rank('u1', ['A', 'B']);
-      process.env.L1_PRIOR_STEP5_WEIGHT = '0.3';
-      const prior: RecipePriorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['A', 0.5], ['B', 1.0]])) }; // A neutral (no lift), B lifted
-      const activated = await build(sameGroup(), prior).rank('u1', ['A', 'B']);
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(ranked.every((item: any) => item.scores.recipePrior === 0.5)).toBe(true);
+  });
 
-      // INVARIANT: A got NO lift; without the diversity-baseline fix the lift on B would reorder B above A and
-      // demote A into the same-group penalty (A would drop ~0.52 → ~0.47). With the fix A keeps its baseline.
-      expect(fs(activated, 'A')).toBeGreaterThanOrEqual(fs(baseline, 'A') - 1e-9);
-      expect(fs(activated, 'B')).toBeGreaterThan(fs(baseline, 'B') + 1e-9); // B was lifted toward/level with A
-    });
+  it('does not probe a throwing legacy source and still completes neutrally', async () => {
+    const baseline = shape(await build(mocks()).rank('u1', IDS));
+    const prior: RecipePriorSource = {
+      valuesForSlate: jest.fn().mockRejectedValue(new Error('must not be reached')),
+    };
+
+    const ranked = shape(await build(mocks(), prior).rank('u1', IDS));
+
+    expect(prior.valuesForSlate).not.toHaveBeenCalled();
+    expect(ranked).toEqual(baseline);
   });
 });

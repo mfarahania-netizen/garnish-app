@@ -4,9 +4,26 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EventEnrichmentService } from './event-enrichment.service';
 import { EventOutboxService } from '../behavior-engine/routing/event-outbox.service';
 import { EventQualityService } from './event-quality.service'; // 👈 جدید
-import { guardEventForRuntime, resolveRuntimeGuardMode } from './event-envelope-runtime-guard';
+import {
+  guardEventForRuntime,
+  resolveRuntimeGuardMode,
+} from './event-envelope-runtime-guard';
 import { ConsentService } from '../consent/consent.service';
-import { sanitizePayload, isKnownEventType } from './payload-sanitizer';
+import {
+  sanitizePayload,
+  isKnownEventType,
+  isSafePagePath,
+  isSafeSessionId,
+} from './payload-sanitizer';
+import { Prisma } from '@prisma/client';
+import {
+  currentEventPopulationWhere,
+  requireCurrentConsentPopulation,
+} from './intelligence/optional-processing-boundary';
+import {
+  currentGrantEpochInLockedTransaction,
+  withUserOptionalProcessingBoundary,
+} from '../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class AnalyticsService {
@@ -29,7 +46,11 @@ export class AnalyticsService {
    * this method does not drop events — producer migration is staged; the guard verdict is observed,
    * not enforced here.
    */
-  private observeWithRuntimeGuard(data: { userId: string; type: string; page?: string }): void {
+  private observeWithRuntimeGuard(data: {
+    userId: string;
+    type: string;
+    page?: string;
+  }): void {
     try {
       const mode = resolveRuntimeGuardMode();
       if (mode === 'off') return;
@@ -42,7 +63,12 @@ export class AnalyticsService {
           surface: data.page,
           // legacy payload is intentionally NOT forwarded (untrusted / possible PII).
         },
-        { mode, source: 'analytics.service.trackEvent', producerId: 'prod-analytics-trackevent', redactForLogs: true },
+        {
+          mode,
+          source: 'analytics.service.trackEvent',
+          producerId: 'prod-analytics-trackevent',
+          redactForLogs: true,
+        },
       );
       if (verdict.status !== 'accepted') {
         this.logger.debug(
@@ -63,11 +89,16 @@ export class AnalyticsService {
     page?: string;
     duration?: number;
     sessionId?: string;
-    payload?: any;
+    payload?: Record<string, unknown>;
   }) {
     if (!data.userId) {
       return null;
     }
+
+    const safePage = isSafePagePath(data.page) ? data.page : undefined;
+    const safeSessionId = isSafeSessionId(data.sessionId)
+      ? data.sessionId
+      : undefined;
 
     // 🛡️ ارزیابی کیفیت رویداد
     const quality = this.eventQuality.assess(data);
@@ -77,81 +108,110 @@ export class AnalyticsService {
     }
 
     // E43-A2 shadow runtime guard (observational; never blocks/alters this flow).
-    this.observeWithRuntimeGuard(data);
+    this.observeWithRuntimeGuard({ ...data, page: safePage });
 
     // Taxonomy drift (advisor audit): flag unknown event types so the signal layer stays clean — but NEVER
     // drop the event (no lost signals). The known-type set is completed from observed flags over time.
     if (!isKnownEventType(data.type)) {
-      this.logger.debug(`[event-taxonomy] unknown event type stored (not dropped): ${data.type}`);
+      this.logger.debug(
+        `[event-taxonomy] unknown event type stored (not dropped): ${data.type}`,
+      );
     }
 
-    const eventData: any = {
+    const eventData: Prisma.UserEventUncheckedCreateInput = {
       userId: data.userId,
       type: data.type,
     };
-    if (data.page) eventData.page = data.page;
+    if (safePage) eventData.page = safePage;
     if (data.duration) eventData.duration = data.duration;
-    if (data.sessionId) eventData.sessionId = data.sessionId;
+    if (safeSessionId) eventData.sessionId = safeSessionId;
     // PRIVACY (advisor audit): persist a REDACTED payload — free-text/PII keys dropped, strings capped. The raw
     // payload stays in-memory only (used for the recipeId denorm below + passed to enrichment), never stored.
     const safePayload = data.payload ? sanitizePayload(data.payload) : null;
-    if (safePayload && Object.keys(safePayload).length > 0) eventData.payload = JSON.stringify(safePayload);
+    if (safePayload && Object.keys(safePayload).length > 0)
+      eventData.payload = JSON.stringify(safePayload);
     // L0/B — denormalize recipeId from the payload onto the row for fast recipe-level signal queries
     // (it previously lived only inside the opaque payload string). Processors still read payload.recipeId
     // unchanged; this is a purely additive column write.
-    const rid = data.payload?.recipeId;
-    if (typeof rid === 'string' && rid) eventData.recipeId = rid;
-
-    // L0 — consent-at-ingest gate (default OFF → no extra read, byte-identical behavior). The raw event is
-    // ALWAYS stored (ops / legitimate interest); but BUILDING a personalization profile from it — routing
-    // into the signal engine — requires the 'personalization' purpose when enforced. Routing already no-ops
-    // for non-personalization event types, so this scopes the gate exactly to personalization signals.
-    // EVENT_CONSENT_GATE_MODE = off (dev/test default) | log (observe only) | enforce (PRODUCTION default).
-    // P0-3 (re-audit): production now ENFORCES. The raw UserEvent is ALWAYS stored (ops / legitimate interest,
-    // and the admin panel reads UserEvent) — but BUILDING a taste/health profile from it (routing into the signal
-    // engine) requires the explicit 'personalization' purpose. Processing personal data into a profile without
-    // opt-in is not lawful for the EU/NL launch, so without consent the event is stored but NEVER routed.
-    // Personalization activates per-user the moment they GRANT the purpose (settings/onboarding consent). Dev/test
-    // stay 'off' so the local learning loop + the admin demo data keep flowing unchanged. An explicit env wins.
-    const gateMode = (process.env.EVENT_CONSENT_GATE_MODE || (process.env.NODE_ENV === 'production' ? 'enforce' : 'off')).toLowerCase();
-    // L0 — GDPR provenance: stamp the consent purpose this event is collected under. Baseline 'analytics'
-    // (legitimate interest — always lawful for raw product analytics); when the gate is on we reuse its
-    // consent read (no second query) to upgrade to 'personalization' for users who granted it.
-    let personalizationAllowed = false;
-    if (gateMode !== 'off') {
-      // FAIL-CLOSED: if the consent check errors, DENY (don't route personal data into personalization).
-      // A permissive default would route under enforce mode on a DB hiccup — wrong for a GDPR launch.
-      personalizationAllowed = await this.consent.hasPurpose(data.userId, 'personalization').catch(() => false);
+    const rid = safePayload?.recipeId;
+    if (typeof rid === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(rid)) {
+      eventData.recipeId = rid;
     }
-    eventData.consentPurpose = personalizationAllowed ? 'personalization' : 'analytics';
 
-    const event = await this.prisma.userEvent.create({ data: eventData });
+    // Authorization and persistence share one serialized transaction. Analytics is required for collection;
+    // personalization promotion is decided from the same locked ledger snapshot. There is no compensating
+    // delete: either the insert commits before a later withdrawal, or a committed withdrawal is observed first.
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId: data.userId,
+        purposes: ['analytics'],
+        operation: 'analytics.track-event',
+      },
+      async (tx) => {
+        const personalizationEpoch =
+          await currentGrantEpochInLockedTransaction(tx, data.userId, [
+            'analytics',
+            'personalization',
+          ]);
+        const collectedEvent = await tx.userEvent.create({
+          data: {
+            ...eventData,
+            consentPurpose: 'analytics',
+          },
+        });
+        if (!personalizationEpoch) return collectedEvent;
+        return tx.userEvent.update({
+          where: { id: collectedEvent.id },
+          data: { consentPurpose: 'personalization' },
+        });
+      },
+    ).catch((error) => {
+      this.logger.warn(
+        `analytics write suppressed: ${
+          error instanceof Error ? error.name : 'boundary_error'
+        }`,
+      );
+      return null;
+    });
+    if (!boundary || boundary.status !== 'executed') return null;
+    const event = boundary.value;
+    if (event.consentPurpose !== 'personalization') return event;
 
-    // غنی‌سازی را در پس‌زمینه اجرا کن — pass the RAW payload so enrichment reads the original message while the
-    // stored payload stays redacted (only the structured, non-PII enrichment result is persisted).
-    this.enrichmentService.enrichEvent(event.id, data.payload);
-
-    if (gateMode !== 'off' && !personalizationAllowed) {
-      if (gateMode === 'enforce') return event; // stored, but NOT routed into personalization
-      this.logger.debug(`[consent-gate:log] would skip signal routing for ${data.type}/${data.userId} (no personalization consent)`);
-    }
+    // Raw-payload enrichment derives durable profile signals, so analytics consent alone is insufficient.
+    // It runs only after a current personalization grant has been verified.
+    void this.enrichmentService.enrichEvent(
+      event.id,
+      data.payload,
+      data.userId,
+    );
 
     // L0 — durable routing via the outbox: persist a routing record, then route immediately (fast path). If
     // this process crashes before routing completes, the scheduled drain re-routes the pending row — the signal
     // is never lost ("capture every second"). enqueue is idempotent (unique eventId).
-    const outboxId = await this.outbox.enqueue(event.id);
+    const outboxId = await this.outbox.enqueue(event.id, data.userId);
     if (outboxId) {
-      this.outbox.processNow(outboxId, event, data.userId).catch((err) =>
-        console.error(`Event routing failed for event ${event.id}:`, err),
-      );
+      this.outbox
+        .processNow(outboxId, event, data.userId)
+        .catch((err) =>
+          console.error(`Event routing failed for event ${event.id}:`, err),
+        );
     }
 
     return event;
   }
 
   async getPopularRecipes() {
+    const subjects = await requireCurrentConsentPopulation(
+      this.prisma,
+      'analytics',
+      'analytics.popular-recipes',
+    );
     return this.prisma.userEvent.findMany({
-      where: { type: 'recipe_view' },
+      where: {
+        type: 'recipe_view',
+        ...currentEventPopulationWhere(subjects, 'analytics'),
+      },
       select: { payload: true },
       take: 100,
     });

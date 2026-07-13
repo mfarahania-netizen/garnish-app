@@ -18,6 +18,12 @@ import {
 import { guardEventForRuntime, resolveRuntimeGuardMode } from './event-envelope-runtime-guard';
 import { redactEventEnvelopeForArtifact, ConsentPurposeEnum } from './event-envelope.schema';
 import { AnalyticsService } from './analytics.service';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+  makeP0ATransactionBoundaryPrisma,
+  p0APersonalizationEventProvenance,
+} from '../test-support/p0-a-epoch-fixture';
 
 const GENERATED_AT = '2026-06-14T00:00:00.000Z';
 
@@ -25,20 +31,52 @@ const GENERATED_AT = '2026-06-14T00:00:00.000Z';
 
 function makeService() {
   const created: Array<{ model: string }> = [];
-  const prisma: any = {
-    userEvent: {
-      create: jest.fn(async () => {
+  const userEvents: any[] = [];
+  const userEvent = {
+      create: jest.fn(async ({ data }: any) => {
         created.push({ model: 'userEvent' });
-        return { id: 'evt_1' };
+        const event = {
+          id: 'evt_1',
+          ...p0APersonalizationEventProvenance(data.userId),
+          ...data,
+        };
+        userEvents.push(event);
+        return event;
       }),
-    },
+      update: jest.fn(async ({ where, data }: any) => {
+        const index = userEvents.findIndex((event) => event.id === where.id);
+        const event = { ...userEvents[index], ...data };
+        userEvents[index] = event;
+        return event;
+      }),
+      delete: jest.fn(async ({ where }: any) => {
+        const index = userEvents.findIndex((event) => event.id === where.id);
+        if (index < 0) return null;
+        return userEvents.splice(index, 1)[0];
+      }),
+      findUnique: jest.fn(async ({ where }: any) =>
+        userEvents.find((event) => event.id === where.id) ?? null,
+      ),
   };
+  const transaction = makeP0ATransactionBoundaryPrisma({ userEvent });
+  const prisma: any = transaction.prisma;
+  const tx: any = transaction.tx;
   const enrichment: any = { enrichEvent: jest.fn() };
   const outbox: any = { enqueue: jest.fn(async () => 'ob1'), processNow: jest.fn(async () => undefined) };
   const quality: any = { assess: jest.fn(() => ({ isValid: true })) };
-  const consent: any = { hasPurpose: jest.fn(async () => true) }; // L0/B — gate is OFF by default; not exercised here
+  const consent: any = makeP0AEpochAwareConsentMock();
   const svc = new AnalyticsService(prisma, enrichment, outbox, quality, consent);
-  return { svc, prisma, enrichment, outbox, quality, consent, created };
+  return {
+    svc,
+    prisma,
+    tx,
+    enrichment,
+    outbox,
+    quality,
+    consent,
+    created,
+    userEvents,
+  };
 }
 
 /* ───────────────────────── Artifact builder ───────────────────────── */
@@ -278,12 +316,15 @@ describe('E43-A2 event producer inventory + migration', () => {
 
 describe('E43-A2 runtime integration (analytics.service shadow guard)', () => {
   let debugSpy: jest.SpyInstance;
+  let restoreOptionalRuntime: () => void;
   const prevMode = process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE;
 
   beforeEach(() => {
+    restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
     debugSpy = jest.spyOn(Logger.prototype, 'debug').mockImplementation(() => undefined);
   });
   afterEach(() => {
+    restoreOptionalRuntime();
     debugSpy.mockRestore();
     if (prevMode === undefined) delete process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE;
     else process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE = prevMode;
@@ -293,8 +334,18 @@ describe('E43-A2 runtime integration (analytics.service shadow guard)', () => {
     delete process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE;
     const { svc, prisma, created } = makeService();
     const result = await svc.trackEvent({ userId: 'u1', type: 'recipe_view', page: 'home' });
-    expect(result).toEqual({ id: 'evt_1' });
+    expect(result).toMatchObject({
+      id: 'evt_1',
+      consentPurpose: 'personalization',
+    });
     expect(prisma.userEvent.create).toHaveBeenCalledTimes(1);
+    expect(prisma.userEvent.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ consentPurpose: 'analytics' }),
+    });
+    expect(prisma.userEvent.update).toHaveBeenCalledWith({
+      where: { id: 'evt_1' },
+      data: { consentPurpose: 'personalization' },
+    });
     expect(created.filter((c) => c.model === 'userEvent').length).toBe(1); // no extra DB writes from the guard
   });
 
@@ -315,7 +366,7 @@ describe('E43-A2 runtime integration (analytics.service shadow guard)', () => {
     process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE = 'off';
     const { svc, prisma } = makeService();
     const result = await svc.trackEvent({ userId: 'u1', type: 'recipe_view', page: 'home' });
-    expect(result).toEqual({ id: 'evt_1' });
+    expect(result).toMatchObject({ id: 'evt_1', consentPurpose: 'personalization' });
     expect(prisma.userEvent.create).toHaveBeenCalledTimes(1);
     const guardLogs = debugSpy.mock.calls.map((c) => String(c[0])).filter((m) => m.includes('event-envelope-guard'));
     expect(guardLogs.length).toBe(0);
@@ -325,7 +376,7 @@ describe('E43-A2 runtime integration (analytics.service shadow guard)', () => {
     process.env.EVENT_ENVELOPE_RUNTIME_GUARD_MODE = 'strict';
     const { svc, prisma } = makeService();
     const result = await svc.trackEvent({ userId: 'u1', type: 'recipe_view', page: 'home' });
-    expect(result).toEqual({ id: 'evt_1' }); // still written even though strict guard would reject
+    expect(result).toMatchObject({ id: 'evt_1', consentPurpose: 'personalization' }); // still written even though strict guard would reject
     expect(prisma.userEvent.create).toHaveBeenCalledTimes(1);
   });
 

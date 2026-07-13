@@ -20,6 +20,8 @@ import {
   effortFit as effortFitFn,
   skillFit as skillFitFn,
 } from './ranking-effort-skill';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 type FeatureMap = Record<string, number>;
 
@@ -176,6 +178,7 @@ export class RankingService {
     private exposureTracking: ExposureTrackingService,
     private tasteAffinityBuilder: TasteAffinityBuilder,
     private recipeEmbedding: RecipeEmbeddingService,
+    private readonly consent: ConsentService,
     // L1 seam — pluggable learned/cohort weight source. @Optional + absent today → byte-identical behaviour.
     @Optional() @Inject(L1_WEIGHT_SOURCE) private readonly weightSource?: WeightSource,
     // L1 step 4 seam — pluggable per-(recipe×cohort) prior VALUE source. @Optional + absent today → the
@@ -186,10 +189,48 @@ export class RankingService {
   async rank(userId: string, candidateIds: string[], context?: RealTimeContext) {
     if (candidateIds.length === 0) return [];
 
-    const weights = this.normalizeWeights(await this.resolveBaseWeights(userId, context));
-    const userFeatures = await this.featureStore.getFeatureVector(userId);
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) {
+      return this.rankWithFeatureVector(
+        userId,
+        candidateIds,
+        {},
+        this.defaultWeights,
+        context,
+        false,
+        false,
+        null,
+      );
+    }
 
-    return this.rankWithFeatureVector(userId, candidateIds, userFeatures, weights, context);
+    const weights = this.normalizeWeights(
+      await this.resolveBaseWeights(userId, consentEpoch, context),
+    );
+    const userFeatures = await this.getFreshFeatureVector(userId, consentEpoch);
+    const epochAfterReads = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!this.sameEpoch(consentEpoch, epochAfterReads)) {
+      return this.rankWithFeatureVector(
+        userId,
+        candidateIds,
+        {},
+        this.defaultWeights,
+        context,
+        false,
+        false,
+        null,
+      );
+    }
+
+    return this.rankWithFeatureVector(
+      userId,
+      candidateIds,
+      userFeatures,
+      weights,
+      context,
+      true,
+      true,
+      consentEpoch,
+    );
   }
 
   /**
@@ -198,12 +239,14 @@ export class RankingService {
    * else the static defaults. With no source registered (today) this equals the prior inline behaviour
    * exactly — `experimentEngine.getWeights(userId) || defaultWeights` — so the ranker is byte-identical.
    */
-  private async resolveBaseWeights(userId: string, context?: RealTimeContext): Promise<Record<string, number>> {
-    if (this.weightSource) {
-      const learned = await this.weightSource.resolve(userId, context).catch(() => null);
-      if (learned) return learned;
-    }
-    const experimentalWeights = await this.experimentEngine.getWeights(userId);
+  private async resolveBaseWeights(
+    userId: string,
+    consentEpoch: Date,
+    context?: RealTimeContext,
+  ): Promise<Record<string, number>> {
+    // WeightSource does not expose an evidence timestamp/provenance contract, so
+    // it cannot be proven newer than a withdrawal/re-grant boundary.
+    const experimentalWeights = await this.experimentEngine.getWeights(userId, consentEpoch);
     return experimentalWeights || this.defaultWeights;
   }
 
@@ -213,12 +256,24 @@ export class RankingService {
     userFeatures: FeatureMap,
     weights?: Record<string, number>,
     context?: RealTimeContext,
+    consentDecision?: boolean,
+    analyticsDecision?: boolean,
+    expectedEpoch?: Date | null,
   ) {
     if (candidateIds.length === 0) return [];
 
+    const consentEpoch = expectedEpoch === undefined
+      ? await this.currentPersonalizedAnalyticsEpoch(userId)
+      : expectedEpoch;
+    const canPersonalize = !!consentEpoch && (consentDecision ?? true);
+    const canUseAnalytics = canPersonalize && (analyticsDecision ?? true);
+    const effectiveFeatures = canPersonalize ? userFeatures : {};
+
     const resolvedWeights = this.resolveWeightsForMaturity(
-      this.normalizeWeights(weights || this.defaultWeights),
-      userFeatures,
+      this.normalizeWeights(
+        canUseAnalytics ? (weights || this.defaultWeights) : this.defaultWeights,
+      ),
+      effectiveFeatures,
     );
 
     const recipes = await this.prisma.recipe.findMany({
@@ -277,36 +332,42 @@ export class RankingService {
 
     // L1 step 4 — prefetch the learned-prior VALUES for the whole slate in ONE batched call (no N+1). Absent
     // source OR any error → empty map → every candidate reads the neutral 0.5 below → byte-identical.
-    const priorValues = this.recipePriorSource
-      ? (await this.recipePriorSource.valuesForSlate(userId, candidateIds, context).catch(() => null)) ?? new Map<string, number>()
+    // RecipePriorSource currently returns values without row timestamps. Until
+    // its contract carries provenance, a re-grant must receive neutral priors.
+    const priorValues = new Map<string, number>();
+
+    const exposurePenalties = canUseAnalytics
+      ? await this.exposureTracking.getPenalties(userId, recipes.map((recipe) => recipe.id))
       : new Map<string, number>();
 
     const scoredRecipes = await Promise.all(
       recipes.map(async (recipe: RecipeForRanking) => {
-        const matchedSignals = this.getMatchedSignals(recipe, userFeatures);
-        const tasteAffinity = this.tasteAffinityBuilder.build(recipe, userFeatures);
+        const matchedSignals = this.getMatchedSignals(recipe, effectiveFeatures);
+        const tasteAffinity = this.tasteAffinityBuilder.build(recipe, effectiveFeatures);
         if (tasteAffinity.matchedSignals.length > 0) {
           matchedSignals.push(...tasteAffinity.matchedSignals);
         }
         const scores: ScoreBreakdown = {
-          tasteAffinity: this.calculateTasteAffinity(recipe, userFeatures, matchedSignals, tasteAffinity.score),
-          behaviorFit: this.calculateBehaviorFit(recipe, userFeatures, matchedSignals),
-          outcomeFit: this.calculateOutcomeFit(recipe, userFeatures, matchedSignals),
-          effortFit: this.calculateEffortFit(recipe, userFeatures, matchedSignals, weekday),
-          skillFit: this.calculateSkillFit(recipe, userFeatures, matchedSignals),
-          novelty: this.calculateNoveltyScore(recipe, userFeatures, matchedSignals),
-          popularity: await this.calculatePopularityScore(recipe.id),
+          tasteAffinity: this.calculateTasteAffinity(recipe, effectiveFeatures, matchedSignals, tasteAffinity.score),
+          behaviorFit: this.calculateBehaviorFit(recipe, effectiveFeatures, matchedSignals),
+          outcomeFit: this.calculateOutcomeFit(recipe, effectiveFeatures, matchedSignals),
+          effortFit: this.calculateEffortFit(recipe, effectiveFeatures, matchedSignals, weekday),
+          skillFit: this.calculateSkillFit(recipe, effectiveFeatures, matchedSignals),
+          novelty: this.calculateNoveltyScore(recipe, effectiveFeatures, matchedSignals),
+          popularity: canUseAnalytics && consentEpoch
+            ? await this.calculatePopularityScore(recipe.id, consentEpoch)
+            : 0,
           recency: this.calculateRecencyScore(recipe),
-          recipeUnderstanding: this.calculateRecipeUnderstanding(recipe, userFeatures, matchedSignals),
-          ingredientIntelligence: this.calculateIngredientIntelligence(recipe, userFeatures, matchedSignals),
+          recipeUnderstanding: this.calculateRecipeUnderstanding(recipe, effectiveFeatures, matchedSignals),
+          ingredientIntelligence: this.calculateIngredientIntelligence(recipe, effectiveFeatures, matchedSignals),
           // L1 step 4 — learned reward-prior VALUE in [0,1]; NEUTRAL 0.5 when no prior (constant across
           // candidates ⇒ cannot reorder). At weight 0 it contributes 0 → byte-identical.
           recipePrior: priorValues.get(recipe.id) ?? 0.5,
         };
-        scores.outcomeFit = this.capOutcomeFit(scores.outcomeFit, userFeatures);
+        scores.outcomeFit = this.capOutcomeFit(scores.outcomeFit, effectiveFeatures);
 
         const rawScore = this.weightedScore(scores, resolvedWeights);
-        const exposurePenalty = await this.exposureTracking.getPenalty(userId, recipe.id);
+        const exposurePenalty = exposurePenalties.get(recipe.id) ?? 0;
         if (exposurePenalty > 0) matchedSignals.push('exposure_fatigue');
         const cleanedMatchedSignals = this.cleanMatchedSignals(recipe, matchedSignals, scores);
 
@@ -345,7 +406,22 @@ export class RankingService {
 
     const ranked = this.applyDiversity(scoredRecipes.sort((a, b) => b.diversityScore - a.diversityScore));
     ranked.forEach((r) => { delete (r as { diversityScore?: number }).diversityScore; }); // strip the internal ordering field
-    await this.logFeatureContributions(userId, ranked.slice(0, 5));
+    if (consentEpoch) {
+      const epochAfterReads = await this.currentPersonalizedAnalyticsEpoch(userId);
+      if (!this.sameEpoch(consentEpoch, epochAfterReads)) {
+        return this.rankWithFeatureVector(
+          userId,
+          candidateIds,
+          {},
+          this.defaultWeights,
+          context,
+          false,
+          false,
+          null,
+        );
+      }
+    }
+    await this.logFeatureContributions(userId, ranked.slice(0, 5), consentEpoch);
     return ranked;
   }
 
@@ -622,15 +698,18 @@ export class RankingService {
     return this.clamp(0.35 + explorer * 0.2);
   }
 
-  private async calculatePopularityScore(recipeId: string): Promise<number> {
-    const [views, favorites] = await Promise.all([
-      this.prisma.userEvent.count({
-        where: { type: 'recipe_view', payload: { contains: recipeId } },
-      }),
-      this.prisma.favoriteRecipe.count({ where: { recipeId } }),
-    ]);
+  private async calculatePopularityScore(recipeId: string, consentEpoch: Date): Promise<number> {
+    const views = await this.prisma.userEvent.count({
+      where: {
+        type: 'recipe_view',
+        consentPurpose: { in: ['analytics', 'personalization'] },
+        payload: { contains: recipeId },
+        timestamp: { gte: consentEpoch },
+      },
+    });
 
-    return this.clamp((views + favorites * 2) / 250);
+    // Favorite rows have no purpose provenance; they remain excluded from analytics-derived ranking.
+    return this.clamp(views / 250);
   }
 
   private calculateDirectTasteScore(
@@ -1055,7 +1134,10 @@ export class RankingService {
       mealType?: string | string[] | null;
       contributions: ContributionBreakdown;
     }>,
+    consentEpoch: Date | null,
   ) {
+    if (!consentEpoch) return;
+
     const rows = ranked.flatMap((item) =>
       this.selectLoggedContributions(item.contributions)
         .filter(([, contribution]) => contribution > 0)
@@ -1070,13 +1152,51 @@ export class RankingService {
 
     if (rows.length === 0) return;
 
-    const featureContributionLog = (this.prisma as any).featureContributionLog;
-    if (!featureContributionLog?.createMany) return;
+    if (!(this.prisma as any).featureContributionLog?.createMany) return;
+    await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'ranking.persist-feature-contributions',
+        expectedEpoch: consentEpoch,
+      },
+      async (tx) => {
+        const featureContributionLog = (tx as any).featureContributionLog;
+        if (!featureContributionLog?.createMany) return;
+        await featureContributionLog.createMany({ data: rows, skipDuplicates: true });
+      },
+    );
+  }
 
-    await featureContributionLog.createMany({
-      data: rows,
-      skipDuplicates: true,
-    });
+  private async currentPersonalizedAnalyticsEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private sameEpoch(before: Date, after: Date | null): boolean {
+    return !!after && before.getTime() === after.getTime();
+  }
+
+  private async getFreshFeatureVector(
+    userId: string,
+    consentEpoch: Date,
+  ): Promise<FeatureMap> {
+    const vectorStore = (this.prisma as any).userFeatureVector;
+    if (!vectorStore?.findUnique) return {};
+    const metadata = await vectorStore
+      .findUnique({ where: { userId }, select: { updatedAt: true } })
+      .catch(() => null);
+    const updatedAt = metadata?.updatedAt ? new Date(metadata.updatedAt).getTime() : NaN;
+    if (!Number.isFinite(updatedAt) || updatedAt < consentEpoch.getTime()) return {};
+    return this.featureStore.getFeatureVector(userId);
   }
 
   private selectLoggedContributions(contributions: ContributionBreakdown) {

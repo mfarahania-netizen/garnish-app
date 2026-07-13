@@ -1,16 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SnapshotBuilderService } from '../snapshots/snapshot-builder.service';
+import { ConsentService } from '../../consent/consent.service';
+import {
+  CURRENT_PRIVACY_POLICY_VERSION,
+  isOptionalPurposeRuntimeEnabled,
+} from '../../consent/consent.constants';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class FeatureStoreService {
   constructor(
     private prisma: PrismaService,
     private snapshotBuilder: SnapshotBuilderService,
+    private readonly consent: ConsentService,
   ) {}
 
   // P1-4: in-flight guard so concurrent stale requests trigger at most ONE background refresh per user.
   private readonly rebuilding = new Set<string>();
+
+  private async currentEventEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private async epochIsCurrent(userId: string, epoch: Date): Promise<boolean> {
+    const current = await this.currentEventEpoch(userId);
+    return current?.getTime() === epoch.getTime();
+  }
+
+  private laterOf(windowStart: Date, epoch: Date): Date {
+    return windowStart > epoch ? windowStart : epoch;
+  }
 
   /**
    * P1-4 (recsys audit): cache-aware entry point. The serve path (GET /recommendations) previously ran the FULL
@@ -21,46 +49,75 @@ export class FeatureStoreService {
    * default 10 min); FEATURE_VECTOR_TTL_MS=0 restores the legacy always-rebuild behaviour.
    */
   async buildFeatureVector(userId: string): Promise<Record<string, number>> {
+    const epoch = await this.currentEventEpoch(userId);
+    if (!epoch) return {};
+
     const ttlMs = Math.max(0, Number(process.env.FEATURE_VECTOR_TTL_MS) || 10 * 60 * 1000);
-    if (ttlMs > 0 && typeof this.prisma.userFeatureVector?.findUnique === 'function') {
-      const cached = await this.prisma.userFeatureVector.findUnique({ where: { userId } }).catch(() => null);
+    if (ttlMs > 0 && typeof this.prisma.userFeatureVector?.findFirst === 'function') {
+      const cached = await this.prisma.userFeatureVector.findFirst({
+        where: { userId, updatedAt: { gte: epoch } },
+      }).catch(() => null);
       if (cached?.features) {
         const ageMs = cached.updatedAt ? Date.now() - new Date(cached.updatedAt).getTime() : Infinity;
         if (ageMs >= ttlMs && !this.rebuilding.has(userId)) {
           this.rebuilding.add(userId); // stale → ONE background refresh; serve cached now (no serve-path write)
-          void this.rebuildFeatureVector(userId).catch(() => {}).finally(() => this.rebuilding.delete(userId));
+          void this.rebuildFeatureVector(userId, epoch).catch(() => {}).finally(() => this.rebuilding.delete(userId));
         }
-        return cached.features as Record<string, number>;
+        return (await this.epochIsCurrent(userId, epoch))
+          ? (cached.features as Record<string, number>)
+          : {};
       }
     }
-    return this.rebuildFeatureVector(userId); // absent vector (or TTL disabled) → synchronous full rebuild
+    return this.rebuildFeatureVector(userId, epoch); // absent vector (or TTL disabled) → synchronous full rebuild
   }
 
-  private async rebuildFeatureVector(userId: string): Promise<Record<string, number>> {
+  private async rebuildFeatureVector(
+    userId: string,
+    requiredEpoch?: Date,
+  ): Promise<Record<string, number>> {
+    const epoch = requiredEpoch ?? (await this.currentEventEpoch(userId));
+    if (!epoch) return {};
+
     await this.snapshotBuilder.buildAll(userId);
 
-    const [signals, dimensions, snapshots, outcomes, identitySnapshot, user] = await Promise.all([
-      this.prisma.userBehaviorSignal.findMany({ where: { userId } }),
-      this.prisma.userIdentityDimension.findMany({ where: { userId } }),
-      this.prisma.userRetentionSnapshot.findUnique({ where: { userId } }),
+    const profileDelegate = (this.prisma as any).userBehaviorProfile;
+    const [signals, dimensions, snapshots, outcomes, identitySnapshot, user, derivedProfile] = await Promise.all([
+      this.prisma.userBehaviorSignal.findMany({
+        where: { userId, updatedAt: { gte: epoch } },
+      }),
+      this.prisma.userIdentityDimension.findMany({
+        where: { userId, updatedAt: { gte: epoch } },
+      }),
+      this.prisma.userRetentionSnapshot.findFirst({
+        where: { userId, updatedAt: { gte: epoch } },
+      }),
       this.prisma.userOutcome.findMany({
-        where: { userId },
+        where: { userId, recordedAt: { gte: epoch } },
         orderBy: { recordedAt: 'desc' },
         take: 4,
       }),
-      this.prisma.userIdentitySnapshot.findUnique({ where: { userId } }),
+      this.prisma.userIdentitySnapshot.findFirst({
+        where: { userId, updatedAt: { gte: epoch } },
+      }),
       this.prisma.user.findUnique({
         where: { id: userId },
-        select: { preferences: true, profile: true },
+        select: {
+          preferences: { select: { diet: true, skillLevel: true } },
+        },
       }),
+      profileDelegate?.findFirst
+        ? profileDelegate.findFirst({
+            where: { userId, updatedAt: { gte: epoch } },
+          })
+        : null,
     ]);
     const [window7, window30, window90] = await Promise.all([
-      this.buildWindowSignalProfile(userId, 7),
-      this.buildWindowSignalProfile(userId, 30),
-      this.buildWindowSignalProfile(userId, 90),
+      this.buildWindowSignalProfile(userId, 7, epoch),
+      this.buildWindowSignalProfile(userId, 30, epoch),
+      this.buildWindowSignalProfile(userId, 90, epoch),
     ]);
-    const derivedBehaviorSignals = await this.buildDerivedBehaviorSignals(userId);
-    const dataMaturity = await this.getDataMaturity(userId);
+    const derivedBehaviorSignals = await this.buildDerivedBehaviorSignals(userId, epoch);
+    const dataMaturity = await this.getDataMaturity(userId, epoch);
 
     const features: Record<string, number> = {};
 
@@ -109,13 +166,10 @@ export class FeatureStoreService {
       if (user.preferences.skillLevel) {
         features[`signal_pref_skill_${user.preferences.skillLevel}`] = 1;
       }
-      if (user.preferences.budget) {
-        features[`signal_pref_budget_${user.preferences.budget}`] = 1;
-      }
     }
 
-    if (user?.profile) {
-      const profile = user.profile as Record<string, unknown>;
+    if (derivedProfile) {
+      const profile = derivedProfile as Record<string, unknown>;
       const parseArray = (value: unknown): string[] => {
         if (Array.isArray(value)) {
           return value.filter((item): item is string => typeof item === 'string');
@@ -178,36 +232,53 @@ export class FeatureStoreService {
     features['_data_signalConfidenceAvg'] = dataMaturity.signalConfidenceAvg;
     features['_data_behavioralReliability'] = dataMaturity.behavioralReliability;
 
-    await this.prisma.userFeatureVector.upsert({
-      where: { userId },
-      create: { userId, features },
-      update: { features, version: { increment: 1 } },
-    });
-
     const rows = Object.entries(features).map(([featureKey, value]) => ({
       userId,
       featureKey,
       value,
     }));
 
-    await this.prisma.$transaction([
-      this.prisma.userFeature.deleteMany({ where: { userId } }),
-      this.prisma.userFeature.createMany({ data: rows, skipDuplicates: true }),
-    ]);
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'feature-store.rebuild-feature-vector',
+        expectedEpoch: epoch,
+      },
+      async (tx) => {
+        await tx.userFeatureVector.upsert({
+          where: { userId },
+          create: { userId, features },
+          update: { features, version: { increment: 1 } },
+        });
+        await tx.userFeature.deleteMany({ where: { userId } });
+        await tx.userFeature.createMany({ data: rows, skipDuplicates: true });
+      },
+    );
+    if (boundary.status !== 'executed') return {};
 
     return features;
   }
 
-  private async buildWindowSignalProfile(userId: string, windowDays: number) {
-    const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+  private async buildWindowSignalProfile(
+    userId: string,
+    windowDays: number,
+    epoch: Date,
+  ) {
+    const since = this.laterOf(
+      new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000),
+      epoch,
+    );
     const [activityCount, recipeEngagementCount, recommendationEngagementCount] =
       await Promise.all([
         this.prisma.userEvent.count({
-          where: { userId, timestamp: { gte: since } },
+          where: { userId, consentPurpose: 'personalization', timestamp: { gte: since } },
         }),
         this.prisma.userEvent.count({
           where: {
             userId,
+            consentPurpose: 'personalization',
             timestamp: { gte: since },
             type: { in: ['recipe_view', 'favorite_add', 'favorite_remove'] },
           },
@@ -215,6 +286,7 @@ export class FeatureStoreService {
         this.prisma.userEvent.count({
           where: {
             userId,
+            consentPurpose: 'personalization',
             timestamp: { gte: since },
             type: {
               in: [
@@ -244,8 +316,11 @@ export class FeatureStoreService {
     return Math.max(0, Math.min(1, Math.round((count / Math.max(windowDays * 2, 1)) * 100) / 100));
   }
 
-  private async buildDerivedBehaviorSignals(userId: string) {
-    const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+  private async buildDerivedBehaviorSignals(userId: string, epoch: Date) {
+    const since = this.laterOf(
+      new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+      epoch,
+    );
     const userEvent = this.prisma.userEvent;
     if (!userEvent?.findMany) {
       return {};
@@ -253,6 +328,7 @@ export class FeatureStoreService {
     const recentEvents = await userEvent.findMany({
       where: {
         userId,
+        consentPurpose: 'personalization',
         timestamp: { gte: since },
         type: {
           in: [
@@ -352,8 +428,14 @@ export class FeatureStoreService {
     return Math.max(0, Math.min(1, Math.round((numerator / Math.max(denominator, 1)) * 100) / 100));
   }
 
-  async getDataMaturity(userId: string) {
-    const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+  async getDataMaturity(userId: string, requiredEpoch?: Date) {
+    const epoch = requiredEpoch ?? (await this.currentEventEpoch(userId));
+    if (!epoch) return this.coldDataMaturity();
+
+    const since = this.laterOf(
+      new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+      epoch,
+    );
     const qualifiedTypes = [
       'recipe_view',
       'favorite_add',
@@ -382,6 +464,7 @@ export class FeatureStoreService {
       this.prisma.userEvent.findMany({
         where: {
           userId,
+          consentPurpose: 'personalization',
           timestamp: { gte: since },
           type: { in: qualifiedTypes },
           NOT: { payload: { contains: '"testMode":true' } },
@@ -390,7 +473,7 @@ export class FeatureStoreService {
         take: 1000,
       }),
       this.prisma.userBehaviorSignal.findMany({
-        where: { userId },
+        where: { userId, updatedAt: { gte: epoch } },
         select: { confidence: true },
       }),
     ]);
@@ -417,6 +500,9 @@ export class FeatureStoreService {
         signalConfidenceAvg * 0.2,
     );
 
+    if (!(await this.epochIsCurrent(userId, epoch))) {
+      return this.coldDataMaturity();
+    }
     return {
       dataMaturity: this.maturityLabel(activeDays, events.length, realImpressions, reliability),
       confidenceLevel: reliability < 0.35 ? 'cold_start' : reliability < 0.65 ? 'warming_up' : 'reliable',
@@ -450,18 +536,98 @@ export class FeatureStoreService {
   }
 
   async getFeatureVector(userId: string): Promise<Record<string, number>> {
-    const vector = await this.prisma.userFeatureVector.findUnique({
-      where: { userId },
+    const epoch = await this.currentEventEpoch(userId);
+    if (!epoch) return {};
+
+    const vector = await this.prisma.userFeatureVector.findFirst({
+      where: { userId, updatedAt: { gte: epoch } },
     });
+    if (!(await this.epochIsCurrent(userId, epoch))) return {};
     return (vector?.features as Record<string, number>) || {};
   }
 
   async findUsersByFeature(featureKey: string, minValue: number): Promise<string[]> {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) return [];
+
+    let decisions: Array<{
+      userId: string;
+      purpose: string;
+      status: string;
+      policyVersion: string | null;
+      createdAt: Date;
+    }>;
+    try {
+      decisions = await this.prisma.userConsent.findMany({
+        where: { purpose: { in: ['analytics', 'personalization'] } },
+        orderBy: { createdAt: 'asc' },
+        select: {
+          userId: true,
+          purpose: true,
+          status: true,
+          policyVersion: true,
+          createdAt: true,
+        },
+      });
+    } catch {
+      return [];
+    }
+
+    const latest = new Map<string, (typeof decisions)[number]>();
+    for (const decision of decisions) {
+      latest.set(`${decision.userId}:${decision.purpose}`, decision);
+    }
+    const userIds = [...new Set(decisions.map((decision) => decision.userId))];
+    const eligible = userIds.flatMap((userId) => {
+      const analytics = latest.get(`${userId}:analytics`);
+      const personalization = latest.get(`${userId}:personalization`);
+      if (
+        !analytics ||
+        !personalization ||
+        analytics.status !== 'granted' ||
+        personalization.status !== 'granted' ||
+        analytics.policyVersion !== CURRENT_PRIVACY_POLICY_VERSION ||
+        personalization.policyVersion !== CURRENT_PRIVACY_POLICY_VERSION
+      ) return [];
+      return [{
+        userId,
+        effectiveFrom: new Date(Math.max(
+          analytics.createdAt.getTime(),
+          personalization.createdAt.getTime(),
+        )),
+      }];
+    });
+    if (!eligible.length) return [];
+
     const rows: { userId: string }[] = await this.prisma.userFeature.findMany({
-      where: { featureKey, value: { gte: minValue } },
+      where: {
+        featureKey,
+        value: { gte: minValue },
+        OR: eligible.map((subject) => ({
+          userId: subject.userId,
+          updatedAt: { gte: subject.effectiveFrom },
+        })),
+      },
       select: { userId: true },
     });
     return [...new Set(rows.map((row) => row.userId))];
+  }
+
+  private coldDataMaturity() {
+    return {
+      dataMaturity: 'cold_start',
+      confidenceLevel: 'cold_start',
+      activeDays: 0,
+      totalQualifiedEvents: 0,
+      realImpressions: 0,
+      clicks: 0,
+      saves: 0,
+      cooks: 0,
+      signalConfidenceAvg: 0,
+      behavioralReliability: 0,
+    };
   }
 
   private clamp(value: number) {

@@ -9,6 +9,8 @@ import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
 import RequireAuth from './shell/RequireAuth';
 import { useAnalytics } from './hooks/useAnalytics';
+import { hasAnalyticsConsent } from './lib/analytics-init';
+import { installE2EQueryInspection } from './lib/private-session-cache';
 import HomePage from './app/home/page';
 import RecipeDetailPage from './app/recipe/[id]/page';
 import CookPage from './app/cook/[id]/page';
@@ -38,6 +40,10 @@ import NotFound from './shell/NotFound';
 // face so every component renders in Vazirmatn. RTL comes from DirectionProvider
 // + `dir="rtl"` on <html>; reduced-motion is respected app-wide.
 const queryClient = new QueryClient();
+installE2EQueryInspection({
+  queryClient,
+  enabled: import.meta.env.VITE_E2E_QUERY_INSPECTION === 'true',
+});
 
 const theme = createTheme({
   ...garnishTheme,
@@ -89,20 +95,32 @@ class ErrorBoundary extends Component {
 // Fire a page_view on EVERY route change with the REAL path, so the admin "top pages" reflects actual
 // navigation. The rebuilt app had dropped page-view tracking entirely (only 18-day-old legacy /home events
 // remained → the panel showed just "/"). Admin routes are skipped so operator views don't pollute user analytics.
-function RouteTracker() {
+export function RouteTracker() {
   const location = useLocation();
   const { trackEvent } = useAnalytics();
   const lastRef = useRef(null);
   // CLICKS-PER-PAGE: count clicks on the current page (capture phase); flushed as ONE summary on leave (low volume,
   // never per-click — that would flood ingest). Stored in sessionStorage so it survives a same-session refresh.
   useEffect(() => {
-    const onClick = () => { try { sessionStorage.setItem('g_clicks', String((Number(sessionStorage.getItem('g_clicks')) || 0) + 1)); } catch { /* */ } };
+    const onClick = () => {
+      if (!hasAnalyticsConsent()) return;
+      try { sessionStorage.setItem('g_clicks', String((Number(sessionStorage.getItem('g_clicks')) || 0) + 1)); } catch { /* */ }
+    };
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
   }, []);
   useEffect(() => {
     const path = location.pathname;
     if (path.startsWith('/admin')) return;
+    if (!hasAnalyticsConsent()) {
+      lastRef.current = null;
+      try {
+        sessionStorage.removeItem('g_prevPage');
+        sessionStorage.removeItem('g_enterTs');
+        sessionStorage.removeItem('g_clicks');
+      } catch { /* private mode */ }
+      return;
+    }
     if (lastRef.current === path) return; // StrictMode / dup-render guard within this mount
     lastRef.current = path;
     let prevPage = null, enterTs = 0, clicks = 0;
@@ -121,6 +139,14 @@ function RouteTracker() {
   useEffect(() => {
     const flush = () => {
       if (document.visibilityState !== 'hidden') return;
+      if (!hasAnalyticsConsent()) {
+        try {
+          sessionStorage.removeItem('g_prevPage');
+          sessionStorage.removeItem('g_enterTs');
+          sessionStorage.removeItem('g_clicks');
+        } catch { /* private mode */ }
+        return;
+      }
       try {
         const prevPage = sessionStorage.getItem('g_prevPage'); const enterTs = Number(sessionStorage.getItem('g_enterTs')) || 0; const clicks = Number(sessionStorage.getItem('g_clicks')) || 0;
         if (prevPage && enterTs) {

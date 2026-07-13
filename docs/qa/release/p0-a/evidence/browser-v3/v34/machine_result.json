@@ -1,0 +1,2587 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-07-13T20:27:15.738Z",
+  "database": "garnish_p0a_v34_browser_20260713_235611",
+  "automation": {
+    "product": "Playwright",
+    "version": "1.61.1",
+    "primaryBrowser": "system Google Chrome",
+    "persistentProfiles": true
+  },
+  "environment": {
+    "api": "PASS",
+    "preview": "PASS",
+    "migrations": "52/52",
+    "cleanBaseline": "PASS",
+    "serviceWorkerAsset": "PASS"
+  },
+  "fixtures": {
+    "accountScopeHashes": {
+      "accountA": "20f6030552d69234",
+      "accountB": "a034a14163b1be11"
+    },
+    "distinctScopes": true,
+    "recipeCount": 2,
+    "distinctAccounts": 2,
+    "distinctProfiles": 2,
+    "distinctAllergies": 2,
+    "distinctFavorites": 2,
+    "distinctPlans": 2,
+    "distinctShoppingMarkers": 2,
+    "crossAccountAssociations": 0,
+    "authenticatedApiReadback": {
+      "status": "PASS",
+      "accountA": {
+        "status": "PASS",
+        "endpointCount": 5,
+        "endpointsHealthy": true,
+        "profileMarkerPresent": true,
+        "favoriteMarkerPresent": true,
+        "planMarkerPresent": true,
+        "shoppingMarkerPresent": true
+      },
+      "accountB": {
+        "status": "PASS",
+        "endpointCount": 5,
+        "endpointsHealthy": true,
+        "profileMarkerPresent": true,
+        "favoriteMarkerPresent": true,
+        "planMarkerPresent": true,
+        "shoppingMarkerPresent": true
+      }
+    }
+  },
+  "scenarios": {
+    "scenario08": {
+      "status": "PASS",
+      "attempts": [
+        {
+          "status": "PASS",
+          "mode": "system-chrome-persistent",
+          "before": {
+            "names": [
+              "api-cache"
+            ],
+            "legacyPresent": true,
+            "priorRegistrationCount": 0,
+            "registrationCount": 0
+          },
+          "after": {
+            "names": [
+              "workbox-precache-v2-http://127.0.0.1:4174/",
+              "public-immutable-assets"
+            ],
+            "entries": [
+              {
+                "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+                "requests": [
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/index-B2X6sm0t.js",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/index-D8f17l-g.css",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/react-BTwDmj8U.js",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/react-DlN7pjm-.css",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/assets/vendor-C5Reev3_.js",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/fonts/Vazirmatn-Regular.ttf",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/index.html",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/logo-garnish.png",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/manifest.webmanifest",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/registerSW.js",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/sw-private-cache-cleanup.js",
+                    "queryParamNames": [
+                      "__WB_REVISION__"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "public-immutable-assets",
+                "requests": [
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/icon-192.png",
+                    "queryParamNames": []
+                  },
+                  {
+                    "method": "GET",
+                    "origin": "http://127.0.0.1:4174",
+                    "path": "/logo-garnish.png",
+                    "queryParamNames": [
+                      "__p0a_public_probe"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "legacyPresent": false,
+            "privateApiEntryCount": 0,
+            "controllerPresent": true
+          },
+          "publicProbe": {
+            "status": 200,
+            "ok": true
+          },
+          "cacheOracle": {
+            "cacheCount": 2,
+            "requestCount": 14,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 1,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          },
+          "activationContextRecovery": true,
+          "sameProfileRelaunched": false,
+          "screenshot": "screenshots/scenario-08-system-chrome-persistent.png",
+          "timestamp": "2026-07-13T20:27:40.362Z"
+        }
+      ]
+    },
+    "scenario09": {
+      "status": "PASS",
+      "accountScopeHash": "20f6030552d69234",
+      "purposes": [
+        {
+          "purpose": "analytics",
+          "status": "granted",
+          "policyVersion": "privacy-1405-03-29",
+          "source": "settings",
+          "lawfulBasis": "consent",
+          "grantedAt": "2026-07-13T20:27:43.917",
+          "withdrawnAt": null,
+          "createdAt": "2026-07-13T20:27:43.917"
+        },
+        {
+          "purpose": "personalization",
+          "status": "granted",
+          "policyVersion": "privacy-1405-03-29",
+          "source": "settings",
+          "lawfulBasis": "consent",
+          "grantedAt": "2026-07-13T20:27:44.951",
+          "withdrawnAt": null,
+          "createdAt": "2026-07-13T20:27:44.951"
+        }
+      ],
+      "independentCanonicalGrants": true,
+      "dbCanonicalReadback": true,
+      "apiCanonicalReadback": true,
+      "consentLedgerRows": 2,
+      "eventWithinAnalyticsGrantEpoch": true,
+      "expectedOptionalRows": 1,
+      "observedOptionalRows": 1,
+      "prePersonalizationConsentPurpose": "analytics",
+      "screenshot": "screenshots/scenario-09-consent-grant.png"
+    },
+    "scenario10": {
+      "status": "PASS",
+      "overlapStartedAt": "2026-07-13T20:27:46.197Z",
+      "refreshAt": "2026-07-13T20:27:46.244Z",
+      "barrierBaselineWaiterCount": 0,
+      "withdrawalRequestObserved": true,
+      "withdrawalLockWaiterCount": 1,
+      "overlapLockWaiterCount": 2,
+      "refreshLockWaiterCount": 2,
+      "twoDistinctBarrierWaiters": true,
+      "sameWaitersBlockedAfterRefresh": true,
+      "withdrawalResponsePendingAtRefresh": true,
+      "eventPendingAtRefresh": true,
+      "refreshNavigationObserved": true,
+      "refreshOutcome": "committed",
+      "barrierReleaseElapsedMs": 98,
+      "barrierReleaseTimingBasis": "withdrawal_request_observed_before_first_waiter_poll",
+      "withdrawalResponseStatus": null,
+      "withdrawalResponseErrorClass": "TimeoutError",
+      "overlapResponseStatus": 201,
+      "overlapResponseErrorClass": null,
+      "canonicalConsent": {
+        "purpose": "analytics",
+        "status": "withdrawn",
+        "policyVersion": "privacy-1405-03-29",
+        "source": "settings",
+        "lawfulBasis": "consent",
+        "grantedAt": "2026-07-13T20:27:46.304",
+        "withdrawnAt": "2026-07-13T20:27:46.302",
+        "createdAt": "2026-07-13T20:27:46.302"
+      },
+      "consentLogWithdrawnRows": 1,
+      "droppedEventResidue": 0,
+      "droppedEventOutboxResidue": 0,
+      "optionalRowsAfterWithdrawalEpoch": 0,
+      "screenshot": "screenshots/scenario-10-after-refresh.png"
+    },
+    "scenario11": {
+      "status": "PASS",
+      "canonicalConsent": {
+        "purpose": "analytics",
+        "status": "granted",
+        "policyVersion": "privacy-1405-03-29",
+        "source": "settings",
+        "lawfulBasis": "consent",
+        "grantedAt": "2026-07-13T20:27:50.877",
+        "withdrawnAt": null,
+        "createdAt": "2026-07-13T20:27:50.877"
+      },
+      "rowsBeforeRegrant": 1,
+      "rowsWithoutNewAction": 1,
+      "replayedRows": 0,
+      "explicitPostGrantActionRows": 1,
+      "explicitPostGrantActionPurpose": "personalization",
+      "screenshot": "screenshots/scenario-11-reconsent.png"
+    },
+    "scenario12": {
+      "status": "PASS",
+      "delayedResponseRelease": "fulfilled",
+      "releaseErrorClass": null,
+      "heldAccountAResponse": {
+        "containsAccountAMarker": true,
+        "bodyHash": "780be770fe49117c",
+        "upstreamStatus": 200
+      },
+      "localAuthPacingMs": 34643,
+      "sameDocumentBeforeLogout": true,
+      "heldQueryMembership": {
+        "accountAActivePending": true,
+        "beforeLogoutClick": true,
+        "afterLogout": false,
+        "accountBBeforeRelease": false,
+        "afterDelayedRelease": false,
+        "accountBMembershipUnchangedAfterRelease": true
+      },
+      "freshBQueryEstablished": true,
+      "accountBFavoritesResponse": {
+        "status": 200,
+        "containsAccountBMarker": true,
+        "containsAccountAMarker": false,
+        "bodyHash": "f1b69865313804ce",
+        "authorizationScopeMatchesAccountB": true
+      },
+      "accountBPrivateDomClean": true,
+      "currentScopeMetadata": {
+        "accountA": true,
+        "loggedOut": true,
+        "accountB": true
+      },
+      "serviceWorkerIsolation": "unregistered-and-blocked-for-deterministic-query-delay",
+      "screenshot": "screenshots/scenario-12-account-b-after-delayed-release.png"
+    },
+    "scenario13": {
+      "status": "PASS",
+      "checkpoints": {
+        "accountAActiveHeld": {
+          "available": true,
+          "rows": [
+            {
+              "queryKeyNamespace": "favorites",
+              "queryKeyHash": "af961aaa5ddb5b9f",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "1b96091dfbafb0b9",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e32d229b8a5dc1bc",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "recipes",
+              "queryKeyHash": "f5753aa27420c60b",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            }
+          ]
+        },
+        "accountABeforeLogoutClick": {
+          "available": true,
+          "rows": [
+            {
+              "queryKeyNamespace": "discover",
+              "queryKeyHash": "c460248177d848d6",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "favorites",
+              "queryKeyHash": "af961aaa5ddb5b9f",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "1b96091dfbafb0b9",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "bf63a5b751e9f156",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "cf0ce099e4736f30",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e32d229b8a5dc1bc",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "recipes",
+              "queryKeyHash": "f5753aa27420c60b",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "users",
+              "queryKeyHash": "714f322f41df3aca",
+              "accountScopeHash": "20f6030552d69234",
+              "status": "pending",
+              "dataPresent": false
+            }
+          ]
+        },
+        "afterAccountALogout": {
+          "available": true,
+          "rows": []
+        },
+        "accountBActive": {
+          "available": true,
+          "rows": [
+            {
+              "queryKeyNamespace": "favorites",
+              "queryKeyHash": "48040034ce375b68",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "1b96091dfbafb0b9",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "bf63a5b751e9f156",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "cf0ce099e4736f30",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e32d229b8a5dc1bc",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e6e748d77676b04a",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "profile",
+              "queryKeyHash": "3b8c97439670ca2c",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            }
+          ]
+        },
+        "afterDelayedARelease": {
+          "available": true,
+          "rows": [
+            {
+              "queryKeyNamespace": "favorites",
+              "queryKeyHash": "48040034ce375b68",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "1b96091dfbafb0b9",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "bf63a5b751e9f156",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "cf0ce099e4736f30",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e32d229b8a5dc1bc",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e6e748d77676b04a",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "profile",
+              "queryKeyHash": "3b8c97439670ca2c",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            }
+          ]
+        },
+        "accountBFavoritesFreshRead": {
+          "available": true,
+          "rows": [
+            {
+              "queryKeyNamespace": "favorites",
+              "queryKeyHash": "af961aaa5ddb5b9f",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "1b96091dfbafb0b9",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "pending",
+              "dataPresent": false
+            },
+            {
+              "queryKeyNamespace": "home",
+              "queryKeyHash": "e32d229b8a5dc1bc",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            },
+            {
+              "queryKeyNamespace": "recipes",
+              "queryKeyHash": "f5753aa27420c60b",
+              "accountScopeHash": "01b863e00d955f40",
+              "status": "success",
+              "dataPresent": true
+            }
+          ]
+        }
+      },
+      "queryMembershipBoundary": {
+        "accountAActivePending": true,
+        "beforeLogoutClick": true,
+        "afterLogout": false,
+        "accountBBeforeRelease": false,
+        "afterDelayedRelease": false,
+        "accountBMembershipUnchangedAfterRelease": true
+      },
+      "currentScopeMetadata": {
+        "accountA": true,
+        "loggedOut": true,
+        "accountB": true
+      },
+      "freshAccountBQueryEstablished": true,
+      "publicAccountNeutralQueryNamespaces": [
+        "recipes"
+      ],
+      "storageOracles": {
+        "accountASentinel": {
+          "status": "PASS",
+          "checks": {
+            "supportTickets": true,
+            "personalizationSession": true,
+            "postHogLocal": true,
+            "postHogSession": true,
+            "postHogCookie": true,
+            "preservedLanguage": true
+          }
+        },
+        "afterLogout": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "accountB": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "afterDelayedRelease": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "cookiesAfterLogout": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "cookiesAccountB": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "cookiesAfterDelayedRelease": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "storageUnchangedAfterRelease": true,
+        "cookiesUnchangedAfterRelease": true
+      }
+    },
+    "storage": {
+      "accountAActive": {
+        "label": "account-a-active-held-query",
+        "timestamp": "2026-07-13T20:27:53.394Z",
+        "path": "/favorites",
+        "historyLength": 8,
+        "localStorage": [
+          {
+            "key": "__ph_opt_in_out_",
+            "valueLength": 1,
+            "valueHash": "5feceb66ffc86f38",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish_language",
+            "valueLength": 2,
+            "valueHash": "3097e26b7f3cbdb9",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish.analyticsConsent",
+            "valueLength": 7,
+            "valueHash": "dd515d1975b8e5a8",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish.consent.personalization",
+            "valueLength": 4,
+            "valueHash": "b5bea41b6c623f7c",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "ph_p0a_v34_posthog",
+            "valueLength": 33,
+            "valueHash": "8640b7598f11c7b2",
+            "accountAMarkerMatches": 1
+          },
+          {
+            "key": "support_tickets",
+            "valueLength": 33,
+            "valueHash": "8640b7598f11c7b2",
+            "accountAMarkerMatches": 1
+          },
+          {
+            "key": "token",
+            "valueLength": 201,
+            "valueHash": "20f6030552d69234",
+            "accountAMarkerMatches": 0
+          }
+        ],
+        "sessionStorage": [
+          {
+            "key": "garnish:personalization:p0a-v34",
+            "valueLength": 33,
+            "valueHash": "8640b7598f11c7b2",
+            "accountAMarkerMatches": 1
+          },
+          {
+            "key": "ph_p0a_v34_posthog",
+            "valueLength": 33,
+            "valueHash": "8640b7598f11c7b2",
+            "accountAMarkerMatches": 1
+          }
+        ],
+        "cacheStorage": [
+          {
+            "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-B2X6sm0t.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-D8f17l-g.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-BTwDmj8U.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-DlN7pjm-.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/vendor-C5Reev3_.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/fonts/Vazirmatn-Regular.ttf",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/index.html",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/logo-garnish.png",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/manifest.webmanifest",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/registerSW.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/sw-private-cache-cleanup.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "public-immutable-assets",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/icon-192.png",
+                "queryParamNames": []
+              }
+            ]
+          }
+        ],
+        "serviceWorkers": [],
+        "controllerPresent": false,
+        "indexedDbEnumerationSupported": true,
+        "indexedDb": [
+          {
+            "name": "workbox-expiration",
+            "version": 1,
+            "stores": [
+              {
+                "name": "cache-entries",
+                "scanStatus": "PASS",
+                "rowCount": 1,
+                "contentHash": "3111c65c4e6d2e0c",
+                "accountAMarkerMatches": 0
+              }
+            ],
+            "scanStatus": "PASS"
+          }
+        ],
+        "cookieNames": [
+          "ph_p0a_v34_posthog"
+        ],
+        "sensitiveCookieNameCount": 0,
+        "accountAMarkerMatches": {
+          "localStorage": 2,
+          "sessionStorage": 2,
+          "indexedDb": 0,
+          "cookies": 1
+        }
+      },
+      "afterAccountALogout": {
+        "label": "after-account-a-logout",
+        "timestamp": "2026-07-13T20:27:53.820Z",
+        "path": "/login",
+        "historyLength": 9,
+        "localStorage": [
+          {
+            "key": "__ph_opt_in_out_",
+            "valueLength": 1,
+            "valueHash": "5feceb66ffc86f38",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish_language",
+            "valueLength": 2,
+            "valueHash": "3097e26b7f3cbdb9",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish.analyticsConsent",
+            "valueLength": 6,
+            "valueHash": "62d6c2330036f64b",
+            "accountAMarkerMatches": 0
+          }
+        ],
+        "sessionStorage": [],
+        "cacheStorage": [
+          {
+            "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-B2X6sm0t.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-D8f17l-g.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-BTwDmj8U.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-DlN7pjm-.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/vendor-C5Reev3_.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/fonts/Vazirmatn-Regular.ttf",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/index.html",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/logo-garnish.png",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/manifest.webmanifest",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/registerSW.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/sw-private-cache-cleanup.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "public-immutable-assets",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/icon-192.png",
+                "queryParamNames": []
+              }
+            ]
+          }
+        ],
+        "serviceWorkers": [],
+        "controllerPresent": false,
+        "indexedDbEnumerationSupported": true,
+        "indexedDb": [
+          {
+            "name": "workbox-expiration",
+            "version": 1,
+            "stores": [
+              {
+                "name": "cache-entries",
+                "scanStatus": "PASS",
+                "rowCount": 1,
+                "contentHash": "3111c65c4e6d2e0c",
+                "accountAMarkerMatches": 0
+              }
+            ],
+            "scanStatus": "PASS"
+          }
+        ],
+        "cookieNames": [],
+        "sensitiveCookieNameCount": 0,
+        "accountAMarkerMatches": {
+          "localStorage": 0,
+          "sessionStorage": 0,
+          "indexedDb": 0,
+          "cookies": 0
+        }
+      },
+      "accountBActive": {
+        "label": "account-b-active",
+        "timestamp": "2026-07-13T20:28:30.630Z",
+        "path": "/",
+        "historyLength": 9,
+        "localStorage": [
+          {
+            "key": "__ph_opt_in_out_",
+            "valueLength": 1,
+            "valueHash": "5feceb66ffc86f38",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish_language",
+            "valueLength": 2,
+            "valueHash": "3097e26b7f3cbdb9",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish.analyticsConsent",
+            "valueLength": 6,
+            "valueHash": "62d6c2330036f64b",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "token",
+            "valueLength": 201,
+            "valueHash": "01b863e00d955f40",
+            "accountAMarkerMatches": 0
+          }
+        ],
+        "sessionStorage": [],
+        "cacheStorage": [
+          {
+            "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-B2X6sm0t.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-D8f17l-g.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-BTwDmj8U.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-DlN7pjm-.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/vendor-C5Reev3_.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/fonts/Vazirmatn-Regular.ttf",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/index.html",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/logo-garnish.png",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/manifest.webmanifest",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/registerSW.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/sw-private-cache-cleanup.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "public-immutable-assets",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/icon-192.png",
+                "queryParamNames": []
+              }
+            ]
+          }
+        ],
+        "serviceWorkers": [],
+        "controllerPresent": false,
+        "indexedDbEnumerationSupported": true,
+        "indexedDb": [
+          {
+            "name": "workbox-expiration",
+            "version": 1,
+            "stores": [
+              {
+                "name": "cache-entries",
+                "scanStatus": "PASS",
+                "rowCount": 1,
+                "contentHash": "3111c65c4e6d2e0c",
+                "accountAMarkerMatches": 0
+              }
+            ],
+            "scanStatus": "PASS"
+          }
+        ],
+        "cookieNames": [],
+        "sensitiveCookieNameCount": 0,
+        "accountAMarkerMatches": {
+          "localStorage": 0,
+          "sessionStorage": 0,
+          "indexedDb": 0,
+          "cookies": 0
+        }
+      },
+      "afterDelayedAccountARelease": {
+        "label": "after-delayed-a-release",
+        "timestamp": "2026-07-13T20:28:30.945Z",
+        "path": "/",
+        "historyLength": 9,
+        "localStorage": [
+          {
+            "key": "__ph_opt_in_out_",
+            "valueLength": 1,
+            "valueHash": "5feceb66ffc86f38",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish_language",
+            "valueLength": 2,
+            "valueHash": "3097e26b7f3cbdb9",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "garnish.analyticsConsent",
+            "valueLength": 6,
+            "valueHash": "62d6c2330036f64b",
+            "accountAMarkerMatches": 0
+          },
+          {
+            "key": "token",
+            "valueLength": 201,
+            "valueHash": "01b863e00d955f40",
+            "accountAMarkerMatches": 0
+          }
+        ],
+        "sessionStorage": [],
+        "cacheStorage": [
+          {
+            "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-B2X6sm0t.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/index-D8f17l-g.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-BTwDmj8U.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/react-DlN7pjm-.css",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/assets/vendor-C5Reev3_.js",
+                "queryParamNames": []
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/fonts/Vazirmatn-Regular.ttf",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/index.html",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/logo-garnish.png",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/manifest.webmanifest",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/registerSW.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              },
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/sw-private-cache-cleanup.js",
+                "queryParamNames": [
+                  "__WB_REVISION__"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "public-immutable-assets",
+            "requests": [
+              {
+                "method": "GET",
+                "origin": "http://127.0.0.1:4174",
+                "path": "/icon-192.png",
+                "queryParamNames": []
+              }
+            ]
+          }
+        ],
+        "serviceWorkers": [],
+        "controllerPresent": false,
+        "indexedDbEnumerationSupported": true,
+        "indexedDb": [
+          {
+            "name": "workbox-expiration",
+            "version": 1,
+            "stores": [
+              {
+                "name": "cache-entries",
+                "scanStatus": "PASS",
+                "rowCount": 1,
+                "contentHash": "3111c65c4e6d2e0c",
+                "accountAMarkerMatches": 0
+              }
+            ],
+            "scanStatus": "PASS"
+          }
+        ],
+        "cookieNames": [],
+        "sensitiveCookieNameCount": 0,
+        "accountAMarkerMatches": {
+          "localStorage": 0,
+          "sessionStorage": 0,
+          "indexedDb": 0,
+          "cookies": 0
+        }
+      },
+      "contextCookies": {
+        "accountAActive": {
+          "label": "account-a-active-held-query",
+          "cookieNames": [
+            "ph_p0a_v34_posthog"
+          ]
+        },
+        "afterAccountALogout": {
+          "label": "after-account-a-logout",
+          "cookieNames": []
+        },
+        "accountBActive": {
+          "label": "account-b-active",
+          "cookieNames": []
+        },
+        "afterDelayedAccountARelease": {
+          "label": "after-delayed-a-release",
+          "cookieNames": []
+        }
+      },
+      "oracles": {
+        "accountASentinel": {
+          "status": "PASS",
+          "checks": {
+            "supportTickets": true,
+            "personalizationSession": true,
+            "postHogLocal": true,
+            "postHogSession": true,
+            "postHogCookie": true,
+            "preservedLanguage": true
+          }
+        },
+        "afterLogout": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "accountB": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "afterDelayedRelease": {
+          "status": "PASS",
+          "checks": {
+            "tokenAbsentWhenLoggedOut": true,
+            "accountStorageAbsentWhenLoggedOut": true,
+            "expectedTokenHashPresent": true,
+            "priorTokenHashAbsent": true,
+            "preservedLanguageHashPresent": true,
+            "analyticsDeniedOrAbsent": true,
+            "analyticsControlRowCount": 1,
+            "postHogPersistenceCount": 1,
+            "safePostHogOptOutCount": 1,
+            "unsafePostHogPersistenceCount": 0,
+            "postHogStateSafe": true,
+            "accountAMarkerMatches": 0,
+            "indexedDbEnumerationSupported": true,
+            "indexedDbScanErrors": 0,
+            "sensitiveCookieNameCount": 0,
+            "cacheStorageStatus": "PASS"
+          },
+          "cacheStorage": {
+            "cacheCount": 2,
+            "requestCount": 13,
+            "expectedPrecacheRequestCount": 12,
+            "observedPrecacheRequestCount": 12,
+            "precacheManifestExact": true,
+            "precacheCacheCount": 1,
+            "runtimeCacheCount": 1,
+            "publicRuntimeProbeCount": 0,
+            "apiOriginEntryCount": 0,
+            "nonPreviewOriginEntryCount": 0,
+            "nonGetRequestCount": 0,
+            "legacyCacheNameCount": 0,
+            "disallowedCacheNameCount": 0,
+            "invalidPrecacheQueryCount": 0,
+            "invalidRuntimePathCount": 0,
+            "invalidRuntimeQueryCount": 0,
+            "disallowedCacheNameHashes": [],
+            "disallowedRequestHashes": [],
+            "status": "PASS"
+          }
+        },
+        "cookiesAfterLogout": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "cookiesAccountB": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "cookiesAfterDelayedRelease": {
+          "status": "PASS",
+          "checks": {
+            "sensitiveCookieNameCount": 0,
+            "postHogCookieCount": 0,
+            "accountASentinelCookieCount": 0
+          }
+        },
+        "storageUnchangedAfterRelease": true,
+        "cookiesUnchangedAfterRelease": true
+      }
+    }
+  },
+  "storage": {
+    "accountAActive": {
+      "label": "account-a-active-held-query",
+      "timestamp": "2026-07-13T20:27:53.394Z",
+      "path": "/favorites",
+      "historyLength": 8,
+      "localStorage": [
+        {
+          "key": "__ph_opt_in_out_",
+          "valueLength": 1,
+          "valueHash": "5feceb66ffc86f38",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish_language",
+          "valueLength": 2,
+          "valueHash": "3097e26b7f3cbdb9",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish.analyticsConsent",
+          "valueLength": 7,
+          "valueHash": "dd515d1975b8e5a8",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish.consent.personalization",
+          "valueLength": 4,
+          "valueHash": "b5bea41b6c623f7c",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "ph_p0a_v34_posthog",
+          "valueLength": 33,
+          "valueHash": "8640b7598f11c7b2",
+          "accountAMarkerMatches": 1
+        },
+        {
+          "key": "support_tickets",
+          "valueLength": 33,
+          "valueHash": "8640b7598f11c7b2",
+          "accountAMarkerMatches": 1
+        },
+        {
+          "key": "token",
+          "valueLength": 201,
+          "valueHash": "20f6030552d69234",
+          "accountAMarkerMatches": 0
+        }
+      ],
+      "sessionStorage": [
+        {
+          "key": "garnish:personalization:p0a-v34",
+          "valueLength": 33,
+          "valueHash": "8640b7598f11c7b2",
+          "accountAMarkerMatches": 1
+        },
+        {
+          "key": "ph_p0a_v34_posthog",
+          "valueLength": 33,
+          "valueHash": "8640b7598f11c7b2",
+          "accountAMarkerMatches": 1
+        }
+      ],
+      "cacheStorage": [
+        {
+          "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-B2X6sm0t.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-D8f17l-g.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-BTwDmj8U.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-DlN7pjm-.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/vendor-C5Reev3_.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/fonts/Vazirmatn-Regular.ttf",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/index.html",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/logo-garnish.png",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/manifest.webmanifest",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/registerSW.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/sw-private-cache-cleanup.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "public-immutable-assets",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/icon-192.png",
+              "queryParamNames": []
+            }
+          ]
+        }
+      ],
+      "serviceWorkers": [],
+      "controllerPresent": false,
+      "indexedDbEnumerationSupported": true,
+      "indexedDb": [
+        {
+          "name": "workbox-expiration",
+          "version": 1,
+          "stores": [
+            {
+              "name": "cache-entries",
+              "scanStatus": "PASS",
+              "rowCount": 1,
+              "contentHash": "3111c65c4e6d2e0c",
+              "accountAMarkerMatches": 0
+            }
+          ],
+          "scanStatus": "PASS"
+        }
+      ],
+      "cookieNames": [
+        "ph_p0a_v34_posthog"
+      ],
+      "sensitiveCookieNameCount": 0,
+      "accountAMarkerMatches": {
+        "localStorage": 2,
+        "sessionStorage": 2,
+        "indexedDb": 0,
+        "cookies": 1
+      }
+    },
+    "afterAccountALogout": {
+      "label": "after-account-a-logout",
+      "timestamp": "2026-07-13T20:27:53.820Z",
+      "path": "/login",
+      "historyLength": 9,
+      "localStorage": [
+        {
+          "key": "__ph_opt_in_out_",
+          "valueLength": 1,
+          "valueHash": "5feceb66ffc86f38",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish_language",
+          "valueLength": 2,
+          "valueHash": "3097e26b7f3cbdb9",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish.analyticsConsent",
+          "valueLength": 6,
+          "valueHash": "62d6c2330036f64b",
+          "accountAMarkerMatches": 0
+        }
+      ],
+      "sessionStorage": [],
+      "cacheStorage": [
+        {
+          "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-B2X6sm0t.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-D8f17l-g.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-BTwDmj8U.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-DlN7pjm-.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/vendor-C5Reev3_.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/fonts/Vazirmatn-Regular.ttf",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/index.html",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/logo-garnish.png",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/manifest.webmanifest",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/registerSW.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/sw-private-cache-cleanup.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "public-immutable-assets",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/icon-192.png",
+              "queryParamNames": []
+            }
+          ]
+        }
+      ],
+      "serviceWorkers": [],
+      "controllerPresent": false,
+      "indexedDbEnumerationSupported": true,
+      "indexedDb": [
+        {
+          "name": "workbox-expiration",
+          "version": 1,
+          "stores": [
+            {
+              "name": "cache-entries",
+              "scanStatus": "PASS",
+              "rowCount": 1,
+              "contentHash": "3111c65c4e6d2e0c",
+              "accountAMarkerMatches": 0
+            }
+          ],
+          "scanStatus": "PASS"
+        }
+      ],
+      "cookieNames": [],
+      "sensitiveCookieNameCount": 0,
+      "accountAMarkerMatches": {
+        "localStorage": 0,
+        "sessionStorage": 0,
+        "indexedDb": 0,
+        "cookies": 0
+      }
+    },
+    "accountBActive": {
+      "label": "account-b-active",
+      "timestamp": "2026-07-13T20:28:30.630Z",
+      "path": "/",
+      "historyLength": 9,
+      "localStorage": [
+        {
+          "key": "__ph_opt_in_out_",
+          "valueLength": 1,
+          "valueHash": "5feceb66ffc86f38",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish_language",
+          "valueLength": 2,
+          "valueHash": "3097e26b7f3cbdb9",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish.analyticsConsent",
+          "valueLength": 6,
+          "valueHash": "62d6c2330036f64b",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "token",
+          "valueLength": 201,
+          "valueHash": "01b863e00d955f40",
+          "accountAMarkerMatches": 0
+        }
+      ],
+      "sessionStorage": [],
+      "cacheStorage": [
+        {
+          "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-B2X6sm0t.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-D8f17l-g.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-BTwDmj8U.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-DlN7pjm-.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/vendor-C5Reev3_.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/fonts/Vazirmatn-Regular.ttf",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/index.html",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/logo-garnish.png",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/manifest.webmanifest",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/registerSW.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/sw-private-cache-cleanup.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "public-immutable-assets",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/icon-192.png",
+              "queryParamNames": []
+            }
+          ]
+        }
+      ],
+      "serviceWorkers": [],
+      "controllerPresent": false,
+      "indexedDbEnumerationSupported": true,
+      "indexedDb": [
+        {
+          "name": "workbox-expiration",
+          "version": 1,
+          "stores": [
+            {
+              "name": "cache-entries",
+              "scanStatus": "PASS",
+              "rowCount": 1,
+              "contentHash": "3111c65c4e6d2e0c",
+              "accountAMarkerMatches": 0
+            }
+          ],
+          "scanStatus": "PASS"
+        }
+      ],
+      "cookieNames": [],
+      "sensitiveCookieNameCount": 0,
+      "accountAMarkerMatches": {
+        "localStorage": 0,
+        "sessionStorage": 0,
+        "indexedDb": 0,
+        "cookies": 0
+      }
+    },
+    "afterDelayedAccountARelease": {
+      "label": "after-delayed-a-release",
+      "timestamp": "2026-07-13T20:28:30.945Z",
+      "path": "/",
+      "historyLength": 9,
+      "localStorage": [
+        {
+          "key": "__ph_opt_in_out_",
+          "valueLength": 1,
+          "valueHash": "5feceb66ffc86f38",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish_language",
+          "valueLength": 2,
+          "valueHash": "3097e26b7f3cbdb9",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "garnish.analyticsConsent",
+          "valueLength": 6,
+          "valueHash": "62d6c2330036f64b",
+          "accountAMarkerMatches": 0
+        },
+        {
+          "key": "token",
+          "valueLength": 201,
+          "valueHash": "01b863e00d955f40",
+          "accountAMarkerMatches": 0
+        }
+      ],
+      "sessionStorage": [],
+      "cacheStorage": [
+        {
+          "name": "workbox-precache-v2-http://127.0.0.1:4174/",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-B2X6sm0t.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/index-D8f17l-g.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-BTwDmj8U.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/react-DlN7pjm-.css",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/rolldown-runtime-Cyuzqnbw.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/assets/vendor-C5Reev3_.js",
+              "queryParamNames": []
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/fonts/Vazirmatn-Regular.ttf",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/index.html",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/logo-garnish.png",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/manifest.webmanifest",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/registerSW.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            },
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/sw-private-cache-cleanup.js",
+              "queryParamNames": [
+                "__WB_REVISION__"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "public-immutable-assets",
+          "requests": [
+            {
+              "method": "GET",
+              "origin": "http://127.0.0.1:4174",
+              "path": "/icon-192.png",
+              "queryParamNames": []
+            }
+          ]
+        }
+      ],
+      "serviceWorkers": [],
+      "controllerPresent": false,
+      "indexedDbEnumerationSupported": true,
+      "indexedDb": [
+        {
+          "name": "workbox-expiration",
+          "version": 1,
+          "stores": [
+            {
+              "name": "cache-entries",
+              "scanStatus": "PASS",
+              "rowCount": 1,
+              "contentHash": "3111c65c4e6d2e0c",
+              "accountAMarkerMatches": 0
+            }
+          ],
+          "scanStatus": "PASS"
+        }
+      ],
+      "cookieNames": [],
+      "sensitiveCookieNameCount": 0,
+      "accountAMarkerMatches": {
+        "localStorage": 0,
+        "sessionStorage": 0,
+        "indexedDb": 0,
+        "cookies": 0
+      }
+    },
+    "contextCookies": {
+      "accountAActive": {
+        "label": "account-a-active-held-query",
+        "cookieNames": [
+          "ph_p0a_v34_posthog"
+        ]
+      },
+      "afterAccountALogout": {
+        "label": "after-account-a-logout",
+        "cookieNames": []
+      },
+      "accountBActive": {
+        "label": "account-b-active",
+        "cookieNames": []
+      },
+      "afterDelayedAccountARelease": {
+        "label": "after-delayed-a-release",
+        "cookieNames": []
+      }
+    },
+    "oracles": {
+      "accountASentinel": {
+        "status": "PASS",
+        "checks": {
+          "supportTickets": true,
+          "personalizationSession": true,
+          "postHogLocal": true,
+          "postHogSession": true,
+          "postHogCookie": true,
+          "preservedLanguage": true
+        }
+      },
+      "afterLogout": {
+        "status": "PASS",
+        "checks": {
+          "tokenAbsentWhenLoggedOut": true,
+          "accountStorageAbsentWhenLoggedOut": true,
+          "expectedTokenHashPresent": true,
+          "priorTokenHashAbsent": true,
+          "preservedLanguageHashPresent": true,
+          "analyticsDeniedOrAbsent": true,
+          "analyticsControlRowCount": 1,
+          "postHogPersistenceCount": 1,
+          "safePostHogOptOutCount": 1,
+          "unsafePostHogPersistenceCount": 0,
+          "postHogStateSafe": true,
+          "accountAMarkerMatches": 0,
+          "indexedDbEnumerationSupported": true,
+          "indexedDbScanErrors": 0,
+          "sensitiveCookieNameCount": 0,
+          "cacheStorageStatus": "PASS"
+        },
+        "cacheStorage": {
+          "cacheCount": 2,
+          "requestCount": 13,
+          "expectedPrecacheRequestCount": 12,
+          "observedPrecacheRequestCount": 12,
+          "precacheManifestExact": true,
+          "precacheCacheCount": 1,
+          "runtimeCacheCount": 1,
+          "publicRuntimeProbeCount": 0,
+          "apiOriginEntryCount": 0,
+          "nonPreviewOriginEntryCount": 0,
+          "nonGetRequestCount": 0,
+          "legacyCacheNameCount": 0,
+          "disallowedCacheNameCount": 0,
+          "invalidPrecacheQueryCount": 0,
+          "invalidRuntimePathCount": 0,
+          "invalidRuntimeQueryCount": 0,
+          "disallowedCacheNameHashes": [],
+          "disallowedRequestHashes": [],
+          "status": "PASS"
+        }
+      },
+      "accountB": {
+        "status": "PASS",
+        "checks": {
+          "tokenAbsentWhenLoggedOut": true,
+          "accountStorageAbsentWhenLoggedOut": true,
+          "expectedTokenHashPresent": true,
+          "priorTokenHashAbsent": true,
+          "preservedLanguageHashPresent": true,
+          "analyticsDeniedOrAbsent": true,
+          "analyticsControlRowCount": 1,
+          "postHogPersistenceCount": 1,
+          "safePostHogOptOutCount": 1,
+          "unsafePostHogPersistenceCount": 0,
+          "postHogStateSafe": true,
+          "accountAMarkerMatches": 0,
+          "indexedDbEnumerationSupported": true,
+          "indexedDbScanErrors": 0,
+          "sensitiveCookieNameCount": 0,
+          "cacheStorageStatus": "PASS"
+        },
+        "cacheStorage": {
+          "cacheCount": 2,
+          "requestCount": 13,
+          "expectedPrecacheRequestCount": 12,
+          "observedPrecacheRequestCount": 12,
+          "precacheManifestExact": true,
+          "precacheCacheCount": 1,
+          "runtimeCacheCount": 1,
+          "publicRuntimeProbeCount": 0,
+          "apiOriginEntryCount": 0,
+          "nonPreviewOriginEntryCount": 0,
+          "nonGetRequestCount": 0,
+          "legacyCacheNameCount": 0,
+          "disallowedCacheNameCount": 0,
+          "invalidPrecacheQueryCount": 0,
+          "invalidRuntimePathCount": 0,
+          "invalidRuntimeQueryCount": 0,
+          "disallowedCacheNameHashes": [],
+          "disallowedRequestHashes": [],
+          "status": "PASS"
+        }
+      },
+      "afterDelayedRelease": {
+        "status": "PASS",
+        "checks": {
+          "tokenAbsentWhenLoggedOut": true,
+          "accountStorageAbsentWhenLoggedOut": true,
+          "expectedTokenHashPresent": true,
+          "priorTokenHashAbsent": true,
+          "preservedLanguageHashPresent": true,
+          "analyticsDeniedOrAbsent": true,
+          "analyticsControlRowCount": 1,
+          "postHogPersistenceCount": 1,
+          "safePostHogOptOutCount": 1,
+          "unsafePostHogPersistenceCount": 0,
+          "postHogStateSafe": true,
+          "accountAMarkerMatches": 0,
+          "indexedDbEnumerationSupported": true,
+          "indexedDbScanErrors": 0,
+          "sensitiveCookieNameCount": 0,
+          "cacheStorageStatus": "PASS"
+        },
+        "cacheStorage": {
+          "cacheCount": 2,
+          "requestCount": 13,
+          "expectedPrecacheRequestCount": 12,
+          "observedPrecacheRequestCount": 12,
+          "precacheManifestExact": true,
+          "precacheCacheCount": 1,
+          "runtimeCacheCount": 1,
+          "publicRuntimeProbeCount": 0,
+          "apiOriginEntryCount": 0,
+          "nonPreviewOriginEntryCount": 0,
+          "nonGetRequestCount": 0,
+          "legacyCacheNameCount": 0,
+          "disallowedCacheNameCount": 0,
+          "invalidPrecacheQueryCount": 0,
+          "invalidRuntimePathCount": 0,
+          "invalidRuntimeQueryCount": 0,
+          "disallowedCacheNameHashes": [],
+          "disallowedRequestHashes": [],
+          "status": "PASS"
+        }
+      },
+      "cookiesAfterLogout": {
+        "status": "PASS",
+        "checks": {
+          "sensitiveCookieNameCount": 0,
+          "postHogCookieCount": 0,
+          "accountASentinelCookieCount": 0
+        }
+      },
+      "cookiesAccountB": {
+        "status": "PASS",
+        "checks": {
+          "sensitiveCookieNameCount": 0,
+          "postHogCookieCount": 0,
+          "accountASentinelCookieCount": 0
+        }
+      },
+      "cookiesAfterDelayedRelease": {
+        "status": "PASS",
+        "checks": {
+          "sensitiveCookieNameCount": 0,
+          "postHogCookieCount": 0,
+          "accountASentinelCookieCount": 0
+        }
+      },
+      "storageUnchangedAfterRelease": true,
+      "cookiesUnchangedAfterRelease": true
+    }
+  },
+  "viewports": {
+    "executed": 24,
+    "pass": 24,
+    "fail": 0,
+    "csv": "evidence/viewport_matrix.csv"
+  },
+  "dbAudit": {
+    "timestamp": "2026-07-13T20:29:11.639Z",
+    "database": "garnish_p0a_v34_browser_20260713_235611",
+    "tableCounts": {
+      "User": 2,
+      "UserConsent": 10,
+      "ConsentLog": 6,
+      "UserEvent": 4,
+      "RecommendationExposure": 0,
+      "FeatureContributionLog": 12,
+      "RecommendationServedItem": 2,
+      "RecommendationAttributionEvent": 0,
+      "SignalObservation": 0,
+      "UserFeature": 33,
+      "UserOutcome": 0,
+      "UserBehaviorTimeline": 0,
+      "ExperimentAssignment": 0,
+      "EventOutbox": 3,
+      "UserAuditLog": 1
+    },
+    "optionalWithdrawalWindow": {
+      "counts": {
+        "UserEvent": 0,
+        "RecommendationExposure": 0,
+        "FeatureContributionLog": 0,
+        "RecommendationServedItem": 0,
+        "RecommendationAttributionEvent": 0,
+        "SignalObservation": 0,
+        "UserFeature": 0,
+        "UserOutcome": 0,
+        "UserBehaviorTimeline": 0,
+        "ExperimentAssignment": 0,
+        "EventOutbox": 0
+      },
+      "total": 0
+    },
+    "credentialMetadataByTable": {
+      "User": 0,
+      "UserConsent": 0,
+      "ConsentLog": 0,
+      "UserEvent": 0,
+      "RecommendationExposure": 0,
+      "FeatureContributionLog": 0,
+      "RecommendationServedItem": 0,
+      "RecommendationAttributionEvent": 0,
+      "SignalObservation": 0,
+      "UserFeature": 0,
+      "UserOutcome": 0,
+      "UserBehaviorTimeline": 0,
+      "ExperimentAssignment": 0,
+      "EventOutbox": 0,
+      "UserAuditLog": 0
+    },
+    "assertions": {
+      "distinctQaAccounts": true,
+      "consentHistoryPresent": true,
+      "preWithdrawalEventPresent": true,
+      "committedWithdrawalPresent": true,
+      "optionalWritesAfterWithdrawal": 0,
+      "optionalWritesAcrossAuditedTablesInWithdrawalWindow": 0,
+      "droppedEventResidue": 0,
+      "reconsentReplay": 0,
+      "reconsentGrantPresent": true,
+      "explicitPostRegrantActionRows": 1,
+      "crossAccountAssociations": 0,
+      "signalEventOwnerMismatches": 0,
+      "operationalAuditTable": "UserAuditLog",
+      "rawSecretMetadataMatches": 0,
+      "plaintextOtpHashMatches": 0
+    },
+    "status": "PASS"
+  },
+  "checkpoint": "complete",
+  "operationalAudit": {
+    "status": "PASS",
+    "ledger": "UserAuditLog",
+    "action": "admin_workflow_run",
+    "newLedgerRows": 1,
+    "nonexistentWorkflowExecutionStatus": 404,
+    "adminElevationReset": true
+  },
+  "finishedAt": "2026-07-13T20:29:11.640Z",
+  "status": "PASS"
+}

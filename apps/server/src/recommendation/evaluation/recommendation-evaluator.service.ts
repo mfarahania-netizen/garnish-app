@@ -2,27 +2,43 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RecommendationRewardService } from './recommendation-reward.service';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 
 @Injectable()
 export class RecommendationEvaluatorService {
   constructor(
     private prisma: PrismaService,
     private rewardService: RecommendationRewardService,
+    private readonly consent: ConsentService,
   ) {}
 
   @Cron('0 30 3 * * *')
   async evaluateDailyRecommendationQuality() {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) return;
     const users = await this.prisma.user.findMany({ select: { id: true } });
 
     for (const user of users) {
+      if (!(await this.currentPersonalizedAnalyticsEpoch(user.id))) continue;
       await this.buildRecommendationQuality(user.id, 7);
       await this.rewardService.buildRewardProfile(user.id, 7);
     }
   }
 
   async getLatestRecommendationQuality(userId: string) {
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return null;
+
     const latest = await this.prisma.userOutcome.findFirst({
-      where: { userId, metricName: 'recommendation_quality' },
+      where: {
+        userId,
+        metricName: 'recommendation_quality',
+        recordedAt: { gte: consentEpoch },
+      },
       orderBy: { recordedAt: 'desc' },
     });
 
@@ -35,12 +51,20 @@ export class RecommendationEvaluatorService {
       }
     }
 
-    return latest;
+    const epochAfterRead = await this.currentPersonalizedAnalyticsEpoch(userId);
+    return this.sameEpoch(consentEpoch, epochAfterRead) ? latest : null;
   }
 
   async getLatestRecommendationReward(userId: string) {
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return null;
+
     const latest = await this.prisma.userOutcome.findFirst({
-      where: { userId, metricName: 'recommendation_reward' },
+      where: {
+        userId,
+        metricName: 'recommendation_reward',
+        recordedAt: { gte: consentEpoch },
+      },
       orderBy: { recordedAt: 'desc' },
     });
 
@@ -53,11 +77,18 @@ export class RecommendationEvaluatorService {
       }
     }
 
-    return latest;
+    const epochAfterRead = await this.currentPersonalizedAnalyticsEpoch(userId);
+    return this.sameEpoch(consentEpoch, epochAfterRead) ? latest : null;
   }
 
   async getRecommendationAttribution(userId: string) {
-    const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return this.emptyAttribution();
+
+    const since = this.maxDate(
+      new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+      consentEpoch,
+    );
     const exposure = (this.prisma as any).recommendationExposure;
     const [attribution, rawExposureCount] = await Promise.all([
       this.collectAttributionMetrics(userId, since),
@@ -76,7 +107,7 @@ export class RecommendationEvaluatorService {
     const cookRate = saves > 0 ? cooks / saves : 0;
     const frictionRate = impressions > 0 ? dismisses / impressions : 0;
 
-    return {
+    const result = {
       windowDays: 14,
       impressions,
       exposures: exposureCount,
@@ -89,10 +120,20 @@ export class RecommendationEvaluatorService {
       cookRate,
       frictionRate,
     };
+    const epochAfterRead = await this.currentPersonalizedAnalyticsEpoch(userId);
+    return this.sameEpoch(consentEpoch, epochAfterRead)
+      ? result
+      : this.emptyAttribution();
   }
 
   async buildRecommendationQuality(userId: string, windowDays = 7) {
-    const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return null;
+
+    const since = this.maxDate(
+      new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000),
+      consentEpoch,
+    );
     const exposure = (this.prisma as any).recommendationExposure;
     const featureContributionLog = (this.prisma as any).featureContributionLog;
     const [attribution, rawExposures, topLogs] = await Promise.all([
@@ -123,20 +164,25 @@ export class RecommendationEvaluatorService {
       exposures,
     });
 
-    return this.prisma.userOutcome.create({
-      data: {
-        userId,
-        metricName: 'recommendation_quality',
-        metricValue: qualityScore,
-        period: 'daily',
-        sources: {
-          windowDays,
-          ...attribution,
-          exposures,
-          topSignals: topLogs.slice(0, 5),
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      { userId, purposes: ['analytics', 'personalization'], operation: 'recommendation-evaluator.persist-quality', expectedEpoch: consentEpoch },
+      (tx) => tx.userOutcome.create({
+        data: {
+          userId,
+          metricName: 'recommendation_quality',
+          metricValue: qualityScore,
+          period: 'daily',
+          sources: {
+            windowDays,
+            ...attribution,
+            exposures,
+            topSignals: topLogs.slice(0, 5),
+          },
         },
-      },
-    });
+      }),
+    );
+    return boundary.status === 'executed' ? boundary.value : null;
   }
 
   private async collectAttributionMetrics(userId: string, since: Date) {
@@ -152,6 +198,7 @@ export class RecommendationEvaluatorService {
         ? this.prisma.userEvent.findMany({
             where: {
               userId,
+              consentPurpose: 'personalization',
               timestamp: { gte: since },
               type: {
                 in: [
@@ -218,5 +265,41 @@ export class RecommendationEvaluatorService {
       Math.min(frictionRate / 0.2, 1) * 10;
 
     return Math.max(0, Math.min(100, Math.round(score * 10) / 10));
+  }
+
+  private async currentPersonalizedAnalyticsEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private sameEpoch(before: Date, after: Date | null): boolean {
+    return !!after && before.getTime() === after.getTime();
+  }
+
+  private maxDate(a: Date, b: Date): Date {
+    return a.getTime() >= b.getTime() ? a : b;
+  }
+
+  private emptyAttribution() {
+    return {
+      windowDays: 14,
+      impressions: 0,
+      exposures: 0,
+      clicks: 0,
+      saves: 0,
+      cooks: 0,
+      dismisses: 0,
+      clickThroughRate: 0,
+      saveRate: 0,
+      cookRate: 0,
+      frictionRate: 0,
+    };
   }
 }

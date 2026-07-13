@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConsentService } from '../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class NotificationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   // ---- متد پایه (ایجاد اعلان) ----
   private async createAndSendNotification(
@@ -24,6 +29,23 @@ export class NotificationsService {
     });
     // در آینده: اینجا Push Notification هم ارسال می‌شود
     return notification;
+  }
+
+  private async createPersonalizedNotification(
+    userId: string,
+    expectedEpoch: Date,
+    title: string,
+    body: string,
+    type: string,
+  ) {
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      { userId, purposes: ['personalization'], operation: `notifications.${type}`, expectedEpoch },
+      (tx) => tx.notification.create({
+        data: { userId, title, body, type, isRead: false },
+      }),
+    );
+    return boundary.status === 'executed' ? boundary.value : null;
   }
 
   // ---- متدهای تخصصی برای رویدادها ----
@@ -55,30 +77,43 @@ export class NotificationsService {
     );
   }
 
-  async notifyShoppingReminder(userId: string, uncheckedCount: number) {
-    return this.createAndSendNotification(
+  async notifyShoppingReminder(userId: string, uncheckedCount: number, expectedEpoch: Date) {
+    return this.createPersonalizedNotification(
       userId,
+      expectedEpoch,
       '🛒 یادآوری خرید',
       `${uncheckedCount} قلم از لیست خرید شما هنوز خریده نشده‌اند.`,
       'shopping_reminder',
     );
   }
 
-  async notifyWeeklyPlanEmpty(userId: string) {
-    return this.createAndSendNotification(
+  async notifyWeeklyPlanEmpty(userId: string, expectedEpoch: Date) {
+    return this.createPersonalizedNotification(
       userId,
+      expectedEpoch,
       '📅 برنامه هفتگی خالی است',
       'به‌نظر می‌رسد این هفته را هنوز برنامه‌ریزی نکرده‌اید. دوست دارید چند پیشنهاد ببینید؟',
       'plan_empty',
     );
   }
 
-  async notifyMealReminder(userId: string, mealType: string) {
-    return this.createAndSendNotification(
+  async notifyMealReminder(userId: string, mealType: string, expectedEpoch: Date) {
+    return this.createPersonalizedNotification(
       userId,
+      expectedEpoch,
       `⏰ یادآوری ${mealType}`,
       `هنوز برای ${mealType} امروز برنامه‌ای ثبت نکرده‌اید.`,
       'meal_reminder',
+    );
+  }
+
+  async notifyChurnReengagement(userId: string, expectedEpoch: Date) {
+    return this.createPersonalizedNotification(
+      userId,
+      expectedEpoch,
+      'دلتنگت شدیم! 😢',
+      'مدتیه که کمتر از گارنیش استفاده می‌کنی. بیا دوباره با هم غذاهای خوشمزه بپزیم!',
+      'churn_reengagement',
     );
   }
 
@@ -106,6 +141,12 @@ export class NotificationsService {
   }
 
   async generateSmartSuggestion(userId: string) {
+    if (process.env.OPTIONAL_SMART_SUGGESTIONS_ENABLED !== 'true') return null;
+    const epoch = await this.consent
+      .currentGrantEpoch(userId, ['personalization'])
+      .catch(() => null);
+    if (!epoch) return null;
+
     // همان کد generateSmartNotification قبلی (بدون تغییر)
     const profile = await this.prisma.userPreference.findUnique({ where: { userId } });
     const mealPlan = await this.prisma.mealPlan.findFirst({
@@ -129,14 +170,6 @@ export class NotificationsService {
 
     const message = `امروز ${todayName} است! با توجه به رژیم ${diet} و علاقه‌مندی‌های شما (${favTitles})، چطوره امروز یک غذای جدید امتحان کنید؟`;
 
-    return this.prisma.notification.create({
-      data: {
-        userId,
-        title: `🍽️ پیشنهاد امروز`,
-        body: message,
-        type: 'suggestion',
-        isRead: false,
-      },
-    });
+    return this.createPersonalizedNotification(userId, epoch, '🍽️ پیشنهاد امروز', message, 'suggestion');
   }
 }

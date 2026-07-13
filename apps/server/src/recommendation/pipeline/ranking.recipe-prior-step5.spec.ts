@@ -1,22 +1,33 @@
 import { RankingService } from './ranking.service';
 import { TasteAffinityBuilder, TASTE_NEUTRAL } from '../taste-affinity/taste-affinity.builder';
 
-// L1 step 5 — minority-protection slate term. The helper is pure (env config + math), so we exercise it directly
-// on a bare service instance. ENV drives activation; default-OFF must yield 0.
-const svc: any = new RankingService({} as any, {} as any, {} as any, {} as any, {} as any, {} as any, {} as any);
+// Dormant post-provenance scoring primitive. These tests cover only bounded
+// score math; they do not authorize reading or consuming recipe-prior data.
+// P0-A Option B keeps the integration neutral until an evidence-bearing source
+// contract and current-policy/current-epoch validation are implemented.
+const svc: any = new RankingService(
+  {} as any,
+  {} as any,
+  {} as any,
+  {} as any,
+  {} as any,
+  {} as any,
+  {} as any,
+  {} as any,
+);
 const term = (vPrior: number, tasteAffinity: number) => svc.recipePriorSlateTerm(vPrior, tasteAffinity);
 
 const STEP5_ENV = ['L1_PRIOR_STEP5_WEIGHT', 'L1_PRIOR_STEP5_LIFT_CAP', 'L1_PRIOR_STEP5_PEN_CAP', 'L1_PRIOR_STEP5_PEN_MULT', 'L1_PRIOR_STEP5_GATE_FULL'];
 afterEach(() => STEP5_ENV.forEach((k) => delete process.env[k]));
 
-describe('recipePriorSlateTerm — L1 step 5 minority protection', () => {
+describe('recipePriorSlateTerm — dormant future scoring contract', () => {
   it('DEFAULT-OFF: weight 0 ⇒ term is exactly 0 for any input (byte-identical)', () => {
     expect(term(1.0, 0.9)).toBe(0);
     expect(term(0.0, 0.1)).toBe(0);
     expect(term(0.5, 0.5)).toBe(0);
   });
 
-  describe('activated (weight 0.3)', () => {
+  describe('synthetic post-provenance math (weight 0.3)', () => {
     beforeEach(() => { process.env.L1_PRIOR_STEP5_WEIGHT = '0.3'; });
 
     it('LIFTS a crowd-loved dish, bounded by liftCap (0.06)', () => {
@@ -33,7 +44,7 @@ describe('recipePriorSlateTerm — L1 step 5 minority protection', () => {
     });
   });
 
-  describe('two-sided enabled (penMult 1) — invariant still secured by the hard floor', () => {
+  describe('synthetic two-sided math (penMult 1) — hard-floor invariant', () => {
     beforeEach(() => { process.env.L1_PRIOR_STEP5_WEIGHT = '0.3'; process.env.L1_PRIOR_STEP5_PEN_MULT = '1'; });
 
     it('HARD FLOOR: any positive personal signal (tasteAffinity > 0.35) ⇒ no pull-down', () => {

@@ -1,7 +1,9 @@
 // apps/server/src/behavior-engine/signals/taste-correction.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConsentService } from '../../consent/consent.service';
 import { clampIngredientSignal } from './ingredient-salience';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 /**
  * TasteCorrectionService (FI-PHASE-4.1) — let the user SEE and CORRECT the soft per-ingredient taste the
@@ -41,12 +43,34 @@ export interface TastePreference {
 
 @Injectable()
 export class TasteCorrectionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
+
+  private async currentPersonalizationEpoch(userId: string): Promise<Date | null> {
+    try {
+      return await this.consent.currentGrantEpoch(userId, ['personalization']);
+    } catch {
+      return null;
+    }
+  }
+
+  private async epochIsCurrent(userId: string, epoch: Date): Promise<boolean> {
+    const current = await this.currentPersonalizationEpoch(userId);
+    return current?.getTime() === epoch.getTime();
+  }
 
   /** Owner read: the inferred + user-stated per-ingredient taste, resolved to Persian names, most-salient first. */
   async listTastePreferences(userId: string): Promise<TastePreference[]> {
+    const epoch = await this.currentPersonalizationEpoch(userId);
+    if (!epoch) return [];
     const signals = await this.prisma.userBehaviorSignal.findMany({
-      where: { userId, signalType: { in: [INFERRED_SIGNAL_TYPE, CORRECTION_SIGNAL_TYPE] } },
+      where: {
+        userId,
+        signalType: { in: [INFERRED_SIGNAL_TYPE, CORRECTION_SIGNAL_TYPE] },
+        updatedAt: { gte: epoch },
+      },
     });
     const meaningful = signals.filter(
       (s) => s.signalType === CORRECTION_SIGNAL_TYPE || Math.abs(s.value) >= SHOW_FLOOR,
@@ -60,6 +84,7 @@ export class TasteCorrectionService {
     });
     const nameById = new Map(ingredients.map((i) => [i.id, i.nameFa || i.nameEn || i.id]));
 
+    if (!(await this.epochIsCurrent(userId, epoch))) return [];
     return meaningful
       .filter((s) => nameById.has(s.signalName)) // only ingredients we can name honestly
       .map((s) => ({
@@ -83,6 +108,18 @@ export class TasteCorrectionService {
     if (!ingredientId || !['like', 'dislike', 'neutral'].includes(stance)) {
       return { ok: false as const, reason: 'invalid input' };
     }
+    // Neutral is a privacy/control operation: it only deletes this user's stored correction and must
+    // remain available after opt-out so withdrawal does not trap previously persisted personalization.
+    if (stance === 'neutral') {
+      await this.prisma.userBehaviorSignal.deleteMany({ where: { userId, signalName: ingredientId } });
+      return { ok: true as const, ingredientId, stance };
+    }
+    // A correction is a direct personalization write. Gate before even resolving the ingredient so a
+    // missing, withdrawn, stale-policy, or unreadable decision cannot reach any lookup/write path.
+    const epoch = await this.currentPersonalizationEpoch(userId);
+    if (!epoch) {
+      return { ok: false as const, reason: 'personalization consent required' };
+    }
     // never write an arbitrary/unknown signal name — the id must be a real ingredient.
     const ingredient = await this.prisma.ingredient.findUnique({
       where: { id: ingredientId },
@@ -90,33 +127,40 @@ export class TasteCorrectionService {
     });
     if (!ingredient) return { ok: false as const, reason: 'unknown ingredient' };
 
-    if (stance === 'neutral') {
-      await this.prisma.userBehaviorSignal.deleteMany({ where: { userId, signalName: ingredientId } });
-      return { ok: true as const, ingredientId, stance };
-    }
-
     const value = clampIngredientSignal(stance === 'like' ? LIKE_VALUE : DISLIKE_VALUE);
-    await this.prisma.userBehaviorSignal.upsert({
-      where: { userId_signalName: { userId, signalName: ingredientId } },
-      create: {
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
         userId,
-        signalName: ingredientId,
-        signalDomain: 'taste',
-        signalType: CORRECTION_SIGNAL_TYPE,
-        value,
-        confidence: 1,
-        halfLifeDays: 365,
-        sampleSize: 1,
-        lastDetected: new Date(),
+        purposes: ['personalization'],
+        operation: 'taste-correction.correct-preference',
+        expectedEpoch: epoch,
       },
-      update: {
-        signalType: CORRECTION_SIGNAL_TYPE,
-        value,
-        confidence: 1,
-        halfLifeDays: 365,
-        lastDetected: new Date(),
-      },
-    });
+      (tx) => tx.userBehaviorSignal.upsert({
+        where: { userId_signalName: { userId, signalName: ingredientId } },
+        create: {
+          userId,
+          signalName: ingredientId,
+          signalDomain: 'taste',
+          signalType: CORRECTION_SIGNAL_TYPE,
+          value,
+          confidence: 1,
+          halfLifeDays: 365,
+          sampleSize: 1,
+          lastDetected: new Date(),
+        },
+        update: {
+          signalType: CORRECTION_SIGNAL_TYPE,
+          value,
+          confidence: 1,
+          halfLifeDays: 365,
+          lastDetected: new Date(),
+        },
+      }),
+    );
+    if (boundary.status !== 'executed') {
+      return { ok: false as const, reason: 'personalization consent required' };
+    }
     return { ok: true as const, ingredientId, stance };
   }
 }

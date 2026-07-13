@@ -1,7 +1,15 @@
 // apps/web/src/context/AuthContext.jsx
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import apiClient from '../lib/apiClient';
-import posthog from 'posthog-js';
+import {
+  clearPrivateSessionState,
+  reloadBrowserForSessionChange,
+  registerPrivateSessionQueryClient,
+  resetBrowserToLogin,
+} from '../lib/private-session-cache';
+import { disableAnalytics, enableAnalytics } from '../lib/analytics-init';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../lib/consent-policy';
 
 const AuthContext = createContext(null);
 
@@ -10,6 +18,7 @@ export const ONBOARDED_KEY = 'garnish.onboarded';
 const GUEST_ENABLED = import.meta.env.VITE_ENABLE_GUEST_MODE === 'true';
 
 export function AuthProvider({ children }) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('token') || '');
   const [isLoading, setIsLoading] = useState(true);
@@ -17,22 +26,131 @@ export function AuthProvider({ children }) {
   const justMintedRef = useRef(null);
 
   const clearAuth = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem(DEVICE_KEY);
+    disableAnalytics();
+    const cacheCleanup = clearPrivateSessionState({ queryClient, clearAccountStorage: true });
+    try { localStorage.removeItem('token'); } catch { /* state reset still continues */ }
+    try { localStorage.removeItem(DEVICE_KEY); } catch { /* state reset still continues */ }
     setToken('');
     setUser(null);
+    return cacheCleanup;
+  }, [queryClient]);
+
+  const syncCanonicalAnalyticsConsent = useCallback(async (authenticatedUser, expectedToken) => {
+    if (!expectedToken || localStorage.getItem('token') !== expectedToken) return false;
+    try {
+      const { data } = await apiClient.get('/users/consent', {
+        headers: { Authorization: `Bearer ${expectedToken}` },
+      });
+      if (localStorage.getItem('token') !== expectedToken) return false;
+      const analyticsDecision = data?.purposes?.analytics;
+      const granted = analyticsDecision?.granted === true
+        && analyticsDecision?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+        && analyticsDecision?.processingEnabled === true;
+      if (!granted) {
+        disableAnalytics();
+        return false;
+      }
+      enableAnalytics();
+      return true;
+    } catch {
+      if (localStorage.getItem('token') === expectedToken) disableAnalytics();
+      return false;
+    }
   }, []);
 
+  const installAuthenticatedSession = useCallback(async (data) => {
+    const extractedToken = data?.access_token || data?.token;
+    const extractedUser = data?.user || data?.data;
+    if (!extractedToken) throw new Error('auth token missing');
+
+    // A successful account transition is a security boundary. Do not expose the
+    // new account until all synchronous private state from the previous one is gone.
+    disableAnalytics();
+    await clearPrivateSessionState({ queryClient, clearAccountStorage: true });
+    justMintedRef.current = extractedToken;
+    localStorage.setItem('token', extractedToken);
+    setToken(extractedToken);
+    setUser(extractedUser || null);
+    await syncCanonicalAnalyticsConsent(extractedUser, extractedToken);
+    return extractedUser || null;
+  }, [queryClient, syncCanonicalAnalyticsConsent]);
+
+  useEffect(() => {
+    const unregister = registerPrivateSessionQueryClient(queryClient);
+    return unregister;
+  }, [queryClient]);
+
+  useEffect(() => {
+    const handleCrossTabTokenRemoval = (event) => {
+      if (!token) return;
+      const tokenWasCleared = (event.key === 'token' || event.key === null) && event.newValue === null;
+      if (tokenWasCleared) {
+        void clearAuth().finally(() => resetBrowserToLogin());
+        return;
+      }
+      const tokenWasReplaced = event.key === 'token'
+        && typeof event.newValue === 'string'
+        && event.newValue.length > 0
+        && event.newValue !== token;
+      if (!tokenWasReplaced) return;
+
+      disableAnalytics();
+      const cleanup = clearPrivateSessionState({
+        queryClient,
+        clearAccountStorage: true,
+        preserveAuthToken: true,
+      });
+      setUser(null);
+      setToken('');
+      void cleanup.finally(() => reloadBrowserForSessionChange());
+    };
+    window.addEventListener('storage', handleCrossTabTokenRemoval);
+    return () => window.removeEventListener('storage', handleCrossTabTokenRemoval);
+  }, [clearAuth, queryClient, token]);
+
+  useEffect(() => {
+    const handleCrossTabAnalyticsDecision = (event) => {
+      if (event.key !== 'garnish.analyticsConsent') return;
+      if (event.newValue !== 'granted') {
+        disableAnalytics();
+        return;
+      }
+      if (token) void syncCanonicalAnalyticsConsent(user, token);
+    };
+    window.addEventListener('storage', handleCrossTabAnalyticsDecision);
+    return () => window.removeEventListener('storage', handleCrossTabAnalyticsDecision);
+  }, [syncCanonicalAnalyticsConsent, token, user]);
+
+  useEffect(() => {
+    if (!token) return undefined;
+    const revalidate = () => {
+      if (document.visibilityState === 'visible') {
+        void syncCanonicalAnalyticsConsent(user, token);
+      }
+    };
+    window.addEventListener('focus', revalidate);
+    document.addEventListener('visibilitychange', revalidate);
+    return () => {
+      window.removeEventListener('focus', revalidate);
+      document.removeEventListener('visibilitychange', revalidate);
+    };
+  }, [syncCanonicalAnalyticsConsent, token, user]);
+
   const refreshUser = useCallback(async () => {
-    const currentToken = localStorage.getItem('token');
-    if (!currentToken) {
+    const expectedToken = localStorage.getItem('token');
+    if (!expectedToken) {
       setUser(null);
       return null;
     }
-    const { data } = await apiClient.get('/users/me');
-    setUser(data || null);
-    return data || null;
-  }, []);
+    const { data } = await apiClient.get('/users/me', {
+      headers: { Authorization: `Bearer ${expectedToken}` },
+    });
+    if (localStorage.getItem('token') !== expectedToken) return null;
+    const authenticatedUser = data || null;
+    setUser(authenticatedUser);
+    await syncCanonicalAnalyticsConsent(authenticatedUser, expectedToken);
+    return localStorage.getItem('token') === expectedToken ? authenticatedUser : null;
+  }, [syncCanonicalAnalyticsConsent]);
 
   useEffect(() => {
     if (token) {
@@ -41,18 +159,31 @@ export function AuthProvider({ children }) {
         setIsLoading(false);
         return;
       }
+      const expectedToken = token;
+      if (localStorage.getItem('token') !== expectedToken) return;
       setIsLoading(true);
-      apiClient.get('/users/me')
-        .then((res) => setUser(res.data || null))
+      apiClient.get('/users/me', {
+        headers: { Authorization: `Bearer ${expectedToken}` },
+      })
+        .then((res) => {
+          if (localStorage.getItem('token') !== expectedToken) return;
+          const authenticatedUser = res.data || null;
+          setUser(authenticatedUser);
+          void syncCanonicalAnalyticsConsent(authenticatedUser, expectedToken);
+        })
         .catch(() => {
+          if (localStorage.getItem('token') !== expectedToken) return;
           localStorage.setItem('garnish.sessionExpired', 'true');
           clearAuth();
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          if (localStorage.getItem('token') === expectedToken) setIsLoading(false);
+        });
       return;
     }
 
     if (!GUEST_ENABLED) {
+      disableAnalytics();
       setUser(null);
       setIsLoading(false);
       return;
@@ -76,33 +207,17 @@ export function AuthProvider({ children }) {
       })
       .catch(() => setIsLoading(false))
       .finally(() => { mintingRef.current = false; });
-  }, [clearAuth, token]);
+  }, [clearAuth, syncCanonicalAnalyticsConsent, token]);
 
   const login = useCallback(async (phone, password) => {
-    localStorage.removeItem('garnish.sessionExpired');
     const { data } = await apiClient.post('/auth/login', { phone, password });
-    const extractedToken = data.access_token || data.token;
-    const extractedUser = data.user || data.data;
-    if (!extractedToken) throw new Error('توکن در پاسخ سرور یافت نشد');
-    localStorage.setItem('token', extractedToken);
-    setToken(extractedToken);
-    setUser(extractedUser || null);
-    if (posthog?.__loaded && extractedUser?.id) posthog.identify(extractedUser.id);
-    return extractedUser || null;
-  }, []);
+    return installAuthenticatedSession(data);
+  }, [installAuthenticatedSession]);
 
   const register = useCallback(async (phone, password, name) => {
-    localStorage.removeItem('garnish.sessionExpired');
     const { data } = await apiClient.post('/auth/register', { phone, password, name });
-    const extractedToken = data.access_token || data.token;
-    const extractedUser = data.user || data.data;
-    if (!extractedToken) throw new Error('auth token missing');
-    localStorage.setItem('token', extractedToken);
-    setToken(extractedToken);
-    setUser(extractedUser || null);
-    if (posthog?.__loaded && extractedUser?.id) posthog.identify(extractedUser.id);
-    return extractedUser || null;
-  }, []);
+    return installAuthenticatedSession(data);
+  }, [installAuthenticatedSession]);
 
   const requestOtp = useCallback(async (phone) => {
     const { data } = await apiClient.post('/auth/otp/request', { phone });
@@ -110,30 +225,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   const verifyOtp = useCallback(async (phone, code, name) => {
-    localStorage.removeItem('garnish.sessionExpired');
     const { data } = await apiClient.post('/auth/otp/verify', { phone, code, name });
-    const extractedToken = data.access_token || data.token;
-    const extractedUser = data.user || data.data;
-    if (!extractedToken) throw new Error('auth token missing');
-    localStorage.setItem('token', extractedToken);
-    setToken(extractedToken);
-    setUser(extractedUser || null);
-    if (posthog?.__loaded && extractedUser?.id) posthog.identify(extractedUser.id);
-    return extractedUser || null;
-  }, []);
+    return installAuthenticatedSession(data);
+  }, [installAuthenticatedSession]);
 
   const loginWithGoogle = useCallback(async (credential) => {
-    localStorage.removeItem('garnish.sessionExpired');
     const { data } = await apiClient.post('/auth/google', { credential });
-    const extractedToken = data.access_token || data.token;
-    const extractedUser = data.user || data.data;
-    if (!extractedToken) throw new Error('auth token missing');
-    localStorage.setItem('token', extractedToken);
-    setToken(extractedToken);
-    setUser(extractedUser || null);
-    if (posthog?.__loaded && extractedUser?.id) posthog.identify(extractedUser.id);
-    return extractedUser || null;
-  }, []);
+    return installAuthenticatedSession(data);
+  }, [installAuthenticatedSession]);
 
   const requestPasswordReset = useCallback(async (phone) => {
     const { data } = await apiClient.post('/auth/password-reset/request', { phone });
@@ -146,16 +245,21 @@ export function AuthProvider({ children }) {
   }, []);
 
   const completeOnboarding = useCallback(async () => {
-    const { data } = await apiClient.patch('/users/me/onboarding-complete');
+    const expectedToken = localStorage.getItem('token');
+    if (!expectedToken) return null;
+    const { data } = await apiClient.patch('/users/me/onboarding-complete', undefined, {
+      headers: { Authorization: `Bearer ${expectedToken}` },
+    });
+    if (localStorage.getItem('token') !== expectedToken) return null;
     setUser(data || null);
     return data || null;
   }, []);
 
   const logout = useCallback(() => {
-    if (posthog?.__loaded) posthog.reset();
-    localStorage.removeItem(ONBOARDED_KEY);
-    localStorage.removeItem('garnish.sessionExpired');
-    clearAuth();
+    const cleanup = clearAuth();
+    try { localStorage.removeItem(ONBOARDED_KEY); } catch { /* full reset still continues */ }
+    try { localStorage.removeItem('garnish.sessionExpired'); } catch { /* full reset still continues */ }
+    void cleanup.finally(() => resetBrowserToLogin());
   }, [clearAuth]);
 
   const value = {

@@ -1,12 +1,21 @@
 // apps/server/src/behavior-engine/identity/identity-dimension.builder.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class IdentityDimensionBuilder {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   async buildAll(userId: string) {
+    const epoch = await this.consent
+      .currentGrantEpoch(userId, ['analytics', 'personalization'])
+      .catch(() => null);
+    if (!epoch) return [];
     // خواندن Snapshotها و Signals
     const [signals, identitySnapshot, healthSnapshot, retentionSnapshot] = await Promise.all([
       this.prisma.userBehaviorSignal.findMany({ where: { userId } }),
@@ -66,27 +75,34 @@ export class IdentityDimensionBuilder {
     });
 
     // ذخیره‌سازی ابعاد
-    const upserts = dimensions.map(dim =>
-      this.prisma.userIdentityDimension.upsert({
-        where: { userId_dimensionKey: { userId, dimensionKey: dim.key } },
-        create: {
-          userId,
-          dimensionKey: dim.key,
-          value: dim.value,
-          confidence: dim.confidence,
-          evidenceCount: 1,
-          lastEvidenceAt: new Date(),
-        },
-        update: {
-          value: dim.value,
-          confidence: dim.confidence,
-          evidenceCount: { increment: 1 },
-          lastEvidenceAt: new Date(),
-        },
-      })
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'identity-dimension.build-all',
+        expectedEpoch: epoch,
+      },
+      async (tx) => Promise.all(dimensions.map(dim =>
+        tx.userIdentityDimension.upsert({
+          where: { userId_dimensionKey: { userId, dimensionKey: dim.key } },
+          create: {
+            userId,
+            dimensionKey: dim.key,
+            value: dim.value,
+            confidence: dim.confidence,
+            evidenceCount: 1,
+            lastEvidenceAt: new Date(),
+          },
+          update: {
+            value: dim.value,
+            confidence: dim.confidence,
+            evidenceCount: { increment: 1 },
+            lastEvidenceAt: new Date(),
+          },
+        }),
+      )),
     );
-
-    await Promise.all(upserts);
-    return dimensions;
+    return boundary.status === 'executed' ? dimensions : [];
   }
 }

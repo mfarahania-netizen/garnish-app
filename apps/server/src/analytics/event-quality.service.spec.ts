@@ -1,5 +1,31 @@
 import { EventQualityService } from './event-quality.service';
 import { GamificationService } from '../gamification/gamification.service';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../consent/consent.constants';
+
+const GAMIFICATION_EPOCH = new Date('2026-06-01T00:00:00.000Z');
+const previousPersonalizationRuntime = process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+
+beforeAll(() => {
+  process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+});
+
+afterAll(() => {
+  if (previousPersonalizationRuntime === undefined) delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+  else process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = previousPersonalizationRuntime;
+});
+
+function addGamificationBoundary(prisma: any, userId: string) {
+  prisma.$executeRaw = jest.fn().mockResolvedValue(0);
+  prisma.$queryRaw = jest.fn().mockResolvedValue([{ id: userId }]);
+  prisma.userConsent = {
+    findMany: jest.fn().mockResolvedValue([{
+      id: 'personalization-grant', userId, purpose: 'personalization', status: 'granted',
+      policyVersion: CURRENT_PRIVACY_POLICY_VERSION, createdAt: GAMIFICATION_EPOCH,
+    }]),
+  };
+  prisma.$transaction = jest.fn(async (callback: (tx: any) => unknown) => callback(prisma));
+  return prisma;
+}
 
 /**
  * BE-FIX-EVENT-QUALITY-DELIBERATE-SIGNALS.
@@ -185,7 +211,7 @@ describe('EventQualityService → Gamification (E2E: cook after a burst counts)'
     expect(cooks).toHaveLength(1); // ← pre-fix this would be 0 (cook rejected as bot → never written)
 
     // ── feed the surviving events to the REAL, FROZEN gamification engine (imported, not modified) ──
-    const prisma: any = {
+    const prisma: any = addGamificationBoundary({
       userEvent: { findMany: jest.fn().mockResolvedValue(cooks.map((c) => ({ timestamp: c.timestamp, payload: c.payload }))) },
       recipe: { findMany: jest.fn().mockResolvedValue([]) },
       favoriteRecipe: { count: jest.fn().mockResolvedValue(0) },
@@ -194,10 +220,10 @@ describe('EventQualityService → Gamification (E2E: cook after a burst counts)'
       userStreak: { findUnique: jest.fn().mockResolvedValue(null), upsert: jest.fn().mockResolvedValue({}) },
       userProgress: { findUnique: jest.fn().mockResolvedValue(null), upsert: jest.fn().mockResolvedValue({}) },
       gamificationEvent: { create: jest.fn().mockResolvedValue({}), createMany: jest.fn().mockResolvedValue({}) },
-    };
+    }, 'cook-user');
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(null) };
     const ine: any = { decideForUser: jest.fn() };
-    const gamification = new GamificationService(prisma, profiles, ine);
+    const gamification = new GamificationService(prisma, profiles, ine, { currentGrantEpoch: jest.fn().mockResolvedValue(GAMIFICATION_EPOCH) } as any);
 
     const state = await gamification.recomputeForUser('cook-user', now);
 
@@ -208,7 +234,7 @@ describe('EventQualityService → Gamification (E2E: cook after a burst counts)'
 
   it('contrast: with ZERO surviving cooks the streak stays idle (proves the count is event-driven)', async () => {
     const now = new Date('2026-06-18T12:00:00.000Z');
-    const prisma: any = {
+    const prisma: any = addGamificationBoundary({
       userEvent: { findMany: jest.fn().mockResolvedValue([]) },
       recipe: { findMany: jest.fn().mockResolvedValue([]) },
       favoriteRecipe: { count: jest.fn().mockResolvedValue(0) },
@@ -217,8 +243,8 @@ describe('EventQualityService → Gamification (E2E: cook after a burst counts)'
       userStreak: { findUnique: jest.fn().mockResolvedValue(null), upsert: jest.fn().mockResolvedValue({}) },
       userProgress: { findUnique: jest.fn().mockResolvedValue(null), upsert: jest.fn().mockResolvedValue({}) },
       gamificationEvent: { create: jest.fn().mockResolvedValue({}), createMany: jest.fn().mockResolvedValue({}) },
-    };
-    const gamification = new GamificationService(prisma, { getLivingUserProfile: jest.fn().mockResolvedValue(null) } as any, {} as any);
+    }, 'empty-user');
+    const gamification = new GamificationService(prisma, { getLivingUserProfile: jest.fn().mockResolvedValue(null) } as any, {} as any, { currentGrantEpoch: jest.fn().mockResolvedValue(GAMIFICATION_EPOCH) } as any);
     const state = await gamification.recomputeForUser('empty-user', now);
     expect(state.stats.totalCooks).toBe(0);
     expect(state.streak.currentWeeks).toBe(0);
