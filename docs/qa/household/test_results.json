@@ -1,0 +1,95 @@
+{
+  "program": "garnish-household-os-v1",
+  "base": "1631dc5dbf0f0d5b9699399ed8f50ebef4b053ab",
+  "status": "BASELINE_PARTIAL_STAGE_B_NOT_RUN",
+  "productionTouched": false,
+  "databaseTouched": false,
+  "runs": [
+    {
+      "id": "dependencies",
+      "command": "pnpm.cmd install --frozen-lockfile --reporter=append-only",
+      "status": "PASS",
+      "summary": "Lockfile current; 1159 workspace packages linked from the local store."
+    },
+    {
+      "id": "baseline-build",
+      "command": "pnpm.cmd build",
+      "status": "PASS",
+      "durationSeconds": 75.777,
+      "summary": "Server Prisma generation/Nest build and web Vite/PWA build passed.",
+      "observations": {
+        "largestWebChunksBeforeGzipKb": [979.09, 656.95, 260.77],
+        "performanceVerdict": "UNMEASURED_NOT_PASS"
+      }
+    },
+    {
+      "id": "baseline-full-unit",
+      "command": "pnpm.cmd test",
+      "status": "FAIL",
+      "durationSeconds": 345.098,
+      "summary": "Turbo failed because the web suite had four baseline smoke-test failures; the concurrent full server run did not produce a final suite summary before Turbo ended.",
+      "failures": [
+        "FoodDnaPage cold-start test found multiple matching 'تازه شروع شده' elements.",
+        "FoodDnaPage onboarding answer test could not find the expected '۳ سؤال دیگه' copy.",
+        "Onboarding signup account-step test could not find the expected heading.",
+        "Onboarding account-error test could not find the expected alert."
+      ]
+    },
+    {
+      "id": "relevant-server-unit",
+      "command": "pnpm.cmd --dir apps/server exec jest src/auth src/consent src/shopping-list src/meal-plans src/notifications/ine --runInBand",
+      "status": "PASS",
+      "durationSeconds": 27.075,
+      "testSuites": { "passed": 15, "total": 15 },
+      "tests": { "passed": 89, "total": 89 }
+    },
+    {
+      "id": "relevant-web-unit-smoke",
+      "command": "pnpm.cmd --dir apps/web exec vitest run src/context/AuthContext.test.jsx src/app/settings/settings.smoke.test.jsx src/app/shopping-list/shoppinglist.smoke.test.jsx src/app/plan/plan.smoke.test.jsx src/app/notifications/notifications.smoke.test.jsx --reporter=dot",
+      "status": "PASS_WITH_WARNINGS",
+      "durationSeconds": 27.16,
+      "testFiles": { "passed": 5, "total": 5 },
+      "tests": { "passed": 27, "total": 27 },
+      "warnings": [
+        "Node 26 localStorage experimental warnings in the jsdom harness.",
+        "One plan smoke test emitted a React act(...) warning."
+      ]
+    },
+    {
+      "id": "baseline-failure-confirmation",
+      "command": "pnpm.cmd --dir apps/web exec vitest run src/app/food-dna/food-dna.smoke.test.jsx src/app/onboarding/onboarding.smoke.test.jsx --reporter=dot",
+      "status": "FAIL_CONFIRMED",
+      "durationSeconds": 10.61,
+      "testFiles": { "failed": 2, "total": 2 },
+      "tests": { "passed": 15, "failed": 4, "total": 19 }
+    },
+    {
+      "id": "targeted-secret-pattern-scan",
+      "command": "git grep common API/private-key token patterns over the 34 Stage A files",
+      "status": "PASS_NO_MATCHES_LIMITED_SCOPE",
+      "summary": "No common Gemini/GitHub/OpenAI/private-key pattern matched. The commit hook reported gitleaks was not installed, so this is not a full secret-audit PASS."
+    }
+  ],
+  "requiredButNotRun": [
+    {
+      "layer": "Account A logout Account B browser isolation",
+      "reason": "Current source lacks query/private-cache purge and P0-A is unmerged; no disposable authenticated browser fixture is available on this base."
+    },
+    {
+      "layer": "Household membership/IDOR/two-browser/realtime/offline",
+      "reason": "No household domain or realtime implementation exists and Stage B is prohibited."
+    },
+    {
+      "layer": "Prisma household integration and migration rehearsal",
+      "reason": "No household migration was created; no verified disposable DB URL exists in this worktree."
+    },
+    {
+      "layer": "Push notification",
+      "reason": "No push provider/subscription implementation exists."
+    },
+    {
+      "layer": "Accessibility/RTL visual and performance",
+      "reason": "Stage A specifies these gates; implementation was not authorized. Build size is evidence only, not a performance PASS."
+    }
+  ]
+}
