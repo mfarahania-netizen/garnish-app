@@ -1,6 +1,6 @@
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconSearch, IconX, IconFlame, IconFridge, IconSearchOff, IconCheck, IconShieldHalf, IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { IconSearch, IconX, IconFlame, IconSearchOff, IconShieldHalf, IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { useDiscovery } from './useDiscovery';
 import { MEAL_CHIPS, FOOD_TILES, UNMET_SUGGESTIONS, QUICK_FILTERS } from './categories';
 import RecipeCard from '../../components/ges/RecipeCard';
@@ -68,11 +68,7 @@ function Browse({ d, openRecipe }) {
       </Box>
 
       <RecipeRail title="محبوب‌ها" icon={IconFlame} items={d.popular} onOpen={openRecipe} />
-      <RecipeRail title="بر اساس آشپزخونه‌ات" icon={IconFridge} items={d.forYou} onOpen={openRecipe} />
-
-      <UnstyledButton type="button" onClick={() => d.setQueryNow('سوشی')} style={{ display: 'block', margin: 'var(--g-space-5) auto 0', minBlockSize: 44, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600, color: 'var(--g-color-brand-700)' }}>
-        نمونهٔ بی‌نتیجه: جستجوی «سوشی» →
-      </UnstyledButton>
+      <RecipeRail title="پیشنهادها" icon={IconAdjustmentsHorizontal} items={d.forYou} onOpen={openRecipe} />
     </Box>
   );
 }
@@ -124,10 +120,7 @@ function UnmetSearch({ query, onPick }) {
         <IconSearchOff size={34} stroke={1.6} />
       </Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', textWrap: 'balance', margin: 'var(--g-space-4) 0 0', color: 'var(--g-color-text-primary)' }}>«{query}» رو پیدا نکردیم</Text>
-      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 320, margin: 'var(--g-space-2) auto 0' }}>ولی این جستجو رو ثبت کردیم تا بهش اضافه‌اش کنیم. به‌محضِ اینکه آماده شد خبرت می‌کنیم.</Text>
-      <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-3)', paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-state-success-bg)', color: 'var(--g-color-state-success-fg)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}>
-        <IconCheck size={13} stroke={2} aria-hidden="true" />درخواستت ثبت شد
-      </Box>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 320, margin: 'var(--g-space-2) auto 0' }}>برای این عبارت نتیجه‌ای نداریم. املای واژه را بررسی کن یا یکی از پیشنهادها را امتحان کن.</Text>
       <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)', margin: 'var(--g-space-6) 0 var(--g-space-3)' }}>شاید این‌ها رو دوست داشته باشی</Text>
       <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)', justifyContent: 'center' }}>
         {UNMET_SUGGESTIONS.map((s) => (
@@ -138,13 +131,24 @@ function UnmetSearch({ query, onPick }) {
   );
 }
 
-function ResultsLoading() {
+function ResultsLoading({ label = 'در حال بارگذاری…' }) {
   return (
-    <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ marginBlockStart: 'var(--g-space-4)' }}>
+    <Box role="status" aria-busy="true" aria-label={label} style={{ marginBlockStart: 'var(--g-space-4)' }}>
       <SkeletonLine w="35%" h={14} />
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', marginBlockStart: 'var(--g-space-4)' }}>
         <SkeletonCard /><SkeletonCard />
       </Box>
+    </Box>
+  );
+}
+
+function BrowseEmpty({ onPick }) {
+  return (
+    <Box style={{ textAlign: 'center', paddingInline: 'var(--g-space-5)', paddingBlock: 'var(--g-space-8)' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 68, blockSize: 68, margin: '0 auto', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-state-info-bg)', color: 'var(--g-color-text-secondary)' }}><IconSearchOff size={30} stroke={1.6} /></Box>
+      <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 'var(--g-space-4) 0 0' }}>فعلاً دستوری در فهرست نیست</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-2) 0 0' }}>می‌توانی یک غذای مشخص را جستجو کنی.</Text>
+      <UnstyledButton type="button" onClick={() => onPick('قورمه سبزی')} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>جستجوی قورمه‌سبزی</UnstyledButton>
     </Box>
   );
 }
@@ -161,9 +165,12 @@ export default function DiscoveryPage() {
     <Box style={PAGE}>
       <SearchBar input={d.input} active={d.active} onChange={d.setInput} onClear={d.clear} />
 
-      {d.status === 'browse' ? <Browse d={d} openRecipe={openRecipe} /> : null}
+      {d.status === 'browse' && d.browseStatus === 'ready' ? <Browse d={d} openRecipe={openRecipe} /> : null}
+      {d.status === 'browse' && d.browseStatus === 'loading' ? <ResultsLoading label="در حال بارگذاری فهرست غذاها…" /> : null}
+      {d.status === 'browse' && d.browseStatus === 'error' ? <ErrorState title="فهرست غذاها در دسترس نیست" body="این بخش بارگذاری نشد؛ دوباره تلاش کن یا جستجو را امتحان کن." reassurance="" onRetry={d.refetchBrowse} /> : null}
+      {d.status === 'browse' && d.browseStatus === 'empty' ? <BrowseEmpty onPick={d.setQueryNow} /> : null}
       {d.status === 'loading' ? <ResultsLoading /> : null}
-      {d.status === 'error' ? <ErrorState title="جستجو در دسترس نیست" body="یه لحظه دیگه دوباره امتحان کن." reassurance="جستجوهای قبلیت محفوظ‌اند" onRetry={d.refetch} /> : null}
+      {d.status === 'error' ? <ErrorState title="جستجو در دسترس نیست" body="یه لحظه دیگه دوباره امتحان کن." reassurance="" onRetry={d.refetch} /> : null}
       {d.status === 'noresults' ? <UnmetSearch query={d.query} onPick={d.setQueryNow} /> : null}
       {d.status === 'results' ? <Results d={d} openRecipe={openRecipe} /> : null}
     </Box>

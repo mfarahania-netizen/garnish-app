@@ -1,4 +1,5 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { useLocation } from 'react-router-dom';
 import { renderWithProviders } from '../../test/renderWithProviders';
 
 // Mock the data hook so the smoke test is deterministic and does NO network.
@@ -36,6 +37,11 @@ vi.mock('../../context/AuthContext', () => ({
 }));
 
 import HomePage from './page';
+
+function LocationProbe() {
+  const location = useLocation();
+  return <output data-testid="location">{location.pathname}</output>;
+}
 
 // A neutral greeting object — the page always renders <Greeting> except in the loading
 // branch, and it dereferences greeting.line / greeting.name / greeting.initial / greeting.streak.
@@ -158,11 +164,13 @@ describe('HomePage smoke', () => {
 
   it('renders the empty / onboarding branch', () => {
     useHomeData.mockReturnValue(emptyShape());
-    renderWithProviders(<HomePage />);
+    renderWithProviders(<><HomePage /><LocationProbe /></>);
     expect(
       screen.getByRole('heading', { name: 'بیا اول ذائقه‌ات رو بشناسیم' }),
     ).toBeInTheDocument();
     expect(screen.getByText('یا از این‌جا شروع کن')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /شروع شناختِ ذائقه/ }));
+    expect(screen.getByTestId('location')).toHaveTextContent('/food-dna');
   });
 
   it('renders the error branch with a retry affordance', () => {
@@ -192,5 +200,7 @@ describe('HomePage smoke', () => {
     expect(screen.queryByText(/درمان|کاهش وزن|دیابت|فشار خون|خرید خودکار/)).not.toBeInTheDocument();
     expect(screen.queryByText('ادامهٔ پخت')).not.toBeInTheDocument();
     expect(screen.getByText('شناسهٔ ذائقهٔ تو')).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /٪/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'بلوغ ذائقه' })).toHaveAttribute('data-ring-mode', 'qualitative');
   });
 });

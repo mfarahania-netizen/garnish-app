@@ -88,7 +88,7 @@ function FoodDnaCard({ dna, onOpen }) {
           <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>شناسهٔ ذائقهٔ تو</Text>
         </Box>
         <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-4)' }}>
-          <FoodDnaRing value={dna.score} size={104} tone={dna.tone} caption="بلوغ ذائقه" />
+          <FoodDnaRing size={104} tone={dna.tone} caption="بلوغ ذائقه" showValue={false} displayMode="qualitative" />
           <Box style={{ flex: 1, minInlineSize: 0 }}>
             <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', color: 'var(--g-color-text-primary)', textWrap: 'balance', margin: 0 }}>{dna.headline}</Text>
             {dna.traits.length ? (
@@ -260,6 +260,7 @@ export default function HomePage() {
     navigate(`/recipe/${id}`);
   }, [navigate, trackEvent]);
   const goDiscover = useCallback(() => navigate('/discover'), [navigate]);
+  const goFoodDna = useCallback(() => navigate('/food-dna'), [navigate]);
   const goPath = useCallback((path) => navigate(path), [navigate]);
   const goRecipeFacet = useCallback(({ meal, category, title }) => {
     const params = new URLSearchParams();
@@ -306,7 +307,7 @@ export default function HomePage() {
 
         {status === 'empty' ? (
           <>
-            <EmptyState icon={IconLeaf} title="بیا اول ذائقه‌ات رو بشناسیم" body="چند سؤال کوتاه می‌پرسیم تا پیشنهادها از همین امشب دقیق‌تر شوند." actionLabel="شروع شناختِ ذائقه" actionIcon={IconSparkles} onAction={goDiscover} />
+            <EmptyState icon={IconLeaf} title="بیا اول ذائقه‌ات رو بشناسیم" body="چند سؤال کوتاه می‌پرسیم تا پیشنهادها از همین امشب دقیق‌تر شوند." actionLabel="شروع شناختِ ذائقه" actionIcon={IconSparkles} onAction={goFoodDna} />
             <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)', margin: 'var(--g-space-2) 2px 0' }}>یا از این‌جا شروع کن</Text>
             <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
               <StarterCard label="کوکو سبزی" seed={2} />
@@ -321,8 +322,8 @@ export default function HomePage() {
               <Box component="section" aria-label={hero.label}>
                 <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginInline: 2, marginBlockEnd: 'var(--g-space-3)' }}>
                   <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{hero.label}</Text>
-                  {hero.source === 'recommendation' && hero.reasons?.length ? (
-                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>با سیگنال واقعی</Text>
+                  {hero.source === 'recommendation' && hero.personalized && hero.reasons?.length ? (
+                    <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-muted)' }}>بر اساس نشانه‌های کافی</Text>
                   ) : null}
                 </Box>
                 <Box ref={observe(hero.recipeId, hero.requestId)}>

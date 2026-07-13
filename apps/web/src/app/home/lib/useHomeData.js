@@ -4,7 +4,7 @@ import apiClient from '../../../lib/apiClient';
 import { useAuth } from '../../../context/AuthContext';
 import { queryKeys } from '../../../lib/queryKeys';
 import { faDuration, faDifficulty, toFaDigits } from '../../../components/ges/format';
-import { reasonLabels, fitFromScore, DNA_BAND, traitsFromProfile } from './reasons';
+import { reasonLabels, fitFromScore, hasReliableRecommendationEvidence, DNA_BAND, traitsFromProfile } from './reasons';
 import { weekdayTimeLine } from './greeting';
 
 /**
@@ -76,14 +76,17 @@ export function useHomeData() {
 
     const recommendationCard = (r) => {
       const recipe = catalogById.get(String(r.recipeId));
-      const labels = reasonLabels(r.matchedSignals || r.reasonSignals || [], 3);
+      const signals = r.matchedSignals || r.reasonSignals || [];
+      const labels = reasonLabels(signals, 3);
+      const personalized = hasReliableRecommendationEvidence(r.dataMaturity, signals);
       return {
         recipeId: r.recipeId,
         requestId: r.requestId || null,
         title: r.title || recipe?.title || 'دستور پیشنهادی',
         imageUrl: recipe?.imageUrl || r.imageUrl || '',
         seed: stableSeed(r.recipeId),
-        fit: fitFromScore(r.finalScore),
+        fit: fitFromScore(r.finalScore, r.dataMaturity, signals),
+        personalized,
         cookTimeText: faDuration(recipe?.cookingTime),
         difficultyText: faDifficulty(recipe?.difficulty),
         servingsText: recipe?.servings ? `${toFaDigits(recipe.servings)} نفر` : '',
@@ -110,8 +113,9 @@ export function useHomeData() {
 
     // ── Hero and rails: one decision-first hero + max two rails. Recommendations are used
     // only when real; otherwise the public catalog fallback is labelled non-personally.
-    const hero = recList[0]
-      ? { ...recommendationCard(recList[0]), source: 'recommendation', label: 'پیشنهاد امروز' }
+    const firstRecommendation = recList[0] ? recommendationCard(recList[0]) : null;
+    const hero = firstRecommendation
+      ? { ...firstRecommendation, source: 'recommendation', label: firstRecommendation.personalized ? 'پیشنهاد مناسب تو' : 'پیشنهاد امروز' }
       : catalog[0]
         ? { ...catalogCard(catalog[0]), source: 'fallback', label: 'برای شروع' }
         : null;

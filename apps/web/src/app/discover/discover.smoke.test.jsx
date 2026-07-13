@@ -31,6 +31,8 @@ function baseShape(overrides = {}) {
     query: '',
     active: false,
     status: 'browse',
+    browseStatus: 'ready',
+    searchStatus: 'idle',
     popular: [],
     forYou: [],
     results: { safe: [], flagged: [], total: 0 },
@@ -39,6 +41,7 @@ function baseShape(overrides = {}) {
     setQueryNow: vi.fn(),
     clear: vi.fn(),
     refetch: vi.fn(),
+    refetchBrowse: vi.fn(),
     ...overrides,
   };
 }
@@ -81,7 +84,8 @@ describe('DiscoveryPage smoke', () => {
     // browse landmarks (rail titles, verbatim from source)
     expect(screen.getByRole('heading', { name: 'دستهٔ وعده' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'محبوب‌ها' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'بر اساس آشپزخونه‌ات' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'پیشنهادها' })).toBeInTheDocument();
+    expect(screen.queryByText(/نمونهٔ بی‌نتیجه/)).not.toBeInTheDocument();
   });
 
   it('renders the loading state while a search is in flight', () => {
@@ -92,6 +96,22 @@ describe('DiscoveryPage smoke', () => {
     // search bar still present; no browse heading while loading
     expect(screen.getByRole('searchbox', { name: 'جستجو' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'محبوب‌ها' })).not.toBeInTheDocument();
+  });
+
+  it('renders browse loading, error, and empty independently from search state', () => {
+    useDiscovery.mockReturnValue(baseShape({ browseStatus: 'loading' }));
+    const loading = renderWithProviders(<DiscoveryPage />);
+    expect(screen.getByRole('status', { name: 'در حال بارگذاری فهرست غذاها…' })).toBeInTheDocument();
+    loading.unmount();
+
+    useDiscovery.mockReturnValue(baseShape({ browseStatus: 'error' }));
+    const error = renderWithProviders(<DiscoveryPage />);
+    expect(screen.getByRole('heading', { name: 'فهرست غذاها در دسترس نیست' })).toBeInTheDocument();
+    error.unmount();
+
+    useDiscovery.mockReturnValue(baseShape({ browseStatus: 'empty' }));
+    renderWithProviders(<DiscoveryPage />);
+    expect(screen.getByRole('heading', { name: 'فعلاً دستوری در فهرست نیست' })).toBeInTheDocument();
   });
 
   it('renders the error state with a retry affordance', () => {
@@ -116,6 +136,7 @@ describe('DiscoveryPage smoke', () => {
 
     // heading interpolates the query verbatim: «{query}» رو پیدا نکردیم
     expect(screen.getByRole('heading', { name: '«سوشی» رو پیدا نکردیم' })).toBeInTheDocument();
+    expect(screen.queryByText(/خبرت می‌کنیم|درخواستت ثبت شد/)).not.toBeInTheDocument();
   });
 
   it('HARD-HIDES allergen-conflicting recipes — shows only a safety count, never the unsafe card', () => {

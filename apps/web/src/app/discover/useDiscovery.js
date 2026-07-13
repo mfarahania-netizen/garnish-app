@@ -172,14 +172,9 @@ export function useDiscovery() {
     return { safe, hiddenForSafety, total: mapped.length };
   }, [search.data, allergiesFa, filters, toCard]);
 
-  // status
-  let status = 'browse';
-  if (active) {
-    if (search.isLoading) status = 'loading';
-    else if (search.isError) status = 'error';
-    else if (results.total === 0) status = 'noresults';
-    else status = 'results';
-  }
+  const browseStatus = deriveBrowseStatus({ itemCount: catalogList.length, isLoading: catalog.isLoading, isError: catalog.isError });
+  const searchStatus = deriveSearchStatus({ active, resultCount: results.total, isLoading: search.isLoading, isError: search.isError });
+  const status = active ? searchStatus : 'browse';
 
   // record the unmet search once per query (honest: real analytics event, signed-in only).
   // PRIVACY (GDPR): never send the RAW query text — it can carry incidental PII (a name, phone, condition).
@@ -210,10 +205,26 @@ export function useDiscovery() {
 
   return {
     input, setInput, query, active, status,
+    browseStatus, searchStatus,
     popular, forYou,
     results,
     filters, toggleFilter,
     setQueryNow, clear,
     refetch: () => search.refetch(),
+    refetchBrowse: () => { catalog.refetch(); if (token) recs.refetch(); },
   };
+}
+
+export function deriveBrowseStatus({ itemCount = 0, isLoading = false, isError = false } = {}) {
+  if (itemCount > 0) return 'ready';
+  if (isLoading) return 'loading';
+  if (isError) return 'error';
+  return 'empty';
+}
+
+export function deriveSearchStatus({ active = false, resultCount = 0, isLoading = false, isError = false } = {}) {
+  if (!active) return 'idle';
+  if (isLoading) return 'loading';
+  if (isError) return 'error';
+  return resultCount > 0 ? 'results' : 'noresults';
 }

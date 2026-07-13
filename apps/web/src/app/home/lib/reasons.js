@@ -32,9 +32,22 @@ export function reasonLabels(signals = [], max = 3) {
   return out;
 }
 
-// Honest fit from a recommendation finalScore (0..1). Only the earned positive badge is surfaced.
-export function fitFromScore(score) {
-  return typeof score === 'number' && score >= 0.7 ? 'great' : null;
+// A high ranking score is not enough to claim a personal fit. The ranking response also carries
+// data-maturity evidence; only a reliable profile plus at least two independently localized signals
+// earns personal language. Cold-start / warming-up results stay useful, but are labelled neutrally.
+export function hasReliableRecommendationEvidence(dataMaturity, signals = []) {
+  const maturity = dataMaturity?.dataMaturity;
+  const confidence = dataMaturity?.confidenceLevel;
+  const reliableProfile = confidence === 'reliable' && (maturity === 'reliable' || maturity === 'mature');
+  return reliableProfile && reasonLabels(signals, 6).length >= 2;
+}
+
+export function fitFromScore(score, dataMaturity, signals = []) {
+  return typeof score === 'number'
+    && score >= 0.7
+    && hasReliableRecommendationEvidence(dataMaturity, signals)
+    ? 'great'
+    : null;
 }
 
 // Food DNA band (from /profile maturity.band) -> Persian headline + ring tone.
