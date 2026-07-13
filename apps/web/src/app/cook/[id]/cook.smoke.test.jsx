@@ -45,8 +45,11 @@ const readyValue = (over = {}) => ({
   isGris: false,
   personalization: { servedFor: null, swaps: {}, removed: [], isPersonalized: false },
   finished: false,
+  completion: { status: 'idle' },
   next: vi.fn(),
   prev: vi.fn(),
+  feedback: { status: 'idle', sentiment: null },
+  submitFeedback: vi.fn(),
   loggedIn: false,
   streakWeeks: 0,
   sheetOpen: false,
@@ -96,11 +99,31 @@ describe('CookPage smoke', () => {
   });
 
   it('renders the finished state', () => {
-    useCook.mockReturnValue(readyValue({ finished: true }));
+    useCook.mockReturnValue(readyValue({ finished: true, loggedIn: true, completion: { status: 'saved' } }));
     renderPage();
     expect(
       screen.getByRole('heading', { name: 'آفرین — نوشِ جان!' }),
     ).toBeInTheDocument();
+    expect(screen.getByText(/پختت رو ثبت کردیم/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'خوب بود' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'بهتر می‌شد' })).toBeInTheDocument();
+  });
+
+  it('never shows feedback success while persistence is pending or failed', () => {
+    useCook.mockReturnValue(readyValue({ finished: true, loggedIn: true, completion: { status: 'saved' }, feedback: { status: 'error', sentiment: 'positive' } }));
+    renderPage();
+    expect(screen.getByRole('alert')).toHaveTextContent('نظر ثبت نشد');
+    expect(screen.queryByText('نظرت ثبت شد')).not.toBeInTheDocument();
+  });
+
+  it('shows a truthful local finish for a guest without a persisted-completion or feedback claim', () => {
+    useCook.mockReturnValue(readyValue({ step: 2, finished: true, completion: { status: 'local_only' }, loggedIn: false }));
+    renderPage();
+    expect(screen.getByRole('heading', { name: 'آفرین — نوشِ جان!' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('در حسابی ثبت نشده');
+    expect(screen.queryByText(/پختت رو ثبت کردیم/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'خوب بود' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'بهتر می‌شد' })).not.toBeInTheDocument();
   });
 
   it('renders the ready/step state with the step UI', () => {

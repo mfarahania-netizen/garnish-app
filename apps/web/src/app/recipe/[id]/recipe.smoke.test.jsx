@@ -135,6 +135,17 @@ describe('RecipeDetailPage smoke', () => {
     expect(screen.getByText('۱ مرحله آماده‌سازی')).toBeInTheDocument();
   });
 
+  it('shows an unavailable action, never a working cook CTA, when valid steps are missing', () => {
+    const v = readyValue();
+    v.recipe.steps = [' ', { instruction: '' }];
+    useRecipeDetail.mockReturnValue(v);
+    renderPage();
+
+    expect(screen.getByText('مراحل پخت ثبت نشده')).toBeInTheDocument();
+    expect(screen.getByText('فعلاً قابل شروع نیست')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'شروع پخت' })).not.toBeInTheDocument();
+  });
+
   it('omits richness sections gracefully when empty (no swaps/tools headings, no fabricated content)', () => {
     useRecipeDetail.mockReturnValue(readyValue());
     renderPage();

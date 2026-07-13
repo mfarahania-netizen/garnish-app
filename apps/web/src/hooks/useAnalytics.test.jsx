@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   touchSession: vi.fn(),
   hasConsent: vi.fn(),
   disableAnalytics: vi.fn(),
+  capture: vi.fn(),
 }));
 
 vi.mock('../lib/apiClient', () => ({ default: { get: mocks.get, post: mocks.post } }));
@@ -14,12 +15,16 @@ vi.mock('../lib/analytics-init', () => ({
   hasAnalyticsConsent: mocks.hasConsent,
   disableAnalytics: mocks.disableAnalytics,
 }));
+vi.mock('posthog-js', () => ({ default: { __loaded: false, capture: mocks.capture } }));
 
 import { useAnalytics } from './useAnalytics';
+import posthog from 'posthog-js';
 
 beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
+  posthog.__loaded = false;
+  mocks.hasConsent.mockReturnValue(true);
   mocks.get.mockResolvedValue({ data: { purposes: {
     analytics: { granted: true, policyVersion: 'privacy-1405-03-29', processingEnabled: true },
   } } });
@@ -136,4 +141,43 @@ it('sends nothing when local withdrawal happens after canonical GET but before P
   expect(mocks.touchSession).toHaveBeenCalledTimes(1);
   expect(mocks.post).not.toHaveBeenCalled();
   expect(mocks.disableAnalytics).toHaveBeenCalledTimes(1);
+});
+
+describe('confirmed first-party events', () => {
+  it('resolves only when the backend returns a stored event id', async () => {
+    localStorage.setItem('token', 'long-enough-test-token');
+    const { result } = renderHook(() => useAnalytics());
+    let stored;
+    await act(async () => {
+      stored = await result.current.trackEventConfirmed('cook_complete', { recipeId: 'r1' });
+    });
+    expect(stored.id).toBe('event-1');
+    expect(mocks.post).toHaveBeenCalledWith(
+      '/analytics/event',
+      expect.objectContaining({ type: 'cook_complete', payload: { recipeId: 'r1' } }),
+      expect.any(Object),
+    );
+  });
+
+  it('rejects when no event was stored', async () => {
+    localStorage.setItem('token', 'long-enough-test-token');
+    mocks.post.mockResolvedValueOnce({ data: null });
+    const { result } = renderHook(() => useAnalytics());
+    await expect(result.current.trackEventConfirmed('feedback_positive', { recipeId: 'r1' }))
+      .rejects.toThrow('EVENT_NOT_STORED');
+  });
+
+  it('keeps the first-party acknowledgement when PostHog capture fails', async () => {
+    localStorage.setItem('token', 'long-enough-test-token');
+    posthog.__loaded = true;
+    mocks.capture.mockImplementationOnce(() => { throw new Error('posthog unavailable'); });
+    mocks.post.mockResolvedValueOnce({ data: { id: 'event-2' } });
+    const { result } = renderHook(() => useAnalytics());
+    await expect(result.current.trackEventConfirmed('cook_complete', { recipeId: 'r2' }))
+      .resolves.toEqual({ id: 'event-2' });
+    expect(mocks.capture).toHaveBeenCalledWith(
+      'cook_complete',
+      expect.objectContaining({ recipeId: 'r2' }),
+    );
+  });
 });

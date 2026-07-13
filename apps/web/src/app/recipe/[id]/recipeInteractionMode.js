@@ -1,6 +1,7 @@
 import { getRecipeActionCopy } from './recipeActionCopy.js';
 
 export const RecipeInteractionMode = Object.freeze({
+  UNAVAILABLE: 'UNAVAILABLE',
   COOK: 'COOK',
   PREPARE: 'PREPARE',
   ASSEMBLE: 'ASSEMBLE',
@@ -124,10 +125,17 @@ function includesAny(text, terms) {
   });
 }
 
+function validStepCount(steps) {
+  if (!Array.isArray(steps)) return 0;
+  return steps.reduce((count, step) => {
+    const instruction = typeof step === 'string' ? step : step?.instruction || step?.text || step?.description;
+    return count + (String(instruction || '').trim() ? 1 : 0);
+  }, 0);
+}
+
 function stepCount(recipe) {
-  if (Array.isArray(recipe?.gris?.steps)) return recipe.gris.steps.length;
-  if (Array.isArray(recipe?.steps)) return recipe.steps.length;
-  return 0;
+  const grisCount = validStepCount(recipe?.gris?.steps);
+  return grisCount > 0 ? grisCount : validStepCount(recipe?.steps);
 }
 
 export { getRecipeActionCopy };
@@ -144,6 +152,7 @@ export function getRecipeInteractionMode(recipe) {
   const hasPrepare = includesAny(text, PREPARE_TERMS);
   const isNoCook = includesAny(text, NO_COOK_TERMS);
 
+  if (steps === 0) return RecipeInteractionMode.UNAVAILABLE;
   if (isDrink) return RecipeInteractionMode.DRINK;
   if (isNoCook && (hasAssembly || hasPrepare || steps <= 2)) return RecipeInteractionMode.NO_COOK_SIMPLE;
   if (hasHeat) return RecipeInteractionMode.COOK;

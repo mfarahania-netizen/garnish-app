@@ -35,16 +35,19 @@ const readyCook = {
 };
 
 describe('Cook Mode renders inside the app shell (FIX 1)', () => {
-  it('shows the app TopBar (back) + BottomNav around the cook content at /cook/:id', () => {
+  it('shows the app TopBar (back) + BottomNav around the cook content at /cook/:id', async () => {
     useCook.mockReturnValue(readyCook);
+    // Prime this bracketed dynamic module under Vitest; route-level lazy loading itself is
+    // covered by the legal-route and App foundation tests.
+    await import('./app/cook/[id]/page');
     renderWithProviders(<AppRoutes />, { route: '/cook/1' });
 
-    // cook content present
-    expect(screen.getByText('مرحلهٔ ۱ از ۳')).toBeInTheDocument();
     // app TopBar present (back chevron on this pushed route) + the wordmark link to home
     expect(screen.getByRole('button', { name: 'بازگشت' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'گارنیش — خانه' })).toBeInTheDocument();
     // app BottomNav present (a primary tab)
     expect(screen.getByRole('link', { name: 'خانه' })).toBeInTheDocument();
-  });
+    // cook content present after its route chunk resolves
+    expect(await screen.findByText('مرحلهٔ ۱ از ۳')).toBeInTheDocument();
+  }, 15000);
 });

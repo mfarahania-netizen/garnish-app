@@ -4,6 +4,12 @@ const stepLabel = (count, noun) => (count > 0 ? `${faDigits(count)} مرحله $
 
 export function getRecipeActionCopy(mode, count = 0) {
   const copy = {
+    UNAVAILABLE: {
+      primaryLabel: 'مراحل پخت ثبت نشده',
+      stepLabel: 'فعلاً قابل شروع نیست',
+      shouldShowStickyCta: false,
+      shouldOpenGuidedMode: false,
+    },
     COOK: {
       primaryLabel: 'شروع پخت',
       stepLabel: stepLabel(count, 'پخت'),

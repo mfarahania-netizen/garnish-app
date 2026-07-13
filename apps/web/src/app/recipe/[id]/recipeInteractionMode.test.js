@@ -14,6 +14,18 @@ const recipe = (overrides) => ({
 });
 
 describe('recipe interaction mode', () => {
+  it('does not expose a cook action when no valid step exists', () => {
+    const action = getRecipeAction(recipe({
+      title: 'دستور ناقص',
+      steps: ['  ', { instruction: '' }, { text: null }],
+    }));
+
+    expect(action.mode).toBe(RecipeInteractionMode.UNAVAILABLE);
+    expect(action.primaryLabel).toBe('مراحل پخت ثبت نشده');
+    expect(action.shouldShowStickyCta).toBe(false);
+    expect(action.shouldOpenGuidedMode).toBe(false);
+  });
+
   it('keeps real cooked recipes on the cook CTA', () => {
     const action = getRecipeAction(recipe({
       title: 'خورش قورمه سبزی',

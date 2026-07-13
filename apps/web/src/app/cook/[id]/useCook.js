@@ -15,7 +15,8 @@ import { queryKeys } from '../../../lib/queryKeys';
  * from gris.steps (flame · tempC · durationMin · sees · recovery · doneness) instead of the flat text
  * steps, and reflects the SAME session personalization (swaps/removes) the recipe page set — so what you
  * tuned is what you cook. Step AI help is grounded on GET /ai/recipes/:id/technique?step=, disclosed +
- * hedged. Finish records a REAL `cook_complete` event the gamification engine counts (never fabricated).
+ * hedged. Finishing the instructions is local UI truth; a persisted `cook_complete` claim is made only
+ * after the first-party analytics endpoint acknowledges the stored event.
  */
 
 // honest per-step duration parsed from free Persian text (e.g. «۶ تا ۷ دقیقه» → 7m, «۲ ساعت» → 120m);
@@ -53,7 +54,7 @@ function extractFa(data) {
 
 export function useCook(id) {
   const { token } = useAuth();
-  const { trackEvent } = useAnalytics();
+  const { trackEvent, trackEventConfirmed } = useAnalytics();
   const detail = useRecipeDetail(id);
   const baseServings = extractBaseServings(detail.recipe?.servingsText, 4);
   const perso = usePersonalization(id, baseServings);
@@ -61,6 +62,8 @@ export function useCook(id) {
 
   const [step, setStep] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [completion, setCompletion] = useState({ status: 'idle' });
+  const [feedback, setFeedback] = useState({ status: 'idle', sentiment: null });
   const [sheetOpen, setSheetOpen] = useState(false);
   const [help, setHelp] = useState({ loading: false, text: null, error: false });
 
@@ -107,23 +110,56 @@ export function useCook(id) {
 
   const total = steps.length;
 
-  const next = useCallback(() => {
+  const next = useCallback(async () => {
     if (step >= total - 1) {
-      if (!finished) {
+      if (finished) return true;
+      if (completion.status === 'saving') return false;
+      if (!token) {
+        // /cook/:id is a public route. A guest can truthfully finish the instructions locally, but there
+        // is no account event to claim or feedback endpoint to expose without authentication.
+        setCompletion({ status: 'local_only' });
         setFinished(true);
-        // CANONICAL completion event the gamification engine counts (UserEvent type 'cook_complete').
-        if (token) {
-          trackEvent('cook_complete', { recipeId: id });
-          // If this recipe was reached from a recommendation (within the window), also fire the explicit
-          // `recommendation_cook` reward with the slate requestId — the strongest exposure↔reward signal.
-          const rid = recallRecommendation(id);
-          if (rid) trackEvent('recommendation_cook', { recipeId: id, requestId: rid });
-        }
+        return true;
       }
-      return;
+
+      setCompletion({ status: 'saving' });
+      try {
+        await trackEventConfirmed('cook_complete', { recipeId: id });
+        setCompletion({ status: 'saved' });
+        setFinished(true);
+        // Recommendation attribution is useful telemetry, but it is not the acknowledgement that gates
+        // the completion claim. It remains non-blocking after cook_complete has durably persisted.
+        const rid = recallRecommendation(id);
+        if (rid) {
+          try {
+            trackEvent('recommendation_cook', { recipeId: id, requestId: rid });
+          } catch {
+            // Secondary attribution is best-effort and must never roll back a confirmed completion.
+          }
+        }
+        return true;
+      } catch {
+        setCompletion({ status: 'error' });
+        return false;
+      }
     }
     setStep((s) => s + 1);
-  }, [step, total, finished, token, trackEvent, id]);
+    return true;
+  }, [step, total, finished, completion.status, token, trackEvent, trackEventConfirmed, id]);
+
+  const submitFeedback = useCallback(async (sentiment) => {
+    if (!finished || !token || feedback.status === 'saving' || feedback.status === 'saved') return false;
+    if (sentiment !== 'positive' && sentiment !== 'negative') return false;
+    setFeedback({ status: 'saving', sentiment });
+    try {
+      await trackEventConfirmed(`feedback_${sentiment}`, { recipeId: id, source: 'cook_finish' });
+      setFeedback({ status: 'saved', sentiment });
+      return true;
+    } catch {
+      setFeedback({ status: 'error', sentiment });
+      return false;
+    }
+  }, [feedback.status, finished, id, token, trackEventConfirmed]);
 
   const prev = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
 
@@ -151,7 +187,9 @@ export function useCook(id) {
     isGris: Array.isArray(detail.gris?.steps) && detail.gris.steps.length > 0,
     personalization: { servedFor: perso.servedFor, swaps: perso.swaps, removed: perso.removed, isPersonalized: perso.isPersonalized },
     finished,
+    completion,
     next, prev,
+    feedback, submitFeedback,
     loggedIn: !!token,
     streakWeeks: gam.data?.streak?.currentWeeks || 0,
     sheetOpen, openHelp, closeHelp, help,

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   IconChevronRight, IconChevronLeft, IconClockPlay, IconPlayerPause, IconRefresh,
-  IconSparkles, IconTag, IconInfoCircle, IconCheck, IconHeart, IconCloudOff, IconFlame,
+  IconSparkles, IconTag, IconInfoCircle, IconCheck, IconThumbUp, IconThumbDown, IconCloudOff, IconFlame,
   IconThermometer, IconClock, IconEye, IconCircleCheck, IconBulb, IconLifebuoy,
 } from '@tabler/icons-react';
 import { useCook } from './useCook';
@@ -119,8 +119,10 @@ function CookLoading() {
   );
 }
 
-function Finish({ c, onDone, onRate }) {
+function Finish({ c, onDone }) {
   const reduce = prefersReducedMotion();
+  const feedbackBusy = c.feedback?.status === 'saving';
+  const feedbackSaved = c.feedback?.status === 'saved';
   return (
     <Column>
       <Box style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingInline: 'var(--g-space-6)' }}>
@@ -135,8 +137,13 @@ function Finish({ c, onDone, onRate }) {
           </Box>
           <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-28)', fontWeight: 800, lineHeight: 'var(--g-leading-heading)', margin: 'var(--g-space-6) 0 0', color: 'var(--g-color-text-primary)' }}>آفرین — نوشِ جان!</Text>
           <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 290, margin: 'var(--g-space-3) 0 0' }}>
-            {c.recipe.title} آماده‌ست.{c.loggedIn ? ' پختت رو ثبت کردیم.' : ''}
+            {c.recipe.title} آماده‌ست.{c.loggedIn && c.completion?.status === 'saved' ? ' پختت رو ثبت کردیم.' : ''}
           </Text>
+          {!c.loggedIn && c.completion?.status === 'local_only' ? (
+            <Text role="status" component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', maxInlineSize: 290, margin: 'var(--g-space-2) 0 0' }}>
+              پایان این پخت فقط در همین نشست تأیید شد و در حسابی ثبت نشده.
+            </Text>
+          ) : null}
           {c.loggedIn && c.streakWeeks > 0 ? (
             <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 'var(--g-space-3)', paddingInline: 'var(--g-space-3)', paddingBlock: 6, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
               <IconFlame size={14} stroke={1.8} aria-hidden="true" />رشتهٔ فعلیت: {toFaDigits(c.streakWeeks)} هفتهٔ پیاپی
@@ -145,9 +152,18 @@ function Finish({ c, onDone, onRate }) {
         </Box>
         <Box style={{ paddingBlockEnd: 'calc(var(--g-space-6) + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)' }}>
           <UnstyledButton type="button" onClick={onDone} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: '100%', minBlockSize: 52, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 700 }}>تمام</UnstyledButton>
-          <UnstyledButton type="button" onClick={onRate} style={{ inlineSize: '100%', paddingBlock: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)', textAlign: 'center' }}>
-            چطور بود؟ <Text component="span" style={{ color: 'var(--g-color-brand-700)' }}>یک نظر بده</Text>
-          </UnstyledButton>
+          {c.loggedIn ? (
+            <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--g-space-2)' }}>
+              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-secondary)', margin: 0 }}>نتیجهٔ این پخت چطور بود؟</Text>
+              <Box style={{ display: 'flex', gap: 'var(--g-space-2)', inlineSize: '100%' }}>
+                <UnstyledButton type="button" onClick={() => c.submitFeedback('positive')} disabled={feedbackBusy || feedbackSaved} aria-label="خوب بود" style={{ flex: 1, minBlockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-1)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', color: 'var(--g-color-state-success-fg)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}><IconThumbUp size={16} stroke={1.8} aria-hidden="true" />خوب بود</UnstyledButton>
+                <UnstyledButton type="button" onClick={() => c.submitFeedback('negative')} disabled={feedbackBusy || feedbackSaved} aria-label="بهتر می‌شد" style={{ flex: 1, minBlockSize: 44, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-1)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-subtle)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}><IconThumbDown size={16} stroke={1.8} aria-hidden="true" />بهتر می‌شد</UnstyledButton>
+              </Box>
+              {feedbackBusy ? <Text role="status" component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>در حال ثبت نظر…</Text> : null}
+              {feedbackSaved ? <Text role="status" component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-success-fg)' }}>نظرت ثبت شد</Text> : null}
+              {c.feedback?.status === 'error' ? <Text role="alert" component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-danger-fg)' }}>نظر ثبت نشد؛ دوباره انتخاب کن.</Text> : null}
+            </Box>
+          ) : null}
         </Box>
       </Box>
     </Column>
@@ -177,7 +193,7 @@ export default function CookPage() {
   if (c.status === 'loading') return <CookLoading />;
   if (c.status === 'error' || c.status === 'empty' || !c.recipe) return <CookError onRetry={() => c.refetch()} onExit={exit} />;
   if (c.total === 0) return <CookError onExit={exit} title="این دستور مرحله‌ای ثبت‌نشده" />;
-  if (c.finished) return <Finish c={c} onDone={() => navigate('/')} onRate={() => showToast('ممنون! نظرت ثبت شد', IconHeart)} />;
+  if (c.finished) return <Finish c={c} onDone={() => navigate('/')} />;
 
   const last = c.step === c.total - 1;
   const s = c.currentStep || {};
@@ -237,8 +253,9 @@ export default function CookPage() {
         </UnstyledButton>
         <Box style={{ display: 'flex', gap: 'var(--g-space-2)' }}>
           <UnstyledButton type="button" onClick={c.prev} disabled={c.step === 0} aria-label="مرحلهٔ قبلی" style={{ inlineSize: 64, minBlockSize: 60, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--g-radius-card)', border: '1px solid var(--g-color-border-strong)', background: 'var(--g-color-bg-surface)', color: c.step === 0 ? 'var(--g-color-text-muted)' : 'var(--g-color-text-primary)' }}><IconChevronRight size={24} stroke={1.8} /></UnstyledButton>
-          <UnstyledButton type="button" onClick={c.next} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 60, borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 700, boxShadow: 'var(--g-shadow-1)' }}>{last ? 'پایان' : 'بعدی'}<IconChevronLeft size={22} stroke={1.8} aria-hidden="true" /></UnstyledButton>
+          <UnstyledButton type="button" onClick={c.next} disabled={c.completion?.status === 'saving'} style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', minBlockSize: 60, borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 700, boxShadow: 'var(--g-shadow-1)', opacity: c.completion?.status === 'saving' ? 0.7 : 1 }}>{c.completion?.status === 'saving' ? 'در حال ثبت…' : last ? 'پایان' : 'بعدی'}<IconChevronLeft size={22} stroke={1.8} aria-hidden="true" /></UnstyledButton>
         </Box>
+        {c.completion?.status === 'error' ? <Text role="alert" component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-danger-fg)', textAlign: 'center', margin: 'var(--g-space-2) 0 0' }}>پخت ثبت نشد؛ اتصال را بررسی کن و دوباره «پایان» را بزن.</Text> : null}
       </Box>
 
       {/* AI help sheet (disclosed + hedged + grounded) */}
