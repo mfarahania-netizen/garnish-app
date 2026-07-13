@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
 import { IconRefresh, IconCheck, IconPlus, IconShoppingCart, IconWand, IconCloudOff, IconShieldCheck, IconTrash, IconPencil, IconX, IconHome, IconArchive, IconUsers, IconMinus } from '@tabler/icons-react';
 import { useShopping } from './useShopping';
 import { emojiFor } from './ingredient-emoji';
@@ -103,12 +102,29 @@ function ShoppingError({ onRetry }) {
   );
 }
 
+function PlanBuildSummary({ summary }) {
+  if (!summary) return null;
+  const parts = [
+    `${toFaDigits(summary.added)} قلم تازه`,
+    summary.merged ? `${toFaDigits(summary.merged)} ادغام` : null,
+    summary.removedPlan ? `${toFaDigits(summary.removedPlan)} ردیف قبلیِ برنامه پاک شد` : null,
+  ].filter(Boolean);
+  return (
+    <Box role="status" style={{ margin: 'var(--g-space-4) var(--g-space-4) 0', padding: 'var(--g-space-3) var(--g-space-4)', borderRadius: 'var(--g-radius-card)', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)' }}>
+      <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-brand-700)' }}>خلاصهٔ ساخت از برنامه{summary.servings ? ` · برای ${toFaDigits(summary.servings)} نفر` : ''}</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-1) 0 0' }}>{parts.join(' · ')}</Text>
+      {summary.flagged ? <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-warning-fg)', margin: 'var(--g-space-1) 0 0' }}>{toFaDigits(summary.flagged)} مقدار یا واحد نیازمند بررسی است.</Text> : null}
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', margin: 'var(--g-space-1) 0 0' }}>این جمع‌بندی برای کل لیست است؛ دادهٔ فعلی منبع هر قلم را به یک غذای مشخص وصل نمی‌کند.</Text>
+    </Box>
+  );
+}
+
 export default function ShoppingListPage() {
-  const navigate = useNavigate();
   const s = useShopping();
   const [draft, setDraft] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
   const [servings, setServings] = useState(4); // «for how many people» the build-from-plan scales the list to
+  const [buildSummary, setBuildSummary] = useState(null);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   useEffect(() => () => clearTimeout(toastTimer.current), []);
@@ -117,8 +133,18 @@ export default function ShoppingListPage() {
   const onFromPlan = async () => {
     const r = await s.buildFromPlan(servings);
     if (!r.ok) { showToast('الان نشد — دوباره امتحان کن', IconCloudOff); return; }
-    if (r.noPlan) { showToast('اول یک برنامهٔ هفته بچین', IconWand); navigate('/plan'); return; }
-    if (!r.added && !r.merged) { showToast('همه‌چیز از قبل توی لیسته', IconCheck); return; }
+    if (r.noPlan) {
+      setBuildSummary(r.removedPlan ? r : null);
+      showToast(
+        r.removedPlan
+          ? `${toFaDigits(r.removedPlan)} ردیف قدیمیِ برنامه پاک شد؛ برنامهٔ فعالی پیدا نشد`
+          : 'برنامهٔ فعالی پیدا نشد؛ اول برنامهٔ هفته را بچین',
+        IconWand,
+      );
+      return;
+    }
+    setBuildSummary(r);
+    if (!r.added && !r.merged) { showToast('مورد تازه‌ای برای خرید لازم نبود', IconCheck); return; }
     const flag = r.flagged ? ` · ${toFaDigits(r.flagged)} نیاز به بررسی واحد` : '';
     showToast(`از برنامه ساخته شد · ${toFaDigits(r.added)} مورد${r.merged ? ` · ${toFaDigits(r.merged)} ادغام` : ''}${flag}`, IconWand);
   };
@@ -145,6 +171,7 @@ export default function ShoppingListPage() {
       </Box>
 
       <Box style={{ flex: 1, minBlockSize: 0, overflowY: 'auto' }}>
+        <PlanBuildSummary summary={buildSummary} />
         {s.status === 'loading' ? (
           <Box role="status" aria-busy="true" aria-label="در حال بارگذاری…" style={{ padding: 'var(--g-space-4)' }}>
             <SkeletonLine w="40%" h={14} />

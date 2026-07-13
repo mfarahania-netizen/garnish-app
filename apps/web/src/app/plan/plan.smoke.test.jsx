@@ -125,6 +125,9 @@ describe('PlanPage smoke', () => {
     renderWithProviders(<PlanPage />);
     expect(screen.getByText('این یک پیشنهاد است — بازبینی کن و بپذیر')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'پذیرفتنِ برنامه' })).toBeInTheDocument();
+    expect(screen.getByText('چیدمان پیشنهادی')).toBeInTheDocument();
+    expect(screen.queryByText(/AI/)).not.toBeInTheDocument();
+    expect(screen.queryByText('پیشنهادِ AI')).not.toBeInTheDocument();
   });
 
   // FIX 4: the redundant dead "دستیار" header button is gone (one clear «بچین» entry point remains).
@@ -160,6 +163,7 @@ describe('PlanPage smoke', () => {
     expect(screen.getByRole('button', { name: /یکی دیگه/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /بپذیر/ })).toBeInTheDocument();
     expect(screen.queryByText('اطمینان بالا')).not.toBeInTheDocument(); // chip removed
+    expect(screen.queryByText('پیشنهادِ AI')).not.toBeInTheDocument();
   });
 
   // FI-STEP-1.3: tapping «یکی دیگه» calls swapSlot for that slot (per-slot swap, not a week regenerate).

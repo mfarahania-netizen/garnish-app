@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../lib/apiClient';
 import { faDuration, recipeDurationMinutes } from '../../components/ges/format';
 
 /**
  * useMealPlan — the weekly plan (RTL, Sat→Fri). Reads the REAL current plan (GET /meal-plans) and,
- * on request, fetches an AI PROPOSAL (POST /meal-plans/propose — PLANNER-L4-09: allergy hard-excluded,
+ * on request, fetches a deterministic planner proposal (POST /meal-plans/propose — PLANNER-L4-09: allergy hard-excluded,
  * writes nothing). The proposal is shown as SUGGESTED slots; nothing is applied until the user accepts
  * a slot / the whole plan via POST /meal-plans/slots (the real apply path) — proposes-not-auto.
  * The proposal's English `why` is NEVER rendered; only the real fitScore drives a localized confidence.
@@ -34,6 +34,8 @@ function buildWeek(offset = 0) {
 export function useMealPlan() {
   const queryClient = useQueryClient();
   const [weekOffset, setWeekOffset] = useState(0); // 0 = this week, +1 next, -1 last (multi-week nav)
+  const offsetRef = useRef(0); // always-fresh offset for mutation URLs/keys (no stale closure)
+  useEffect(() => { offsetRef.current = weekOffset; }, [weekOffset]);
   const plan = useQuery({ queryKey: ['plan', weekOffset], queryFn: () => apiClient.get(`/meal-plans?offset=${weekOffset}`).then((r) => r.data) });
   const [proposal, setProposal] = useState(null); // ProposedSlot[] | null
   const [proposing, setProposing] = useState(false);
@@ -113,20 +115,20 @@ export function useMealPlan() {
   // Optimistic: drop it from the cached plan immediately; on failure, revert the cache + return false
   // (so the caller never claims a delete that did not happen).
   const removeSlot = useCallback(async (dayOfWeek, mealType) => {
-    const key = ['plan', weekOffset];
+    const key = ['plan', offsetRef.current];
     const prev = queryClient.getQueryData(key);
     queryClient.setQueryData(key, (old) => (
       old?.slots ? { ...old, slots: old.slots.filter((s) => !(s.dayOfWeek === dayOfWeek && s.mealType === mealType)) } : old
     ));
     try {
-      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}?offset=${weekOffset}`);
+      await apiClient.delete(`/meal-plans/slots/${dayOfWeek}/${mealType}?offset=${offsetRef.current}`);
       await plan.refetch();
       return true;
     } catch {
       queryClient.setQueryData(key, prev); // revert to server truth
       return false;
     }
-  }, [plan, queryClient, weekOffset]);
+  }, [plan, queryClient]);
 
   // accept one suggested slot via the real apply path. On success it refetches → the slot moves from
   // `suggested` to `filled` (a real dish with a working remove). No persistent 'accepted' state — the
@@ -134,7 +136,7 @@ export function useMealPlan() {
   const acceptSlot = useCallback(async (s) => {
     setApplying(true);
     try {
-      await apiClient.post(`/meal-plans/slots?offset=${weekOffset}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
+      await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
       await plan.refetch();
       return true;
     } catch {
@@ -142,51 +144,51 @@ export function useMealPlan() {
     } finally {
       setApplying(false);
     }
-  }, [plan, weekOffset]);
+  }, [plan]);
 
   // MANUAL add — drop a user-chosen dish into a slot (the empty-slot picker). Same real apply path as accept; refetch
   // so the slot moves to `filled`. Founder bug: empty slots were dead «—» with no way to add a dish by hand.
   const addDish = useCallback(async (dayOfWeek, mealType, recipeId) => {
     try {
-      await apiClient.post(`/meal-plans/slots?offset=${weekOffset}`, { dayOfWeek, mealType, recipeId });
+      await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek, mealType, recipeId });
       await plan.refetch();
       return true;
     } catch {
       return false;
     }
-  }, [plan, weekOffset]);
+  }, [plan]);
 
   // mark a slot cooked / un-cooked (the "پختم" moment). Optimistic cache flip; reverts on failure.
   const markCooked = useCallback(async (dayOfWeek, mealType, cooked) => {
-    const key = ['plan', weekOffset];
+    const key = ['plan', offsetRef.current];
     const prev = queryClient.getQueryData(key);
     queryClient.setQueryData(key, (old) => (
       old?.slots ? { ...old, slots: old.slots.map((s) => (s.dayOfWeek === dayOfWeek && s.mealType === mealType ? { ...s, cookedAt: cooked ? new Date().toISOString() : null } : s)) } : old
     ));
     try {
-      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/cooked?offset=${weekOffset}`, { cooked });
+      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/cooked?offset=${offsetRef.current}`, { cooked });
       return true;
     } catch {
       queryClient.setQueryData(key, prev);
       return false;
     }
-  }, [queryClient, weekOffset]);
+  }, [queryClient]);
 
   // set how many people a slot is cooked for (scales the shopping list). Optimistic; reverts on failure.
   const setServings = useCallback(async (dayOfWeek, mealType, servings) => {
-    const key = ['plan', weekOffset];
+    const key = ['plan', offsetRef.current];
     const prev = queryClient.getQueryData(key);
     queryClient.setQueryData(key, (old) => (
       old?.slots ? { ...old, slots: old.slots.map((s) => (s.dayOfWeek === dayOfWeek && s.mealType === mealType ? { ...s, servings } : s)) } : old
     ));
     try {
-      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/servings?offset=${weekOffset}`, { servings });
+      await apiClient.post(`/meal-plans/slots/${dayOfWeek}/${mealType}/servings?offset=${offsetRef.current}`, { servings });
       return true;
     } catch {
       queryClient.setQueryData(key, prev);
       return false;
     }
-  }, [queryClient, weekOffset]);
+  }, [queryClient]);
 
   // safe, meal-appropriate dishes for the picker (GET /meal-plans/dish-options — allergy-gated server-side). q searches.
   const fetchDishOptions = useCallback(async (mealType, q) => {
@@ -209,7 +211,7 @@ export function useMealPlan() {
     let failed = 0;
     for (const s of items) {
       try {
-        await apiClient.post(`/meal-plans/slots?offset=${weekOffset}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
+        await apiClient.post(`/meal-plans/slots?offset=${offsetRef.current}`, { dayOfWeek: s.dayOfWeek, mealType: s.mealType, recipeId: s.recipeId });
       } catch {
         failed += 1;
       }
@@ -218,7 +220,7 @@ export function useMealPlan() {
     setApplying(false);
     if (failed === 0) { setProposal(null); shownBySlot.current = {}; }
     return { ok: failed === 0, failed, total: items.length };
-  }, [suggested, plan, weekOffset]);
+  }, [suggested, plan]);
 
   // multi-week navigation (clamped to the backend's ±8-week window)
   const nextWeek = useCallback(() => setWeekOffset((o) => Math.min(8, o + 1)), []);
@@ -228,24 +230,24 @@ export function useMealPlan() {
   // clear every meal of the week being viewed (the «پاک‌کردنِ این هفته» action). Returns true on success.
   const clearWeek = useCallback(async () => {
     try {
-      await apiClient.post(`/meal-plans/clear-week?offset=${weekOffset}`);
+      await apiClient.post(`/meal-plans/clear-week?offset=${offsetRef.current}`);
       await plan.refetch();
       return true;
     } catch {
       return false;
     }
-  }, [plan, weekOffset]);
+  }, [plan]);
 
   // copy the PREVIOUS week's plan into the week being viewed (the repeat-use lever). Returns {ok, copied}.
   const copyPrevWeek = useCallback(async () => {
     try {
-      const res = await apiClient.post(`/meal-plans/copy?from=${weekOffset - 1}&to=${weekOffset}`).then((r) => r.data);
+      const res = await apiClient.post(`/meal-plans/copy?from=${offsetRef.current - 1}&to=${offsetRef.current}`).then((r) => r.data);
       if (res?.ok) { await plan.refetch(); return { ok: true, copied: res.copied ?? 0 }; }
       return { ok: false };
     } catch {
       return { ok: false };
     }
-  }, [plan, weekOffset]);
+  }, [plan]);
 
   let status = 'ready';
   if (plan.isLoading) status = 'loading';

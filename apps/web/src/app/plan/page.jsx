@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Box, Text, UnstyledButton } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
-  IconSparkles, IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
+  IconWand, IconShoppingCart, IconChevronLeft, IconEyeCheck, IconCheck,
   IconCalendarPlus, IconCloudOff, IconRefresh, IconClock, IconTrash, IconPlus, IconX, IconSearch,
   IconArrowsExchange, IconFlame, IconChevronRight, IconCopy,
 } from '@tabler/icons-react';
@@ -28,7 +28,7 @@ function Thumb({ title, size = 56 }) {
 
 /**
  * SlotRow — a full-width meal slot for the single-day view. Three states: FILLED (dish + swap/remove, tap → recipe),
- * SUGGESTED (AI proposal: accept / یکی دیگه), EMPTY (an inviting «+ افزودن {meal}» that opens the picker).
+ * SUGGESTED (deterministic planner proposal: accept / یکی دیگه), EMPTY (an inviting «+ افزودن {meal}» that opens the picker).
  */
 function SlotRow({ meal, slot, cooked, onOpen, onAccept, onSwap, onRemove, onAdd, onCook }) {
   if (slot?.kind === 'filled') {
@@ -56,11 +56,11 @@ function SlotRow({ meal, slot, cooked, onOpen, onAccept, onSwap, onRemove, onAdd
   }
   if (slot?.kind === 'suggested') {
     return (
-      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)' }}>
+      <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-2)' }}>
         <UnstyledButton type="button" onClick={onOpen} aria-label={`${slot.title} — پیشنهاد`} style={{ flex: 1, minInlineSize: 0, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', textAlign: 'start' }}>
           <Thumb title={slot.title} />
           <Box style={{ flex: 1, minInlineSize: 0 }}>
-            <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><IconSparkles size={11} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} /><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>پیشنهادِ AI</Text></Box>
+            <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>چیدمان پیشنهادی</Text>
             <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-15)', fontWeight: 700, color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.7 }}>{slot.title}</Text>
           </Box>
         </UnstyledButton>
@@ -186,7 +186,7 @@ function EmptyWeek({ onPropose, proposing, onManual, onCopyPrev }) {
     <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingInline: 'var(--g-space-6)', paddingBlock: 'var(--g-space-8)', gap: 'var(--g-space-2)' }}>
       <Box aria-hidden="true" style={{ inlineSize: 60, blockSize: 60, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', border: '1.5px solid var(--g-color-brand-200)', marginBlockEnd: 'var(--g-space-2)' }}><IconCalendarPlus size={28} stroke={1.6} /></Box>
       <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>بیا هفته‌ات رو با هم بچینیم</Text>
-      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 0 }}>با یک پیشنهادِ هماهنگ با ذائقه‌ات شروع کن.</Text>
+      <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', maxInlineSize: 300, margin: 0 }}>با یک چیدمان بر اساس ترجیحات و حساسیت‌های ثبت‌شده شروع کن.</Text>
       <UnstyledButton type="button" onClick={onPropose} disabled={proposing} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-2)', minBlockSize: 44, paddingInline: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{proposing ? 'در حال چیدن…' : 'پیشنهاد بده'}</UnstyledButton>
       <UnstyledButton type="button" onClick={onCopyPrev} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', marginBlockStart: 'var(--g-space-2)', borderRadius: 'var(--g-radius-input)', border: '1px solid var(--g-color-border-strong)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}><IconCopy size={15} stroke={1.8} aria-hidden="true" />کپیِ هفتهٔ قبل</UnstyledButton>
       <UnstyledButton type="button" onClick={onManual} style={{ marginBlockStart: 'var(--g-space-1)', minBlockSize: 40, paddingInline: 'var(--g-space-4)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>یا خودم دستی می‌چینم</UnstyledButton>
@@ -211,7 +211,7 @@ export default function PlanPage() {
   const [manualMode, setManualMode] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false); // 2-tap confirm for the destructive «clear week»
 
-  const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'پیشنهاد آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
+  const onPropose = async () => { const ok = await m.propose(); showToast(ok ? 'چیدمان پیشنهادی آماده‌ست — بازبینی کن' : 'الان نشد — دوباره امتحان کن', ok ? IconWand : IconCloudOff); };
   const onAcceptAll = async () => { const r = await m.acceptAll(); showToast(r.ok ? 'برنامهٔ هفته ذخیره شد' : 'بخشی ذخیره نشد — دوباره امتحان کن', r.ok ? IconCheck : IconCloudOff); };
   const onAcceptSlot = async (s) => { const ok = await m.acceptSlot(s); showToast(ok ? 'به برنامه اضافه شد' : 'اضافه نشد — دوباره امتحان کن', ok ? IconCheck : IconCloudOff); };
   const onSwapSlot = async (s) => {
@@ -308,7 +308,7 @@ export default function PlanPage() {
                   <Text component="span" style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700 }}>بپز<IconChevronLeft size={16} stroke={2} /></Text>
                 </UnstyledButton>
               ) : (
-                <UnstyledButton type="button" onClick={() => setPicker({ day, meal: heroMeal })} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-4)' }}>
+                <UnstyledButton type="button" onClick={() => setPicker({ day, meal: heroMeal })} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', textAlign: 'start', background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-4)' }}>
                   <Box style={{ flexShrink: 0, inlineSize: 30, blockSize: 30, borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)' }}><IconFlame size={17} stroke={1.8} /></Box>
                   <Box style={{ flex: 1, minInlineSize: 0 }}>
                     <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>{`برای ${heroMeal.label}ِ امروز چی بپزیم؟`}</Text>
@@ -349,10 +349,10 @@ export default function PlanPage() {
           {/* invite / to-shopping */}
           <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-5)', paddingBlockEnd: 'var(--g-space-6)' }}>
             {!m.proposalActive ? (
-              <Box style={{ background: 'var(--g-color-ai-surface)', border: 'var(--g-border-ai)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
-                <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)' }}><Box aria-hidden="true" style={{ inlineSize: 22, blockSize: 22, borderRadius: '50%', background: 'var(--g-color-ai-glow)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center', boxShadow: '0 0 0 1px var(--g-color-brand-200)' }}><IconSparkles size={12} stroke={1.8} /></Box><Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--g-color-brand-700)' }}>AI</Text></Box>
+              <Box style={{ background: 'var(--g-color-brand-50)', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-card)', padding: 'var(--g-space-4)' }}>
+                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700, color: 'var(--g-color-brand-700)' }}>چیدمان پیشنهادی</Text>
                 <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, lineHeight: 'var(--g-leading-body)', margin: 'var(--g-space-2) 0 0', color: 'var(--g-color-text-primary)' }}>{m.hasPlan ? 'جاهای خالیِ هفته رو برات پیشنهاد بدم؟' : 'کلِ هفته رو برات پیشنهاد بدم؟'}</Text>
-                <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-1) 0 0' }}>با ذائقه، حساسیت‌ها و موادِ موجودت هماهنگ — بعد می‌تونی بپذیری یا عوض کنی.</Text>
+                <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-1) 0 0' }}>بر اساس ترجیحات و حساسیت‌های ثبت‌شده چیده می‌شود — بعد می‌تونی بپذیری یا عوض کنی.</Text>
                 <UnstyledButton type="button" onClick={onPropose} disabled={m.proposing} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 44, marginBlockStart: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}><IconWand size={16} stroke={1.8} aria-hidden="true" />{m.proposing ? 'در حال چیدن…' : 'برنامهٔ هفته رو بچین'}</UnstyledButton>
               </Box>
             ) : null}
@@ -361,7 +361,7 @@ export default function PlanPage() {
                 <Box aria-hidden="true" style={{ inlineSize: 40, blockSize: 40, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-600)', display: 'grid', placeItems: 'center' }}><IconShoppingCart size={20} stroke={1.8} /></Box>
                 <Box style={{ flex: 1, textAlign: 'start' }}>
                   <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>از این برنامه، لیست خرید بساز</Text>
-                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>ادغام و دسته‌بندیِ خودکارِ مواد</Text>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>موادِ وعده‌های ثبت‌شده در سطح کل لیست ادغام می‌شوند؛ منبع هر قلم به غذای خاص نمایش داده نمی‌شود.</Text>
                 </Box>
                 <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
               </UnstyledButton>

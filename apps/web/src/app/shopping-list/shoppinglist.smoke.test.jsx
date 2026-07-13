@@ -120,4 +120,26 @@ describe('ShoppingListPage smoke', () => {
     fireEvent.click(del);
     expect(remove).toHaveBeenCalledTimes(1);
   });
+
+  it('shows a persistent aggregate build summary without inventing recipe-level provenance', async () => {
+    const buildFromPlan = vi.fn().mockResolvedValue({ ok: true, added: 5, merged: 2, flagged: 1, removedPlan: 3, servings: 4, noPlan: false });
+    useShopping.mockReturnValue(baseHook({ status: 'ready', total: 1, buildFromPlan }));
+    renderWithProviders(<ShoppingListPage />);
+    fireEvent.click(screen.getByRole('button', { name: /از روی برنامه/ }));
+
+    expect(await screen.findByText(/خلاصهٔ ساخت از برنامه/)).toHaveTextContent('برای ۴ نفر');
+    expect(screen.getByText(/۵ قلم تازه/)).toHaveTextContent('۲ ادغام');
+    expect(screen.getByText(/۳ ردیف قبلیِ برنامه پاک شد/)).toBeInTheDocument();
+    expect(screen.getByText(/دادهٔ فعلی منبع هر قلم را به یک غذای مشخص وصل نمی‌کند/)).toBeInTheDocument();
+  });
+
+  it('keeps a truthful removal summary visible when no active plan exists', async () => {
+    const buildFromPlan = vi.fn().mockResolvedValue({ ok: true, added: 0, merged: 0, flagged: 0, removedPlan: 2, servings: 4, noPlan: true });
+    useShopping.mockReturnValue(baseHook({ status: 'ready', total: 1, buildFromPlan }));
+    renderWithProviders(<ShoppingListPage />);
+    fireEvent.click(screen.getByRole('button', { name: /از روی برنامه/ }));
+
+    expect(await screen.findByText(/۲ ردیف قبلیِ برنامه پاک شد/)).toBeInTheDocument();
+    expect(screen.getByText(/برنامهٔ فعالی پیدا نشد/)).toBeInTheDocument();
+  });
 });
