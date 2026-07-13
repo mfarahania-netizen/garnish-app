@@ -28,6 +28,13 @@ const ago = (d) => {
 };
 const fmtNum = (n) => (typeof n === 'number' ? toFaDigits(Math.round(n * 1000) / 1000) : null);
 
+export function requestWorkflowAction(id, promptText, promptFn = window.prompt) {
+  const value = promptFn(promptText);
+  if (typeof value !== 'string') return null;
+  const reason = value.trim();
+  return reason.length >= 3 ? { id, reason } : null;
+}
+
 function ActBtn({ icon: Icon, label, tone, onClick, loading }) {
   const danger = tone === 'danger';
   return (
@@ -42,17 +49,18 @@ export default function AttentionQueue() {
   const navigate = useNavigate();
   const alertsQ = useQuery({ queryKey: ['admin', 'attention', 'alerts'], queryFn: () => get('/admin/workflows/alerts?status=open&limit=50'), refetchInterval: 20000 });
   const ticketsQ = useQuery({ queryKey: ['admin', 'attention', 'tickets'], queryFn: () => get('/admin/tickets?unanswered=true&limit=20'), refetchInterval: 30000 });
+  const permsQ = useQuery({ queryKey: ['admin', 'me', 'permissions'], queryFn: () => get('/admin/me/permissions'), staleTime: 300000 });
+  const canRunWorkflows = !!permsQ.data?.canRunWorkflows;
 
   const inval = () => qc.invalidateQueries({ queryKey: ['admin', 'attention'] });
   const ackM = useMutation({ mutationFn: (id) => apiClient.post(`/admin/workflows/alerts/${id}/ack`), onSuccess: inval });
-  const resolveM = useMutation({ mutationFn: (arg) => { const id = typeof arg === 'string' ? arg : arg.id; const reason = typeof arg === 'string' ? 'attention queue quick resolve' : arg.reason; return apiClient.post(`/admin/workflows/alerts/${id}/resolve`, { reason }); }, onSuccess: inval });
-  const snoozeM = useMutation({ mutationFn: (arg) => { const id = typeof arg === 'string' ? arg : arg.id; const reason = typeof arg === 'string' ? 'attention queue quick snooze' : arg.reason; return apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`, { reason }); }, onSuccess: inval });
-  const askReason = (label) => { const r = (window.prompt(label) || '').trim(); return r.length >= 3 ? r : null; };
-  const busyId = ackM.variables ?? (typeof resolveM.variables === 'string' ? resolveM.variables : resolveM.variables?.id) ?? (typeof snoozeM.variables === 'string' ? snoozeM.variables : snoozeM.variables?.id);
+  const resolveM = useMutation({ mutationFn: ({ id, reason }) => apiClient.post(`/admin/workflows/alerts/${id}/resolve`, { reason }), onSuccess: inval });
+  const snoozeM = useMutation({ mutationFn: ({ id, reason }) => apiClient.post(`/admin/workflows/alerts/${id}/snooze?minutes=60`, { reason }), onSuccess: inval });
+  const busyId = ackM.variables ?? resolveM.variables?.id ?? snoozeM.variables?.id;
   const busy = ackM.isPending || resolveM.isPending || snoozeM.isPending;
 
-  if (alertsQ.isError && ticketsQ.isError) return <Box style={{ ...cardBase }}><ErrorState note="صفِ توجه از سرور خوانده نشد." onRetry={() => { alertsQ.refetch(); ticketsQ.refetch(); }} /></Box>;
-  if (alertsQ.isLoading && ticketsQ.isLoading) return <Box style={{ ...cardBase, display: 'grid', placeItems: 'center', paddingBlock: 24 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
+  if (alertsQ.isError || ticketsQ.isError) return <Box style={{ ...cardBase }}><ErrorState note="یکی از منابعِ صفِ توجه (هشدارها یا تیکت‌ها) خوانده نشد؛ نمایشِ «همه‌چیز آرام است» معتبر نیست." onRetry={() => { alertsQ.refetch(); ticketsQ.refetch(); }} /></Box>;
+  if ((alertsQ.isLoading && !alertsQ.data) || (ticketsQ.isLoading && !ticketsQ.data)) return <Box style={{ ...cardBase, display: 'grid', placeItems: 'center', paddingBlock: 24 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
 
   const alertItems = (alertsQ.data?.alerts || []).map((a) => ({ id: a.id, kind: 'alert', sev: SEV[a.severity] ? a.severity : 'info', title: a.title, subsystem: a.workflowKey || 'workflow', metric: a.metric, value: a.value, threshold: a.threshold, since: a.createdAt, ownerRole: a.ownerRole, assignedTo: a.assignedTo, dueAt: a.dueAt, isOverdue: a.isOverdue }));
   const ticketItems = (ticketsQ.data?.data || []).map((t) => ({ id: t.id, kind: 'ticket', sev: PRIO_TO_SEV[t.priority] || 'info', title: t.subject, subsystem: 'پشتیبانی', since: t.createdAt }));
@@ -97,11 +105,11 @@ export default function AttentionQueue() {
             </Box>
             <Box style={{ display: 'inline-flex', gap: 5, flexShrink: 0 }}>
               {it.kind === 'alert' ? (
-                <>
+                canRunWorkflows ? <>
                   <ActBtn icon={IconCheck} label="تأیید" onClick={() => ackM.mutate(it.id)} loading={busy && busyId === it.id} />
-                  <ActBtn icon={IconClockPause} label="۱ ساعت" onClick={() => snoozeM.mutate(it.id)} loading={busy && busyId === it.id} />
-                  <ActBtn icon={IconCircleCheck} label="حل شد" tone="danger" onClick={() => resolveM.mutate(it.id)} loading={busy && busyId === it.id} />
-                </>
+                  <ActBtn icon={IconClockPause} label="۱ ساعت" onClick={() => { const action = requestWorkflowAction(it.id, 'دلیلِ تعویقِ یک‌ساعتهٔ این هشدار؟ (حداقل ۳ کاراکتر)'); if (action) snoozeM.mutate(action); }} loading={busy && busyId === it.id} />
+                  <ActBtn icon={IconCircleCheck} label="حل شد" tone="danger" onClick={() => { const action = requestWorkflowAction(it.id, 'دلیلِ بستنِ این هشدار به‌عنوان حل‌شده؟ (حداقل ۳ کاراکتر)'); if (action) resolveM.mutate(action); }} loading={busy && busyId === it.id} />
+                </> : <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10.5px', color: 'var(--g-color-text-muted)' }}>فقط مشاهده</Text>
               ) : (
                 <ActBtn icon={IconChevronLeft} label="باز کردن" onClick={() => navigate('/admin?tab=tickets')} />
               )}

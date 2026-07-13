@@ -8,10 +8,11 @@ import { ProfileModule } from '../behavior-engine/profile/profile.module'; // R8
 import { UsersModule } from '../users/users.module'; // admin user-management reuses ErasureService + UserExportService
 import { AdminUsersService } from './admin-users.service';
 import { AdminTicketsService } from './admin-tickets.service'; // NotificationsModule is @Global → NotificationsService injects directly
+import { AdminCapabilityGuard } from '../auth/admin-capability.guard';
 
 @Module({
   imports: [AnalyticsModule, ProfileModule, UsersModule],
-  providers: [AdminService, ObservabilityService, AdminUsersService, AdminTicketsService],
+  providers: [AdminService, ObservabilityService, AdminUsersService, AdminTicketsService, AdminCapabilityGuard],
   controllers: [AdminController, ObservabilityController],
 })
 export class AdminModule {}

@@ -42,6 +42,9 @@ const STATUS = {
   awaiting_rates: { label: 'در انتظار نرخ', dot: 'var(--g-color-border-strong)', solid: false },
   post_launch: { label: 'پس از لانچ', dot: 'var(--g-color-border-strong)', solid: false },
   partial: { label: 'پوشش جزئی', dot: 'var(--g-color-state-warning-fg, #c0801c)', solid: true },
+  loading: { label: 'در حال بارگذاری', dot: 'var(--g-color-border-strong)', solid: false },
+  unavailable: { label: 'داده در دسترس نیست', dot: 'var(--g-color-state-warning-fg, #c0801c)', solid: false },
+  error: { label: 'خطای بارگذاری', dot: 'var(--g-color-state-danger-fg, #b3261e)', solid: true },
 };
 export const isReal = (status) => status === 'real';
 
@@ -82,7 +85,7 @@ export function Kpi({ icon: Icon, label, value, sub, status = 'real', awaitNote,
       ) : (
         <Box style={{ marginBlockStart: 7 }}>
           <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '14px', fontWeight: 500, color: 'var(--g-color-text-muted)' }}>—</Text>
-          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)', marginBlockStart: 3 }}>{awaitNote || 'با ورود کاربران واقعی پر می‌شود'}</Text>
+          <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: status === 'error' ? 'var(--g-color-state-danger-fg, #b3261e)' : 'var(--g-color-text-muted)', marginBlockStart: 3 }}>{awaitNote || ({ loading: 'در حال بارگذاری…', unavailable: 'داده در پاسخ سرور موجود نیست.', error: 'بارگذاری ناموفق بود.' }[status] ?? 'با ورود کاربران واقعی پر می‌شود')}</Text>
         </Box>
       )}
     </Box>

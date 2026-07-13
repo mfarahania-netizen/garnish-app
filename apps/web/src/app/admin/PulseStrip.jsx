@@ -45,10 +45,11 @@ export default function PulseStrip() {
   const stats = useQuery({ queryKey: ['admin', 'pulse', 'stats'], queryFn: () => get('/admin/analytics/stats'), refetchInterval: 15000 });
   const alerts = useQuery({ queryKey: ['admin', 'attention', 'alerts'], queryFn: () => get('/admin/workflows/alerts?status=open&limit=50'), refetchInterval: 20000 });
 
-  // HONESTY (re-audit blocker): a dead backend must NOT blend into a calm pre-launch board. If the core feeds all
-  // error → say "error" (not silent '—' tiles that read as a quiet empty board); if all still loading → a spinner.
-  if (health.isError && safety.isError && aiobs.isError) return <ErrorState note="نبضِ سیستم از سرور خوانده نشد — وضعیت نامعلوم است؛ این «خطا» است، نه بوردِ خالیِ پیش‌از‌لانچ." onRetry={() => { health.refetch(); safety.refetch(); aiobs.refetch(); stats.refetch(); alerts.refetch(); }} />;
-  if (health.isLoading && safety.isLoading && aiobs.isLoading && !health.data && !safety.data) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 28 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
+  const feeds = [health, safety, aiobs, stats, alerts];
+  // One failed dependency makes the aggregate state unknown. Rendering the remaining feeds as a calm board would
+  // turn a partial outage into a false green signal.
+  if (feeds.some((q) => q.isError)) return <ErrorState note="حداقل یک فیدِ نبض پاسخ نداد؛ وضعیتِ کل نامعلوم است و هیچ صفر/سبزی از دادهٔ ناقص نتیجه‌گیری نمی‌شود." onRetry={() => feeds.forEach((q) => q.refetch())} />;
+  if (feeds.some((q) => q.isLoading && !q.data)) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 28 }}><Loader size="sm" color="var(--g-color-brand-600)" /></Box>;
 
   const h = health.data || {}, s = safety.data || {}, o = aiobs.data || {}, st = stats.data || {}, al = alerts.data || {};
   const T = o.totals || {};
@@ -61,22 +62,21 @@ export default function PulseStrip() {
   const eq = h.eventQuality;
   const eqReal = eq?.status === 'real';
   const aiReal = T.calls > 0;
-  const p95 = T.latencyMsP95 ?? h.aiCalls?.latencyMsP95 ?? null;
+  const p95 = T.latencyMsP95 ?? null;
   const fallback = T.fallbackRate ?? 0;
   const errCount = Object.values(o.byErrorCode || {}).reduce((n, x) => n + (x || 0), 0);
-  const feedErr = health.isError || safety.isError || aiobs.isError;
-  const sysState = criticals > 0 || (allergy && allergy.leaks > 0) ? 'down' : feedErr ? 'degraded' : warnings > 0 ? 'degraded' : 'ok';
+  const sysState = criticals > 0 || (allergy && allergy.leaks > 0) ? 'down' : warnings > 0 ? 'degraded' : 'ok';
 
   const tiles = [
-    { icon: IconActivity, label: 'وضعیتِ سیستم', state: sysState, value: STATE[sysState].word, sub: feedErr ? 'برخی فیدها پاسخ ندادند' : criticals ? `${toFaDigits(criticals)} بحرانی` : warnings ? `${toFaDigits(warnings)} هشدار` : 'بدونِ هشدار' },
-    { icon: IconShieldHalf, label: 'نشتِ آلرژی', state: !allergy ? 'nodata' : allergy.leaks > 0 ? 'down' : 'ok', value: allergy ? toFaDigits(allergy.leaks ?? 0) : '—', sub: allergy ? (allergy.pass ? 'گاردِ سخت می‌گذراند' : 'بررسی') : 'در حالِ ارزیابی' },
-    { icon: IconSparkles, label: 'سلامتِ چتِ AI', state: !aiReal ? 'nodata' : (fallback > 0.7 || errCount > 0) ? 'degraded' : 'ok', value: aiReal ? faPercent(fallback * 100) : '—', sub: aiReal ? `نرخِ fallback · ${toFaDigits(errCount)} خطا` : 'در انتظارِ فراخوان' },
-    { icon: IconCoin, label: 'هزینهٔ AI امروز', state: T.totalCostUsd != null ? 'ok' : 'nodata', value: T.totalCostUsd != null ? '$' + toFaDigits(Math.round((T.totalCostUsd || 0) * 1e4) / 1e4) : '—', sub: T.totalCostUsd != null ? 'حداقلِ نرخ‌دار' : 'نرخِ تأییدشده نیست' },
+    { icon: IconActivity, label: 'وضعیتِ فیدهای این نما', state: sysState, value: STATE[sysState].word, sub: criticals ? `${toFaDigits(criticals)} بحرانی` : warnings ? `${toFaDigits(warnings)} هشدار` : 'همهٔ فیدها دریافت شدند' },
+    { icon: IconShieldHalf, label: 'نشتِ آلرژی · fixture', state: !allergy ? 'nodata' : allergy.leaks > 0 ? 'down' : allergy.pass ? 'ok' : 'degraded', value: allergy ? toFaDigits(allergy.leaks ?? 0) : '—', sub: allergy ? 'پیکرهٔ تست · نه ترافیک تولید' : 'در حالِ ارزیابی' },
+    { icon: IconSparkles, label: 'فراخوان‌های AI · ۳۰ روز', state: !aiReal ? 'nodata' : (fallback > 0.7 || errCount > 0) ? 'degraded' : 'ok', value: aiReal ? toFaDigits(T.calls) : '—', sub: aiReal ? `${faPercent(fallback * 100)} fallback · ${toFaDigits(errCount)} خطا` : 'در انتظارِ فراخوان' },
+    { icon: IconCoin, label: 'حداقل هزینهٔ AI · ۳۰ روز', state: T.totalCostUsd == null ? 'nodata' : T.ratedCallShare < 1 ? 'degraded' : 'ok', value: T.totalCostUsd != null ? '$' + toFaDigits(Math.round((T.totalCostUsd || 0) * 1e4) / 1e4) : '—', sub: T.totalCostUsd != null ? `پوشش نرخ: ${faPercent((T.ratedCallShare ?? 0) * 100)}` : 'نرخِ تأییدشده نیست' },
     { icon: IconChartBar, label: 'ترافیکِ امروز', state: st.todayEvents > 0 ? 'ok' : 'nodata', value: st.todayEvents != null ? toFaDigits(st.todayEvents) : '—', sub: 'رویدادِ امروز' },
-    { icon: IconDatabase, label: 'کیفیتِ خطِ‌داده', state: !eqReal ? 'nodata' : (eq.wellFormedRate != null && eq.wellFormedRate < 0.9) ? 'degraded' : 'ok', value: eqReal && eq.wellFormedRate != null ? faPercent(eq.wellFormedRate * 100) : '—', sub: 'رویدادِ معتبر' },
-    { icon: IconShieldCheck, label: 'گاردهای ایمنی', state: guards ? 'ok' : 'nodata', value: guards ? toFaDigits(guards.blockedCases ?? 0) : '—', sub: guards ? `از ${toFaDigits(guards.casesEvaluated ?? 0)} موردِ پیکره` : 'در حالِ آماده‌سازی' },
+    { icon: IconDatabase, label: 'کیفیتِ خطِ‌داده', state: !eqReal ? 'nodata' : (eq.wellFormedRate != null && eq.wellFormedRate < 0.9) ? 'degraded' : 'ok', value: eqReal && eq.wellFormedRate != null ? faPercent(eq.wellFormedRate * 100) : '—', sub: eqReal ? `نمونهٔ اخیر: ${toFaDigits(eq.sampled ?? 0)} رویداد` : 'نمونه در دسترس نیست' },
+    { icon: IconShieldCheck, label: 'گاردهای ایمنی · fixture', state: guards ? 'ok' : 'nodata', value: guards ? toFaDigits(guards.blockedCases ?? 0) : '—', sub: guards ? `از ${toFaDigits(guards.casesEvaluated ?? 0)} موردِ پیکره` : 'در حالِ آماده‌سازی' },
     { icon: IconBolt, label: 'بحرانی‌های باز', state: criticals > 0 ? 'down' : warnings > 0 ? 'degraded' : 'ok', value: toFaDigits(al.openCount ?? openAlerts.length ?? 0), sub: criticals ? `${toFaDigits(criticals)} بحرانی` : 'صفِ توجه' },
-    { icon: IconClock, label: 'تأخیرِ p۹۵', state: !aiReal ? 'nodata' : (p95 != null && p95 > 12000) ? 'degraded' : 'ok', value: aiReal && p95 != null ? `${toFaDigits(p95)}ms` : '—', sub: aiReal ? (h.aiCalls?.latencyMsP50 != null ? `p۵۰ ${toFaDigits(h.aiCalls.latencyMsP50)}ms` : 'زمانِ پاسخ') : 'در انتظار' },
+    { icon: IconClock, label: 'تأخیرِ AI · ۳۰ روز', state: !aiReal || p95 == null ? 'nodata' : p95 > 12000 ? 'degraded' : 'ok', value: aiReal && p95 != null ? `p۹۵ ${toFaDigits(p95)}ms` : '—', sub: aiReal && T.latencyMsP50 != null ? `p۵۰ ${toFaDigits(T.latencyMsP50)}ms` : 'در انتظارِ نمونهٔ زمان‌دار' },
   ];
 
   return (

@@ -29,31 +29,39 @@ import AuthForm from '../../components/auth/AuthForm';
 
 const RANGES = [{ id: 1, label: '۲۴ ساعت' }, { id: 7, label: '۷ روز' }, { id: 30, label: '۳۰ روز' }];
 
-// A live "the panel is breathing" pill — ticks the wall-clock + re-stamps on window focus, so the operator can
-// trust the board isn't a frozen snapshot (the per-tab queries poll every 15–30s underneath, and react-query
-// refetches on focus). Honest: it signals liveness, not a specific per-metric timestamp.
+// Freshness comes from the active query states, not the wall clock. A clock that keeps ticking while requests fail
+// is not evidence that the board is live.
 function FreshnessPill() {
   const qc = useQueryClient();
-  const [now, setNow] = useState(() => new Date());
-  const [errs, setErrs] = useState(0);
+  const [snapshot, setSnapshot] = useState({ errs: 0, updatedAt: 0, fetching: false, hasActive: false });
   useEffect(() => {
-    // P1-12: honest freshness — surface how many admin panels actually FAILED to load, so a green pill never
-    // masks a stale/broken panel. Recomputed on each tick + on focus (the queries themselves poll underneath).
     const tick = () => {
-      setNow(new Date());
-      try { setErrs(qc.getQueryCache().findAll({ queryKey: ['admin'] }).filter((q) => q.state.status === 'error').length); } catch { setErrs(0); }
+      try {
+        const active = qc.getQueryCache().findAll({ queryKey: ['admin'] }).filter((q) => q.getObserversCount() > 0);
+        const updates = active.map((q) => q.state.dataUpdatedAt).filter((v) => Number(v) > 0);
+        setSnapshot({
+          errs: active.filter((q) => q.state.status === 'error').length,
+          updatedAt: updates.length ? Math.min(...updates) : 0,
+          fetching: active.some((q) => q.state.fetchStatus === 'fetching'),
+          hasActive: active.length > 0,
+        });
+      } catch {
+        setSnapshot({ errs: 1, updatedAt: 0, fetching: false, hasActive: false });
+      }
     };
     tick();
     const t = setInterval(tick, 20000);
     window.addEventListener('focus', tick);
     return () => { clearInterval(t); window.removeEventListener('focus', tick); };
   }, [qc]);
-  const hhmm = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-  const ok = errs === 0;
+  const d = snapshot.updatedAt ? new Date(snapshot.updatedAt) : null;
+  const hhmm = d ? `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : null;
+  const failed = snapshot.errs > 0;
+  const label = failed ? `${toFaDigits(snapshot.errs)} پنل خطا` : snapshot.fetching && !hhmm ? 'در حال دریافت' : hhmm ? `آخرین دریافت · ${toFaDigits(hhmm)}` : 'بدونِ timestamp';
   return (
-    <Box title={ok ? 'پنل زنده است و خودکار به‌روزرسانی می‌شود' : `${errs} پنل بارگذاری نشد — «به‌روزرسانی» را بزن`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingInline: 10, minBlockSize: 32, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: ok ? 'var(--g-color-bg-surface)' : 'var(--g-color-state-warning-bg, #fdf3e3)' }}>
-      <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: ok ? 'var(--g-color-state-success-fg, #2e7d4f)' : 'var(--g-color-state-warning-fg, #c0801c)' }} />
-      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: ok ? 'var(--g-color-text-secondary)' : 'var(--g-color-state-warning-fg, #c0801c)', whiteSpace: 'nowrap' }}>{ok ? `زنده · ${toFaDigits(hhmm)}` : `${toFaDigits(errs)} پنل خطا`}</Text>
+    <Box title={failed ? `${snapshot.errs} منبعِ فعال خطا دارد` : 'قدیمی‌ترین timestamp دریافت میان queryهای فعال'} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingInline: 10, minBlockSize: 32, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: failed ? 'var(--g-color-state-warning-bg, #fdf3e3)' : 'var(--g-color-bg-surface)' }}>
+      <Box aria-hidden="true" style={{ inlineSize: 7, blockSize: 7, borderRadius: '50%', background: failed ? 'var(--g-color-state-warning-fg, #c0801c)' : snapshot.hasActive ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)' }} />
+      <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: failed ? 'var(--g-color-state-warning-fg, #c0801c)' : 'var(--g-color-text-secondary)', whiteSpace: 'nowrap' }}>{label}</Text>
     </Box>
   );
 }

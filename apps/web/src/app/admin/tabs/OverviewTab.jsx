@@ -4,22 +4,17 @@
 import { Box, Text, Loader } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import {
-  IconUsers, IconToolsKitchen2, IconSearch, IconSparkles, IconShieldCheck, IconShieldHalf,
-  IconClock, IconChartBar, IconCircleCheck, IconAlertTriangle, IconBulb,
+  IconUsers, IconToolsKitchen2, IconSearch, IconSparkles, IconShieldCheck,
+  IconCircleCheck, IconAlertTriangle, IconBulb,
 } from '@tabler/icons-react';
 import apiClient from '../../../lib/apiClient';
 import { useOverviewData } from '../useAdmin';
 import AttentionQueue from '../AttentionQueue';
 import PulseStrip from '../PulseStrip';
 import DailyBrief from '../DailyBrief';
-import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits, faPercent } from '../_ui';
+import { Section, Kpi, HBar, Panel, Note, Awaiting, ErrorState, grid, CARD, toFaDigits } from '../_ui';
 
 const get = (url) => apiClient.get(url).then((r) => r.data);
-const SEV = {
-  critical: { fg: 'var(--g-color-state-danger-fg, #c0392b)', bg: 'var(--g-color-state-danger-bg, #fdecea)', label: 'بحرانی' },
-  warning: { fg: 'var(--g-color-state-warning-fg, #c0801c)', bg: 'var(--g-color-state-warning-bg, #fdf3e3)', label: 'هشدار' },
-  info: { fg: 'var(--g-color-text-secondary)', bg: 'var(--g-color-state-info-bg)', label: 'اطلاع' },
-};
 const IMP = { high: 'var(--g-color-state-danger-fg, #c0392b)', medium: 'var(--g-color-state-warning-fg, #c0801c)', low: 'var(--g-color-text-secondary)' };
 
 const GUARD_FA = { ai_safety: 'ایمنی هوش مصنوعی', prompt_injection: 'تزریق پرامپت', nutrition_claim: 'ادعای تغذیه‌ای' };
@@ -28,15 +23,28 @@ const RECSYS_FA = { catalogCoverage: 'پوشش کاتالوگ', coverage: 'پو�
 const recsysRows = (offline) => Object.entries(offline || {}).filter(([, m]) => m && typeof m.value === 'number');
 const st = (real) => (real ? 'real' : 'awaiting_pilot');
 
+const OVERVIEW_SOURCE_FA = {
+  'ops-health': 'سلامت عملیات (/admin/ops/health)',
+  'safety-compliance': 'ایمنی و انطباق (/admin/ops/safety-compliance)',
+  'user-stats': 'آمار کاربران (/admin/analytics/user-stats)',
+  'activity-trends': 'روند فعالیت (/admin/analytics/trends)',
+  'product-intelligence': 'هوشمندی محصول (/admin/analytics/product-intelligence)',
+};
+
+export function describeOverviewFailures(sourceIds = []) {
+  const sources = sourceIds.map((id) => OVERVIEW_SOURCE_FA[id] || id);
+  return `منابع زیر از سرور خوانده نشدند: ${sources.join('، ')}. تا بازیابی این منبع‌ها، اعداد این نما قابل اتکا نیستند.`;
+}
+
 export default function OverviewTab({ days = 30 }) {
-  const { d, loading, error } = useOverviewData(days);
+  const { d, loading, error, failedSourceIds, retry, refreshedAt } = useOverviewData(days);
   // Pulse: what needs ATTENTION first — the unified Attention Queue (alerts + tickets) + the top things to improve.
   const behaviorQ = useQuery({ queryKey: ['admin', 'behavior'], queryFn: () => get('/admin/insights/behavior'), refetchInterval: 30000 });
   const improve = (behaviorQ.data?.improve || []).slice(0, 4);
 
   if (loading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 'var(--g-space-8)' }}><Loader color="var(--g-color-brand-600)" /></Box>;
   // HONESTY (P0-3): the core ops feeds failed → say so. A dead backend must NEVER render as the green "all healthy" board.
-  if (error) return <Box style={{ paddingBlock: 'var(--g-space-6)' }}><ErrorState note="بخشِ اصلیِ عملیات (سلامت + ایمنی) از سرور پاسخ نداد — اعدادِ این صفحه قابلِ اعتماد نیست." onRetry={() => window.location.reload()} /></Box>;
+  if (error) return <Box style={{ paddingBlock: 'var(--g-space-6)' }}><ErrorState note={describeOverviewFailures(failedSourceIds)} onRetry={retry} /></Box>;
 
   return (
     <>
@@ -74,23 +82,19 @@ export default function OverviewTab({ days = 30 }) {
       </Section>
 
       <Note tone="info" icon={IconAlertTriangle}>
-        اعدادِ «رشد و فعالیت» و «توزیع DNA» روی <Text component="span" style={{ fontWeight: 700 }}>کاربرانِ تستیِ فعلی</Text> محاسبه شده‌اند (هنوز کاربرِ واقعی نداریم) — واقعی‌اند ولی تا پایلوت معنادار نیستند. شواهدِ مستقلِ واقعی (هزینه و تأخیرِ واقعیِ هوش مصنوعی در تبِ «هوش مصنوعی»، گاردهای ایمنی، ارزیابیِ پیشنهادگر) به دادهٔ پایلوت وابسته نیستند.
+        منبع: snapshot جدول User برای شمارشِ حساب‌ها؛ UserEvent برای فعالیتِ <Text component="span" style={{ fontWeight: 700 }}>{toFaDigits(days)} روز اخیر</Text>؛ ops برای سلامت؛ و پیکرهٔ fixture برای گاردهای ایمنی. قدیمی‌ترین دریافتِ این نما: {refreshedAt ? new Date(refreshedAt).toLocaleString('fa-IR') : 'نامعلوم'}.
       </Note>
       <Section title="رشد و فعالیت">
         <Box style={grid(190)}>
-          <Kpi icon={IconUsers} label="کل کاربران" status={st(d.growth.users.real)} value={toFaDigits(d.growth.users.value)} sub="کاربرانِ ثبت‌شده" awaitNote="هنوز کاربری نداریم" />
+          <Kpi icon={IconUsers} label="کاربرانِ ثبت‌شده" status={st(d.growth.registered.real)} value={toFaDigits(d.growth.registered.value)} sub={`${toFaDigits(d.growth.guests.value)} مهمان · ${toFaDigits(d.growth.total.value)} کل`} awaitNote="شمارش User در دسترس نیست" />
           <Kpi icon={IconToolsKitchen2} label="پخت" status={st(d.growth.cooks.real)} value={toFaDigits(d.growth.cooks.value)} sub={`در ${toFaDigits(days)} روز`} awaitNote="در انتظار پخت واقعی" />
           <Kpi icon={IconSearch} label="جستجو" status={st(d.growth.searches.real)} value={toFaDigits(d.growth.searches.value)} sub={`در ${toFaDigits(days)} روز`} awaitNote="در انتظار جستجوی واقعی" />
           <Kpi icon={IconSparkles} label="استفاده از هوش مصنوعی" status={st(d.growth.ai.real)} value={toFaDigits(d.growth.ai.value)} sub={`در ${toFaDigits(days)} روز`} awaitNote="در انتظار کاربر واقعی" />
         </Box>
       </Section>
 
-      <Section title="آمادگی پیش از پایلوت">
-        <Box style={{ ...CARD, display: 'flex', alignItems: 'center', gap: 8, marginBlockEnd: 'var(--g-space-3)' }}>
-          <Box aria-hidden="true" style={{ inlineSize: 8, blockSize: 8, borderRadius: '50%', background: 'var(--g-color-state-success-fg, #2e7d4f)', flexShrink: 0 }} />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>سامانه آمادهٔ راه‌اندازی</Text>
-        </Box>
-        <Note tone="info">شاخص‌های زندهٔ آمادگی (آلرژن · گاردها · تأخیر · کیفیتِ رویداد) بالا در «نبضِ سیستم» نشان داده می‌شوند — اینجا تکرار نمی‌کنیم.</Note>
+      <Section title="دامنهٔ شواهد">
+        <Note tone="info">این نما وضعیتِ داده و عملیات را گزارش می‌کند؛ نتیجهٔ سبزِ یک fixture یا نبودِ هشدار، به‌تنهایی تأییدِ آمادگیِ لانچ نیست. تصمیم لانچ به شواهد مرورگر، مسیرهای کاربر و gateهای انتشار جداگانه نیاز دارد.</Note>
       </Section>
 
       <Section title="ایمنی و انطباق">

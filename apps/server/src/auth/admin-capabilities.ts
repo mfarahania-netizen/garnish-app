@@ -4,7 +4,7 @@ import { isOpsAdminId, isOwnerId, isPrivacyAdminId } from './owner.guard';
  * P1-14 (re-audit): the admin capability set the UI reads (GET /admin/me/permissions) so it can hide/disable the
  * actions an operator can't perform — instead of letting them click and eat a 403. Derived from the owner
  * allowlist + isAdmin. Owner = the irreversible / PII-exfiltrating tier (export, delete, password-reset, grant
- * admin, approve recipe); a plain admin can view, support (reveal with reason+audit) and operate workflows.
+ * admin); bounded operational mutations are separately assigned to content/support/ops roles.
  *
  * This is the single place the role→capability mapping lives, so when a DB `role` field lands (support/privacy/
  * ops/content/finance) the finer grants slot in here without touching every guard/route.
@@ -20,6 +20,11 @@ export interface AdminCapabilities {
   canManageAdmins: boolean;
   canApproveRecipe: boolean;
   canRunWorkflows: boolean;
+  canCreateUsers: boolean;
+  canEditUsers: boolean;
+  canBanUsers: boolean;
+  canForceLogoutUsers: boolean;
+  canManageTickets: boolean;
 }
 
 const ROLE_SET = new Set(['owner', 'admin', 'support', 'privacy', 'ops', 'content', 'finance', 'readonly']);
@@ -36,7 +41,8 @@ export function isAdminRole(adminRole: string | undefined | null, isAdmin: boole
 
 export function resolveAdminCapabilities(userId: string | undefined, isAdmin: boolean, adminRole?: string | null): AdminCapabilities {
   const role = normalizeAdminRole(adminRole, isAdmin);
-  const isOwner = isOwnerId(userId) || role === 'owner';
+  // ADMIN_OWNER_IDS is the security source of truth. A mutable DB label must not silently grant owner powers.
+  const isOwner = isOwnerId(userId);
   const privacy = isOwner || role === 'privacy' || role === 'support' || isPrivacyAdminId(userId);
   const ops = isOwner || role === 'ops' || isOpsAdminId(userId);
   const content = isOwner || role === 'content';
@@ -46,11 +52,16 @@ export function resolveAdminCapabilities(userId: string | undefined, isAdmin: bo
     isOwner,
     adminRole: role,
     canRevealPii: admin && privacy,
-    canExportPii: admin && (isOwner || role === 'privacy'),
+    canExportPii: isOwner,
     canDeleteUser: isOwner,
     canResetPassword: isOwner,
     canManageAdmins: isOwner, // grant / revoke the admin role
     canApproveRecipe: content,
     canRunWorkflows: admin && ops,
+    canCreateUsers: isOwner || role === 'admin',
+    canEditUsers: isOwner || role === 'admin',
+    canBanUsers: isOwner || role === 'admin' || role === 'ops',
+    canForceLogoutUsers: isOwner || role === 'admin' || role === 'ops',
+    canManageTickets: isOwner || role === 'admin' || role === 'support',
   };
 }

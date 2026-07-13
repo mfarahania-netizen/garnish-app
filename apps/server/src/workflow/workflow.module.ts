@@ -10,11 +10,12 @@ import { WorkflowRunnerService } from './workflow-runner.service';
 import { WorkflowService } from './workflow.service';
 import { WorkflowSchedulerService } from './workflow-scheduler.service';
 import { WorkflowController } from './workflow.controller';
+import { AdminCapabilityGuard } from '../auth/admin-capability.guard';
 
 @Module({
   imports: [AnalyticsModule],
   controllers: [WorkflowController],
-  providers: [WorkflowNodesService, WorkflowRunnerService, WorkflowService, WorkflowSchedulerService],
+  providers: [WorkflowNodesService, WorkflowRunnerService, WorkflowService, WorkflowSchedulerService, AdminCapabilityGuard],
   exports: [WorkflowService],
 })
 export class WorkflowModule {}

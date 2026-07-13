@@ -49,6 +49,21 @@ describe('AdminUsersService', () => {
     expect(where.adminRole).toBe('user');
   });
 
+  it('list allowlists sorting and falls back to newest for unknown input', async () => {
+    const prisma = mkPrisma();
+    const svc = mk(prisma);
+
+    await svc.list({ sort: 'oldest' });
+    expect(prisma.user.findMany.mock.calls[0][0].orderBy).toEqual({ createdAt: 'asc' });
+
+    await svc.list({ sort: 'name' });
+    expect(prisma.user.findMany.mock.calls[1][0].orderBy).toEqual([{ name: 'asc' }, { createdAt: 'desc' }]);
+
+    const result = await svc.list({ sort: 'createdAt;drop table users' });
+    expect(prisma.user.findMany.mock.calls[2][0].orderBy).toEqual({ createdAt: 'desc' });
+    expect(result.sort).toBe('newest');
+  });
+
   it('detail throws NotFound for a missing user', async () => {
     const prisma = mkPrisma({ user: { findUnique: jest.fn(async () => null) } });
     await expect(mk(prisma).detail('nope')).rejects.toBeInstanceOf(NotFoundException);

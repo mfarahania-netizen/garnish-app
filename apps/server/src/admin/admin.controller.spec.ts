@@ -14,7 +14,7 @@ describe('AdminController — sensitive-op guards (re-audit P0-2/P0-3)', () => {
     process.env.ADMIN_PRIVACY_IDS = '';
     delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_MAX;
     delete process.env.ADMIN_SENSITIVE_RATE_LIMIT_WINDOW_MS;
-    adminService = { recordAuditStrict: jest.fn().mockResolvedValue(undefined), recordAudit: jest.fn().mockResolvedValue(undefined), recordAuditDurable: jest.fn() };
+    adminService = { recordAuditStrict: jest.fn().mockResolvedValue(undefined), recordAudit: jest.fn().mockResolvedValue(undefined), recordAuditDurable: jest.fn(), updateRecipeStatus: jest.fn().mockResolvedValue({ id: 'r1' }) };
     adminUsers = {
       create: jest.fn().mockResolvedValue({ id: 'u-new' }),
       export: jest.fn().mockResolvedValue({ ok: true }),
@@ -75,6 +75,16 @@ describe('AdminController — sensitive-op guards (re-audit P0-2/P0-3)', () => {
     await expect(ctrl.forceLogoutUser(req(OWNER), 'u1', {} as any)).rejects.toBeInstanceOf(BadRequestException);
     await ctrl.forceLogoutUser(req(OWNER), 'u1', { reason: 'suspected compromise' } as any);
     expect(adminUsers.forceLogout).toHaveBeenCalledWith('u1');
+  });
+
+  it('content moderation records the operator reason before changing publication state', async () => {
+    await ctrl.approveRecipe(req(OWNER), 'r1', { reason: 'editorial review passed' });
+    expect(adminService.recordAuditStrict).toHaveBeenCalledWith(OWNER, 'r1', 'admin_recipe_approve', expect.objectContaining({ reason: 'editorial review passed' }));
+    expect(adminService.updateRecipeStatus).toHaveBeenCalledWith('r1', 'active', 'editorial review passed');
+
+    adminService.recordAuditStrict.mockRejectedValueOnce(new Error('ledger down'));
+    await expect(ctrl.rejectRecipe(req(OWNER), 'r1', { reason: 'unsafe claim' })).rejects.toThrow('ledger down');
+    expect(adminService.updateRecipeStatus).toHaveBeenCalledTimes(1);
   });
 
   it('P1: sensitive admin ops are rate-limited before the second mutation', async () => {

@@ -15,6 +15,8 @@ import { WorkflowService } from './workflow.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowActionDto } from './workflow.dto';
 import { resolveAdminCapabilities } from '../auth/admin-capabilities';
+import { AdminCapabilityGuard } from '../auth/admin-capability.guard';
+import { RequireAdminCapability } from '../auth/admin-capability.decorator';
 import { enforceAdminSensitiveRateLimit } from '../admin/admin-sensitive-rate-limit';
 
 function reqReason(reason: string | undefined): string {
@@ -74,6 +76,8 @@ export class WorkflowController {
   }
 
   @Post(':key/run')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canRunWorkflows')
   async run(@Req() req: any, @Param('key') key: string, @Body() body?: WorkflowActionDto) {
     this.requireWorkflowOperator(req);
     const reason = reqReason(body?.reason);
@@ -83,6 +87,8 @@ export class WorkflowController {
   }
 
   @Post('alerts/:id/ack')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canRunWorkflows')
   async ack(@Req() req: any, @Param('id') id: string) {
     this.requireWorkflowOperator(req);
     enforceAdminSensitiveRateLimit(req, 'workflow_alert_ack');
@@ -91,6 +97,8 @@ export class WorkflowController {
   }
 
   @Post('alerts/:id/resolve')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canRunWorkflows')
   async resolve(@Req() req: any, @Param('id') id: string, @Body() body?: WorkflowActionDto) {
     this.requireWorkflowOperator(req);
     const reason = reqReason(body?.reason);
@@ -100,6 +108,8 @@ export class WorkflowController {
   }
 
   @Post('alerts/:id/snooze')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canRunWorkflows')
   async snooze(@Req() req: any, @Param('id') id: string, @Query('minutes') minutes?: string, @Body() body?: WorkflowActionDto) {
     this.requireWorkflowOperator(req);
     const mins = parseInt(minutes || '', 10) || 60;

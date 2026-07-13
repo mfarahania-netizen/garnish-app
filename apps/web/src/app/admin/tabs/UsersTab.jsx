@@ -68,6 +68,32 @@ const userRole = (u) => (u?.adminRole && u.adminRole !== 'user') ? u.adminRole :
 const roleTag = (u) => (userRole(u) !== 'user' ? <Tag tone="brand">{roleFa(userRole(u))}</Tag> : u.isGuest ? <Tag tone="muted">مهمان</Tag> : <Tag tone="info">کاربر</Tag>);
 const contact = (u) => u.phone || u.email || '—';
 
+export function deriveUserStatsView(query = {}) {
+  const queryStatus = query.isError ? 'error' : query.isLoading && !query.data ? 'loading' : 'ready';
+  const metric = (key) => {
+    if (queryStatus !== 'ready') return { status: queryStatus, value: undefined };
+    const value = query.data?.[key];
+    return typeof value === 'number' && Number.isFinite(value)
+      ? { status: 'real', value }
+      : { status: 'unavailable', value: undefined };
+  };
+
+  return {
+    queryStatus,
+    total: metric('total'),
+    registered: metric('registered'),
+    guests: metric('guests'),
+    admins: metric('admins'),
+    banned: metric('banned'),
+  };
+}
+
+const statsNote = (metric, label) => ({
+  loading: 'در حال بارگذاری آمار کاربران…',
+  error: 'بارگذاری آمار کاربران ناموفق بود.',
+  unavailable: `${label} در پاسخ سرور موجود نیست.`,
+}[metric.status]);
+
 // Action button used inside the dossier drawer.
 function Act({ icon: Icon, label, tone = 'default', onClick, loading, disabled }) {
   const danger = tone === 'danger';
@@ -87,6 +113,7 @@ export default function UsersTab() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [sort, setSort] = useState('newest');
   const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -99,7 +126,7 @@ export default function UsersTab() {
   useEffect(() => { setRevealed(null); }, [selectedId]); // a new dossier starts masked again
 
   const fq = FILTERS.find((f) => f.id === filter)?.q || {};
-  const qs = new URLSearchParams({ page: String(page), limit: '20', ...(search ? { search } : {}), ...fq }).toString();
+  const qs = new URLSearchParams({ page: String(page), limit: '20', sort, ...(search ? { search } : {}), ...fq }).toString();
 
   const stats = useQuery({ queryKey: ['admin', 'users', 'stats'], queryFn: () => get('/admin/users/stats') });
   const list = useQuery({ queryKey: ['admin', 'users', qs], queryFn: () => get('/admin/users?' + qs), placeholderData: (prev) => prev });
@@ -138,7 +165,7 @@ export default function UsersTab() {
     else if (danger.kind === 'reveal') { setExporting(true); setExportErr(null); try { const d = await post('/admin/users/' + usr.id + '/reveal', { reason }); setRevealed(d); closeDanger(); } catch (e) { setExportErr(e); } finally { setExporting(false); } }
   };
 
-  const s = stats.data || {};
+  const statsView = deriveUserStatsView(stats);
   const rows = list.data?.data || [];
   const total = list.data?.total || 0;
   const pages = Math.ceil(total / 20);
@@ -148,18 +175,22 @@ export default function UsersTab() {
 
   return (
     <>
-      <Box style={grid(150)}>
-        <Kpi icon={IconUsers} label="کل کاربران" status="real" value={fmtInt(s.total)} sub="ثبت‌شده در پایگاه" />
-        <Kpi icon={IconUserStar} label="ثبت‌شده" status="real" value={fmtInt(s.registered)} sub={`${toFaDigits(s.guests ?? 0)} مهمان`} />
-        <Kpi icon={IconShield} label="مدیران" status="real" value={fmtInt(s.admins)} sub="نقشِ admin" />
-        <Kpi icon={IconBan} label="مسدودشده" status={s.banned > 0 ? 'partial' : 'real'} value={fmtInt(s.banned)} sub="حساب‌های مسدود" tone={s.banned > 0 ? 'warn' : undefined} />
-      </Box>
+      {statsView.queryStatus === 'error' ? (
+        <Box style={{ marginBlockEnd: 11 }}><ErrorState note="آمار خلاصهٔ کاربران از سرور خوانده نشد؛ هیچ مقدار صفری فرض نشده است." onRetry={() => stats.refetch()} /></Box>
+      ) : (
+        <Box style={grid(150)}>
+          <Kpi icon={IconUsers} label="کل کاربران" status={statsView.total.status} value={fmtInt(statsView.total.value)} sub="ثبت‌شده در پایگاه" awaitNote={statsNote(statsView.total, 'کل کاربران')} />
+          <Kpi icon={IconUserStar} label="ثبت‌شده" status={statsView.registered.status} value={fmtInt(statsView.registered.value)} sub={statsView.guests.status === 'real' ? `${fmtInt(statsView.guests.value)} مهمان` : 'شمارش مهمان در دسترس نیست'} awaitNote={statsNote(statsView.registered, 'کاربران ثبت‌شده')} />
+          <Kpi icon={IconShield} label="مدیران" status={statsView.admins.status} value={fmtInt(statsView.admins.value)} sub="نقشِ admin" awaitNote={statsNote(statsView.admins, 'تعداد مدیران')} />
+          <Kpi icon={IconBan} label="مسدودشده" status={statsView.banned.status} value={fmtInt(statsView.banned.value)} sub="حساب‌های مسدود" awaitNote={statsNote(statsView.banned, 'حساب‌های مسدود')} tone={statsView.banned.status === 'real' && statsView.banned.value > 0 ? 'warn' : undefined} />
+        </Box>
+      )}
 
-      <Section title="فهرستِ کاربران" right={
+      <Section title="فهرستِ کاربران" right={cap.canCreateUsers ? (
         <UnstyledButton type="button" onClick={() => setCreateOpen(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minBlockSize: 32, paddingInline: 12, borderRadius: '9px', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: '12px', fontWeight: 500 }}>
           <IconUserPlus size={15} stroke={1.8} /> افزودنِ کاربر
         </UnstyledButton>
-      } />
+      ) : null} />
 
       <Box style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBlockEnd: 11 }}>
         <Box style={{ position: 'relative', flex: 1, minInlineSize: 200 }}>
@@ -169,6 +200,14 @@ export default function UsersTab() {
         <Box style={{ display: 'inline-flex', gap: 6, flexWrap: 'wrap' }}>
           {FILTERS.map((f) => <Chip key={f.id} on={filter === f.id} onClick={() => { setFilter(f.id); setPage(1); }}>{f.label}</Chip>)}
         </Box>
+        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', color: 'var(--g-color-text-muted)' }}>
+          ترتیب
+          <select value={sort} onChange={(e) => { setSort(e.target.value); setPage(1); }} style={{ minBlockSize: 34, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', paddingInline: 9 }}>
+            <option value="newest">جدیدترین</option>
+            <option value="oldest">قدیمی‌ترین</option>
+            <option value="name">نام</option>
+          </select>
+        </label>
       </Box>
 
       <Panel>
@@ -212,7 +251,9 @@ export default function UsersTab() {
 
       {/* ── DOSSIER DRAWER ── */}
       <Drawer opened={!!selectedId} onClose={() => setSelectedId(null)} position="left" size={420} withCloseButton={false} padding={0} overlayProps={{ opacity: 0.4 }}>
-        {detail.isLoading || !u ? (
+        {detail.isError ? (
+          <Box style={{ padding: 18 }}><ErrorState note="پروندهٔ کاربر از سرور خوانده نشد؛ داده‌ای نمایش داده نمی‌شود." onRetry={() => detail.refetch()} /></Box>
+        ) : detail.isLoading || !u ? (
           <Box style={{ display: 'grid', placeItems: 'center', minBlockSize: 200 }}><Loader color="var(--g-color-brand-600)" /></Box>
         ) : (
           <Box style={{ display: 'flex', flexDirection: 'column', minBlockSize: '100dvh' }}>
@@ -276,11 +317,11 @@ export default function UsersTab() {
 
             {/* actions — grouped by risk tier (advisor P1-9): session/security ops, then owner-only irreversible ops */}
             <Box style={{ display: 'flex', flexDirection: 'column', gap: 7, padding: '14px 18px', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)' }}>
-              <Text component="div" style={actGroupLbl}>نشست و دسترسی</Text>
-              <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => { const reason = window.prompt('دلیلِ ابطالِ نشست‌های این کاربر؟ (اجباری — در audit ثبت می‌شود)'); if (reason === null) return; if (reason.trim().length < 3) { window.alert('دلیل باید حداقل ۳ کاراکتر باشد.'); return; } logoutM.mutate({ id: u.id, reason: reason.trim() }); }} />
-              {u.isBanned
+              {cap.canForceLogoutUsers || cap.canBanUsers ? <Text component="div" style={actGroupLbl}>نشست و دسترسی</Text> : null}
+              {cap.canForceLogoutUsers ? <Act icon={IconLogout} label="خروجِ اجباری (ابطالِ نشست‌ها)" loading={logoutM.isPending} onClick={() => { const reason = window.prompt('دلیلِ ابطالِ نشست‌های این کاربر؟ (اجباری — در audit ثبت می‌شود)'); if (reason === null) return; if (reason.trim().length < 3) { window.alert('دلیل باید حداقل ۳ کاراکتر باشد.'); return; } logoutM.mutate({ id: u.id, reason: reason.trim() }); }} /> : null}
+              {cap.canBanUsers && (u.isBanned
                 ? <Act icon={IconLockOpen} label="رفعِ مسدودی" loading={banM.isPending} onClick={() => banM.mutate({ id: u.id, banned: false })} />
-                : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />}
+                : <Act icon={IconBan} label="مسدود کردن" tone="danger" onClick={() => setDanger({ kind: 'ban', user: u })} />)}
               <Text component="div" style={{ ...actGroupLbl, marginBlockStart: 6 }}>عملیاتِ مالک · برگشت‌ناپذیر</Text>
               {/* P1-1/P1-14: owner-only irreversible / PII ops are hidden for a non-owner admin (not just 403'd) */}
               {cap.canManageAdmins ? <Act icon={userRole(u) !== 'user' ? IconShieldOff : IconShield} label={userRole(u) !== 'user' ? 'تغییر یا برداشتن نقش ادمین' : 'دادن نقش ادمین'} tone="danger" onClick={() => setDanger({ kind: 'role', user: u })} /> : null}
@@ -293,7 +334,7 @@ export default function UsersTab() {
       </Drawer>
 
       {/* ── CREATE ── */}
-      <Modal opened={createOpen} onClose={() => setCreateOpen(false)} title="افزودنِ کاربرِ جدید" centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
+      <Modal opened={createOpen && !!cap.canCreateUsers} onClose={() => setCreateOpen(false)} title="افزودنِ کاربرِ جدید" centered styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 600 } }}>
         <CreateForm canCreateAdmin={!!cap.canManageAdmins} pending={createM.isPending} error={createM.error} onSubmit={(body) => createM.mutate(body)} />
       </Modal>
 

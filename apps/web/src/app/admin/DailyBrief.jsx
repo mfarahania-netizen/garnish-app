@@ -30,6 +30,7 @@ export default function DailyBrief() {
       <Box style={{ display: 'flex', alignItems: 'center', gap: 8, marginBlockEnd: 11 }}>
         <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '13px', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>بریفِ امروز</Text>
         <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10px', color: 'var(--g-color-text-muted)', background: 'var(--g-color-state-info-bg)', borderRadius: '5px', padding: '2px 7px' }}>قواعدِ قطعی، نه حدسِ مدل</Text>
+        {q.data?.status === 'partial' ? <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '10px', color: 'var(--g-color-state-warning-fg)', background: 'var(--g-color-state-warning-bg)', borderRadius: '5px', padding: '2px 7px' }}>داده ناقص</Text> : null}
       </Box>
       <Box style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
         {insights.map((it, i) => {

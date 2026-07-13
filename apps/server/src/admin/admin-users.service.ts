@@ -16,7 +16,7 @@ import { UserExportService } from '../users/export/user-export.service';
 import { maskPhone, maskEmail } from './pii.util';
 import * as bcrypt from 'bcryptjs';
 
-type ListArgs = { page?: number; limit?: number; search?: string; role?: string; status?: string };
+type ListArgs = { page?: number; limit?: number; search?: string; role?: string; status?: string; sort?: string };
 const ADMIN_ROLES = new Set(['user', 'admin', 'support', 'privacy', 'ops', 'content', 'finance', 'readonly']);
 
 function safeDevice(device: string | null | undefined): string | null {
@@ -46,7 +46,7 @@ export class AdminUsersService {
   ) {}
 
   /** Rich, searchable, filterable roster with per-user counts + last-activity (the "monitor users" list). */
-  async list({ page = 1, limit = 20, search, role, status }: ListArgs) {
+  async list({ page = 1, limit = 20, search, role, status, sort }: ListArgs) {
     const where: Prisma.UserWhereInput = {};
     const and: Prisma.UserWhereInput[] = [];
     const s = (search ?? '').trim();
@@ -67,9 +67,15 @@ export class AdminUsersService {
 
     const take = Math.min(Math.max(1, limit), 100);
     const skip = (Math.max(1, page) - 1) * take;
+    const allowedOrder: Record<string, Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]> = {
+      newest: { createdAt: 'desc' },
+      oldest: { createdAt: 'asc' },
+      name: [{ name: 'asc' }, { createdAt: 'desc' }],
+    };
+    const safeSort = Object.prototype.hasOwnProperty.call(allowedOrder, String(sort || '')) ? String(sort) : 'newest';
     const [rows, total] = await Promise.all([
       this.prisma.user.findMany({
-        where, skip, take, orderBy: { createdAt: 'desc' },
+        where, skip, take, orderBy: allowedOrder[safeSort],
         select: {
           id: true, name: true, phone: true, email: true, avatar: true,
           isAdmin: true, adminRole: true, isGuest: true, isBanned: true, locale: true, country: true, createdAt: true,
@@ -87,7 +93,7 @@ export class AdminUsersService {
     const lastMap = new Map(last.map((e) => [e.userId, e._max.timestamp]));
     // P0-5: default-mask PII in the roster (the bulk-exposure surface). Real values via the audited reveal endpoint.
     const data = rows.map((r) => ({ ...r, phone: maskPhone(r.phone), email: maskEmail(r.email), lastActiveAt: lastMap.get(r.id) ?? null }));
-    return { data, total, page: Math.max(1, page), limit: take };
+    return { data, total, page: Math.max(1, page), limit: take, sort: safeSort };
   }
 
   /** Roster headline counts for the KPI row. */

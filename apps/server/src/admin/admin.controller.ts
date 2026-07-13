@@ -8,8 +8,11 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { OwnerGuard, isOwnerId } from '../auth/owner.guard';
 import { resolveAdminCapabilities } from '../auth/admin-capabilities';
+import { AdminCapabilityGuard } from '../auth/admin-capability.guard';
+import { RequireAdminCapability } from '../auth/admin-capability.decorator';
 import { CreateAdminUserDto, UpdateAdminUserDto, ResetUserPasswordDto, BanUserDto, ReasonDto } from './dto/admin-user.dto';
 import { RespondTicketDto, UpdateTicketDto, CreateTicketNoteDto } from './dto/admin-ticket.dto';
+import { ListAdminRecipesQueryDto, ModerateRecipeDto } from './dto/admin-recipe.dto';
 import { enforceAdminSensitiveRateLimit } from './admin-sensitive-rate-limit';
 
 // Mandatory operator justification for sensitive ops (advisor P0-2) — recorded into the audit ledger. <3 chars → 400.
@@ -83,6 +86,8 @@ export class AdminController {
   }
 
   @Post('tickets/:id/respond')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canManageTickets')
   async respondToTicket(@Req() req, @Param('id') id: string, @Body() body: RespondTicketDto) {
     enforceAdminSensitiveRateLimit(req, 'ticket_reply');
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_ticket_reply', { ip: req.ip, userAgent: req.headers['user-agent'], after: { messageLength: String(body?.message ?? '').trim().length } });
@@ -90,6 +95,8 @@ export class AdminController {
   }
 
   @Patch('tickets/:id')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canManageTickets')
   async updateTicket(@Req() req, @Param('id') id: string, @Body() body: UpdateTicketDto) {
     enforceAdminSensitiveRateLimit(req, 'ticket_update');
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_ticket_update', { ip: req.ip, userAgent: req.headers['user-agent'], after: body || {} });
@@ -97,6 +104,8 @@ export class AdminController {
   }
 
   @Post('tickets/:id/notes')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canManageTickets')
   async addTicketNote(@Req() req, @Param('id') id: string, @Body() dto: CreateTicketNoteDto) {
     enforceAdminSensitiveRateLimit(req, 'ticket_note');
     await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_ticket_note', { ip: req.ip, userAgent: req.headers['user-agent'], after: { bodyLength: String(dto?.body ?? '').trim().length } });
@@ -104,27 +113,28 @@ export class AdminController {
   }
 
   @Get('recipes')
-  getRecipes(@Query('page') page: string, @Query('limit') limit: string) {
-    const safeLimit = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
-    return this.adminService.getAllRecipes(parseInt(page) || 1, safeLimit);
+  getRecipes(@Query() query: ListAdminRecipesQueryDto) {
+    return this.adminService.getAllRecipes(query);
   }
 
-  // Content moderation — owner-gated + fail-closed audited (advisor P1-5): there is no live UGC flow, so these
-  // stay restricted to an owner rather than being a loose surface any admin can hit.
+  // Content moderation — explicit content capability + fail-closed audit. Owner allowlist retains the capability;
+  // a content operator gets only this bounded mutation surface, not owner-only PII/destructive powers.
   @Patch('recipes/:id/approve')
-  @UseGuards(OwnerGuard)
-  async approveRecipe(@Req() req, @Param('id') id: string) {
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canApproveRecipe')
+  async approveRecipe(@Req() req, @Param('id') id: string, @Body() body: ModerateRecipeDto) {
     enforceAdminSensitiveRateLimit(req, 'recipe_approve');
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_approve', { ip: req.ip, userAgent: req.headers['user-agent'] });
-    return this.adminService.updateRecipeStatus(id, 'active'); // P0-1: 'active' (+ isPublic) = actually published; 'approved' was a dead status no public surface reads
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_approve', { reason: body.reason, ip: req.ip, userAgent: req.headers['user-agent'] });
+    return this.adminService.updateRecipeStatus(id, 'active', body.reason); // P0-1: 'active' (+ isPublic) = actually published; 'approved' was a dead status no public surface reads
   }
 
   @Patch('recipes/:id/reject')
-  @UseGuards(OwnerGuard)
-  async rejectRecipe(@Req() req, @Param('id') id: string, @Body('note') note: string) {
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canApproveRecipe')
+  async rejectRecipe(@Req() req, @Param('id') id: string, @Body() body: ModerateRecipeDto) {
     enforceAdminSensitiveRateLimit(req, 'recipe_reject');
-    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_reject', { reason: note, ip: req.ip, userAgent: req.headers['user-agent'] });
-    return this.adminService.updateRecipeStatus(id, 'rejected', note);
+    await this.adminService.recordAuditStrict(req.user?.userId, id, 'admin_recipe_reject', { reason: body.reason, ip: req.ip, userAgent: req.headers['user-agent'] });
+    return this.adminService.updateRecipeStatus(id, 'rejected', body.reason);
   }
 
   // ── USERS — full admin control + monitoring (founder mandate). Real PII; every access/mutation is audited
@@ -137,9 +147,10 @@ export class AdminController {
     @Query('search') search: string,
     @Query('role') role: string,
     @Query('status') status: string,
+    @Query('sort') sort: string,
   ) {
     this.adminService.recordAudit(req.user?.userId, 'admin_view', { route: 'users', q: search ? 'y' : 'n', role: role || 'all', status: status || 'all' });
-    return this.adminUsers.list({ page: parseInt(page) || 1, limit: parseInt(limit) || 20, search, role, status });
+    return this.adminUsers.list({ page: parseInt(page) || 1, limit: parseInt(limit) || 20, search, role, status, sort });
   }
 
   @Get('users/stats') // declared BEFORE users/:id so the static path is not captured by the :id param
@@ -190,6 +201,8 @@ export class AdminController {
   }
 
   @Post('users')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canCreateUsers')
   async createUser(@Req() req, @Body() body: CreateAdminUserDto) {
     const grantsAdmin = !!body?.isAdmin || (!!body?.adminRole && body.adminRole !== 'user');
     if (grantsAdmin && !isOwnerId(req.user?.userId)) throw new ForbiddenException('super_admin_required'); // granting admin = owner-only
@@ -205,6 +218,8 @@ export class AdminController {
   }
 
   @Patch('users/:id')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canEditUsers')
   async updateUser(@Req() req, @Param('id') id: string, @Body() body: UpdateAdminUserDto) {
     const roleChange = body?.isAdmin !== undefined || body?.adminRole !== undefined;
     const identityChange = body?.email !== undefined;
@@ -232,6 +247,8 @@ export class AdminController {
   }
 
   @Post('users/:id/ban')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canBanUsers')
   async banUser(@Req() req, @Param('id') id: string, @Body() body: BanUserDto) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_ban_self');
     if (body?.banned) requireReason(body?.reason); // banning needs a reason; un-banning is safe
@@ -241,6 +258,8 @@ export class AdminController {
   }
 
   @Post('users/:id/force-logout')
+  @UseGuards(AdminCapabilityGuard)
+  @RequireAdminCapability('canForceLogoutUsers')
   async forceLogoutUser(@Req() req, @Param('id') id: string, @Body() body?: ReasonDto) {
     if (req.user?.userId === id) throw new BadRequestException('cannot_force_logout_self'); // P1-8: don't lock yourself out
     const r = requireReason(body?.reason);
@@ -286,7 +305,7 @@ export class AdminController {
   getBehaviorInsights() { return this.adminService.getBehaviorInsights(); }
 
   @Get('analytics/meal-planning')
-  getMealPlanningStats() { return this.adminService.getMealPlanningStats(); }
+  getMealPlanningStats(@Query('days') days: string) { return this.adminService.getMealPlanningStats(parseInt(days) || 30); }
 
   @Get('analytics/ai-interaction')
   getAIInteractionStats() { return this.adminService.getAIInteractionStats(); }
@@ -295,10 +314,10 @@ export class AdminController {
   getUserStats() { return this.adminService.getUserStats(); }
 
   @Get('analytics/recipes-stats')
-  getRecipeStats() { return this.adminService.getRecipeStats(); }
+  getRecipeStats(@Query('days') days: string) { return this.adminService.getRecipeStats(parseInt(days) || 30); }
 
   @Get('analytics/shopping')
-  getShoppingAnalytics() { return this.adminService.getShoppingAnalytics(); }
+  getShoppingAnalytics(@Query('days') days: string) { return this.adminService.getShoppingAnalytics(parseInt(days) || 30); }
 
   @Get('analytics/behavior-profiles')
   getBehaviorProfiles(@Req() req) {
@@ -345,7 +364,7 @@ export class AdminController {
   getOpsAiObservability() { return this.adminService.getOpsAiObservability(); }
 
   @Get('analytics/content-gaps')
-  getContentGaps() { return this.adminService.getContentGaps(); }
+  getContentGaps(@Query('days') days: string) { return this.adminService.getContentGaps(parseInt(days) || 30); }
 
   @Get('ai/insights')
   getAdminInsights() { return this.adminService.getAdminInsights(); }

@@ -24,6 +24,13 @@ function riskLevelFromAction(action: string): string {
   return 'low';
 }
 
+function boundedWindow(input: number | undefined, fallback = 30) {
+  const days = Math.min(Math.max(Math.floor(Number(input)) || fallback, 1), 90);
+  const asOf = new Date();
+  const from = new Date(asOf.getTime() - days * 24 * 60 * 60 * 1000);
+  return { days, asOf, from };
+}
+
 @Injectable()
 export class AdminService {
   constructor(
@@ -161,13 +168,18 @@ export class AdminService {
 
   // CONTENT-GAP signal (§7): the top searches that returned nothing useful → the demand-weighted authoring
   // backlog ("what recipe to write next"). Aggregate counts only (search terms, no user link / no PII).
-  async getContentGaps() {
+  async getContentGaps(daysInput = 30) {
     // The "what to author next" signal. HONESTY: search_unmet events deliberately carry only SHAPE
     // (queryLength, wordCount) — the raw query text is NOT stored (GDPR; see web useDiscovery.js). So we report
     // the real unmet VOLUME; surfacing WHICH dishes needs a privacy-safe normalized capture (a launch task), not a
     // guess. `query` is read only in case such a capture later adds a normalized, non-PII term.
-    let events: { payload: string | null }[] = [];
-    try { events = await this.prisma.userEvent.findMany({ where: { type: 'search_unmet' }, select: { payload: true }, take: 5000 }); } catch { /* awaiting */ }
+    const { days, asOf, from } = boundedWindow(daysInput);
+    const events: { payload: string | null }[] = await this.prisma.userEvent.findMany({
+      where: { type: 'search_unmet', timestamp: { gte: from, lte: asOf } },
+      select: { payload: true },
+      orderBy: { timestamp: 'desc' },
+      take: 5000,
+    });
     const counts = new Map<string, number>();
     for (const e of events) {
       try {
@@ -184,6 +196,12 @@ export class AdminService {
       totalUnmet: events.length,
       distinctQueries: counts.size,
       topQueries,
+      source: 'UserEvent.search_unmet (privacy-safe normalized intents only)',
+      windowDays: days,
+      from: from.toISOString(),
+      asOf: asOf.toISOString(),
+      sampled: events.length,
+      capped: events.length === 5000,
       note: counts.size === 0 && events.length > 0 ? 'متنِ جستجو به‌دلیلِ حریمِ خصوصی ذخیره نمی‌شود؛ برای دیدنِ «کدام دیش»، ثبتِ نرمالِ privacy-safe لازم است (کارِ لانچ).' : null,
     };
   }
@@ -191,13 +209,17 @@ export class AdminService {
   // ADMIN-AI (§14) — a REAL deterministic analyst: scans live metrics and emits honest findings via fixed
   // rules (NOT a model guessing). The LLM-narration layer is a later, founder-gated step. Never fabricates.
   async getAdminInsights() {
-    const [obs, health, safety, funnelsRes, gaps]: any[] = await Promise.all([
-      this.opsIntelligence.getAiObservability().catch(() => null),
-      this.opsIntelligence.getHealth().catch(() => null),
-      this.opsIntelligence.getSafetyCompliance().catch(() => null),
-      this.analyticsIntelligence.getFunnels().catch(() => null),
-      this.getContentGaps().catch(() => null),
+    const dependencyNames = ['ai_observability', 'ops_health', 'safety_compliance', 'funnels', 'content_gaps'];
+    const settled = await Promise.allSettled([
+      this.opsIntelligence.getAiObservability(),
+      this.opsIntelligence.getHealth(),
+      this.opsIntelligence.getSafetyCompliance(),
+      this.analyticsIntelligence.getFunnels(),
+      this.getContentGaps(),
     ]);
+    const values = settled.map((result) => result.status === 'fulfilled' ? result.value : null) as any[];
+    const [obs, health, safety, funnelsRes, gaps] = values;
+    const failedDependencies = settled.flatMap((result, index) => result.status === 'rejected' ? [dependencyNames[index]] : []);
     const T = obs?.totals || {};
     const insights: any[] = [];
     const push = (severity: string, area: string, title: string, detail: string, metric: string) => insights.push({ severity, area, title, detail, metric });
@@ -209,7 +231,7 @@ export class AdminService {
     if (typeof eq === 'number' && eq < 0.95) push('warn', 'داده', 'کیفیتِ رویداد پایین', `نرخِ رویدادهای سالم ${Math.round(eq * 100)}٪ است — احتمالِ نویز یا داده‌های ناقص.`, 'event_quality');
     const al = safety?.allergySafety;
     if (al && al.pass === false) push('critical', 'ایمنی', 'نشتِ آلرژن!', `فیلترِ سختِ آلرژن ${al.leaks ?? '?'} نشت دارد — این بحرانی است، فوری بررسی شود.`, 'allergen');
-    if (al && al.pass === true) push('ok', 'ایمنی', 'آلرژن: صفر نشت', 'فیلترِ سختِ آلرژن روی همهٔ نمونه‌های پیکره گذراند — ایمن.', 'allergen');
+    if (al && al.pass === true) push('ok', 'ایمنی', 'آلرژن: صفر نشت در fixture', 'فیلترِ سختِ آلرژن همهٔ نمونه‌های پیکرهٔ تست را گذراند؛ این نتیجه معادلِ اثباتِ ترافیک تولید نیست.', 'allergen_fixture');
     const err = obs?.byErrorCode || {};
     const errTotal: number = (Object.values(err) as any[]).reduce((s: number, n: any) => s + Number(n || 0), 0);
     if (errTotal > 0) push('info', 'هوش مصنوعی', 'خطاهای مدل', `${errTotal} خطای مدل در ۳۰ روز ثبت شده.`, 'errors');
@@ -220,9 +242,17 @@ export class AdminService {
       }
     }
     if (gaps && typeof gaps.totalUnmet === 'number' && gaps.totalUnmet > 0) push('info', 'محتوا', 'جستجوهای بی‌نتیجه', `${gaps.totalUnmet} جستجو نتیجه‌ای نداشت — تقاضای محتوای پوشش‌داده‌نشده.`, 'content_gap');
+    if (failedDependencies.length > 0) push('warn', 'داده', 'بریف با دادهٔ ناقص', `${failedDependencies.length} منبع پاسخ نداد: ${failedDependencies.join('، ')}. نبودِ هشدار از این منابع قابل استنتاج نیست.`, 'dependency_failure');
     if (insights.length === 0) push('ok', 'سامانه', 'بدونِ هشدار', 'هیچ متریکی از آستانه‌های سلامت عبور نکرده.', 'none');
 
-    return { status: 'real', method: 'قواعدِ قطعی روی متریک‌های زنده (نه حدسِ مدل)', insights };
+    return {
+      status: failedDependencies.length > 0 ? ('partial' as const) : ('real' as const),
+      method: 'قواعدِ قطعی روی متریک‌های دریافت‌شده (نه حدسِ مدل)',
+      sourceWindow: 'AI=30d; ops-health=24h/recent sample; safety=fixture corpus; funnels=instrumented events',
+      asOf: new Date().toISOString(),
+      failedDependencies,
+      insights,
+    };
   }
 
   async getDashboardStats() {
@@ -237,18 +267,63 @@ export class AdminService {
   // P2-2 (re-audit): getAllTickets / respondToTicket / updateTicketStatus removed — dead since the live ticket
   // routes use AdminTicketsService. (getAllUsers removed below too — AdminUsersService owns the user list.)
 
-  async getAllRecipes(page = 1, limit = 20) {
+  async getAllRecipes(opts: { q?: string; status?: string; visibility?: string; sort?: string; direction?: 'asc' | 'desc'; page?: number; limit?: number } = {}) {
+    const page = Math.max(Math.floor(Number(opts.page)) || 1, 1);
+    const limit = Math.min(Math.max(Math.floor(Number(opts.limit)) || 20, 1), 100);
     const skip = (page - 1) * limit;
+    const where: any = {};
+    const q = String(opts.q || '').trim();
+    if (q) where.title = { contains: q, mode: 'insensitive' };
+    if (['pending', 'active', 'rejected', 'archived'].includes(String(opts.status))) where.status = opts.status;
+    if (opts.visibility === 'public') where.isPublic = true;
+    if (opts.visibility === 'private') where.isPublic = false;
+    const sort = ['updatedAt', 'createdAt', 'title', 'status'].includes(String(opts.sort)) ? String(opts.sort) : 'updatedAt';
+    const direction: 'asc' | 'desc' = opts.direction === 'asc' ? 'asc' : 'desc';
     const [data, total] = await Promise.all([
       this.prisma.recipe.findMany({
+        where,
         skip,
         take: limit,
-        include: { author: { select: { name: true } } },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { [sort]: direction },
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          status: true,
+          isPublic: true,
+          imageUrl: true,
+          createdAt: true,
+          updatedAt: true,
+          author: { select: { name: true } },
+          _count: { select: { ingredients: true, steps: true } },
+        },
       }),
-      this.prisma.recipe.count(),
+      this.prisma.recipe.count({ where }),
     ]);
-    return { data, total, page, limit };
+    const rows = data.map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      category: recipe.category,
+      status: recipe.status,
+      isPublic: recipe.isPublic,
+      hasImage: !!recipe.imageUrl,
+      authorName: recipe.author?.name ?? null,
+      ingredientCount: recipe._count?.ingredients ?? 0,
+      stepCount: recipe._count?.steps ?? 0,
+      createdAt: recipe.createdAt,
+      updatedAt: recipe.updatedAt,
+    }));
+    return {
+      data: rows,
+      total,
+      page,
+      limit,
+      sort,
+      direction,
+      range: { from: total > 0 ? skip + 1 : 0, to: Math.min(skip + rows.length, total) },
+      source: 'Recipe table snapshot',
+      asOf: new Date().toISOString(),
+    };
   }
 
   async updateRecipeStatus(recipeId: string, status: string, adminNote?: string) {
@@ -350,21 +425,22 @@ export class AdminService {
   }
 
 
-  async getMealPlanningStats() {
+  async getMealPlanningStats(daysInput = 30) {
     // `mealplan_generate` was never emitted — meal-plan v2 fills slots one at a time, there is no "generate a
     // plan" action — so the old generateCount was a permanently-dead 0 dressed as a metric. Report REAL planning
     // activity instead: total slots added (mealplan_add, which IS emitted) + distinct planners.
+    const { days, asOf, from } = boundedWindow(daysInput);
+    const eventWhere = { type: 'mealplan_add', timestamp: { gte: from, lte: asOf } };
     const [addEvents, distinctPlanners] = await Promise.all([
-      this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { payload: true }, take: 10000 }),
-      this.prisma.userEvent.findMany({ where: { type: 'mealplan_add' }, select: { userId: true }, distinct: ['userId'] }).then((r) => r.length).catch(() => 0),
+      this.prisma.userEvent.findMany({ where: eventWhere, select: { recipeId: true, payload: true }, orderBy: { timestamp: 'desc' }, take: 10000 }),
+      this.prisma.userEvent.findMany({ where: eventWhere, select: { userId: true }, distinct: ['userId'], take: 10000 }).then((r) => r.length),
     ]);
 
     const recipeCounts = new Map<string, number>();
     for (const e of addEvents) {
-      try {
-        const p = JSON.parse(e.payload || '{}');
-        if (p.recipeId) recipeCounts.set(p.recipeId, (recipeCounts.get(p.recipeId) || 0) + 1);
-      } catch {}
+      let recipeId = e.recipeId;
+      if (!recipeId) try { recipeId = JSON.parse(e.payload || '{}').recipeId; } catch { /* invalid legacy payload */ }
+      if (recipeId) recipeCounts.set(recipeId, (recipeCounts.get(recipeId) || 0) + 1);
     }
     const topIds = [...recipeCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10).map(([id])=>id);
     
@@ -373,7 +449,16 @@ export class AdminService {
       const recipes = await this.prisma.recipe.findMany({ where: { id: { in: topIds } }, select: { id: true, title: true } });
       topRecipes = recipes.map(r => ({ id: r.id, title: r.title, count: recipeCounts.get(r.id) || 0 })).sort((a, b) => b.count - a.count);
     }
-    return { topRecipes, slotsAdded: addEvents.length, distinctPlanners };
+    return {
+      topRecipes,
+      slotsAdded: addEvents.length,
+      distinctPlanners,
+      source: 'UserEvent.mealplan_add',
+      windowDays: days,
+      from: from.toISOString(),
+      asOf: asOf.toISOString(),
+      capped: addEvents.length === 10000,
+    };
   }
 
   /** The recommendation-engine OUTCOME funnel — how the home/recsys slate actually performs: impressions → clicks
@@ -443,20 +528,27 @@ export class AdminService {
     ]);
 
     // registeredUsers excludes anonymous guest visitors — the honest "real users" headline (most rows are guests today).
-    return { totalUsers, registeredUsers, guestUsers, todayUsers, weekUsers, monthUsers };
+    return {
+      totalUsers, registeredUsers, guestUsers, todayUsers, weekUsers, monthUsers,
+      source: 'User table snapshot',
+      windows: { today: todayStart.toISOString(), weekDays: 7, monthDays: 30 },
+      asOf: now.toISOString(),
+    };
   }
 
-  async getRecipeStats() {
+  async getRecipeStats(daysInput = 30) {
+    const { days, asOf, from } = boundedWindow(daysInput);
     const viewEvents = await this.prisma.userEvent.findMany({
-      where: { type: 'recipe_view' },
-      select: { payload: true },
+      where: { type: 'recipe_view', timestamp: { gte: from, lte: asOf } },
+      select: { recipeId: true, payload: true },
+      orderBy: { timestamp: 'desc' },
+      take: 20000,
     });
     const viewCountMap = new Map<string, number>();
     for (const e of viewEvents) {
-      try {
-        const p = JSON.parse(e.payload || '{}');
-        if (p.recipeId) viewCountMap.set(p.recipeId, (viewCountMap.get(p.recipeId) || 0) + 1);
-      } catch {}
+      let recipeId = e.recipeId;
+      if (!recipeId) try { recipeId = JSON.parse(e.payload || '{}').recipeId; } catch { /* invalid legacy payload */ }
+      if (recipeId) viewCountMap.set(recipeId, (viewCountMap.get(recipeId) || 0) + 1);
     }
     const topViewedIds = [...viewCountMap.entries()]
       .sort((a, b) => b[1] - a[1])
@@ -474,6 +566,7 @@ export class AdminService {
 
     const favCounts = await this.prisma.favoriteRecipe.groupBy({
       by: ['recipeId'],
+      where: { addedAt: { gte: from, lte: asOf } },
       _count: { recipeId: true },
       orderBy: { _count: { recipeId: 'desc' } },
       take: 10,
@@ -494,22 +587,37 @@ export class AdminService {
         .sort((a, b) => b.favorites - a.favorites); // re-sort: findMany discards the groupBy order
     }
 
-    return { topViewed, topFavorited };
+    return {
+      topViewed,
+      topFavorited,
+      source: 'UserEvent.recipe_view + FavoriteRecipe.addedAt',
+      windowDays: days,
+      from: from.toISOString(),
+      asOf: asOf.toISOString(),
+      cappedViews: viewEvents.length === 20000,
+    };
   }
 
-  async getShoppingAnalytics() {
+  async getShoppingAnalytics(daysInput = 30) {
+    const { days, asOf, from } = boundedWindow(daysInput);
+    const where = { addedAt: { gte: from, lte: asOf } };
     const items = await this.prisma.shoppingItem.groupBy({
       by: ['name'],
+      where,
       _count: { name: true },
       orderBy: { _count: { name: 'desc' } },
       take: 20,
     });
-    const totalItems = await this.prisma.shoppingItem.count();
-    const checkedItems = await this.prisma.shoppingItem.count({ where: { isChecked: true } });
+    const totalItems = await this.prisma.shoppingItem.count({ where });
+    const checkedItems = await this.prisma.shoppingItem.count({ where: { ...where, isChecked: true } });
     return {
       totalItems,
       checkedItems,
       topItems: items.map(i => ({ name: i.name, count: i._count.name })),
+      source: 'ShoppingItem.addedAt',
+      windowDays: days,
+      from: from.toISOString(),
+      asOf: asOf.toISOString(),
     };
   }
 

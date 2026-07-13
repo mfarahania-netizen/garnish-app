@@ -113,4 +113,26 @@ describe('admin PII minimization + audit (advisor audit)', () => {
       expect(JSON.stringify(e)).not.toContain('something private');
     });
   });
+
+  describe('getAdminInsights honesty', () => {
+    it('returns partial and a warning when any dependency fails', async () => {
+      const prisma: any = { userEvent: { findMany: jest.fn(async () => []) } };
+      const analytics: any = { getFunnels: jest.fn(async () => ({ funnels: [] })) };
+      const ops: any = {
+        getAiObservability: jest.fn(async () => ({ totals: { calls: 0 }, byErrorCode: {} })),
+        getHealth: jest.fn(async () => { throw new Error('health unavailable'); }),
+        getSafetyCompliance: jest.fn(async () => ({ allergySafety: null })),
+      };
+      const result = await new AdminService(prisma, analytics, ops).getAdminInsights();
+
+      expect(result.status).toBe('partial');
+      expect(result.failedDependencies).toContain('ops_health');
+      expect(result.insights).toEqual(expect.arrayContaining([
+        expect.objectContaining({ metric: 'dependency_failure', severity: 'warn' }),
+      ]));
+      expect(result.insights).not.toEqual(expect.arrayContaining([
+        expect.objectContaining({ metric: 'none' }),
+      ]));
+    });
+  });
 });
