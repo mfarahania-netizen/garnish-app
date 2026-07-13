@@ -78,4 +78,50 @@ describe('RecommendationPipelineService', () => {
       trackingPolicy: { fetchCreatesImpression: false },
     });
   });
+
+  it('threads the epoch observed before derivation into served-slate persistence', async () => {
+    const epoch = new Date('2026-07-01T00:00:00.000Z');
+    const counters = { logSlate: jest.fn().mockResolvedValue(2) };
+    const consent = { currentGrantEpoch: jest.fn().mockResolvedValue(epoch) };
+    service = new RecommendationPipelineService(
+      candidateGenerator as any,
+      rankingService as any,
+      featureStore as any,
+      explainabilityService as any,
+      undefined,
+      undefined,
+      counters as any,
+      consent as any,
+    );
+
+    await service.getRecommendations('user-1', 2);
+
+    expect(counters.logSlate).toHaveBeenCalledWith(
+      'user-1',
+      expect.any(Array),
+      expect.objectContaining({ expectedEpoch: epoch }),
+    );
+    expect(consent.currentGrantEpoch.mock.invocationCallOrder[0]).toBeLessThan(
+      featureStore.buildFeatureVector.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('does not enqueue a served slate when the epoch cannot be established', async () => {
+    const counters = { logSlate: jest.fn() };
+    const consent = { currentGrantEpoch: jest.fn().mockResolvedValue(null) };
+    service = new RecommendationPipelineService(
+      candidateGenerator as any,
+      rankingService as any,
+      featureStore as any,
+      explainabilityService as any,
+      undefined,
+      undefined,
+      counters as any,
+      consent as any,
+    );
+
+    await service.getRecommendations('user-1', 2);
+
+    expect(counters.logSlate).not.toHaveBeenCalled();
+  });
 });

@@ -1,108 +1,186 @@
+import { ForbiddenException, ServiceUnavailableException } from '@nestjs/common';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../consent/consent.constants';
 import { ObservabilityService } from './observability.service';
 
-function make(opts: { events?: any[]; obs?: any[]; profile?: any; profileThrows?: boolean; grouped?: any[] } = {}) {
+const GRANT_AT = new Date('2026-07-01T00:00:00.000Z');
+const grant = (purpose: string, userId = 'u1') => ({
+  id: `${purpose}-${userId}`,
+  userId,
+  purpose,
+  status: 'granted',
+  policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+  createdAt: GRANT_AT,
+});
+
+function make(
+  opts: {
+    events?: any[];
+    obs?: any[];
+    grouped?: any[];
+    consents?: any[];
+  } = {},
+) {
   const prisma: any = {
+    userConsent: {
+      findMany: jest.fn(async ({ where }: any) =>
+        (opts.consents ?? [grant('analytics'), grant('personalization')]).filter(
+          (row) => row.purpose === where.purpose,
+        ),
+      ),
+    },
     userEvent: {
       findMany: jest.fn().mockResolvedValue(opts.events ?? []),
       groupBy: jest.fn().mockResolvedValue(opts.grouped ?? []),
     },
-    signalObservation: { findMany: jest.fn().mockResolvedValue(opts.obs ?? []) },
+    signalObservation: {
+      findMany: jest.fn().mockResolvedValue(opts.obs ?? []),
+    },
+    aICallLog: { findMany: jest.fn() },
+    eventOutbox: { count: jest.fn() },
+    recipePrior: { count: jest.fn(), findFirst: jest.fn(), groupBy: jest.fn() },
+    userBehaviorSignal: { groupBy: jest.fn() },
   };
-  const profiles: any = { getLivingUserProfile: jest.fn(opts.profileThrows ? async () => { throw new Error('db'); } : async () => opts.profile) };
-  return new ObservabilityService(prisma, profiles);
+  const profiles: any = { getLivingUserProfile: jest.fn() };
+  return { svc: new ObservabilityService(prisma, profiles), prisma, profiles };
 }
 
-describe('ObservabilityService (R8 cabin)', () => {
-  it('eventStream returns the raw interaction stream (no payload dump)', async () => {
-    const svc = make({ events: [{ id: 'e1', type: 'cook_complete', recipeId: 'r1', page: null, timestamp: new Date() }] });
+describe('ObservabilityService optional-data boundary', () => {
+  const previousAnalytics = process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+  const previousPersonalization =
+    process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+
+  beforeEach(() => {
+    process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = 'true';
+    process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+  });
+
+  afterAll(() => {
+    if (previousAnalytics === undefined)
+      delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+    else process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = previousAnalytics;
+    if (previousPersonalization === undefined)
+      delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+    else
+      process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED =
+        previousPersonalization;
+  });
+
+  it('eventStream uses current consent epoch and excludes legacy/null provenance', async () => {
+    const event = {
+      id: 'e1',
+      type: 'cook_complete',
+      recipeId: 'r1',
+      page: null,
+      consentPurpose: 'analytics',
+      timestamp: new Date('2026-07-02T00:00:00.000Z'),
+    };
+    const { svc, prisma } = make({ events: [event] });
+
     const out = await svc.eventStream('u1');
     expect(out.count).toBe(1);
     expect(out.events[0]).not.toHaveProperty('payload');
+    expect(prisma.userEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          consentPurpose: { in: ['analytics', 'personalization'] },
+          OR: [{ userId: 'u1', timestamp: { gte: GRANT_AT } }],
+        },
+      }),
+    );
   });
 
-  it('observations aggregates derived signals by name (shows what the engine learned)', async () => {
-    const svc = make({ obs: [
-      { signalName: 'taste.cuisine_affinity', dimension: 'taste', value: 'persian', weight: 1, confidence: 1, recipeId: 'r1', source: 'cook_complete', observedAt: new Date() },
-      { signalName: 'taste.cuisine_affinity', dimension: 'taste', value: 'persian', weight: 1, confidence: 1, recipeId: 'r2', source: 'cook_complete', observedAt: new Date() },
-    ] });
+  it('withdrawal denies the per-user view before UserEvent IO', async () => {
+    const withdrawn = {
+      ...grant('analytics'),
+      id: 'withdrawn',
+      status: 'withdrawn',
+      createdAt: new Date('2026-07-03T00:00:00.000Z'),
+    };
+    const { svc, prisma } = make({
+      consents: [grant('analytics'), withdrawn],
+    });
+
+    await expect(svc.eventStream('u1')).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+  });
+
+  it('observations require both current grants and event provenance', async () => {
+    const obs = [{
+      signalName: 'taste.cuisine_affinity',
+      dimension: 'taste',
+      value: 'persian',
+      weight: 1,
+      confidence: 1,
+      recipeId: 'r1',
+      source: 'cook_complete',
+      observedAt: new Date('2026-07-02T00:00:00.000Z'),
+    }];
+    const { svc, prisma } = make({ obs });
+
     const out = await svc.observations('u1');
-    const cuisine = out.summary.find((s) => s.signalName === 'taste.cuisine_affinity')!;
-    expect(cuisine.count).toBe(2);
-    expect(cuisine.values).toEqual(['persian']);
+    expect(out.summary[0].values).toEqual(['persian']);
+    expect(prisma.signalObservation.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          OR: [{
+            userId: 'u1',
+            observedAt: { gte: GRANT_AT },
+            event: {
+              consentPurpose: 'personalization',
+              timestamp: { gte: GRANT_AT },
+            },
+          }],
+        },
+      }),
+    );
   });
 
-  it('profileTrace REDACTS allergy values (PII) — count only, never the list', async () => {
-    const svc = make({ profile: {
-      privacy: { consentPurposesUsed: ['core', 'personalization'] },
-      maturity: { band: 'forming' },
-      observed: { status: 'forming', overallConfidence: 0.4, strongestDimensions: ['taste'] },
-      reconciled: { dimensions: {
-        allergies: { status: 'declared', reconciledValue: ['peanut', 'shellfish'], confidence: 1 },
-        dietary_pattern: { status: 'declared', reconciledValue: 'halal', confidence: 1 },
-      } },
-    } });
-    const trace: any = await svc.profileTrace('u1');
-    expect(trace.reconciled.allergies).toEqual({ status: 'declared', count: 2, safetyCritical: true });
-    expect(trace.reconciled.dietary_pattern.value).toBe('halal'); // non-sensitive dim shown
-    expect(JSON.stringify(trace)).not.toMatch(/peanut|shellfish/); // raw allergy values NEVER leak
-  });
-
-  it('profileTrace fails closed (profile error → error, never a fake empty profile)', async () => {
-    const svc = make({ profileThrows: true });
-    expect((await svc.profileTrace('u1')).error).toBe('profile_unavailable_fail_closed');
-  });
-
-  it('counters pivots events into trending + a low-cook-through problem list', async () => {
-    const svc = make({ grouped: [
+  it('counters query only current-consent, provenance-stamped events', async () => {
+    const grouped = [
       { type: 'recipe_view', recipeId: 'popular', _count: { _all: 10 } },
       { type: 'cook_complete', recipeId: 'popular', _count: { _all: 8 } },
-      { type: 'recipe_view', recipeId: 'problem', _count: { _all: 20 } },
-      { type: 'cook_complete', recipeId: 'problem', _count: { _all: 1 } },
-    ] });
+    ];
+    const { svc, prisma } = make({ grouped });
+
     const out = await svc.counters({ days: 30 });
-    expect(out.trending[0].recipeId).toBe('popular'); // most cooks+faves
-    expect(out.problem[0].recipeId).toBe('problem'); // high views, low cook-through
-    expect(out.problem[0].cookThrough).toBe(0.05);
-  });
-});
-
-// recsys audit §12 — system-level recsys/personalization operational health cabin.
-describe('ObservabilityService.recsysHealth (recsys §12)', () => {
-  function makeHealth(over: any = {}) {
-    const prisma: any = {
-      eventOutbox: { count: jest.fn().mockImplementation(({ where }: any) =>
-        Promise.resolve(where?.status === 'dead' ? 0 : where?.status === 'pending' ? 2 : where?.status === 'processing' ? 1 : 100)) },
-      signalObservation: {
-        count: jest.fn().mockResolvedValue(50),
-        groupBy: jest.fn().mockResolvedValue([{ signalName: 'likes_recipe', _count: { _all: 5 } }, { signalName: 'views_recipe', _count: { _all: 12 } }]),
-      },
-      userBehaviorSignal: { groupBy: jest.fn().mockResolvedValue([{ userId: 'u1' }, { userId: 'u2' }, { userId: 'u3' }]) },
-      userEvent: { groupBy: jest.fn().mockResolvedValue([{ consentPurpose: 'analytics', _count: { _all: 80 } }, { consentPurpose: null, _count: { _all: 20 } }]) },
-      recipePrior: { count: jest.fn().mockResolvedValue(0), findFirst: jest.fn().mockResolvedValue(null), groupBy: jest.fn().mockResolvedValue([]) },
-      ...over,
-    };
-    return new ObservabilityService(prisma, {} as any);
-  }
-
-  it('reports healthy outbox + signal/consent coverage + empty priors', async () => {
-    const out: any = await makeHealth().recsysHealth({ days: 7 });
-    expect(out.outbox).toEqual({ pendingBacklog: 2, processing: 1, deadLetter: 0, processedInWindow: 100, health: 'healthy' });
-    expect(out.signals.usersWithSignals).toBe(3);
-    expect(out.signals.totalObservations).toBe(50);
-    expect(out.signals.typeCoverage[0]).toEqual({ signalName: 'views_recipe', count: 12 }); // sorted desc
-    expect(out.consent.byPurpose).toContainEqual({ purpose: 'analytics', count: 80 });
-    expect(out.consent.byPurpose).toContainEqual({ purpose: 'unstamped', count: 20 }); // null consentPurpose → 'unstamped'
-    expect(out.priors).toEqual({ count: 0, latestUpdate: null, byScope: [] });
-    // P1-2: registry-vs-live coverage — the legacy live names are OFF the canonical taxonomy.
-    expect(out.registryCoverage.registryTotal).toBeGreaterThan(0);
-    expect(out.registryCoverage.legacyOnlySignals).toEqual(expect.arrayContaining(['likes_recipe', 'views_recipe']));
+    expect(out.trending[0].recipeId).toBe('popular');
+    expect(prisma.userEvent.groupBy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          consentPurpose: { in: ['analytics', 'personalization'] },
+          OR: [expect.objectContaining({ userId: 'u1' })],
+        }),
+      }),
+    );
   });
 
-  it('flags dead-letters in the outbox health verdict', async () => {
-    const out: any = await makeHealth({
-      eventOutbox: { count: jest.fn().mockImplementation(({ where }: any) => Promise.resolve(where?.status === 'dead' ? 4 : 0)) },
-    }).recsysHealth();
-    expect(out.outbox.deadLetter).toBe(4);
-    expect(out.outbox.health).toBe('dead_letters_present');
+  it.each([
+    ['profile trace', (svc: ObservabilityService) => svc.profileTrace('u1')],
+    ['AI calls', (svc: ObservabilityService) => svc.aiCalls('u1')],
+    ['recsys health', (svc: ObservabilityService) => svc.recsysHealth()],
+  ])('%s is pre-read unavailable because legacy sources lack provenance', async (_name, call) => {
+    const { svc, prisma, profiles } = make();
+
+    await expect(call(svc)).rejects.toBeInstanceOf(
+      ServiceUnavailableException,
+    );
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(prisma.aICallLog.findMany).not.toHaveBeenCalled();
+    expect(prisma.eventOutbox.count).not.toHaveBeenCalled();
+    expect(prisma.recipePrior.count).not.toHaveBeenCalled();
+    expect(prisma.userBehaviorSignal.groupBy).not.toHaveBeenCalled();
+  });
+
+  it('runtime OFF rejects before consent and optional table IO', async () => {
+    delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+    const { svc, prisma } = make();
+
+    await expect(svc.eventStream('u1')).rejects.toBeInstanceOf(
+      ServiceUnavailableException,
+    );
+    expect(prisma.userConsent.findMany).not.toHaveBeenCalled();
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
   });
 });

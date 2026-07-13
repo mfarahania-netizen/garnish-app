@@ -1,6 +1,19 @@
 import { SignalCalculatorService } from '../../behavior-engine/signals/signal-calculator.service';
 import { ingredientSalience, ingredientDelta } from '../../behavior-engine/signals/ingredient-salience';
 import { RankingService } from './ranking.service';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+  makeP0ATransactionBoundaryPrisma,
+} from '../../test-support/p0-a-epoch-fixture';
+
+let restoreOptionalRuntime: () => void;
+
+beforeAll(() => {
+  restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
+});
+
+afterAll(() => restoreOptionalRuntime());
 
 /**
  * FI-PHASE-2.3 — INGREDIENT-LEVEL soft taste ("dislikes lentils"). Proves, end-to-end:
@@ -40,7 +53,7 @@ describe('FI-PHASE-2.3 (A) — salience + attribution (pure)', () => {
 
 function makeCalc(existingSignal: any = null) {
   const upserts: any[] = [];
-  const prisma: any = {
+  const delegates: any = {
     recipe: {
       findUnique: jest.fn().mockResolvedValue({
         ingredients: [
@@ -59,6 +72,7 @@ function makeCalc(existingSignal: any = null) {
       upsert: jest.fn().mockImplementation((args) => { upserts.push(args); return Promise.resolve({}); }),
     },
   };
+  const { prisma } = makeP0ATransactionBoundaryPrisma(delegates);
   return { svc: new SignalCalculatorService(prisma), prisma, upserts };
 }
 
@@ -111,10 +125,19 @@ function makeRanker(corpus: any[]) {
   const featureStore: any = { getFeatureVector: jest.fn() };
   const contributionCalculator: any = { calculate: jest.fn((s) => s) };
   const experimentEngine: any = { getWeights: jest.fn().mockResolvedValue(null) };
-  const exposureTracking: any = { getPenalty: jest.fn().mockResolvedValue(0) };
+  const exposureTracking: any = { getPenalties: jest.fn().mockResolvedValue(new Map()) };
   const tasteAffinityBuilder: any = { build: jest.fn().mockReturnValue({ score: 0.5, matchedSignals: [] }) };
   const recipeEmbedding: any = { buildEmbedding: jest.fn().mockReturnValue([0, 0, 0, 0]) };
-  return new RankingService(prisma, featureStore, contributionCalculator, experimentEngine, exposureTracking, tasteAffinityBuilder, recipeEmbedding);
+  return new RankingService(
+    prisma,
+    featureStore,
+    contributionCalculator,
+    experimentEngine,
+    exposureTracking,
+    tasteAffinityBuilder,
+    recipeEmbedding,
+    makeP0AEpochAwareConsentMock() as any,
+  );
 }
 
 const pick = (ranked: any[], id: string) => ranked.find((r) => r.recipeId === id);

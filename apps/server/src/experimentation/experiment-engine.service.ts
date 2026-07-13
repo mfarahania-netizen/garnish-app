@@ -1,39 +1,71 @@
-// apps/server/src/experimentation/experiment-engine.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
+import { ConsentService } from '../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ExperimentEngine {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(ExperimentEngine.name);
+  constructor(
+    private readonly prisma: PrismaService,
+    // Retained for Nest/module and test-constructor compatibility. Authorization is intentionally read through
+    // the transaction client in the canonical boundary, never through an independently-timed service read.
+    @Optional() _consent?: ConsentService,
+  ) {}
 
-  async getWeights(userId: string): Promise<Record<string, number> | null> {
-    // @ts-ignore // مدل‌ها پس از generate شناخته می‌شوند
-    const experiment = await this.prisma.experiment.findFirst({
-      where: { isActive: true },
-    });
-    if (!experiment) return null;
-    if (/^"?test experiment"?$/i.test(String(experiment.name || '').trim())) {
+  async getWeights(
+    userId: string,
+    expectedEpoch?: Date,
+  ): Promise<Record<string, number> | null> {
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'experiment-engine.get-weights',
+        expectedEpoch,
+      },
+      async (tx, context) => {
+        const experiment = await tx.experiment.findFirst({
+          where: { isActive: true },
+        });
+        if (!experiment) return null;
+        if (/^"?test experiment"?$/i.test(String(experiment.name || '').trim())) {
+          return null;
+        }
+
+        let assignment = await tx.experimentAssignment.findUnique({
+          where: {
+            userId_experimentId: { userId, experimentId: experiment.id },
+          },
+        });
+        if (assignment) {
+          const assignedAt = new Date(assignment.createdAt).getTime();
+          if (
+            !Number.isFinite(assignedAt) ||
+            assignedAt < context.grantEpoch.getTime()
+          ) return null;
+        } else {
+          const variant = Math.random() < 0.5 ? 'A' : 'B';
+          assignment = await tx.experimentAssignment.create({
+            data: { userId, experimentId: experiment.id, variant },
+          });
+        }
+
+        return this.sanitizeWeights(
+          assignment.variant === 'A'
+            ? (experiment.variantA as Record<string, number>)
+            : (experiment.variantB as Record<string, number>),
+        );
+      },
+    ).catch((error) => {
+      this.logger.warn(
+        `experiment assignment suppressed: ${error instanceof Error ? error.name : 'boundary_error'}`,
+      );
       return null;
-    }
-
-    // @ts-ignore
-    let assignment = await this.prisma.experimentAssignment.findUnique({
-      where: { userId_experimentId: { userId, experimentId: experiment.id } },
     });
 
-    if (!assignment) {
-      const variant = Math.random() < 0.5 ? 'A' : 'B';
-      // @ts-ignore
-      assignment = await this.prisma.experimentAssignment.create({
-        data: { userId, experimentId: experiment.id, variant },
-      });
-    }
-
-    return this.sanitizeWeights(
-      assignment.variant === 'A'
-        ? (experiment.variantA as Record<string, number>)
-        : (experiment.variantB as Record<string, number>),
-    );
+    return boundary?.status === 'executed' ? boundary.value : null;
   }
 
   private sanitizeWeights(weights: Record<string, number> | null) {

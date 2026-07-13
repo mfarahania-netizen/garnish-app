@@ -1,9 +1,20 @@
 import { GamificationService } from './gamification.service';
 import { weekOrdinal, mondayIso } from './engine/gamification-streak';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../consent/consent.constants';
+import { makeP0ATransactionBoundaryPrisma } from '../test-support/p0-a-epoch-fixture';
 
 const now = new Date('2026-06-20T12:00:00Z'); // a Saturday → late in the week
 const nowOrd = weekOrdinal(now);
 const cookInWeek = (k: number, recipeId = 'r1') => ({ timestamp: new Date(mondayIso(nowOrd - k) + 'T12:00:00Z'), payload: JSON.stringify({ recipeId }) });
+
+const previousPersonalizationRuntime = process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+beforeAll(() => {
+  process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+});
+afterAll(() => {
+  if (previousPersonalizationRuntime === undefined) delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+  else process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = previousPersonalizationRuntime;
+});
 
 function makeService(opts: {
   events?: { timestamp: Date; payload: string }[];
@@ -13,8 +24,9 @@ function makeService(opts: {
   existingAchievements?: string[];
   consents?: string[];
 } = {}) {
+  const epoch = new Date('2026-01-01T00:00:00.000Z');
   const created: Record<string, any[]> = { userAchievement: [], gamificationEvent: [] };
-  const prisma: any = {
+  const delegates: any = {
     userEvent: { findMany: jest.fn().mockResolvedValue(opts.events ?? []) },
     recipe: { findMany: jest.fn().mockResolvedValue(opts.recipes ?? []) },
     favoriteRecipe: { count: jest.fn().mockResolvedValue(opts.favorites ?? 0) },
@@ -24,10 +36,19 @@ function makeService(opts: {
     userProgress: { findUnique: jest.fn().mockResolvedValue(null), upsert: jest.fn().mockResolvedValue({}) },
     gamificationEvent: { createMany: jest.fn(async (a: any) => { created.gamificationEvent.push(...a.data); return { count: a.data.length }; }), create: jest.fn(async (a: any) => { created.gamificationEvent.push(a.data); return a.data; }) },
   };
+  const { prisma } = makeP0ATransactionBoundaryPrisma(delegates, 'u1', [{
+    id: 'personalization-grant', userId: 'u1', purpose: 'personalization', status: 'granted',
+    policyVersion: CURRENT_PRIVACY_POLICY_VERSION, source: 'settings', createdAt: epoch,
+  }]);
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue({ declared: { dimensions: {} } }) };
   const ineDecide = jest.fn().mockResolvedValue([{ triggerKey: 'streak_at_risk', decision: 'suppress', dryRun: true }]);
   const ine: any = { decideForUser: ineDecide, realSendEnabled: () => false };
-  return { svc: new GamificationService(prisma, profiles, ine), prisma, profiles, ineDecide, created };
+  const consent: any = {
+    currentGrantEpoch: jest.fn().mockResolvedValue(
+      (opts.consents ?? ['personalization']).includes('personalization') ? epoch : null,
+    ),
+  };
+  return { svc: new GamificationService(prisma, profiles, ine, consent), prisma, profiles, ineDecide, created, consent };
 }
 
 describe('GamificationService — honest, server-authoritative', () => {
@@ -48,7 +69,12 @@ describe('GamificationService — honest, server-authoritative', () => {
     expect(state.streak.currentWeeks).toBeGreaterThanOrEqual(1);
     // contract: the engine counts UserEvent type 'cook_complete' — the FE must emit exactly this
     expect(prisma.userEvent.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: expect.objectContaining({ type: { in: ['cook_complete'] } }) }),
+      expect.objectContaining({
+        where: expect.objectContaining({
+          consentPurpose: 'personalization',
+          type: { in: ['cook_complete'] },
+        }),
+      }),
     );
   });
 
@@ -97,5 +123,29 @@ describe('GamificationService — honest, server-authoritative', () => {
     const candidates = ineDecide.mock.calls[0][1];
     expect(candidates.some((c: any) => c.triggerKey === 'streak_at_risk')).toBe(true);
     expect(out.decisions[0].dryRun).toBe(true);
+  });
+
+  it('fails closed without personalization consent and performs no behavior reads or writes', async () => {
+    const { svc, prisma, profiles, ineDecide, created } = makeService({
+      consents: [],
+      events: [cookInWeek(0)],
+    });
+    const state = await svc.recomputeForUser('u1', now);
+    expect(state.stats.totalCooks).toBe(0);
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+    expect(prisma.favoriteRecipe.count).not.toHaveBeenCalled();
+    expect(prisma.mealPlan.findMany).not.toHaveBeenCalled();
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(prisma.userStreak.upsert).not.toHaveBeenCalled();
+    expect(prisma.userAchievement.createMany).not.toHaveBeenCalled();
+    expect(prisma.userProgress.upsert).not.toHaveBeenCalled();
+    expect(created.gamificationEvent).toEqual([]);
+
+    const summary = await svc.getSummary('u1', now);
+    expect(summary.private).toBe(true);
+    expect(summary.stats.totalCooks).toBe(0);
+    const notifications = await svc.evaluateNotifications('u1', now);
+    expect(notifications.decisions).toEqual([]);
+    expect(ineDecide).not.toHaveBeenCalled();
   });
 });

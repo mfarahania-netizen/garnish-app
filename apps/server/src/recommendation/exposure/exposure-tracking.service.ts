@@ -1,20 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class ExposureTrackingService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(ExposureTrackingService.name);
+  constructor(
+    private prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   async trackExposure(
     userId: string,
     recipeId: string,
     source = 'recommendation',
   ) {
-    await (this.prisma as any).$executeRaw`
-      INSERT INTO "RecommendationExposure" ("id", "userId", "recipeId", "source", "viewedAt", "scorePenalty")
-      VALUES (${randomUUID()}, ${userId}, ${recipeId}, ${source}, NOW(), 0)
-    `;
+    const exposureId = randomUUID();
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'recommendation-exposure.track-one',
+      },
+      async (tx) => {
+        await tx.$executeRaw`
+          INSERT INTO "RecommendationExposure" ("id", "userId", "recipeId", "source", "viewedAt", "scorePenalty")
+          VALUES (${exposureId}, ${userId}, ${recipeId}, ${source}, NOW(), 0)
+        `;
+        return true;
+      },
+    ).catch((error) => {
+      this.logger.warn(
+        `exposure write suppressed: ${error instanceof Error ? error.name : 'boundary_error'}`,
+      );
+      return null;
+    });
+    return !!boundary && boundary.status === 'executed' && boundary.value;
   }
 
   async trackExposures(
@@ -22,21 +46,67 @@ export class ExposureTrackingService {
     recipeIds: string[],
     source = 'recommendation',
   ) {
-    const uniqueRecipeIds = [...new Set(recipeIds)].filter(Boolean);
-    if (uniqueRecipeIds.length === 0) return;
-
-    await (this.prisma as any).$transaction(
-      uniqueRecipeIds.map((recipeId) =>
-        (this.prisma as any).$executeRaw`
-          INSERT INTO "RecommendationExposure" ("id", "userId", "recipeId", "source", "viewedAt", "scorePenalty")
-          VALUES (${randomUUID()}, ${userId}, ${recipeId}, ${source}, NOW(), 0)
-        `,
-      ),
-    );
+    const uniqueRecipeIds = [...new Set(recipeIds)].filter(Boolean).sort();
+    if (uniqueRecipeIds.length === 0) return 0;
+    const exposures = uniqueRecipeIds.map((recipeId) => ({
+      id: randomUUID(),
+      recipeId,
+    }));
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId,
+        purposes: ['analytics', 'personalization'],
+        operation: 'recommendation-exposure.track-many',
+      },
+      async (tx) => {
+        for (const { id, recipeId } of exposures) {
+          await tx.$executeRaw`
+            INSERT INTO "RecommendationExposure" ("id", "userId", "recipeId", "source", "viewedAt", "scorePenalty")
+            VALUES (${id}, ${userId}, ${recipeId}, ${source}, NOW(), 0)
+          `;
+        }
+        return exposures.length;
+      },
+    ).catch((error) => {
+      this.logger.warn(
+        `exposure batch suppressed: ${error instanceof Error ? error.name : 'boundary_error'}`,
+      );
+      return null;
+    });
+    return boundary?.status === 'executed' ? boundary.value : 0;
   }
 
   async getPenalty(userId: string, recipeId: string): Promise<number> {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const consentEpoch = await this.currentPersonalizedTelemetryEpoch(userId);
+    if (!consentEpoch) return 0;
+    return this.calculatePenalty(userId, recipeId, consentEpoch);
+  }
+
+  /** Resolve consent once for a whole slate; avoids a consent-query N+1 in RankingService. */
+  async getPenalties(userId: string, recipeIds: string[]): Promise<Map<string, number>> {
+    const uniqueRecipeIds = [...new Set(recipeIds)].filter(Boolean);
+    if (uniqueRecipeIds.length === 0) return new Map();
+    const consentEpoch = await this.currentPersonalizedTelemetryEpoch(userId);
+    if (!consentEpoch) return new Map();
+
+    const pairs = await Promise.all(
+      uniqueRecipeIds.map(async (recipeId) => [
+        recipeId,
+        await this.calculatePenalty(userId, recipeId, consentEpoch),
+      ] as const),
+    );
+    return new Map(pairs);
+  }
+
+  private async calculatePenalty(
+    userId: string,
+    recipeId: string,
+    consentEpoch: Date | null = null,
+  ): Promise<number> {
+    const defaultSince = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo =
+      consentEpoch && consentEpoch > defaultSince ? consentEpoch : defaultSince;
 
     const exposures: any[] = await (this.prisma as any).$queryRaw`
       SELECT COUNT(*) as count FROM "RecommendationExposure"
@@ -50,6 +120,7 @@ export class ExposureTrackingService {
       SELECT COUNT(*) as count FROM "UserEvent"
       WHERE "userId" = ${userId}
         AND type = 'recommendation_dismiss'
+        AND "consentPurpose" = 'personalization'
         AND "timestamp" >= ${sevenDaysAgo}
         AND payload LIKE ${'%' + recipeId + '%'}
     `;
@@ -59,6 +130,7 @@ export class ExposureTrackingService {
       SELECT COUNT(*) as count FROM "UserEvent"
       WHERE "userId" = ${userId}
         AND type = 'recommendation_ignore'
+        AND "consentPurpose" = 'personalization'
         AND "timestamp" >= ${sevenDaysAgo}
         AND payload LIKE ${'%' + recipeId + '%'}
     `;
@@ -75,7 +147,12 @@ export class ExposureTrackingService {
   }
 
   async getExposureMemory(userId: string, limit = 10) {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const consentEpoch = await this.currentPersonalizedTelemetryEpoch(userId);
+    if (!consentEpoch) return [];
+
+    const defaultSince = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo =
+      consentEpoch && consentEpoch > defaultSince ? consentEpoch : defaultSince;
     const exposures: any[] = await (this.prisma as any).$queryRaw`
       SELECT
         e."recipeId",
@@ -100,7 +177,7 @@ export class ExposureTrackingService {
           this.countEvent(userId, recipeId, 'recommendation_cook', thirtyDaysAgo),
           this.countEvent(userId, recipeId, 'recommendation_dismiss', thirtyDaysAgo),
           this.countEvent(userId, recipeId, 'recommendation_ignore', thirtyDaysAgo),
-          this.getPenalty(userId, recipeId),
+          this.calculatePenalty(userId, recipeId, consentEpoch),
         ]);
 
         return {
@@ -125,9 +202,28 @@ export class ExposureTrackingService {
       FROM "UserEvent"
       WHERE "userId" = ${userId}
         AND type = ${type}
+        AND "consentPurpose" = 'personalization'
         AND "timestamp" >= ${since}
         AND payload LIKE ${'%' + recipeId + '%'}
     `;
     return Number(result[0]?.count || 0);
   }
+
+  /** Exposure rows are analytics that are later applied to per-user fatigue/ranking. */
+  private async currentPersonalizedTelemetryEpoch(
+    userId: string,
+  ): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      if (!(await this.consent.hasPurpose(userId, 'analytics'))) return null;
+      if (!(await this.consent.hasPurpose(userId, 'personalization'))) return null;
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
 }

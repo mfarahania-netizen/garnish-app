@@ -1,13 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { eventRewardValue } from './reward-values';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class RecommendationRewardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   async buildRewardProfile(userId: string, windowDays = 14) {
-    const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000);
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return null;
+
+    const since = this.maxDate(
+      new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000),
+      consentEpoch,
+    );
     const attributionEvent = (this.prisma as any).recommendationAttributionEvent;
     const exposure = (this.prisma as any).recommendationExposure;
 
@@ -22,6 +33,7 @@ export class RecommendationRewardService {
         ? this.prisma.userEvent.findMany({
             where: {
               userId,
+              consentPurpose: 'personalization',
               timestamp: { gte: since },
               type: {
                 in: [
@@ -77,18 +89,24 @@ export class RecommendationRewardService {
 
     const rewardScore = this.computeRewardScore(aggregate);
 
-    const outcome = await this.prisma.userOutcome.create({
-      data: {
-        userId,
-        metricName: 'recommendation_reward',
-        metricValue: rewardScore,
-        period: 'daily',
-        sources: {
-          windowDays,
-          aggregate,
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      { userId, purposes: ['analytics', 'personalization'], operation: 'recommendation-reward.persist-profile', expectedEpoch: consentEpoch },
+      (tx) => tx.userOutcome.create({
+        data: {
+          userId,
+          metricName: 'recommendation_reward',
+          metricValue: rewardScore,
+          period: 'daily',
+          sources: {
+            windowDays,
+            aggregate,
+          },
         },
-      },
-    });
+      }),
+    );
+    if (boundary.status !== 'executed') return null;
+    const outcome = boundary.value;
 
     return {
       ...outcome,
@@ -99,10 +117,19 @@ export class RecommendationRewardService {
   }
 
   async getLatestReward(userId: string) {
-    return this.prisma.userOutcome.findFirst({
-      where: { userId, metricName: 'recommendation_reward' },
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    if (!consentEpoch) return null;
+
+    const latest = await this.prisma.userOutcome.findFirst({
+      where: {
+        userId,
+        metricName: 'recommendation_reward',
+        recordedAt: { gte: consentEpoch },
+      },
       orderBy: { recordedAt: 'desc' },
     });
+    const epochAfterRead = await this.currentPersonalizedAnalyticsEpoch(userId);
+    return this.sameEpoch(consentEpoch, epochAfterRead) ? latest : null;
   }
 
   private computeRewardScore(aggregate: Record<string, number>) {
@@ -120,5 +147,25 @@ export class RecommendationRewardService {
 
   private defaultEventValue(eventType: string) {
     return eventRewardValue(eventType); // shared canonical scale (reward-values.ts)
+  }
+
+  private async currentPersonalizedAnalyticsEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private sameEpoch(before: Date, after: Date | null): boolean {
+    return !!after && before.getTime() === after.getTime();
+  }
+
+  private maxDate(a: Date, b: Date): Date {
+    return a.getTime() >= b.getTime() ? a : b;
   }
 }

@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConsentService } from '../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 export interface ServedSlateItem {
   recipeId: string;
@@ -16,7 +18,10 @@ export interface ServedSlateItem {
 @Injectable()
 export class RecommendationCountersService {
   private readonly logger = new Logger(RecommendationCountersService.name);
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   /** Numerically-stable softmax over slate scores → a per-item selection probability (sums to 1). */
   static propensities(scores: number[]): number[] {
@@ -34,7 +39,13 @@ export class RecommendationCountersService {
   async logSlate(
     userId: string,
     items: ServedSlateItem[],
-    opts: { surface?: string; sessionId?: string; context?: any; requestId?: string } = {},
+    opts: {
+      surface?: string;
+      sessionId?: string;
+      context?: any;
+      requestId?: string;
+      expectedEpoch?: Date;
+    } = {},
   ): Promise<number> {
     try {
       if (!userId || !items?.length) return 0;
@@ -55,21 +66,22 @@ export class RecommendationCountersService {
       // exposure rows that the IPS/off-policy layer can NEVER recover after serve time. Still fire-and-forget
       // from the caller (never awaited on the serve path) → adds no user-facing latency. A persistent failure
       // escalates debug→warn so the §12 health surface can notice it instead of silently dropping exposure.
-      for (let attempt = 0; ; attempt++) {
-        try {
-          const res = await this.prisma.recommendationServedItem.createMany({ data });
-          return res?.count ?? data.length;
-        } catch (err) {
-          if (attempt >= 2) {
-            this.logger.warn(`served-slate log FAILED after 3 attempts (${data.length} rows lost): ${(err as Error)?.message}`);
-            return 0;
-          }
-          await new Promise((r) => setTimeout(r, 50 * (attempt + 1)));
-        }
-      }
+      const boundary = await withUserOptionalProcessingBoundary(
+        this.prisma,
+        {
+          userId,
+          purposes: ['analytics', 'personalization'],
+          operation: 'recommendation-counters.log-slate',
+          expectedEpoch: opts.expectedEpoch,
+        },
+        async (tx) => tx.recommendationServedItem.createMany({ data }),
+      );
+      if (boundary.status !== 'executed') return 0;
+      return boundary.value?.count ?? data.length;
     } catch (err) {
-      this.logger.debug(`served-slate log skipped: ${(err as Error)?.message}`);
+      this.logger.warn(`served-slate log skipped: ${(err as Error)?.message}`);
       return 0;
     }
   }
+
 }

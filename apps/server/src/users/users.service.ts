@@ -1,13 +1,25 @@
 // apps/server/src/users/users.service.ts
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { CompleteOnboardingDto } from './dto/complete-onboarding.dto';
 import { ErasureService } from './erasure/erasure.service';
 import { UserExportService } from './export/user-export.service';
-import { ConsentService, CONSENT_PURPOSES } from '../consent/consent.service';
+import { ConsentService } from '../consent/consent.service';
 import { CANONICAL_ALLERGEN_TOKENS } from '../ai/intent/allergen-extractor';
+import {
+  CURRENT_PRIVACY_POLICY_VERSION,
+  CURRENT_TERMS_POLICY_VERSION,
+  OPTIONAL_CONSENT_PURPOSES,
+  TERMS_LAWFUL_BASIS,
+  isOptionalPurposeRuntimeEnabled,
+} from '../consent/consent.constants';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
+import {
+  nextConsentDecisionTimestamp,
+  withUserConsentMutationBoundary,
+} from '../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class UsersService {
@@ -31,8 +43,42 @@ export class UsersService {
     });
   }
 
-  async findByPhone(phone: string) {
-    return this.prisma.user.findUnique({ where: { phone } });
+  async findByPhone(phone: string): Promise<any> {
+    const user = await this.prisma.user.findUnique({
+      where: { phone },
+      include: {
+        _count: { select: { allergies: true } },
+        userConsents: {
+          where: { purpose: { in: ['terms', 'personalization'] } },
+          orderBy: { createdAt: 'desc' },
+          select: { purpose: true, status: true, policyVersion: true, source: true },
+        },
+      },
+    });
+    return this.withVerifiedOnboardingState(user);
+  }
+
+  private withVerifiedOnboardingState<T extends Record<string, any> | null>(user: T): T {
+    if (!user) return user;
+    const declaredAllergyCount = Number(user?._count?.allergies ?? 0);
+    const latest = new Map<string, any>();
+    for (const row of user?.userConsents ?? []) {
+      if (!latest.has(row.purpose)) latest.set(row.purpose, row);
+    }
+    const terms = latest.get('terms');
+    const personalization = latest.get('personalization');
+    const atomicDecisionProof = terms?.status === 'granted'
+      && terms?.policyVersion === CURRENT_TERMS_POLICY_VERSION
+      && terms?.source === 'onboarding'
+      && ['granted', 'declined'].includes(personalization?.status)
+      && personalization?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+      && personalization?.source === 'onboarding';
+    return {
+      ...user,
+      onboardingComplete: Boolean(
+        user.onboardingCompletedAt && (declaredAllergyCount > 0 || atomicDecisionProof),
+      ),
+    };
   }
 
   // A guest deviceKey is a bearer credential, so it must be a SERVER-issued secret — never a client-chosen value
@@ -84,8 +130,14 @@ export class UsersService {
         createdAt: true,
         isBanned: true, // jwt strategy rejects a banned principal
         sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)
+        _count: { select: { allergies: true } },
+        userConsents: {
+          where: { purpose: { in: ['terms', 'personalization'] } },
+          orderBy: { createdAt: 'desc' },
+          select: { purpose: true, status: true, policyVersion: true, source: true },
+        },
       },
-    });
+    }).then((user) => this.withVerifiedOnboardingState(user));
   }
 
   /**
@@ -163,6 +215,17 @@ export class UsersService {
   }
 
   async updatePreferences(userId: string, dto: UpdatePreferencesDto) {
+    const optionalPersonalizationRequested = dto.cuisine !== undefined
+      || dto.budget !== undefined
+      || dto.healthGoals !== undefined;
+    if (optionalPersonalizationRequested) {
+      const allowed = await this.consent
+        .hasPurpose(userId, 'personalization')
+        .catch(() => false);
+      if (!allowed) {
+        throw new ForbiddenException('Personalization processing is not active');
+      }
+    }
     const currentPrefs = await this.getPreferences(userId);
     const oldDiet = currentPrefs?.diet || null;
     const oldSkillLevel = currentPrefs?.skillLevel || null;
@@ -183,13 +246,16 @@ export class UsersService {
     // — only canonical EU-14 chip tokens reach the global Allergy table, so a crafted/buggy client (or a future
     // free-text field) can neither pollute it nor store a non-canonical token the hard gate silently ignores. The
     // legit onboarding/settings UI already sends only canonical chip ids, so this is byte-identical for real users.
-    const allergies = [
-      ...new Set(
-        safeParseArray(dto.allergies)
-          .map((n) => String(n ?? '').trim().toLowerCase())
-          .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
-      ),
-    ].sort();
+    const normalizedAllergies = safeParseArray(dto.allergies)
+      .map((n) => String(n ?? '').trim().toLowerCase())
+      .filter(Boolean);
+    if (
+      dto.allergies !== undefined
+      && normalizedAllergies.some((name) => !CANONICAL_ALLERGEN_TOKENS.has(name))
+    ) {
+      throw new BadRequestException('Preferences contain an unsupported allergen token');
+    }
+    const allergies = [...new Set(normalizedAllergies)].sort();
     const cuisine = safeParseArray(dto.cuisine).sort();
     const healthGoals = safeParseArray(dto.healthGoals).sort();
 
@@ -280,34 +346,299 @@ export class UsersService {
     }
   }
 
-  async completeOnboarding(userId: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { onboardingCompletedAt: new Date() },
-      select: {
-        id: true,
-        phone: true,
-        name: true,
-        email: true,
-        avatar: true,
-        isAdmin: true,
-        adminRole: true,
-        isGuest: true,
-        onboardingCompletedAt: true,
-        createdAt: true,
+  private onboardingUserSelect() {
+    return {
+      id: true,
+      phone: true,
+      name: true,
+      email: true,
+      avatar: true,
+      isAdmin: true,
+      adminRole: true,
+      isGuest: true,
+      onboardingCompletedAt: true,
+      createdAt: true,
+    } as const;
+  }
+
+  private canonicalOnboardingAllergies(names: string[]): string[] {
+    const normalized = (names || []).map((name) => String(name ?? '').trim().toLowerCase());
+    const invalid = normalized.filter((name) => !name || !CANONICAL_ALLERGEN_TOKENS.has(name));
+    if (invalid.length > 0) throw new BadRequestException('Onboarding contains an unsupported allergen token');
+    return [...new Set(normalized)].sort();
+  }
+
+  /**
+   * The only launch-facing completion command. Every critical write and its canonical read-back happen in one
+   * transaction; optional profile signals are intentionally handled by the client only after this succeeds.
+   */
+  async completeOnboardingCommand(userId: string, dto: CompleteOnboardingDto, ip?: string) {
+    if (
+      dto.termsAccepted !== true
+      || dto.termsPolicyVersion !== CURRENT_TERMS_POLICY_VERSION
+      || dto.privacyPolicyVersion !== CURRENT_PRIVACY_POLICY_VERSION
+      || typeof dto.personalizationConsent !== 'boolean'
+    ) {
+      throw new BadRequestException('Current Terms and Privacy decisions are required');
+    }
+
+    const allergies = this.canonicalOnboardingAllergies(dto.allergies);
+    const allergyDecisionMatches = dto.allergyDecision === 'none'
+      ? allergies.length === 0
+      : dto.allergyDecision === 'declared' && allergies.length > 0;
+    if (!allergyDecisionMatches) {
+      throw new BadRequestException('Allergy decision does not match the declared allergy set');
+    }
+    const personalizationStatus = dto.personalizationConsent ? 'granted' : 'declined';
+
+    const boundary = await withUserConsentMutationBoundary(
+      this.prisma,
+      { userId, operation: 'users.complete-onboarding' },
+      async (tx) => {
+      const user = await tx.user.findUnique({ where: { id: userId }, select: this.onboardingUserSelect() });
+      if (!user) throw new BadRequestException('User not found');
+
+      // A completed onboarding command is immutable. An exact retry may read the
+      // existing canonical state, but a stale/replayed payload must not overwrite
+      // later Settings changes or re-grant a withdrawn optional purpose.
+      if (user.onboardingCompletedAt) {
+        const [preferences, declaredAllergies, terms, personalization] = await Promise.all([
+          tx.userPreference.findUnique({ where: { userId }, select: { diet: true } }),
+          tx.userAllergy.findMany({
+            where: { userId },
+            select: { allergy: { select: { name: true } } },
+          }),
+          tx.userConsent.findFirst({
+            where: { userId, purpose: 'terms' },
+            orderBy: { createdAt: 'desc' },
+            select: { status: true, lawfulBasis: true, policyVersion: true, source: true },
+          }),
+          tx.userConsent.findFirst({
+            where: { userId, purpose: 'personalization' },
+            orderBy: { createdAt: 'desc' },
+            select: { status: true, lawfulBasis: true, policyVersion: true, source: true },
+          }),
+        ]);
+        const readBackAllergies = declaredAllergies.map((row) => row.allergy.name).sort();
+        const exactRetry = !!preferences
+          && JSON.stringify(readBackAllergies) === JSON.stringify(allergies)
+          && (dto.diet === undefined || preferences.diet === (dto.diet ?? null))
+          && terms?.status === 'granted'
+          && (terms.lawfulBasis === TERMS_LAWFUL_BASIS || terms.lawfulBasis === 'contract')
+          && terms.policyVersion === CURRENT_TERMS_POLICY_VERSION
+          && terms.source === 'onboarding'
+          && personalization?.status === personalizationStatus
+          && personalization.lawfulBasis === 'consent'
+          && personalization.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+          && personalization.source === 'onboarding';
+        if (!exactRetry) {
+          throw new ConflictException('Onboarding is already complete; use Settings for later changes');
+        }
+        return {
+          user,
+          preferences: {
+            diet: preferences.diet,
+            allergies: readBackAllergies,
+            allergyDecision: dto.allergyDecision,
+          },
+          consent: {
+            terms: { granted: true, policyVersion: CURRENT_TERMS_POLICY_VERSION },
+            personalization: {
+              granted: dto.personalizationConsent,
+              status: personalizationStatus,
+              policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+              processingEnabled: isOptionalPurposeRuntimeEnabled('personalization'),
+            },
+          },
+        };
+      }
+
+      await tx.userPreference.upsert({
+        where: { userId },
+        create: { userId, diet: dto.diet ?? null },
+        update: dto.diet === undefined ? {} : { diet: dto.diet ?? null },
+      });
+
+      await tx.userAllergy.deleteMany({ where: { userId } });
+      if (allergies.length > 0) {
+        for (const name of allergies) {
+          await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });
+        }
+        const records = await tx.allergy.findMany({ where: { name: { in: allergies } }, select: { id: true } });
+        if (records.length !== allergies.length) throw new BadRequestException('Allergy write could not be verified');
+        await tx.userAllergy.createMany({
+          data: records.map((allergy) => ({ userId, allergyId: allergy.id })),
+          skipDuplicates: true,
+        });
+      }
+
+      const ensureConsentDecision = async (
+        purpose: 'terms' | 'personalization',
+        status: 'granted' | 'declined',
+        lawfulBasis: string,
+        policyVersion: string,
+      ) => {
+        const latest = await tx.userConsent.findFirst({
+          where: { userId, purpose },
+          orderBy: { createdAt: 'desc' },
+          select: { status: true, lawfulBasis: true, policyVersion: true, source: true },
+        });
+        if (
+          latest?.status !== status
+          || latest?.lawfulBasis !== lawfulBasis
+          || latest?.policyVersion !== policyVersion
+          || latest?.source !== 'onboarding'
+        ) {
+          const createdAt = await nextConsentDecisionTimestamp(
+            tx,
+            userId,
+            purpose,
+          );
+          await tx.userConsent.create({
+            data: {
+              userId,
+              purpose,
+              status,
+              lawfulBasis,
+              policyVersion,
+              source: 'onboarding',
+              ip,
+              createdAt,
+              grantedAt: status === 'granted' ? createdAt : undefined,
+            },
+          });
+        }
+      };
+
+      await ensureConsentDecision('terms', 'granted', TERMS_LAWFUL_BASIS, CURRENT_TERMS_POLICY_VERSION);
+      await ensureConsentDecision(
+        'personalization',
+        personalizationStatus,
+        'consent',
+        CURRENT_PRIVACY_POLICY_VERSION,
+      );
+
+      const mirrorDecision = async (type: 'terms' | 'personalization', granted: boolean) => {
+        const existing = await tx.consentLog.findUnique({ where: { userId_type: { userId, type } } });
+        if (!existing) {
+          await tx.consentLog.create({ data: { userId, type, purpose: type, granted, ip } });
+        } else if (existing.granted !== granted || existing.purpose !== type) {
+          await tx.consentLog.update({
+            where: { userId_type: { userId, type } },
+            data: { purpose: type, granted, ip, updatedAt: new Date() },
+          });
+        }
+      };
+      await mirrorDecision('terms', true);
+      await mirrorDecision('personalization', dto.personalizationConsent);
+
+      const [preferences, declaredAllergies, terms, personalization] = await Promise.all([
+        tx.userPreference.findUnique({ where: { userId }, select: { diet: true } }),
+        tx.userAllergy.findMany({
+          where: { userId },
+          select: { allergy: { select: { name: true } } },
+        }),
+        tx.userConsent.findFirst({
+          where: { userId, purpose: 'terms' },
+          orderBy: { createdAt: 'desc' },
+          select: { status: true, lawfulBasis: true, policyVersion: true, source: true },
+        }),
+        tx.userConsent.findFirst({
+          where: { userId, purpose: 'personalization' },
+          orderBy: { createdAt: 'desc' },
+          select: { status: true, lawfulBasis: true, policyVersion: true, source: true },
+        }),
+      ]);
+
+      const readBackAllergies = declaredAllergies.map((row) => row.allergy.name).sort();
+      const allergyMatch = JSON.stringify(readBackAllergies) === JSON.stringify(allergies);
+      const dietMatch = dto.diet === undefined || preferences?.diet === (dto.diet ?? null);
+      const termsMatch = terms?.status === 'granted'
+        && terms.lawfulBasis === TERMS_LAWFUL_BASIS
+        && terms.policyVersion === CURRENT_TERMS_POLICY_VERSION
+        && terms.source === 'onboarding';
+      const personalizationMatch = personalization?.status === personalizationStatus
+        && personalization.lawfulBasis === 'consent'
+        && personalization.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+        && personalization.source === 'onboarding';
+      if (!preferences || !allergyMatch || !dietMatch || !termsMatch || !personalizationMatch) {
+        throw new BadRequestException('Onboarding canonical read-back failed');
+      }
+
+      const completedUser = user.onboardingCompletedAt
+        ? user
+        : await tx.user.update({
+          where: { id: userId },
+          data: { onboardingCompletedAt: new Date() },
+          select: this.onboardingUserSelect(),
+        });
+
+      return {
+        user: completedUser,
+        preferences: {
+          diet: preferences.diet,
+          allergies: readBackAllergies,
+          allergyDecision: dto.allergyDecision,
+        },
+        consent: {
+          terms: { granted: true, policyVersion: CURRENT_TERMS_POLICY_VERSION },
+          personalization: {
+            granted: dto.personalizationConsent,
+            status: personalizationStatus,
+            policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            processingEnabled: isOptionalPurposeRuntimeEnabled('personalization'),
+          },
+        },
+      };
       },
+    );
+    if (boundary.status !== 'executed') {
+      throw new BadRequestException('User not found');
+    }
+    return boundary.value;
+  }
+
+  /** Legacy compatibility route: it may acknowledge an existing completion, never create one. */
+  async completeOnboarding(userId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({ where: { id: userId }, select: this.onboardingUserSelect() });
+      if (!user) throw new BadRequestException('User not found');
+      if (user.onboardingCompletedAt) return user;
+      throw new BadRequestException('Use POST /users/onboarding/complete with an explicit allergy decision');
     });
   }
 
   async getConsentStatus(userId: string) {
-    const latest = new Map<string, { status: string; updatedAt: Date | null; source: string | null }>();
+    const latest = new Map<string, {
+      status: string;
+      updatedAt: Date | null;
+      source: string | null;
+      policyVersion: string | null;
+      lawfulBasis: string | null;
+      withdrawnAt: Date | null;
+    }>();
     try {
       const rows = await this.prisma.userConsent.findMany({
         where: { userId },
         orderBy: { createdAt: 'asc' },
-        select: { purpose: true, status: true, updatedAt: true, source: true },
+        select: {
+          purpose: true,
+          status: true,
+          updatedAt: true,
+          source: true,
+          policyVersion: true,
+          lawfulBasis: true,
+          withdrawnAt: true,
+        },
       });
-      for (const r of rows) latest.set(r.purpose, { status: r.status, updatedAt: r.updatedAt ?? null, source: r.source ?? null });
+      for (const r of rows) latest.set(r.purpose, {
+        status: r.status,
+        updatedAt: r.updatedAt ?? null,
+        source: r.source ?? null,
+        policyVersion: r.policyVersion ?? null,
+        lawfulBasis: r.lawfulBasis ?? null,
+        withdrawnAt: r.withdrawnAt ?? null,
+      });
     } catch {
       // Fall back to the legacy log below; absence must remain fail-closed except for core.
     }
@@ -321,36 +652,102 @@ export class UsersService {
       for (const r of rows) {
         const purpose = r.purpose || r.type;
         if (!purpose || latest.has(purpose)) continue;
-        latest.set(purpose, { status: r.granted ? 'granted' : 'withdrawn', updatedAt: r.updatedAt ?? null, source: 'legacy' });
+        latest.set(purpose, {
+          status: r.granted ? 'granted' : 'withdrawn',
+          updatedAt: r.updatedAt ?? null,
+          source: 'legacy',
+          policyVersion: null,
+          lawfulBasis: null,
+          withdrawnAt: r.granted ? null : (r.updatedAt ?? null),
+        });
       }
     } catch {
       // No legacy state available.
     }
 
-    const purposes = ['core', 'analytics', 'personalization', 'notifications'];
+    const purposes = ['core', 'terms', 'analytics', 'personalization', 'notifications'];
     return {
       purposes: Object.fromEntries(purposes.map((purpose) => {
-        if (purpose === 'core') return [purpose, { granted: true, status: 'granted', updatedAt: null, source: 'system' }];
+        if (purpose === 'core') return [purpose, {
+          granted: true,
+          status: 'granted',
+          updatedAt: null,
+          source: 'system',
+          policyVersion: null,
+          lawfulBasis: TERMS_LAWFUL_BASIS,
+          withdrawnAt: null,
+        }];
         const row = latest.get(purpose);
-        return [purpose, { granted: row?.status === 'granted', status: row?.status ?? 'unknown', updatedAt: row?.updatedAt ?? null, source: row?.source ?? null }];
+        const currentPolicy = purpose === 'terms'
+          ? row?.policyVersion === CURRENT_TERMS_POLICY_VERSION
+          : (OPTIONAL_CONSENT_PURPOSES as readonly string[]).includes(purpose)
+            ? row?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+            : true;
+        return [purpose, {
+          granted: row?.status === 'granted' && currentPolicy,
+          processingEnabled: isOptionalPurposeRuntimeEnabled(purpose),
+          status: row?.status ?? 'unknown',
+          updatedAt: row?.updatedAt ?? null,
+          source: row?.source ?? null,
+          policyVersion: row?.policyVersion ?? null,
+          lawfulBasis: row?.lawfulBasis ?? null,
+          withdrawnAt: row?.withdrawnAt ?? null,
+        }];
       })),
     };
   }
 
   async grantConsent(userId: string, type: string, granted: boolean, ip?: string) {
-    const log = await this.prisma.consentLog.upsert({
-      where: { userId_type: { userId, type } },
-      create: { userId, type, purpose: type, granted, ip },
-      update: { purpose: type, granted, ip, updatedAt: new Date() },
-    });
-    // L0/B — mirror a purpose decision into the opt-in UserConsent ledger so the personalization loop
-    // (getConsentState → getLivingUserProfile hydration) actually activates on consent. ConsentLog above
-    // is unchanged (byte-identical); this is a purely additive second write for recognized purposes.
-    if ((CONSENT_PURPOSES as readonly string[]).includes(type)) {
-      if (granted) await this.consent.grantPurpose(userId, type, { source: 'settings', ip });
-      else await this.consent.withdrawPurpose(userId, type, { source: 'settings', ip });
+    if (!(OPTIONAL_CONSENT_PURPOSES as readonly string[]).includes(type)) {
+      throw new BadRequestException('Unsupported optional consent purpose');
     }
-    return log;
+    const boundary = await withUserConsentMutationBoundary(
+      this.prisma,
+      { userId, operation: `users.consent.${type}` },
+      async (tx) => {
+      const latest = await tx.userConsent.findFirst({
+        where: { userId, purpose: type },
+        orderBy: { createdAt: 'desc' },
+        select: { status: true, policyVersion: true, source: true },
+      });
+      const status = granted
+        ? 'granted'
+        : latest?.status === 'granted' || latest?.status === 'withdrawn'
+          ? 'withdrawn'
+          : 'declined';
+
+      await tx.consentLog.upsert({
+        where: { userId_type: { userId, type } },
+        create: { userId, type, purpose: type, granted, ip },
+        update: { purpose: type, granted, ip, updatedAt: new Date() },
+      });
+
+      const isIdempotentRetry = latest?.status === status
+        && latest.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
+        && latest.source === 'settings';
+      if (!isIdempotentRetry) {
+        const createdAt = await nextConsentDecisionTimestamp(tx, userId, type);
+        await tx.userConsent.create({
+          data: {
+            userId,
+            purpose: type,
+            status,
+            source: 'settings',
+            lawfulBasis: 'consent',
+            policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+            ip,
+            createdAt,
+            grantedAt: status === 'granted' ? createdAt : undefined,
+            withdrawnAt: status === 'withdrawn' ? createdAt : null,
+          },
+        });
+      }
+      },
+    );
+    if (boundary.status !== 'executed') {
+      throw new BadRequestException('User not found');
+    }
+    return this.getConsentStatus(userId);
   }
 
   // 🆕 GDPR: Right to be Forgotten — delegated to the transactional ErasureService (E39-1C).

@@ -1,6 +1,20 @@
 import { SignalCalculatorService } from '../../behavior-engine/signals/signal-calculator.service';
 import { RankingService } from './ranking.service';
 import { buildRealTimeContext } from '../../context/real-time-context';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+  makeP0ATransactionBoundaryPrisma,
+  P0_A_EVENT_AT,
+} from '../../test-support/p0-a-epoch-fixture';
+
+let restoreOptionalRuntime: () => void;
+
+beforeAll(() => {
+  restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
+});
+
+afterAll(() => restoreOptionalRuntime());
 
 /**
  * L0 EXIT GATE — service-level INTEGRATION test (real SignalCalculatorService + real RankingService, only the
@@ -19,7 +33,7 @@ const RECIPES: Record<string, any> = {
 function statefulPrisma() {
   const ubs = new Map<string, any>(); // userId::signalName → row
   const key = (w: any) => `${w.userId_signalName.userId}::${w.userId_signalName.signalName}`;
-  return {
+  const delegates: any = {
     _ubs: ubs,
     userBehaviorSignal: {
       upsert: jest.fn(async ({ where, create, update }: any) => { const k = key(where); const row = ubs.has(k) ? { ...ubs.get(k), ...update } : { ...create }; ubs.set(k, row); return row; }),
@@ -35,7 +49,12 @@ function statefulPrisma() {
     recipeIngredient: { groupBy: jest.fn(async () => []) },
     userEvent: { count: jest.fn(async () => 0) }, // popularity score
     favoriteRecipe: { count: jest.fn(async () => 0) },
-  } as any;
+    userFeatureVector: {
+      findUnique: jest.fn(async () => ({ updatedAt: new Date(P0_A_EVENT_AT) })),
+    },
+  };
+  const { prisma } = makeP0ATransactionBoundaryPrisma(delegates);
+  return prisma as any;
 }
 
 // FeatureStore's documented contract: features[`signal_${name}`] = value * confidence.
@@ -49,10 +68,19 @@ function makeRanker(prisma: any, features: Record<string, number>) {
   const featureStore: any = { getFeatureVector: jest.fn(async () => features) };
   const contributionCalculator: any = { calculate: jest.fn((s: any) => s) };
   const experimentEngine: any = { getWeights: jest.fn(async () => null) };
-  const exposureTracking: any = { getPenalty: jest.fn(async () => 0) };
+  const exposureTracking: any = { getPenalties: jest.fn(async () => new Map()) };
   const tasteAffinityBuilder: any = { build: jest.fn(() => ({ score: 0.5, matchedSignals: [] })) };
   const recipeEmbedding: any = { buildEmbedding: jest.fn(() => [0.5, 0.5, 0, 0]) };
-  return new RankingService(prisma, featureStore, contributionCalculator, experimentEngine, exposureTracking, tasteAffinityBuilder, recipeEmbedding);
+  return new RankingService(
+    prisma,
+    featureStore,
+    contributionCalculator,
+    experimentEngine,
+    exposureTracking,
+    tasteAffinityBuilder,
+    recipeEmbedding,
+    makeP0AEpochAwareConsentMock() as any,
+  );
 }
 const scoreOf = (ranked: any[], id: string) => ranked.find((r) => r.recipeId === id)?.finalScore ?? 0;
 

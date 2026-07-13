@@ -5,9 +5,10 @@ import { MealPlanSignalProcessor } from '../processors/meal-plan.signal-processo
 import { ShoppingSignalProcessor } from '../processors/shopping.signal-processor';
 import { RecommendationSignalProcessor } from '../processors/recommendation.signal-processor';
 import { PersonalizationSignalProcessor } from '../processors/personalization.signal-processor';
+import type { OptionalProcessingTransactionClient } from '../../consent/optional-processing-transaction-boundary.service';
 
 export interface IEventProcessor {
-  process(event: any, userId: string): Promise<void>;
+  process(event: any, userId: string, tx: OptionalProcessingTransactionClient): Promise<void>;
 }
 
 @Injectable()

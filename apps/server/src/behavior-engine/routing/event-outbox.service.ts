@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventRouterService } from './event-router.service';
+import { ConsentService } from '../../consent/consent.service';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
+import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 const GRACE_MS = 120_000; // a pending row is a "straggler" the fast path didn't finish only after this
 const STALE_PROCESSING_MS = 5 * 60_000; // a row 'processing' longer than this is presumed crashed mid-flight
@@ -25,13 +28,55 @@ export class EventOutboxService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly router: EventRouterService,
+    private readonly consent: ConsentService,
   ) {}
 
   /** Record a stored event for durable routing. eventId is unique → idempotent. Returns the row id (or null). */
-  async enqueue(eventId: string): Promise<string | null> {
+  async enqueue(eventId: string, expectedUserId?: string): Promise<string | null> {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) {
+      return null;
+    }
     try {
-      const row = await this.prisma.eventOutbox.create({ data: { eventId } });
-      return row.id;
+      const userId = expectedUserId ?? (
+        await this.prisma.userEvent.findUnique({
+          where: { id: eventId },
+          select: { userId: true },
+        })
+      )?.userId;
+      if (!userId) return null;
+      const boundary = await withUserOptionalProcessingBoundary(
+        this.prisma,
+        {
+          userId,
+          purposes: ['analytics', 'personalization'],
+          operation: 'event-outbox.enqueue',
+        },
+        async (tx, context) => {
+          const event = await tx.userEvent.findUnique({
+            where: { id: eventId },
+            select: {
+              userId: true,
+              timestamp: true,
+              consentPurpose: true,
+            },
+          });
+          if (
+            !event ||
+            event.userId !== userId ||
+            event.consentPurpose !== 'personalization' ||
+            event.timestamp.getTime() < context.grantEpoch.getTime()
+          ) return null;
+          return tx.eventOutbox.upsert({
+            where: { eventId },
+            create: { eventId },
+            update: {},
+          });
+        },
+      );
+      return boundary.status === 'executed' ? boundary.value?.id ?? null : null;
     } catch (e: any) {
       this.logger.error(`outbox enqueue failed for ${eventId}: ${e?.message}`);
       return null;
@@ -41,6 +86,16 @@ export class EventOutboxService {
   /** Fast path: route one enqueued row now and mark it done. Safe to call fire-and-forget; never throws. On
    *  failure the row is left pending (attempts++) for the scheduled drain to retry. */
   async processNow(outboxId: string, event: any, userId: string): Promise<void> {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) {
+      return;
+    }
+    if (!(await this.canRoutePersonalizationEvent(event, userId))) {
+      await this.finishSuppressed(outboxId);
+      return;
+    }
     try {
       await this.router.route(event, userId);
       await this.finishOk(outboxId);
@@ -63,6 +118,78 @@ export class EventOutboxService {
     }
   }
 
+  /** Consent denial/withdrawal is terminal, not retryable. The ledger-interruption check below is the
+   * durable fallback if this best-effort terminal write is temporarily unavailable. */
+  private async finishSuppressed(id: string): Promise<void> {
+    for (let i = 0; i < 3; i++) {
+      try {
+        await this.prisma.eventOutbox.update({
+          where: { id },
+          data: {
+            status: 'done',
+            processedAt: new Date(),
+            error: 'suppressed: personalization consent not granted at routing',
+          },
+        });
+        return;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+    }
+  }
+
+  /** Both purposes are required because this telemetry is collected as analytics and consumed as profile data. */
+  private async hasPersonalizedTelemetryConsent(userId: string): Promise<boolean> {
+    try {
+      if (!(await this.consent.hasPurpose(userId, 'personalization'))) return false;
+      return await this.consent.hasPurpose(userId, 'analytics');
+    } catch (err) {
+      this.logger.warn(
+        `analytics/personalization consent unavailable; outbox routing suppressed: ${
+          err instanceof Error ? err.name : 'error'
+        }`,
+      );
+      return false;
+    }
+  }
+
+  /** A current re-grant must not resurrect an event that crossed a withdrawal boundary while queued. The
+   * append-only consent ledger makes that decision durable even if the earlier terminal outbox update was
+   * temporarily unavailable. Missing provenance/timestamp and ledger read errors are all fail-closed. */
+  private async canRoutePersonalizationEvent(
+    event: any,
+    userId: string,
+  ): Promise<boolean> {
+    if (!(await this.hasPersonalizedTelemetryConsent(userId))) return false;
+    if (
+      event?.userId !== userId ||
+      event?.consentPurpose !== 'personalization'
+    ) {
+      return false;
+    }
+
+    const eventAt =
+      event?.timestamp instanceof Date
+        ? event.timestamp
+        : new Date(event?.timestamp ?? Number.NaN);
+    if (Number.isNaN(eventAt.getTime())) return false;
+
+    try {
+      const epoch = await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+      return !!epoch && eventAt.getTime() >= epoch.getTime();
+    } catch (err) {
+      this.logger.warn(
+        `consent epoch unavailable; outbox routing suppressed: ${
+          err instanceof Error ? err.name : 'error'
+        }`,
+      );
+      return false;
+    }
+  }
+
   /** Transition a failed row: dead-letter once it exhausts MAX_ATTEMPTS, else back to pending for a retry. */
   private async finishFail(id: string, priorAttempts: number, err?: string): Promise<void> {
     const dead = priorAttempts + 1 >= MAX_ATTEMPTS;
@@ -73,7 +200,13 @@ export class EventOutboxService {
   }
 
   /** Safety net (scheduled): revive crashed-mid-flight 'processing' rows, then re-route pending stragglers. */
-  async drain(opts: { graceMs?: number; staleProcessingMs?: number; limit?: number; maxAttempts?: number } = {}): Promise<{ processed: number; failed: number; dead: number; revived: number }> {
+  async drain(opts: { graceMs?: number; staleProcessingMs?: number; limit?: number; maxAttempts?: number } = {}): Promise<{ processed: number; failed: number; dead: number; revived: number; suppressed: number }> {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) {
+      return { processed: 0, failed: 0, dead: 0, revived: 0, suppressed: 0 };
+    }
     const graceMs = opts.graceMs ?? GRACE_MS;
     const staleMs = opts.staleProcessingMs ?? STALE_PROCESSING_MS;
     const limit = Math.min(Math.max(opts.limit ?? 100, 1), 500);
@@ -95,11 +228,17 @@ export class EventOutboxService {
     let processed = 0;
     let failed = 0;
     let dead = 0;
+    let suppressed = 0;
     for (const row of rows) {
       const claim = await this.prisma.eventOutbox.updateMany({ where: { id: row.id, status: 'pending' }, data: { status: 'processing', claimedAt: new Date() } });
       if (!claim.count) continue; // another drain claimed it
       const event = await this.prisma.userEvent.findUnique({ where: { id: row.eventId } });
       if (!event) { await this.finishOk(row.id); continue; } // event gone → nothing to route, close it
+      if (!(await this.canRoutePersonalizationEvent(event, event.userId))) {
+        await this.finishSuppressed(row.id);
+        suppressed++;
+        continue;
+      }
       try {
         await this.router.route(event, event.userId);
         await this.finishOk(row.id);
@@ -110,7 +249,7 @@ export class EventOutboxService {
         if (willDie) dead++; else failed++;
       }
     }
-    if (processed || failed || dead || stale.length) this.logger.log(`[outbox] drain: processed=${processed} failed=${failed} dead=${dead} revived=${stale.length} (scanned ${rows.length})`);
-    return { processed, failed, dead, revived: stale.length };
+    if (processed || failed || dead || suppressed || stale.length) this.logger.log(`[outbox] drain: processed=${processed} failed=${failed} dead=${dead} suppressed=${suppressed} revived=${stale.length} (scanned ${rows.length})`);
+    return { processed, failed, dead, revived: stale.length, suppressed };
   }
 }

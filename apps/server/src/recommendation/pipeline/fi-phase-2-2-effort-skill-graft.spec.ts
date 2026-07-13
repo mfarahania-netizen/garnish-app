@@ -9,6 +9,18 @@ import {
   EFFORT_LEVEL,
   SKILL_LEVEL,
 } from './ranking-effort-skill';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+} from '../../test-support/p0-a-epoch-fixture';
+
+let restoreOptionalRuntime: () => void;
+
+beforeAll(() => {
+  restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
+});
+
+afterAll(() => restoreOptionalRuntime());
 
 /**
  * FI-PHASE-2.2 — GRAFT effortFit + skillFit into the LIVE ranker. Two layers of proof:
@@ -80,11 +92,20 @@ function makeService(corpus = RECIPES) {
   const featureStore: any = { getFeatureVector: jest.fn() };
   const contributionCalculator: any = { calculate: jest.fn((scores) => scores) };
   const experimentEngine: any = { getWeights: jest.fn().mockResolvedValue(null) };
-  const exposureTracking: any = { getPenalty: jest.fn().mockResolvedValue(0) };
+  const exposureTracking: any = { getPenalties: jest.fn().mockResolvedValue(new Map()) };
   // neutralize taste so effort/skill drive the comparison
   const tasteAffinityBuilder: any = { build: jest.fn().mockReturnValue({ score: 0, matchedSignals: [] }) };
   const recipeEmbedding: any = { buildEmbedding: jest.fn().mockReturnValue([0, 0, 0, 0]) };
-  const service = new RankingService(prisma, featureStore, contributionCalculator, experimentEngine, exposureTracking, tasteAffinityBuilder, recipeEmbedding);
+  const service = new RankingService(
+    prisma,
+    featureStore,
+    contributionCalculator,
+    experimentEngine,
+    exposureTracking,
+    tasteAffinityBuilder,
+    recipeEmbedding,
+    makeP0AEpochAwareConsentMock() as any,
+  );
   return { service, featureStore };
 }
 

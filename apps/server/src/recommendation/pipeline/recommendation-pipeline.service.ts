@@ -7,6 +7,7 @@ import { RankingService } from './ranking.service';
 import { RecommendationShadowA8Service } from '../runtime-shadow/recommendation-shadow-a8-service';
 import { ContextService } from '../../context/context.service';
 import { RecommendationCountersService } from './recommendation-counters.service';
+import { ConsentService } from '../../consent/consent.service';
 
 interface RecommendationRankItem {
   recipeId: string;
@@ -33,9 +34,14 @@ export class RecommendationPipelineService {
     @Optional() private readonly context?: ContextService,
     // L0/L1 "counters first-class": served-slate log (position + propensity). @Optional() + fire-and-forget.
     @Optional() private readonly counters?: RecommendationCountersService,
+    // The epoch must be captured before optional derivation so a withdrawal/re-grant cannot relabel a stale slate.
+    @Optional() private readonly consent?: ConsentService,
   ) {}
 
   async getRecommendations(userId: string, limit = 10) {
+    const expectedEpoch = await this.consent
+      ?.currentGrantEpoch(userId, ['analytics', 'personalization'])
+      .catch(() => null) ?? null;
     await this.featureStore.buildFeatureVector(userId);
 
     const [candidateIds, dataMaturity] = await Promise.all([
@@ -57,11 +63,13 @@ export class RecommendationPipelineService {
     // L0/L1 "counters first-class" — log the served slate (rank + score + propensity + context) so off-policy
     // learning has unbiased exposure data from day one. Fire-and-forget: never awaited, never throws, so it
     // adds no latency and cannot affect the response. Reward is derived downstream by joining to events.
-    this.counters?.logSlate(
-      userId,
-      recommendations.map((r: RecommendationRankItem) => ({ recipeId: r.recipeId, score: r.finalScore })),
-      { surface: 'recommendations', context: liveContext, requestId },
-    );
+    if (expectedEpoch) {
+      this.counters?.logSlate(
+        userId,
+        recommendations.map((r: RecommendationRankItem) => ({ recipeId: r.recipeId, score: r.finalScore })),
+        { surface: 'recommendations', context: liveContext, requestId, expectedEpoch },
+      );
+    }
 
     const response = recommendations.map((item: RecommendationRankItem) => {
       const matchedSignals = Array.isArray(item.matchedSignals) ? item.matchedSignals : [];

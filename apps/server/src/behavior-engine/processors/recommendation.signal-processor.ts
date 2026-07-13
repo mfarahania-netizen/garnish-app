@@ -1,8 +1,10 @@
 // apps/server/src/behavior-engine/processors/recommendation.signal-processor.ts
 import { Injectable } from '@nestjs/common';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
 import { safeJsonPayload, alreadyConsumed } from './safe-payload';
+import type { OptionalProcessingTransactionClient } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class RecommendationSignalProcessor {
@@ -11,8 +13,9 @@ export class RecommendationSignalProcessor {
     private signalCalculator: SignalCalculatorService,
   ) {}
 
-  async process(event: any, userId: string) {
-    if (await alreadyConsumed(this.prisma, event.id)) return; // P0-6: skip a redelivered (at-least-once) event
+  async process(event: any, userId: string, tx: OptionalProcessingTransactionClient) {
+    if (!isOptionalPurposeRuntimeEnabled('personalization')) return;
+    if (await alreadyConsumed(tx, event.id)) return; // P0-6: skip a redelivered (at-least-once) event
     const payload = safeJsonPayload(event);
     const recipeIds = payload.recipeIds?.length
       ? payload.recipeIds
@@ -23,7 +26,7 @@ export class RecommendationSignalProcessor {
     if (recipeIds.length === 0) return;
 
     for (const recipeId of recipeIds) {
-      await (this.prisma as any).recommendationAttributionEvent.create({
+      await (tx as any).recommendationAttributionEvent.create({
         data: {
           userId,
           recipeId,
@@ -35,7 +38,7 @@ export class RecommendationSignalProcessor {
       });
 
       // ثبت مشاهده
-      await this.prisma.signalObservation.create({
+      await tx.signalObservation.create({
         data: {
           userId,
           signalName: `event_${event.type}`,
@@ -46,27 +49,27 @@ export class RecommendationSignalProcessor {
 
       // سیگنال منفی: رد کردن صریح
       if (event.type === 'recommendation_dismiss' || event.type === 'not_interested') {
-        await this.signalCalculator.applyNegativeFeedback(userId, recipeId, -0.5);
+        await this.signalCalculator.applyNegativeFeedbackInLockedTransaction(tx, userId, recipeId, -0.5);
       }
 
       // سیگنال منفی: چشم‌پوشی
       if (event.type === 'recommendation_ignore' || event.type === 'recipe_skip') {
-        await this.signalCalculator.applyNegativeFeedback(userId, recipeId, -0.2);
+        await this.signalCalculator.applyNegativeFeedbackInLockedTransaction(tx, userId, recipeId, -0.2);
       }
 
       // سیگنال منفی: خروج سریع
       if (event.type === 'quick_exit') {
-        await this.signalCalculator.applyNegativeFeedback(userId, recipeId, -0.3);
+        await this.signalCalculator.applyNegativeFeedbackInLockedTransaction(tx, userId, recipeId, -0.3);
       }
 
       // سیگنال مثبت: cook (پخت واقعی)
       if (event.type === 'recommendation_cook') {
-        await this.signalCalculator.applyPositiveFeedback(userId, recipeId, 0.4);
+        await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(tx, userId, recipeId, 0.4);
       }
 
       // سیگنال مثبت: save
       if (event.type === 'recommendation_save') {
-        await this.signalCalculator.applyPositiveFeedback(userId, recipeId, 0.2);
+        await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(tx, userId, recipeId, 0.2);
       }
     }
   }

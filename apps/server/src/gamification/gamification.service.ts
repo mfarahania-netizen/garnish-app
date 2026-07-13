@@ -16,6 +16,8 @@ import { IneService, TriggerCandidate } from '../notifications/ine/ine.service';
 import { computeStreak } from './engine/gamification-streak';
 import { evaluateAchievements, getAchievement, CookStats } from './engine/gamification-achievements';
 import { computeMastery } from './engine/gamification-mastery';
+import { ConsentService } from '../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 
 export const COOK_COMPLETE_TYPES = ['cook_complete']; // canonical completion event (ADR taxonomy)
 const HARD_DIFFICULTY = ['hard', 'سخت', 'پیشرفته', 'advanced'];
@@ -29,12 +31,46 @@ export class GamificationService {
     private readonly prisma: PrismaService,
     private readonly profiles: ProfileReadService,
     private readonly ine: IneService,
+    private readonly consent: ConsentService,
   ) {}
+
+  private async currentPersonalizationEpoch(userId: string): Promise<Date | null> {
+    try {
+      return await this.consent.currentGrantEpoch(userId, ['personalization']);
+    } catch {
+      return null;
+    }
+  }
+
+  private emptyState(userId: string, now: Date) {
+    const streak = computeStreak([], now);
+    const mastery = computeMastery({ totalCooks: 0, distinctCuisines: 0 });
+    const stats: CookStats = {
+      totalCooks: 0,
+      distinctRecipes: 0,
+      distinctCuisines: 0,
+      hardRecipesCooked: 0,
+      fullWeeksPlanned: 0,
+      favoritesCount: 0,
+      currentStreakWeeks: streak.currentWeeks,
+    };
+    return {
+      userId,
+      streak,
+      mastery,
+      stats,
+      achievements: { allEarned: [] as string[], newlyUnlocked: [] as never[] },
+    };
+  }
 
   /** Assemble CookStats + cook dates purely from the trusted event/owned-data store. */
   private async resolveCookStats(userId: string): Promise<{ stats: CookStats; cookDates: Date[]; streakWeeks: number; distinctCuisines: number }> {
     const events = await this.prisma.userEvent.findMany({
-      where: { userId, type: { in: COOK_COMPLETE_TYPES } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        type: { in: COOK_COMPLETE_TYPES },
+      },
       select: { timestamp: true, payload: true },
       orderBy: { timestamp: 'asc' },
     });
@@ -97,6 +133,8 @@ export class GamificationService {
    * idempotently. Returns the full computed state. now is injectable for determinism in tests.
    */
   async recomputeForUser(userId: string, now: Date = new Date()) {
+    const epoch = await this.currentPersonalizationEpoch(userId);
+    if (!epoch) return this.emptyState(userId, now);
     const { stats, cookDates } = await this.resolveCookStats(userId);
     const streak = computeStreak(cookDates, now);
     const declaredSkill = await this.declaredSkill(userId);
@@ -106,37 +144,39 @@ export class GamificationService {
     const alreadyUnlocked = existing.map((a) => a.achievementKey);
     const { newlyUnlocked, allEarned } = evaluateAchievements(stats, alreadyUnlocked);
 
-    // ── persist (idempotent, server-authoritative) ──
-    try {
-      const prevStreak = await this.prisma.userStreak.findUnique({ where: { userId } });
-      await this.prisma.userStreak.upsert({
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      { userId, purposes: ['personalization'], operation: 'gamification.recompute', expectedEpoch: epoch },
+      async (tx) => {
+      const prevStreak = await tx.userStreak.findUnique({ where: { userId } });
+      await tx.userStreak.upsert({
         where: { userId },
         create: { userId, currentWeeks: streak.currentWeeks, longestWeeks: streak.longestWeeks, graceUsed: streak.graceUsed, lastCookWeek: streak.lastCookWeek },
         update: { currentWeeks: streak.currentWeeks, longestWeeks: Math.max(streak.longestWeeks, prevStreak?.longestWeeks ?? 0), graceUsed: streak.graceUsed, lastCookWeek: streak.lastCookWeek },
       });
 
       if (newlyUnlocked.length > 0) {
-        await this.prisma.userAchievement.createMany({
+        await tx.userAchievement.createMany({
           data: newlyUnlocked.map((a) => ({ userId, achievementKey: a.key })),
           skipDuplicates: true,
         });
-        await this.prisma.gamificationEvent.createMany({
+        await tx.gamificationEvent.createMany({
           data: newlyUnlocked.map((a) => ({ userId, kind: 'achievement_unlocked', refKey: a.key, detail: JSON.stringify({ title: a.title }) })),
         });
       }
 
-      const prevProgress = await this.prisma.userProgress.findUnique({ where: { userId_track: { userId, track: 'overall' } } });
-      await this.prisma.userProgress.upsert({
+      const prevProgress = await tx.userProgress.findUnique({ where: { userId_track: { userId, track: 'overall' } } });
+      await tx.userProgress.upsert({
         where: { userId_track: { userId, track: 'overall' } },
         create: { userId, track: 'overall', level: mastery.level, levelName: mastery.levelName, score: mastery.score, basis: mastery.basis },
         update: { level: mastery.level, levelName: mastery.levelName, score: mastery.score, basis: mastery.basis },
       });
       if (prevProgress && mastery.level > prevProgress.level) {
-        await this.prisma.gamificationEvent.create({ data: { userId, kind: 'mastery_levelup', refKey: 'overall', detail: JSON.stringify({ from: prevProgress.level, to: mastery.level }) } });
+        await tx.gamificationEvent.create({ data: { userId, kind: 'mastery_levelup', refKey: 'overall', detail: JSON.stringify({ from: prevProgress.level, to: mastery.level }) } });
       }
-    } catch (err) {
-      this.logger.warn(`gamification persistence skipped (likely no DB in this context): ${err instanceof Error ? err.name : 'error'}`);
-    }
+      },
+    );
+    if (boundary.status !== 'executed') return this.emptyState(userId, now);
 
     return { userId, streak, mastery, stats, achievements: { allEarned, newlyUnlocked: newlyUnlocked.map((a) => ({ key: a.key, title: a.title, description: a.description })) } };
   }
@@ -178,7 +218,9 @@ export class GamificationService {
 
   /** Owner-only read summary (private; no other-user data is ever included). */
   async getSummary(userId: string, now: Date = new Date()) {
-    const state = await this.buildReadSummary(userId, now);
+    const state = (await this.currentPersonalizationEpoch(userId))
+      ? await this.buildReadSummary(userId, now)
+      : this.emptyState(userId, now);
     // Celebrate moment: at most ONE per response (max 1/session) — the first newly-unlocked achievement.
     const celebrate = state.achievements.newlyUnlocked[0] ?? null;
     return {
@@ -197,6 +239,7 @@ export class GamificationService {
    * INE's consent/quiet-hours/fatigue gates — gamification never sends directly.
    */
   async evaluateNotifications(userId: string, now: Date = new Date()) {
+    if (!(await this.currentPersonalizationEpoch(userId))) return { userId, decisions: [] };
     const state = await this.recomputeForUser(userId, now);
     const candidates: TriggerCandidate[] = [];
     if (state.streak.atRisk) candidates.push({ triggerKey: 'streak_at_risk', payload: { message: state.streak.kindMessage } });

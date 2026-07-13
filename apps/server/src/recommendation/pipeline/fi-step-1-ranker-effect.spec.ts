@@ -1,4 +1,17 @@
 import { RankingService } from './ranking.service';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+  P0_A_EVENT_AT,
+} from '../../test-support/p0-a-epoch-fixture';
+
+let restoreOptionalRuntime: () => void;
+
+beforeAll(() => {
+  restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
+});
+
+afterAll(() => restoreOptionalRuntime());
 
 /**
  * FI-STEP-1 — learn from rejection (READ side, the binding effect proof). Shows that when a dismiss has
@@ -21,17 +34,23 @@ function makeService() {
     },
     userEvent: { count: jest.fn().mockResolvedValue(0) },
     favoriteRecipe: { count: jest.fn().mockResolvedValue(0) },
+    userFeatureVector: {
+      findUnique: jest.fn().mockResolvedValue({
+        updatedAt: new Date(P0_A_EVENT_AT),
+      }),
+    },
   };
   const featureStore = { getFeatureVector: jest.fn() };
   const contributionCalculator = { calculate: jest.fn((scores: any) => scores) };
   const experimentEngine = { getWeights: jest.fn().mockResolvedValue(null) };
-  const exposureTracking = { getPenalty: jest.fn().mockResolvedValue(0) };
+  const exposureTracking = { getPenalties: jest.fn().mockResolvedValue(new Map()) };
   // base 0 so the USER's signal drives tasteAffinity (no fixed-base masking) — the realistic dismiss path
   const tasteAffinityBuilder = { build: jest.fn().mockReturnValue({ score: 0, matchedSignals: [] }) };
   const recipeEmbedding = { buildEmbedding: jest.fn().mockReturnValue([0.5, 0.5, 0, 0]) };
   const service = new RankingService(
     prisma, featureStore as any, contributionCalculator as any, experimentEngine as any,
     exposureTracking as any, tasteAffinityBuilder as any, recipeEmbedding as any,
+    makeP0AEpochAwareConsentMock() as any,
   );
   return { service, featureStore };
 }

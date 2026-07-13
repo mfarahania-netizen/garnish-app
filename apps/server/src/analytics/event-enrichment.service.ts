@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConsentService } from '../consent/consent.service';
+import { isOptionalPurposeRuntimeEnabled } from '../consent/consent.constants';
+import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 import { CONCEPT_MAP } from '../shared/constants'; // 👈 این خط اضافه شده
 
 // ================================================
@@ -103,14 +106,37 @@ const RECIPES_LIST = [
 
 @Injectable()
 export class EventEnrichmentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
 
   // rawPayload (PRIVACY): the caller passes the ORIGINAL payload so enrichment can read the free-text message
   // even though the STORED payload is redacted (the raw message is never persisted — only the structured,
   // non-PII enrichment below is). Falls back to the stored payload when no raw payload is supplied.
-  async enrichEvent(eventId: string, rawPayload?: any) {
+  async enrichEvent(eventId: string, rawPayload?: any, expectedUserId?: string) {
+    if (
+      !isOptionalPurposeRuntimeEnabled('analytics') ||
+      !isOptionalPurposeRuntimeEnabled('personalization')
+    ) return;
     const event = await this.prisma.userEvent.findUnique({ where: { id: eventId } });
-    if (!event || event.enrichment) return;
+    const userId = expectedUserId ?? event?.userId;
+    if (
+      !event ||
+      event.userId !== userId ||
+      event.enrichment ||
+      event.consentPurpose !== 'personalization'
+    ) return;
+    const expectedEpoch = userId
+      ? await this.consent.currentGrantEpoch(userId, [
+          'analytics',
+          'personalization',
+        ]).catch(() => null)
+      : null;
+    if (
+      !expectedEpoch
+      || event.timestamp.getTime() < expectedEpoch.getTime()
+    ) return;
 
     let enrichmentData: any = {};
 
@@ -150,10 +176,27 @@ export class EventEnrichmentService {
       }
 
       if (Object.keys(enrichmentData).length > 0) {
-        await this.prisma.userEvent.update({
-          where: { id: eventId },
-          data: { enrichment: JSON.stringify(enrichmentData) },
-        });
+        // Re-check after parsing the ephemeral raw payload. A withdrawal during enrichment suppresses
+        // the mutation, and updateMany keeps provenance in the final write predicate.
+        await withUserOptionalProcessingBoundary(
+          this.prisma,
+          {
+            userId: event.userId,
+            purposes: ['analytics', 'personalization'],
+            operation: 'analytics.enrich-event',
+            expectedEpoch,
+          },
+          async (tx, context) => tx.userEvent.updateMany({
+            where: {
+              id: eventId,
+              userId: event.userId,
+              consentPurpose: 'personalization',
+              enrichment: null,
+              timestamp: { gte: context.grantEpoch },
+            },
+            data: { enrichment: JSON.stringify(enrichmentData) },
+          }),
+        );
       }
     } catch (e) {
       console.error('Event enrichment failed:', e);

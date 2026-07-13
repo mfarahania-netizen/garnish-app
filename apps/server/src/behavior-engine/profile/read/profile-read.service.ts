@@ -13,6 +13,9 @@
  */
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { ConsentService } from '../../../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../../../consent/optional-processing-transaction-boundary.service';
+import { SensitiveFactRejectedError } from '../../../ai/facts/user-fact.service';
 import { UserFactService } from '../../../ai/facts/user-fact.service';
 import { buildDeclaredProfile, ownerReadView, validateDeclaredAnswer } from '../declared/declared-profile.builder';
 import { getDeclaredDef } from '../declared/declared-dimension-registry';
@@ -43,52 +46,55 @@ export class ProfileReadService {
     private readonly prisma: PrismaService,
     private readonly userFacts: UserFactService,
     private readonly questions: QuestionSelectionService,
+    private readonly consent: ConsentService,
   ) {}
 
-  /** Read the user's consent state (granted purposes) from ConsentLog. core is always granted. */
+  /** Read current, canonical purpose grants. Legacy ConsentLog rows never activate personalization. */
   async getConsentState(userId: string): Promise<DeclaredConsentState> {
-    const granted = new Set<DeclaredConsentPurpose>(['core']);
     try {
-      const rows = await this.prisma.consentLog.findMany({ where: { userId, granted: true } });
-      for (const r of rows) {
-        const p = (r.purpose ?? '') as DeclaredConsentPurpose;
-        if (VALID_PURPOSES.has(p)) granted.add(p);
-      }
+      const optional = await Promise.all(
+        [...VALID_PURPOSES]
+          .filter((purpose) => purpose !== 'core')
+          .map(async (purpose) => [purpose, await this.consent.hasPurpose(userId, purpose)] as const),
+      );
+      const granted: DeclaredConsentPurpose[] = ['core'];
+      for (const [purpose, enabled] of optional) if (enabled) granted.push(purpose);
+      return { granted };
     } catch (err) {
-      this.logger.warn(`consent read unavailable; defaulting to core only: ${err instanceof Error ? err.name : 'error'}`);
+      this.logger.warn(`canonical consent read unavailable; defaulting to core only: ${err instanceof Error ? err.name : 'error'}`);
+      return { granted: ['core'] };
     }
-    // L0/B — ALSO honor the opt-in UserConsent ledger (ConsentService's store; latest decision per purpose).
-    // Additive: cold-start has no rows → still core-only, so the byte-identical cold-start contract holds.
-    try {
-      const rows = await this.prisma.userConsent.findMany({ where: { userId }, orderBy: { createdAt: 'asc' }, select: { purpose: true, status: true } });
-      const latest = new Map<string, string>();
-      for (const r of rows) latest.set(r.purpose, r.status);
-      for (const [p, status] of latest) if (status === 'granted' && VALID_PURPOSES.has(p as DeclaredConsentPurpose)) granted.add(p as DeclaredConsentPurpose);
-    } catch (err) {
-      this.logger.warn(`user-consent read unavailable: ${err instanceof Error ? err.name : 'error'}`);
-    }
-    return { granted: [...granted] };
   }
 
   /** Gather persisted declared answers from UserFact + UserPreference + UserAllergy. */
-  async getDeclaredAnswers(userId: string): Promise<DeclaredAnswer[]> {
+  async getDeclaredAnswers(userId: string, includeOptional = false): Promise<DeclaredAnswer[]> {
     const answers: DeclaredAnswer[] = [];
-    try {
-      const facts = await this.userFacts.listByUser(userId);
-      for (const f of facts) {
-        if (!f.key.startsWith(FACT_PREFIX)) continue;
-        answers.push({ key: f.key.slice(FACT_PREFIX.length), value: (f.value as any)?.v ?? f.value, declaredAt: (f.updatedAt ?? new Date()).toISOString() });
+    if (includeOptional) {
+      try {
+        const facts = await this.userFacts.listByUser(userId);
+        for (const f of facts) {
+          if (!f.key.startsWith(FACT_PREFIX)) continue;
+          answers.push({ key: f.key.slice(FACT_PREFIX.length), value: (f.value as any)?.v ?? f.value, declaredAt: (f.updatedAt ?? new Date()).toISOString() });
+        }
+      } catch (err) {
+        this.logger.warn(`user-fact read unavailable: ${err instanceof Error ? err.name : 'error'}`);
       }
-    } catch (err) {
-      this.logger.warn(`user-fact read unavailable: ${err instanceof Error ? err.name : 'error'}`);
     }
     try {
-      const pref = await this.prisma.userPreference.findUnique({ where: { userId } });
+      const pref = await this.prisma.userPreference.findUnique({
+        where: { userId },
+        select: {
+          diet: true,
+          skillLevel: true,
+          updatedAt: true,
+          ...(includeOptional ? { budget: true } : {}),
+        },
+      });
       if (pref) {
         const at = (pref.updatedAt ?? new Date()).toISOString();
         if (pref.diet) answers.push({ key: 'dietary.pattern', value: pref.diet, declaredAt: at });
         if (pref.skillLevel) answers.push({ key: 'constraints.cooking_skill', value: pref.skillLevel, declaredAt: at });
-        if (pref.budget && BUDGET_BANDS.has(pref.budget)) answers.push({ key: 'constraints.weekly_budget_band', value: pref.budget, declaredAt: at });
+        if (includeOptional && pref.budget && BUDGET_BANDS.has(pref.budget)) answers.push({ key: 'constraints.weekly_budget_band', value: pref.budget, declaredAt: at });
       }
     } catch (err) {
       this.logger.warn(`preference read unavailable: ${err instanceof Error ? err.name : 'error'}`);
@@ -112,7 +118,7 @@ export class ProfileReadService {
    */
   async getLivingUserProfile(userId: string, now: Date = new Date()): Promise<LivingUserProfile> {
     const consent = await this.getConsentState(userId);
-    const answers = await this.getDeclaredAnswers(userId);
+    const answers = await this.getDeclaredAnswers(userId, consent.granted.includes('personalization'));
     const declared = buildDeclaredProfile(userId, answers, consent, { now });
     const ownerDeclared = ownerReadView(declared, true);
     // Build the OBSERVED graph via the existing builder (shadow mode = cold-start when no observations
@@ -163,7 +169,7 @@ export class ProfileReadService {
    */
   async getFoodDnaProjection(userId: string, now: Date = new Date()): Promise<FoodDnaProjection> {
     const consent = await this.getConsentState(userId);
-    const answers = await this.getDeclaredAnswers(userId);
+    const answers = await this.getDeclaredAnswers(userId, consent.granted.includes('personalization'));
     const declared = buildDeclaredProfile(userId, answers, consent, { now });
 
     let graph: UserFoodIdentityGraph | null = null;
@@ -185,7 +191,7 @@ export class ProfileReadService {
 
   async getNextQuestion(userId: string, now: Date = new Date()) {
     const consent = await this.getConsentState(userId);
-    const answers = await this.getDeclaredAnswers(userId);
+    const answers = await this.getDeclaredAnswers(userId, consent.granted.includes('personalization'));
     const declared = buildDeclaredProfile(userId, answers, consent, { now });
     return this.questions.selectNext(declared, consent);
   }
@@ -214,11 +220,39 @@ export class ProfileReadService {
       if (key === 'dietary.pattern') data.diet = v.value;
       else if (key === 'constraints.cooking_skill') data.skillLevel = v.value;
       else if (key === 'constraints.weekly_budget_band') data.budget = v.value;
-      await this.prisma.userPreference.upsert({ where: { userId }, create: { userId, ...data }, update: data });
+      if (def.consentPurpose === 'core') {
+        await this.prisma.userPreference.upsert({ where: { userId }, create: { userId, ...data }, update: data });
+      } else {
+        const epoch = await this.consent.currentGrantEpoch(userId, [def.consentPurpose]);
+        if (!epoch) return { accepted: false, status: 'consent_required', dimensionKey: key, reason: `requires consent: ${def.consentPurpose}` };
+        const boundary = await withUserOptionalProcessingBoundary(
+          this.prisma,
+          { userId, purposes: [def.consentPurpose], operation: 'profile-read.submit-preference', expectedEpoch: epoch },
+          (tx) => tx.userPreference.upsert({ where: { userId }, create: { userId, ...data }, update: data }),
+        );
+        if (boundary.status !== 'executed') return { accepted: false, status: 'consent_required', dimensionKey: key, reason: `requires consent: ${def.consentPurpose}` };
+      }
       return { accepted: true, status: 'persisted', dimensionKey: key };
     }
-    // user_fact — UserFactService re-enforces its sensitive-key guard (we never weaken it)
-    await this.userFacts.upsert({ userId, key: `${FACT_PREFIX}${key}`, value: { v: v.value }, source: 'declared', confidence: 0.85 });
+    // user_fact — preserve the UserFactService sensitive-key guard, then write through the locked tx client.
+    const factKey = `${FACT_PREFIX}${key}`;
+    if (this.userFacts.isSensitiveKey(factKey)) throw new SensitiveFactRejectedError(factKey);
+    if (def.consentPurpose === 'core') {
+      await this.userFacts.upsert({ userId, key: factKey, value: { v: v.value }, source: 'declared', confidence: 0.85 });
+      return { accepted: true, status: 'persisted', dimensionKey: key };
+    }
+    const epoch = await this.consent.currentGrantEpoch(userId, [def.consentPurpose]);
+    if (!epoch) return { accepted: false, status: 'consent_required', dimensionKey: key, reason: `requires consent: ${def.consentPurpose}` };
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      { userId, purposes: [def.consentPurpose], operation: 'profile-read.submit-fact', expectedEpoch: epoch },
+      (tx) => tx.userFact.upsert({
+        where: { userId_key: { userId, key: factKey } },
+        create: { userId, key: factKey, value: { v: v.value } as any, source: 'declared', confidence: 0.85, expiresAt: null },
+        update: { value: { v: v.value } as any, source: 'declared', confidence: 0.85, expiresAt: null },
+      }),
+    );
+    if (boundary.status !== 'executed') return { accepted: false, status: 'consent_required', dimensionKey: key, reason: `requires consent: ${def.consentPurpose}` };
     return { accepted: true, status: 'persisted', dimensionKey: key };
   }
 }

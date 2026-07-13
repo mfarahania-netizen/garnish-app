@@ -1,5 +1,25 @@
 import { ProfileReadService } from './profile-read.service';
 import { QuestionSelectionService } from '../onboarding/question-selection.service';
+import { ConsentService } from '../../../consent/consent.service';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../../../consent/consent.constants';
+
+const previousAnalyticsRuntime = process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+const previousPersonalizationRuntime = process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+
+beforeAll(() => {
+  process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = 'true';
+  process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+});
+
+afterAll(() => {
+  if (previousAnalyticsRuntime === undefined) delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+  else process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = previousAnalyticsRuntime;
+  if (previousPersonalizationRuntime === undefined) {
+    delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+  } else {
+    process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = previousPersonalizationRuntime;
+  }
+});
 
 const NOW = new Date('2026-06-15T12:00:00.000Z');
 
@@ -11,47 +31,79 @@ function makeDeps(opts: {
   observations?: any[];
   userConsentRows?: any[];
 } = {}) {
+  const rows = (opts.userConsentRows ?? []).map((row) => ({
+    createdAt: row.createdAt ?? new Date('2026-06-01T00:00:00.000Z'),
+    source: row.source ?? 'settings',
+    ...row,
+  }));
   const prisma: any = {
     consentLog: { findMany: jest.fn().mockResolvedValue(opts.consentRows ?? []) },
     userPreference: { findUnique: jest.fn().mockResolvedValue(opts.pref ?? null), upsert: jest.fn().mockResolvedValue({}) },
     userAllergy: { findMany: jest.fn().mockResolvedValue(opts.allergies ?? []) },
     signalObservation: { findMany: jest.fn().mockResolvedValue(opts.observations ?? []) },
-    userConsent: { findMany: jest.fn().mockResolvedValue(opts.userConsentRows ?? []) },
+    userConsent: { findMany: jest.fn().mockResolvedValue(rows) },
+    userFact: { upsert: jest.fn().mockResolvedValue({ id: 'f1' }) },
+    $executeRaw: jest.fn().mockResolvedValue(0),
+    $queryRaw: jest.fn().mockResolvedValue([{ id: 'u1' }]),
   };
+  prisma.$transaction = jest.fn(async (callback: (tx: any) => unknown) => callback(prisma));
   const userFacts: any = {
     listByUser: jest.fn().mockResolvedValue(opts.facts ?? []),
     upsert: jest.fn().mockResolvedValue({ id: 'f1' }),
     isSensitiveKey: (k: string) => /allerg|health|medical/i.test(k),
   };
-  const svc = new ProfileReadService(prisma, userFacts, new QuestionSelectionService());
+  const svc = new ProfileReadService(
+    prisma,
+    userFacts,
+    new QuestionSelectionService(),
+    new ConsentService(prisma),
+  );
   return { svc, prisma, userFacts };
 }
 
-const personalizationConsent = [{ purpose: 'personalization', granted: true }, { purpose: 'analytics', granted: true }];
+const personalizationConsent = [
+  { purpose: 'personalization', status: 'granted', policyVersion: CURRENT_PRIVACY_POLICY_VERSION },
+  { purpose: 'analytics', status: 'granted', policyVersion: CURRENT_PRIVACY_POLICY_VERSION },
+];
 
 describe('ProfileReadService — consent state', () => {
   it('always includes core; adds granted purposes; defaults to core-only on error', async () => {
-    const { svc } = makeDeps({ consentRows: personalizationConsent });
+    const { svc } = makeDeps({ userConsentRows: personalizationConsent });
     expect((await svc.getConsentState('u1')).granted.sort()).toEqual(['analytics', 'core', 'personalization']);
     const bad = makeDeps();
-    bad.prisma.consentLog.findMany.mockRejectedValueOnce(new Error('db'));
+    bad.prisma.userConsent.findMany.mockRejectedValueOnce(new Error('db'));
     expect((await bad.svc.getConsentState('u1')).granted).toEqual(['core']);
   });
 
   it('honors the opt-in UserConsent ledger (latest decision per purpose) — this is what flips hydration on', async () => {
     const { svc } = makeDeps({ userConsentRows: [
-      { purpose: 'personalization', status: 'granted' },
-      { purpose: 'analytics', status: 'granted' },
-      { purpose: 'analytics', status: 'withdrawn' }, // newer → analytics excluded
+      { purpose: 'personalization', status: 'granted', policyVersion: CURRENT_PRIVACY_POLICY_VERSION },
+      { purpose: 'analytics', status: 'granted', policyVersion: CURRENT_PRIVACY_POLICY_VERSION },
+      { purpose: 'analytics', status: 'withdrawn', policyVersion: CURRENT_PRIVACY_POLICY_VERSION }, // newer → analytics excluded
     ] });
     expect((await svc.getConsentState('u1')).granted.sort()).toEqual(['core', 'personalization']);
+  });
+
+  it('does not let a legacy grant or stale-policy UserConsent activate personalization', async () => {
+    const legacyOnly = makeDeps({
+      consentRows: [{ purpose: 'personalization', granted: true }],
+    });
+    expect((await legacyOnly.svc.getConsentState('u1')).granted).toEqual(['core']);
+    expect(legacyOnly.prisma.consentLog.findMany).not.toHaveBeenCalled();
+
+    const stalePolicy = makeDeps({
+      userConsentRows: [
+        { purpose: 'personalization', status: 'granted', policyVersion: 'privacy-obsolete' },
+      ],
+    });
+    expect((await stalePolicy.svc.getConsentState('u1')).granted).toEqual(['core']);
   });
 });
 
 describe('ProfileReadService — living profile (owner-only, merged)', () => {
   it('builds a living profile from persisted facts + preference + allergies with a maturity score', async () => {
     const { svc } = makeDeps({
-      consentRows: personalizationConsent,
+      userConsentRows: personalizationConsent,
       facts: [{ key: 'declared.context.age_range', value: { v: '25_34' }, updatedAt: NOW }],
       pref: { diet: 'vegetarian', skillLevel: 'beginner', budget: 'tight', updatedAt: NOW },
       allergies: [{ allergy: { name: 'peanut' } }],
@@ -78,17 +130,21 @@ describe('ProfileReadService — L0 hydration invariants', () => {
   ];
 
   it('cold-start (no consent, no data) stays byte-identical and NEVER hydrates', async () => {
-    const { svc, prisma } = makeDeps(); // core-only consent, empty everything
+    const { svc, prisma, userFacts } = makeDeps(); // core-only consent, empty everything
     const p = await svc.getLivingUserProfile('u1', NOW);
     expect(p.observed.status).toBe('cold_start');
     expect(p.reconciled.dimensions.allergies.reconciledValue).toEqual([]);
     expect(p.maturity.band).toBe('empty');
     // without 'personalization' consent the hydration path must never even query observations
     expect(prisma.signalObservation.findMany).not.toHaveBeenCalled();
+    expect(userFacts.listByUser).not.toHaveBeenCalled();
+    expect(prisma.userPreference.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      select: expect.not.objectContaining({ budget: true }),
+    }));
   });
 
   it('declared allergy + personalization consent but ZERO observations → allergy set = declared, still cold-start', async () => {
-    const { svc, prisma } = makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: [] });
+    const { svc, prisma } = makeDeps({ userConsentRows: personalizationConsent, allergies: allergyRow, observations: [] });
     const p = await svc.getLivingUserProfile('u1', NOW);
     expect(prisma.signalObservation.findMany).toHaveBeenCalled(); // consent → path runs
     expect(p.reconciled.dimensions.allergies.reconciledValue).toEqual(['peanut']); // declared, untouched
@@ -96,8 +152,8 @@ describe('ProfileReadService — L0 hydration invariants', () => {
   });
 
   it('WITH observations + consent → observed axis hydrates, but the allergy set is STILL the declared set', async () => {
-    const cold = await makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: [] }).svc.getLivingUserProfile('u1', NOW);
-    const hot = await makeDeps({ consentRows: personalizationConsent, allergies: allergyRow, observations: cuisineObs }).svc.getLivingUserProfile('u1', NOW);
+    const cold = await makeDeps({ userConsentRows: personalizationConsent, allergies: allergyRow, observations: [] }).svc.getLivingUserProfile('u1', NOW);
+    const hot = await makeDeps({ userConsentRows: personalizationConsent, allergies: allergyRow, observations: cuisineObs }).svc.getLivingUserProfile('u1', NOW);
     // the observed axis is genuinely different once real signals flow in (the L0 unlock)
     expect(JSON.stringify(hot.observed)).not.toEqual(JSON.stringify(cold.observed));
     // …yet the safety-critical allergy set is byte-identical to the declared one in BOTH
@@ -115,27 +171,30 @@ describe('ProfileReadService — submitAnswer (consent + persistence routing)', 
   });
 
   it('rejects an unknown dimension and an out-of-band value', async () => {
-    const { svc } = makeDeps({ consentRows: personalizationConsent });
+    const { svc } = makeDeps({ userConsentRows: personalizationConsent });
     expect((await svc.submitAnswer('u1', 'nope.key', 'x')).status).toBe('rejected');
     expect((await svc.submitAnswer('u1', 'context.age_range', 99)).status).toBe('rejected'); // precise numeric
   });
 
   it('persists a non-sensitive declared fact via UserFact', async () => {
-    const { svc, userFacts } = makeDeps({ consentRows: personalizationConsent });
+    const { svc, prisma, userFacts } = makeDeps({ userConsentRows: personalizationConsent });
     const r = await svc.submitAnswer('u1', 'dietary.hard_dislikes', ['cilantro']);
     expect(r.status).toBe('persisted');
-    expect(userFacts.upsert).toHaveBeenCalledWith(expect.objectContaining({ key: 'declared.dietary.hard_dislikes', source: 'declared' }));
+    expect(userFacts.upsert).not.toHaveBeenCalled();
+    expect(prisma.userFact.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({ key: 'declared.dietary.hard_dislikes', source: 'declared' }),
+    }));
   });
 
   it('routes dietary pattern to UserPreference', async () => {
-    const { svc, prisma } = makeDeps({ consentRows: personalizationConsent });
+    const { svc, prisma } = makeDeps({ userConsentRows: personalizationConsent });
     const r = await svc.submitAnswer('u1', 'dietary.pattern', 'vegan');
     expect(r.status).toBe('persisted');
     expect(prisma.userPreference.upsert).toHaveBeenCalled();
   });
 
   it('routes allergies to the dedicated allergy flow (never the safe-fact store)', async () => {
-    const { svc, userFacts } = makeDeps({ consentRows: personalizationConsent });
+    const { svc, userFacts } = makeDeps({ userConsentRows: personalizationConsent });
     const r = await svc.submitAnswer('u1', 'dietary.allergies_intolerances', ['peanut']);
     expect(r.status).toBe('use_allergy_flow');
     expect(userFacts.upsert).not.toHaveBeenCalled();

@@ -1,8 +1,10 @@
 // apps/server/src/behavior-engine/processors/recipe.signal-processor.ts
 import { Injectable } from '@nestjs/common';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
 import { safeJsonPayload, alreadyConsumed } from './safe-payload';
+import type { OptionalProcessingTransactionClient } from '../../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class RecipeSignalProcessor {
@@ -11,8 +13,9 @@ export class RecipeSignalProcessor {
     private signalCalculator: SignalCalculatorService,
   ) {}
 
-  async process(event: any, userId: string) {
-    if (await alreadyConsumed(this.prisma, event.id)) return; // P0-6: skip a redelivered (at-least-once) event
+  async process(event: any, userId: string, tx: OptionalProcessingTransactionClient) {
+    if (!isOptionalPurposeRuntimeEnabled('personalization')) return;
+    if (await alreadyConsumed(tx, event.id)) return; // P0-6: skip a redelivered (at-least-once) event
     const payload = safeJsonPayload(event);
     const recipeId = payload.recipeId;
 
@@ -23,14 +26,14 @@ export class RecipeSignalProcessor {
     // observation + soft negative feedback (the mirror of the +0.3 a favorite_add applies) — and NEVER a
     // 'views_recipe' row.
     if (event.type === 'favorite_remove') {
-      await this.prisma.signalObservation.create({
+      await tx.signalObservation.create({
         data: { userId, signalName: 'unfavorited_recipe', eventId: event.id, weight: -0.3, recipeId },
       });
       // P0-1 (re-audit): applyNegativeFeedback does `value + factor`, and every OTHER caller (dismiss -0.5,
       // meal-plan remove -0.2) passes a NEGATIVE factor to DECREASE affinity. This path used to pass +0.3 →
       // it INCREASED affinity on an unfavorite (the opposite of intent). It must be -0.3 (the mirror of the
       // +0.3 a favorite_add applies via applyPositiveFeedback).
-      await this.signalCalculator.applyNegativeFeedback(userId, recipeId, -0.3);
+      await this.signalCalculator.applyNegativeFeedbackInLockedTransaction(tx, userId, recipeId, -0.3);
       return;
     }
 
@@ -40,10 +43,10 @@ export class RecipeSignalProcessor {
     // eventId (not deduped against this), so completion still adds its full weight — intent and completion are
     // different moments, not a double count.
     if (event.type === 'start_cooking_click') {
-      await this.prisma.signalObservation.create({
+      await tx.signalObservation.create({
         data: { userId, signalName: 'started_cooking_recipe', eventId: event.id, weight: 0.7, recipeId },
       });
-      await this.signalCalculator.applyPositiveFeedback(userId, recipeId, 0.2);
+      await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(tx, userId, recipeId, 0.2);
       return;
     }
 
@@ -54,7 +57,7 @@ export class RecipeSignalProcessor {
     // ۱. سیگنال: علاقه به غذاهای خاص — fires on every positive action (now including a COOK, the
     // strongest signal; previously cooking produced nothing, so the loop never closed — L0/C1).
     if (event.type === 'recipe_view' || positive) {
-      const recipe = await this.prisma.recipe.findUnique({
+      const recipe = await tx.recipe.findUnique({
         where: { id: recipeId },
         select: { diet: true, categories: true, region: true, ingredients: { select: { name: true } } },
       });
@@ -68,12 +71,12 @@ export class RecipeSignalProcessor {
           ['مرغ', 'گوشت', 'تخم‌مرغ', 'عدس', 'لوبیا'].includes(i.name),
         );
         if (isHighProtein) {
-          await this.signalCalculator.updateSignal(userId, 'likes_high_protein', 'nutrition', 'raw', 0.9, confidence);
+          await this.signalCalculator.updateSignalInLockedTransaction(tx, userId, 'likes_high_protein', 'nutrition', 'raw', 0.9, confidence);
         }
 
         // آیا غذا vegetarian است؟
         if (recipe.diet === 'vegetarian' || recipe.diet === 'vegan') {
-          await this.signalCalculator.updateSignal(userId, 'prefers_vegetarian', 'health', 'raw', 0.8, confidence);
+          await this.signalCalculator.updateSignalInLockedTransaction(tx, userId, 'prefers_vegetarian', 'health', 'raw', 0.8, confidence);
         }
 
         // L0/C2 — سیگنالِ ساختاریافتهٔ تمایلِ آشپزی (cuisine). یک ردیفِ نقطه‌دار «taste.cuisine_affinity»
@@ -82,7 +85,7 @@ export class RecipeSignalProcessor {
         // درشتِ بخشِ ۲؛ همان نردبانِ اطمینان (پخت ۱ > پسند ۰٫۸ > دیدن ۰٫۵) را برای وزن به‌کار می‌برد.
         const cuisine = typeof recipe.region === 'string' ? recipe.region.trim().toLowerCase() : '';
         if (cuisine) {
-          await this.prisma.signalObservation.create({
+          await tx.signalObservation.create({
             data: {
               userId,
               signalName: 'taste.cuisine_affinity',
@@ -102,7 +105,7 @@ export class RecipeSignalProcessor {
     // ۲. ذخیره SignalObservation برای بازسازی آینده — a cook is the heaviest observation.
     const signalName = cooked ? 'cooked_recipe' : event.type === 'favorite_add' ? 'likes_recipe' : 'views_recipe';
     const weight = cooked ? 1.5 : event.type === 'favorite_add' ? 1.0 : 0.5;
-    await this.prisma.signalObservation.create({
+    await tx.signalObservation.create({
       data: { userId, signalName, eventId: event.id, weight },
     });
 
@@ -111,7 +114,7 @@ export class RecipeSignalProcessor {
     // the ranker's tasteAffinity. THIS is what makes «N خورش بپز → خورشی‌تر» real. A cook is stronger
     // evidence than a favorite. (A plain view stays observation-only — too weak for a taste commitment.)
     if (positive) {
-      await this.signalCalculator.applyPositiveFeedback(userId, recipeId, cooked ? 0.5 : 0.3);
+      await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(tx, userId, recipeId, cooked ? 0.5 : 0.3);
     }
   }
 }

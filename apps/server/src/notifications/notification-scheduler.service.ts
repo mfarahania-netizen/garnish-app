@@ -12,6 +12,8 @@ import { NotificationsService } from './notifications.service';
 import { IneService, TriggerCandidate } from './ine/ine.service';
 import { IneDecision } from './ine/ine-pipeline';
 import { getStartOfWeek } from '../utils/date.utils';
+import { ConsentService } from '../consent/consent.service';
+import { isOptionalPurposeRuntimeEnabled } from '../consent/consent.constants';
 
 @Injectable()
 export class NotificationSchedulerService {
@@ -20,9 +22,10 @@ export class NotificationSchedulerService {
   private lastMealReminder = new Map<string, Date>();
 
   constructor(
-    private prisma: PrismaService,
-    private notificationsService: NotificationsService,
-    private ine: IneService,
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+    private readonly ine: IneService,
+    private readonly consent: ConsentService,
   ) {}
 
   /** Dispatch the real in-app notification ONLY when the INE said 'send' and real-send is enabled. */
@@ -34,30 +37,27 @@ export class NotificationSchedulerService {
 
   @Cron('0 10 * * *')
   async handleDailyReminders() {
+    if (!isOptionalPurposeRuntimeEnabled('personalization')) return;
     const startOfWeek = getStartOfWeek();
-
-    const usersWithData = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        shoppingList: {
-          take: 1,
-          include: { items: { where: { isChecked: false } } },
-          orderBy: { createdAt: 'desc' },
-        },
-        mealPlans: {
-          take: 1,
-          where: { weekStart: startOfWeek },
-          include: { slots: true },
-        },
-      },
-    });
+    const users = await this.prisma.user.findMany({ select: { id: true } });
 
     let dispatched = 0;
-    for (const user of usersWithData) {
+    for (const user of users) {
+      const epoch = await this.currentPersonalizationEpoch(user.id);
+      if (!epoch) continue;
+      const [list, plan] = await Promise.all([
+        this.prisma.shoppingList.findFirst({
+          where: { userId: user.id },
+          include: { items: { where: { isChecked: false } } },
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.mealPlan.findFirst({
+          where: { userId: user.id, weekStart: startOfWeek },
+          include: { slots: true },
+        }),
+      ]);
       const candidates: TriggerCandidate[] = [];
-      const list = user.shoppingList[0];
       if (list && list.items.length > 0) candidates.push({ triggerKey: 'shopping_unchecked', payload: { count: list.items.length } });
-      const plan = user.mealPlans[0];
       if (!plan || plan.slots.length === 0) candidates.push({ triggerKey: 'weekly_plan_gap' });
       if (candidates.length === 0) continue;
 
@@ -65,28 +65,32 @@ export class NotificationSchedulerService {
       for (const d of decisions) {
         const sent = await this.dispatchIfEnabled(d, () =>
           d.triggerKey === 'shopping_unchecked'
-            ? this.notificationsService.notifyShoppingReminder(user.id, list!.items.length)
-            : this.notificationsService.notifyWeeklyPlanEmpty(user.id),
+            ? this.notificationsService.notifyShoppingReminder(user.id, list!.items.length, epoch)
+            : this.notificationsService.notifyWeeklyPlanEmpty(user.id, epoch),
         );
         if (sent) dispatched++;
       }
     }
-    this.logger.log(`[INE dry-run] daily reminders evaluated for ${usersWithData.length} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
+    this.logger.log(`[INE dry-run] daily reminders evaluated for ${users.length} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handleMealReminders() {
+    if (!isOptionalPurposeRuntimeEnabled('personalization')) return;
     const now = new Date();
     const todayDayOfWeek = now.getDay();
     const startOfWeek = getStartOfWeek();
     const hour = now.getHours();
 
-    const mealPlans = await this.prisma.mealPlan.findMany({
-      where: { weekStart: startOfWeek },
-      include: { slots: true },
-    });
-
-    for (const plan of mealPlans) {
+    const users = await this.prisma.user.findMany({ select: { id: true } });
+    for (const user of users) {
+      const epoch = await this.currentPersonalizationEpoch(user.id);
+      if (!epoch) continue;
+      const plan = await this.prisma.mealPlan.findFirst({
+        where: { userId: user.id, weekStart: startOfWeek },
+        include: { slots: true },
+      });
+      if (!plan) continue;
       const todaySlots = plan.slots.filter((s) => s.dayOfWeek === todayDayOfWeek);
       const meal = this.dueMeal(todaySlots, hour);
       if (!meal) continue;
@@ -97,7 +101,7 @@ export class NotificationSchedulerService {
       if (last && now.getTime() - last.getTime() <= 2 * 60 * 60 * 1000) continue;
 
       const [decision] = await this.ine.decideForUser(plan.userId, [{ triggerKey: 'meal_time_nudge', payload: { meal } }], now);
-      const sent = await this.dispatchIfEnabled(decision, () => this.notificationsService.notifyMealReminder(plan.userId, meal));
+      const sent = await this.dispatchIfEnabled(decision, () => this.notificationsService.notifyMealReminder(plan.userId, meal, epoch));
       if (sent) this.lastMealReminder.set(key, now);
     }
   }
@@ -112,26 +116,35 @@ export class NotificationSchedulerService {
   // 🆕 هر دوشنبه ساعت ۹ صبح – کاربران با ریسک ریزش بالا (now consent-gated via the INE)
   @Cron('0 9 * * 1')
   async handleChurnRiskNotifications() {
-    const highRiskUsers = await this.prisma.userBehaviorProfile.findMany({
-      where: { churnRiskScore: { gte: 70 } },
-      select: { userId: true },
-    });
+    if (!isOptionalPurposeRuntimeEnabled('personalization')) return;
+    const users = await this.prisma.user.findMany({ select: { id: true } });
 
     let dispatched = 0;
-    for (const profile of highRiskUsers) {
-      const [decision] = await this.ine.decideForUser(profile.userId, [{ triggerKey: 'churn_reengagement' }]);
+    let evaluated = 0;
+    for (const user of users) {
+      const epoch = await this.currentPersonalizationEpoch(user.id);
+      if (!epoch) continue;
+      const profile = await this.prisma.userBehaviorProfile.findUnique({
+        where: { userId: user.id },
+        select: { churnRiskScore: true },
+      });
+      if (!profile || Number(profile.churnRiskScore ?? 0) < 70) continue;
+      evaluated++;
+      const [decision] = await this.ine.decideForUser(user.id, [{ triggerKey: 'churn_reengagement' }]);
       const sent = await this.dispatchIfEnabled(decision, () =>
-        this.prisma.notification.create({
-          data: {
-            userId: profile.userId,
-            title: 'دلتنگت شدیم! 😢',
-            body: 'مدتیه که کمتر از گارنیش استفاده می‌کنی. بیا دوباره با هم غذاهای خوشمزه بپزیم!',
-            type: 'churn_reengagement',
-          },
-        }),
+        this.notificationsService.notifyChurnReengagement(user.id, epoch),
       );
       if (sent) dispatched++;
     }
-    this.logger.log(`[INE dry-run] churn-risk evaluated for ${highRiskUsers.length} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
+    this.logger.log(`[INE dry-run] churn-risk evaluated for ${evaluated} users; dispatched=${dispatched} (realSend=${this.ine.realSendEnabled()})`);
+  }
+
+  private async currentPersonalizationEpoch(userId: string): Promise<Date | null> {
+    if (!userId || !isOptionalPurposeRuntimeEnabled('personalization')) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, ['personalization']);
+    } catch {
+      return null;
+    }
   }
 }

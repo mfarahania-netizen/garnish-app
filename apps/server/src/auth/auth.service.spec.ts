@@ -84,11 +84,13 @@ describe('AuthService phone normalization', () => {
       createUser: jest.fn().mockResolvedValue({ id: 'u2', phone: '09125859634', isGuest: false, sessionEpoch: 0 }),
     };
     const jwtService: any = { sign: jest.fn().mockReturnValue('tok') };
+    const userEventCreate = jest.fn().mockResolvedValue(null);
 
-    await makeAuth(usersService, jwtService, { userEvent: { create: jest.fn().mockResolvedValue(null) } } as any).register('+989125859634', 'password8', 'Test');
+    await makeAuth(usersService, jwtService, { userEvent: { create: userEventCreate } } as any).register('+989125859634', 'password8', 'Test');
 
     expect(usersService.findByPhone).toHaveBeenCalledWith('09125859634');
     expect(usersService.createUser).toHaveBeenCalledWith('09125859634', 'password8', 'Test');
+    expect(userEventCreate).not.toHaveBeenCalled();
   });
 });
 
@@ -201,10 +203,18 @@ describe('AuthService OTP login/signup', () => {
 
   it('verifies OTP, creates a passwordless user when phone is new, and signs in', async () => {
     const codeHash = await bcrypt.hash('123456', 10);
-    const createdUser = { id: 'u-new', phone: '09125859634', isGuest: false, password: null, sessionEpoch: 0 };
+    const createdUser = {
+      id: 'u-new',
+      phone: '09125859634',
+      isGuest: false,
+      password: null,
+      sessionEpoch: 0,
+      onboardingCompletedAt: null,
+    };
     const usersService: any = {
       findByPhone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
       createPasswordlessUser: jest.fn().mockResolvedValue(createdUser),
+      findById: jest.fn().mockResolvedValue(createdUser),
     };
     const jwtService: any = { sign: jest.fn().mockReturnValue('tok') };
     const prisma: any = {
@@ -221,11 +231,13 @@ describe('AuthService OTP login/signup', () => {
     const res = await makeAuth(usersService, jwtService, prisma).verifyOtp('+989125859634', '123456', 'Test');
 
     expect(usersService.createPasswordlessUser).toHaveBeenCalledWith('09125859634', 'Test');
+    expect(usersService.findById).toHaveBeenCalledWith('u-new');
     expect(jwtService.sign).toHaveBeenCalledWith({ sub: 'u-new', epoch: 0 });
     expect(res.token).toBe('tok');
     expect(res.created).toBe(true);
     expect(res.user?.onboardingComplete).toBe(false);
     expect((res.user as any).password).toBeUndefined();
+    expect(prisma.userEvent.create).not.toHaveBeenCalled();
   });
 });
 
@@ -272,6 +284,7 @@ describe('AuthService Google Sign-In', () => {
     expect(res.token).toBe('tok');
     expect(res.user?.onboardingComplete).toBe(false);
     expect((res.user as any).isGuest).toBe(false);
+    expect(prisma.userEvent.create).not.toHaveBeenCalled();
   });
 
   it('logs in an existing googleId user', async () => {

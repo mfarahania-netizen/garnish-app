@@ -1,7 +1,10 @@
 import { RankingService } from './ranking.service';
 import { buildRealTimeContext } from '../../context/real-time-context';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../../consent/consent.constants';
+import { makeP0ATransactionBoundaryPrisma } from '../../test-support/p0-a-epoch-fixture';
 
 describe('RankingService', () => {
+  const epoch = new Date('2099-07-01T00:00:00.000Z');
   let prisma: any;
   let featureStore: any;
   let contributionCalculator: any;
@@ -9,10 +12,12 @@ describe('RankingService', () => {
   let exposureTracking: any;
   let tasteAffinityBuilder: any;
   let recipeEmbedding: any;
+  let consent: any;
+  let tx: any;
   let service: RankingService;
 
   beforeEach(() => {
-    prisma = {
+    const delegates = {
       recipe: {
         findMany: jest.fn().mockResolvedValue([
           {
@@ -65,7 +70,18 @@ describe('RankingService', () => {
       favoriteRecipe: {
         count: jest.fn().mockResolvedValue(0),
       },
+      userFeatureVector: {
+        findUnique: jest.fn().mockResolvedValue({
+          updatedAt: new Date('2099-07-01T00:01:00.000Z'),
+        }),
+      },
     };
+    ({ prisma, tx } = makeP0ATransactionBoundaryPrisma(delegates, 'u1',
+      ['analytics', 'personalization'].map((purpose) => ({
+        id: `${purpose}-grant`, userId: 'u1', purpose, status: 'granted',
+        policyVersion: CURRENT_PRIVACY_POLICY_VERSION, source: 'settings', createdAt: epoch,
+      })),
+    ));
 
     featureStore = {
       getFeatureVector: jest.fn(),
@@ -80,7 +96,7 @@ describe('RankingService', () => {
     };
 
     exposureTracking = {
-      getPenalty: jest.fn().mockResolvedValue(0),
+      getPenalties: jest.fn().mockResolvedValue(new Map()),
     };
     tasteAffinityBuilder = {
       build: jest.fn().mockReturnValue({ score: 0.7, matchedSignals: ['likes_high_protein'] }),
@@ -88,6 +104,9 @@ describe('RankingService', () => {
     recipeEmbedding = {
       buildEmbedding: jest.fn().mockReturnValue([0.5, 0.5, 0, 0]),
     };
+    consent = { currentGrantEpoch: jest.fn().mockResolvedValue(epoch) };
+    process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = 'true';
+    process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
 
     service = new RankingService(
       prisma,
@@ -97,6 +116,7 @@ describe('RankingService', () => {
       exposureTracking,
       tasteAffinityBuilder,
       recipeEmbedding,
+      consent,
     );
   });
 
@@ -225,5 +245,137 @@ describe('RankingService', () => {
     await service.rank('fitness-user', ['protein-bowl']);
 
     expect(tasteAffinityBuilder.build).toHaveBeenCalled();
+    for (const [args] of prisma.userEvent.count.mock.calls) {
+      expect(args.where.consentPurpose).toEqual({ in: ['analytics', 'personalization'] });
+    }
+  });
+
+  it('withdrawal cold-ranks without feature-vector, experiment, or exposure-history reads', async () => {
+    consent.currentGrantEpoch.mockResolvedValue(null);
+
+    await service.rank('withdrawn-user', ['protein-bowl']);
+
+    expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+    expect(experimentEngine.getWeights).not.toHaveBeenCalled();
+    expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+    expect(prisma.userEvent.count).not.toHaveBeenCalled();
+    expect(prisma.favoriteRecipe.count).not.toHaveBeenCalled();
+    expect(tasteAffinityBuilder.build).toHaveBeenCalledWith(expect.any(Object), {});
+  });
+
+  it('withdrawal also suppresses optional learned weights, recipe priors, and contribution writes', async () => {
+    const weightSource = { resolve: jest.fn().mockResolvedValue({ tasteAffinity: 1 }) };
+    const priorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1]])) };
+    prisma.featureContributionLog = { createMany: jest.fn().mockResolvedValue({ count: 1 }) };
+    tx.featureContributionLog = prisma.featureContributionLog;
+    consent.currentGrantEpoch.mockResolvedValue(null);
+    const guarded = new RankingService(
+      prisma,
+      featureStore,
+      contributionCalculator,
+      experimentEngine,
+      exposureTracking,
+      tasteAffinityBuilder,
+      recipeEmbedding,
+      consent,
+      weightSource as any,
+      priorSource as any,
+    );
+
+    await guarded.rank('withdrawn-user', ['protein-bowl']);
+
+    expect(weightSource.resolve).not.toHaveBeenCalled();
+    expect(priorSource.valuesForSlate).not.toHaveBeenCalled();
+    expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+    expect(prisma.featureContributionLog.createMany).not.toHaveBeenCalled();
+    expect(prisma.userEvent.count).not.toHaveBeenCalled();
+    expect(prisma.favoriteRecipe.count).not.toHaveBeenCalled();
+  });
+
+  it('direct rankWithFeatureVector ignores a caller-supplied personal vector after withdrawal', async () => {
+    consent.currentGrantEpoch.mockResolvedValue(null);
+
+    await service.rankWithFeatureVector(
+      'withdrawn-user',
+      ['protein-bowl'],
+      { signal_likes_high_protein: 1 },
+    );
+
+    expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+    expect(tasteAffinityBuilder.build).toHaveBeenCalledWith(expect.any(Object), {});
+  });
+
+  it('consent read failure follows the same cold, no-private-read path', async () => {
+    consent.currentGrantEpoch.mockRejectedValue(new Error('consent unavailable'));
+
+    await expect(service.rank('u1', ['protein-bowl'])).resolves.toEqual(expect.any(Array));
+
+    expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+    expect(experimentEngine.getWeights).not.toHaveBeenCalled();
+    expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+  });
+
+  it('analytics denial suppresses experiment assignment, learned weights/prior, exposure and contribution logs', async () => {
+    const weightSource = { resolve: jest.fn().mockResolvedValue({ tasteAffinity: 1 }) };
+    const priorSource = { valuesForSlate: jest.fn().mockResolvedValue(new Map([['protein-bowl', 1]])) };
+    prisma.featureContributionLog = { createMany: jest.fn().mockResolvedValue({ count: 1 }) };
+    tx.featureContributionLog = prisma.featureContributionLog;
+    featureStore.getFeatureVector.mockResolvedValue({ signal_likes_high_protein: 1 });
+    consent.currentGrantEpoch.mockResolvedValue(null);
+    const guarded = new RankingService(
+      prisma,
+      featureStore,
+      contributionCalculator,
+      experimentEngine,
+      exposureTracking,
+      tasteAffinityBuilder,
+      recipeEmbedding,
+      consent,
+      weightSource as any,
+      priorSource as any,
+    );
+
+    await guarded.rank('u1', ['protein-bowl']);
+
+    expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+    expect(experimentEngine.getWeights).not.toHaveBeenCalled();
+    expect(weightSource.resolve).not.toHaveBeenCalled();
+    expect(priorSource.valuesForSlate).not.toHaveBeenCalled();
+    expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+    expect(prisma.featureContributionLog.createMany).not.toHaveBeenCalled();
+    expect(prisma.userEvent.count).not.toHaveBeenCalled();
+    expect(prisma.favoriteRecipe.count).not.toHaveBeenCalled();
+  });
+
+  it('does not consume a cached feature vector created before the latest re-grant epoch', async () => {
+    prisma.userFeatureVector.findUnique.mockResolvedValue({
+      updatedAt: new Date('2099-06-30T23:59:00.000Z'),
+    });
+
+    await service.rank('u1', ['protein-bowl']);
+
+    expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+    expect(tasteAffinityBuilder.build).toHaveBeenCalledWith(expect.any(Object), {});
+  });
+
+  it('filters popularity events to the latest epoch and suppresses contribution writes after re-grant', async () => {
+    const nextEpoch = new Date('2099-07-02T00:00:00.000Z');
+    prisma.featureContributionLog = { createMany: jest.fn().mockResolvedValue({ count: 1 }) };
+    tx.featureContributionLog = prisma.featureContributionLog;
+    featureStore.getFeatureVector.mockResolvedValue({ signal_likes_high_protein: 1 });
+    consent.currentGrantEpoch.mockResolvedValue(epoch);
+    tx.userConsent.findMany = jest.fn().mockResolvedValue(
+      ['analytics', 'personalization'].map((purpose) => ({
+        id: `${purpose}-regrant`, userId: 'u1', purpose, status: 'granted',
+        policyVersion: CURRENT_PRIVACY_POLICY_VERSION, source: 'settings', createdAt: nextEpoch,
+      })),
+    );
+
+    await service.rank('u1', ['protein-bowl']);
+
+    expect(prisma.userEvent.count).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ timestamp: { gte: epoch } }),
+    }));
+    expect(prisma.featureContributionLog.createMany).not.toHaveBeenCalled();
   });
 });

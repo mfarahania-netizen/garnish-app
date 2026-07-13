@@ -3,6 +3,17 @@ import { MealPlanSignalProcessor } from './meal-plan.signal-processor';
 import { ShoppingSignalProcessor } from './shopping.signal-processor';
 import { SignalCalculatorService } from '../signals/signal-calculator.service';
 
+const previousPersonalizationRuntime = process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+
+beforeAll(() => {
+  process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+});
+
+afterAll(() => {
+  if (previousPersonalizationRuntime === undefined) delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+  else process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = previousPersonalizationRuntime;
+});
+
 /**
  * FI-STEP-1 — learn from rejection (write side). Proves the negative-feedback chain that the live ranker
  * reads: a dismiss → applyNegativeFeedback; applyNegativeFeedback decrements the matching UserBehaviorSignal;
@@ -12,21 +23,21 @@ import { SignalCalculatorService } from '../signals/signal-calculator.service';
 describe('FI-STEP-1 — learn from rejection (signal write chain)', () => {
   describe('RecommendationSignalProcessor — dismiss → applyNegativeFeedback', () => {
     it('recommendation_dismiss routes to applyNegativeFeedback(-0.5) keyed to recipeId', async () => {
-      const signalCalculator = { applyNegativeFeedback: jest.fn(), applyPositiveFeedback: jest.fn() } as any;
+      const signalCalculator = { applyNegativeFeedbackInLockedTransaction: jest.fn(), applyPositiveFeedbackInLockedTransaction: jest.fn() } as any;
       const prisma = { recommendationAttributionEvent: { create: jest.fn() }, signalObservation: { create: jest.fn() } } as any;
       const proc = new RecommendationSignalProcessor(prisma, signalCalculator);
-      await proc.process({ id: 'e1', type: 'recommendation_dismiss', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1');
-      expect(signalCalculator.applyNegativeFeedback).toHaveBeenCalledWith('u1', 'r1', -0.5);
+      await proc.process({ id: 'e1', type: 'recommendation_dismiss', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1', prisma);
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'r1', -0.5);
     });
 
     it('not_interested also → applyNegativeFeedback(-0.5); recipe_skip → -0.2', async () => {
-      const signalCalculator = { applyNegativeFeedback: jest.fn(), applyPositiveFeedback: jest.fn() } as any;
+      const signalCalculator = { applyNegativeFeedbackInLockedTransaction: jest.fn(), applyPositiveFeedbackInLockedTransaction: jest.fn() } as any;
       const prisma = { recommendationAttributionEvent: { create: jest.fn() }, signalObservation: { create: jest.fn() } } as any;
       const proc = new RecommendationSignalProcessor(prisma, signalCalculator);
-      await proc.process({ id: 'e2', type: 'not_interested', payload: JSON.stringify({ recipeId: 'r2' }) }, 'u1');
-      await proc.process({ id: 'e3', type: 'recipe_skip', payload: JSON.stringify({ recipeId: 'r3' }) }, 'u1');
-      expect(signalCalculator.applyNegativeFeedback).toHaveBeenCalledWith('u1', 'r2', -0.5);
-      expect(signalCalculator.applyNegativeFeedback).toHaveBeenCalledWith('u1', 'r3', -0.2);
+      await proc.process({ id: 'e2', type: 'not_interested', payload: JSON.stringify({ recipeId: 'r2' }) }, 'u1', prisma);
+      await proc.process({ id: 'e3', type: 'recipe_skip', payload: JSON.stringify({ recipeId: 'r3' }) }, 'u1', prisma);
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'r2', -0.5);
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'r3', -0.2);
     });
   });
 
@@ -41,7 +52,7 @@ describe('FI-STEP-1 — learn from rejection (signal write chain)', () => {
         },
       } as any;
       const calc = new SignalCalculatorService(prisma);
-      await calc.applyNegativeFeedback('u1', 'r1', -0.5);
+      await calc.applyNegativeFeedbackInLockedTransaction(prisma, 'u1', 'r1', -0.5);
       expect(update).toHaveBeenCalledTimes(1);
       const arg = update.mock.calls[0][0];
       expect(arg.where).toEqual({ userId_signalName: { userId: 'u1', signalName: 'likes_chicken' } });
@@ -56,56 +67,60 @@ describe('FI-STEP-1 — learn from rejection (signal write chain)', () => {
         userBehaviorSignal: { findUnique: jest.fn().mockResolvedValue({ value: 0.1, confidence: 0.6 }), update },
       } as any;
       const calc = new SignalCalculatorService(prisma);
-      await calc.applyNegativeFeedback('u1', 'r1', -0.5);
+      await calc.applyNegativeFeedbackInLockedTransaction(prisma, 'u1', 'r1', -0.5);
       expect(update.mock.calls[0][0].data.value).toBe(0); // max(0, 0.1 - 0.5)
     });
   });
 
   describe('MealPlanSignalProcessor — remove/clear now record a negative signal (was nothing)', () => {
     it('mealplan_remove → applyNegativeFeedback(-0.2) + plan_abandonment observation', async () => {
-      const signalCalculator = { applyNegativeFeedback: jest.fn(), updateSignal: jest.fn() } as any;
+      const signalCalculator = { applyNegativeFeedbackInLockedTransaction: jest.fn(), updateSignalInLockedTransaction: jest.fn() } as any;
       const create = jest.fn();
       const prisma = { signalObservation: { create } } as any;
       const proc = new MealPlanSignalProcessor(prisma, signalCalculator);
-      await proc.process({ id: 'e1', type: 'mealplan_remove', payload: JSON.stringify({ recipeId: 'r1', dayOfWeek: 1, mealType: 'dinner' }) }, 'u1');
-      expect(signalCalculator.applyNegativeFeedback).toHaveBeenCalledWith('u1', 'r1', -0.2);
+      await proc.process({ id: 'e1', type: 'mealplan_remove', payload: JSON.stringify({ recipeId: 'r1', dayOfWeek: 1, mealType: 'dinner' }) }, 'u1', prisma);
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'r1', -0.2);
       expect(create).toHaveBeenCalledWith({ data: expect.objectContaining({ userId: 'u1', signalName: 'plan_abandonment' }) });
     });
 
     it('mealplan_clear (no recipeId) → plan_abandonment observation only (no per-recipe negative)', async () => {
-      const signalCalculator = { applyNegativeFeedback: jest.fn(), updateSignal: jest.fn() } as any;
+      const signalCalculator = { applyNegativeFeedbackInLockedTransaction: jest.fn(), updateSignalInLockedTransaction: jest.fn() } as any;
       const create = jest.fn();
-      const proc = new MealPlanSignalProcessor({ signalObservation: { create } } as any, signalCalculator);
-      await proc.process({ id: 'e2', type: 'mealplan_clear', payload: '{}' }, 'u1');
-      expect(signalCalculator.applyNegativeFeedback).not.toHaveBeenCalled();
+      const prisma = { signalObservation: { create } } as any;
+      const proc = new MealPlanSignalProcessor(prisma, signalCalculator);
+      await proc.process({ id: 'e2', type: 'mealplan_clear', payload: '{}' }, 'u1', prisma);
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).not.toHaveBeenCalled();
       expect(create).toHaveBeenCalledWith({ data: expect.objectContaining({ signalName: 'plan_abandonment' }) });
     });
 
     it('mealplan_add is UNCHANGED (consistent_meal_planner + plans_meal; no negative)', async () => {
-      const signalCalculator = { applyNegativeFeedback: jest.fn(), updateSignal: jest.fn() } as any;
+      const signalCalculator = { applyNegativeFeedbackInLockedTransaction: jest.fn(), updateSignalInLockedTransaction: jest.fn() } as any;
       const create = jest.fn();
-      const proc = new MealPlanSignalProcessor({ signalObservation: { create } } as any, signalCalculator);
-      await proc.process({ id: 'e3', type: 'mealplan_add', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1');
-      expect(signalCalculator.updateSignal).toHaveBeenCalledWith('u1', 'consistent_meal_planner', 'cooking', 'behavior', 0.9, 1);
+      const prisma = { signalObservation: { create } } as any;
+      const proc = new MealPlanSignalProcessor(prisma, signalCalculator);
+      await proc.process({ id: 'e3', type: 'mealplan_add', payload: JSON.stringify({ recipeId: 'r1' }) }, 'u1', prisma);
+      expect(signalCalculator.updateSignalInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'consistent_meal_planner', 'cooking', 'behavior', 0.9, 1);
       expect(create).toHaveBeenCalledWith({ data: expect.objectContaining({ signalName: 'plans_meal' }) });
-      expect(signalCalculator.applyNegativeFeedback).not.toHaveBeenCalled();
+      expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).not.toHaveBeenCalled();
     });
   });
 
   describe('ShoppingSignalProcessor — remove now records grocery_friction (was nothing)', () => {
     it('shopping_item_remove → grocery_friction observation', async () => {
       const create = jest.fn();
-      const proc = new ShoppingSignalProcessor({ signalObservation: { create } } as any, { updateSignal: jest.fn() } as any);
-      await proc.process({ id: 'e1', type: 'shopping_item_remove', payload: '{}' }, 'u1');
+      const prisma = { signalObservation: { create } } as any;
+      const proc = new ShoppingSignalProcessor(prisma, { updateSignalInLockedTransaction: jest.fn() } as any);
+      await proc.process({ id: 'e1', type: 'shopping_item_remove', payload: '{}' }, 'u1', prisma);
       expect(create).toHaveBeenCalledWith({ data: expect.objectContaining({ signalName: 'grocery_friction' }) });
     });
 
     it('shopping_item_add is UNCHANGED (budget_sensitive + shops_efficiently)', async () => {
-      const updateSignal = jest.fn();
+      const updateSignalInLockedTransaction = jest.fn();
       const create = jest.fn();
-      const proc = new ShoppingSignalProcessor({ signalObservation: { create } } as any, { updateSignal } as any);
-      await proc.process({ id: 'e2', type: 'shopping_item_add', payload: '{}' }, 'u1');
-      expect(updateSignal).toHaveBeenCalledWith('u1', 'budget_sensitive', 'engagement', 'behavior', 0.7, 1);
+      const prisma = { signalObservation: { create } } as any;
+      const proc = new ShoppingSignalProcessor(prisma, { updateSignalInLockedTransaction } as any);
+      await proc.process({ id: 'e2', type: 'shopping_item_add', payload: '{}' }, 'u1', prisma);
+      expect(updateSignalInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'budget_sensitive', 'engagement', 'behavior', 0.7, 1);
       expect(create).toHaveBeenCalledWith({ data: expect.objectContaining({ signalName: 'shops_efficiently' }) });
     });
   });

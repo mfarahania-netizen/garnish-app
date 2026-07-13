@@ -5,6 +5,20 @@ import { ProcessorRegistry } from '../behavior-engine/routing/processor.registry
 import { RecommendationSignalProcessor } from '../behavior-engine/processors/recommendation.signal-processor';
 import { RecipePriorLearnerService } from './pipeline/recipe-prior-learner.service';
 import { RecommendationController } from './recommendation.controller';
+import {
+  enableP0AOptionalProcessingRuntime,
+  makeP0AEpochAwareConsentMock,
+  makeP0ATransactionBoundaryPrisma,
+  p0APersonalizationEventProvenance,
+} from '../test-support/p0-a-epoch-fixture';
+
+let restoreOptionalRuntime: () => void;
+
+beforeAll(() => {
+  restoreOptionalRuntime = enableP0AOptionalProcessingRuntime();
+});
+
+afterAll(() => restoreOptionalRuntime());
 
 const waitUntil = async (ok: () => boolean, label: string) => {
   const deadline = Date.now() + 500;
@@ -29,13 +43,26 @@ function makeHarness() {
     return next;
   };
 
-  const prisma: any = {
+  const delegates: any = {
     userEvent: {
       create: jest.fn(async ({ data }: any) => {
-        const event = { id: `ev${++eventSeq}`, timestamp: new Date(), ...data };
+        const event = {
+          id: `ev${++eventSeq}`,
+          ...p0APersonalizationEventProvenance(data.userId),
+          ...data,
+        };
         userEvents.push(event);
         return event;
       }),
+      update: jest.fn(async ({ where, data }: any) => {
+        const index = userEvents.findIndex((event) => event.id === where.id);
+        const event = { ...userEvents[index], ...data };
+        userEvents[index] = event;
+        return event;
+      }),
+      findUnique: jest.fn(async ({ where }: any) =>
+        userEvents.find((event) => event.id === where.id) ?? null,
+      ),
       findMany: jest.fn(async ({ where }: any) => {
         const types = where?.type?.in;
         return userEvents
@@ -58,6 +85,24 @@ function makeHarness() {
         outboxRows.set(row.id, row);
         return row;
       }),
+      upsert: jest.fn(async ({ where, create }: any) => {
+        const existing = [...outboxRows.values()].find(
+          (row) => row.eventId === where.eventId,
+        );
+        if (existing) return existing;
+        const row = {
+          id: `ob${++outboxSeq}`,
+          status: 'pending',
+          attempts: 0,
+          claimedAt: null,
+          processedAt: null,
+          error: null,
+          createdAt: new Date(),
+          ...create,
+        };
+        outboxRows.set(row.id, row);
+        return row;
+      }),
       update: jest.fn(async ({ where, data }: any) => {
         const next = applyOutboxUpdate(outboxRows.get(where.id), data);
         outboxRows.set(where.id, next);
@@ -66,6 +111,7 @@ function makeHarness() {
       updateMany: jest.fn(),
       findMany: jest.fn(),
     },
+    userConsent: { findFirst: jest.fn(async () => null) },
     recommendationAttributionEvent: {
       create: jest.fn(async ({ data }: any) => {
         attributionRows.push(data);
@@ -95,20 +141,27 @@ function makeHarness() {
       }),
     },
   };
+  const { prisma } = makeP0ATransactionBoundaryPrisma(delegates);
 
   const recommendationProcessor = new RecommendationSignalProcessor(
     prisma,
-    { applyPositiveFeedback: jest.fn(), applyNegativeFeedback: jest.fn() } as any,
+    {
+      applyPositiveFeedback: jest.fn(),
+      applyNegativeFeedback: jest.fn(),
+      applyPositiveFeedbackInLockedTransaction: jest.fn(async () => undefined),
+      applyNegativeFeedbackInLockedTransaction: jest.fn(async () => undefined),
+    } as any,
   );
   const registry = new ProcessorRegistry({} as any, {} as any, {} as any, recommendationProcessor, {} as any);
-  const router = new EventRouterService(registry);
-  const outbox = new EventOutboxService(prisma, router);
+  const router = new EventRouterService(registry, prisma);
+  const consent = makeP0AEpochAwareConsentMock();
+  const outbox = new EventOutboxService(prisma, router, consent as any);
   const analytics = new AnalyticsService(
     prisma,
     { enrichEvent: jest.fn() } as any,
     outbox,
     { assess: jest.fn(() => ({ isValid: true })) } as any,
-    { hasPurpose: jest.fn(async () => true) } as any,
+    consent as any,
   );
   const controller = new RecommendationController(
     {} as any,
@@ -156,6 +209,10 @@ describe('Recommendation requestId capstone', () => {
       payload: { recipeId: 'r1', requestId: 'req-123' },
     });
     await waitUntil(() => h.attributionRows.some((row) => row.eventType === 'recommendation_cook'), 'cook attribution');
+    await waitUntil(
+      () => h.outboxRows.size === 2 && [...h.outboxRows.values()].every((row) => row.status === 'done'),
+      'all routed outbox rows to finish',
+    );
 
     const learner = new RecipePriorLearnerService(h.prisma);
     await expect(learner.refresh()).resolves.toEqual({ impressions: 2, scopeRows: 6 });

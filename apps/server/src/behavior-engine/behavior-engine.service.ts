@@ -1,25 +1,70 @@
 // apps/server/src/behavior-engine/behavior-engine.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConsentService } from '../consent/consent.service';
+import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 
 @Injectable()
 export class BehaviorEngineService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(BehaviorEngineService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly consent: ConsentService,
+  ) {}
+
+  private async currentEventEpoch(userId: string): Promise<Date | null> {
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch (err) {
+      this.logger.warn(
+        `personalization consent epoch unavailable; behavior processing skipped: ${
+          err instanceof Error ? err.name : 'error'
+        }`,
+      );
+      return null;
+    }
+  }
+
+  private async epochIsCurrent(userId: string, epoch: Date): Promise<boolean> {
+    const current = await this.currentEventEpoch(userId);
+    return current?.getTime() === epoch.getTime();
+  }
+
+  private laterOf(windowStart: Date, epoch: Date): Date {
+    return windowStart > epoch ? windowStart : epoch;
+  }
 
   async processEventsForUser(userId: string) {
+    // One mutation boundary serves the scheduler and direct callers. Check consent before reading behavioral
+    // data or writing a derived profile; an unavailable ledger is a denial, never an implicit grant.
+    const epoch = await this.currentEventEpoch(userId);
+    if (!epoch) return null;
+
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     // رویدادهای ۳۰ روز اخیر
     const recentEvents = await this.prisma.userEvent.findMany({
-      where: { userId, timestamp: { gte: thirtyDaysAgo } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        timestamp: { gte: this.laterOf(thirtyDaysAgo, epoch) },
+      },
       orderBy: { timestamp: 'asc' },
     });
 
     // رویدادهای ۶۰ روز اخیر برای favoriteFoods
     const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
     const extendedEvents = await this.prisma.userEvent.findMany({
-      where: { userId, timestamp: { gte: sixtyDaysAgo } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        timestamp: { gte: this.laterOf(sixtyDaysAgo, epoch) },
+      },
       select: { type: true, payload: true },
     });
 
@@ -40,7 +85,7 @@ export class BehaviorEngineService {
 
     // ──── shoppingPattern (بخش ادغام‌شده) ────
     const shoppingItems = await this.prisma.shoppingItem.findMany({
-      where: { shoppingList: { userId } },
+      where: { shoppingList: { userId }, addedAt: { gte: epoch } },
       select: { name: true, isChecked: true },
     });
     const itemCounts: Record<string, number> = {};
@@ -51,28 +96,39 @@ export class BehaviorEngineService {
 
     // ──── حالت بدون رویداد ────
     if (recentEvents.length === 0) {
-      return this.prisma.userBehaviorProfile.upsert({
-        where: { userId },
-        create: {
+      const write = await withUserOptionalProcessingBoundary(
+        this.prisma,
+        {
           userId,
-          consistencyScore: 0,
-          churnRiskScore: 100,
-          healthAdherenceScore: 0,
-          cookingFrequency: 'rarely',
-          budgetScore: 'low',
-          favoriteFoods: JSON.stringify(favoriteFoods),
-          shoppingPattern: JSON.stringify(shoppingPattern),
+          purposes: ['analytics', 'personalization'],
+          operation: 'behavior_engine.profile_upsert_empty',
+          expectedEpoch: epoch,
         },
-        update: {
-          consistencyScore: 0,
-          churnRiskScore: 100,
-          healthAdherenceScore: 0,
-          cookingFrequency: 'rarely',
-          budgetScore: 'low',
-          favoriteFoods: JSON.stringify(favoriteFoods),
-          shoppingPattern: JSON.stringify(shoppingPattern),
-        },
-      });
+        (tx) =>
+          tx.userBehaviorProfile.upsert({
+            where: { userId },
+            create: {
+              userId,
+              consistencyScore: 0,
+              churnRiskScore: 100,
+              healthAdherenceScore: 0,
+              cookingFrequency: 'rarely',
+              budgetScore: 'low',
+              favoriteFoods: JSON.stringify(favoriteFoods),
+              shoppingPattern: JSON.stringify(shoppingPattern),
+            },
+            update: {
+              consistencyScore: 0,
+              churnRiskScore: 100,
+              healthAdherenceScore: 0,
+              cookingFrequency: 'rarely',
+              budgetScore: 'low',
+              favoriteFoods: JSON.stringify(favoriteFoods),
+              shoppingPattern: JSON.stringify(shoppingPattern),
+            },
+          }),
+      );
+      return write.status === 'executed' ? write.value : null;
     }
 
     // ──── امتیازات اصلی ────
@@ -110,12 +166,8 @@ export class BehaviorEngineService {
       healthAdherenceScore = Math.round((nutritionEvents / recentEvents.length) * 100);
     } else {
       // ۲. اگر nutrition event وجود ندارد، از healthGoals کاربر استفاده کن
-      const userWithGoals = await this.prisma.user.findUnique({
-        where: { id: userId },
-        include: { healthGoals: { include: { healthGoal: true } } },
-      });
-      const hasHealthGoals = (userWithGoals?.healthGoals?.length ?? 0) > 0;
-
+      // Health-goal membership has no consent-epoch timestamp, so it cannot be reused after re-consent.
+      const hasHealthGoals = false;
       if (hasHealthGoals) {
         healthAdherenceScore = 50; // baseline
         // فعالیت‌های mealplan امتیاز اضافه می‌کنند
@@ -126,31 +178,47 @@ export class BehaviorEngineService {
     }
 
     // ──── upsert نهایی با تمام فیلدها ────
-    return this.prisma.userBehaviorProfile.upsert({
-      where: { userId },
-      create: {
+    const write = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
         userId,
-        consistencyScore,
-        churnRiskScore,
-        healthAdherenceScore,
-        cookingFrequency,
-        budgetScore,
-        favoriteFoods: JSON.stringify(favoriteFoods),
-        shoppingPattern: JSON.stringify(shoppingPattern),
+        purposes: ['analytics', 'personalization'],
+        operation: 'behavior_engine.profile_upsert',
+        expectedEpoch: epoch,
       },
-      update: {
-        consistencyScore,
-        churnRiskScore,
-        healthAdherenceScore,
-        cookingFrequency,
-        budgetScore,
-        favoriteFoods: JSON.stringify(favoriteFoods),
-        shoppingPattern: JSON.stringify(shoppingPattern),
-      },
-    });
+      (tx) =>
+        tx.userBehaviorProfile.upsert({
+          where: { userId },
+          create: {
+            userId,
+            consistencyScore,
+            churnRiskScore,
+            healthAdherenceScore,
+            cookingFrequency,
+            budgetScore,
+            favoriteFoods: JSON.stringify(favoriteFoods),
+            shoppingPattern: JSON.stringify(shoppingPattern),
+          },
+          update: {
+            consistencyScore,
+            churnRiskScore,
+            healthAdherenceScore,
+            cookingFrequency,
+            budgetScore,
+            favoriteFoods: JSON.stringify(favoriteFoods),
+            shoppingPattern: JSON.stringify(shoppingPattern),
+          },
+        }),
+    );
+    return write.status === 'executed' ? write.value : null;
   }
 
   async getProfile(userId: string) {
-    return this.prisma.userBehaviorProfile.findUnique({ where: { userId } });
+    const epoch = await this.currentEventEpoch(userId);
+    if (!epoch) return null;
+    const profile = await this.prisma.userBehaviorProfile.findFirst({
+      where: { userId, updatedAt: { gte: epoch } },
+    });
+    return (await this.epochIsCurrent(userId, epoch)) ? profile : null;
   }
 }
