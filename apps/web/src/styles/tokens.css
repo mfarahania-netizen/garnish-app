@@ -1,7 +1,6 @@
 /* ============================================================
    GARNISH DESIGN TOKENS — GES v1
-   DRAFT — for later implementation by coding assistant after approval
-   STATUS: DRAFT_PENDING_UX_APPROVAL (all values are proposals until Designer sign-off)
+   STATUS: IMPLEMENTED_PRODUCT_FOUNDATION
    Authority: GES v1 + DESIGN_IMPLEMENTATION_GUIDE.md (Constitution A1.8)
    Single source of color/type/space/radius/shadow/motion/z/state tokens.
    ============================================================ */
@@ -17,6 +16,7 @@
   --g-color-bg-canvas:#FAF7F2;
   --g-color-bg-surface:#FFFFFF;
   --g-color-bg-surface-raised:#FFFFFF;
+  --g-color-bg-muted:#F3EFE9;
   --g-color-text-primary:#1F1B16;
   --g-color-text-secondary:#57534E;
   --g-color-text-muted:#6F665E;
@@ -25,8 +25,13 @@
   --g-color-border-strong:#D8D1C7;
   --g-scrim-photo: linear-gradient(180deg, rgba(31,27,22,0) 35%, rgba(31,27,22,.62) 100%);
 
+  /* Primary-action pair: brand-600 + inverse cream is only 3.02:1. */
+  --g-color-action-primary-bg:var(--g-color-brand-700);
+  --g-color-action-primary-hover:var(--g-color-brand-800);
+  --g-color-action-primary-fg:#FFFFFF;
+
   /* ── Semantic states ── */
-  --g-color-state-success-fg:#2E7D4F; --g-color-state-success-bg:#EAF5EE;
+  --g-color-state-success-fg:#2E7D4F; --g-color-state-success-text:var(--g-color-state-success-fg); --g-color-state-success-bg:#EAF5EE;
   --g-color-state-warning-fg:#C9821B; --g-color-state-warning-bg:#FBF3E4;
   --g-color-state-danger-fg:#B43C2E;  --g-color-state-danger-bg:#FBEDEA; /* destructive only — never streak shame */
   --g-color-state-info-fg:#4A443D;    --g-color-state-info-bg:#F2EEE8;
@@ -49,8 +54,9 @@
   --g-font-display:'Plus Jakarta Sans',system-ui,sans-serif;
   --g-font-text:'Inter',system-ui,sans-serif;
   --g-font-fa:'Vazirmatn','Inter',system-ui,sans-serif;
-  --g-font-size-12:12px; --g-font-size-14:14px; --g-font-size-16:16px; /* base */
-  --g-font-size-18:18px; --g-font-size-22:22px; --g-font-size-28:28px; --g-font-size-34:34px;
+  --g-font-size-11:11px; --g-font-size-12:12px; --g-font-size-13:13px; --g-font-size-14:14px;
+  --g-font-size-15:15px; --g-font-size-16:16px; /* base */
+  --g-font-size-18:18px; --g-font-size-22:22px; --g-font-size-26:26px; --g-font-size-28:28px; --g-font-size-34:34px;
   --g-font-size-hero-48:48px; /* splash/demo only */
   --g-leading-body:1.55; --g-leading-heading:1.25;
 
@@ -58,6 +64,10 @@
   --g-space-1:4px; --g-space-2:8px; --g-space-3:12px; --g-space-4:16px; --g-space-5:20px;
   --g-space-6:24px; --g-space-7:28px; --g-space-8:32px; --g-space-9:36px; --g-space-10:40px;
   --g-space-12:48px; --g-space-16:64px;
+
+  /* ── Controls ── */
+  --g-control-min-size:44px;
+  --g-input-min-size:44px;
 
   /* ── Radius ── */
   --g-radius-input:12px; --g-radius-card:16px; --g-radius-photo:16px;
@@ -79,7 +89,10 @@
   --g-z-base:0; --g-z-sticky:100; --g-z-shelf:200; --g-z-sheet:300; --g-z-overlay:400; --g-z-toast:500;
 
   /* ── Focus / breakpoints ── */
-  --g-focus-ring:0 0 0 2px var(--g-color-bg-surface),0 0 0 4px var(--g-color-brand-600);
+  --g-color-focus-ring:var(--g-color-brand-800);
+  --g-focus-ring:0 0 0 2px var(--g-color-bg-surface),0 0 0 4px var(--g-color-focus-ring);
+  --g-focus-outline-width:3px;
+  --g-focus-outline-offset:2px;
   --g-bp-sm:480px; --g-bp-md:768px; --g-bp-lg:1024px; --g-bp-xl:1280px;
 }
 
@@ -88,6 +101,7 @@
   --g-color-bg-canvas:#171310;
   --g-color-bg-surface:#211C17;
   --g-color-bg-surface-raised:#2A241E;
+  --g-color-bg-muted:#2A241E;
   --g-color-text-primary:#F4EEE6;
   --g-color-text-secondary:#C7BEB2;
   --g-color-text-muted:#B8ADA0;

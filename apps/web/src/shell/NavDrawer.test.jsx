@@ -14,6 +14,8 @@ vi.mock('@tanstack/react-query', () => ({
 
 vi.mock('../lib/apiClient', () => ({ default: { get: vi.fn() } }));
 
+vi.mock('@mantine/hooks', () => ({ useReducedMotion: () => true }));
+
 vi.mock('./navConfig', () => ({
   DRAWER_PRIMARY: [{ to: '/', label: 'خانه', Icon: () => null, end: true }],
   DRAWER_SECONDARY: [],
@@ -56,5 +58,6 @@ describe('NavDrawer launch auth behavior', () => {
     mount();
     expect(screen.queryByText('خروج از حالت دمو')).not.toBeInTheDocument();
     expect(screen.getByText('خروج')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'خروج از حساب' })).toBeInTheDocument();
   });
 });

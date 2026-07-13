@@ -92,15 +92,16 @@ export default function RecipeCard({
           <PlatePlaceholder label={title} seed={placeholderSeed} glyphSize={compact ? 34 : 44} />
         )}
 
-        <UnstyledButton
-          type="button"
+        <Box
+          component="span"
+          data-recipe-card-media-open="true"
           onClick={onOpen}
-          aria-label={`${title} — مشاهدهٔ دستور`}
-          style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'transparent' }}
+          aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'transparent', cursor: onOpen ? 'pointer' : 'default' }}
         />
 
         {allergen ? (
-          <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'color-mix(in srgb, var(--g-color-text-primary) 6%, transparent)', zIndex: 1 }} />
+          <Box aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'color-mix(in srgb, var(--g-color-text-primary) 6%, transparent)', zIndex: 1, pointerEvents: 'none' }} />
         ) : null}
 
         {fit === 'great' ? (
@@ -188,31 +189,29 @@ export default function RecipeCard({
           </Text>
 
           <Meta cookTimeText={cookTimeText} difficultyText={difficultyText} servingsText={servingsText} />
-        </UnstyledButton>
 
-        {isHero ? (
-          <UnstyledButton
-            type="button"
-            onClick={onOpen}
-            aria-label={`دیدن دستور ${title}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minBlockSize: 44,
-              marginBlockStart: 'var(--g-space-2)',
-              paddingInline: 'var(--g-space-4)',
-              borderRadius: 'var(--g-radius-input)',
-              background: 'var(--g-color-brand-600)',
-              color: 'var(--g-color-text-inverse)',
-              fontFamily: 'var(--g-font-fa)',
-              fontSize: 'var(--g-font-size-14)',
-              fontWeight: 800,
-            }}
-          >
-            دیدن دستور
-          </UnstyledButton>
-        ) : null}
+          {isHero ? (
+            <Box
+              component="span"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minBlockSize: 44,
+                marginBlockStart: 'var(--g-space-2)',
+                paddingInline: 'var(--g-space-4)',
+                borderRadius: 'var(--g-radius-input)',
+                background: 'var(--g-color-action-primary-bg)',
+                color: 'var(--g-color-action-primary-fg)',
+                fontFamily: 'var(--g-font-fa)',
+                fontSize: 'var(--g-font-size-14)',
+                fontWeight: 800,
+              }}
+            >
+              دیدن دستور
+            </Box>
+          ) : null}
+        </UnstyledButton>
 
         {!compact && caution ? (
           <Box style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-warning-bg)' }}>

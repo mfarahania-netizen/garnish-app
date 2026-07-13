@@ -1,4 +1,5 @@
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
 import { IconX, IconLeaf, IconLogout, IconLayoutDashboard, IconLogin2 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
@@ -70,6 +71,7 @@ function DrawerLink({ item, onNavigate, secondary }) {
 export default function NavDrawer({ opened, onClose }) {
   const { token, user, logout, guestEnabled } = useAuth();
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   // Maturity for the header line — shares the cache key with Home's /profile fetch (deduped).
   const profile = useQuery({
@@ -102,7 +104,7 @@ export default function NavDrawer({ opened, onClose }) {
       withCloseButton={false}
       aria-label="منوی کاربری گارنیش"
       overlayProps={{ backgroundOpacity: 0.42, blur: 2 }}
-      transitionProps={{ duration: 240 }}
+      transitionProps={{ duration: reduceMotion ? 0 : 240 }}
       styles={{
         content: { background: 'var(--g-color-bg-surface)', display: 'flex', flexDirection: 'column' },
         body: { padding: 0, flex: 1, display: 'flex', flexDirection: 'column', minBlockSize: 0 },
@@ -151,7 +153,7 @@ export default function NavDrawer({ opened, onClose }) {
           type="button"
           onClick={onClose}
           aria-label="بستن منو"
-          style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 40, blockSize: 40, borderRadius: '50%', color: 'var(--g-color-text-muted)' }}
+          style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', inlineSize: 44, blockSize: 44, borderRadius: '50%', color: 'var(--g-color-text-muted)' }}
         >
           <IconX size={20} stroke={1.8} />
         </UnstyledButton>
@@ -187,7 +189,8 @@ export default function NavDrawer({ opened, onClose }) {
           <UnstyledButton
             type="button"
             onClick={() => { onClose(); logout(); navigate('/login'); }}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 46, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)' }}
+            aria-label="خروج از حالت دمو و ورود"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 46, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-action-primary-bg)', color: 'var(--g-color-action-primary-fg)' }}
           >
             <IconLogin2 size={19} stroke={1.8} aria-hidden="true" />
             <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-14)', color: 'inherit' }}>خروج از حالت دمو</Text>
@@ -198,7 +201,7 @@ export default function NavDrawer({ opened, onClose }) {
           <UnstyledButton
             type="button"
             onClick={handleLogout}
-            aria-label="Ø®Ø±ÙˆØ¬ Ø§Ø² Ø­Ø³Ø§Ø¨"
+            aria-label="خروج از حساب"
             style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', inlineSize: '100%', minBlockSize: 44, color: 'var(--g-color-state-danger-fg)' }}
           >
             <IconLogout size={20} stroke={1.8} aria-hidden="true" />

@@ -19,18 +19,19 @@ export default function AppShell() {
 
   return (
     <Box
+      className="g-app-shell"
       style={{
-        minBlockSize: '100dvh',
         display: 'flex',
         justifyContent: 'center',
         background: 'var(--g-color-bg-canvas)',
       }}
     >
+      <a className="g-skip-link" href="#main-content">پرش به محتوای اصلی</a>
       <Box
+        className="g-app-shell__frame"
         style={{
           width: '100%',
           maxInlineSize: 480,
-          minBlockSize: '100dvh',
           display: 'flex',
           flexDirection: 'column',
           background: 'var(--g-color-bg-canvas)',
@@ -40,7 +41,14 @@ export default function AppShell() {
         <TopBar onMenuOpen={open} />
         <NavDrawer opened={opened} onClose={close} />
 
-        <Box component="main" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Box
+          component="main"
+          id="main-content"
+          className="g-app-main"
+          tabIndex={-1}
+          aria-label="محتوای اصلی"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', minInlineSize: 0 }}
+        >
           <Outlet />
         </Box>
 

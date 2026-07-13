@@ -16,13 +16,15 @@ if (!('localStorage' in globalThis) || globalThis.localStorage == null) {
 // The onboarding consent links (target=_blank to /terms and /privacy) previously hit no route → 404.
 // These prove the public legal routes now resolve to real pages.
 describe('public legal routes — onboarding consent links no longer 404', () => {
-  it('/terms resolves to the Terms page (not NotFound)', () => {
+  it('/terms resolves to the Terms page (not NotFound)', async () => {
     renderWithProviders(<AppRoutes />, { route: '/terms' });
-    expect(screen.getByRole('heading', { name: 'شرایط استفاده' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('در حال آماده‌سازی صفحه');
+    expect(await screen.findByRole('heading', { name: 'شرایط استفاده' })).toBeInTheDocument();
   });
 
-  it('/privacy resolves to the Privacy page (not NotFound)', () => {
+  it('/privacy resolves to the Privacy page (not NotFound)', async () => {
     renderWithProviders(<AppRoutes />, { route: '/privacy' });
-    expect(screen.getByRole('heading', { name: 'حریم خصوصی' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('در حال آماده‌سازی صفحه');
+    expect(await screen.findByRole('heading', { name: 'حریم خصوصی' })).toBeInTheDocument();
   });
 });

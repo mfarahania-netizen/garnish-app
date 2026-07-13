@@ -1,45 +1,68 @@
-import { Component, useEffect, useRef } from 'react';
+import { Component, Suspense, lazy, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { DirectionProvider, MantineProvider, createTheme } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@mantine/core/styles.css';
 import { garnishTheme } from './theme/garnish-theme';
 import { AuthProvider } from './context/AuthContext';
-import { RecipeProvider } from './context/RecipeContext';
 import AppShell from './shell/AppShell';
 import RequireAuth from './shell/RequireAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { hasAnalyticsConsent } from './lib/analytics-init';
 import { installE2EQueryInspection } from './lib/private-session-cache';
-import HomePage from './app/home/page';
-import RecipeDetailPage from './app/recipe/[id]/page';
-import CookPage from './app/cook/[id]/page';
-import OnboardingPage from './app/onboarding/page';
-import LoginPage from './app/login/page';
-import DiscoveryPage from './app/discover/page';
-import RecipesPage from './app/recipes/page';
-import ProfilePage from './app/profile/page';
-import FoodDnaPage from './app/food-dna/page';
-import PlanPage from './app/plan/page';
-import ShoppingListPage from './app/shopping-list/page';
-import FavoritesPage from './app/favorites/page';
-import AssistantPage from './app/assistant/page';
-import SettingsPage from './app/settings/page';
-import NotificationsPage from './app/notifications/page';
-import AchievementsPage from './app/achievements/page';
-import SupportPage from './app/support/page';
-import AdminPage from './app/admin/page';
-import TermsPage from './app/terms/page';
-import PrivacyPage from './app/privacy/page';
-import NotFound from './shell/NotFound';
+
+const HomePage = lazy(() => import('./app/home/page'));
+const RecipeDetailPage = lazy(() => import('./app/recipe/[id]/page'));
+const CookPage = lazy(() => import('./app/cook/[id]/page'));
+const OnboardingPage = lazy(() => import('./app/onboarding/page'));
+const LoginPage = lazy(() => import('./app/login/page'));
+const DiscoveryPage = lazy(() => import('./app/discover/page'));
+const RecipesPage = lazy(() => import('./app/recipes/page'));
+const ProfilePage = lazy(() => import('./app/profile/page'));
+const FoodDnaPage = lazy(() => import('./app/food-dna/page'));
+const PlanPage = lazy(() => import('./app/plan/page'));
+const ShoppingListPage = lazy(() => import('./app/shopping-list/page'));
+const FavoritesPage = lazy(() => import('./app/favorites/page'));
+const AssistantPage = lazy(() => import('./app/assistant/page'));
+const SettingsPage = lazy(() => import('./app/settings/page'));
+const NotificationsPage = lazy(() => import('./app/notifications/page'));
+const AchievementsPage = lazy(() => import('./app/achievements/page'));
+const SupportPage = lazy(() => import('./app/support/page'));
+const AdminPage = lazy(() => import('./app/admin/page'));
+const TermsPage = lazy(() => import('./app/terms/page'));
+const PrivacyPage = lazy(() => import('./app/privacy/page'));
+const NotFound = lazy(() => import('./shell/NotFound'));
 
 // FE-RESET-A — clean app root.
 // Providers wired per spec: MantineProvider (GES theme, RTL) · QueryClient ·
-// Auth · Recipe · BrowserRouter. The Mantine theme reuses the preserved
+// Auth · BrowserRouter. The obsolete root RecipeProvider was removed: its catalog
+// request had no mounted consumer in the active route tree.
+// The Mantine theme reuses the preserved
 // GES adapter (theme/garnish-theme.js → tokens.css) and pins the Persian
 // face so every component renders in Vazirmatn. RTL comes from DirectionProvider
 // + `dir="rtl"` on <html>; reduced-motion is respected app-wide.
-const queryClient = new QueryClient();
+export function shouldRetryQuery(failureCount, error) {
+  const status = error?.response?.status ?? error?.status;
+  if (Number.isFinite(status) && status >= 400 && status < 500) return false;
+  return failureCount < 1;
+}
+
+export function createAppQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 30_000,
+        gcTime: 5 * 60_000,
+        retry: shouldRetryQuery,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+      },
+      mutations: { retry: false },
+    },
+  });
+}
+
+const queryClient = createAppQueryClient();
 installE2EQueryInspection({
   queryClient,
   enabled: import.meta.env.VITE_E2E_QUERY_INSPECTION === 'true',
@@ -173,12 +196,10 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <MantineProvider theme={theme} defaultColorScheme="light">
             <AuthProvider>
-              <RecipeProvider>
-                <BrowserRouter>
-                  <RouteTracker />
-                  <AppRoutes />
-                </BrowserRouter>
-              </RecipeProvider>
+              <BrowserRouter>
+                <RouteTracker />
+                <AppRoutes />
+              </BrowserRouter>
             </AuthProvider>
           </MantineProvider>
         </QueryClientProvider>
@@ -187,44 +208,59 @@ export default function App() {
   );
 }
 
+export function RouteFallback() {
+  return (
+    <div className="g-route-fallback" role="status" aria-live="polite" aria-atomic="true">
+      <span className="g-route-fallback__bar g-skeleton" aria-hidden="true" />
+      <span>در حال آماده‌سازی صفحه…</span>
+    </div>
+  );
+}
+
+function RouteBoundary({ children }) {
+  return <Suspense fallback={<RouteFallback />}>{children}</Suspense>;
+}
+
+const routeElement = (element) => <RouteBoundary>{element}</RouteBoundary>;
+
 /** The route tree, exported so tests can mount it under a MemoryRouter and verify the shell wraps a route. */
 export function AppRoutes() {
   return (
-                  <Routes>
-                    {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
-                    <Route path="/onboarding" element={<OnboardingPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<Navigate to="/login?mode=signup" replace />} />
-                    {/* Public legal pages — opened (target=_blank) from the onboarding consent links */}
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="/recipe/:id" element={<RecipeDetailPage />} />
-                    <Route path="/admin" element={<AdminPage />} />
-                    {/* Cook Mode wears the standard app shell (TopBar + BottomNav) but stays publicly
-                        reachable from a recipe — same access level as Recipe Detail, so NOT behind RequireAuth */}
-                    <Route element={<AppShell />}>
-                      <Route path="/cook/:id" element={<CookPage />} />
-                    </Route>
-                    <Route element={<RequireAuth />}>
-                      <Route element={<AppShell />}>
-                        <Route index element={<HomePage />} />
-                        <Route path="/discover" element={<DiscoveryPage />} />
-                        <Route path="/recipes" element={<RecipesPage />} />
-                        {/* Profile stays a summary/control center; Food DNA owns the detailed taste workflow. */}
-                        <Route path="/profile" element={<ProfilePage key="profile" />} />
-                        {/* S2: dedicated Food DNA activation screen (was ProfilePage initialView="dna") */}
-                        <Route path="/food-dna" element={<FoodDnaPage />} />
-                        <Route path="/plan" element={<PlanPage />} />
-                        <Route path="/shopping-list" element={<ShoppingListPage />} />
-                        <Route path="/favorites" element={<FavoritesPage />} />
-                        <Route path="/assistant" element={<AssistantPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/notifications" element={<NotificationsPage />} />
-                        <Route path="/support" element={<SupportPage />} />
-                        <Route path="/achievements" element={<AchievementsPage />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Route>
-                    </Route>
-                  </Routes>
+    <Routes>
+      {/* Recipe Detail is a standalone immersive screen (own hero controls + action shelf) */}
+      <Route path="/onboarding" element={routeElement(<OnboardingPage />)} />
+      <Route path="/login" element={routeElement(<LoginPage />)} />
+      <Route path="/register" element={<Navigate to="/login?mode=signup" replace />} />
+      {/* Public legal pages — opened (target=_blank) from the onboarding consent links */}
+      <Route path="/terms" element={routeElement(<TermsPage />)} />
+      <Route path="/privacy" element={routeElement(<PrivacyPage />)} />
+      <Route path="/recipe/:id" element={routeElement(<RecipeDetailPage />)} />
+      <Route path="/admin" element={routeElement(<AdminPage />)} />
+      {/* Cook Mode wears the standard app shell (TopBar + BottomNav) but stays publicly
+          reachable from a recipe — same access level as Recipe Detail, so NOT behind RequireAuth */}
+      <Route element={<AppShell />}>
+        <Route path="/cook/:id" element={routeElement(<CookPage />)} />
+      </Route>
+      <Route element={<RequireAuth />}>
+        <Route element={<AppShell />}>
+          <Route index element={routeElement(<HomePage />)} />
+          <Route path="/discover" element={routeElement(<DiscoveryPage />)} />
+          <Route path="/recipes" element={routeElement(<RecipesPage />)} />
+          {/* Profile stays a summary/control center; Food DNA owns the detailed taste workflow. */}
+          <Route path="/profile" element={routeElement(<ProfilePage key="profile" />)} />
+          {/* S2: dedicated Food DNA activation screen (was ProfilePage initialView="dna") */}
+          <Route path="/food-dna" element={routeElement(<FoodDnaPage />)} />
+          <Route path="/plan" element={routeElement(<PlanPage />)} />
+          <Route path="/shopping-list" element={routeElement(<ShoppingListPage />)} />
+          <Route path="/favorites" element={routeElement(<FavoritesPage />)} />
+          <Route path="/assistant" element={routeElement(<AssistantPage />)} />
+          <Route path="/settings" element={routeElement(<SettingsPage />)} />
+          <Route path="/notifications" element={routeElement(<NotificationsPage />)} />
+          <Route path="/support" element={routeElement(<SupportPage />)} />
+          <Route path="/achievements" element={routeElement(<AchievementsPage />)} />
+          <Route path="*" element={routeElement(<NotFound />)} />
+        </Route>
+      </Route>
+    </Routes>
   );
 }

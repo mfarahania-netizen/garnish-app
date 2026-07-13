@@ -36,6 +36,7 @@ export default function TopBar({ onMenuOpen }) {
   return (
     <Box
       component="header"
+      aria-label="نوار بالای برنامه"
       className="g-safe-top"
       style={{
         position: 'sticky',
@@ -68,7 +69,7 @@ export default function TopBar({ onMenuOpen }) {
 
         {/* center — wordmark → home */}
         <Box style={{ display: 'flex', justifyContent: 'center', minInlineSize: 0 }}>
-          <UnstyledButton component={Link} to="/" aria-label="گارنیش — خانه" style={{ display: 'inline-flex' }}>
+          <UnstyledButton component={Link} to="/" aria-label="گارنیش — خانه" style={{ ...iconButton, color: 'inherit' }}>
             <Image src="/logo-garnish.png" alt="گارنیش" h={32} w="auto" fit="contain" />
           </UnstyledButton>
         </Box>

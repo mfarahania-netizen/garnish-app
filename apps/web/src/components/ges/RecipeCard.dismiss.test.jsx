@@ -8,12 +8,22 @@ import RecipeCard from './RecipeCard';
  * + optimistically remove the card) and does NOT trigger onOpen.
  */
 describe('RecipeCard — not-interested control (FI-STEP-1)', () => {
-  it('opens the recipe from media and title/body surfaces', () => {
+  it('keeps one keyboard open control while media remains pointer-clickable', () => {
     const onOpen = vi.fn();
-    renderWithProviders(<RecipeCard title="قورمه سبزی" cookTimeText="۶۰ دقیقه" onOpen={onOpen} />);
-    fireEvent.click(screen.getByRole('button', { name: 'قورمه سبزی — مشاهدهٔ دستور' }));
-    fireEvent.click(screen.getByRole('button', { name: 'قورمه سبزی — دیدن دستور' }));
+    const { container } = renderWithProviders(<RecipeCard title="قورمه سبزی" cookTimeText="۶۰ دقیقه" onOpen={onOpen} />);
+    const openButton = screen.getByRole('button', { name: 'قورمه سبزی — دیدن دستور' });
+    expect(screen.getAllByRole('button', { name: /دستور/ })).toHaveLength(1);
+    const mediaSurface = container.querySelector('[data-recipe-card-media-open="true"]');
+    expect(mediaSurface).toHaveAttribute('aria-hidden', 'true');
+    fireEvent.click(mediaSurface);
+    fireEvent.click(openButton);
     expect(onOpen).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the hero CTA inside that single open control', () => {
+    renderWithProviders(<RecipeCard variant="hero" title="عدس پلو" onOpen={vi.fn()} />);
+    expect(screen.getAllByRole('button', { name: /دستور/ })).toHaveLength(1);
+    expect(screen.getByText('دیدن دستور')).toBeInTheDocument();
   });
 
   it('does not open the recipe when save is tapped', () => {

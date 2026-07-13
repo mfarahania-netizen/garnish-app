@@ -1,12 +1,11 @@
 /* ============================================================
    GARNISH BASE STYLES — GES v1
-   DRAFT — for later implementation by coding assistant after approval
-   STATUS: DRAFT_PENDING_UX_APPROVAL (all values are proposals until Designer sign-off)
+   STATUS: IMPLEMENTED_PRODUCT_FOUNDATION (formal design review remains separate)
    Resets, defaults, accessibility, RTL/LTR helpers, mobile safe areas.
    Consumes tokens.css only — no raw values beyond resets.
    ============================================================ */
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;max-inline-size:100%;overflow-x:clip}
 body{
   margin:0;
   background:var(--g-color-bg-canvas);
@@ -15,7 +14,10 @@ body{
   font-size:var(--g-font-size-16);
   line-height:var(--g-leading-body);
   -webkit-font-smoothing:antialiased;
+  min-height:100vh;
   min-height:100dvh;
+  max-inline-size:100%;
+  overflow-x:clip;
 }
 :lang(fa){font-family:var(--g-font-fa)}
 h1,h2,h3,h4{font-family:var(--g-font-display);line-height:var(--g-leading-heading);margin:0;color:var(--g-color-text-primary)}
@@ -25,18 +27,43 @@ img,video{max-width:100%;display:block}
 button,input,select,textarea{font:inherit;color:inherit}
 
 /* Fluid root — retires legacy fixed #root width (migration P0) */
-#root{width:100%;min-height:100dvh}
+#root{width:100%;min-height:100vh;min-height:100dvh;max-inline-size:100%;overflow-x:clip}
 
-/* Focus — never removed, always visible */
-:focus{outline:none}
-:focus-visible{box-shadow:var(--g-focus-ring);border-radius:var(--g-radius-input)}
+/* Focus — outline survives clipped shadows and Windows forced-colour mode. */
+:focus{outline:2px solid transparent;outline-offset:var(--g-focus-outline-offset)}
+:focus-visible{outline:var(--g-focus-outline-width) solid var(--g-color-focus-ring);outline-offset:var(--g-focus-outline-offset)}
 
 /* Touch targets & tap feedback baseline */
-button,[role="button"],a.g-action{min-height:44px;min-width:44px;touch-action:manipulation}
+button,[role="button"],a.g-action,nav a{
+  min-block-size:var(--g-control-min-size);
+  min-inline-size:var(--g-control-min-size);
+  touch-action:manipulation;
+}
+/* Scope the accessible action pair to controls without recolouring decorative brand surfaces. */
+button,[role="button"],a.g-action{
+  --g-color-brand-600:var(--g-color-action-primary-bg);
+  --g-color-text-inverse:var(--g-color-action-primary-fg);
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),select,textarea{min-block-size:var(--g-input-min-size)}
 
 /* Mobile safe areas (Action Shelf / bottom nav consumers) */
-.g-safe-bottom{padding-bottom:calc(var(--g-space-4) + env(safe-area-inset-bottom))}
-.g-safe-top{padding-top:env(safe-area-inset-top)}
+.g-safe-bottom{padding-bottom:calc(var(--g-space-4) + env(safe-area-inset-bottom,0px))}
+.g-safe-top{padding-top:env(safe-area-inset-top,0px)}
+
+/* App-shell resilience: preserve intentional inner rails while preventing document-level RTL drift. */
+.g-app-shell,.g-app-shell__frame,.g-app-main{min-inline-size:0;max-inline-size:100%}
+.g-app-shell,.g-app-shell__frame{min-block-size:100vh;min-block-size:100dvh}
+.g-app-main>*{min-inline-size:0;max-inline-size:100%}
+.g-skip-link{
+  position:fixed;inset-block-start:calc(env(safe-area-inset-top,0px) + var(--g-space-2));inset-inline-start:var(--g-space-2);
+  z-index:var(--g-z-toast);display:inline-flex;align-items:center;justify-content:center;
+  min-block-size:var(--g-control-min-size);padding-inline:var(--g-space-4);border-radius:var(--g-radius-input);
+  background:var(--g-color-action-primary-bg);color:var(--g-color-action-primary-fg);font-family:var(--g-font-fa);
+  text-decoration:none;transform:translateY(-200%);
+}
+.g-skip-link:focus-visible{transform:none}
+.g-route-fallback{min-block-size:40dvh;display:grid;place-content:center;justify-items:center;gap:var(--g-space-3);padding:var(--g-space-6);font-family:var(--g-font-fa);font-size:var(--g-font-size-14);color:var(--g-color-text-secondary);text-align:center}
+.g-route-fallback__bar{display:block;inline-size:96px;block-size:8px;border-radius:var(--g-radius-chip)}
 
 /* RTL/LTR: logical-by-default helpers (physical left/right forbidden in components) */
 .g-start{text-align:start}
@@ -58,10 +85,16 @@ button,[role="button"],a.g-action{min-height:44px;min-width:44px;touch-action:ma
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms!important;
+    animation-delay:0ms!important;
     animation-iteration-count:1!important;
     transition-duration:.01ms!important;
+    transition-delay:0ms!important;
     scroll-behavior:auto!important;
   }
+}
+
+@media (forced-colors:active){
+  :focus-visible{outline-color:CanvasText}
 }
 
 /* Screen-reader-only utility */
