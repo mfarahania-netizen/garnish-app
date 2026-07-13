@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-07-13T20:29:11.639Z",
+  "database": "garnish_p0a_v34_browser_20260713_235611",
+  "tableCounts": {
+    "User": 2,
+    "UserConsent": 10,
+    "ConsentLog": 6,
+    "UserEvent": 4,
+    "RecommendationExposure": 0,
+    "FeatureContributionLog": 12,
+    "RecommendationServedItem": 2,
+    "RecommendationAttributionEvent": 0,
+    "SignalObservation": 0,
+    "UserFeature": 33,
+    "UserOutcome": 0,
+    "UserBehaviorTimeline": 0,
+    "ExperimentAssignment": 0,
+    "EventOutbox": 3,
+    "UserAuditLog": 1
+  },
+  "optionalWithdrawalWindow": {
+    "counts": {
+      "UserEvent": 0,
+      "RecommendationExposure": 0,
+      "FeatureContributionLog": 0,
+      "RecommendationServedItem": 0,
+      "RecommendationAttributionEvent": 0,
+      "SignalObservation": 0,
+      "UserFeature": 0,
+      "UserOutcome": 0,
+      "UserBehaviorTimeline": 0,
+      "ExperimentAssignment": 0,
+      "EventOutbox": 0
+    },
+    "total": 0
+  },
+  "credentialMetadataByTable": {
+    "User": 0,
+    "UserConsent": 0,
+    "ConsentLog": 0,
+    "UserEvent": 0,
+    "RecommendationExposure": 0,
+    "FeatureContributionLog": 0,
+    "RecommendationServedItem": 0,
+    "RecommendationAttributionEvent": 0,
+    "SignalObservation": 0,
+    "UserFeature": 0,
+    "UserOutcome": 0,
+    "UserBehaviorTimeline": 0,
+    "ExperimentAssignment": 0,
+    "EventOutbox": 0,
+    "UserAuditLog": 0
+  },
+  "assertions": {
+    "distinctQaAccounts": true,
+    "consentHistoryPresent": true,
+    "preWithdrawalEventPresent": true,
+    "committedWithdrawalPresent": true,
+    "optionalWritesAfterWithdrawal": 0,
+    "optionalWritesAcrossAuditedTablesInWithdrawalWindow": 0,
+    "droppedEventResidue": 0,
+    "reconsentReplay": 0,
+    "reconsentGrantPresent": true,
+    "explicitPostRegrantActionRows": 1,
+    "crossAccountAssociations": 0,
+    "signalEventOwnerMismatches": 0,
+    "operationalAuditTable": "UserAuditLog",
+    "rawSecretMetadataMatches": 0,
+    "plaintextOtpHashMatches": 0
+  },
+  "status": "PASS"
+}

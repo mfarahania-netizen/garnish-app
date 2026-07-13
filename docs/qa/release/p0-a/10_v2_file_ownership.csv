@@ -1,0 +1,101 @@
+path,classification,owning_agent,finding,reason,may_edit,expected_test,final_status
+apps/server/src/consent/optional-processing-transaction-boundary.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Canonical per-user transaction and User-row lock,yes,unit plus real PostgreSQL interleavings,implemented
+apps/server/src/consent/optional-processing-transaction-boundary.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Boundary retry runtime policy and rollback contract,yes,focused Jest,tested
+apps/server/src/consent/optional-processing-transaction-boundary.integration.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Required non-mock lock interleavings,yes,dedicated disposable PostgreSQL,tested
+apps/server/src/consent/consent.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Consent reads and mutations must share the boundary,yes,consent and interleaving tests,implemented
+apps/server/src/consent/consent.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Consent transaction contract,yes,focused Jest,tested
+apps/server/src/users/users.service.ts,CORE_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Grant and withdrawal mutation entrypoint,yes,users-consent and onboarding tests,implemented
+apps/server/src/users/users-consent.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Grant withdrawal and policy behavior,yes,focused Jest,tested
+apps/server/src/users/users-onboarding.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Onboarding consent transaction compatibility,yes,focused Jest,tested
+apps/server/src/analytics/analytics.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Primary optional UserEvent writer,yes,analytics consent and DB race tests,implemented
+apps/server/src/analytics/analytics.consent-gate.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,No compensation safety invariant,yes,focused Jest,tested
+apps/server/src/analytics/event-enrichment.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Optional derived event mutation,yes,enrichment focused tests,implemented
+apps/server/src/analytics/event-enrichment.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Derived mutation gate,yes,focused Jest,tested
+apps/server/src/behavior-engine/routing/event-outbox.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Optional outbox enqueue and processing,yes,outbox and integration tests,implemented
+apps/server/src/behavior-engine/routing/event-outbox.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Outbox dual-purpose epoch contract,yes,focused Jest,tested
+apps/server/src/recommendation/exposure/exposure-tracking.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Exposure optional writer,yes,exposure and DB race tests,implemented
+apps/server/src/recommendation/exposure/exposure-tracking.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Exposure transaction contract,yes,focused Jest,tested
+apps/server/src/recommendation/pipeline/recommendation-counters.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Served-slate optional writer,yes,counter focused tests,implemented
+apps/server/src/recommendation/pipeline/recommendation-counters.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Served-slate transaction contract,yes,focused Jest,tested
+apps/server/src/experimentation/experiment-engine.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Experiment assignment optional writer,yes,experiment epoch tests,implemented
+apps/server/src/experimentation/experiment-engine.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Experiment transaction contract,yes,focused Jest,tested
+apps/server/src/behavior-engine/signals/signal-calculator.service.ts,BOUNDARY_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Direct signal writer,yes,signal calculator tests,implemented
+apps/server/src/behavior-engine/signals/signal-calculator.service.spec.ts,TEST_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Direct writer transaction contract,yes,focused Jest,tested
+apps/server/src/behavior-engine/signals/signal-detector.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-003,Runtime OFF must precede user discovery and derived writer allocation,yes,SignalDetector zero-call tests,implemented
+apps/server/src/behavior-engine/signals/signal-detector.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-003,Assert zero discovery consent and optional calls,yes,focused Jest,tested
+apps/server/src/behavior-engine/behavior-engine.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Active profile writer integration,yes,behavior consent tests,implemented
+apps/server/src/behavior-engine/feature-store/feature-store.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Feature/vector optional writer integration,yes,feature store tests,implemented
+apps/server/src/behavior-engine/snapshots/snapshot-builder.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Snapshot optional writer integration,yes,snapshot tests,implemented
+apps/server/src/behavior-engine/identity/identity-dimension.builder.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Identity optional writer integration,yes,identity tests,implemented
+apps/server/src/behavior-engine/signals/taste-correction.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Taste optional writer integration,yes,taste tests,implemented
+apps/server/src/behavior-engine/profile/read/profile-read.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Optional answer writer integration,yes,profile read tests,implemented
+apps/server/src/recommendation/pipeline/ranking.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Feature contribution optional writer integration,yes,ranking tests,implemented
+apps/server/src/recommendation/evaluation/recommendation-evaluator.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Recommendation outcome/contribution writer integration,yes,evaluator tests,implemented
+apps/server/src/recommendation/evaluation/recommendation-reward.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Reward outcome writer integration,yes,reward tests,implemented
+apps/server/src/outcomes/health-outcome.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Health optional outcome writer,yes,outcome gate tests,implemented
+apps/server/src/outcomes/behavior-outcome.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Behavior optional outcome writer,yes,outcome gate tests,implemented
+apps/server/src/outcomes/adherence-outcome.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Adherence optional outcome writer,yes,outcome gate tests,implemented
+apps/server/src/gamification/gamification.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Optional derived gamification writer,yes,gamification tests,implemented
+apps/server/src/notifications/notifications.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Smart optional notification writer,yes,notification consent tests,implemented
+apps/server/src/test-support/p0-a-epoch-fixture.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Canonical shared epoch-aware fixture,yes,five formerly-red recommendation suites,tested
+apps/server/src/recommendation/recommendation-requestid-capstone.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Outbox epoch fixture drift,yes,focused suite,tested
+apps/server/src/recommendation/pipeline/fi-phase-2-3-ingredient-soft-taste.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Ranker epoch fixture drift,yes,focused suite,tested
+apps/server/src/recommendation/pipeline/fi-phase-2-2-effort-skill-graft.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Ranker epoch fixture drift,yes,focused suite,tested
+apps/server/src/recommendation/pipeline/l0-loop.integration.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Ranker epoch fixture drift,yes,focused suite,tested
+apps/server/src/recommendation/pipeline/fi-step-1-ranker-effect.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Ranker epoch fixture drift,yes,focused suite,tested
+apps/server/src/analytics/event-producer-inventory.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Stateful provenance promotion mock,yes,focused analytics producer suite,tested
+apps/server/src/auth/auth.service.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Persisted OTP user serializer contract fixture,yes,focused auth suite,tested
+apps/server/src/admin/observability.service.spec.ts,TEST_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Assert stronger current-epoch relation predicate,yes,focused observability suite,tested
+apps/server/src/recommendation/pipeline/ranking.recipe-prior.spec.ts,TEST_REQUIRED,Recipe-Prior Contract Reviewer,ADV-P0A-002,Fail-neutral behavior without provenance,yes,recipe-prior suite,tested
+apps/server/src/recommendation/pipeline/ranking.recipe-prior-step5.spec.ts,TEST_REQUIRED,Recipe-Prior Contract Reviewer,ADV-P0A-002,Future activation contract without fabricated provenance,yes,recipe-prior suite,tested
+docs/architecture/p0-a/recipe_prior_provenance_decision_v1.md,REPORT_REQUIRED,Recipe-Prior Contract Reviewer,ADV-P0A-002,Mandatory Option A versus Option B decision,yes,reviewed against tests,reported
+docs/architecture/p0-a/optional_processing_transaction_boundary_v2.md,REPORT_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Mandatory lock and transaction architecture,yes,reviewed against DB tests,reported
+docs/qa/release/p0-a/11_transaction_boundary_report.md,REPORT_REQUIRED,Transaction Boundary Engineer,ADV-P0A-001,Transaction evidence handoff,yes,report completeness,reported
+docs/qa/release/p0-a/13_branch_regression_closure_report.md,REPORT_REQUIRED,Branch Regression Engineer,ADV-P0A-002,Failure closure handoff,yes,report completeness,reported
+apps/web/src/App.jsx,BOUNDARY_REQUIRED,Coordinator,GAR-LAUNCH-009,E2E-only masked QueryClient instrumentation if required,yes,web cache/session tests,implemented
+apps/web/src/context/AuthContext.jsx,BOUNDARY_REQUIRED,Coordinator,GAR-LAUNCH-009,Account switch and query cleanup evidence hook only if required,yes,AuthContext tests,implemented
+docs/qa/release/p0-a/P0A_PROGRESS.md,REPORT_REQUIRED,Coordinator,P0-A-V2,Continuous gate ledger,yes,manual and file validation,reported
+docs/qa/release/p0-a/12_signal_detector_boundary_report.md,REPORT_REQUIRED,Coordinator,ADV-P0A-003,Signal detector evidence,yes,report completeness,reported
+docs/qa/release/p0-a/14_gap_classification.csv,REPORT_REQUIRED,Coordinator,P0-A-V2,Classify 81 GAP rows,yes,CSV validation,reported
+docs/qa/release/p0-a/14_gap_classification_report.md,REPORT_REQUIRED,Coordinator,P0-A-V2,Gap classification summary,yes,zero ACTIVE_UNGATED_P0 assertion,reported
+docs/qa/release/p0-a/15_v2_full_suite_differential_report.md,REPORT_REQUIRED,Coordinator,P0-A-V2,Final differential evidence,yes,full suite reconciliation,reported
+docs/qa/release/p0-a/16_browser_race_querycache_db_evidence.md,REPORT_REQUIRED,Coordinator,GAR-LAUNCH-009,Browser and DB evidence,yes,production preview plus disposable DB,blocked_browser
+docs/qa/release/p0-a/17_adversarial_rereview.md,REPORT_REQUIRED,Independent Adversarial Reviewer,P0-A-V2,Independent final verdict,yes,attack matrix,reported
+docs/qa/release/p0-a/p0_a_atomic_consent_branch_closure_v2_report.md,REPORT_REQUIRED,Coordinator,P0-A-V2,Main continuation report,yes,all mandatory fields,reported
+docs/qa/release/p0-a/test_results_v2.json,REPORT_REQUIRED,Coordinator,P0-A-V2,Machine-readable tests,yes,JSON parse,reported
+docs/qa/release/p0-a/changed_files_v2.csv,REPORT_REQUIRED,Coordinator,P0-A-V2,Machine-readable v2 changes,yes,git reconciliation,reported
+docs/qa/release/p0-a/open_risks_v2.json,REPORT_REQUIRED,Coordinator,P0-A-V2,Machine-readable risk ledger,yes,JSON parse,reported
+apps/server/src/behavior-engine/behavior-engine.consent-boundary.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove BehaviorEngine writes use the transaction-scoped client,yes,focused BehaviorEngine consent boundary,tested
+apps/server/src/behavior-engine/snapshots/snapshot-builder.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove all snapshot writes use the transaction-scoped client,yes,focused SnapshotBuilder boundary,tested
+apps/server/src/behavior-engine/feature-store/feature-store.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove feature-vector and feature-row writes use the transaction-scoped client,yes,focused FeatureStore boundary,tested
+apps/server/src/behavior-engine/identity/identity-dimension.builder.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove identity-dimension writes use the transaction-scoped client,yes,focused identity boundary,tested
+apps/server/src/behavior-engine/signals/taste-correction.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove taste-correction writes use the transaction-scoped client,yes,focused taste-correction boundary,tested
+apps/server/src/behavior-engine/profile/read/profile-read.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove declared-profile writes use the transaction-scoped client,yes,focused profile-read boundary,tested
+apps/server/src/recommendation/pipeline/ranking.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove feature-contribution writes use the transaction-scoped client,yes,focused ranking boundary,tested
+apps/server/src/recommendation/evaluation/recommendation-evaluator.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove recommendation quality outcomes use the transaction-scoped client,yes,focused evaluator boundary,tested
+apps/server/src/recommendation/evaluation/recommendation-reward.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove recommendation reward outcomes use the transaction-scoped client,yes,focused reward boundary,tested
+apps/server/src/outcomes/outcomes.consent-gate.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove outcome writers use the transaction-scoped client,yes,focused outcomes boundary,tested
+apps/server/src/gamification/gamification.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove gamification writes use the transaction-scoped client,yes,focused gamification boundary,tested
+apps/server/src/notifications/notifications.smart-suggestion-consent.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove smart-suggestion writes use the transaction-scoped client,yes,focused notification boundary,tested
+apps/server/src/notifications/notification-scheduler.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Carry the pre-computation grant epoch into optional notification dispatch,yes,focused notification scheduler boundary,implemented
+apps/server/src/notifications/notification-scheduler.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove scheduler runtime OFF and epoch-aware dispatch behavior,yes,focused notification scheduler boundary,tested
+apps/server/src/behavior-engine/routing/event-router.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Authorize and execute processor writes in one locked transaction,yes,focused router and processor boundary,implemented
+apps/server/src/behavior-engine/routing/processor.registry.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Require transaction-scoped processor execution,yes,focused router and processor boundary,implemented
+apps/server/src/behavior-engine/processors/meal-plan.signal-processor.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Use locked transaction client for observation and signal writes,yes,processor focused tests,implemented
+apps/server/src/behavior-engine/processors/personalization.signal-processor.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Use locked transaction client for observation and signal writes,yes,processor focused tests,implemented
+apps/server/src/behavior-engine/processors/recipe.signal-processor.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Use locked transaction client for observation and signal writes,yes,processor focused tests,implemented
+apps/server/src/behavior-engine/processors/recommendation.signal-processor.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Use locked transaction client for attribution observation and signal writes,yes,processor focused tests,implemented
+apps/server/src/behavior-engine/processors/shopping.signal-processor.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Use locked transaction client for observation and signal writes,yes,processor focused tests,implemented
+apps/server/src/behavior-engine/routing/event-router.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Prove route-time epoch validation and transaction reuse,yes,focused router boundary,tested
+apps/server/src/behavior-engine/processors/direct-processor-runtime-gates.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Retain zero-call runtime OFF contract with transaction signature,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/fi-step-1-learn-from-rejection.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise rejection processors through locked transaction client,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/personalization.signal-processor.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise personalization processor through locked transaction client,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/recipe.signal-processor.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise recipe processor through locked transaction client,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/recipe.signal-processor.cook-loop.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise cook loop through locked transaction client,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/recipe.signal-processor.cuisine.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise cuisine observations through locked transaction client,yes,processor focused tests,tested
+apps/server/src/behavior-engine/processors/shopping.signal-processor.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Exercise shopping processor through locked transaction client,yes,processor focused tests,tested
+apps/server/src/recommendation/pipeline/recommendation-pipeline.service.ts,BOUNDARY_REQUIRED,Coordinator,ADV-P0A-001,Thread the observed joint epoch into served-slate persistence,yes,recommendation pipeline plus counters focused tests,implemented
+apps/server/src/recommendation/pipeline/recommendation-pipeline.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Assert served-slate expectedEpoch threading and fail-closed omission,yes,recommendation pipeline focused test,tested
+apps/server/src/analytics/event-quality.service.spec.ts,TEST_REQUIRED,Coordinator,ADV-P0A-001,Upgrade Gamification E2E fixture to canonical epoch and transaction contract,yes,event-quality focused test,tested
+apps/web/src/lib/private-session-cache.js,BOUNDARY_REQUIRED,Coordinator,GAR-LAUNCH-009,Expose only an explicitly enabled masked QueryClient summary for browser evidence,yes,private-session-cache focused tests,implemented
+apps/web/src/lib/private-session-cache.test.js,TEST_REQUIRED,Coordinator,GAR-LAUNCH-009,Prove inspection is absent by default and never emits raw account or query values,yes,focused Vitest,tested

@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 2,
+  "status": "blocked_by_browser_env",
+  "generatedAt": "2026-07-13T04:30:00+03:30",
+  "branch": {
+    "name": "fix/p0-a-safety-consent-session-isolation-v1",
+    "head": "1631dc5dbf0f0d5b9699399ed8f50ebef4b053ab",
+    "base": "1631dc5dbf0f0d5b9699399ed8f50ebef4b053ab",
+    "originMaster": "1631dc5dbf0f0d5b9699399ed8f50ebef4b053ab",
+    "baseDivergence": false
+  },
+  "environment": {
+    "node": "26.1.0",
+    "pnpm": "9.1.0",
+    "ci": true,
+    "nodeOptions": "--max-old-space-size=8192",
+    "databaseGuard": "postgresql://postgres:postgres@127.0.0.1:1/garnish_p0a_guarded",
+    "optionalRuntimeFlags": "unset except isolated browser QA server",
+    "providerCredentials": "unset",
+    "prismaGeneratedBeforeEveryFullSuite": true
+  },
+  "focused": [
+    {
+      "id": "signal-detector-runtime-off",
+      "result": "pass",
+      "suites": {
+        "passed": 1,
+        "total": 1
+      },
+      "tests": {
+        "passed": 6,
+        "total": 6
+      },
+      "wallSeconds": 55.296
+    },
+    {
+      "id": "recipe-prior-option-b",
+      "result": "pass",
+      "suites": {
+        "passed": 2,
+        "total": 2
+      },
+      "tests": {
+        "passed": 19,
+        "total": 19
+      },
+      "jestSeconds": 49.47,
+      "wallSeconds": 64.3,
+      "decision": "fail-neutral without real observation provenance; updatedAt rejected"
+    },
+    {
+      "id": "transaction-boundary-owned",
+      "result": "pass",
+      "suites": {
+        "passed": 11,
+        "total": 11
+      },
+      "tests": {
+        "passed": 120,
+        "total": 120
+      },
+      "jestSeconds": 19.43,
+      "wallSeconds": 24.795
+    },
+    {
+      "id": "branch-regression-closure",
+      "result": "pass",
+      "suites": {
+        "passed": 8,
+        "total": 8
+      },
+      "tests": {
+        "passed": 60,
+        "total": 60
+      },
+      "jestSeconds": 17.871,
+      "wallSeconds": 20.8
+    },
+    {
+      "id": "coordinator-comprehensive-server",
+      "result": "pass",
+      "suites": {
+        "passed": 46,
+        "total": 46
+      },
+      "tests": {
+        "passed": 360,
+        "total": 360
+      },
+      "jestSeconds": 34.856,
+      "wallSeconds": 37.6
+    },
+    {
+      "id": "coordinator-focused-web",
+      "result": "pass",
+      "files": {
+        "passed": 13,
+        "total": 13
+      },
+      "tests": {
+        "passed": 102,
+        "total": 102
+      },
+      "vitestSeconds": 25.24,
+      "wallSeconds": 27.6
+    },
+    {
+      "id": "event-quality-current-epoch-fixture",
+      "result": "pass",
+      "suites": {
+        "passed": 1,
+        "total": 1
+      },
+      "tests": {
+        "passed": 19,
+        "total": 19
+      },
+      "jestSeconds": 8.747
+    },
+    {
+      "id": "e2e-queryclient-inspection-contract",
+      "result": "pass",
+      "files": {
+        "passed": 5,
+        "total": 5
+      },
+      "tests": {
+        "passed": 35,
+        "total": 35
+      },
+      "note": "Code/test contract only; browser runtime enumeration was not reached."
+    }
+  ],
+  "postgresqlInterleavings": {
+    "id": "optional-processing-transaction-boundary-A-J",
+    "result": "pass",
+    "engine": "PostgreSQL 16",
+    "isolation": "READ COMMITTED plus User FOR UPDATE",
+    "database": "garnish_p0a_v2_tx_test",
+    "suites": {
+      "passed": 1,
+      "total": 1
+    },
+    "tests": {
+      "passed": 10,
+      "total": 10
+    },
+    "jestSeconds": 8.332,
+    "wallSeconds": 11.825,
+    "cases": {
+      "A": "pass",
+      "B": "pass",
+      "C": "pass",
+      "D": "pass",
+      "E": "pass",
+      "F": "pass",
+      "G": "pass",
+      "H": "pass",
+      "I": "pass",
+      "J": "pass"
+    },
+    "residueAfterRun": {
+      "users": 0,
+      "events": 0,
+      "consents": 0
+    },
+    "databaseDropped": true,
+    "catalogCountAfterDrop": 0,
+    "migrationCreated": false,
+    "seedOrImportRun": false
+  },
+  "fullSuiteDifferential": {
+    "server": [
+      {
+        "revision": "clean_base",
+        "run": 1,
+        "result": "fail_baseline",
+        "suites": {
+          "passed": 276,
+          "failed": 2,
+          "skipped": 1,
+          "executed": 278
+        },
+        "tests": {
+          "passed": 2357,
+          "failed": 3,
+          "total": 2360
+        },
+        "jestSeconds": 144.076,
+        "wallSeconds": 150.188,
+        "failureMembership": [
+          "user.serializer.spec.ts (2)",
+          "user-export.service.spec.ts (1)"
+        ]
+      },
+      {
+        "revision": "clean_base",
+        "run": 2,
+        "result": "fail_baseline",
+        "suites": {
+          "passed": 276,
+          "failed": 2,
+          "skipped": 1,
+          "executed": 278
+        },
+        "tests": {
+          "passed": 2357,
+          "failed": 3,
+          "total": 2360
+        },
+        "jestSeconds": 140.523,
+        "wallSeconds": 146.186,
+        "failureMembership": [
+          "user.serializer.spec.ts (2)",
+          "user-export.service.spec.ts (1)"
+        ]
+      },
+      {
+        "revision": "final_branch",
+        "run": 1,
+        "result": "pass",
+        "suites": {
+          "passed": 300,
+          "failed": 0,
+          "skipped": 1,
+          "total": 301
+        },
+        "tests": {
+          "passed": 2593,
+          "failed": 0,
+          "skipped": 10,
+          "total": 2603
+        },
+        "jestSeconds": 156.217,
+        "wallSeconds": 162.428
+      },
+      {
+        "revision": "final_branch",
+        "run": 2,
+        "result": "pass",
+        "suites": {
+          "passed": 300,
+          "failed": 0,
+          "skipped": 1,
+          "total": 301
+        },
+        "tests": {
+          "passed": 2593,
+          "failed": 0,
+          "skipped": 10,
+          "total": 2603
+        },
+        "jestSeconds": 173.279,
+        "wallSeconds": 176.438
+      }
+    ],
+    "web": [
+      {
+        "revision": "clean_base",
+        "run": 1,
+        "result": "fail_baseline",
+        "files": {
+          "passed": 53,
+          "failed": 2,
+          "total": 55
+        },
+        "tests": {
+          "passed": 283,
+          "failed": 4,
+          "total": 287
+        },
+        "vitestSeconds": 156.16,
+        "wallSeconds": 159.166,
+        "failureMembership": [
+          "FoodDNA cold-start",
+          "FoodDNA onboarding",
+          "Onboarding (2)"
+        ]
+      },
+      {
+        "revision": "clean_base",
+        "run": 2,
+        "result": "fail_baseline",
+        "files": {
+          "passed": 53,
+          "failed": 2,
+          "total": 55
+        },
+        "tests": {
+          "passed": 283,
+          "failed": 4,
+          "total": 287
+        },
+        "vitestSeconds": 143.65,
+        "wallSeconds": 146.789,
+        "failureMembership": [
+          "FoodDNA cold-start",
+          "FoodDNA onboarding",
+          "Onboarding (2)"
+        ]
+      },
+      {
+        "revision": "final_branch",
+        "run": 1,
+        "result": "fail_baseline_subset",
+        "files": {
+          "passed": 62,
+          "failed": 1,
+          "total": 63
+        },
+        "tests": {
+          "passed": 363,
+          "failed": 2,
+          "total": 365
+        },
+        "vitestSeconds": 200.68,
+        "wallSeconds": 203.033,
+        "failureMembership": [
+          "FoodDNA cold-start",
+          "FoodDNA onboarding"
+        ]
+      },
+      {
+        "revision": "final_branch",
+        "run": 2,
+        "result": "fail_baseline_subset",
+        "files": {
+          "passed": 62,
+          "failed": 1,
+          "total": 63
+        },
+        "tests": {
+          "passed": 363,
+          "failed": 2,
+          "total": 365
+        },
+        "vitestSeconds": 173.52,
+        "wallSeconds": 176.028,
+        "failureMembership": [
+          "FoodDNA cold-start",
+          "FoodDNA onboarding"
+        ]
+      }
+    ],
+    "conclusion": {
+      "branchOwnedTestFailuresAdded": 0,
+      "baselineServerTestsFixed": 3,
+      "baselineWebTestsFixed": 2,
+      "deterministicRepeat": true
+    }
+  },
+  "compileAndBuild": [
+    {
+      "revision": "clean_base",
+      "target": "server_build",
+      "result": "pass",
+      "wallSeconds": 58.802
+    },
+    {
+      "revision": "clean_base",
+      "target": "web_build",
+      "result": "pass",
+      "wallSeconds": 35.902
+    },
+    {
+      "revision": "final_branch",
+      "target": "server_typescript_no_emit",
+      "result": "pass"
+    },
+    {
+      "revision": "final_branch",
+      "target": "server_build_and_e2e_instrumented_web_build",
+      "result": "pass",
+      "combinedWallSeconds": 101.7,
+      "webViteSeconds": 11.09,
+      "note": "VITE_E2E_QUERY_INSPECTION=true production build accepted."
+    }
+  ],
+  "lintDifferential": [
+    {
+      "revision": "clean_base",
+      "target": "server",
+      "result": "fail_baseline",
+      "errors": 1,
+      "warnings": 18806
+    },
+    {
+      "revision": "final_branch",
+      "target": "server",
+      "result": "fail_same_error_membership",
+      "errors": 1,
+      "warnings": 21456,
+      "newErrors": 0,
+      "warningDelta": 2650
+    },
+    {
+      "revision": "clean_base",
+      "target": "web",
+      "result": "fail_baseline",
+      "errors": 4,
+      "warnings": 35
+    },
+    {
+      "revision": "final_branch",
+      "target": "web",
+      "result": "fail_same_error_membership",
+      "errors": 4,
+      "warnings": 33,
+      "newErrors": 0,
+      "warningDelta": -2
+    }
+  ],
+  "browser": {
+    "result": "blocked_by_browser_env",
+    "productionPreviewBuild": "pass",
+    "pwaBuild": "pass",
+    "e2eQueryInspectionBuild": "pass",
+    "queryInspectionFocusedTests": "pass",
+    "runtimeScenarios": {
+      "required": 13,
+      "passed": 0,
+      "unverified": 13
+    },
+    "directMaskedQueryClientEnumeration": "unverified_runtime",
+    "viewportMeasurements": "unverified",
+    "blocker": [
+      "in-app browser CDP control timed out after one login-page DOM read",
+      "fresh Playwright DOM, DOM-control fallback, and fresh-tab navigation timed out",
+      "ChatGPT Chrome Extension absent from Default, Profile 1, and Profile 2"
+    ],
+    "dataCapturedBeforeFailure": false,
+    "priorV1EvidenceUsedAsV2Pass": false
+  },
+  "browserQaDatabaseCleanup": {
+    "result": "complete_but_vacuous",
+    "database": "garnish_p0a_v2_browser_20260713_0317",
+    "tablesAudited": 15,
+    "tableCounts": {
+      "User": 0,
+      "UserConsent": 0,
+      "ConsentLog": 0,
+      "UserEvent": 0,
+      "RecommendationExposure": 0,
+      "FeatureContributionLog": 0,
+      "RecommendationServedItem": 0,
+      "RecommendationAttributionEvent": 0,
+      "SignalObservation": 0,
+      "UserFeature": 0,
+      "UserOutcome": 0,
+      "UserBehaviorTimeline": 0,
+      "ExperimentAssignment": 0,
+      "EventOutbox": 0,
+      "UserAuditLog": 0
+    },
+    "interpretation": "Startup and cleanup residue are zero, but no browser account or withdrawal existed, so this is not race or account-isolation proof.",
+    "databaseDropped": true,
+    "catalogCountAfterDrop": 0,
+    "migrationsApplied": 52,
+    "migrationCreated": false,
+    "seedOrImportRun": false
+  },
+  "gate": {
+    "branchCodeAndDifferential": "pass_relative_to_baseline",
+    "browser": "blocked",
+    "commitAuthorized": false,
+    "pushAuthorized": false
+  }
+}
