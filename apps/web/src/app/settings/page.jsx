@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Box, Modal, Text, UnstyledButton } from '@mantine/core';
 import {
-  IconSalad, IconShieldHalf, IconBell, IconShieldLock, IconUserCircle, IconAdjustments,
+  IconSalad, IconShieldHalf, IconShieldLock, IconUserCircle, IconAdjustments,
   IconDeviceMobile, IconDownload, IconTrash, IconChevronLeft, IconAlertTriangle, IconPlus, IconCheck,
   IconInfoCircle, IconCloudOff, IconRefresh,
 } from '@tabler/icons-react';
@@ -132,20 +132,6 @@ export default function SettingsPage() {
               </Box>
             </Box>
           ) : null}
-        </Box>
-
-        {/* notifications */}
-        <SectionHead icon={IconBell}>اعلان‌ها</SectionHead>
-        <Box style={{ ...card, overflow: 'hidden' }}>
-          <Box role="note" style={{ padding: 'var(--g-space-3) var(--g-space-4)', background: 'var(--g-color-state-info-bg)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
-            <Text component="p" style={{ margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
-              به‌زودی؛ این تنظیمات هنوز به سرویس ارسال اعلان متصل نیستند و فعلاً غیرفعال‌اند.
-            </Text>
-          </Box>
-          <ToggleRow first label="بریفینگِ هفتگی" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
-          <ToggleRow label="یادآوریِ پیوستگی" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
-          <ToggleRow label="بازگشتِ ملایم" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
-          <ToggleRow label="ساعتِ آرام" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
         </Box>
 
         {/* consent */}

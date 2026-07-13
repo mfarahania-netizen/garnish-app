@@ -109,7 +109,8 @@ export function useProfile() {
       control: {
         allergyGuardActive: allergies.length > 0,
         personalizationGranted: consent.data?.purposes?.personalization?.granted === true,
-        completeness: Math.round(Math.max(0, Math.min(1, score)) * 100),
+        maturityLabel: BAND_SHORT[band] || 'در حال شکل‌گیری',
+        maturityTone: band === 'developing' || band === 'mature' ? 'ok' : 'muted',
       },
     };
   }, [me.data, me.isLoading, me.isError, profile.data, profile.isLoading, profile.isError, gamification.data, gamification.isLoading, gamification.isError, prefs.data, consent.data, me, profile, gamification, prefs, consent]);

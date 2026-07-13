@@ -43,8 +43,6 @@ const readyShape = () => ({
   choosePattern: vi.fn(),
   toggleAllergen: vi.fn(),
   removeLegacyAllergen: vi.fn(),
-  notif: { briefing: true, streak: true, reengage: false, quiet: true },
-  toggleNotif: vi.fn(),
   consent: { personalization: false, analytics: false },
   consentActive: { personalization: false, analytics: false },
   consentRuntimeAvailable: { personalization: true, analytics: true },
@@ -68,6 +66,8 @@ describe('SettingsPage smoke', () => {
     expect(screen.getByRole('button', { name: 'وگان' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'آمارِ استفادهٔ اختیاری' })).toBeInTheDocument();
     expect(screen.queryByText('آمارِ ناشناس')).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 2, name: 'اعلان‌ها' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('switch', { name: 'بریفینگِ هفتگی' })).not.toBeInTheDocument();
   });
 
   it('renders the loading state (skeletons, no throw)', () => {

@@ -65,7 +65,8 @@ function readyShape() {
     control: {
       allergyGuardActive: true,
       personalizationGranted: true,
-      completeness: 62,
+      maturityLabel: 'در حال رشد',
+      maturityTone: 'ok',
     },
   };
 }
@@ -98,6 +99,9 @@ describe('ProfilePage smoke', () => {
     expect(screen.getByText('دسترسی سریع')).toBeInTheDocument();
     expect(screen.queryByText('تاریخچهٔ پخت')).not.toBeInTheDocument();
     expect(screen.getByText('خروج از حساب')).toBeInTheDocument();
+    expect(screen.getByText('شناختِ ذائقه')).toBeInTheDocument();
+    expect(screen.queryByText(/٪/)).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'بلوغ' })).toHaveAttribute('data-ring-mode', 'qualitative');
   });
 
   it('opens a real profile edit dialog from the pencil button', () => {

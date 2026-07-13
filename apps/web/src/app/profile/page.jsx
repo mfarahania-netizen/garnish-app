@@ -74,9 +74,9 @@ function ControlStrip({ control, known }) {
       value: control?.personalizationGranted ? 'فعال' : 'کنترل در تنظیمات',
     },
     {
-      label: 'کامل‌بودن پروفایل',
-      tone: (control?.completeness ?? 0) >= 60 ? 'ok' : 'warn',
-      value: `${toFaDigits(control?.completeness ?? 0)}٪`,
+      label: 'شناختِ ذائقه',
+      tone: control?.maturityTone || 'muted',
+      value: control?.maturityLabel || 'در حال شکل‌گیری',
     },
   ];
   const colors = {
@@ -215,7 +215,7 @@ function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
           <IconChevronLeft size={16} stroke={1.8} aria-hidden="true" style={{ marginInlineStart: 'auto', color: 'var(--g-color-text-muted)' }} />
         </Box>
         <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-4)' }}>
-          <FoodDnaRing value={dna.score} size={96} tone={dna.forming ? 'forming' : 'mature'} caption="بلوغ" />
+          <FoodDnaRing size={96} tone={dna.forming ? 'forming' : 'mature'} caption="بلوغ" showValue={false} displayMode="qualitative" />
           <Box style={{ flex: 1, minInlineSize: 0 }}>
             <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 4, borderRadius: 'var(--g-radius-chip)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
               <IconTrendingUp size={12} stroke={1.8} aria-hidden="true" />{dna.bandLabel}

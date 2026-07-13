@@ -245,14 +245,14 @@ export default function FoodDnaPage() {
     <Column>
       <Header onBack={() => navigate(-1)} />
       <Box component="main" style={{ flex: 1, overflowY: 'auto', paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-8)' }}>
-        {/* maturity ring — band caption always; number ONLY on developing/mature, never cold-start */}
+        {/* Maturity is a qualitative band; the decorative ring is static and does not encode the heuristic score. */}
         <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingBlock: 'var(--g-space-5)' }}>
           <FoodDnaRing
-            value={maturity.score ?? 0}
             size={148}
             tone={tone}
             caption={caption}
-            showValue={!cold}
+            showValue={false}
+            displayMode="qualitative"
             centerIcon={cold ? IconSeedling : undefined}
           />
           <Text component="p" style={{ ...body, textAlign: 'center', maxInlineSize: 320, margin: 'var(--g-space-3) 0 0' }}>{bandLineFa(band, observations)}</Text>

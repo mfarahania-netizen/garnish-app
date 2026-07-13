@@ -89,7 +89,8 @@ describe('FoodDnaPage', () => {
   it('ring shows the band caption (Persian), not the raw English band label', () => {
     useFoodDna.mockReturnValue(READY);
     renderWithProviders(<FoodDnaPage />);
-    expect(screen.getByRole('img', { name: /در حالِ رشد/ })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /در حالِ رشد/ })).toHaveAttribute('data-ring-mode', 'qualitative');
+    expect(screen.queryByRole('img', { name: /٪/ })).not.toBeInTheDocument();
   });
 
   it('HIDES the silent dimension (routine, confidence 0) instead of an empty card', () => {
