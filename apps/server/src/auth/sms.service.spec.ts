@@ -1,4 +1,4 @@
-import { ServiceUnavailableException } from '@nestjs/common';
+import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { SmsService } from './sms.service';
 
 function response(body: string, ok = true) {
@@ -24,9 +24,11 @@ describe('SmsService Melipayamak transport', () => {
     process.env = { ...originalEnv };
     global.fetch = originalFetch;
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   it('accepts a numeric message receipt and sends exactly one pattern variable', async () => {
+    const log = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
     (global.fetch as jest.Mock).mockResolvedValue(response(
       '<?xml version="1.0"?><string xmlns="http://tempuri.org/">123456789</string>',
     ));
@@ -39,6 +41,9 @@ describe('SmsService Melipayamak transport', () => {
     expect(params.get('text')).toBe('123456');
     expect(params.get('to')).toBe('09125859634');
     expect(params.get('bodyId')).toBe('484419');
+    expect(log).toHaveBeenCalledWith('melipayamak accepted receipt=123456789');
+    expect(log.mock.calls.flat().join(' ')).not.toContain('09125859634');
+    expect(log.mock.calls.flat().join(' ')).not.toContain('123456');
   });
 
   it.each(['-2', '14', 'not-a-provider-result'])(
@@ -53,6 +58,23 @@ describe('SmsService Melipayamak transport', () => {
       expect(error.message).not.toContain(providerResult);
     },
   );
+
+  it('rejects a numeric value outside the exact provider XML envelope', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(response('<result>123456789</result>'));
+
+    await expect(new SmsService().sendOtpCode('09125859634', '123456'))
+      .rejects.toThrow('sms_send_failed');
+  });
+
+  it('maps response stream failures to the stable public error', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      text: jest.fn().mockRejectedValue(new Error('body stream failed')),
+    });
+
+    await expect(new SmsService().sendOtpCode('09125859634', '123456'))
+      .rejects.toThrow('sms_send_failed');
+  });
 
   it('requires an explicit body id instead of silently using another account template', async () => {
     delete process.env.MELIPAYAMAK_PATTERN_BODY_ID;
