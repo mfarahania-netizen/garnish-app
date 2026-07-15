@@ -21,7 +21,7 @@ export default function LoginPage() {
     <Box style={{ minBlockSize: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--g-color-bg-canvas)', paddingInline: 'var(--g-space-5)', paddingBlock: 'var(--g-space-6)' }}>
       <AuthForm
         heading="به گارنیش خوش آمدی"
-        sub={reason === 'session-expired' ? 'نشستت منقضی شده. دوباره با کد پیامکی وارد شو.' : 'با شماره موبایل وارد شو یا حساب تازه بساز؛ رمز عبور لازم نیست.'}
+        sub={reason === 'session-expired' ? 'نشستت تمام شده؛ دوباره با کد پیامکی وارد شو.' : 'شماره موبایلت را وارد کن؛ رمز عبور لازم نیست.'}
         onSuccess={afterAuth}
       />
     </Box>

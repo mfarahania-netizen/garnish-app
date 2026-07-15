@@ -29,8 +29,11 @@ apiClient.interceptors.response.use(
       const path = window.location?.pathname || '';
       const isAuthAttempt = /\/auth\/(login|register|guest)$/.test(requestUrl);
       const isPublicAuthRoute = path === '/login' || path === '/onboarding' || path === '/terms' || path === '/privacy';
-      if (!isAuthAttempt) localStorage.removeItem('token');
-      if (!isAuthAttempt && !isPublicAuthRoute && !path.startsWith('/admin')) window.location.href = '/login';
+      if (!isAuthAttempt) {
+        localStorage.removeItem('token');
+        localStorage.setItem('garnish.sessionExpired', 'true');
+      }
+      if (!isAuthAttempt && !isPublicAuthRoute && !path.startsWith('/admin')) window.location.href = '/login?reason=session-expired';
     }
     return Promise.reject(error);
   }

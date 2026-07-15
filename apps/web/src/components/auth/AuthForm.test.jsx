@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import AuthForm from './AuthForm';
 
 const auth = vi.hoisted(() => ({
@@ -20,8 +20,9 @@ vi.mock('@mantine/core', () => ({
 
 vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }) => <>{children}</>,
+  useReducedMotion: () => true,
   motion: new Proxy({}, {
-    get: (_target, tag) => ({ children, ...props }) => {
+    get: (_target, tag) => ({ children, initial: _initial, animate: _animate, exit: _exit, transition: _transition, whileHover: _whileHover, whileTap: _whileTap, ...props }) => {
       const Component = tag;
       return <Component {...props}>{children}</Component>;
     },
@@ -31,8 +32,9 @@ vi.mock('framer-motion', () => ({
 vi.mock('@tabler/icons-react', () => ({
   IconLeaf: () => <span aria-hidden="true" />,
   IconAlertTriangle: () => <span aria-hidden="true" />,
+  IconCheck: () => <span aria-hidden="true" />,
+  IconPencil: () => <span aria-hidden="true" />,
   IconShieldCheck: () => <span aria-hidden="true" />,
-  IconSparkles: () => <span aria-hidden="true" />,
 }));
 
 beforeEach(() => {
@@ -51,8 +53,8 @@ describe('AuthForm OTP behavior', () => {
     auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', resendCooldownSeconds: 0 });
     render(<AuthForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '09125859634' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
 
     await waitFor(() => expect(auth.requestOtp).toHaveBeenCalledWith('09125859634'));
     expect(screen.getByLabelText('کد ورود')).toBeInTheDocument();
@@ -61,28 +63,72 @@ describe('AuthForm OTP behavior', () => {
   it('rejects +98 and 0098 formats in the primary OTP flow', async () => {
     render(<AuthForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '+989125859634' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '+989125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
 
     expect(auth.requestOtp).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toHaveTextContent('فقط با فرمت ۰۹');
   });
 
-  it('verifies a 6 digit OTP and calls onSuccess', async () => {
+  it('automatically verifies a 6 digit OTP and calls onSuccess without a submit button', async () => {
     const onSuccess = vi.fn();
     auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent' });
     auth.verifyOtp.mockResolvedValue({ id: 'u1', phone: '09125859634' });
     render(<AuthForm onSuccess={onSuccess} />);
 
-    fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '09125859634' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
     await waitFor(() => expect(auth.requestOtp).toHaveBeenCalled());
 
     fireEvent.change(screen.getByLabelText('کد ورود'), { target: { value: '123456' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ورود / ساخت حساب' }));
 
     await waitFor(() => expect(auth.verifyOtp).toHaveBeenCalledWith('09125859634', '123456', undefined));
-    expect(onSuccess).toHaveBeenCalledWith({ id: 'u1', phone: '09125859634' });
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith({ id: 'u1', phone: '09125859634' }));
+    expect(screen.queryByRole('button', { name: /ورود|ساخت حساب/ })).not.toBeInTheDocument();
+  });
+
+  it('shows checking and verified states before completing entry', async () => {
+    const onSuccess = vi.fn();
+    let resolveVerification;
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent' });
+    auth.verifyOtp.mockReturnValue(new Promise((resolve) => { resolveVerification = resolve; }));
+    render(<AuthForm onSuccess={onSuccess} />);
+
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
+    const otpInput = await screen.findByLabelText('کد ورود');
+    fireEvent.change(otpInput, { target: { value: '123456' } });
+
+    expect(await screen.findByText('در حال بررسی کد…')).toBeInTheDocument();
+    await act(async () => resolveVerification({ id: 'u1', phone: '09125859634' }));
+    expect(await screen.findByText('کد تأیید شد؛ در حال ورود…')).toBeInTheDocument();
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
+  });
+
+  it('focuses the OTP input as soon as the code step opens', async () => {
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent' });
+    render(<AuthForm />);
+
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
+
+    const otpInput = await screen.findByLabelText('کد ورود');
+    expect(otpInput).toHaveFocus();
+    expect(screen.queryByLabelText('نام')).not.toBeInTheDocument();
+  });
+
+  it('shows the existing error flow and clears a rejected code for retry', async () => {
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent' });
+    auth.verifyOtp.mockRejectedValue({ response: { data: { message: 'کد نامعتبر است.' } } });
+    render(<AuthForm />);
+
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
+    const otpInput = await screen.findByLabelText('کد ورود');
+    fireEvent.change(otpInput, { target: { value: '111111' } });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('کد نامعتبر است.');
+    await waitFor(() => expect(otpInput).toHaveValue(''));
   });
 
   it('does not render password or forgot-password controls', () => {
@@ -93,25 +139,37 @@ describe('AuthForm OTP behavior', () => {
   });
 
   it('disables resend while the countdown is active', async () => {
-    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', resendCooldownSeconds: 180 });
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', ttlSeconds: 120, resendCooldownSeconds: 60 });
     render(<AuthForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '09125859634' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /ارسال دوباره ·/ })).toBeDisabled());
+    await waitFor(() => expect(screen.getByText(/ارسال دوباره در/)).toHaveTextContent('۱:۰۰'));
+    expect(screen.queryByRole('button', { name: 'ارسال دوباره کد' })).not.toBeInTheDocument();
+  });
+
+  it('renders OTP validity from backend timing and uses launch-safe fallbacks', async () => {
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', ttlSeconds: 180, resendCooldownSeconds: 0 });
+    render(<AuthForm />);
+
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
+
+    expect(await screen.findByText(/کد تا ۳ دقیقه معتبر است/)).toBeInTheDocument();
+    expect(screen.getByText(/ارسال دوباره در/)).toHaveTextContent('۱:۰۰');
   });
 
   it('does not request another OTP when the user changes back to the same phone during cooldown', async () => {
-    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', resendCooldownSeconds: 180 });
+    auth.requestOtp.mockResolvedValue({ ok: true, message: 'sent', resendCooldownSeconds: 60 });
     render(<AuthForm />);
 
-    fireEvent.change(screen.getByPlaceholderText('۰۹...'), { target: { value: '09125859634' } });
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.change(screen.getByLabelText('شماره موبایل'), { target: { value: '09125859634' } });
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
     await waitFor(() => expect(auth.requestOtp).toHaveBeenCalledTimes(1));
 
     fireEvent.click(screen.getByRole('button', { name: 'تغییر شماره' }));
-    fireEvent.click(screen.getByRole('button', { name: 'ارسال کد ورود' }));
+    fireEvent.click(screen.getByRole('button', { name: 'دریافت کد ورود' }));
 
     expect(auth.requestOtp).toHaveBeenCalledTimes(1);
     expect(screen.getByLabelText('کد ورود')).toBeInTheDocument();
