@@ -22,6 +22,12 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  // Safe default: trust no forwarding headers. Deployments behind a known,
+  // network-enforced proxy chain may set the exact hop count so req.ip (and
+  // ThrottlerGuard) identifies the real client without blindly trusting XFF.
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', env.TRUST_PROXY_HOPS);
+
   // E7: consistent error contract + server-side error logging (no PII in logs).
   app.useGlobalFilters(new AllExceptionsFilter());
 

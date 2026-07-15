@@ -52,10 +52,10 @@ describe('RetentionService (E39-1E) — dry-run', () => {
   it('EXCLUDES user_owned_active models (chat/facts/mealPlans/etc.)', async () => {
     const out = await new RetentionService(makeMockPrisma() as never).previewRetention();
     const candidateModels = out.candidates.map((c) => c.model);
-    for (const m of ['chatMessage', 'userFact', 'mealPlan', 'shoppingList', 'favorite' + 'Recipe', 'user', 'userPreference', 'recipe', 'preferenceHistory']) {
+    for (const m of ['chatMessage', 'userFact', 'mealPlan', 'shoppingList', 'favorite' + 'Recipe', 'user', 'userPreference', 'recipe', 'preferenceHistory', 'onboardingProfile', 'onboardingMutation']) {
       expect(candidateModels).not.toContain(m);
     }
-    expect(out.excluded.user_owned_active).toEqual(expect.arrayContaining(['chatMessage', 'userFact', 'mealPlan', 'user', 'preferenceHistory']));
+    expect(out.excluded.user_owned_active).toEqual(expect.arrayContaining(['chatMessage', 'userFact', 'mealPlan', 'user', 'preferenceHistory', 'onboardingProfile', 'onboardingMutation']));
   });
 
   it('EXCLUDES review_required models (derived snapshots / reference content)', async () => {
@@ -114,10 +114,10 @@ describe('RetentionService (E39-1E) — dry-run', () => {
 });
 
 describe('retention-policy completeness (E39-1E safety rail)', () => {
-  it('classifies all 54 schema models exactly once', () => {
+  it('classifies all 56 schema models exactly once', () => {
     const models = RETENTION_POLICY.map((r) => r.model);
     expect(new Set(models).size).toBe(models.length); // no duplicates
-    expect(models.length).toBe(54); // +4 GAMIFY-L4-11 models (userStreak/userAchievement/userProgress/gamificationEvent)
+    expect(models.length).toBe(56); // +4 gamification models +2 onboarding V2 models
   });
 
   it('only standard_365d / ephemeral_30d are prunable, each with timeField + cutoffDays', () => {

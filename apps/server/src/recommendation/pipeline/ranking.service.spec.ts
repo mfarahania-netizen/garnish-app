@@ -2,6 +2,7 @@ import { RankingService } from './ranking.service';
 import { buildRealTimeContext } from '../../context/real-time-context';
 import { CURRENT_PRIVACY_POLICY_VERSION } from '../../consent/consent.constants';
 import { makeP0ATransactionBoundaryPrisma } from '../../test-support/p0-a-epoch-fixture';
+import { onboardingV2Features } from '../../onboarding/onboarding-v2.features';
 
 describe('RankingService', () => {
   const epoch = new Date('2099-07-01T00:00:00.000Z');
@@ -69,11 +70,15 @@ describe('RankingService', () => {
       },
       favoriteRecipe: {
         count: jest.fn().mockResolvedValue(0),
+        create: jest.fn(),
       },
       userFeatureVector: {
         findUnique: jest.fn().mockResolvedValue({
           updatedAt: new Date('2099-07-01T00:01:00.000Z'),
         }),
+      },
+      onboardingProfile: {
+        findUnique: jest.fn().mockResolvedValue(null),
       },
     };
     ({ prisma, tx } = makeP0ATransactionBoundaryPrisma(delegates, 'u1',
@@ -157,6 +162,173 @@ describe('RankingService', () => {
     expect(budgetRank[0].matchedSignals).toEqual(
       expect.arrayContaining(['effort_fit', 'budget_sensitive']),
     );
+  });
+
+  it('ranks an under-15-minute recipe above a slow peer on the first post-onboarding slate', async () => {
+    prisma.recipe.findMany.mockResolvedValue([
+      { id: 'quick', title: 'Quick', cookingTime: 10, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+      { id: 'slow', title: 'Slow', cookingTime: 90, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+    ]);
+    featureStore.getFeatureVector.mockResolvedValue(onboardingV2Features({
+      schemaVersion: 2,
+      completedAt: new Date(),
+      weekdayTimeBucket: 'under_15',
+      likedRecipeIds: [],
+      dislikedRecipeIds: [],
+    }, true));
+    tasteAffinityBuilder.build.mockReturnValue({ score: 0.5, matchedSignals: [] });
+    const ranked = await service.rank('new-user', ['quick', 'slow']);
+    const quick = ranked.find((r) => r.recipeId === 'quick') as any;
+    const slow = ranked.find((r) => r.recipeId === 'slow') as any;
+    expect(ranked[0].recipeId).toBe('quick');
+    expect(quick.scores.effortFit).toBeGreaterThan(slow.scores.effortFit);
+  });
+
+  it('uses V2 taste calibration immediately without creating a FavoriteRecipe', async () => {
+    prisma.recipe.findMany.mockResolvedValue([
+      { id: 'liked', title: 'Liked', imageUrl: '/media/liked.webp', cookingTime: 20, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+      { id: 'disliked', title: 'Disliked', cookingTime: 20, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+    ]);
+    featureStore.getFeatureVector.mockResolvedValue(onboardingV2Features({
+      schemaVersion: 2,
+      completedAt: new Date(),
+      weekdayTimeBucket: '30_60',
+      likedRecipeIds: ['liked'],
+      dislikedRecipeIds: ['disliked'],
+    }, true));
+    tasteAffinityBuilder.build.mockReturnValue({ score: 0.5, matchedSignals: [] });
+    const ranked = await service.rank('new-user', ['liked', 'disliked']);
+    const disliked = ranked.find((r) => r.recipeId === 'disliked') as any;
+    expect(ranked[0].recipeId).toBe('liked');
+    expect(ranked[0].imageUrl).toBe('/media/liked.webp');
+    expect(ranked[0].matchedSignals).toContain('onboarding_taste_like');
+    expect(ranked[0].scores.tasteAffinity).toBe(0.66);
+    expect(disliked.matchedSignals).toContain('onboarding_taste_dislike');
+    expect(disliked.scores.tasteAffinity).toBe(0.26);
+    expect(prisma.favoriteRecipe.create).not.toHaveBeenCalled();
+  });
+
+  describe('live onboarding declarations under independent consent purposes', () => {
+    const profile = (overrides: Record<string, unknown> = {}) => ({
+      schemaVersion: 2,
+      completedAt: new Date('2099-06-30T10:00:00.000Z'),
+      weekdayTimeBucket: 'under_15',
+      likedRecipeIds: ['liked'],
+      dislikedRecipeIds: ['disliked'],
+      ...overrides,
+    });
+    const recipes = [
+      { id: 'quick', title: 'Quick', cookingTime: 10, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+      { id: 'slow', title: 'Slow', cookingTime: 90, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+      { id: 'liked', title: 'Liked', cookingTime: 20, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+      { id: 'disliked', title: 'Disliked', cookingTime: 20, difficulty: 'easy', diet: 'omnivore', mealType: 'dinner', servings: 2, categories: '[]', createdAt: new Date('2026-07-01'), ingredients: [], searchTerms: [] },
+    ];
+    const setConsent = (analytics: boolean, personalization: boolean) => {
+      consent.currentGrantEpoch.mockImplementation(async (_userId: string, purposes: string[]) => {
+        if (purposes.length === 1 && purposes[0] === 'personalization') {
+          return personalization ? epoch : null;
+        }
+        return analytics && personalization ? epoch : null;
+      });
+    };
+
+    beforeEach(() => {
+      prisma.recipe.findMany.mockResolvedValue(recipes);
+      prisma.onboardingProfile.findUnique.mockResolvedValue(profile());
+      tasteAffinityBuilder.build.mockReturnValue({ score: 0.5, matchedSignals: [] });
+    });
+
+    it('uses completed core time for effort with neither analytics nor personalization', async () => {
+      setConsent(false, false);
+
+      const ranked = await service.rank('u1', ['quick', 'slow']);
+      const quick = ranked.find((item) => item.recipeId === 'quick')!;
+      const slow = ranked.find((item) => item.recipeId === 'slow')!;
+
+      expect(quick.scores.effortFit).toBeGreaterThan(slow.scores.effortFit);
+      expect(quick.matchedSignals).toContain('effort_fit');
+      expect(ranked.flatMap((item) => item.matchedSignals)).not.toContain('onboarding_taste_like');
+      expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+      expect(experimentEngine.getWeights).not.toHaveBeenCalled();
+      expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+      expect(prisma.onboardingProfile.findUnique).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        select: {
+          schemaVersion: true,
+          completedAt: true,
+          weekdayTimeBucket: true,
+        },
+      });
+    });
+
+    it('uses declared taste with personalization granted even when analytics is absent', async () => {
+      setConsent(false, true);
+
+      const ranked = await service.rank('u1', ['liked', 'disliked']);
+      const liked = ranked.find((item) => item.recipeId === 'liked')!;
+      const disliked = ranked.find((item) => item.recipeId === 'disliked')!;
+
+      expect(liked.scores.tasteAffinity).toBeGreaterThan(disliked.scores.tasteAffinity);
+      expect(liked.matchedSignals).toContain('onboarding_taste_like');
+      expect(disliked.matchedSignals).toContain('onboarding_taste_dislike');
+      expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+      expect(prisma.userEvent.count).not.toHaveBeenCalled();
+      expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+      expect(prisma.onboardingProfile.findUnique).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        select: expect.objectContaining({ likedRecipeIds: true, dislikedRecipeIds: true }),
+      });
+    });
+
+    it('fails closed on a concurrent personalization withdrawal while retaining core time', async () => {
+      prisma.onboardingProfile.findUnique.mockResolvedValue(profile({ likedRecipeIds: ['slow'], dislikedRecipeIds: [] }));
+      let personalizationReads = 0;
+      consent.currentGrantEpoch.mockImplementation(async (_userId: string, purposes: string[]) => {
+        if (purposes.length !== 1) return null;
+        personalizationReads += 1;
+        return personalizationReads <= 2 ? epoch : null;
+      });
+
+      const ranked = await service.rank('u1', ['quick', 'slow']);
+      const quick = ranked.find((item) => item.recipeId === 'quick')!;
+      const slow = ranked.find((item) => item.recipeId === 'slow')!;
+
+      expect(personalizationReads).toBe(3);
+      expect(quick.scores.effortFit).toBeGreaterThan(slow.scores.effortFit);
+      expect(slow.matchedSignals).not.toContain('onboarding_taste_like');
+      expect(slow.scores.tasteAffinity).toBe(quick.scores.tasteAffinity);
+      expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+      expect(prisma.onboardingProfile.findUnique).toHaveBeenLastCalledWith({
+        where: { userId: 'u1' },
+        select: {
+          schemaVersion: true,
+          completedAt: true,
+          weekdayTimeBucket: true,
+        },
+      });
+    });
+
+    it('does not use taste for analytics-only consent but still applies core time', async () => {
+      setConsent(true, false);
+
+      const ranked = await service.rank('u1', ['quick', 'slow', 'liked']);
+      const quick = ranked.find((item) => item.recipeId === 'quick')!;
+      const slow = ranked.find((item) => item.recipeId === 'slow')!;
+      const liked = ranked.find((item) => item.recipeId === 'liked')!;
+
+      expect(quick.scores.effortFit).toBeGreaterThan(slow.scores.effortFit);
+      expect(liked.matchedSignals).not.toContain('onboarding_taste_like');
+      expect(featureStore.getFeatureVector).not.toHaveBeenCalled();
+      expect(exposureTracking.getPenalties).not.toHaveBeenCalled();
+      expect(prisma.onboardingProfile.findUnique).toHaveBeenCalledWith({
+        where: { userId: 'u1' },
+        select: {
+          schemaVersion: true,
+          completedAt: true,
+          weekdayTimeBucket: true,
+        },
+      });
+    });
   });
 
   // L0 EXIT GATE (clause 2): "recs differ by time-of-day/season". SAME candidate + SAME features —

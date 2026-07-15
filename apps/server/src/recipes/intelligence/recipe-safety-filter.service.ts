@@ -9,7 +9,7 @@ import { PUBLISHED_RECIPE_WHERE } from '../recipe-visibility';
  * THE single, reusable HARD safety gate (guardian H1 rework). The allergy/observance invariant must hold on
  * EVERY user-facing recipe-serving path — /recommendations AND the /recipes popular/fresh rails (Home/
  * Discover) AND search AND similar — not just one. Drops recommendation 'avoid_allergen' (declared allergy)
- * AND 'avoid_constraint' (pork for halal/kosher/no_pork).
+ * AND 'avoid_constraint' (audited no-pork or restrictive diet-pattern mismatch).
  *
  * POLICY:
  *  - Authenticated user → FAIL-CLOSED: if the living profile (incl. its allergy read) can't load, return

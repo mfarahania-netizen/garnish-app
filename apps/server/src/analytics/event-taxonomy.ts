@@ -89,6 +89,9 @@ export enum EventType {
   ADMIN_RECIPE_REJECT = 'admin_recipe_reject',
 
   RECIPE_VIEW = 'recipe_view',
+  // Explicit lightweight preference (e.g. onboarding calibration). It is NOT
+  // a save/favorite and must never mutate FavoriteRecipe.
+  RECIPE_LIKED = 'recipe_liked',
   RECIPE_SHARE = 'recipe_share',
   FAVORITE_ADD = 'favorite_add',
   FAVORITE_REMOVE = 'favorite_remove',

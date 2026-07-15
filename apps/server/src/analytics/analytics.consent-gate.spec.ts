@@ -10,6 +10,7 @@ type ConsentState = {
   analytics?: boolean;
   personalization?: boolean;
   throwFor?: string;
+  policyVersion?: Partial<Record<'analytics' | 'personalization', string>>;
 };
 type StoredEvent = Record<string, unknown>;
 
@@ -38,7 +39,8 @@ function make(
         id: `consent-${purpose}`,
         purpose,
         status: 'granted',
-        policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        policyVersion:
+          state.policyVersion?.[purpose] ?? CURRENT_PRIVACY_POLICY_VERSION,
         createdAt: epoch,
       })));
   });
@@ -151,6 +153,95 @@ describe('AnalyticsService.trackEvent — purpose gates', () => {
     expect(enrichmentMock.enrichEvent).not.toHaveBeenCalled();
     expect(findMany).toHaveBeenCalledTimes(2);
   });
+
+  it('never stores recommendation impressions with analytics-only consent, including through the generic endpoint', async () => {
+    const { svc, created, create, outboxMock } = make({
+      analytics: true,
+      personalization: false,
+    });
+
+    await expect(svc.trackEvent({
+      userId: 'u1',
+      type: 'recommendation_impression',
+      payload: { recipeId: 'r1' },
+    })).resolves.toBeNull();
+
+    expect(created).toEqual([]);
+    expect(create).not.toHaveBeenCalled();
+    expect(outboxMock.enqueue).not.toHaveBeenCalled();
+  });
+
+  it.each(['analytics', 'personalization'] as const)(
+    'rejects a stale %s policy before the recommendation impression write',
+    async (purpose) => {
+      const { svc, created, create } = make({
+        analytics: true,
+        personalization: true,
+        policyVersion: { [purpose]: 'privacy-stale' },
+      });
+
+      await expect(svc.trackRecommendationImpression({
+        userId: 'u1',
+        payload: { recipeId: 'r1' },
+      })).resolves.toBeNull();
+
+      expect(created).toEqual([]);
+      expect(create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('returns the locked joint-consent epoch for a recommendation exposure follow-up', async () => {
+    const { svc, create, update } = make({
+      analytics: true,
+      personalization: true,
+    });
+
+    const result = await svc.trackRecommendationImpression({
+      userId: 'u1',
+      page: 'recommendations',
+      payload: { recipeId: 'r1' },
+    });
+
+    expect(result).toMatchObject({
+      event: {
+        id: 'ev1',
+        consentPurpose: 'personalization',
+        recipeId: 'r1',
+      },
+      grantEpoch: new Date('2026-07-13T00:00:00.000Z'),
+    });
+    expect(create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ consentPurpose: 'personalization' }),
+    });
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    'OPTIONAL_ANALYTICS_INGEST_ENABLED',
+    'OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED',
+  ] as const)(
+    'performs zero consent or event IO when %s is disabled',
+    async (switchName) => {
+      const { svc, create, prismaMock, findMany } = make({
+        analytics: true,
+        personalization: true,
+      });
+      process.env[switchName] = 'false';
+
+      try {
+        await expect(svc.trackEvent({
+          userId: 'u1',
+          type: 'recommendation_impression',
+          payload: { recipeId: 'r1' },
+        })).resolves.toBeNull();
+        expect(prismaMock.$transaction).not.toHaveBeenCalled();
+        expect(findMany).not.toHaveBeenCalled();
+        expect(create).not.toHaveBeenCalled();
+      } finally {
+        process.env[switchName] = 'true';
+      }
+    },
+  );
 
   it.each(['09123456789', 'x'.repeat(200)])(
     'never denormalizes a forged recipeId into the indexed column: %s',

@@ -6,6 +6,7 @@ const routableEvent = (id = 'ev1') => ({
   type: 'cook_complete',
   timestamp: new Date(Date.now() - 600_000),
   consentPurpose: 'personalization',
+  payload: JSON.stringify({ recipeId: 'r1', privateDetail: 'full-payload' }),
 });
 
 function make(
@@ -26,6 +27,14 @@ function make(
     if (data.attempts?.increment != null) next.attempts = (r.attempts || 0) + data.attempts.increment;
     return next;
   };
+  const project = (row: any, select?: Record<string, boolean>) => {
+    if (!row || !select) return row;
+    return Object.fromEntries(
+      Object.entries(select)
+        .filter(([, enabled]) => enabled)
+        .map(([key]) => [key, row[key]]),
+    );
+  };
   let missingEventReads = 0;
   const prisma: any = {
     $executeRaw: jest.fn().mockResolvedValue(0),
@@ -42,40 +51,45 @@ function make(
       }),
       update: jest.fn(async ({ where, data }: any) => { const r = rows.get(where.id); const next = apply(r, data); rows.set(where.id, next); return next; }),
       updateMany: jest.fn(async ({ where, data }: any) => { const r = rows.get(where.id); if (r && (where.status == null || r.status === where.status)) { rows.set(where.id, apply(r, data)); return { count: 1 }; } return { count: 0 }; }),
+      findUnique: jest.fn(async ({ where, select }: any) =>
+        project(rows.get(where.id) ?? null, select)),
       findMany: jest.fn(async ({ where }: any) => [...rows.values()].filter((r) => matches(r, where))),
     },
     userEvent: {
-      findUnique: jest.fn(async ({ where }: any) => {
+      findUnique: jest.fn(async ({ where, select }: any) => {
         if (where.id === 'missing' && missingEventReads++ > 1) return null;
-        return routableEvent(where.id);
+        return project(routableEvent(where.id), select);
       }),
     },
     userConsent: {
-      findMany: jest.fn(async () => {
+      findMany: jest.fn(async ({ where }: any) => {
         const epoch = await epochImpl();
         if (!epoch) return [];
-        return ['analytics', 'personalization'].map((purpose) => ({
-          id: `consent-${purpose}`,
-          purpose,
-          status: 'granted',
-          policyVersion: 'privacy-1405-03-29',
-          createdAt: epoch,
-        }));
+        const purposes = where?.purpose?.in ?? ['analytics', 'personalization'];
+        const decisions: any[] = [];
+        for (const purpose of purposes) {
+          if (await consentImpl(where?.userId ?? 'u1', purpose)) {
+            decisions.push({
+              id: `consent-${purpose}`,
+              purpose,
+              status: 'granted',
+              policyVersion: 'privacy-1405-03-29',
+              createdAt: epoch,
+            });
+          }
+        }
+        return decisions;
       }),
     },
   };
   prisma.$transaction = jest.fn(async (callback: (tx: typeof prisma) => unknown) =>
     callback(prisma));
-  const router: any = { route: jest.fn(routeImpl || (async () => undefined)) };
-  const consent: any = {
-    hasPurpose: jest.fn(consentImpl),
-    currentGrantEpoch: jest.fn(epochImpl),
-  };
+  const route = jest.fn(routeImpl || (async () => undefined));
+  const router: any = { route, routeInLockedTransaction: route };
   return {
-    svc: new EventOutboxService(prisma, router, consent),
+    svc: new EventOutboxService(prisma, router),
     prisma,
     router,
-    consent,
     rows,
   };
 }
@@ -99,10 +113,10 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
 
   it('runtime OFF performs zero outbox/event IO at every public entry point', async () => {
     delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
-    const { svc, prisma, router, consent } = make();
+    const { svc, prisma, router } = make();
 
     await expect(svc.enqueue('ev1')).resolves.toBeNull();
-    await expect(svc.processNow('legacy-row', routableEvent(), 'u1')).resolves.toBeUndefined();
+    await expect(svc.processNow('legacy-row')).resolves.toBeUndefined();
     await expect(svc.drain()).resolves.toEqual({
       processed: 0,
       failed: 0,
@@ -114,8 +128,7 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     expect(prisma.eventOutbox.create).not.toHaveBeenCalled();
     expect(prisma.eventOutbox.findMany).not.toHaveBeenCalled();
     expect(prisma.userEvent.findUnique).not.toHaveBeenCalled();
-    expect(consent.hasPurpose).not.toHaveBeenCalled();
-    expect(consent.currentGrantEpoch).not.toHaveBeenCalled();
+    expect(prisma.userConsent.findMany).not.toHaveBeenCalled();
     expect(router.route).not.toHaveBeenCalled();
   });
 
@@ -140,9 +153,29 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
   });
 
   it('processNow success → routes once and marks the row done', async () => {
-    const { svc, router, rows } = make();
+    const { svc, prisma, router, rows } = make();
     const id = await svc.enqueue('ev1');
-    await svc.processNow(id!, routableEvent(), 'u1');
+    prisma.userEvent.findUnique.mockClear();
+    prisma.userConsent.findMany.mockClear();
+    router.route.mockClear();
+
+    await svc.processNow(id!);
+
+    expect(prisma.userEvent.findUnique.mock.calls).toEqual([
+      [{
+        where: { id: 'ev1' },
+        select: {
+          userId: true,
+          timestamp: true,
+          consentPurpose: true,
+        },
+      }],
+      [{ where: { id: 'ev1' } }],
+    ]);
+    expect(prisma.userConsent.findMany.mock.invocationCallOrder[0])
+      .toBeLessThan(prisma.userEvent.findUnique.mock.invocationCallOrder[1]);
+    expect(prisma.userEvent.findUnique.mock.invocationCallOrder[1])
+      .toBeLessThan(router.route.mock.invocationCallOrder[0]);
     expect(router.route).toHaveBeenCalledTimes(1);
     expect(rows.get(id!).status).toBe('done');
     expect(rows.get(id!).processedAt).toBeTruthy();
@@ -152,19 +185,24 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     const { svc, rows } = make(async () => { throw new Error('router down'); });
     const id = await svc.enqueue('ev1');
     await expect(
-      svc.processNow(id!, routableEvent(), 'u1'),
+      svc.processNow(id!),
     ).resolves.toBeUndefined();
     expect(rows.get(id!).status).toBe('pending');
     expect(rows.get(id!).attempts).toBe(1);
   });
 
   it('processNow deny → never routes and terminally suppresses the row', async () => {
-    const { svc, router, consent, rows } = make(undefined, async () => false);
+    let granted = true;
+    const { svc, prisma, router, rows } = make(
+      undefined,
+      async () => granted,
+    );
     const id = await svc.enqueue('ev1');
+    granted = false;
 
-    await svc.processNow(id!, routableEvent(), 'u1');
+    await svc.processNow(id!);
 
-    expect(consent.hasPurpose).toHaveBeenCalledWith('u1', 'personalization');
+    expect(prisma.userConsent.findMany).toHaveBeenCalled();
     expect(router.route).not.toHaveBeenCalled();
     expect(rows.get(id!)).toMatchObject({
       status: 'done',
@@ -173,36 +211,47 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     expect(rows.get(id!).processedAt).toBeTruthy();
   });
 
-  it('processNow consent read error → fails closed and terminally suppresses the row', async () => {
-    const { svc, router, rows } = make(undefined, async () => {
-      throw new Error('consent store unavailable');
-    });
+  it('processNow consent read error fails closed before full payload read and remains retryable', async () => {
+    const { svc, prisma, router, rows } = make();
     const id = await svc.enqueue('ev1');
+    prisma.userEvent.findUnique.mockClear();
+    prisma.userConsent.findMany.mockRejectedValueOnce(
+      new Error('consent store unavailable'),
+    );
 
     await expect(
-      svc.processNow(id!, routableEvent(), 'u1'),
+      svc.processNow(id!),
     ).resolves.toBeUndefined();
 
     expect(router.route).not.toHaveBeenCalled();
     expect(rows.get(id!)).toMatchObject({
-      status: 'done',
-      error: 'suppressed: personalization consent not granted at routing',
+      status: 'pending',
+      attempts: 1,
+    });
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledTimes(1);
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledWith({
+      where: { id: 'ev1' },
+      select: {
+        userId: true,
+        timestamp: true,
+        consentPurpose: true,
+      },
     });
   });
 
-  it('consent-epoch read error fails closed before routing', async () => {
-    const { svc, consent, router, rows } = make();
+  it('canonical lock error fails closed before routing and leaves the row retryable', async () => {
+    const { svc, prisma, router, rows } = make();
     const id = await svc.enqueue('ev1');
-    consent.currentGrantEpoch.mockRejectedValueOnce(
-      new Error('consent history unavailable'),
+    prisma.$queryRaw.mockRejectedValueOnce(
+      new Error('canonical user lock unavailable'),
     );
 
-    await svc.processNow(id!, routableEvent(), 'u1');
+    await svc.processNow(id!);
 
     expect(router.route).not.toHaveBeenCalled();
     expect(rows.get(id!)).toMatchObject({
-      status: 'done',
-      error: 'suppressed: personalization consent not granted at routing',
+      status: 'pending',
+      attempts: 1,
     });
   });
 
@@ -218,18 +267,28 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
 
   it('withdraw-between-queue-drain → pending row is terminally suppressed without routing', async () => {
     let granted = true;
-    const { svc, router, consent, rows } = make(
+    const { svc, prisma, router, rows } = make(
       undefined,
       async () => granted,
     );
     const id = await svc.enqueue('ev1');
     rows.get(id!).createdAt = ago(300_000);
+    prisma.userEvent.findUnique.mockClear();
 
     // The event was queued while personalization was allowed, then withdrawn before the drain claimed it.
     granted = false;
     const res = await svc.drain();
 
-    expect(consent.hasPurpose).toHaveBeenCalledWith('u1', 'personalization');
+    expect(prisma.userConsent.findMany).toHaveBeenCalled();
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledTimes(1);
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledWith({
+      where: { id: 'ev1' },
+      select: {
+        userId: true,
+        timestamp: true,
+        consentPurpose: true,
+      },
+    });
     expect(router.route).not.toHaveBeenCalled();
     expect(res.suppressed).toBe(1);
     expect(rows.get(id!)).toMatchObject({
@@ -238,9 +297,43 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     });
   });
 
+  it('withdrawal while waiting for the canonical lock never triggers a full payload read', async () => {
+    let granted = true;
+    const { svc, prisma, router, rows } = make(
+      undefined,
+      async () => granted,
+    );
+    const id = await svc.enqueue('ev1');
+    prisma.userEvent.findUnique.mockClear();
+    router.route.mockClear();
+    prisma.$queryRaw.mockImplementationOnce(async () => {
+      // Models a withdrawal that commits before this delivery acquires the
+      // canonical User lock. The locked ledger read must observe the denial.
+      granted = false;
+      return [{ id: 'u1' }];
+    });
+
+    await svc.processNow(id!);
+
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledTimes(1);
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledWith({
+      where: { id: 'ev1' },
+      select: {
+        userId: true,
+        timestamp: true,
+        consentPurpose: true,
+      },
+    });
+    expect(router.route).not.toHaveBeenCalled();
+    expect(rows.get(id!)).toMatchObject({
+      status: 'done',
+      error: 'suppressed: personalization consent not granted at routing',
+    });
+  });
+
   it('analytics withdrawal after enqueue suppresses processNow before routing', async () => {
     let analyticsGranted = true;
-    const { svc, router, consent, rows } = make(
+    const { svc, prisma, router, rows } = make(
       undefined,
       async (_userId, purpose) =>
         purpose === 'analytics' ? analyticsGranted : true,
@@ -248,40 +341,48 @@ describe('EventOutboxService — durable routing (no lost signals)', () => {
     const id = await svc.enqueue('ev1');
     analyticsGranted = false;
 
-    await svc.processNow(id!, routableEvent(), 'u1');
+    await svc.processNow(id!);
 
-    expect(consent.hasPurpose).toHaveBeenCalledWith('u1', 'analytics');
+    expect(prisma.userConsent.findMany).toHaveBeenCalled();
     expect(router.route).not.toHaveBeenCalled();
     expect(rows.get(id!)).toMatchObject({ status: 'done' });
   });
 
   it('temporary terminal-write failure plus re-grant never routes across withdrawal', async () => {
-    let granted = false;
-    const { svc, prisma, router, consent, rows } = make(
+    let granted = true;
+    let epoch = new Date(Date.now() - 3_600_000);
+    const { svc, prisma, router, rows } = make(
       undefined,
       async () => granted,
+      async () => epoch,
     );
     const event = routableEvent();
     const id = await svc.enqueue(event.id);
 
+    granted = false;
     prisma.eventOutbox.update
       .mockRejectedValueOnce(new Error('temporary write failure 1'))
       .mockRejectedValueOnce(new Error('temporary write failure 2'))
       .mockRejectedValueOnce(new Error('temporary write failure 3'));
-    await svc.processNow(id!, event, event.userId);
+    await svc.processNow(id!);
     expect(rows.get(id!).status).toBe('pending');
 
     granted = true;
-    consent.currentGrantEpoch.mockResolvedValue(
-      new Date(event.timestamp.getTime() + 60_000),
-    );
+    epoch = new Date(event.timestamp.getTime() + 60_000);
     rows.get(id!).createdAt = ago(300_000);
+    prisma.userEvent.findUnique.mockClear();
     const res = await svc.drain();
 
-    expect(consent.currentGrantEpoch).toHaveBeenCalledWith('u1', [
-      'analytics',
-      'personalization',
-    ]);
+    expect(prisma.userConsent.findMany).toHaveBeenCalled();
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledTimes(1);
+    expect(prisma.userEvent.findUnique).toHaveBeenCalledWith({
+      where: { id: event.id },
+      select: {
+        userId: true,
+        timestamp: true,
+        consentPurpose: true,
+      },
+    });
     expect(router.route).not.toHaveBeenCalled();
     expect(res.suppressed).toBe(1);
     expect(rows.get(id!)).toMatchObject({

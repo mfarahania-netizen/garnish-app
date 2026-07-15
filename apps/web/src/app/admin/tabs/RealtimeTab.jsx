@@ -12,8 +12,8 @@ const TYPE_FA = {
   favorite_add: 'علاقه‌مندی', start_cooking_click: 'شروعِ پخت', search_unmet: 'جستجوی بی‌نتیجه', login: 'ورود', logout: 'خروج',
   recommendation_impression: 'نمایشِ پیشنهاد', recommendation_click: 'کلیکِ پیشنهاد',
 };
-const rel = (ts) => {
-  const s = Math.max(0, Math.floor((Date.now() - new Date(ts).getTime()) / 1000));
+const rel = (ts, now) => {
+  const s = Math.max(0, Math.floor((now - new Date(ts).getTime()) / 1000));
   if (s < 60) return `${toFaDigits(s)} ثانیه پیش`;
   const m = Math.floor(s / 60); if (m < 60) return `${toFaDigits(m)} دقیقه پیش`;
   const h = Math.floor(m / 60); if (h < 24) return `${toFaDigits(h)} ساعت پیش`;
@@ -27,7 +27,8 @@ export default function RealtimeTab() {
   if (events.isLoading) return <Box style={{ display: 'grid', placeItems: 'center', paddingBlock: 60 }}><Loader color="var(--g-color-brand-600)" /></Box>;
 
   const list = events.data?.events || [];
-  const since = Date.now() - 30 * 60 * 1000;
+  const now = events.dataUpdatedAt || stats.dataUpdatedAt || 0;
+  const since = now - 30 * 60 * 1000;
   const recent = list.filter((e) => new Date(e.timestamp).getTime() >= since);
 
   return (
@@ -48,7 +49,7 @@ export default function RealtimeTab() {
                 <Box style={{ inlineSize: 6, blockSize: 6, borderRadius: '50%', background: 'var(--g-color-brand-400)', flexShrink: 0 }} />
                 <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', color: 'var(--g-color-text-primary)', flexShrink: 0, minInlineSize: 120 }}>{TYPE_FA[e.type] || e.type}</Text>
                 <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '12px', color: 'var(--g-color-text-muted)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.recipeTitle || e.page || ''}</Text>
-                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', flexShrink: 0 }}>{rel(e.timestamp)}</Text>
+                <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: '11px', color: 'var(--g-color-text-muted)', flexShrink: 0 }}>{rel(e.timestamp, now)}</Text>
               </Box>
             ))}
           </Box>

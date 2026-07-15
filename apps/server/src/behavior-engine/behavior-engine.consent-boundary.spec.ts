@@ -132,7 +132,13 @@ describe('BehaviorEngineService personalization consent boundary', () => {
 
   it('scheduler path reaches the same fail-closed entry before profile mutation', async () => {
     process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+    const currentEpoch = new Date(Date.now() - 5 * 60 * 1000);
     const prisma: any = {
+      userConsent: {
+        findMany: jest.fn(async ({ where }: any) =>
+          grantRows(currentEpoch).filter((row) => row.purpose === where.purpose),
+        ),
+      },
       userEvent: {
         findMany: jest.fn(async () => [{ userId: 'u1' }]),
         create: jest.fn(),
@@ -143,7 +149,6 @@ describe('BehaviorEngineService personalization consent boundary', () => {
         findMany: jest.fn(),
       },
       user: { findFirst: jest.fn(async () => null), findUnique: jest.fn() },
-      notification: { createMany: jest.fn() },
     };
     const consent: any = { currentGrantEpoch: jest.fn(async () => null) };
     const service = new BehaviorEngineService(prisma, consent);
@@ -167,11 +172,145 @@ describe('BehaviorEngineService personalization consent boundary', () => {
     expect(prisma.userEvent.findMany).toHaveBeenCalledTimes(1);
     expect(prisma.userEvent.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ consentPurpose: 'personalization' }),
+        where: expect.objectContaining({
+          consentPurpose: 'personalization',
+          OR: [
+            {
+              userId: 'u1',
+              timestamp: { gte: currentEpoch },
+            },
+          ],
+        }),
       }),
     );
     expect(prisma.userEvent.create).not.toHaveBeenCalled();
     expect(prisma.userBehaviorProfile.upsert).not.toHaveBeenCalled();
+  });
+
+  it('scheduler withdrawal excludes the subject before optional event discovery', async () => {
+    const grantedAt = new Date(Date.now() - 30 * 60 * 1000);
+    const withdrawnAt = new Date(Date.now() - 10 * 60 * 1000);
+    const decisions = [
+      ...grantRows(grantedAt),
+      {
+        id: 'personalization-withdrawal',
+        userId: 'u1',
+        purpose: 'personalization',
+        status: 'withdrawn',
+        policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        createdAt: withdrawnAt,
+      },
+    ];
+    const prisma: any = {
+      userConsent: {
+        findMany: jest.fn(async ({ where }: any) =>
+          decisions.filter((row) => row.purpose === where.purpose),
+        ),
+      },
+      userEvent: { findMany: jest.fn(), create: jest.fn() },
+      user: { findFirst: jest.fn(async () => null) },
+    };
+    const engine: any = { processEventsForUser: jest.fn() };
+    const scheduler = new BehaviorEngineScheduler(engine, prisma, {
+      drain: jest.fn(),
+    } as any);
+    const log = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    try {
+      await scheduler.handleCron();
+    } finally {
+      log.mockRestore();
+      warn.mockRestore();
+    }
+
+    expect(prisma.userConsent.findMany).toHaveBeenCalledTimes(2);
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+    expect(engine.processEventsForUser).not.toHaveBeenCalled();
+  });
+
+  it('scheduler re-grant excludes an old-epoch event even when it is inside the activity window', async () => {
+    const now = Date.now();
+    const originalGrantAt = new Date(now - 50 * 60 * 1000);
+    const oldEventAt = new Date(now - 30 * 60 * 1000);
+    const withdrawnAt = new Date(now - 20 * 60 * 1000);
+    const regrantedAt = new Date(now - 10 * 60 * 1000);
+    const decisions = [
+      ...grantRows(originalGrantAt),
+      {
+        id: 'personalization-withdrawal',
+        userId: 'u1',
+        purpose: 'personalization',
+        status: 'withdrawn',
+        policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        createdAt: withdrawnAt,
+      },
+      {
+        id: 'personalization-regrant',
+        userId: 'u1',
+        purpose: 'personalization',
+        status: 'granted',
+        policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+        createdAt: regrantedAt,
+      },
+    ];
+    const event = {
+      userId: 'u1',
+      consentPurpose: 'personalization',
+      timestamp: oldEventAt,
+    };
+    const prisma: any = {
+      userConsent: {
+        findMany: jest.fn(async ({ where }: any) =>
+          decisions.filter((row) => row.purpose === where.purpose),
+        ),
+      },
+      userEvent: {
+        findMany: jest.fn(async ({ where }: any) => {
+          const inActivityWindow = event.timestamp >= where.timestamp.gte;
+          const inCurrentEpoch = where.OR.some(
+            (subject: any) =>
+              subject.userId === event.userId &&
+              event.timestamp >= subject.timestamp.gte,
+          );
+          return event.consentPurpose === where.consentPurpose &&
+            inActivityWindow &&
+            inCurrentEpoch
+            ? [{ userId: event.userId }]
+            : [];
+        }),
+        create: jest.fn(),
+      },
+      user: { findFirst: jest.fn(async () => null) },
+    };
+    const engine: any = { processEventsForUser: jest.fn() };
+    const scheduler = new BehaviorEngineScheduler(engine, prisma, {
+      drain: jest.fn(),
+    } as any);
+    const log = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    try {
+      await scheduler.handleCron();
+    } finally {
+      log.mockRestore();
+      warn.mockRestore();
+    }
+
+    expect(prisma.userEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          consentPurpose: 'personalization',
+          OR: [
+            {
+              userId: 'u1',
+              timestamp: { gte: regrantedAt },
+            },
+          ],
+        }),
+      }),
+    );
+    expect(engine.processEventsForUser).not.toHaveBeenCalled();
   });
 
   it('scheduler performs zero database IO while personalization processing is disabled', async () => {

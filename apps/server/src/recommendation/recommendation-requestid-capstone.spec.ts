@@ -109,6 +109,9 @@ function makeHarness() {
         return next;
       }),
       updateMany: jest.fn(),
+      findUnique: jest.fn(async ({ where }: any) =>
+        outboxRows.get(where.id) ?? null,
+      ),
       findMany: jest.fn(),
     },
     userConsent: { findFirst: jest.fn(async () => null) },
@@ -155,7 +158,7 @@ function makeHarness() {
   const registry = new ProcessorRegistry({} as any, {} as any, {} as any, recommendationProcessor, {} as any);
   const router = new EventRouterService(registry, prisma);
   const consent = makeP0AEpochAwareConsentMock();
-  const outbox = new EventOutboxService(prisma, router, consent as any);
+  const outbox = new EventOutboxService(prisma, router);
   const analytics = new AnalyticsService(
     prisma,
     { enrichEvent: jest.fn() } as any,

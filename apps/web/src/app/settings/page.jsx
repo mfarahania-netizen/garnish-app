@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Box, Text, UnstyledButton } from '@mantine/core';
+import { Box, Modal, Text, UnstyledButton } from '@mantine/core';
 import {
   IconSalad, IconShieldHalf, IconBell, IconShieldLock, IconUserCircle, IconAdjustments,
   IconDeviceMobile, IconDownload, IconTrash, IconChevronLeft, IconAlertTriangle, IconPlus, IconCheck,
@@ -18,9 +18,9 @@ const SectionHead = ({ icon: Icon, children }) => (
 );
 const subLabel = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-secondary)' };
 
-function Switch({ on, onClick, label }) {
+function Switch({ on, onClick, label, disabled = false }) {
   return (
-    <UnstyledButton type="button" onClick={onClick} role="switch" aria-checked={on} aria-label={label} style={{ inlineSize: 44, blockSize: 44, flexShrink: 0, display: 'grid', placeItems: 'center' }}>
+    <UnstyledButton type="button" onClick={onClick} disabled={disabled} role="switch" aria-checked={on} aria-label={label} style={{ inlineSize: 44, blockSize: 44, flexShrink: 0, display: 'grid', placeItems: 'center', opacity: disabled ? 0.55 : 1 }}>
       <Box aria-hidden="true" style={{ position: 'relative', inlineSize: 44, blockSize: 26, borderRadius: 'var(--g-radius-chip)', background: on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-strong)' }}>
         <Box style={{ position: 'absolute', insetBlockStart: 3, insetInlineStart: on ? 21 : 3, inlineSize: 20, blockSize: 20, borderRadius: '50%', background: 'var(--g-color-bg-surface)', boxShadow: 'var(--g-shadow-1)' }} />
       </Box>
@@ -28,24 +28,24 @@ function Switch({ on, onClick, label }) {
   );
 }
 
-function ToggleRow({ label, sub, on, onClick, first }) {
+function ToggleRow({ label, sub, on, onClick, first, disabled = false }) {
   return (
     <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', paddingInline: 'var(--g-space-4)', paddingBlock: 'var(--g-space-3)', borderBlockStart: first ? 'none' : '1px solid var(--g-color-border-subtle)' }}>
       <Box style={{ flex: 1, minInlineSize: 0 }}>
         <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>{label}</Text>
         {sub ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 2 }}>{sub}</Text> : null}
       </Box>
-      <Switch on={on} onClick={onClick} label={label} />
+      <Switch on={on} onClick={onClick} label={label} disabled={disabled} />
     </Box>
   );
 }
 
-function Chip({ label, on, onClick, danger }) {
+function Chip({ label, on, onClick, danger, ariaLabel }) {
   const fg = danger ? 'var(--g-color-allergen-fg)' : on ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)';
   const bg = danger ? 'var(--g-color-allergen-bg)' : on ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)';
   const bd = danger ? 'var(--g-color-allergen-fg)' : on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)';
   return (
-    <UnstyledButton type="button" onClick={onClick} aria-pressed={on} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
+    <UnstyledButton type="button" onClick={onClick} aria-pressed={on} aria-label={ariaLabel || label} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
       {danger ? <IconAlertTriangle size={12} stroke={2} aria-hidden="true" style={{ opacity: on ? 1 : 0.6 }} /> : (on ? <IconCheck size={12} stroke={2.4} aria-hidden="true" /> : <IconPlus size={12} stroke={2} aria-hidden="true" />)}
       {label}
     </UnstyledButton>
@@ -63,9 +63,10 @@ function Seg({ active, label, soon, onClick }) {
 export default function SettingsPage() {
   const s = useSettings();
   const [toast, setToast] = useState(null);
-  const [armDelete, setArmDelete] = useState(false);
-  const tt = useRef(); const dt = useRef();
-  useEffect(() => () => { clearTimeout(tt.current); clearTimeout(dt.current); }, []);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const tt = useRef();
+  useEffect(() => () => { clearTimeout(tt.current); }, []);
   useEffect(() => {
     if (!s.toast) return;
     clearTimeout(tt.current);
@@ -73,9 +74,10 @@ export default function SettingsPage() {
     tt.current = setTimeout(() => setToast(null), 2200);
   }, [s.toast?.ts]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onDelete = () => {
-    if (!armDelete) { setArmDelete(true); clearTimeout(dt.current); dt.current = setTimeout(() => setArmDelete(false), 4000); return; }
-    s.deleteAccount();
+  const closeDeleteDialog = () => {
+    if (s.busy) return;
+    setDeleteOpen(false);
+    setDeleteConfirmation('');
   };
 
   if (s.status === 'loading') {
@@ -120,25 +122,67 @@ export default function SettingsPage() {
           <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
             {s.allergenOptions.map((a) => <Chip key={a.id} label={a.label} on={!!s.allergens[a.id]} onClick={() => s.toggleAllergen(a.id)} danger />)}
           </Box>
+          {s.legacyAllergenOptions?.length ? (
+            <Box role="note" style={{ marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-warning-bg)' }}>
+              <Text component="p" style={{ margin: '0 0 var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-state-warning-fg)' }}>
+                این موارد از نسخهٔ قبلی حفظ شده‌اند، اما پوشش کامل دادهٔ دستورها هنوز تأیید نشده؛ مواد اولیه را هم بررسی کن. برای حذف، همان مورد را بزن.
+              </Text>
+              <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                {s.legacyAllergenOptions.map((a) => <Chip key={a.id} label={`${a.label} · قدیمی`} ariaLabel={`حذف ${a.label}`} on onClick={() => s.removeLegacyAllergen(a.id)} danger />)}
+              </Box>
+            </Box>
+          ) : null}
         </Box>
 
         {/* notifications */}
         <SectionHead icon={IconBell}>اعلان‌ها</SectionHead>
         <Box style={{ ...card, overflow: 'hidden' }}>
-          <ToggleRow first label="بریفینگِ هفتگی" sub="خلاصهٔ آرامِ شروعِ هفته" on={s.notif.briefing} onClick={() => s.toggleNotif('briefing')} />
-          <ToggleRow label="مراقبت از رشته" sub="یادآوریِ مهربان، بدون فشار" on={s.notif.streak} onClick={() => s.toggleNotif('streak')} />
-          <ToggleRow label="بازگشتِ ملایم" sub="وقتی مدتی نبودی" on={s.notif.reengage} onClick={() => s.toggleNotif('reengage')} />
-          <ToggleRow label="ساعتِ آرام (۲۲ تا ۸)" sub="در این بازه اعلان نمی‌فرستیم" on={s.notif.quiet} onClick={() => s.toggleNotif('quiet')} />
+          <Box role="note" style={{ padding: 'var(--g-space-3) var(--g-space-4)', background: 'var(--g-color-state-info-bg)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+            <Text component="p" style={{ margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
+              به‌زودی؛ این تنظیمات هنوز به سرویس ارسال اعلان متصل نیستند و فعلاً غیرفعال‌اند.
+            </Text>
+          </Box>
+          <ToggleRow first label="بریفینگِ هفتگی" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
+          <ToggleRow label="یادآوریِ پیوستگی" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
+          <ToggleRow label="بازگشتِ ملایم" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
+          <ToggleRow label="ساعتِ آرام" sub="پس از راه‌اندازی سرویس اعلان" on={false} disabled />
         </Box>
 
         {/* consent */}
         <SectionHead icon={IconShieldLock}>حریم خصوصی و رضایت</SectionHead>
-        <Box style={{ ...card, overflow: 'hidden' }}>
-          <ToggleRow first label="ساختِ پروفایلِ ذائقه" sub="از انتخاب‌ها برای پیشنهادِ بهتر" on={s.consent.personalization} onClick={() => s.toggleConsent('personalization')} />
-          <ToggleRow label="آمارِ ناشناس" sub="کمک به بهترشدنِ اپ" on={s.consent.analytics} onClick={() => s.toggleConsent('analytics')} />
+        <Box aria-busy={s.consentStatus === 'loading'} style={{ ...card, overflow: 'hidden' }}>
+          <ToggleRow
+            first
+            label="ساختِ پروفایلِ ذائقه"
+            sub={s.consent.personalization && !s.consentRuntimeAvailable?.personalization
+              ? 'انتخاب ثبت شده؛ این قابلیت فعلاً غیرفعال است'
+              : 'استفادهٔ اختیاری از انتخاب‌ها برای پیشنهاد بهتر'}
+            on={s.consent.personalization}
+            onClick={() => s.toggleConsent('personalization')}
+            disabled={s.consentStatus !== 'ready' || s.consentBusy?.personalization}
+          />
+          <ToggleRow
+            label="آمارِ استفادهٔ اختیاری"
+            sub={s.consent.analytics && !s.consentRuntimeAvailable?.analytics
+              ? 'انتخاب ثبت شده؛ جمع‌آوری فعلاً غیرفعال است'
+              : 'رویدادهای متصل به حساب برای بهبود محصول'}
+            on={s.consent.analytics}
+            onClick={() => s.toggleConsent('analytics')}
+            disabled={s.consentStatus !== 'ready' || s.consentBusy?.analytics}
+          />
         </Box>
+        {s.consentStatus === 'error' ? (
+          <Box role="alert" style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', margin: 'var(--g-space-2) 2px 0', color: 'var(--g-color-state-danger-fg)' }}>
+            <Text component="p" style={{ flex: 1, margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'inherit' }}>
+              وضعیت رضایت تأیید نشد؛ گزینه‌های اختیاری خاموش و قفل مانده‌اند.
+            </Text>
+            <UnstyledButton type="button" onClick={s.refetch} aria-label="تلاش دوباره برای بارگذاری رضایت" style={{ minBlockSize: 44, paddingInline: 'var(--g-space-3)', color: 'inherit', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>
+              تلاش دوباره
+            </UnstyledButton>
+          </Box>
+        ) : null}
         <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: 'var(--g-space-2) 2px 0', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
-          <IconInfoCircle size={13} stroke={1.8} aria-hidden="true" style={{ flexShrink: 0, marginBlockStart: 1 }} />هر رضایت قابل‌لغوه؛ با خاموش‌کردن، جمع‌آوریِ همان مورد متوقف می‌شه.
+          <IconInfoCircle size={13} stroke={1.8} aria-hidden="true" style={{ flexShrink: 0, marginBlockStart: 1 }} />این گزینه‌ها اختیاری و قابل‌لغو هستند؛ با خاموش‌کردن، ارسال رویدادهای اختیاری از این دستگاه فوراً متوقف می‌شود.
         </Text>
 
         {/* account */}
@@ -154,9 +198,9 @@ export default function SettingsPage() {
             <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-text-primary)' }}>خروجیِ داده‌هایم</Text>
             <IconChevronLeft size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
           </UnstyledButton>
-          <UnstyledButton type="button" onClick={onDelete} disabled={s.busy} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 52, paddingInline: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)', background: armDelete ? 'var(--g-color-state-danger-bg)' : 'transparent' }}>
+          <UnstyledButton type="button" onClick={() => setDeleteOpen(true)} disabled={s.busy} aria-haspopup="dialog" style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 52, paddingInline: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)' }}>
             <IconTrash size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-danger-fg)' }} />
-            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-state-danger-fg)' }}>{armDelete ? 'برای حذفِ همیشگی دوباره بزن' : 'حذف حساب'}</Text>
+            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, color: 'var(--g-color-state-danger-fg)' }}>حذف حساب</Text>
             <IconChevronLeft size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-danger-fg)' }} />
           </UnstyledButton>
         </Box>
@@ -180,6 +224,45 @@ export default function SettingsPage() {
           </Box>
         </Box>
       </Box>
+
+      <Modal
+        opened={deleteOpen}
+        onClose={closeDeleteDialog}
+        closeOnClickOutside={!s.busy}
+        closeOnEscape={!s.busy}
+        centered
+        title="حذف دائمی حساب"
+        styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 800 }, body: { fontFamily: 'var(--g-font-fa)' } }}
+      >
+        <Text id="delete-account-consequences" component="p" style={{ margin: '0 0 var(--g-space-4)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
+          این کار برگشت‌پذیر نیست. حساب و داده‌های متصل حذف می‌شوند؛ رکوردهای الزامی ممیزی فقط به‌شکل بی‌هویت باقی می‌مانند.
+        </Text>
+        <Text component="label" htmlFor="delete-account-confirmation" style={{ display: 'block', marginBlockEnd: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>
+          برای تأیید، عبارت «حذف حساب» را بنویس.
+        </Text>
+        <input
+          id="delete-account-confirmation"
+          value={deleteConfirmation}
+          onChange={(event) => setDeleteConfirmation(event.target.value)}
+          autoComplete="off"
+          aria-describedby="delete-account-consequences"
+          disabled={s.busy}
+          style={{ inlineSize: '100%', minBlockSize: 44, paddingInline: 'var(--g-space-3)', border: '1px solid var(--g-color-border-strong)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)' }}
+        />
+        <Box style={{ display: 'flex', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-5)' }}>
+          <UnstyledButton type="button" onClick={closeDeleteDialog} disabled={s.busy} style={{ flex: 1, minBlockSize: 44, border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-input)', color: 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontWeight: 700 }}>
+            انصراف
+          </UnstyledButton>
+          <UnstyledButton
+            type="button"
+            onClick={() => { void s.deleteAccount(); }}
+            disabled={deleteConfirmation.trim() !== 'حذف حساب' || s.busy}
+            style={{ flex: 1, minBlockSize: 44, borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-danger-fg)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontWeight: 800, opacity: deleteConfirmation.trim() !== 'حذف حساب' || s.busy ? 0.5 : 1 }}
+          >
+            حذف دائمی حساب
+          </UnstyledButton>
+        </Box>
+      </Modal>
 
       <Toast toast={toast} />
     </Box>

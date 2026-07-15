@@ -45,6 +45,7 @@ export class ExposureTrackingService {
     userId: string,
     recipeIds: string[],
     source = 'recommendation',
+    expectedEpoch?: Date,
   ) {
     const uniqueRecipeIds = [...new Set(recipeIds)].filter(Boolean).sort();
     if (uniqueRecipeIds.length === 0) return 0;
@@ -58,6 +59,7 @@ export class ExposureTrackingService {
         userId,
         purposes: ['analytics', 'personalization'],
         operation: 'recommendation-exposure.track-many',
+        expectedEpoch,
       },
       async (tx) => {
         for (const { id, recipeId } of exposures) {

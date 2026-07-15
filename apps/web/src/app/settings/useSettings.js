@@ -3,26 +3,27 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../context/AuthContext';
-import { getAnalyticsConsent, enableAnalytics, disableAnalytics } from '../../lib/analytics-init';
-import { PATTERN_OPTIONS, ALLERGEN_OPTIONS } from '../onboarding/steps';
+import { enableAnalytics, disableAnalytics } from '../../lib/analytics-init';
+import { CURRENT_PRIVACY_POLICY_VERSION } from '../../lib/consent-policy';
+import { clearRecommendationAttribution } from '../../lib/recommendationAttribution';
+import { PATTERN_OPTIONS, ALLERGEN_OPTIONS, ONBOARDING_ALLERGEN_OPTIONS } from '../onboarding/steps';
 import { invalidateProfileDomain, queryKeys } from '../../lib/queryKeys';
 
 /**
- * useSettings — the food-profile + notification + consent + account editor.
+ * useSettings — the food-profile + consent + account editor.
  *
  * Honest persistence map (the backend is frozen):
  *  - dietary pattern + allergens  → PUT /users/preferences (diet + allergies JSON). The DTO has NO
  *    dislikes/severity field, so those are NOT shown here (no dead control) — documented.
  *  - consent (personalization, analytics) → GET/POST /users/consent. Server is the source of truth;
  *    localStorage is only an optimistic mirror for quick boot/analytics wiring.
- *  - notification prefs → localStorage (no backend prefs endpoint) — honest client-side persistence.
+ *  - notifications are intentionally not exposed as editable settings until a delivery service consumes them.
  *  - account: phone (GET /users/me), data export (GET /users/me/export), delete (DELETE /users/me).
  */
 
-const NOTIF_KEY = 'garnish.notifPrefs';
 const PERS_KEY = 'garnish.consent.personalization';
-const readJson = (k, fallback) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } };
-const DEFAULT_NOTIF = { briefing: true, streak: true, reengage: false, quiet: true };
+const SUPPORTED_ALLERGEN_IDS = new Set(ONBOARDING_ALLERGEN_OPTIONS.map((option) => option.id));
+const ALLERGEN_BY_ID = new Map(ALLERGEN_OPTIONS.map((option) => [option.id, option]));
 
 export function useSettings() {
   const navigate = useNavigate();
@@ -34,104 +35,227 @@ export function useSettings() {
 
   const [pattern, setPattern] = useState('');
   const [allergens, setAllergens] = useState({}); // id → true
-  const [notif, setNotif] = useState(() => ({ ...DEFAULT_NOTIF, ...readJson(NOTIF_KEY, {}) }));
-  const [consent, setConsent] = useState(() => ({
-    // conservative default: never assert a grant we can't verify (onboarding seeds this on real grant)
-    personalization: readJson(PERS_KEY, false),
-    analytics: (typeof getAnalyticsConsent === 'function' ? getAnalyticsConsent() : null) === 'granted',
-  }));
-  const [hydrated, setHydrated] = useState(false);
-  const [busy, setBusy] = useState(false);
+  // Historical declarations outside the currently audited option set remain
+  // visible/removable and are never silently lost on an unrelated save.
+  const [legacyAllergens, setLegacyAllergens] = useState([]);
+  // Persisted mirrors are never canonical: a grant may have been withdrawn on another device.
+  const [consent, setConsent] = useState({ personalization: false, analytics: false });
+  const [consentActive, setConsentActive] = useState({ personalization: false, analytics: false });
+  const [consentRuntimeAvailable, setConsentRuntimeAvailable] = useState({ personalization: false, analytics: false });
+  const [consentHydrated, setConsentHydrated] = useState(false);
+  const [consentWriteUnknown, setConsentWriteUnknown] = useState(false);
+  const [consentBusy, setConsentBusy] = useState({ personalization: false, analytics: false });
+  const [preferenceBusy, setPreferenceBusy] = useState(false);
+  const [accountBusy, setAccountBusy] = useState(false);
   const [toast, setToast] = useState(null);
-  const saveSeq = useRef(0);
+  const preferenceSnapshot = useRef({ pattern: '', allergens: {} });
+  const preferenceWriteChain = useRef(Promise.resolve());
+  const pendingPreferenceWrites = useRef(0);
+  const deleteInFlight = useRef(false);
+  const consentWrites = useRef(new Set());
 
   // hydrate the food profile from the real preferences and keep it synced after assistant/profile writes
   useEffect(() => {
-    if (busy || prefs.isLoading || prefs.isError) return;
+    if (preferenceBusy || prefs.isLoading || prefs.isError) return;
     const allergyNames = (prefs.data?.allergies || []).map((a) => String(a).toLowerCase());
     const map = {};
-    for (const o of ALLERGEN_OPTIONS) if (allergyNames.includes(o.id)) map[o.id] = true;
-    setPattern(prefs.data?.diet || '');
+    for (const o of ONBOARDING_ALLERGEN_OPTIONS) if (allergyNames.includes(o.id)) map[o.id] = true;
+    setLegacyAllergens(allergyNames.filter((id) => !SUPPORTED_ALLERGEN_IDS.has(id) && ALLERGEN_BY_ID.has(id)));
+    const nextPattern = prefs.data?.diet || '';
+    preferenceSnapshot.current = { pattern: nextPattern, allergens: map };
+    setPattern(nextPattern);
     setAllergens(map);
-    setHydrated(true);
-  }, [busy, prefs.isLoading, prefs.isError, prefs.data]);
+  }, [preferenceBusy, prefs.isLoading, prefs.isError, prefs.data]);
 
   useEffect(() => {
-    if (serverConsent.isLoading || serverConsent.isError || !serverConsent.data?.purposes) return;
-    const personalization = serverConsent.data.purposes.personalization?.granted === true;
-    const analytics = serverConsent.data.purposes.analytics?.granted === true;
+    if (serverConsent.isLoading || serverConsent.isFetching || serverConsent.isError || !serverConsent.data?.purposes) {
+      disableAnalytics();
+      clearRecommendationAttribution();
+      setConsent({ personalization: false, analytics: false });
+      setConsentActive({ personalization: false, analytics: false });
+      setConsentRuntimeAvailable({ personalization: false, analytics: false });
+      try { localStorage.setItem(PERS_KEY, 'false'); } catch { /* storage unavailable */ }
+      setConsentHydrated(false);
+      return;
+    }
+    const personalizationDecision = serverConsent.data.purposes.personalization;
+    const analyticsDecision = serverConsent.data.purposes.analytics;
+    const personalization = personalizationDecision?.granted === true
+      && personalizationDecision?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION;
+    const analytics = analyticsDecision?.granted === true
+      && analyticsDecision?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION;
+    const active = {
+      personalization: personalization && personalizationDecision?.processingEnabled === true,
+      analytics: analytics && analyticsDecision?.processingEnabled === true,
+    };
     setConsent({ personalization, analytics });
-    try { localStorage.setItem(PERS_KEY, JSON.stringify(personalization)); } catch { /* */ }
-    if (analytics) enableAnalytics(); else disableAnalytics();
-  }, [serverConsent.isLoading, serverConsent.isError, serverConsent.data]);
+    setConsentActive(active);
+    setConsentRuntimeAvailable({
+      personalization: personalizationDecision?.processingEnabled === true,
+      analytics: analyticsDecision?.processingEnabled === true,
+    });
+    try { localStorage.setItem(PERS_KEY, JSON.stringify(active.personalization)); } catch { /* storage unavailable */ }
+    if (!active.personalization) clearRecommendationAttribution();
+    if (active.analytics) enableAnalytics(); else disableAnalytics();
+    setConsentWriteUnknown(false);
+    setConsentHydrated(true);
+  }, [serverConsent.isLoading, serverConsent.isFetching, serverConsent.isError, serverConsent.data]);
 
   const flash = useCallback((message, icon) => { setToast({ message, icon, ts: Date.now() }); }, []);
 
-  const savePreferences = useCallback(async (next) => {
-    const requestId = saveSeq.current + 1;
-    saveSeq.current = requestId;
-    setBusy(true);
-    try {
-      const body = {};
-      if (Object.prototype.hasOwnProperty.call(next, 'pattern')) body.diet = next.pattern || null;
-      body.allergies = Object.keys(next.allergens);
-      const saved = await apiClient.put('/users/preferences', body).then((r) => r.data);
-      queryClient.setQueryData(queryKeys.preferences, saved);
-      invalidateProfileDomain(queryClient);
-      flash('تغییرات ذخیره شد', 'ok');
-    } catch {
-      flash('ذخیره نشد — تغییرات محلی نگه داشته شد', 'err');
-    } finally {
-      if (saveSeq.current === requestId) setBusy(false);
-    }
+  const savePreferences = useCallback((next) => {
+    const snapshot = { pattern: next.pattern, allergens: { ...next.allergens } };
+    pendingPreferenceWrites.current += 1;
+    setPreferenceBusy(true);
+
+    const write = preferenceWriteChain.current.then(async () => {
+      try {
+        // Unsupported historical values are deliberately omitted. The server preserves
+        // them unless the dedicated DELETE endpoint is used, and its DTO rejects them on PUT.
+        const body = {
+          diet: snapshot.pattern || null,
+          allergies: Object.keys(snapshot.allergens),
+        };
+        const saved = await apiClient.put('/users/preferences', body).then((r) => r.data);
+        queryClient.setQueryData(queryKeys.preferences, saved);
+        invalidateProfileDomain(queryClient);
+        flash('تغییرات ذخیره شد', 'ok');
+      } catch {
+        flash('ذخیره نشد — دوباره تلاش کن', 'err');
+      } finally {
+        pendingPreferenceWrites.current -= 1;
+        if (pendingPreferenceWrites.current === 0) setPreferenceBusy(false);
+      }
+    });
+    preferenceWriteChain.current = write;
+    return write;
   }, [flash, queryClient]);
 
   const choosePattern = useCallback((id) => {
-    const nextPattern = pattern === id ? '' : id;
+    const current = preferenceSnapshot.current;
+    const nextPattern = current.pattern === id ? '' : id;
+    const next = { pattern: nextPattern, allergens: { ...current.allergens } };
+    preferenceSnapshot.current = next;
     setPattern(nextPattern);
-    savePreferences({ pattern: nextPattern, allergens });
-  }, [allergens, pattern, savePreferences]);
+    void savePreferences(next);
+  }, [savePreferences]);
 
   const toggleAllergen = useCallback((id) => {
-    setAllergens((prev) => {
-      const nextMap = { ...prev };
-      if (nextMap[id]) delete nextMap[id]; else nextMap[id] = true;
-      savePreferences({ pattern, allergens: nextMap });
-      return nextMap;
-    });
-  }, [pattern, savePreferences]);
+    const current = preferenceSnapshot.current;
+    const nextMap = { ...current.allergens };
+    if (nextMap[id]) delete nextMap[id]; else nextMap[id] = true;
+    const next = { pattern: current.pattern, allergens: nextMap };
+    preferenceSnapshot.current = next;
+    setAllergens(nextMap);
+    void savePreferences(next);
+  }, [savePreferences]);
 
-  const toggleNotif = useCallback((key) => {
-    setNotif((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      try { localStorage.setItem(NOTIF_KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
-      flash('تغییرات ذخیره شد', 'ok');
-      return next;
+  const removeLegacyAllergen = useCallback((id) => {
+    pendingPreferenceWrites.current += 1;
+    setPreferenceBusy(true);
+    const removal = preferenceWriteChain.current.then(async () => {
+      try {
+        await apiClient.delete('/users/allergies', { data: { allergies: [id] } });
+        setLegacyAllergens((prev) => prev.filter((value) => value !== id));
+        queryClient.setQueryData(queryKeys.preferences, (current) => current ? ({
+          ...current,
+          allergies: (current.allergies || []).filter((value) => String(value).toLowerCase() !== id),
+        }) : current);
+        invalidateProfileDomain(queryClient);
+        flash('حساسیت قدیمی حذف شد', 'ok');
+      } catch {
+        flash('حذف نشد — مورد ایمنی حفظ شد', 'err');
+      } finally {
+        pendingPreferenceWrites.current -= 1;
+        if (pendingPreferenceWrites.current === 0) setPreferenceBusy(false);
+      }
     });
-  }, [flash]);
+    preferenceWriteChain.current = removal;
+    return removal;
+  }, [flash, queryClient]);
 
   const toggleConsent = useCallback(async (key) => {
-    const prev = consent[key];
-    const nextVal = !prev;
-    setConsent((c) => ({ ...c, [key]: nextVal }));
+    if (!['personalization', 'analytics'].includes(key)) return;
+    if (
+      !consentHydrated
+      || consentWriteUnknown
+      || serverConsent.isLoading
+      || serverConsent.isFetching
+      || serverConsent.isError
+      || consentBusy[key]
+      || consentWrites.current.has(key)
+    ) return;
+    const nextVal = !consent[key];
     const type = key === 'personalization' ? 'personalization' : 'analytics';
-    if (key === 'analytics') { if (nextVal) enableAnalytics(); else disableAnalytics(); }
-    if (key === 'personalization') { try { localStorage.setItem(PERS_KEY, JSON.stringify(nextVal)); } catch { /* */ } }
+    consentWrites.current.add(key);
+    setConsentBusy((state) => ({ ...state, [key]: true }));
+
+    // Withdrawal is a local deny boundary. Apply it before any network await and never
+    // restore an old grant merely because the acknowledgement times out.
+    if (!nextVal) {
+      setConsent((state) => ({ ...state, [key]: false }));
+      setConsentActive((state) => ({ ...state, [key]: false }));
+      if (key === 'analytics') disableAnalytics();
+      if (key === 'personalization') {
+        clearRecommendationAttribution();
+        try { localStorage.setItem(PERS_KEY, 'false'); } catch { /* storage unavailable */ }
+      }
+    }
     try {
-      await apiClient.post('/users/consent', { type, granted: nextVal });
+      const acknowledged = await apiClient
+        .post('/users/consent', { type, granted: nextVal })
+        .then((response) => response.data);
+      const canonicalDecision = acknowledged?.purposes?.[type];
+      const canonicalMatch = canonicalDecision?.granted === nextVal
+        && canonicalDecision?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION;
+      if (!canonicalMatch) throw new Error('CONSENT_READBACK_MISMATCH');
+
+      const runtimeAvailable = canonicalDecision?.processingEnabled === true;
+      const active = nextVal && runtimeAvailable;
+      setConsent((state) => ({ ...state, [key]: nextVal }));
+      setConsentActive((state) => ({ ...state, [key]: active }));
+      setConsentRuntimeAvailable((state) => ({ ...state, [key]: runtimeAvailable }));
+      if (key === 'analytics') {
+        if (active) enableAnalytics(); else disableAnalytics();
+      }
+      if (key === 'personalization') {
+        if (!active) clearRecommendationAttribution();
+        try { localStorage.setItem(PERS_KEY, JSON.stringify(active)); } catch { /* storage unavailable */ }
+      }
+      setConsentWriteUnknown(false);
       invalidateProfileDomain(queryClient);
       flash(nextVal ? 'رضایت ثبت شد' : 'رضایت لغو شد', 'ok');
     } catch {
-      // revert — never show a successful-looking consent change that did not persist server-side
-      setConsent((c) => ({ ...c, [key]: prev }));
-      if (key === 'analytics') { if (prev) enableAnalytics(); else disableAnalytics(); }
-      if (key === 'personalization') { try { localStorage.setItem(PERS_KEY, JSON.stringify(prev)); } catch { /* */ } }
-      flash('ثبت نشد — دوباره امتحان کن', 'err');
+      // A timeout can leave canonical state unknown. Keep the local runtime off and
+      // require a fresh canonical read instead of reviving a possibly withdrawn grant.
+      setConsent((state) => ({ ...state, [key]: false }));
+      setConsentActive((state) => ({ ...state, [key]: false }));
+      setConsentRuntimeAvailable((state) => ({ ...state, [key]: false }));
+      if (key === 'analytics') disableAnalytics();
+      if (key === 'personalization') {
+        clearRecommendationAttribution();
+        try { localStorage.setItem(PERS_KEY, 'false'); } catch { /* storage unavailable */ }
+      }
+      setConsentWriteUnknown(true);
+      flash('ثبت نشد — برای بررسی وضعیت دوباره تلاش کن', 'err');
+    } finally {
+      consentWrites.current.delete(key);
+      setConsentBusy((state) => ({ ...state, [key]: false }));
     }
-  }, [consent, flash, queryClient]);
+  }, [
+    consent,
+    consentBusy,
+    consentHydrated,
+    consentWriteUnknown,
+    flash,
+    queryClient,
+    serverConsent.isError,
+    serverConsent.isFetching,
+    serverConsent.isLoading,
+  ]);
 
   const exportData = useCallback(async () => {
-    setBusy(true);
+    setAccountBusy(true);
     try {
       const data = await apiClient.get('/users/me/export').then((r) => r.data);
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -144,36 +268,60 @@ export function useSettings() {
     } catch {
       flash('خروجی نشد — دوباره امتحان کن', 'err');
     } finally {
-      setBusy(false);
+      setAccountBusy(false);
     }
   }, [flash]);
 
   const deleteAccount = useCallback(async () => {
-    setBusy(true);
+    if (deleteInFlight.current) return;
+    deleteInFlight.current = true;
+    setAccountBusy(true);
     try {
       await apiClient.delete('/users/me');
       logout();
-      navigate('/onboarding', { replace: true });
+      navigate('/login', { replace: true });
     } catch {
+      deleteInFlight.current = false;
       flash('حذف نشد — دوباره امتحان کن', 'err');
-      setBusy(false);
+      setAccountBusy(false);
     }
   }, [logout, navigate, flash]);
 
   const account = useMemo(() => ({ phone: me.data?.phone || '', email: me.data?.email || '' }), [me.data]);
 
   let status = 'ready';
-  if (me.isLoading || prefs.isLoading || serverConsent.isLoading) status = 'loading';
-  else if (me.isError) status = 'error';
+  if (me.isLoading || me.isFetching || prefs.isLoading || prefs.isFetching) status = 'loading';
+  else if (me.isError || prefs.isError) status = 'error';
+
+  let consentStatus = 'ready';
+  if (serverConsent.isLoading || serverConsent.isFetching) consentStatus = 'loading';
+  else if (serverConsent.isError || consentWriteUnknown) consentStatus = 'error';
+  else if (!consentHydrated) consentStatus = 'loading';
+
+  const refetch = useCallback(() => {
+    setConsentHydrated(false);
+    setConsentWriteUnknown(false);
+    setConsent({ personalization: false, analytics: false });
+    setConsentActive({ personalization: false, analytics: false });
+    setConsentRuntimeAvailable({ personalization: false, analytics: false });
+    disableAnalytics();
+    clearRecommendationAttribution();
+    try { localStorage.setItem(PERS_KEY, 'false'); } catch { /* storage unavailable */ }
+    me.refetch();
+    prefs.refetch();
+    serverConsent.refetch();
+  }, [me, prefs, serverConsent]);
 
   return {
     status,
-    refetch: () => { me.refetch(); prefs.refetch(); serverConsent.refetch(); },
-    patternOptions: PATTERN_OPTIONS, allergenOptions: ALLERGEN_OPTIONS,
-    pattern, allergens, choosePattern, toggleAllergen,
-    notif, toggleNotif,
-    consent, toggleConsent,
+    consentStatus,
+    refetch,
+    patternOptions: PATTERN_OPTIONS,
+    allergenOptions: ONBOARDING_ALLERGEN_OPTIONS,
+    legacyAllergenOptions: legacyAllergens.map((id) => ALLERGEN_BY_ID.get(id)).filter(Boolean),
+    pattern, allergens, choosePattern, toggleAllergen, removeLegacyAllergen,
+    consent, consentActive, consentRuntimeAvailable, toggleConsent, consentBusy,
     account, exportData, deleteAccount,
-    busy, toast,
+    busy: preferenceBusy || accountBusy, toast,
   };
 }

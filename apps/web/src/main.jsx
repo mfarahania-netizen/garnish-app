@@ -7,14 +7,22 @@ import './index.css'
 import './styles/base.css'
 import App from './App.jsx'
 import { initAnalyticsIfConsented } from './lib/analytics-init'
+import { installPrivateCacheUpgradeGuard, purgeLegacyPrivateCaches } from './lib/private-session-cache'
 
-// E4: do NOT initialize analytics here unconditionally. PostHog is started only
-// if the user has previously granted consent (and only with an env-provided key,
-// on the EU host). See src/lib/analytics-init.js and ConsentModal.jsx.
-initAnalyticsIfConsented()
+async function bootstrap() {
+  // An old worker may still recreate an authenticated API cache until the new
+  // worker claims the page. Keep purging across the ownership transition.
+  installPrivateCacheUpgradeGuard()
+  // Purge legacy private caches before React children can issue account-scoped
+  // requests. AuthProvider mount is intentionally too late for this boundary.
+  await purgeLegacyPrivateCaches()
+  initAnalyticsIfConsented()
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+  createRoot(document.getElementById('root')).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+}
+
+void bootstrap()

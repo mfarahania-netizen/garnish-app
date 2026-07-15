@@ -8,6 +8,29 @@
  * timings + servings. NO medical claims; missing data stays missing.
  */
 import { toStringArray, norm } from '../../ai/tools/grounding-utils';
+import onboardingAllergenPolicyJson from './onboarding-allergen-policy.json';
+
+/**
+ * Canonical onboarding disclosure policy. `enabled` means the CURRENT corpus has at least one published recipe
+ * path whose ingredient metadata exercises the hard gate; it is deliberately NOT a medical-verification claim.
+ * Deferred tokens stay accepted by the profile/chat write boundary, but must not be shown as useful onboarding
+ * choices until the live-data audit proves coverage. The DB-backed audit is
+ * `scripts/data/audit-onboarding-allergen-coverage.cjs`.
+ */
+export type OnboardingAllergenPolicyStatus = 'enabled' | 'deferred';
+export interface OnboardingAllergenPolicyOption {
+  id: string;
+  status: OnboardingAllergenPolicyStatus;
+  reason?: string;
+}
+export const ONBOARDING_ALLERGEN_POLICY = onboardingAllergenPolicyJson as {
+  schemaVersion: number;
+  policy: 'corpus_coverage_not_medical_verification';
+  options: OnboardingAllergenPolicyOption[];
+};
+export const ENABLED_ONBOARDING_ALLERGEN_TOKENS = Object.freeze(
+  ONBOARDING_ALLERGEN_POLICY.options.filter((option) => option.status === 'enabled').map((option) => option.id),
+);
 
 export const DIET_VOCAB = ['omnivore', 'vegetarian', 'vegan', 'pescatarian', 'flexitarian', 'mediterranean', 'keto', 'low_carb', 'paleo', 'halal', 'kosher'];
 export const MEALTYPE_VOCAB = ['breakfast', 'lunch', 'dinner', 'snack'];

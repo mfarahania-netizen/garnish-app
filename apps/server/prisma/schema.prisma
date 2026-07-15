@@ -25,6 +25,8 @@ model User {
   isGuest   Boolean  @default(false)
   deviceKey String?  @unique
   onboardingCompletedAt DateTime?
+  onboardingProfile     OnboardingProfile?
+  onboardingMutations   OnboardingMutation[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -139,6 +141,48 @@ model UserPreference {
   skillLevel String?
   budget     String?
   updatedAt  DateTime @updatedAt
+}
+
+// Onboarding V2 is a versioned, resumable server-side draft. Safety declarations are
+// kept structurally separate from soft taste data; completion atomically projects the
+// validated draft into the canonical profile tables before marking the user complete.
+model OnboardingProfile {
+  userId            String   @id
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schemaVersion     Int      @default(2)
+  revision          Int      @default(0)
+  safetyStatus      String   @default("unknown") // unknown | none | declared
+  allergyIds        Json     @default("[]")
+  intoleranceIds    Json     @default("[]")
+  dietaryRules      Json     @default("[]")
+  dietPattern       String?
+  weekdayTimeBucket String?
+  cooksForCount     String?
+  likedRecipeIds    Json     @default("[]")
+  dislikedRecipeIds Json     @default("[]")
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("onboarding_profiles")
+}
+
+// Bounded replay ledger for mutating onboarding calls. The latest 64 keys per user
+// replay the stored metadata-only response and reject reuse with different data;
+// older keys age out. Cascade keeps erasure semantics aligned with the owning user.
+model OnboardingMutation {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idempotencyKey String
+  operation      String
+  requestHash    String
+  response       Json
+  createdAt      DateTime @default(now())
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@map("onboarding_mutations")
 }
 
 model Allergy {

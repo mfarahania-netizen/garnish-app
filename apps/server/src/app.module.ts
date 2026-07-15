@@ -29,6 +29,7 @@ import { GovernanceModule } from './governance/governance.module';
 import { GamificationModule } from './gamification/gamification.module';
 import { BriefingModule } from './briefing/briefing.module';
 import { WorkflowModule } from './workflow/workflow.module';
+import { OnboardingV2Module } from './onboarding/onboarding-v2.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { WorkflowModule } from './workflow/workflow.module';
     IngredientsModule,
     RecipesModule,
     UsersModule,
+    OnboardingV2Module,
     AuthModule,
     FavoritesModule,
     MealPlansModule,

@@ -1,17 +1,11 @@
-import { Injectable, Logger, Optional } from '@nestjs/common';
-import { ConsentService } from '../consent/consent.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { withUserOptionalProcessingBoundary } from '../consent/optional-processing-transaction-boundary.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ExperimentEngine {
   private readonly logger = new Logger(ExperimentEngine.name);
-  constructor(
-    private readonly prisma: PrismaService,
-    // Retained for Nest/module and test-constructor compatibility. Authorization is intentionally read through
-    // the transaction client in the canonical boundary, never through an independently-timed service read.
-    @Optional() _consent?: ConsentService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async getWeights(
     userId: string,

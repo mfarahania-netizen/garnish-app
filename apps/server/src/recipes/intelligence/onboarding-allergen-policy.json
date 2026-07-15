@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "policy": "corpus_coverage_not_medical_verification",
+  "options": [
+    { "id": "gluten", "status": "enabled" },
+    { "id": "dairy", "status": "enabled" },
+    { "id": "egg", "status": "enabled" },
+    { "id": "nut", "status": "enabled" },
+    { "id": "peanut", "status": "enabled" },
+    { "id": "shellfish", "status": "enabled" },
+    { "id": "fish", "status": "enabled" },
+    { "id": "soy", "status": "enabled" },
+    { "id": "sesame", "status": "enabled" },
+    { "id": "mustard", "status": "enabled" },
+    { "id": "celery", "status": "enabled" },
+    {
+      "id": "lupin",
+      "status": "deferred",
+      "reason": "No published recipe currently references the tagged lupin ingredient; the answer would be inert."
+    },
+    {
+      "id": "sulphites",
+      "status": "deferred",
+      "reason": "No ingredient in the current corpus has a sulphites tag; safe enforcement cannot yet be demonstrated."
+    }
+  ]
+}

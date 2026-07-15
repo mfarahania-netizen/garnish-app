@@ -10,6 +10,10 @@ interface GoogleJwk {
   e: string;
 }
 
+const GOOGLE_JWKS_TIMEOUT_MS = 5000;
+const GOOGLE_JWKS_MAX_CACHE_SECONDS = 24 * 60 * 60;
+const GOOGLE_UNKNOWN_KID_REFRESH_INTERVAL_MS = 30_000;
+
 export interface VerifiedGoogleProfile {
   googleId: string;
   email: string;
@@ -34,6 +38,8 @@ function parseJwtPart<T>(part: string): T {
 export class GoogleIdTokenService {
   private keys = new Map<string, GoogleJwk>();
   private keysExpireAt = 0;
+  private keysLoadedAt = 0;
+  private keysLoading: Promise<void> | null = null;
 
   private isEnabled() {
     return String(process.env.GOOGLE_AUTH_ENABLED || '').trim().toLowerCase() === 'true';
@@ -43,15 +49,45 @@ export class GoogleIdTokenService {
     return String(process.env.GOOGLE_CLIENT_ID || '').trim();
   }
 
-  private async loadKeys() {
-    if (this.keys.size && Date.now() < this.keysExpireAt) return;
-    const res = await fetch('https://www.googleapis.com/oauth2/v3/certs');
-    if (!res.ok) throw new ServiceUnavailableException('google_jwks_unavailable');
-    const cacheControl = res.headers.get('cache-control') || '';
-    const maxAge = Number(cacheControl.match(/max-age=(\d+)/)?.[1] || 3600);
-    const body = await res.json() as { keys?: GoogleJwk[] };
-    this.keys = new Map((body.keys || []).filter((k) => k.kid && k.kty === 'RSA').map((k) => [k.kid, k]));
-    this.keysExpireAt = Date.now() + Math.max(60, maxAge) * 1000;
+  private async fetchKeys() {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), GOOGLE_JWKS_TIMEOUT_MS);
+    try {
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/certs', { signal: controller.signal });
+      if (!res.ok) throw new ServiceUnavailableException('google_jwks_unavailable');
+      const cacheControl = res.headers.get('cache-control') || '';
+      const rawMaxAge = Number(cacheControl.match(/max-age=(\d+)/)?.[1] || 3600);
+      const maxAge = Math.min(GOOGLE_JWKS_MAX_CACHE_SECONDS, Math.max(60, rawMaxAge));
+      const body = await res.json() as { keys?: GoogleJwk[] };
+      const nextKeys = new Map(
+        (body.keys || [])
+          .filter((key) => key.kid && key.kty === 'RSA' && (!key.alg || key.alg === 'RS256') && (!key.use || key.use === 'sig'))
+          .map((key) => [key.kid, key]),
+      );
+      if (nextKeys.size === 0) throw new ServiceUnavailableException('google_jwks_unavailable');
+      const loadedAt = Date.now();
+      this.keys = nextKeys;
+      this.keysLoadedAt = loadedAt;
+      this.keysExpireAt = loadedAt + maxAge * 1000;
+    } catch (error) {
+      if (error instanceof ServiceUnavailableException) throw error;
+      throw new ServiceUnavailableException('google_jwks_unavailable');
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private async loadKeys(force = false) {
+    if (!force && this.keys.size && Date.now() < this.keysExpireAt) return;
+    if (this.keysLoading) return this.keysLoading;
+
+    const loading = this.fetchKeys();
+    this.keysLoading = loading;
+    try {
+      await loading;
+    } finally {
+      if (this.keysLoading === loading) this.keysLoading = null;
+    }
   }
 
   async verifyCredential(credential: string): Promise<VerifiedGoogleProfile> {
@@ -67,7 +103,14 @@ export class GoogleIdTokenService {
     if (header.alg !== 'RS256' || !header.kid) throw new UnauthorizedException('invalid_google_token');
 
     await this.loadKeys();
-    const jwk = this.keys.get(header.kid);
+    let jwk = this.keys.get(header.kid);
+    // Google may rotate signing keys before the prior Cache-Control window
+    // ends. Refresh once for an unknown kid, but rate-limit that escape hatch
+    // so arbitrary kid values cannot turn login into a JWKS fetch amplifier.
+    if (!jwk && Date.now() - this.keysLoadedAt >= GOOGLE_UNKNOWN_KID_REFRESH_INTERVAL_MS) {
+      await this.loadKeys(true);
+      jwk = this.keys.get(header.kid);
+    }
     if (!jwk) throw new UnauthorizedException('invalid_google_token');
 
     const ok = verify(
@@ -81,9 +124,16 @@ export class GoogleIdTokenService {
     const aud = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
     const now = Math.floor(Date.now() / 1000);
     if (!aud.includes(expectedAud)) throw new UnauthorizedException('invalid_google_token');
+    // OIDC tokens with multiple audiences must identify the authorized party.
+    // Merely listing our client among several audiences is insufficient when
+    // `azp` is absent or belongs to another client.
+    if ((aud.length > 1 || payload.azp) && payload.azp !== expectedAud) {
+      throw new UnauthorizedException('invalid_google_token');
+    }
     if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') throw new UnauthorizedException('invalid_google_token');
     if (typeof payload.exp !== 'number' || payload.exp <= now) throw new UnauthorizedException('invalid_google_token');
     if (typeof payload.iat === 'number' && payload.iat > now + 300) throw new UnauthorizedException('invalid_google_token');
+    if (typeof payload.nbf === 'number' && payload.nbf > now + 300) throw new UnauthorizedException('invalid_google_token');
     if (!payload.sub || !payload.email || payload.email_verified !== true) throw new UnauthorizedException('invalid_google_token');
 
     return {

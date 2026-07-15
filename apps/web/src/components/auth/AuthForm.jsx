@@ -176,9 +176,16 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
   const [lastRequestedPhone, setLastRequestedPhone] = useState('');
   const lastSubmittedCodeRef = useRef('');
   const clearCodeTimerRef = useRef(null);
+  const requestInFlightRef = useRef(false);
+  const verificationInFlightRef = useRef(false);
+  const authFlowGenerationRef = useRef(0);
+  const phoneValueRef = useRef('');
   const normalizedPhone = useMemo(() => normalizePhone(phone), [phone]);
   const otpValidityMinutes = Math.max(1, Math.ceil(otpTtlSeconds / 60));
   const googleEnabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === 'true';
+  const handleGoogleError = useCallback((googleError) => {
+    setError(errorMessage(googleError, 'ورود با گوگل ناموفق بود. دوباره تلاش کن.'));
+  }, []);
   const accentBg = accent === 'admin' ? 'var(--g-color-state-info-bg)' : 'var(--g-color-brand-50)';
   const accentFg = accent === 'admin' ? 'var(--g-color-text-secondary)' : 'var(--g-color-brand-600)';
 
@@ -200,16 +207,33 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
     if (step !== 'code' || code) return undefined;
     if (typeof window === 'undefined' || !('OTPCredential' in window) || !navigator.credentials?.get) return undefined;
     const controller = new AbortController();
+    const flowGeneration = authFlowGenerationRef.current;
+    const expectedPhone = normalizedPhone;
+    let active = true;
     navigator.credentials.get({ otp: { transport: ['sms'] }, signal: controller.signal })
       .then((credential) => {
+        // AbortSignal support differs across WebOTP/browser implementations. A
+        // credential settled for phone A must not repopulate the form after the
+        // user moved to phone B, even if the provider ignores a late abort.
+        if (
+          !active
+          || flowGeneration !== authFlowGenerationRef.current
+          || normalizePhone(phoneValueRef.current) !== expectedPhone
+        ) return;
         const nextCode = String(credential?.code || '').replace(/\D/g, '').slice(0, 6);
         if (nextCode) setCode(nextCode);
       })
       .catch(() => {});
-    return () => controller.abort();
-  }, [step, code]);
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [step, code, normalizedPhone]);
 
   const requestCode = async ({ force = false } = {}) => {
+    // React state is not a same-frame mutex. The ref closes Enter+click/double-
+    // click races before a second SMS request can leave the browser.
+    if (requestInFlightRef.current || verificationInFlightRef.current) return;
     if (!PHONE_RE.test(normalizedPhone)) {
       setError('شماره موبایل را فقط با فرمت ۰۹ وارد کن؛ مثل ۰۹۱۲۳۴۵۶۷۸۹.');
       return;
@@ -220,11 +244,16 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
       return;
     }
     if (!force && resendSeconds > 0 && step === 'code') return;
+    const flowGeneration = authFlowGenerationRef.current;
+    requestInFlightRef.current = true;
     setSubmitting(true);
     setError(null);
     setNotice(null);
     try {
       const response = await requestOtp(normalizedPhone);
+      // The user may have corrected the phone while the network request was in
+      // flight. Never open the code step or overwrite timing for the old phone.
+      if (flowGeneration !== authFlowGenerationRef.current) return;
       setNotice(response?.message || 'کد ورود ارسال شد.');
       setLastRequestedPhone(normalizedPhone);
       setOtpTtlSeconds(safeSeconds(response?.ttlSeconds, 120));
@@ -232,34 +261,44 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
       setStep('code');
       setVerificationState('idle');
     } catch (requestError) {
-      setError(errorMessage(requestError, 'ارسال کد ناموفق بود. اتصال سرور و تنظیمات پنل پیامکی را بررسی کن.'));
+      if (flowGeneration === authFlowGenerationRef.current) {
+        setError(errorMessage(requestError, 'ارسال کد ناموفق بود. اتصال سرور و تنظیمات پنل پیامکی را بررسی کن.'));
+      }
     } finally {
+      requestInFlightRef.current = false;
       setSubmitting(false);
     }
   };
 
   const verifyCode = useCallback(async (candidate) => {
-    if (!/^\d{6}$/.test(candidate) || submitting) return;
+    if (!/^\d{6}$/.test(candidate) || requestInFlightRef.current || verificationInFlightRef.current) return;
+    const flowGeneration = authFlowGenerationRef.current;
+    verificationInFlightRef.current = true;
     setSubmitting(true);
     setError(null);
     setVerificationState('checking');
     try {
       const nextUser = await verifyOtp(normalizedPhone, candidate, undefined);
+      if (flowGeneration !== authFlowGenerationRef.current) return;
       setVerificationState('success');
       await delay(reducedMotion ? 80 : 720);
+      if (flowGeneration !== authFlowGenerationRef.current) return;
       onSuccess?.(nextUser);
     } catch (verifyError) {
+      if (flowGeneration !== authFlowGenerationRef.current) return;
       setVerificationState('error');
       setError(errorMessage(verifyError, 'کد درست نیست یا زمان آن تمام شده است. دوباره واردش کن.'));
       clearCodeTimerRef.current = window.setTimeout(() => {
+        if (flowGeneration !== authFlowGenerationRef.current) return;
         setCode('');
         setVerificationState('idle');
         lastSubmittedCodeRef.current = '';
       }, reducedMotion ? 40 : 520);
     } finally {
-      setSubmitting(false);
+      verificationInFlightRef.current = false;
+      if (flowGeneration === authFlowGenerationRef.current) setSubmitting(false);
     }
-  }, [normalizedPhone, onSuccess, reducedMotion, submitting, verifyOtp]);
+  }, [normalizedPhone, onSuccess, reducedMotion, verifyOtp]);
 
   useEffect(() => {
     if (step !== 'code' || code.length !== 6 || submitting || lastSubmittedCodeRef.current === code) return;
@@ -275,6 +314,8 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
   };
 
   const resetPhone = () => {
+    if (requestInFlightRef.current || verificationInFlightRef.current) return;
+    authFlowGenerationRef.current += 1;
     window.clearTimeout(clearCodeTimerRef.current);
     setStep('phone');
     setCode('');
@@ -359,8 +400,13 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
                     aria-invalid={Boolean(error)}
                     value={phone}
                     onChange={(event) => {
+                      const nextPhone = toLatin(event.target.value).replace(/[^\d\s\-()]/g, '').slice(0, 14);
+                      if (nextPhone !== phoneValueRef.current) {
+                        phoneValueRef.current = nextPhone;
+                        authFlowGenerationRef.current += 1;
+                      }
                       setError(null);
-                      setPhone(toLatin(event.target.value).replace(/[^\d\s\-()]/g, '').slice(0, 14));
+                      setPhone(nextPhone);
                     }}
                     onKeyDown={(event) => { if (event.key === 'Enter' && !submitting) void requestCode(); }}
                     style={{ textAlign: 'left' }}
@@ -370,7 +416,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
 
               <AnimatePresence>
                 {error ? (
-                  <motion.div className="gz-alert" role="alert" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <motion.div className="gz-alert" role="alert" initial={reducedMotion ? false : { opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.18 }}>
                     <IconAlertTriangle size={16} stroke={1.9} aria-hidden="true" style={{ flexShrink: 0, marginBlockStart: 2 }} />
                     <span>{error}</span>
                   </motion.div>
@@ -393,7 +439,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
                   <Box className="gz-divider">یا</Box>
                   <GoogleSignInButton
                     onSuccess={onSuccess}
-                    onError={(googleError) => setError(errorMessage(googleError, 'ورود با گوگل ناموفق بود. دوباره تلاش کن.'))}
+                    onError={handleGoogleError}
                   />
                 </>
               ) : null}
@@ -421,7 +467,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
               <Text component="p" style={headerSubStyle}>کد ۶ رقمی ارسال‌شده به این شماره</Text>
               <Box className="gz-phone-summary">
                 <Text component="span" className="gz-phone-number">{toFaDigits(normalizedPhone)}</Text>
-                <UnstyledButton type="button" className="gz-edit-phone" onClick={resetPhone} aria-label="تغییر شماره">
+                <UnstyledButton type="button" className="gz-edit-phone" onClick={resetPhone} disabled={submitting} aria-label="تغییر شماره">
                   <IconPencil size={14} stroke={2} aria-hidden="true" />
                 </UnstyledButton>
               </Box>
@@ -436,7 +482,7 @@ export default function AuthForm({ onSuccess, heading, sub, badge, icon: Icon = 
 
               <AnimatePresence>
                 {error ? (
-                  <motion.div className="gz-alert" role="alert" initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <motion.div className="gz-alert" role="alert" initial={reducedMotion ? false : { opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={reducedMotion ? undefined : { opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.18 }}>
                     <IconAlertTriangle size={16} stroke={1.9} aria-hidden="true" style={{ flexShrink: 0, marginBlockStart: 2 }} />
                     <span>{error}</span>
                   </motion.div>

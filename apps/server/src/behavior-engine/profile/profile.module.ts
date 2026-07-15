@@ -11,9 +11,10 @@ import { QuestionSelectionService } from './onboarding/question-selection.servic
 import { ProfileReadService } from './read/profile-read.service';
 import { ProfileController } from './read/profile.controller';
 import { TasteCorrectionService } from '../signals/taste-correction.service';
+import { ConsentModule } from '../../consent/consent.module';
 
 @Module({
-  imports: [PrismaModule, AiCoreModule],
+  imports: [PrismaModule, AiCoreModule, ConsentModule],
   controllers: [ProfileController],
   providers: [QuestionSelectionService, ProfileReadService, TasteCorrectionService],
   exports: [ProfileReadService, QuestionSelectionService, TasteCorrectionService],

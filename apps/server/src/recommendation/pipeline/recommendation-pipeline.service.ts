@@ -12,6 +12,7 @@ import { ConsentService } from '../../consent/consent.service';
 interface RecommendationRankItem {
   recipeId: string;
   title: string;
+  imageUrl?: string | null;
   finalScore: number;
   rawScore: number;
   scores: Record<string, number>;

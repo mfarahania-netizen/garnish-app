@@ -77,13 +77,39 @@ describe('assessRecipeFit — no-pork observance constraint (halal/kosher/no_por
 });
 
 describe('assessRecipeFit — dietary / disliked / fit', () => {
-  it('flags a dietary mismatch (vegetarian profile + meat recipe) as caution, not unsafe', () => {
+  it('hard-excludes a recipe not explicitly classified for a vegetarian user', () => {
     const profile = profileWith([{ key: 'dietary.pattern', value: 'vegetarian', declaredAt: recent() }]);
-    const recipe = { id: 'r2', allergens: [], ingredients: [{ name: 'chicken' }, { name: 'rice' }] };
+    const recipe = { id: 'r2', diet: 'omnivore', allergens: [], ingredients: [{ name: 'chicken' }, { name: 'rice' }] };
     const fit = assessRecipeFit(recipe, profile, []);
     expect(fit.dietaryMatch).toBe('mismatch');
-    expect(fit.safety.allergenConflict).toBe(false); // mismatch is a preference, not unsafe
-    expect(fit.recommendation).toBe('caution');
+    expect(fit.safety.allergenConflict).toBe(false);
+    expect(fit.safety.safe).toBe(false);
+    expect(fit.recommendation).toBe('avoid_constraint');
+    expect(fit.fitScore).toBe(0);
+  });
+
+  it.each([
+    ['vegan', 'vegetarian'],
+    ['vegetarian', 'pescatarian'],
+    ['pescatarian', 'omnivore'],
+    ['vegan', null],
+  ])('hard-excludes %s user from diet=%s (unknown metadata fails closed)', (userDiet, recipeDiet) => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: userDiet, declaredAt: recent() }]);
+    const fit = assessRecipeFit({ id: 'rx', diet: recipeDiet, allergens: [], ingredients: [] }, profile, []);
+    expect(fit.recommendation).toBe('avoid_constraint');
+    expect(fit.fitScore).toBe(0);
+  });
+
+  it.each([
+    ['vegan', 'vegan'],
+    ['vegetarian', 'vegetarian'],
+    ['vegetarian', 'vegan'],
+    ['pescatarian', 'pescatarian'],
+    ['pescatarian', 'vegetarian'],
+  ])('allows %s user to receive explicitly compatible diet=%s', (userDiet, recipeDiet) => {
+    const profile = profileWith([{ key: 'dietary.pattern', value: userDiet, declaredAt: recent() }]);
+    const fit = assessRecipeFit({ id: 'ok', diet: recipeDiet, allergens: [], ingredients: [] }, profile, []);
+    expect(fit.recommendation).not.toBe('avoid_constraint');
   });
 
   it('warns on disliked ingredients', () => {

@@ -8,6 +8,8 @@ const INGREDIENT_DICTIONARY_PATH = path.join(
   ROOT_DIR,
   'data/ingredients/phase-one-final/Ingredient Dictionary/ingredients_verified_structure_resolver_ready_1008_only_recipe_resolver_alias_patch_00.json',
 );
+const RECIPE_SAFETY_OVERRIDES_PATH = path.join(__dirname, 'recipe-safety-overrides.json');
+const RECIPE_SAFETY_OVERRIDES = readJson(RECIPE_SAFETY_OVERRIDES_PATH);
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -27,6 +29,23 @@ function text(value, fallback = '') {
 
 function compactJson(value) {
   return JSON.stringify(value ?? []);
+}
+
+/** Apply the small reviewed recipe-label patch before any importer derives Recipe.diet/categories/GRIS. */
+function applyRecipeSafetyOverride(recipe) {
+  const override = RECIPE_SAFETY_OVERRIDES.records[String(recipe?.recipeId || '')];
+  if (!override) return recipe;
+  const patched = {
+    ...recipe,
+    ...(Array.isArray(override.dietFlags) ? { dietFlags: [...override.dietFlags] } : {}),
+  };
+  if (override.grisDietary && patched.gris && typeof patched.gris === 'object') {
+    patched.gris = {
+      ...patched.gris,
+      dietary: { ...(patched.gris.dietary || {}), ...override.grisDietary },
+    };
+  }
+  return patched;
 }
 
 function recipeDiet(recipe) {
@@ -59,6 +78,7 @@ function recipeSearchTerms(recipe) {
 }
 
 function mapRecipe(recipe) {
+  recipe = applyRecipeSafetyOverride(recipe);
   const timing = recipe.timing || {};
   const media = recipe.media || {};
   const nutrition = recipe.nutrition?.perServing;
@@ -228,6 +248,9 @@ module.exports = {
   ACTIVE_RECIPE_PATH,
   ACTIVE_WRAPPER_PATH,
   INGREDIENT_DICTIONARY_PATH,
+  RECIPE_SAFETY_OVERRIDES_PATH,
+  RECIPE_SAFETY_OVERRIDES,
+  applyRecipeSafetyOverride,
   loadPhaseOneData,
   mapRecipe,
   validatePhaseOneData,

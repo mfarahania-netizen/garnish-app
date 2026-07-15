@@ -84,12 +84,10 @@ export class RecommendationController {
       };
     }
 
-    await this.exposureTracking.trackExposures(userId, recipeIds, body.source || 'viewport');
-    await Promise.all(
+    const analyticsResults = await Promise.all(
       recipeIds.map((recipeId) =>
-        this.analytics.trackEvent({
+        this.analytics.trackRecommendationImpression({
           userId,
-          type: 'recommendation_impression',
           page: 'recommendations',
           duration: viewportMs,
           payload: {
@@ -102,10 +100,59 @@ export class RecommendationController {
         }),
       ),
     );
+    const trackedAnalytics = analyticsResults.filter(
+      (result): result is NonNullable<typeof result> => !!result,
+    );
+    const analyticsCount = trackedAnalytics.length;
+    const epochValues = new Set(
+      trackedAnalytics
+        .map((result) => result.grantEpoch?.getTime())
+        .filter((epoch) => Number.isFinite(epoch)),
+    );
+
+    if (analyticsCount === 0) {
+      return {
+        accepted: false,
+        learned: false,
+        analyticsTracked: 0,
+        reason: 'consent_not_granted',
+        trackedRecipeIds: [],
+      };
+    }
+
+    // The batch must belong to one canonical grant epoch. A withdrawal/re-grant
+    // between event writes suppresses exposure learning rather than crossing epochs.
+    if (analyticsCount !== recipeIds.length || epochValues.size !== 1) {
+      return {
+        accepted: true,
+        learned: false,
+        analyticsTracked: analyticsCount,
+        reason: 'impression_batch_incomplete',
+        trackedRecipeIds: [],
+      };
+    }
+
+    const expectedEpoch = trackedAnalytics[0].grantEpoch;
+    const exposureCount = await this.exposureTracking.trackExposures(
+      userId,
+      recipeIds,
+      body.source || 'viewport',
+      expectedEpoch,
+    );
+    if (exposureCount !== recipeIds.length) {
+      return {
+        accepted: true,
+        learned: false,
+        analyticsTracked: analyticsCount,
+        reason: 'consent_changed_before_exposure',
+        trackedRecipeIds: [],
+      };
+    }
 
     return {
       accepted: true,
       learned: true,
+      analyticsTracked: analyticsCount,
       trackedRecipeIds: recipeIds,
     };
   }

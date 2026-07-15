@@ -20,6 +20,7 @@ describe('FeatureStoreService', () => {
       userOutcome: { findMany: jest.fn().mockResolvedValue([]) },
       userIdentitySnapshot: { findFirst: jest.fn().mockResolvedValue(null) },
       userBehaviorProfile: { findFirst: jest.fn().mockResolvedValue(null) },
+      onboardingProfile: { findUnique: jest.fn().mockResolvedValue(null) },
       user: {
         findUnique: jest.fn().mockResolvedValue({
           preferences: null,
@@ -119,6 +120,7 @@ describe('FeatureStoreService', () => {
     });
 
     expect(prisma.userFeatureVector.findFirst).not.toHaveBeenCalled();
+    expect(prisma.onboardingProfile.findUnique).not.toHaveBeenCalled();
     expect(snapshotBuilder.buildAll).not.toHaveBeenCalled();
     expect(prisma.userFeatureVector.upsert).not.toHaveBeenCalled();
     expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
@@ -238,5 +240,21 @@ describe('FeatureStoreService', () => {
       },
       select: { userId: true },
     });
+  });
+
+  it('adds completed onboarding V2 cold-start features inside the current consent epoch', async () => {
+    prisma.onboardingProfile.findUnique.mockResolvedValue({
+      schemaVersion: 2,
+      completedAt: new Date(),
+      weekdayTimeBucket: 'under_15',
+      likedRecipeIds: ['liked'],
+      dislikedRecipeIds: ['disliked'],
+    });
+
+    const features = await service.buildFeatureVector('u1');
+
+    expect(features.signal_quick_meal_lover).toBe(1);
+    expect(features.onboarding_like_liked).toBe(1);
+    expect(features.onboarding_dislike_disliked).toBe(1);
   });
 });

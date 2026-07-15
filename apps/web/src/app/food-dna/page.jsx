@@ -9,6 +9,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import FoodDnaRing from '../../components/ges/FoodDnaRing';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
+import { toFaDigits } from '../../components/ges/format';
 import {
   DNA_TITLE_FA, bandFa, bandLineFa, dimFa, dimLineFa, metricFa,
   questionPromptFa, questionOptionsFa, summaryFa,
@@ -127,7 +128,7 @@ function QuestionCard({ question, remaining, onAnswer, submitting }) {
           ))}
         </Box>
       ) : null}
-      {remaining > 0 ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-3) 0 0' }}>{remaining} سؤال دیگه می‌تونی جواب بدی.</Text> : null}
+      {remaining > 0 ? <Text component="p" style={{ ...muted, margin: 'var(--g-space-3) 0 0' }}>{toFaDigits(remaining)} سؤال دیگه می‌تونی جواب بدی.</Text> : null}
       <Text component="p" style={{ ...muted, margin: 'var(--g-space-2) 0 0' }}>پاسخ‌ها فقط یه نقطهٔ شروعِ کوچیکن؛ آشپزیِ واقعی شناسه رو می‌سازه.</Text>
     </Box>
   );

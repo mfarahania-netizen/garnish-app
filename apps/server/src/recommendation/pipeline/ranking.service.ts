@@ -22,12 +22,14 @@ import {
 } from './ranking-effort-skill';
 import { ConsentService } from '../../consent/consent.service';
 import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
+import { onboardingV2Features } from '../../onboarding/onboarding-v2.features';
 
 type FeatureMap = Record<string, number>;
 
 interface RecipeForRanking {
   id: string;
   title: string;
+  imageUrl?: string | null;
   cookingTime?: number | null;
   difficulty?: string | null;
   cost?: string | null;
@@ -186,20 +188,82 @@ export class RankingService {
     @Optional() @Inject(L1_RECIPE_PRIOR_SOURCE) private readonly recipePriorSource?: RecipePriorSource,
   ) {}
 
+  private async currentOnboardingDeclaredFeatures(
+    userId: string,
+    includeTaste = true,
+  ): Promise<{ features: FeatureMap; personalizationEpoch: Date | null }> {
+    const profileDelegate = (this.prisma as any).onboardingProfile;
+    if (!profileDelegate?.findUnique) return { features: {}, personalizationEpoch: null };
+
+    // Core declarations (currently weekday cooking time) are account/product data.
+    // Taste remains optional personalization: capture its epoch before the profile
+    // read and prove the same epoch afterwards so a concurrent withdrawal fails closed.
+    const personalizationEpoch = includeTaste
+      ? await this.currentPersonalizationEpoch(userId)
+      : null;
+    const profile = await profileDelegate
+      .findUnique({
+        where: { userId },
+        select: {
+          schemaVersion: true,
+          completedAt: true,
+          weekdayTimeBucket: true,
+          ...(personalizationEpoch
+            ? { likedRecipeIds: true, dislikedRecipeIds: true }
+            : {}),
+        },
+      })
+      .catch(() => null);
+    const coreFeatures = onboardingV2Features(profile, false);
+    if (!personalizationEpoch || !profile) {
+      return { features: coreFeatures, personalizationEpoch: null };
+    }
+
+    const epochAfterRead = await this.currentPersonalizationEpoch(userId);
+    if (!this.sameEpoch(personalizationEpoch, epochAfterRead)) {
+      return { features: coreFeatures, personalizationEpoch: null };
+    }
+    return {
+      features: onboardingV2Features(profile, true),
+      personalizationEpoch,
+    };
+  }
+
+  private async rankWithCoreOnboardingOnly(
+    userId: string,
+    candidateIds: string[],
+    context?: RealTimeContext,
+  ) {
+    const declared = await this.currentOnboardingDeclaredFeatures(userId, false);
+    return this.rankWithFeatureVector(
+      userId,
+      candidateIds,
+      declared.features,
+      this.defaultWeights,
+      context,
+      true,
+      false,
+      null,
+      null,
+    );
+  }
+
   async rank(userId: string, candidateIds: string[], context?: RealTimeContext) {
     if (candidateIds.length === 0) return [];
 
+    const declared = await this.currentOnboardingDeclaredFeatures(userId);
     const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
     if (!consentEpoch) {
       return this.rankWithFeatureVector(
         userId,
         candidateIds,
-        {},
+        declared.features,
         this.defaultWeights,
         context,
-        false,
+        true,
         false,
         null,
+        declared.personalizationEpoch,
       );
     }
 
@@ -209,27 +273,19 @@ export class RankingService {
     const userFeatures = await this.getFreshFeatureVector(userId, consentEpoch);
     const epochAfterReads = await this.currentPersonalizedAnalyticsEpoch(userId);
     if (!this.sameEpoch(consentEpoch, epochAfterReads)) {
-      return this.rankWithFeatureVector(
-        userId,
-        candidateIds,
-        {},
-        this.defaultWeights,
-        context,
-        false,
-        false,
-        null,
-      );
+      return this.rankWithCoreOnboardingOnly(userId, candidateIds, context);
     }
 
     return this.rankWithFeatureVector(
       userId,
       candidateIds,
-      userFeatures,
+      { ...userFeatures, ...declared.features },
       weights,
       context,
       true,
       true,
       consentEpoch,
+      declared.personalizationEpoch,
     );
   }
 
@@ -259,15 +315,19 @@ export class RankingService {
     consentDecision?: boolean,
     analyticsDecision?: boolean,
     expectedEpoch?: Date | null,
+    expectedPersonalizationEpoch?: Date | null,
   ) {
     if (candidateIds.length === 0) return [];
 
     const consentEpoch = expectedEpoch === undefined
       ? await this.currentPersonalizedAnalyticsEpoch(userId)
       : expectedEpoch;
-    const canPersonalize = !!consentEpoch && (consentDecision ?? true);
-    const canUseAnalytics = canPersonalize && (analyticsDecision ?? true);
-    const effectiveFeatures = canPersonalize ? userFeatures : {};
+    // A direct caller without an explicit decision remains fail-closed unless the
+    // joint analytics+personalization epoch exists. rank() explicitly authorizes
+    // only the freshly read onboarding declaration vector when analytics is absent.
+    const canUseProvidedFeatures = consentDecision ?? !!consentEpoch;
+    const canUseAnalytics = !!consentEpoch && (analyticsDecision ?? true);
+    const effectiveFeatures = canUseProvidedFeatures ? userFeatures : {};
 
     const resolvedWeights = this.resolveWeightsForMaturity(
       this.normalizeWeights(
@@ -281,6 +341,7 @@ export class RankingService {
       select: {
         id: true,
         title: true,
+        imageUrl: true,
         cookingTime: true,
         difficulty: true,
         cost: true,
@@ -388,6 +449,7 @@ export class RankingService {
         return {
           recipeId: recipe.id,
           title: recipe.title,
+          imageUrl: recipe.imageUrl || null,
           diet: recipe.diet || null,
           mealType: this.parseListField(recipe.mealType),
           finalScore: this.round(finalScore),
@@ -409,16 +471,13 @@ export class RankingService {
     if (consentEpoch) {
       const epochAfterReads = await this.currentPersonalizedAnalyticsEpoch(userId);
       if (!this.sameEpoch(consentEpoch, epochAfterReads)) {
-        return this.rankWithFeatureVector(
-          userId,
-          candidateIds,
-          {},
-          this.defaultWeights,
-          context,
-          false,
-          false,
-          null,
-        );
+        return this.rankWithCoreOnboardingOnly(userId, candidateIds, context);
+      }
+    }
+    if (expectedPersonalizationEpoch) {
+      const personalizationAfterReads = await this.currentPersonalizationEpoch(userId);
+      if (!this.sameEpoch(expectedPersonalizationEpoch, personalizationAfterReads)) {
+        return this.rankWithCoreOnboardingOnly(userId, candidateIds, context);
       }
     }
     await this.logFeatureContributions(userId, ranked.slice(0, 5), consentEpoch);
@@ -469,17 +528,36 @@ export class RankingService {
     );
 
     const directTasteScore = this.calculateDirectTasteScore(recipe, activeTasteSignals, matchedSignals);
+    let score: number;
 
     if (typeof baseScore === 'number') {
       const uniqueTasteSignals = new Set(matchedSignals.filter((signal) => this.signalTokenMap[signal]));
       const strongEvidenceCount = uniqueTasteSignals.size;
       const evidenceCap =
         strongEvidenceCount >= 3 ? 1 : strongEvidenceCount === 2 ? 0.94 : 0.86;
-      return this.clamp(Math.min(Math.max(baseScore, directTasteScore), evidenceCap));
+      score = Math.min(Math.max(baseScore, directTasteScore), evidenceCap);
+    } else {
+      score = activeTasteSignals.length === 0 ? TASTE_NEUTRAL : directTasteScore;
     }
 
-    if (activeTasteSignals.length === 0) return 0.35;
-    return directTasteScore;
+    // Onboarding calibration is intentionally weaker than accumulated behavior.
+    // Apply a bounded delta to the existing master score instead of replacing it;
+    // with no V2 feature this returns the exact pre-onboarding value.
+    const onboardingLike = this.clamp(
+      this.feature(features, `onboarding_like_${recipe.id}`),
+    );
+    const onboardingDislike = this.clamp(
+      this.feature(features, `onboarding_dislike_${recipe.id}`),
+    );
+    if (onboardingDislike > 0) {
+      matchedSignals.push('onboarding_taste_dislike');
+      return this.clamp(score - 0.24 * onboardingDislike);
+    }
+    if (onboardingLike > 0) {
+      matchedSignals.push('onboarding_taste_like');
+      return this.clamp(score + 0.16 * onboardingLike);
+    }
+    return this.clamp(score);
   }
 
   private calculateBehaviorFit(
@@ -1176,6 +1254,15 @@ export class RankingService {
         'analytics',
         'personalization',
       ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private async currentPersonalizationEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, ['personalization']);
     } catch {
       return null;
     }

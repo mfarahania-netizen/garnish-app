@@ -28,8 +28,14 @@ describe('RecommendationController — placeholder routes return honest 501', ()
 
 describe('RecommendationController — requestId echo for attribution', () => {
   it('passes impression requestId into analytics payload so served and reward rows are joinable', async () => {
-    const exposureTracking = { trackExposures: jest.fn().mockResolvedValue(undefined) };
-    const analytics = { trackEvent: jest.fn().mockResolvedValue(undefined) };
+    const grantEpoch = new Date('2026-07-15T08:00:00.000Z');
+    const exposureTracking = { trackExposures: jest.fn().mockResolvedValue(1) };
+    const analytics = {
+      trackRecommendationImpression: jest.fn().mockResolvedValue({
+        event: { id: 'event-1', consentPurpose: 'personalization' },
+        grantEpoch,
+      }),
+    };
     const c = new RecommendationController(
       {} as any,
       exposureTracking as any,
@@ -44,12 +50,107 @@ describe('RecommendationController — requestId echo for attribution', () => {
       { recipeIds: ['r1'], viewportMs: 1200, visibleRatio: 0.75, source: 'home', requestId: 'req-123' },
     );
 
-    expect(result).toMatchObject({ accepted: true, learned: true, trackedRecipeIds: ['r1'] });
-    expect(exposureTracking.trackExposures).toHaveBeenCalledWith('u1', ['r1'], 'home');
-    expect(analytics.trackEvent).toHaveBeenCalledWith(expect.objectContaining({
+    expect(result).toMatchObject({
+      accepted: true,
+      learned: true,
+      analyticsTracked: 1,
+      trackedRecipeIds: ['r1'],
+    });
+    expect(exposureTracking.trackExposures).toHaveBeenCalledWith(
+      'u1',
+      ['r1'],
+      'home',
+      grantEpoch,
+    );
+    expect(analytics.trackRecommendationImpression).toHaveBeenCalledWith(expect.objectContaining({
       userId: 'u1',
-      type: 'recommendation_impression',
       payload: expect.objectContaining({ recipeId: 'r1', requestId: 'req-123' }),
     }));
+  });
+
+  it('performs no exposure write when strict joint consent suppresses every impression event', async () => {
+    const exposureTracking = { trackExposures: jest.fn() };
+    const analytics = {
+      trackRecommendationImpression: jest.fn().mockResolvedValue(null),
+    };
+    const c = new RecommendationController(
+      {} as any,
+      exposureTracking as any,
+      {} as any,
+      {} as any,
+      {} as any,
+      analytics as any,
+    );
+
+    await expect(c.trackImpression(
+      { user: { userId: 'u1' } } as any,
+      { recipeIds: ['r1'], viewportMs: 1200, visibleRatio: 0.75 },
+    )).resolves.toEqual({
+      accepted: false,
+      learned: false,
+      analyticsTracked: 0,
+      reason: 'consent_not_granted',
+      trackedRecipeIds: [],
+    });
+    expect(exposureTracking.trackExposures).not.toHaveBeenCalled();
+  });
+
+  it('does not cross consent epochs when withdrawal/re-grant occurs during a batch', async () => {
+    const exposureTracking = { trackExposures: jest.fn() };
+    const analytics = {
+      trackRecommendationImpression: jest.fn()
+        .mockResolvedValueOnce({ event: { id: 'e1' }, grantEpoch: new Date('2026-07-15T08:00:00Z') })
+        .mockResolvedValueOnce({ event: { id: 'e2' }, grantEpoch: new Date('2026-07-15T08:01:00Z') }),
+    };
+    const c = new RecommendationController(
+      {} as any,
+      exposureTracking as any,
+      {} as any,
+      {} as any,
+      {} as any,
+      analytics as any,
+    );
+
+    await expect(c.trackImpression(
+      { user: { userId: 'u1' } } as any,
+      { recipeIds: ['r1', 'r2'], viewportMs: 1200, visibleRatio: 0.75 },
+    )).resolves.toEqual({
+      accepted: true,
+      learned: false,
+      analyticsTracked: 2,
+      reason: 'impression_batch_incomplete',
+      trackedRecipeIds: [],
+    });
+    expect(exposureTracking.trackExposures).not.toHaveBeenCalled();
+  });
+
+  it('reports a consent race honestly when the exposure boundary rejects the captured epoch', async () => {
+    const grantEpoch = new Date('2026-07-15T08:00:00.000Z');
+    const exposureTracking = { trackExposures: jest.fn().mockResolvedValue(0) };
+    const analytics = {
+      trackRecommendationImpression: jest.fn().mockResolvedValue({
+        event: { id: 'event-1', consentPurpose: 'personalization' },
+        grantEpoch,
+      }),
+    };
+    const c = new RecommendationController(
+      {} as any,
+      exposureTracking as any,
+      {} as any,
+      {} as any,
+      {} as any,
+      analytics as any,
+    );
+
+    await expect(c.trackImpression(
+      { user: { userId: 'u1' } } as any,
+      { recipeIds: ['r1'], viewportMs: 1200, visibleRatio: 0.75 },
+    )).resolves.toEqual({
+      accepted: true,
+      learned: false,
+      analyticsTracked: 1,
+      reason: 'consent_changed_before_exposure',
+      trackedRecipeIds: [],
+    });
   });
 });

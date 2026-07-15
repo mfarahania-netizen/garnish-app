@@ -119,7 +119,7 @@ export function metricFa(metricKey, value) {
   }
   if (typeof value === 'string') {
     // Flavor tokens like "smoky/herby" — map every token; if any is unknown, drop the whole value.
-    const tokens = value.toLowerCase().split(/[\/,،|\s]+/).filter(Boolean);
+    const tokens = value.toLowerCase().split(/[/,،|\s]+/).filter(Boolean);
     if (!tokens.length) return null;
     const fa = tokens.map((t) => FLAVOR_FA[t]).filter(Boolean);
     if (fa.length !== tokens.length) return null; // unmapped token → hide rather than leak English

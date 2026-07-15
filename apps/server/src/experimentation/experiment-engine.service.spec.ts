@@ -47,7 +47,7 @@ describe('ExperimentEngine locked consent epoch isolation', () => {
       $transaction: jest.fn(async (callback: (client: typeof tx) => unknown) =>
         callback(tx)),
     };
-    service = new ExperimentEngine(prisma, {} as any);
+    service = new ExperimentEngine(prisma);
   });
 
   afterAll(() => {

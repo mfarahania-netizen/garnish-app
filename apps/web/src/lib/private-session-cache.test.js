@@ -147,6 +147,8 @@ describe('private session cache isolation', () => {
     localStorage.setItem('garnish_weekly_plan', '{"owner":"a"}');
     localStorage.setItem('garnish_language', 'fa');
     sessionStorage.setItem('garnish:personalization:r1', '{"owner":"a"}');
+    sessionStorage.setItem('garnish.onboarding.v2.draft:account-a', '{"step":2}');
+    sessionStorage.setItem('garnish.layoutDensity', 'compact');
     sessionStorage.setItem('g_prevPage', '/settings');
 
     purgeAccountScopedWebStorage();
@@ -156,6 +158,8 @@ describe('private session cache isolation', () => {
     expect(localStorage.getItem('garnish_weekly_plan')).toBeNull();
     expect(localStorage.getItem('garnish_language')).toBe('fa');
     expect(sessionStorage.getItem('garnish:personalization:r1')).toBeNull();
+    expect(sessionStorage.getItem('garnish.onboarding.v2.draft:account-a')).toBeNull();
+    expect(sessionStorage.getItem('garnish.layoutDensity')).toBe('compact');
     expect(sessionStorage.getItem('g_prevPage')).toBeNull();
   });
 

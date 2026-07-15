@@ -98,6 +98,15 @@ export class UserExportService {
         history: await many('preferences.history', () => p.preferenceHistory.findMany({ ...byUser, take, orderBy: { changedAt: 'desc' } })),
       },
 
+      onboarding: {
+        profile: await one('onboarding.profile', () => p.onboardingProfile.findUnique({ where: { userId } })),
+        // Bounded metadata-only replay rows are user-owned, exported here, and
+        // cascade on erasure with their owner; profile answers live only above.
+        mutations: await many('onboarding.mutations', () =>
+          p.onboardingMutation.findMany({ ...byUser, take, orderBy: { createdAt: 'desc' } }),
+        ),
+      },
+
       consents: await many('consents', () => p.consentLog.findMany({ ...byUser, take, orderBy: { createdAt: 'desc' } })),
 
       sessions: await many('sessions', () => p.userSession.findMany({ ...byUser, take, orderBy: { startTime: 'desc' } })),

@@ -24,6 +24,7 @@ export class ProcessorRegistry {
   ) {
     // Recipe events
     this.map.set('recipe_view', recipeProcessor);
+    this.map.set('recipe_liked', recipeProcessor);
     this.map.set('favorite_add', recipeProcessor);
     this.map.set('favorite_remove', recipeProcessor);
     // L0/C1: cooking is the strongest taste signal — route it (the web emits `cook_complete` at

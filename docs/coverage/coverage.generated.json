@@ -12,17 +12,17 @@
     "eventTaxonomyFrontend": "apps/web/src/lib/eventTaxonomy.js"
   },
   "counts": {
-    "models": 66,
+    "models": 70,
     "recipeScalarFields": 34,
     "recipeRelations": 10,
     "recipeTotalFields": 44,
-    "endpoints": 178,
+    "endpoints": 188,
     "internalEndpoints": 9,
-    "controllers": 25,
-    "routes": 21,
+    "controllers": 26,
+    "routes": 22,
     "protectedRoutes": 0,
-    "frontendCallSites": 151,
-    "backendEvents": 123,
+    "frontendCallSites": 152,
+    "backendEvents": 124,
     "frontendEvents": 116
   },
   "models": [
@@ -443,6 +443,101 @@
           "type": "UserAllergy",
           "list": true,
           "optional": false
+        }
+      ]
+    },
+    {
+      "name": "AuthOtpCode",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "phone",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "codeHash",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "purpose",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "expiresAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "consumedAt",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "attempts",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": true
         }
       ]
     },
@@ -1954,6 +2049,232 @@
       ]
     },
     {
+      "name": "OnboardingMutation",
+      "dbName": "onboarding_mutations",
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "idempotencyKey",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "operation",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "requestHash",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "response",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "name": "OnboardingProfile",
+      "dbName": "onboarding_profiles",
+      "fields": [
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "schemaVersion",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "revision",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "safetyStatus",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "allergyIds",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "intoleranceIds",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "dietaryRules",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "dietPattern",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "weekdayTimeBucket",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "cooksForCount",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "likedRecipeIds",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "dislikedRecipeIds",
+          "type": "Json",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "completedAt",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
+        }
+      ]
+    },
+    {
       "name": "PantryItem",
       "dbName": null,
       "fields": [
@@ -2042,6 +2363,92 @@
           "type": "Ingredient",
           "list": false,
           "optional": true
+        }
+      ]
+    },
+    {
+      "name": "PasswordResetCode",
+      "dbName": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": true,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "userId",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "phone",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "codeHash",
+          "type": "String",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "expiresAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "consumedAt",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
+          "name": "attempts",
+          "type": "Int",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "optional": false,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": true
+        }
+      ],
+      "relations": [
+        {
+          "name": "user",
+          "type": "User",
+          "list": false,
+          "optional": false
         }
       ]
     },
@@ -3985,6 +4392,24 @@
           "hasDefault": false
         },
         {
+          "name": "googleId",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "authProvider",
+          "type": "String",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
+          "hasDefault": false
+        },
+        {
           "name": "name",
           "type": "String",
           "optional": true,
@@ -4045,6 +4470,15 @@
           "isEnum": false,
           "isId": false,
           "isUnique": true,
+          "hasDefault": false
+        },
+        {
+          "name": "onboardingCompletedAt",
+          "type": "DateTime",
+          "optional": true,
+          "isEnum": false,
+          "isId": false,
+          "isUnique": false,
           "hasDefault": false
         },
         {
@@ -4121,6 +4555,18 @@
         }
       ],
       "relations": [
+        {
+          "name": "onboardingProfile",
+          "type": "OnboardingProfile",
+          "list": false,
+          "optional": true
+        },
+        {
+          "name": "onboardingMutations",
+          "type": "OnboardingMutation",
+          "list": true,
+          "optional": false
+        },
         {
           "name": "preferences",
           "type": "UserPreference",
@@ -4376,6 +4822,18 @@
         {
           "name": "pantryItems",
           "type": "PantryItem",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "passwordResetCodes",
+          "type": "PasswordResetCode",
+          "list": true,
+          "optional": false
+        },
+        {
+          "name": "authOtpCodes",
+          "type": "AuthOtpCode",
           "list": true,
           "optional": false
         }
@@ -6783,11 +7241,30 @@
     "scope": "apps/web/src/app/recipe/[id]",
     "scannedFiles": [
       "apps/web/src/app/recipe/[id]/GrisRecipe.jsx",
+      "apps/web/src/app/recipe/[id]/IngredientListSection.jsx",
+      "apps/web/src/app/recipe/[id]/IngredientRow.jsx",
+      "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.js",
+      "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.test.js",
+      "apps/web/src/app/recipe/[id]/ingredientDisplayPresenterV3.js",
+      "apps/web/src/app/recipe/[id]/ingredientDisplayPresenterV3.test.js",
+      "apps/web/src/app/recipe/[id]/ingredientEditGuard.js",
+      "apps/web/src/app/recipe/[id]/ingredientEditGuard.test.js",
+      "apps/web/src/app/recipe/[id]/ingredientIconMap.js",
+      "apps/web/src/app/recipe/[id]/ingredientIconMap.test.js",
       "apps/web/src/app/recipe/[id]/page.jsx",
       "apps/web/src/app/recipe/[id]/recipe.actions.test.jsx",
       "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
       "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
       "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+      "apps/web/src/app/recipe/[id]/recipeActionCopy.js",
+      "apps/web/src/app/recipe/[id]/recipeActionCopy.test.js",
+      "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
+      "apps/web/src/app/recipe/[id]/recipeDetailPresenter.test.js",
+      "apps/web/src/app/recipe/[id]/recipeIngredientSection.smoke.test.jsx",
+      "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+      "apps/web/src/app/recipe/[id]/recipeInteractionMode.test.js",
+      "apps/web/src/app/recipe/[id]/substitutionSafety.js",
+      "apps/web/src/app/recipe/[id]/substitutionSafety.test.js",
       "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
     ],
     "fields": [
@@ -6828,11 +7305,14 @@
         "field": "categories",
         "rendered": true,
         "files": [
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.js",
           "apps/web/src/app/recipe/[id]/page.jsx",
           "apps/web/src/app/recipe/[id]/recipe.actions.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.test.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6840,7 +7320,13 @@
         "field": "category",
         "rendered": true,
         "files": [
-          "apps/web/src/app/recipe/[id]/page.jsx"
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.js",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.test.js",
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.js",
+          "apps/web/src/app/recipe/[id]/ingredientIconMap.js",
+          "apps/web/src/app/recipe/[id]/page.jsx",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
       {
@@ -6881,8 +7367,10 @@
       },
       {
         "field": "cost",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "createdAt",
@@ -6899,6 +7387,9 @@
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.test.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6919,6 +7410,7 @@
         "field": "dishType",
         "rendered": true,
         "files": [
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6932,6 +7424,7 @@
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6940,9 +7433,13 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/GrisRecipe.jsx",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenterV3.js",
           "apps/web/src/app/recipe/[id]/page.jsx",
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.test.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6963,11 +7460,13 @@
         "field": "imageUrl",
         "rendered": true,
         "files": [
+          "apps/web/src/app/recipe/[id]/GrisRecipe.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx",
           "apps/web/src/app/recipe/[id]/recipe.actions.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -6989,18 +7488,23 @@
         "field": "occasion",
         "rendered": true,
         "files": [
-          "apps/web/src/app/recipe/[id]/GrisRecipe.jsx"
+          "apps/web/src/app/recipe/[id]/GrisRecipe.jsx",
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
       {
         "field": "prepTime",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "region",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "servings",
@@ -7028,6 +7532,8 @@
         "field": "status",
         "rendered": true,
         "files": [
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.js",
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.test.js",
           "apps/web/src/app/recipe/[id]/page.jsx",
           "apps/web/src/app/recipe/[id]/recipe.actions.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
@@ -7057,6 +7563,7 @@
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -7065,11 +7572,27 @@
         "rendered": true,
         "files": [
           "apps/web/src/app/recipe/[id]/GrisRecipe.jsx",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.js",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenter.test.js",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenterV3.js",
+          "apps/web/src/app/recipe/[id]/ingredientDisplayPresenterV3.test.js",
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.js",
+          "apps/web/src/app/recipe/[id]/ingredientEditGuard.test.js",
+          "apps/web/src/app/recipe/[id]/ingredientIconMap.js",
+          "apps/web/src/app/recipe/[id]/IngredientListSection.jsx",
+          "apps/web/src/app/recipe/[id]/IngredientRow.jsx",
           "apps/web/src/app/recipe/[id]/page.jsx",
           "apps/web/src/app/recipe/[id]/recipe.actions.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.gris-swap.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.personalization.test.jsx",
           "apps/web/src/app/recipe/[id]/recipe.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.js",
+          "apps/web/src/app/recipe/[id]/recipeDetailPresenter.test.js",
+          "apps/web/src/app/recipe/[id]/recipeIngredientSection.smoke.test.jsx",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.js",
+          "apps/web/src/app/recipe/[id]/recipeInteractionMode.test.js",
+          "apps/web/src/app/recipe/[id]/substitutionSafety.js",
+          "apps/web/src/app/recipe/[id]/substitutionSafety.test.js",
           "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
         ]
       },
@@ -7087,8 +7610,10 @@
       },
       {
         "field": "totalTime",
-        "rendered": false,
-        "files": []
+        "rendered": true,
+        "files": [
+          "apps/web/src/app/recipe/[id]/useRecipeDetail.js"
+        ]
       },
       {
         "field": "updatedAt",
@@ -8576,6 +9101,21 @@
       "calledByFrontend": false
     },
     {
+      "id": "POST /auth/google",
+      "verb": "POST",
+      "path": "/auth/google",
+      "controller": "AuthController",
+      "handler": "google",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "POST /auth/guest",
       "verb": "POST",
       "path": "/auth/guest",
@@ -8583,12 +9123,10 @@
       "handler": "guest",
       "file": "apps/server/src/auth/auth.controller.ts",
       "controllerBasePath": "/auth",
-      "guards": [
-        "ThrottlerGuard"
-      ],
+      "guards": [],
       "roles": [],
       "public": false,
-      "auth": "throttler",
+      "auth": "none",
       "isInternal": false,
       "calledByFrontend": true
     },
@@ -8600,12 +9138,70 @@
       "handler": "login",
       "file": "apps/server/src/auth/auth.controller.ts",
       "controllerBasePath": "/auth",
-      "guards": [
-        "ThrottlerGuard"
-      ],
+      "guards": [],
       "roles": [],
       "public": false,
-      "auth": "throttler",
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /auth/otp/request",
+      "verb": "POST",
+      "path": "/auth/otp/request",
+      "controller": "AuthController",
+      "handler": "requestOtp",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /auth/otp/verify",
+      "verb": "POST",
+      "path": "/auth/otp/verify",
+      "controller": "AuthController",
+      "handler": "verifyOtp",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /auth/password-reset/confirm",
+      "verb": "POST",
+      "path": "/auth/password-reset/confirm",
+      "controller": "AuthController",
+      "handler": "confirmPasswordReset",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /auth/password-reset/request",
+      "verb": "POST",
+      "path": "/auth/password-reset/request",
+      "controller": "AuthController",
+      "handler": "requestPasswordReset",
+      "file": "apps/server/src/auth/auth.controller.ts",
+      "controllerBasePath": "/auth",
+      "guards": [],
+      "roles": [],
+      "public": false,
+      "auth": "none",
       "isInternal": false,
       "calledByFrontend": true
     },
@@ -8617,12 +9213,10 @@
       "handler": "register",
       "file": "apps/server/src/auth/auth.controller.ts",
       "controllerBasePath": "/auth",
-      "guards": [
-        "ThrottlerGuard"
-      ],
+      "guards": [],
       "roles": [],
       "public": false,
-      "auth": "throttler",
+      "auth": "none",
       "isInternal": false,
       "calledByFrontend": true
     },
@@ -8825,7 +9419,7 @@
       "public": false,
       "auth": "none",
       "isInternal": false,
-      "calledByFrontend": true
+      "calledByFrontend": false
     },
     {
       "id": "POST /internal/recommendation-shadow/activation-review/dry-run",
@@ -9337,6 +9931,74 @@
       "auth": "jwt",
       "isInternal": false,
       "calledByFrontend": false
+    },
+    {
+      "id": "GET /onboarding/v2",
+      "verb": "GET",
+      "path": "/onboarding/v2",
+      "controller": "OnboardingV2Controller",
+      "handler": "getDraft",
+      "file": "apps/server/src/onboarding/onboarding-v2.controller.ts",
+      "controllerBasePath": "/onboarding/v2",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "GET /onboarding/v2/candidates",
+      "verb": "GET",
+      "path": "/onboarding/v2/candidates",
+      "controller": "OnboardingV2Controller",
+      "handler": "getCandidates",
+      "file": "apps/server/src/onboarding/onboarding-v2.controller.ts",
+      "controllerBasePath": "/onboarding/v2",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "POST /onboarding/v2/complete",
+      "verb": "POST",
+      "path": "/onboarding/v2/complete",
+      "controller": "OnboardingV2Controller",
+      "handler": "complete",
+      "file": "apps/server/src/onboarding/onboarding-v2.controller.ts",
+      "controllerBasePath": "/onboarding/v2",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
+      "id": "PATCH /onboarding/v2/draft",
+      "verb": "PATCH",
+      "path": "/onboarding/v2/draft",
+      "controller": "OnboardingV2Controller",
+      "handler": "saveDraft",
+      "file": "apps/server/src/onboarding/onboarding-v2.controller.ts",
+      "controllerBasePath": "/onboarding/v2",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
     },
     {
       "id": "GET /outcomes",
@@ -10394,6 +11056,23 @@
       "calledByFrontend": true
     },
     {
+      "id": "PATCH /users/me/onboarding-complete",
+      "verb": "PATCH",
+      "path": "/users/me/onboarding-complete",
+      "controller": "UsersController",
+      "handler": "completeOnboarding",
+      "file": "apps/server/src/users/users.controller.ts",
+      "controllerBasePath": "/users",
+      "guards": [
+        "AuthGuard('jwt')"
+      ],
+      "roles": [],
+      "public": false,
+      "auth": "jwt",
+      "isInternal": false,
+      "calledByFrontend": true
+    },
+    {
       "id": "GET /users/preferences",
       "verb": "GET",
       "path": "/users/preferences",
@@ -10544,6 +11223,13 @@
     {
       "path": "/recipes",
       "component": "RecipesPage",
+      "protected": false,
+      "admin": false,
+      "layoutOnly": false
+    },
+    {
+      "path": "/register",
+      "component": "Navigate",
       "protected": false,
       "admin": false,
       "layoutOnly": false
@@ -10827,14 +11513,14 @@
       "verb": "POST",
       "raw": "/analytics/event",
       "normalized": "/analytics/event",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "file": "apps/web/src/hooks/useAnalytics.js",
       "dynamic": false
     },
     {
       "verb": "POST",
-      "raw": "/analytics/event",
-      "normalized": "/analytics/event",
-      "file": "apps/web/src/hooks/useAnalytics.js",
+      "raw": "/auth/google",
+      "normalized": "/auth/google",
+      "file": "apps/web/src/context/AuthContext.jsx",
       "dynamic": false
     },
     {
@@ -10848,6 +11534,34 @@
       "verb": "POST",
       "raw": "/auth/login",
       "normalized": "/auth/login",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/otp/request",
+      "normalized": "/auth/otp/request",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/otp/verify",
+      "normalized": "/auth/otp/verify",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/password-reset/confirm",
+      "normalized": "/auth/password-reset/confirm",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/auth/password-reset/request",
+      "normalized": "/auth/password-reset/request",
       "file": "apps/web/src/context/AuthContext.jsx",
       "dynamic": false
     },
@@ -10869,13 +11583,6 @@
       "verb": "GET",
       "raw": "/favorites",
       "normalized": "/favorites",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/favorites",
-      "normalized": "/favorites",
       "file": "apps/web/src/hooks/useFavoritesQuery.js",
       "dynamic": false
     },
@@ -10898,13 +11605,6 @@
       "raw": "/favorites/${recipeId}",
       "normalized": "/favorites/*",
       "file": "apps/web/src/app/favorites/useFavorites.js",
-      "dynamic": true
-    },
-    {
-      "verb": "POST",
-      "raw": "/favorites/${it.id}",
-      "normalized": "/favorites/*",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
       "dynamic": true
     },
     {
@@ -10944,13 +11644,6 @@
     },
     {
       "verb": "GET",
-      "raw": "/ingredients/search",
-      "normalized": "/ingredients/search",
-      "file": "apps/web/src/app/onboarding/TasteBuilder.jsx",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
       "raw": "/meal-plans?offset=${weekOffset}",
       "normalized": "/meal-plans",
       "file": "apps/web/src/app/plan/useMealPlan.js",
@@ -10972,14 +11665,14 @@
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/clear-week?offset=${offsetRef.current}",
+      "raw": "/meal-plans/clear-week?offset=${weekOffset}",
       "normalized": "/meal-plans/clear-week",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/copy?from=${offsetRef.current - 1}&to=${offsetRef.current}",
+      "raw": "/meal-plans/copy?from=${weekOffset - 1}&to=${weekOffset}",
       "normalized": "/meal-plans/copy",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
@@ -11007,21 +11700,21 @@
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/slots?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots?offset=${weekOffset}",
       "normalized": "/meal-plans/slots",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/slots?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots?offset=${weekOffset}",
       "normalized": "/meal-plans/slots",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/slots?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots?offset=${weekOffset}",
       "normalized": "/meal-plans/slots",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
@@ -11042,7 +11735,7 @@
     },
     {
       "verb": "DELETE",
-      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}?offset=${weekOffset}",
       "normalized": "/meal-plans/slots/*/*",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
@@ -11056,14 +11749,14 @@
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}/cooked?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}/cooked?offset=${weekOffset}",
       "normalized": "/meal-plans/slots/*/*/cooked",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
     },
     {
       "verb": "POST",
-      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}/servings?offset=${offsetRef.current}",
+      "raw": "/meal-plans/slots/${dayOfWeek}/${mealType}/servings?offset=${weekOffset}",
       "normalized": "/meal-plans/slots/*/*/servings",
       "file": "apps/web/src/app/plan/useMealPlan.js",
       "dynamic": true
@@ -11126,16 +11819,51 @@
     },
     {
       "verb": "GET",
-      "raw": "/profile",
-      "normalized": "/profile",
-      "file": "apps/web/src/app/home/lib/useHomeData.js",
+      "raw": "/onboarding/v2",
+      "normalized": "/onboarding/v2",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/onboarding/v2",
+      "normalized": "/onboarding/v2",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/onboarding/v2/candidates",
+      "normalized": "/onboarding/v2/candidates",
+      "file": "apps/web/src/app/onboarding/TasteBuilder.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "GET",
+      "raw": "/onboarding/v2/candidates",
+      "normalized": "/onboarding/v2/candidates",
+      "file": "apps/web/src/app/onboarding/TasteBuilder.jsx",
+      "dynamic": false
+    },
+    {
+      "verb": "POST",
+      "raw": "/onboarding/v2/complete",
+      "normalized": "/onboarding/v2/complete",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/onboarding/v2/draft",
+      "normalized": "/onboarding/v2/draft",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
       "dynamic": false
     },
     {
       "verb": "GET",
       "raw": "/profile",
       "normalized": "/profile",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "file": "apps/web/src/app/home/lib/useHomeData.js",
       "dynamic": false
     },
     {
@@ -11160,34 +11888,6 @@
       "dynamic": false
     },
     {
-      "verb": "POST",
-      "raw": "/profile/answer",
-      "normalized": "/profile/answer",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/profile/answer",
-      "normalized": "/profile/answer",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/profile/answer",
-      "normalized": "/profile/answer",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/profile/answer",
-      "normalized": "/profile/answer",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
       "verb": "GET",
       "raw": "/profile/dna",
       "normalized": "/profile/dna",
@@ -11209,31 +11909,10 @@
       "dynamic": false
     },
     {
-      "verb": "GET",
-      "raw": "/profile/taste",
-      "normalized": "/profile/taste",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
       "verb": "POST",
       "raw": "/profile/taste/correct",
       "normalized": "/profile/taste/correct",
       "file": "apps/web/src/app/food-dna/useFoodDna.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/profile/taste/correct",
-      "normalized": "/profile/taste/correct",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "POST",
-      "raw": "/profile/taste/correct",
-      "normalized": "/profile/taste/correct",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
       "dynamic": false
     },
     {
@@ -11273,6 +11952,13 @@
     },
     {
       "verb": "GET",
+      "raw": "/recipes/${encodeURIComponent(item.id)}",
+      "normalized": "/recipes/*",
+      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "dynamic": true
+    },
+    {
+      "verb": "GET",
       "raw": "/recipes/${id}",
       "normalized": "/recipes/*",
       "file": "apps/web/src/app/recipe/[id]/useRecipeDetail.js",
@@ -11297,13 +11983,6 @@
       "raw": "/recipes/search",
       "normalized": "/recipes/search",
       "file": "apps/web/src/app/discover/useDiscovery.js",
-      "dynamic": false
-    },
-    {
-      "verb": "GET",
-      "raw": "/recipes/search",
-      "normalized": "/recipes/search",
-      "file": "apps/web/src/app/onboarding/TasteBuilder.jsx",
       "dynamic": false
     },
     {
@@ -11489,6 +12168,13 @@
       "dynamic": false
     },
     {
+      "verb": "DELETE",
+      "raw": "/users/allergies",
+      "normalized": "/users/allergies",
+      "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
       "verb": "POST",
       "raw": "/users/allergies",
       "normalized": "/users/allergies",
@@ -11496,9 +12182,9 @@
       "dynamic": false
     },
     {
-      "verb": "POST",
-      "raw": "/users/allergies",
-      "normalized": "/users/allergies",
+      "verb": "GET",
+      "raw": "/users/consent",
+      "normalized": "/users/consent",
       "file": "apps/web/src/app/onboarding/useOnboarding.js",
       "dynamic": false
     },
@@ -11517,17 +12203,17 @@
       "dynamic": false
     },
     {
-      "verb": "POST",
+      "verb": "GET",
       "raw": "/users/consent",
       "normalized": "/users/consent",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "file": "apps/web/src/context/AuthContext.jsx",
       "dynamic": false
     },
     {
-      "verb": "POST",
+      "verb": "GET",
       "raw": "/users/consent",
       "normalized": "/users/consent",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
+      "file": "apps/web/src/hooks/useAnalytics.js",
       "dynamic": false
     },
     {
@@ -11573,6 +12259,13 @@
       "dynamic": false
     },
     {
+      "verb": "GET",
+      "raw": "/users/me",
+      "normalized": "/users/me",
+      "file": "apps/web/src/context/AuthContext.jsx",
+      "dynamic": false
+    },
+    {
       "verb": "PATCH",
       "raw": "/users/me",
       "normalized": "/users/me",
@@ -11584,6 +12277,13 @@
       "raw": "/users/me/export",
       "normalized": "/users/me/export",
       "file": "apps/web/src/app/settings/useSettings.js",
+      "dynamic": false
+    },
+    {
+      "verb": "PATCH",
+      "raw": "/users/me/onboarding-complete",
+      "normalized": "/users/me/onboarding-complete",
+      "file": "apps/web/src/context/AuthContext.jsx",
       "dynamic": false
     },
     {
@@ -11618,13 +12318,6 @@
       "verb": "PUT",
       "raw": "/users/preferences",
       "normalized": "/users/preferences",
-      "file": "apps/web/src/app/onboarding/useOnboarding.js",
-      "dynamic": false
-    },
-    {
-      "verb": "PUT",
-      "raw": "/users/preferences",
-      "normalized": "/users/preferences",
       "file": "apps/web/src/app/settings/useSettings.js",
       "dynamic": false
     },
@@ -11637,7 +12330,7 @@
     }
   ],
   "events": {
-    "backendCount": 123,
+    "backendCount": 124,
     "frontendCount": 116,
     "bothCount": 116,
     "both": [
@@ -11764,6 +12457,7 @@
       "ingredient_removed",
       "ingredient_swapped",
       "portion_scaled",
+      "recipe_liked",
       "resolve_miss",
       "search_unmet"
     ],

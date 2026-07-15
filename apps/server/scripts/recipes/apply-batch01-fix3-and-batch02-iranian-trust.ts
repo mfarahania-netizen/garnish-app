@@ -2,11 +2,10 @@ import { assertLocalDatabase, evaluate, getCounts, loadRecipes, parseJson, patch
 
 const markerBySlug: Record<string, Array<{ label: string; ingredientId: string; code: string; amount: string; unit: string; note: string }>> = {
   'ash-dandooni': [{ label: 'برنج نیم‌دانه', ingredientId: 'ing_basmati_rice_raw', code: 'basmati_rice_raw', amount: '60', unit: 'گرم', note: 'تکمیل هویت چندغله آش دندونی' }],
-  'ash-sabzi-shirazi': [
-    { label: 'گوشت گوسفندی', ingredientId: 'ing_lamb_meat_raw', code: 'lamb_meat_raw', amount: '250', unit: 'گرم', note: 'پایه گوشتی و کشدار آش سبزی شیرازی' },
-    { label: 'برنج نیم‌دانه', ingredientId: 'ing_basmati_rice_raw', code: 'basmati_rice_raw', amount: '80', unit: 'گرم', note: 'لعاب و بافت کشدار آش سبزی شیرازی' },
-    { label: 'ترخون تازه', ingredientId: 'ing_tarragon_fresh', code: 'tarragon_fresh', amount: '1', unit: 'دسته کوچک', note: 'عطر مرکزی سبزی شیرازی' },
-  ],
+  // `ash-sabzi-shirazi` is deliberately absent. Its reviewed canonical recipe is a
+  // light vegetarian chickpea/split-pea/herb soup. An older trust run incorrectly
+  // injected lamb, rice and tarragon as identity markers; the dedicated local
+  // reconciliation command removes those historical artifacts.
   'khoresh-havij-tabrizi': [{ label: 'زعفران', ingredientId: 'ing_saffron', code: 'saffron', amount: '0.25', unit: 'قاشق چای‌خوری', note: 'رنگ و عطر هویت ملس تبریزی' }],
 };
 

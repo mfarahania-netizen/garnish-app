@@ -1,13 +1,67 @@
 // apps/web/src/lib/analytics-init.js
-// E4: PostHog is initialized ONLY after explicit user consent, on the EU host,
-// with the key sourced from env (no hardcoded fallback). Until consent is
-// granted, posthog is never initialized, so every posthog.* call elsewhere
-// (guarded by `posthog.__loaded`) is a no-op.
+// E4: direct third-party capture is disabled for the launch path. The import remains
+// only to reset/opt-out and migrate persistence left by older builds.
 import posthog from 'posthog-js';
 
 const CONSENT_KEY = 'garnish.analyticsConsent'; // 'granted' | 'denied'
-const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.i.posthog.com';
-const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY;
+const ANALYTICS_SESSION_KEY = 'garnish:session';
+export const ANALYTICS_RUNTIME_EVENT = 'garnish:analytics-runtime-changed';
+let runtimeConsentGranted = false;
+
+function notifyAnalyticsRuntimeChanged() {
+  try {
+    globalThis.dispatchEvent?.(new globalThis.Event(ANALYTICS_RUNTIME_EVENT));
+  } catch { /* non-browser */ }
+}
+
+const isLegacyPostHogCookie = (key) => /^ph_.+_posthog$/.test(String(key || ''));
+const isLegacyPostHogStorageKey = (key) => (
+  isLegacyPostHogCookie(key) || /^ph_conv_.+/.test(String(key || ''))
+);
+
+export function legacyPostHogCookieDomains(hostname = globalThis.location?.hostname) {
+  const host = String(hostname || '').trim().toLowerCase().replace(/^\.+|\.+$/g, '');
+  if (!host.includes('.') || host.includes(':') || /^\d+(?:\.\d+){3}$/.test(host)) return [];
+
+  const labels = host.split('.').filter(Boolean);
+  const domains = [];
+  // Never attempt a top-level-only Domain. Browsers reject public suffixes;
+  // enumerating multi-label suffixes retires legacy cross-subdomain cookies
+  // without assuming a specific deployment hostname.
+  for (let index = 0; index <= labels.length - 2; index += 1) {
+    const suffix = labels.slice(index).join('.');
+    domains.push(suffix, `.${suffix}`);
+  }
+  return [...new Set(domains)];
+}
+
+export function clearLegacyPostHogPersistence({
+  cookieDocument = globalThis.document,
+  hostname = globalThis.location?.hostname,
+} = {}) {
+  for (const storage of [globalThis.localStorage, globalThis.sessionStorage]) {
+    try {
+      const keys = [];
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (isLegacyPostHogStorageKey(key)) keys.push(key);
+      }
+      for (const key of keys) storage.removeItem(key);
+    } catch { /* storage unavailable */ }
+  }
+  try {
+    const cookieNames = cookieDocument.cookie
+      .split(';')
+      .map((part) => part.trim().split('=')[0])
+      .filter(isLegacyPostHogCookie);
+    for (const name of cookieNames) {
+      cookieDocument.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+      for (const domain of legacyPostHogCookieDomains(hostname)) {
+        cookieDocument.cookie = `${name}=; Max-Age=0; path=/; Domain=${domain}; SameSite=Lax`;
+      }
+    }
+  } catch { /* non-browser */ }
+}
 
 export function getAnalyticsConsent() {
   try {
@@ -18,51 +72,56 @@ export function getAnalyticsConsent() {
 }
 
 export function hasAnalyticsConsent() {
-  return getAnalyticsConsent() === 'granted';
+  return runtimeConsentGranted;
 }
 
-function startPostHog() {
-  // No key configured → analytics stays off. We never ship a hardcoded key.
-  if (!POSTHOG_KEY) return false;
-  if (posthog.__loaded) return true;
-  posthog.init(POSTHOG_KEY, {
-    api_host: POSTHOG_HOST,
-    autocapture: false,
-    capture_pageview: false,
-  });
-  return true;
-}
-
-/** Called once at boot. No-op unless the user has already granted consent. */
+/**
+ * Called once at boot. Persisted client state is not canonical and may be stale after a cross-device withdrawal,
+ * so analytics starts OFF until an authenticated server read explicitly calls enableAnalytics().
+ */
 export function initAnalyticsIfConsented() {
-  if (hasAnalyticsConsent()) startPostHog();
+  runtimeConsentGranted = false;
+  clearLegacyPostHogPersistence();
+  try {
+    posthog.opt_out_capturing?.();
+    posthog.reset?.();
+  } catch { /* legacy provider may be unavailable */ }
+  return false;
 }
 
-/** Called when the user grants analytics consent in the ConsentModal. */
+/** Called only after an authenticated server read/write acknowledges analytics consent. */
 export function enableAnalytics() {
+  runtimeConsentGranted = true;
+  notifyAnalyticsRuntimeChanged();
   try {
     localStorage.setItem(CONSENT_KEY, 'granted');
   } catch {
     /* storage unavailable — analytics simply won't persist across reloads */
   }
-  if (startPostHog()) {
-    posthog.capture('consent_granted', { surface: 'consent_modal' });
-  }
+  // Direct third-party capture is intentionally disabled for launch. The first-party
+  // endpoint revalidates canonical consent for every event and is the only ingest path.
 }
 
 /** Called when the user declines analytics. */
 export function disableAnalytics() {
+  // Disable synchronously before touching storage/provider state so no concurrent producer can create a session.
+  runtimeConsentGranted = false;
+  notifyAnalyticsRuntimeChanged();
   try {
     localStorage.setItem(CONSENT_KEY, 'denied');
+    localStorage.removeItem(ANALYTICS_SESSION_KEY);
+    localStorage.removeItem('garnish:rec-attribution');
+    sessionStorage.removeItem('g_prevPage');
+    sessionStorage.removeItem('g_enterTs');
+    sessionStorage.removeItem('g_clicks');
   } catch {
     /* ignore */
   }
-  if (posthog.__loaded) {
-    try {
-      posthog.opt_out_capturing();
-      posthog.reset();
-    } catch {
-      /* ignore */
-    }
+  clearLegacyPostHogPersistence();
+  try {
+    posthog.opt_out_capturing?.();
+    posthog.reset?.();
+  } catch {
+    /* ignore */
   }
 }

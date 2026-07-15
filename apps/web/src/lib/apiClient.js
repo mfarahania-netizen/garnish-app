@@ -1,5 +1,7 @@
 // apps/web/src/lib/apiClient.js
 import axios from 'axios';
+import { clearPrivateSessionState, resetBrowserToLogin } from './private-session-cache';
+import { disableAnalytics } from './analytics-init';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
@@ -12,9 +14,16 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token) {
+    const explicitAuthorization = config.headers?.Authorization
+      || config.headers?.get?.('Authorization');
+    if (token && !explicitAuthorization) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    const boundAuthorization = config.headers?.Authorization
+      || config.headers?.get?.('Authorization');
+    config.garnishAuthToken = typeof boundAuthorization === 'string'
+      ? boundAuthorization.replace(/^Bearer\s+/i, '')
+      : null;
     return config;
   },
   (error) => Promise.reject(error)
@@ -22,18 +31,34 @@ apiClient.interceptors.request.use(
 
 // 🆕 پاسخ interceptor – مدیریت 401 Unauthorized
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const requestToken = response.config?.garnishAuthToken;
+    if (requestToken && localStorage.getItem('token') !== requestToken) {
+      const stale = new Error('AUTH_SESSION_CHANGED');
+      stale.code = 'AUTH_SESSION_CHANGED';
+      return Promise.reject(stale);
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       const requestUrl = String(error.config?.url || '');
-      const path = window.location?.pathname || '';
-      const isAuthAttempt = /\/auth\/(login|register|guest)$/.test(requestUrl);
-      const isPublicAuthRoute = path === '/login' || path === '/onboarding' || path === '/terms' || path === '/privacy';
+      const isAuthAttempt = /\/auth\/(login|register|guest|google|otp\/(?:request|verify)|password-reset\/confirm)$/.test(requestUrl);
       if (!isAuthAttempt) {
-        localStorage.removeItem('token');
-        localStorage.setItem('garnish.sessionExpired', 'true');
+        const requestAuthorization = error.config?.headers?.Authorization
+          || error.config?.headers?.get?.('Authorization');
+        const requestToken = typeof requestAuthorization === 'string'
+          ? requestAuthorization.replace(/^Bearer\s+/i, '')
+          : null;
+        const currentToken = localStorage.getItem('token');
+        // A delayed account-A response must never tear down account B.
+        if (requestToken && currentToken && requestToken !== currentToken) return Promise.reject(error);
+        disableAnalytics();
+        const cleanup = clearPrivateSessionState({ clearAccountStorage: true });
+        // Preserve the current login UX marker after the account-scoped purge.
+        try { localStorage.setItem('garnish.sessionExpired', 'true'); } catch { /* reset still continues */ }
+        void cleanup.finally(() => resetBrowserToLogin());
       }
-      if (!isAuthAttempt && !isPublicAuthRoute && !path.startsWith('/admin')) window.location.href = '/login?reason=session-expired';
     }
     return Promise.reject(error);
   }

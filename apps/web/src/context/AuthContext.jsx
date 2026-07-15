@@ -16,6 +16,13 @@ const AuthContext = createContext(null);
 const DEVICE_KEY = 'garnish.deviceKey';
 export const ONBOARDED_KEY = 'garnish.onboarded';
 const GUEST_ENABLED = import.meta.env.VITE_ENABLE_GUEST_MODE === 'true';
+const CONSENT_SYNC_TIMEOUT_MS = 3000;
+
+function authAttemptSupersededError() {
+  const error = new Error('AUTH_ATTEMPT_SUPERSEDED');
+  error.code = 'AUTH_ATTEMPT_SUPERSEDED';
+  return error;
+}
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
@@ -24,8 +31,12 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const mintingRef = useRef(false);
   const justMintedRef = useRef(null);
+  const authAttemptRef = useRef(0);
 
   const clearAuth = useCallback(() => {
+    // Invalidate any OTP/Google/password response still in flight. A response
+    // that returns after logout must never reinstall an old account.
+    authAttemptRef.current += 1;
     disableAnalytics();
     const cacheCleanup = clearPrivateSessionState({ queryClient, clearAccountStorage: true });
     try { localStorage.removeItem('token'); } catch { /* state reset still continues */ }
@@ -37,9 +48,12 @@ export function AuthProvider({ children }) {
 
   const syncCanonicalAnalyticsConsent = useCallback(async (authenticatedUser, expectedToken) => {
     if (!expectedToken || localStorage.getItem('token') !== expectedToken) return false;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), CONSENT_SYNC_TIMEOUT_MS);
     try {
       const { data } = await apiClient.get('/users/consent', {
         headers: { Authorization: `Bearer ${expectedToken}` },
+        signal: controller.signal,
       });
       if (localStorage.getItem('token') !== expectedToken) return false;
       const analyticsDecision = data?.purposes?.analytics;
@@ -55,10 +69,13 @@ export function AuthProvider({ children }) {
     } catch {
       if (localStorage.getItem('token') === expectedToken) disableAnalytics();
       return false;
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }, []);
 
-  const installAuthenticatedSession = useCallback(async (data) => {
+  const installAuthenticatedSession = useCallback(async (data, expectedAttempt) => {
+    if (expectedAttempt !== authAttemptRef.current) throw authAttemptSupersededError();
     const extractedToken = data?.access_token || data?.token;
     const extractedUser = data?.user || data?.data;
     if (!extractedToken) throw new Error('auth token missing');
@@ -67,13 +84,22 @@ export function AuthProvider({ children }) {
     // new account until all synchronous private state from the previous one is gone.
     disableAnalytics();
     await clearPrivateSessionState({ queryClient, clearAccountStorage: true });
+    if (expectedAttempt !== authAttemptRef.current) throw authAttemptSupersededError();
     justMintedRef.current = extractedToken;
     localStorage.setItem('token', extractedToken);
     setToken(extractedToken);
     setUser(extractedUser || null);
-    await syncCanonicalAnalyticsConsent(extractedUser, extractedToken);
+    // Optional analytics hydration is fail-closed and bounded, but it is not an
+    // authentication prerequisite. Never keep a successfully authenticated
+    // user on the OTP/Google loading state because this optional read is slow.
+    void syncCanonicalAnalyticsConsent(extractedUser, extractedToken);
     return extractedUser || null;
   }, [queryClient, syncCanonicalAnalyticsConsent]);
+
+  const beginAuthAttempt = useCallback(() => {
+    authAttemptRef.current += 1;
+    return authAttemptRef.current;
+  }, []);
 
   useEffect(() => {
     const unregister = registerPrivateSessionQueryClient(queryClient);
@@ -94,6 +120,7 @@ export function AuthProvider({ children }) {
         && event.newValue !== token;
       if (!tokenWasReplaced) return;
 
+      authAttemptRef.current += 1;
       disableAnalytics();
       const cleanup = clearPrivateSessionState({
         queryClient,
@@ -191,9 +218,11 @@ export function AuthProvider({ children }) {
 
     if (mintingRef.current) return;
     mintingRef.current = true;
+    const guestAttemptGeneration = authAttemptRef.current;
     const deviceKey = localStorage.getItem(DEVICE_KEY) || undefined;
     apiClient.post('/auth/guest', deviceKey ? { deviceKey } : {})
       .then(({ data }) => {
+        if (guestAttemptGeneration !== authAttemptRef.current || localStorage.getItem('token')) return;
         const t = data?.token || data?.access_token;
         if (data?.deviceKey) localStorage.setItem(DEVICE_KEY, data.deviceKey);
         if (t) {
@@ -210,14 +239,16 @@ export function AuthProvider({ children }) {
   }, [clearAuth, syncCanonicalAnalyticsConsent, token]);
 
   const login = useCallback(async (phone, password) => {
+    const attempt = beginAuthAttempt();
     const { data } = await apiClient.post('/auth/login', { phone, password });
-    return installAuthenticatedSession(data);
-  }, [installAuthenticatedSession]);
+    return installAuthenticatedSession(data, attempt);
+  }, [beginAuthAttempt, installAuthenticatedSession]);
 
   const register = useCallback(async (phone, password, name) => {
+    const attempt = beginAuthAttempt();
     const { data } = await apiClient.post('/auth/register', { phone, password, name });
-    return installAuthenticatedSession(data);
-  }, [installAuthenticatedSession]);
+    return installAuthenticatedSession(data, attempt);
+  }, [beginAuthAttempt, installAuthenticatedSession]);
 
   const requestOtp = useCallback(async (phone) => {
     const { data } = await apiClient.post('/auth/otp/request', { phone });
@@ -225,14 +256,16 @@ export function AuthProvider({ children }) {
   }, []);
 
   const verifyOtp = useCallback(async (phone, code, name) => {
+    const attempt = beginAuthAttempt();
     const { data } = await apiClient.post('/auth/otp/verify', { phone, code, name });
-    return installAuthenticatedSession(data);
-  }, [installAuthenticatedSession]);
+    return installAuthenticatedSession(data, attempt);
+  }, [beginAuthAttempt, installAuthenticatedSession]);
 
   const loginWithGoogle = useCallback(async (credential) => {
+    const attempt = beginAuthAttempt();
     const { data } = await apiClient.post('/auth/google', { credential });
-    return installAuthenticatedSession(data);
-  }, [installAuthenticatedSession]);
+    return installAuthenticatedSession(data, attempt);
+  }, [beginAuthAttempt, installAuthenticatedSession]);
 
   const requestPasswordReset = useCallback(async (phone) => {
     const { data } = await apiClient.post('/auth/password-reset/request', { phone });

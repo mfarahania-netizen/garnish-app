@@ -8,7 +8,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { PrismaClient } = require('@prisma/client');
-const { mapRecipe } = require('../data/phase-one-recipes');
+const { mapRecipe, applyRecipeSafetyOverride } = require('../data/phase-one-recipes');
 
 const ROOT = path.resolve(__dirname, '../../../..');
 const HANDOFF = path.join(
@@ -407,6 +407,7 @@ function completeGris(recipe) {
   return gris;
 }
 function mapForGlobal(recipe, importedAt) {
+  recipe = applyRecipeSafetyOverride(recipe);
   const mapped = mapRecipe(recipe);
   const note = parseAdminNote(mapped.adminNote);
   note.source = SOURCE_TAG;

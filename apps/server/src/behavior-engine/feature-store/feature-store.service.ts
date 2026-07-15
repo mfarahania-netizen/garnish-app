@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { onboardingV2Features } from '../../onboarding/onboarding-v2.features';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SnapshotBuilderService } from '../snapshots/snapshot-builder.service';
 import { ConsentService } from '../../consent/consent.service';
@@ -81,7 +82,16 @@ export class FeatureStoreService {
     await this.snapshotBuilder.buildAll(userId);
 
     const profileDelegate = (this.prisma as any).userBehaviorProfile;
-    const [signals, dimensions, snapshots, outcomes, identitySnapshot, user, derivedProfile] = await Promise.all([
+    const [
+      signals,
+      dimensions,
+      snapshots,
+      outcomes,
+      identitySnapshot,
+      user,
+      derivedProfile,
+      onboardingV2,
+    ] = await Promise.all([
       this.prisma.userBehaviorSignal.findMany({
         where: { userId, updatedAt: { gte: epoch } },
       }),
@@ -110,6 +120,7 @@ export class FeatureStoreService {
             where: { userId, updatedAt: { gte: epoch } },
           })
         : null,
+      this.prisma.onboardingProfile.findUnique({ where: { userId } }),
     ]);
     const [window7, window30, window90] = await Promise.all([
       this.buildWindowSignalProfile(userId, 7, epoch),
@@ -120,10 +131,21 @@ export class FeatureStoreService {
     const dataMaturity = await this.getDataMaturity(userId, epoch);
 
     const features: Record<string, number> = {};
+    Object.assign(
+      features,
+      // Reaching this point proves the current analytics + personalization grant
+      // epoch. The guarded write below re-checks the same epoch before anything
+      // is persisted or returned, so taste never survives a concurrent withdrawal.
+      onboardingV2Features(onboardingV2, true),
+    );
 
     for (const signal of signals) {
       const confidence = this.clamp(Number(signal.confidence ?? 0.5));
-      features[`signal_${signal.signalName}`] = this.round(Number(signal.value || 0) * confidence);
+      const key = `signal_${signal.signalName}`;
+      features[key] = Math.max(
+        features[key] ?? 0,
+        this.round(Number(signal.value || 0) * confidence),
+      );
       features[`signalConfidence_${signal.signalName}`] = confidence;
     }
 

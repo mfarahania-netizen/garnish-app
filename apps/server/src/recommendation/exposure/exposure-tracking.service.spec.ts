@@ -133,6 +133,47 @@ describe('ExposureTrackingService', () => {
     expect(mutationSql).toEqual([]);
   });
 
+  it('rejects the whole batch when the analytics event belongs to an older consent epoch', async () => {
+    const capturedEpoch = new Date(Date.now() - 120_000);
+    const regrantEpoch = new Date(Date.now() - 60_000);
+    boundaryRows = boundaryRows.map((row) => ({
+      ...row,
+      createdAt: regrantEpoch,
+    }));
+
+    await expect(service.trackExposures(
+      'user-1',
+      ['recipe-1', 'recipe-2'],
+      'viewport',
+      capturedEpoch,
+    )).resolves.toBe(0);
+
+    const mutationSql = prisma.$executeRaw.mock.calls
+      .filter(([strings]) => Array.isArray(strings));
+    expect(mutationSql).toEqual([]);
+  });
+
+  it.each([
+    'OPTIONAL_ANALYTICS_INGEST_ENABLED',
+    'OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED',
+  ] as const)(
+    'performs zero transaction or write IO when %s is disabled',
+    async (switchName) => {
+      process.env[switchName] = 'false';
+
+      try {
+        await expect(service.trackExposures(
+          'user-1',
+          ['recipe-1'],
+        )).resolves.toBe(0);
+        expect(prisma.$transaction).not.toHaveBeenCalled();
+        expect(prisma.$executeRaw).not.toHaveBeenCalled();
+      } finally {
+        process.env[switchName] = 'true';
+      }
+    },
+  );
+
   it('calculates capped penalty from repeated exposures and negative feedback', async () => {
     prisma.$queryRaw
       .mockResolvedValueOnce([{ count: 6 }])

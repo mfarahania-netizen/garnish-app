@@ -15,7 +15,7 @@ import {
   isSafePagePath,
   isSafeSessionId,
 } from './payload-sanitizer';
-import { Prisma } from '@prisma/client';
+import { Prisma, type UserEvent } from '@prisma/client';
 import {
   currentEventPopulationWhere,
   requireCurrentConsentPopulation,
@@ -24,6 +24,23 @@ import {
   currentGrantEpochInLockedTransaction,
   withUserOptionalProcessingBoundary,
 } from '../consent/optional-processing-transaction-boundary.service';
+import type { OptionalConsentPurpose } from '../consent/consent.constants';
+
+type AnalyticsEventInput = {
+  userId: string;
+  type: string;
+  page?: string;
+  duration?: number;
+  sessionId?: string;
+  payload?: Record<string, unknown>;
+};
+
+type ConsentBoundEvent = {
+  event: UserEvent;
+  grantEpoch: Date;
+};
+
+const JOINT_CONSENT_EVENT_TYPES = new Set(['recommendation_impression']);
 
 @Injectable()
 export class AnalyticsService {
@@ -83,14 +100,33 @@ export class AnalyticsService {
     }
   }
 
-  async trackEvent(data: {
-    userId: string;
-    type: string;
-    page?: string;
-    duration?: number;
-    sessionId?: string;
-    payload?: Record<string, unknown>;
-  }) {
+  async trackEvent(data: AnalyticsEventInput) {
+    const purposes: readonly OptionalConsentPurpose[] =
+      JOINT_CONSENT_EVENT_TYPES.has(data.type)
+        ? ['analytics', 'personalization']
+        : ['analytics'];
+    const result = await this.trackEventWithinConsentBoundary(data, purposes);
+    return result?.event ?? null;
+  }
+
+  /**
+   * Recommendation impressions are collected specifically to influence a user's future ranking.
+   * Return the locked grant epoch so the exposure write can reject a withdraw/re-grant race instead
+   * of attaching an old impression to a new consent epoch.
+   */
+  async trackRecommendationImpression(
+    data: Omit<AnalyticsEventInput, 'type'>,
+  ): Promise<ConsentBoundEvent | null> {
+    return this.trackEventWithinConsentBoundary(
+      { ...data, type: 'recommendation_impression' },
+      ['analytics', 'personalization'],
+    );
+  }
+
+  private async trackEventWithinConsentBoundary(
+    data: AnalyticsEventInput,
+    requiredPurposes: readonly OptionalConsentPurpose[],
+  ): Promise<ConsentBoundEvent | null> {
     if (!data.userId) {
       return null;
     }
@@ -145,22 +181,31 @@ export class AnalyticsService {
       this.prisma,
       {
         userId: data.userId,
-        purposes: ['analytics'],
+        purposes: requiredPurposes,
         operation: 'analytics.track-event',
       },
       async (tx) => {
-        const personalizationEpoch =
-          await currentGrantEpochInLockedTransaction(tx, data.userId, [
-            'analytics',
-            'personalization',
-          ]);
+        const personalizationRequired =
+          requiredPurposes.includes('personalization');
+        const personalizationEpoch = await currentGrantEpochInLockedTransaction(
+          tx,
+          data.userId,
+          ['analytics', 'personalization'],
+        );
+        // The generic analytics endpoint can also receive recommendation_impression.
+        // Never downgrade that event to analytics-only storage when personalization is absent.
+        if (personalizationRequired && !personalizationEpoch) return null;
         const collectedEvent = await tx.userEvent.create({
           data: {
             ...eventData,
-            consentPurpose: 'analytics',
+            consentPurpose: personalizationRequired
+              ? 'personalization'
+              : 'analytics',
           },
         });
-        if (!personalizationEpoch) return collectedEvent;
+        if (personalizationRequired || !personalizationEpoch) {
+          return collectedEvent;
+        }
         return tx.userEvent.update({
           where: { id: collectedEvent.id },
           data: { consentPurpose: 'personalization' },
@@ -174,9 +219,13 @@ export class AnalyticsService {
       );
       return null;
     });
-    if (!boundary || boundary.status !== 'executed') return null;
+    if (!boundary || boundary.status !== 'executed' || !boundary.value) {
+      return null;
+    }
     const event = boundary.value;
-    if (event.consentPurpose !== 'personalization') return event;
+    if (event.consentPurpose !== 'personalization') {
+      return { event, grantEpoch: boundary.grantEpoch };
+    }
 
     // Raw-payload enrichment derives durable profile signals, so analytics consent alone is insufficient.
     // It runs only after a current personalization grant has been verified.
@@ -192,13 +241,13 @@ export class AnalyticsService {
     const outboxId = await this.outbox.enqueue(event.id, data.userId);
     if (outboxId) {
       this.outbox
-        .processNow(outboxId, event, data.userId)
+        .processNow(outboxId)
         .catch((err) =>
           console.error(`Event routing failed for event ${event.id}:`, err),
         );
     }
 
-    return event;
+    return { event, grantEpoch: boundary.grantEpoch };
   }
 
   async getPopularRecipes() {

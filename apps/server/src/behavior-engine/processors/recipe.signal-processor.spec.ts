@@ -69,6 +69,14 @@ describe('RecipeSignalProcessor — favorite_remove (recsys P0-2)', () => {
     expect(names()).toContain('likes_recipe');
   });
 
+  it('recipe_liked is lightweight taste evidence and never impersonates a favorite', async () => {
+    await proc.process(ev('recipe_liked'), 'u1', prisma);
+    expect(signalCalculator.applyPositiveFeedbackInLockedTransaction).toHaveBeenCalledWith(prisma, 'u1', 'r1', 0.2);
+    expect(signalCalculator.applyNegativeFeedbackInLockedTransaction).not.toHaveBeenCalled();
+    expect(names()).toContain('likes_recipe');
+    expect(names()).not.toContain('views_recipe');
+  });
+
   it('recipe_view records views_recipe with no feedback (no regression)', async () => {
     await proc.process(ev('recipe_view'), 'u1', prisma);
     expect(signalCalculator.applyPositiveFeedbackInLockedTransaction).not.toHaveBeenCalled();

@@ -4,10 +4,11 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationSchedulerService } from './notification-scheduler.service';
 import { IneService } from './ine/ine.service';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
+import { ConsentModule } from '../consent/consent.module';
 
 @Global()
 @Module({
-  imports: [ProfileModule], // INE reuses ProfileReadService (getLivingUserProfile + getConsentState)
+  imports: [ProfileModule, ConsentModule], // INE reuses ProfileReadService (getLivingUserProfile + getConsentState)
   providers: [NotificationsService, NotificationSchedulerService, IneService],
   controllers: [NotificationsController],
   exports: [NotificationsService, IneService],

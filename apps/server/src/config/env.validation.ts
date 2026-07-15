@@ -19,6 +19,7 @@ const PLACEHOLDER_VALUES = new Set<string>([
   'your-strong-random-secret-here',
   'your-gemini-api-key',
   'PUT_REAL_KEY_IN_ENV_ONLY',
+  'PUT_REAL_BODY_ID_IN_ENV_ONLY',
   'changeme',
   'secret',
   'postgresql://username:password@localhost:5432/garnish_db',
@@ -60,11 +61,14 @@ function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
     { key: 'REDIS_PORT', required: false },
     { key: 'FRONTEND_URL', required: false },
     { key: 'PORT', required: false },
+    { key: 'TRUST_PROXY_HOPS', required: false },
     { key: 'SMS_PROVIDER', required: false },
     { key: 'MELIPAYAMAK_USERNAME', required: isMelipayamakSmsEnabled(env) },
     { key: 'MELIPAYAMAK_API_KEY', required: isMelipayamakSmsEnabled(env), minLength: 16 },
     { key: 'MELIPAYAMAK_PATTERN_BODY_ID', required: isMelipayamakSmsEnabled(env) },
     { key: 'MELIPAYAMAK_ENABLED', required: false },
+    { key: 'SMS_PROVIDER_TIMEOUT_MS', required: false },
+    { key: 'SMS_DEV_LOG_OTP', required: false },
     { key: 'OTP_TTL_SECONDS', required: false },
     { key: 'OTP_RESEND_COOLDOWN_SECONDS', required: false },
     { key: 'OTP_MAX_ATTEMPTS', required: false },
@@ -82,6 +86,8 @@ export interface ValidatedEnv {
   REDIS_PORT: number;
   FRONTEND_URL: string;
   PORT: number;
+  TRUST_PROXY_HOPS: number;
+  SMS_PROVIDER_TIMEOUT_MS: number;
 }
 
 export function validateEnv(
@@ -117,6 +123,45 @@ export function validateEnv(
     }
   }
 
+  // Express must not trust caller-supplied X-Forwarded-For by default. A
+  // positive hop count is allowed only when the operator knows the exact
+  // number of ingress proxies and direct public access to the app is blocked.
+  const trustProxyRaw = (env.TRUST_PROXY_HOPS ?? '').trim();
+  const trustProxyHops = trustProxyRaw ? Number(trustProxyRaw) : 0;
+  if (!Number.isInteger(trustProxyHops) || trustProxyHops < 0 || trustProxyHops > 10) {
+    errors.push('TRUST_PROXY_HOPS must be an integer between 0 and 10');
+  }
+
+  const smsTimeoutRaw = (env.SMS_PROVIDER_TIMEOUT_MS ?? '').trim();
+  const smsProviderTimeoutMs = smsTimeoutRaw ? Number(smsTimeoutRaw) : 5000;
+  if (!Number.isInteger(smsProviderTimeoutMs) || smsProviderTimeoutMs < 1000 || smsProviderTimeoutMs > 15_000) {
+    errors.push('SMS_PROVIDER_TIMEOUT_MS must be an integer between 1000 and 15000');
+  }
+
+  const smsDevLogRaw = (env.SMS_DEV_LOG_OTP ?? '').trim().toLowerCase();
+  if (smsDevLogRaw && smsDevLogRaw !== 'true' && smsDevLogRaw !== 'false') {
+    errors.push('SMS_DEV_LOG_OTP must be true or false');
+  }
+  const nodeEnv = (env.NODE_ENV ?? '').trim().toLowerCase();
+  if (smsDevLogRaw === 'true' && nodeEnv !== 'development' && nodeEnv !== 'test') {
+    errors.push('SMS_DEV_LOG_OTP may be true only when NODE_ENV is development or test');
+  }
+
+  const otpBounds: Array<[string, number, number]> = [
+    ['OTP_TTL_SECONDS', 30, 600],
+    ['OTP_RESEND_COOLDOWN_SECONDS', 10, 600],
+    ['OTP_MAX_ATTEMPTS', 1, 10],
+    ['OTP_DAILY_LIMIT_PER_PHONE', 1, 50],
+  ];
+  for (const [key, minimum, maximum] of otpBounds) {
+    const raw = (env[key] ?? '').trim();
+    if (!raw) continue;
+    const parsed = Number(raw);
+    if (!Number.isInteger(parsed) || parsed < minimum || parsed > maximum) {
+      errors.push(`${key} must be an integer between ${minimum} and ${maximum}`);
+    }
+  }
+
   if (errors.length > 0) {
     // No secret values are included — only key names and failure reasons.
     const message =
@@ -136,5 +181,7 @@ export function validateEnv(
     REDIS_PORT: parseInt(env.REDIS_PORT || '6379', 10),
     FRONTEND_URL: env.FRONTEND_URL || 'http://localhost:5173',
     PORT: parseInt(env.PORT || '3000', 10),
+    TRUST_PROXY_HOPS: trustProxyHops,
+    SMS_PROVIDER_TIMEOUT_MS: smsProviderTimeoutMs,
   };
 }

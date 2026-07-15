@@ -2,7 +2,7 @@
  * Recipe Intelligence QA gate (GARNISH-RECIPE-L4-07) — consolidated, deterministic, offline.
  *
  * Cross-cutting checks: integrity (resolve/flag/derive/normalize), fit reuse of the unified profile,
- * ALLERGY HARD-FILTER never softened, dietary mismatch ≠ unsafe, disliked warnings, non-medical framing,
+ * allergy and restrictive-diet hard filters, disliked warnings, non-medical framing,
  * sparse-data grace. Emits a PII-free artifact. Reuses composeLivingUserProfile (the canonical profile).
  */
 import * as fs from 'node:fs';
@@ -38,9 +38,9 @@ describe('Recipe Intelligence QA gate (RECIPE-L4-07)', () => {
   check('allergy_hard_filter_avoid', 'allergy_safety', allergyFit.recommendation === 'avoid_allergen');
   check('allergy_never_softened', 'allergy_safety', allergyFit.fitScore === 0 && allergyFit.safety.allergenConflict === true && allergyFit.safety.safe === false);
 
-  // dietary mismatch is a preference (caution), NOT unsafe
+  // A declared restrictive diet is a serving constraint. Unknown/non-canonical recipe diet metadata fails closed.
   const vegFit = assessRecipeFit({ id: 'r', allergens: [], ingredients: [{ name: 'chicken' }] }, profile([{ key: 'dietary.pattern', value: 'vegetarian', declaredAt: recent() }]), []);
-  check('dietary_mismatch_not_unsafe', 'dietary', vegFit.dietaryMatch === 'mismatch' && vegFit.safety.allergenConflict === false && vegFit.recommendation === 'caution');
+  check('dietary_mismatch_hard_constraint', 'dietary', vegFit.dietaryMatch === 'mismatch' && vegFit.safety.allergenConflict === false && vegFit.safety.dietaryRestrictionConflict === true && vegFit.safety.safe === false && vegFit.recommendation === 'avoid_constraint' && vegFit.fitScore === 0);
 
   // disliked warnings
   const dislikeFit = assessRecipeFit({ id: 'r', allergens: [], ingredients: [{ name: 'cilantro' }] }, profile([{ key: 'dietary.hard_dislikes', value: ['cilantro'], declaredAt: recent() }]), []);

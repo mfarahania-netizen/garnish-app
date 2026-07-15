@@ -122,7 +122,7 @@ describe('FoodDnaPage', () => {
     });
     renderWithProviders(<FoodDnaPage />);
     // calm Persian forming line
-    expect(screen.getByText(/تازه شروع شده/)).toBeInTheDocument();
+    expect(screen.getAllByText(/تازه شروع شده/).length).toBeGreaterThan(0);
     // a 0% / ۰٪ must not appear as a big ring value (no "۰٪" aria-label as a percentage)
     expect(screen.queryByRole('img', { name: /۰٪/ })).not.toBeInTheDocument();
     // no raw English trustGuidance

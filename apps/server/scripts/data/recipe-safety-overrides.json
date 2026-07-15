@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "policy": "reviewed_recipe_diet_label_corrections",
+  "records": {
+    "garnish_recipe_fa_77_3adf94d4": {
+      "dietFlags": ["vegetarian"],
+      "grisDietary": { "vegan": false, "vegetarian": true }
+    },
+    "garnish_recipe_global_143_014_8a86b8a0": {
+      "dietFlags": ["vegetarian"],
+      "grisDietary": {
+        "flags": ["vegetarian"],
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false
+      }
+    }
+  }
+}

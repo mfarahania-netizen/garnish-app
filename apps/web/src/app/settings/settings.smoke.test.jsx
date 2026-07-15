@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import SettingsPage from './page';
 
@@ -27,6 +27,7 @@ vi.mock('../../context/AuthContext', () => ({
 // A complete, realistic READY shape covering every field the page dereferences.
 const readyShape = () => ({
   status: 'ready',
+  consentStatus: 'ready',
   refetch: vi.fn(),
   patternOptions: [
     { id: 'omnivore', label: 'همه‌چیزخوار' },
@@ -36,13 +37,18 @@ const readyShape = () => ({
     { id: 'gluten', label: 'گلوتن' },
     { id: 'dairy', label: 'لبنیات' },
   ],
+  legacyAllergenOptions: [],
   pattern: 'omnivore',
   allergens: { gluten: true },
   choosePattern: vi.fn(),
   toggleAllergen: vi.fn(),
+  removeLegacyAllergen: vi.fn(),
   notif: { briefing: true, streak: true, reengage: false, quiet: true },
   toggleNotif: vi.fn(),
   consent: { personalization: false, analytics: false },
+  consentActive: { personalization: false, analytics: false },
+  consentRuntimeAvailable: { personalization: true, analytics: true },
+  consentBusy: { personalization: false, analytics: false },
   toggleConsent: vi.fn(),
   account: { phone: '09120000000', email: 'test@example.com' },
   exportData: vi.fn(),
@@ -60,6 +66,8 @@ describe('SettingsPage smoke', () => {
     // a section head + a chip option from the realistic shape.
     expect(screen.getByRole('heading', { level: 2, name: 'پروفایل غذایی' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'وگان' })).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'آمارِ استفادهٔ اختیاری' })).toBeInTheDocument();
+    expect(screen.queryByText('آمارِ ناشناس')).not.toBeInTheDocument();
   });
 
   it('renders the loading state (skeletons, no throw)', () => {
@@ -76,5 +84,57 @@ describe('SettingsPage smoke', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'تنظیمات بارگذاری نشد' })).toBeInTheDocument();
     // retry button label copied verbatim from source.
     expect(screen.getByRole('button', { name: 'تلاش دوباره' })).toBeInTheDocument();
+  });
+
+  it('keeps a historical deferred allergen visible and removable', () => {
+    const shape = readyShape();
+    shape.legacyAllergenOptions = [{ id: 'lupin', label: 'لوپین' }];
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+    screen.getByRole('button', { name: 'حذف لوپین' }).click();
+    expect(shape.removeLegacyAllergen).toHaveBeenCalledWith('lupin');
+  });
+
+  it('locks optional consent and exposes a focused retry when canonical state is unknown', () => {
+    const shape = readyShape();
+    shape.consentStatus = 'error';
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+
+    expect(screen.getByRole('switch', { name: 'آمارِ استفادهٔ اختیاری' })).toBeDisabled();
+    screen.getByRole('button', { name: 'تلاش دوباره برای بارگذاری رضایت' }).click();
+    expect(shape.refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks notification controls as unavailable instead of claiming local choices are operational', () => {
+    const shape = readyShape();
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+
+    expect(screen.getByText(/این تنظیمات هنوز به سرویس ارسال اعلان متصل نیستند/)).toBeInTheDocument();
+    expect(screen.getByRole('switch', { name: 'بریفینگِ هفتگی' })).toBeDisabled();
+    expect(screen.getByRole('switch', { name: 'بریفینگِ هفتگی' })).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByRole('switch', { name: 'ساعتِ آرام' })).toBeDisabled();
+    expect(shape.toggleNotif).not.toHaveBeenCalled();
+  });
+
+  it('requires explicit typed confirmation before permanent account deletion', async () => {
+    const shape = readyShape();
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'حذف حساب' }));
+    expect(await screen.findByRole('dialog', { name: 'حذف دائمی حساب' })).toBeInTheDocument();
+    const confirmButton = screen.getByRole('button', { name: 'حذف دائمی حساب' });
+    const confirmationInput = screen.getByLabelText(/برای تأیید، عبارت/);
+    expect(confirmButton).toBeDisabled();
+
+    fireEvent.change(confirmationInput, { target: { value: 'حذف' } });
+    expect(confirmButton).toBeDisabled();
+    fireEvent.change(confirmationInput, { target: { value: 'حذف حساب' } });
+    expect(confirmButton).toBeEnabled();
+    fireEvent.click(confirmButton);
+
+    expect(shape.deleteAccount).toHaveBeenCalledTimes(1);
   });
 });

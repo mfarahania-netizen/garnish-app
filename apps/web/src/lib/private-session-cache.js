@@ -18,7 +18,10 @@ const ACCOUNT_LOCAL_STORAGE_KEYS = [
   'submitted_recipes',
 ];
 const ACCOUNT_SESSION_STORAGE_KEYS = ['g_prevPage', 'g_enterTs', 'g_clicks'];
-const ACCOUNT_SESSION_STORAGE_PREFIXES = ['garnish:personalization:'];
+const ACCOUNT_SESSION_STORAGE_PREFIXES = [
+  'garnish:personalization:',
+  'garnish.onboarding.v2.draft:',
+];
 const E2E_QUERY_INSPECTION_GLOBAL = '__GARNISH_E2E_QUERY_INSPECTION__';
 
 async function sha256Prefix(value, cryptoApi = globalThis.crypto) {

@@ -3,10 +3,27 @@ import { Box } from '@mantine/core';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AuthForm from '../../components/auth/AuthForm';
 
+const RETURN_PATH_ORIGIN = 'https://garnish.local';
+
+export function sanitizeReturnPath(rawPath) {
+  if (typeof rawPath !== 'string') return '/';
+
+  const value = rawPath.trim();
+  if (!value.startsWith('/') || value.startsWith('//') || value.includes('\\')) return '/';
+
+  try {
+    const parsed = new URL(value, RETURN_PATH_ORIGIN);
+    if (parsed.origin !== RETURN_PATH_ORIGIN || parsed.pathname === '/login') return '/';
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    return '/';
+  }
+}
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const [sp] = useSearchParams();
-  const from = sp.get('from') || '/';
+  const from = sanitizeReturnPath(sp.get('from'));
   const reason = sp.get('reason');
 
   const afterAuth = (user) => {

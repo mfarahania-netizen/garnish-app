@@ -69,6 +69,8 @@ export const RETENTION_POLICY: readonly RetentionRule[] = [
   { model: 'chatMessage', class: 'user_owned_active' },
   { model: 'userFact', class: 'user_owned_active' },
   { model: 'preferenceHistory', class: 'user_owned_active', note: 'user-owned preference-change history (allergy/health/diet) — audit trail, NOT pruned; handled by erasure/export' },
+  { model: 'onboardingProfile', class: 'user_owned_active', note: 'versioned onboarding declarations; exported and cascade-erased with the user' },
+  { model: 'onboardingMutation', class: 'user_owned_active', note: 'metadata-only replay rows are capped at 64 per user, never retain onboarding answer snapshots, and cascade-erase with the user' },
   { model: 'userBehaviorProfile', class: 'user_owned_active', note: 'current profile state' },
   { model: 'recipe', class: 'user_owned_active', note: 'user-authored or catalog content' },
   // GAMIFY-L4-11 — user-owned gamification state; erased via Cascade, not retention-pruned

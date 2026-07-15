@@ -1,54 +1,33 @@
-/* ============================================================
-   ONBOARDING — step option datasets + honest derivations.
-   Content is taken from the approved mockup (Garnish Onboarding Flow.dc.html).
-   Option ids are the canonical values persisted via PUT /users/preferences
-   (diet/skillLevel/budget + JSON arrays of allergies/healthGoals). No fabricated data.
-   ============================================================ */
 import {
-  IconBriefcase, IconClock, IconHome, IconCoffee,
-  IconUser, IconHeart, IconUsersGroup, IconUsers,
-  IconMeat, IconLeaf, IconCarrot, IconPlant2, IconFish, IconSalad, IconEgg, IconChecks,
-  IconArrowsShuffle, IconBolt, IconWallet, IconSchool,
-  IconSeeding, IconToolsKitchen2, IconChefHat,
-  IconCoin, IconCoins, IconCash, IconClockBolt,
+  IconMeat,
+  IconLeaf,
+  IconCarrot,
+  IconPlant2,
+  IconClockBolt,
+  IconClock,
+  IconMeatOff,
 } from '@tabler/icons-react';
 
-// STEP 2 — context (routine/time + who + how-many)
-export const WORK_OPTIONS = [
-  { id: 'desk', label: 'پشت‌میز و پرمشغله', Icon: IconBriefcase },
-  { id: 'shift', label: 'شیفتی / نامنظم', Icon: IconClock },
-  { id: 'home', label: 'دورکاری / خانه', Icon: IconHome },
-  { id: 'free', label: 'وقت آزاد دارم', Icon: IconCoffee },
-];
-
-export const HOUSEHOLD_OPTIONS = [
-  { id: 'solo', label: 'فقط خودم', Icon: IconUser },
-  { id: 'couple', label: 'من و پارتنر', Icon: IconHeart },
-  { id: 'family', label: 'خانواده با بچه', Icon: IconUsersGroup },
-  { id: 'mates', label: 'هم‌خانه‌ای‌ها', Icon: IconUsers },
-];
-
-// STEP 3 — diet pattern + allergens + dislikes
+/**
+ * Onboarding V2 option registry.
+ *
+ * IDs intentionally mirror the typed backend contract. Keep labels here so the
+ * review screen and Settings render the same language for the same value.
+ */
 export const PATTERN_OPTIONS = [
-  { id: 'omnivore', label: 'همه‌چیزخوار', Icon: IconMeat },
-  { id: 'flexitarian', label: 'گیاه‌محور', Icon: IconLeaf },
-  { id: 'vegetarian', label: 'گیاه‌خوار', Icon: IconCarrot },
-  { id: 'vegan', label: 'وگان', Icon: IconPlant2 },
-  { id: 'pescatarian', label: 'ماهی‌خوار', Icon: IconFish },
-  { id: 'mediterranean', label: 'مدیترانه‌ای', Icon: IconSalad },
-  { id: 'keto', label: 'کتو', Icon: IconEgg },
-  { id: 'halal', label: 'حلال', Icon: IconChecks },
+  { id: 'omnivore', label: 'همه‌چیزخوار', description: 'گوشت، ماهی و غذاهای گیاهی', Icon: IconMeat },
+  { id: 'flexitarian', label: 'گیاه‌محور', description: 'بیشتر گیاهی، گاهی گوشت یا ماهی', Icon: IconLeaf },
+  { id: 'vegetarian', label: 'گیاه‌خوار', description: 'بدون گوشت و ماهی', Icon: IconCarrot },
+  { id: 'vegan', label: 'وگان', description: 'بدون فرآورده‌های حیوانی', Icon: IconPlant2 },
 ];
 
-// EU-14 declarable allergens (FIC 1169/2011 Annex II). 'molluscs' is folded into the shellfish token (the
-// extractor + hard gate map molluscs⊆shellfish), so 13 chips cover all 14. Ids MUST equal the server's canonical
-// tokens (CANONICAL_ALLERGEN_TOKENS, derived from allergen-extractor.ts) so the hard allergy gate filters them —
-// asserted by allergen-options.canon.test in apps/web. sulphites is correct-but-inert until ingredients are tagged.
+// EU-14 declarable allergens. Molluscs are folded into the shellfish token by
+// the canonical server extractor, therefore 13 UI values cover the full set.
 export const ALLERGEN_OPTIONS = [
-  { id: 'gluten', label: 'گلوتن' },
-  { id: 'dairy', label: 'لبنیات' },
+  { id: 'gluten', label: 'غلاتِ دارای گلوتن' },
+  { id: 'dairy', label: 'شیر و لبنیات' },
   { id: 'egg', label: 'تخم‌مرغ' },
-  { id: 'nut', label: 'آجیل' },
+  { id: 'nut', label: 'آجیل و مغزها' },
   { id: 'peanut', label: 'بادام‌زمینی' },
   { id: 'shellfish', label: 'صدف و سخت‌پوستان' },
   { id: 'fish', label: 'ماهی' },
@@ -60,79 +39,47 @@ export const ALLERGEN_OPTIONS = [
   { id: 'sulphites', label: 'سولفیت' },
 ];
 
-export const DISLIKE_OPTIONS = [
-  { id: 'eggplant', label: 'بادمجان' },
-  { id: 'liver', label: 'جگر' },
-  { id: 'veryspicy', label: 'تندِ زیاد' },
-  { id: 'olive', label: 'زیتون' },
-  { id: 'mushroom', label: 'قارچ' },
-  { id: 'seafood', label: 'غذای دریایی' },
+// Runtime safety audit (2026-07-14): these are the only tokens whose recipe
+// corpus coverage is currently sufficient for a fail-closed onboarding claim.
+// Keep the full canonical registry above for Settings/drift checks, but never
+// collect unsupported declarations in V2 until backend coverage is certified.
+const ONBOARDING_SUPPORTED_ALLERGEN_IDS = new Set([
+  'gluten', 'dairy', 'egg', 'nut', 'peanut', 'shellfish',
+  'fish', 'soy', 'sesame', 'mustard', 'celery',
+]);
+
+export const ONBOARDING_ALLERGEN_OPTIONS = ALLERGEN_OPTIONS.filter((option) =>
+  ONBOARDING_SUPPORTED_ALLERGEN_IDS.has(option.id));
+
+export const DIETARY_RULE_OPTIONS = [
+  { id: 'no_pork', label: 'گوشت خوک نمی‌خورم', description: 'غذاهای دارای گوشت خوک نمایش داده نشوند', Icon: IconMeatOff },
 ];
 
-// STEP 4 — goals (multi-select; optional) — WELLNESS framing only, no medical goals
-export const GOAL_OPTIONS = [
-  { id: 'variety', label: 'تنوعِ بیشتر', Icon: IconArrowsShuffle },
-  { id: 'energy', label: 'انرژی و تعادل', Icon: IconBolt },
-  { id: 'home_cooking', label: 'آشپزی بیشتر در خانه', Icon: IconHome },
-  { id: 'time', label: 'صرفه‌جویی در زمان', Icon: IconClock },
-  { id: 'budget', label: 'مدیریت بودجه', Icon: IconWallet },
-  { id: 'skill', label: 'یادگیری مهارت', Icon: IconSchool },
-];
-
-// STEP 5 — skill + budget BAND (never an exact number)
-export const SKILL_OPTIONS = [
-  { id: 'beginner', label: 'تازه‌کار', Icon: IconSeeding },
-  { id: 'intermediate', label: 'متوسط', Icon: IconToolsKitchen2 },
-  { id: 'advanced', label: 'حرفه‌ای', Icon: IconChefHat },
-];
-
-export const BUDGET_OPTIONS = [
-  { id: 'low', label: 'کم', Icon: IconCoin },
-  { id: 'mid', label: 'متوسط', Icon: IconCoins },
-  { id: 'generous', label: 'دست‌ودل‌باز', Icon: IconCash },
-];
-
-// COOKING TIME on a workday — the declared effort lever. ids MUST equal the engine bands
-// (constraints.cooking_time_workday: under_15/15_30/30_60/60_plus); under_15+15_30 = "wants quick" → quicker slate.
 export const COOKTIME_OPTIONS = [
-  { id: 'under_15', label: 'کمتر از ۱۵ دقیقه', Icon: IconClockBolt },
-  { id: '15_30', label: '۱۵ تا ۳۰ دقیقه', Icon: IconClock },
-  { id: '30_60', label: '۳۰ تا ۶۰ دقیقه', Icon: IconClock },
-  { id: '60_plus', label: 'بیشتر از یک ساعت', Icon: IconCoffee },
+  { id: 'under_15', label: 'کمتر از ۱۵ دقیقه', description: 'برای روزهای خیلی شلوغ', Icon: IconClockBolt },
+  { id: '15_30', label: '۱۵ تا ۳۰ دقیقه', description: 'سریع و مناسب روزهای معمولی', Icon: IconClock },
+  { id: '30_60', label: '۳۰ تا ۶۰ دقیقه', description: 'برای آشپزی با حوصله‌تر', Icon: IconClock },
+  { id: '60_plus', label: 'بیشتر از یک ساعت', description: 'برای آشپزی مفصل و باحوصله', Icon: IconClock },
 ];
 
-// STEP 4 — goal (multi-select) → declared `goals.primary`. WELLNESS framing only (no clinical weight/muscle goals).
-export const GOAL_V1_OPTIONS = [
-  { id: 'eat_healthier', label: 'سالم‌تر و سبک‌تر', Icon: IconLeaf },
-  { id: 'learn_cooking', label: 'یادگیریِ آشپزی', Icon: IconSchool },
-  { id: 'save_time', label: 'صرفه‌جویی در زمان', Icon: IconClock },
-  { id: 'save_money', label: 'مدیریت هزینه', Icon: IconWallet },
-  { id: 'more_energy', label: 'انرژی و تعادل', Icon: IconBolt },
+export const COOKS_FOR_OPTIONS = [
+  { id: '1', label: '۱ نفر' },
+  { id: '2', label: '۲ نفر' },
+  { id: '3_4', label: '۳ تا ۴ نفر' },
+  { id: '5_plus', label: '۵ نفر یا بیشتر' },
 ];
 
-// STEP 4 — cuisine style (single) → declared `context.cuisine_style`. SOFT lean (boosts, never hides the other).
-export const STYLE_OPTIONS = [
-  { id: 'traditional', label: 'سنتی و اصیل', Icon: IconChefHat },
-  { id: 'modern', label: 'سریع و امروزی', Icon: IconClockBolt },
-  { id: 'both', label: 'هر دو، فرقی نداره', Icon: IconArrowsShuffle },
-];
-
-// ── Food DNA reveal traits — derived ONLY from the user's real answers (never invented) ──
-const PATTERN_TRAIT = {
-  flexitarian: 'گیاه‌محور', vegetarian: 'گیاه‌خوار', vegan: 'وگن', pescatarian: 'ماهی‌محور',
-  mediterranean: 'مدیترانه‌ای', keto: 'کم‌کربوهیدرات', halal: 'حلال', omnivore: 'همه‌چیزخوار',
+export const STEP_META = {
+  2: { key: 'safety', index: 1, title: 'ایمنی غذایی' },
+  3: { key: 'preferences', index: 2, title: 'الگوی غذایی' },
+  4: { key: 'preferences', index: 3, title: 'زمان آشپزی' },
+  5: { key: 'taste', index: 4, title: 'کالیبراسیون ذائقه', optional: true },
 };
 
-export function deriveTraits(state) {
-  const out = [];
-  const push = (label, Icon) => { if (label && !out.some((t) => t.label === label)) out.push({ label, Icon }); };
+export const QUESTION_STEP_TOTAL = 4;
 
-  // Derived ONLY from the v1 answers actually collected (diet · workday cooking-time · dislikes) — never invented.
-  if (state.pattern && PATTERN_TRAIT[state.pattern]) push(PATTERN_TRAIT[state.pattern], IconLeaf);
-  if (state.workdayTime === 'under_15' || state.workdayTime === '15_30') push('سریعِ روزهای هفته', IconClockBolt);
-  else if (state.workdayTime === '60_plus') push('وقت‌دارِ آشپزی', IconCoffee);
-  const tasteCount = (state.taste?.likes?.length || 0) + (state.taste?.dislikes?.length || 0);
-  if (tasteCount) push('سلیقهٔ مشخص', IconChecks);
+export const optionLabel = (options, id, fallback = 'ثبت نشده') =>
+  options.find((option) => option.id === id)?.label || fallback;
 
-  return out.slice(0, 3);
-}
+export const allergenLabels = (ids = []) =>
+  ids.map((id) => optionLabel(ALLERGEN_OPTIONS, id, id));

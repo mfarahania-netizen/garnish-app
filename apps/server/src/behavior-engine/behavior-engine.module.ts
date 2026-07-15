@@ -21,9 +21,10 @@ import { RecommendationSignalProcessor } from './processors/recommendation.signa
 import { PersonalizationSignalProcessor } from './processors/personalization.signal-processor';
 import { LifestyleGraphBuilder } from '../lifestyle/lifestyle-graph.builder';
 import { RecipeEmbeddingService } from '../embeddings/recipe-embedding.service';
+import { ConsentModule } from '../consent/consent.module';
 
 @Module({
-  imports: [PrismaModule, ScheduleModule.forRoot()],
+  imports: [PrismaModule, ScheduleModule.forRoot(), ConsentModule],
   providers: [
     BehaviorEngineService,
     BehaviorEngineScheduler,

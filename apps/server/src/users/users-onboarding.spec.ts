@@ -9,6 +9,7 @@ import {
 import { CompleteOnboardingDto } from './dto/complete-onboarding.dto';
 import { UsersService } from './users.service';
 import { OptionalProcessingBoundaryOperationalError } from '../consent/optional-processing-transaction-boundary.service';
+import { sanitizeUser } from '../common/serializers/user.serializer';
 
 const dto = (
   overrides: Partial<CompleteOnboardingDto> = {},
@@ -385,6 +386,74 @@ describe('legacy onboarding safety remediation', () => {
     });
 
     expect(user?.onboardingComplete).toBe(true);
+  });
+
+  it.each(['granted', 'withdrawn', 'declined'])(
+    'keeps zero-allergy V2 completion true after a later Settings %s decision and through the auth serializer',
+    async (settingsStatus) => {
+      const completedAt = new Date('2026-07-14T10:00:00.000Z');
+      const row = {
+        id: `v2-${settingsStatus}`,
+        phone: '09120000000',
+        name: null,
+        onboardingCompletedAt: completedAt,
+        onboardingProfile: { completedAt },
+        _count: { allergies: 0 },
+        userConsents: [{
+          purpose: 'personalization',
+          status: settingsStatus,
+          policyVersion: CURRENT_PRIVACY_POLICY_VERSION,
+          source: 'settings',
+        }],
+      };
+      const prisma = { user: { findUnique: jest.fn().mockResolvedValue(row) } };
+      const service = new UsersService(prisma as never, {} as never, {} as never, {} as never);
+
+      const phoneUser = await service.findByPhone(row.phone);
+      const idUser = await service.findById(row.id);
+
+      expect(phoneUser?.onboardingComplete).toBe(true);
+      expect((idUser as Record<string, any> | null)?.onboardingComplete).toBe(true);
+      expect(sanitizeUser(phoneUser as Record<string, any>)?.onboardingComplete).toBe(true);
+      expect(sanitizeUser(idUser as Record<string, any>)?.onboardingComplete).toBe(true);
+      expect(prisma.user.findUnique).toHaveBeenNthCalledWith(1, expect.objectContaining({
+        include: expect.objectContaining({ onboardingProfile: { select: { completedAt: true } } }),
+      }));
+      expect(prisma.user.findUnique).toHaveBeenNthCalledWith(2, expect.objectContaining({
+        select: expect.objectContaining({ onboardingProfile: { select: { completedAt: true } } }),
+      }));
+    },
+  );
+
+  it('uses historical atomic onboarding proof even when the latest optional decision is a Settings withdrawal', async () => {
+    const { user } = await lookup({
+      id: 'legacy-withdrawn-after-completion',
+      onboardingCompletedAt: new Date('2026-07-12'),
+      onboardingProfile: null,
+      _count: { allergies: 0 },
+      userConsents: [
+        { purpose: 'personalization', status: 'withdrawn', policyVersion: CURRENT_PRIVACY_POLICY_VERSION, source: 'settings' },
+        { purpose: 'personalization', status: 'declined', policyVersion: 'privacy-legacy', source: 'onboarding' },
+        { purpose: 'terms', status: 'granted', policyVersion: 'terms-legacy', source: 'onboarding' },
+      ],
+    });
+
+    expect(user?.onboardingComplete).toBe(true);
+    expect(sanitizeUser(user as Record<string, any>)?.onboardingComplete).toBe(true);
+  });
+
+  it('treats immutable V2 profile completion as authoritative without the redundant legacy marker', async () => {
+    const completedAt = new Date('2026-07-14T10:00:00.000Z');
+    const { user } = await lookup({
+      id: 'v2-profile-authoritative',
+      onboardingCompletedAt: null,
+      onboardingProfile: { completedAt },
+      _count: { allergies: 0 },
+      userConsents: [],
+    });
+
+    expect(user?.onboardingComplete).toBe(true);
+    expect(sanitizeUser(user as Record<string, any>)?.onboardingComplete).toBe(true);
   });
 });
 

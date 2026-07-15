@@ -74,7 +74,11 @@ describe('ProfileReadService.getFoodDnaProjection — hydrates from real persist
     };
     const userFacts: any = { listByUser: jest.fn().mockResolvedValue([]) };
     const questions: any = { selectNext: jest.fn() };
-    return { svc: new ProfileReadService(prisma, userFacts, questions), prisma };
+    const consent: any = {
+      hasPurpose: jest.fn(async (_userId: string, purpose: string) =>
+        purpose === 'core' || (purpose === 'personalization' && granted)),
+    };
+    return { svc: new ProfileReadService(prisma, userFacts, questions, consent), prisma };
   }
 
   it('no persisted observations → honest cold-start (never fabricated)', async () => {

@@ -31,7 +31,41 @@ describe('validateEnv (E1 fail-fast)', () => {
     expect(cfg.REDIS_PORT).toBe(6379);
     expect(cfg.FRONTEND_URL).toBe('http://localhost:5173');
     expect(cfg.PORT).toBe(3000);
+    expect(cfg.TRUST_PROXY_HOPS).toBe(0);
+    expect(cfg.SMS_PROVIDER_TIMEOUT_MS).toBe(5000);
     expect(exitSpy).not.toHaveBeenCalled();
+  });
+
+  it('accepts only an explicit bounded integer proxy-hop count', () => {
+    expect(validateEnv({ ...valid, TRUST_PROXY_HOPS: '2' } as any).TRUST_PROXY_HOPS).toBe(2);
+    for (const invalid of ['-1', '1.5', 'abc', '11']) {
+      expect(() => validateEnv({ ...valid, TRUST_PROXY_HOPS: invalid } as any)).toThrow('exit:1');
+    }
+  });
+
+  it('accepts only a bounded integer SMS provider timeout', () => {
+    expect(validateEnv({ ...valid, SMS_PROVIDER_TIMEOUT_MS: '7000' } as any).SMS_PROVIDER_TIMEOUT_MS).toBe(7000);
+    for (const invalid of ['999', '15001', '1.5', 'abc']) {
+      expect(() => validateEnv({ ...valid, SMS_PROVIDER_TIMEOUT_MS: invalid } as any)).toThrow('exit:1');
+    }
+  });
+
+  it('permits raw OTP logs only in explicit development or test environments', () => {
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'development', SMS_DEV_LOG_OTP: 'true' } as any)).not.toThrow();
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'test', SMS_DEV_LOG_OTP: 'true' } as any)).not.toThrow();
+    expect(() => validateEnv({ ...valid, NODE_ENV: 'staging', SMS_DEV_LOG_OTP: 'true' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({ ...valid, SMS_DEV_LOG_OTP: 'true' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({ ...valid, SMS_DEV_LOG_OTP: 'yes' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({ ...valid, SMS_DEV_LOG_OTP: 'false' } as any)).not.toThrow();
+  });
+
+  it.each([
+    ['OTP_TTL_SECONDS', '29'],
+    ['OTP_RESEND_COOLDOWN_SECONDS', '601'],
+    ['OTP_MAX_ATTEMPTS', '0'],
+    ['OTP_DAILY_LIMIT_PER_PHONE', '1.5'],
+  ])('rejects an unsafe %s value', (key, value) => {
+    expect(() => validateEnv({ ...valid, [key]: value } as any)).toThrow('exit:1');
   });
 
   it('exits(1) when required vars are missing', () => {

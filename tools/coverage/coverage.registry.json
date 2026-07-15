@@ -436,8 +436,8 @@
       "reason": "Admin-only surface (RolesGuard 'admin'); consumed by the admin dashboard."
     },
     "GET /ingredients/search": {
-      "status": "frontend:onboarding/TasteBuilder",
-      "reason": "Ingredient search powers onboarding taste correction."
+      "status": "deferred:E-ingredient-search-ui",
+      "reason": "Onboarding V2 now uses the safety-aware /onboarding/v2/candidates endpoint; keep the generic ingredient search endpoint documented for a future ingredient picker."
     },
     "GET /lifestyle": {
       "status": "admin",
@@ -462,6 +462,14 @@
     "GET /notifications/ine/preview": {
       "status": "deferred:E-fe-reset-a",
       "reason": "FE-RESET-A wipe removed the frontend caller; re-map to frontend:notifications/NotificationsPage when rebuilt. NOTIF-L4-10: owner-only DRY-RUN preview of the Notification Intelligence Engine, surfaced by IneNotificationPreview on the notifications page."
+    },
+    "GET /onboarding/v2": {
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "Onboarding V2 restores the authenticated user's durable draft and completion state."
+    },
+    "GET /onboarding/v2/candidates": {
+      "status": "frontend:onboarding/TasteBuilder",
+      "reason": "Taste calibration searches the curated, safety-aware recipe candidate set."
     },
     "GET /outcomes": {
       "status": "admin",
@@ -619,6 +627,10 @@
       "status": "frontend:notifications/NotificationsPage",
       "reason": "Notifications surface."
     },
+    "PATCH /onboarding/v2/draft": {
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "Onboarding V2 autosaves a resumable, idempotent draft after meaningful answers."
+    },
     "PATCH /recipes/:id": {
       "status": "deferred:E-recipe-edit-ui",
       "reason": "Edit endpoint exists; no frontend edit UI yet (add-recipe does create only)."
@@ -638,6 +650,10 @@
     "PATCH /users/me": {
       "status": "frontend:profile/ProfilePage",
       "reason": "Profile edit."
+    },
+    "PATCH /users/me/onboarding-complete": {
+      "status": "frontend:_global/AuthContext",
+      "reason": "Legacy completion compatibility path used by AuthContext; Onboarding V2 completes atomically through its dedicated endpoint."
     },
     "POST /admin/tickets/:id/notes": {
       "status": "admin",
@@ -711,9 +727,29 @@
       "status": "frontend:onboarding/OnboardingPage",
       "reason": "Guest auth is used by onboarding/session bootstrap."
     },
+    "POST /auth/google": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Canonical Google ID-token sign-in path with server-side token verification."
+    },
     "POST /auth/login": {
       "status": "frontend:auth/AuthPage",
       "reason": "Authentication surface (rate-limited)."
+    },
+    "POST /auth/otp/request": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Canonical phone sign-in requests a rate-limited one-time code."
+    },
+    "POST /auth/otp/verify": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Canonical phone sign-in verifies the six-digit code and auto-enters on success."
+    },
+    "POST /auth/password-reset/confirm": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Password recovery confirms the one-time code and rotates the password/session epoch."
+    },
+    "POST /auth/password-reset/request": {
+      "status": "frontend:auth/AuthPage",
+      "reason": "Password recovery requests a rate-limited verification code."
     },
     "POST /auth/register": {
       "status": "frontend:auth/AuthPage",
@@ -766,6 +802,10 @@
     "POST /notifications/generate": {
       "status": "frontend:notifications/NotificationsPage",
       "reason": "Notifications surface."
+    },
+    "POST /onboarding/v2/complete": {
+      "status": "frontend:onboarding/OnboardingPage",
+      "reason": "Onboarding V2 atomically validates answers, persists profile/safety preferences, and marks completion."
     },
     "POST /profile/answer": {
       "status": "frontend:food-dna/FoodDnaPage",

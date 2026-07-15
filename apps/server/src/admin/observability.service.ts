@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProfileReadService } from '../behavior-engine/profile/read/profile-read.service';
 import { SIGNAL_REGISTRY } from '../behavior-engine/signals/signal-registry';
+import {
+  assertOptionalDataProvenanceUnavailable,
+  currentEventPopulationWhere,
+  currentObservationPopulationWhere,
+  requireCurrentConsentPopulation,
+  requireCurrentUserProcessing,
+} from '../analytics/intelligence/optional-processing-boundary';
 
 /**
  * R8 — admin observability "behavioral cabin" ("capture every second"; SEE the loop close). Read-only,
@@ -19,8 +26,14 @@ export class ObservabilityService {
 
   /** What the user DID — the raw interaction stream (no payload dump). */
   async eventStream(userId: string, limit = 50) {
+    const subject = await requireCurrentUserProcessing(
+      this.prisma,
+      userId,
+      'analytics',
+      'observability.event_stream',
+    );
     const events = await this.prisma.userEvent.findMany({
-      where: { userId }, orderBy: { timestamp: 'desc' }, take: Math.min(Math.max(limit, 1), 200),
+      where: currentEventPopulationWhere([subject], 'analytics'), orderBy: { timestamp: 'desc' }, take: Math.min(Math.max(limit, 1), 200),
       select: { id: true, type: true, recipeId: true, page: true, consentPurpose: true, timestamp: true }, // consentPurpose = GDPR provenance per event
 
     });
@@ -29,8 +42,14 @@ export class ObservabilityService {
 
   /** What the engine LEARNED — derived taste/behavior signals (e.g. taste.cuisine_affinity=persian). */
   async observations(userId: string, limit = 50) {
+    const subject = await requireCurrentUserProcessing(
+      this.prisma,
+      userId,
+      'personalization',
+      'observability.observations',
+    );
     const obs = await this.prisma.signalObservation.findMany({
-      where: { userId }, orderBy: { observedAt: 'desc' }, take: Math.min(Math.max(limit, 1), 200),
+      where: currentObservationPopulationWhere([subject]), orderBy: { observedAt: 'desc' }, take: Math.min(Math.max(limit, 1), 200),
       select: { signalName: true, dimension: true, value: true, weight: true, confidence: true, recipeId: true, source: true, observedAt: true },
     });
     const byName = new Map<string, { count: number; sumWeight: number; values: Set<string> }>();
@@ -46,6 +65,10 @@ export class ObservabilityService {
 
   /** The living-profile trace: declared → observed → reconciled. Allergy VALUES are REDACTED (count only). */
   async profileTrace(userId: string) {
+    assertOptionalDataProvenanceUnavailable(
+      'observability.profile_trace',
+      'personalization',
+    );
     let p: any;
     try {
       p = await this.profiles.getLivingUserProfile(userId);
@@ -79,6 +102,10 @@ export class ObservabilityService {
 
   /** Recent AI calls — METADATA ONLY (the log never stores prompt/response text; GDPR shape-only). */
   async aiCalls(userId: string, limit = 30) {
+    assertOptionalDataProvenanceUnavailable(
+      'observability.ai_calls',
+      'analytics',
+    );
     const calls = await this.prisma.aICallLog.findMany({
       where: { userId }, orderBy: { createdAt: 'desc' }, take: Math.min(Math.max(limit, 1), 100),
       select: { id: true, surface: true, intent: true, model: true, provider: true, status: true, latencyMs: true, estimatedInputTokens: true, estimatedOutputTokens: true, estimatedCost: true, createdAt: true },
@@ -103,8 +130,13 @@ export class ObservabilityService {
     const days = Math.min(Math.max(opts.days ?? 30, 1), 365);
     const limit = Math.min(Math.max(opts.limit ?? 20, 1), 100);
     const since = new Date(Date.now() - days * 86_400_000);
+    const subjects = await requireCurrentConsentPopulation(
+      this.prisma,
+      'analytics',
+      'observability.counters',
+    );
     const grouped: any[] = await this.prisma.userEvent.groupBy({
-      by: ['type', 'recipeId'], where: { timestamp: { gte: since }, recipeId: { not: null } }, _count: { _all: true },
+      by: ['type', 'recipeId'], where: { ...currentEventPopulationWhere(subjects, 'analytics'), timestamp: { gte: since }, recipeId: { not: null } }, _count: { _all: true },
     } as any);
     const byRecipe = new Map<string, any>();
     for (const g of grouped) {
@@ -133,6 +165,10 @@ export class ObservabilityService {
    * coverage — the P0-5 gate stamping every event; (4) L1 prior freshness — has the learner run.
    */
   async recsysHealth(opts: { days?: number } = {}) {
+    assertOptionalDataProvenanceUnavailable(
+      'observability.recsys_health',
+      'personalization',
+    );
     const days = Math.min(Math.max(opts.days ?? 7, 1), 90);
     const since = new Date(Date.now() - days * 86_400_000);
 

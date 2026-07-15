@@ -1,13 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventRouterService } from './event-router.service';
-import { ConsentService } from '../../consent/consent.service';
 import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 import { withUserOptionalProcessingBoundary } from '../../consent/optional-processing-transaction-boundary.service';
 
 const GRACE_MS = 120_000; // a pending row is a "straggler" the fast path didn't finish only after this
 const STALE_PROCESSING_MS = 5 * 60_000; // a row 'processing' longer than this is presumed crashed mid-flight
 const MAX_ATTEMPTS = 10; // after this many tries a row is dead-lettered instead of looping forever
+const EVENT_PROVENANCE_SELECT = {
+  userId: true,
+  timestamp: true,
+  consentPurpose: true,
+} as const;
+
+type StoredRoutingOutcome = 'processed' | 'missing' | 'suppressed';
 
 /**
  * Durable transactional-outbox for event routing — the L0 "no lost signals" guarantee. Every routable event
@@ -28,7 +34,6 @@ export class EventOutboxService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly router: EventRouterService,
-    private readonly consent: ConsentService,
   ) {}
 
   /** Record a stored event for durable routing. eventId is unique → idempotent. Returns the row id (or null). */
@@ -85,20 +90,25 @@ export class EventOutboxService {
 
   /** Fast path: route one enqueued row now and mark it done. Safe to call fire-and-forget; never throws. On
    *  failure the row is left pending (attempts++) for the scheduled drain to retry. */
-  async processNow(outboxId: string, event: any, userId: string): Promise<void> {
+  async processNow(outboxId: string): Promise<void> {
     if (
       !isOptionalPurposeRuntimeEnabled('analytics') ||
       !isOptionalPurposeRuntimeEnabled('personalization')
     ) {
       return;
     }
-    if (!(await this.canRoutePersonalizationEvent(event, userId))) {
-      await this.finishSuppressed(outboxId);
-      return;
-    }
     try {
-      await this.router.route(event, userId);
-      await this.finishOk(outboxId);
+      const row = await this.prisma.eventOutbox.findUnique({
+        where: { id: outboxId },
+        select: { eventId: true },
+      });
+      if (!row) return;
+      const outcome = await this.routeStoredEvent(
+        row.eventId,
+        'event-outbox.process-now',
+      );
+      if (outcome === 'suppressed') await this.finishSuppressed(outboxId);
+      else await this.finishOk(outboxId);
     } catch (e: any) {
       await this.finishFail(outboxId, 0, e?.message);
       this.logger.debug(`outbox processNow failed (${outboxId}); left for drain: ${e?.message}`);
@@ -138,56 +148,63 @@ export class EventOutboxService {
     }
   }
 
-  /** Both purposes are required because this telemetry is collected as analytics and consumed as profile data. */
-  private async hasPersonalizedTelemetryConsent(userId: string): Promise<boolean> {
-    try {
-      if (!(await this.consent.hasPurpose(userId, 'personalization'))) return false;
-      return await this.consent.hasPurpose(userId, 'analytics');
-    } catch (err) {
-      this.logger.warn(
-        `analytics/personalization consent unavailable; outbox routing suppressed: ${
-          err instanceof Error ? err.name : 'error'
-        }`,
-      );
-      return false;
-    }
-  }
-
-  /** A current re-grant must not resurrect an event that crossed a withdrawal boundary while queued. The
-   * append-only consent ledger makes that decision durable even if the earlier terminal outbox update was
-   * temporarily unavailable. Missing provenance/timestamp and ledger read errors are all fail-closed. */
-  private async canRoutePersonalizationEvent(
-    event: any,
-    userId: string,
-  ): Promise<boolean> {
-    if (!(await this.hasPersonalizedTelemetryConsent(userId))) return false;
+  /**
+   * Read only non-payload provenance before authorization. The canonical user
+   * lock and current joint-consent decision are then resolved in one boundary;
+   * only its callback may fetch the complete event and dispatch its processor.
+   */
+  private async routeStoredEvent(
+    eventId: string,
+    operation: string,
+  ): Promise<StoredRoutingOutcome> {
+    const provenance = await this.prisma.userEvent.findUnique({
+      where: { id: eventId },
+      select: EVENT_PROVENANCE_SELECT,
+    });
+    if (!provenance) return 'missing';
+    const provenanceAt = provenance.timestamp instanceof Date
+      ? provenance.timestamp
+      : new Date(provenance.timestamp ?? Number.NaN);
     if (
-      event?.userId !== userId ||
-      event?.consentPurpose !== 'personalization'
-    ) {
-      return false;
-    }
+      !provenance.userId ||
+      provenance.consentPurpose !== 'personalization' ||
+      Number.isNaN(provenanceAt.getTime())
+    ) return 'suppressed';
 
-    const eventAt =
-      event?.timestamp instanceof Date
-        ? event.timestamp
-        : new Date(event?.timestamp ?? Number.NaN);
-    if (Number.isNaN(eventAt.getTime())) return false;
-
-    try {
-      const epoch = await this.consent.currentGrantEpoch(userId, [
-        'analytics',
-        'personalization',
-      ]);
-      return !!epoch && eventAt.getTime() >= epoch.getTime();
-    } catch (err) {
-      this.logger.warn(
-        `consent epoch unavailable; outbox routing suppressed: ${
-          err instanceof Error ? err.name : 'error'
-        }`,
-      );
-      return false;
-    }
+    const boundary = await withUserOptionalProcessingBoundary(
+      this.prisma,
+      {
+        userId: provenance.userId,
+        purposes: ['analytics', 'personalization'],
+        operation,
+      },
+      async (tx, context): Promise<StoredRoutingOutcome> => {
+        if (provenanceAt.getTime() < context.grantEpoch.getTime()) {
+          return 'suppressed';
+        }
+        // Deliberately no `select`: this is the first and only full-payload read,
+        // after the canonical lock and current-grant authorization succeeded.
+        const event = await tx.userEvent.findUnique({ where: { id: eventId } });
+        if (!event) return 'missing';
+        const eventAt = event.timestamp instanceof Date
+          ? event.timestamp
+          : new Date(event.timestamp ?? Number.NaN);
+        if (
+          event.userId !== provenance.userId ||
+          event.consentPurpose !== 'personalization' ||
+          Number.isNaN(eventAt.getTime()) ||
+          eventAt.getTime() < context.grantEpoch.getTime()
+        ) return 'suppressed';
+        await this.router.routeInLockedTransaction(
+          event,
+          provenance.userId,
+          tx,
+          context.grantEpoch,
+        );
+        return 'processed';
+      },
+    );
+    return boundary.status === 'executed' ? boundary.value : 'suppressed';
   }
 
   /** Transition a failed row: dead-letter once it exhausts MAX_ATTEMPTS, else back to pending for a retry. */
@@ -232,17 +249,18 @@ export class EventOutboxService {
     for (const row of rows) {
       const claim = await this.prisma.eventOutbox.updateMany({ where: { id: row.id, status: 'pending' }, data: { status: 'processing', claimedAt: new Date() } });
       if (!claim.count) continue; // another drain claimed it
-      const event = await this.prisma.userEvent.findUnique({ where: { id: row.eventId } });
-      if (!event) { await this.finishOk(row.id); continue; } // event gone → nothing to route, close it
-      if (!(await this.canRoutePersonalizationEvent(event, event.userId))) {
-        await this.finishSuppressed(row.id);
-        suppressed++;
-        continue;
-      }
       try {
-        await this.router.route(event, event.userId);
-        await this.finishOk(row.id);
-        processed++;
+        const outcome = await this.routeStoredEvent(
+          row.eventId,
+          'event-outbox.drain',
+        );
+        if (outcome === 'suppressed') {
+          await this.finishSuppressed(row.id);
+          suppressed++;
+        } else {
+          await this.finishOk(row.id);
+          if (outcome === 'processed') processed++;
+        }
       } catch (e: any) {
         const willDie = row.attempts + 1 >= maxAttempts;
         await this.finishFail(row.id, row.attempts, e?.message);

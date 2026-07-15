@@ -3,6 +3,13 @@ import { useAuth } from '../../context/AuthContext';
 
 const GOOGLE_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
 const GOOGLE_BUTTON_WIDTH = 320;
+const GOOGLE_BUTTON_MIN_WIDTH = 100;
+
+function getResponsiveButtonWidth(container) {
+  const availableWidth = Math.floor(container.getBoundingClientRect().width);
+  if (!Number.isFinite(availableWidth) || availableWidth <= 0) return GOOGLE_BUTTON_WIDTH;
+  return Math.max(GOOGLE_BUTTON_MIN_WIDTH, Math.min(GOOGLE_BUTTON_WIDTH, availableWidth));
+}
 
 function loadGoogleIdentityScript() {
   const existing = document.querySelector('script[data-garnish-google-identity="true"]');
@@ -19,30 +26,47 @@ function loadGoogleIdentityScript() {
 export default function GoogleSignInButton({ onSuccess, onError }) {
   const { loginWithGoogle } = useAuth();
   const containerRef = useRef(null);
+  const loginWithGoogleRef = useRef(loginWithGoogle);
+  const onSuccessRef = useRef(onSuccess);
+  const onErrorRef = useRef(onError);
   const [ready, setReady] = useState(false);
   const enabled = import.meta.env.VITE_GOOGLE_AUTH_ENABLED === 'true';
   const clientId = String(import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
 
   useEffect(() => {
+    loginWithGoogleRef.current = loginWithGoogle;
+    onSuccessRef.current = onSuccess;
+    onErrorRef.current = onError;
+  }, [loginWithGoogle, onError, onSuccess]);
+
+  useEffect(() => {
     if (!enabled || !clientId) return undefined;
     let cancelled = false;
+    let initialized = false;
+    let lastWidth = null;
+    let resizeObserver;
 
     const renderOfficialButton = () => {
       if (cancelled || !containerRef.current || !window.google?.accounts?.id) return;
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        auto_select: false,
-        callback: async (response) => {
-          const credential = response?.credential;
-          if (!credential) return;
-          try {
-            const user = await loginWithGoogle(credential);
-            onSuccess?.(user);
-          } catch (error) {
-            onError?.(error);
-          }
-        },
-      });
+      const width = getResponsiveButtonWidth(containerRef.current);
+      if (!initialized) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          auto_select: false,
+          callback: async (response) => {
+            const credential = response?.credential;
+            if (!credential) return;
+            try {
+              const user = await loginWithGoogleRef.current(credential);
+              onSuccessRef.current?.(user);
+            } catch (error) {
+              onErrorRef.current?.(error);
+            }
+          },
+        });
+        initialized = true;
+      }
+      if (lastWidth === width) return;
       containerRef.current.innerHTML = '';
       window.google.accounts.id.renderButton(containerRef.current, {
         type: 'standard',
@@ -51,27 +75,42 @@ export default function GoogleSignInButton({ onSuccess, onError }) {
         shape: 'pill',
         text: 'continue_with',
         logo_alignment: 'left',
-        width: GOOGLE_BUTTON_WIDTH,
+        width,
       });
+      lastWidth = width;
       setReady(true);
     };
 
-    if (window.google?.accounts?.id) {
+    const observeContainer = () => {
       renderOfficialButton();
-      return () => { cancelled = true; };
+      if (resizeObserver || typeof ResizeObserver === 'undefined' || !containerRef.current) return;
+      resizeObserver = new ResizeObserver(renderOfficialButton);
+      resizeObserver.observe(containerRef.current);
+    };
+
+    const handleScriptError = () => {
+      if (!cancelled) onErrorRef.current?.(new Error('google_identity_script_failed'));
+    };
+
+    if (window.google?.accounts?.id) {
+      observeContainer();
+      return () => {
+        cancelled = true;
+        resizeObserver?.disconnect();
+      };
     }
 
     const script = loadGoogleIdentityScript();
-    script.addEventListener('load', renderOfficialButton);
-    script.addEventListener('error', () => {
-      if (!cancelled) onError?.(new Error('google_identity_script_failed'));
-    });
+    script.addEventListener('load', observeContainer);
+    script.addEventListener('error', handleScriptError);
 
     return () => {
       cancelled = true;
-      script.removeEventListener('load', renderOfficialButton);
+      resizeObserver?.disconnect();
+      script.removeEventListener('load', observeContainer);
+      script.removeEventListener('error', handleScriptError);
     };
-  }, [clientId, enabled, loginWithGoogle, onError, onSuccess]);
+  }, [clientId, enabled]);
 
   if (!enabled || !clientId) return null;
 

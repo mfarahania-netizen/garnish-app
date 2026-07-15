@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -6,10 +6,9 @@ import { ConfirmPasswordResetDto, RequestPasswordResetDto } from './dto/password
 import { GuestDto } from './dto/guest.dto';
 import { RequestOtpDto, VerifyOtpDto } from './dto/otp.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler'; // ← ThrottlerGuard اضافه شد
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
-@UseGuards(ThrottlerGuard) // ← گارد محدودیت نرخ فقط روی این کنترلر فعال می‌شود
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

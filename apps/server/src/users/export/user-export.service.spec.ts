@@ -13,8 +13,9 @@ const MANY_USERID = [
   'recommendationAttributionEvent', 'featureContributionLog', 'chatMessage', 'userFact', 'aICallLog',
   'mealPlan', 'shoppingList', 'favoriteRecipe', 'notification', 'supportTicket', 'dataAccessLog',
   'userAuditLog', 'experimentAssignment', 'erasureEvent',
+  'onboardingMutation',
 ];
-const ONE_USERID = ['userPreference', 'userBehaviorProfile', 'userFeatureVector', 'userEngagementSnapshot', 'userHealthSnapshot', 'userIdentitySnapshot', 'userRetentionSnapshot'];
+const ONE_USERID = ['userPreference', 'userBehaviorProfile', 'userFeatureVector', 'userEngagementSnapshot', 'userHealthSnapshot', 'userIdentitySnapshot', 'userRetentionSnapshot', 'onboardingProfile'];
 
 function makeMockPrisma() {
   const p: Record<string, { findMany?: jest.Mock; findUnique?: jest.Mock }> = {};
@@ -40,10 +41,12 @@ describe('UserExportService (E39-1D)', () => {
     expect(typeof out.generatedAt).toBe('string');
     expect(out.userId).toBe('u1');
     expect(out.subject).toEqual({
-      id: 'u1', phone: '+989000000001', name: 'Target', email: 'u1@example.com', avatar: null, isAdmin: false, createdAt: expect.any(Date),
+      id: 'u1', phone: '+989000000001', name: 'Target', email: 'u1@example.com', avatar: null, isAdmin: false,
+      onboardingComplete: false, createdAt: expect.any(Date),
     });
     expect(out.sections).toHaveProperty('profile');
     expect(out.sections).toHaveProperty('preferences');
+    expect(out.sections).toHaveProperty('onboarding');
     expect(out.sections).toHaveProperty('ai');
     expect(out.sections).toHaveProperty('behavior');
     expect(out.metadata.includedSections.length).toBeGreaterThan(20);

@@ -11,10 +11,27 @@
  * window survives across sessions (a recipe recommended today and cooked next week is still attributable),
  * pruned to a bounded, expiring set. Best-effort: never throws, never blocks navigation.
  */
+import { hasAnalyticsConsent } from './analytics-init';
 
 const KEY = 'garnish:rec-attribution';
+const PERSONALIZATION_KEY = 'garnish.consent.personalization';
 const WINDOW_MS = 14 * 24 * 60 * 60 * 1000; // 14-day conversion window (spec B2: a generous 7–30d window)
 const MAX_ENTRIES = 200; // bound the store; keep the most recent
+
+export function clearRecommendationAttribution() {
+  try { localStorage.removeItem(KEY); } catch { /* storage unavailable */ }
+}
+
+function hasAttributionConsent() {
+  if (!hasAnalyticsConsent()) return false;
+  try {
+    // This mirror is an early local deny, never proof of canonical consent. It is
+    // written true only after a current server acknowledgement and runtime approval.
+    return localStorage.getItem(PERSONALIZATION_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
 
 function readMap() {
   try {
@@ -37,6 +54,10 @@ function writeMap(map) {
 
 /** Remember that `recipeId` was reached from a recommendation served under `requestId` (called on click). */
 export function rememberRecommendation(recipeId, requestId) {
+  if (!hasAttributionConsent()) {
+    clearRecommendationAttribution();
+    return;
+  }
   if (!recipeId || !requestId) return;
   try {
     const now = Date.now();
@@ -55,6 +76,10 @@ export function rememberRecommendation(recipeId, requestId) {
 
 /** Recall the `requestId` a recipe was recommended under, if still within the window — else null. */
 export function recallRecommendation(recipeId) {
+  if (!hasAttributionConsent()) {
+    clearRecommendationAttribution();
+    return null;
+  }
   if (!recipeId) return null;
   try {
     const entry = readMap()[recipeId];

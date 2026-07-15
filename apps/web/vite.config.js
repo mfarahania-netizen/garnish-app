@@ -31,18 +31,24 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Delete cache families created by pre-P0-A workers even when an old tab
+        // never executes the new page bundle.
+        importScripts: ['/sw-private-cache-cleanup.js'],
         runtimeCaching: [
-          {
-            urlPattern: /\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'api-cache', expiration: { maxEntries: 50, maxAgeSeconds: 86400 } },
-          },
           {
             // images/fonts only — the hashed JS/CSS are PRECACHED (versioned), so they must NOT be
             // StaleWhileRevalidate'd here or an updated app keeps serving stale code for a load.
-            urlPattern: /\.(png|jpg|jpeg|svg|woff2|ttf)$/i,
-            handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'asset-cache' },
+            // API responses, user uploads and arbitrary images are excluded.
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && (
+              (/^\/fonts\//.test(url.pathname) && /\.(woff2|ttf)$/i.test(url.pathname))
+              || ['/logo-garnish.png', '/icon-192.png', '/icon-512.png'].includes(url.pathname)
+            ),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'public-immutable-assets',
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 16, maxAgeSeconds: 31536000 },
+            },
           },
         ],
       },

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ProfileModule } from '../behavior-engine/profile/profile.module';
 import { GamificationService } from './gamification.service';
 import { GamificationController } from './gamification.controller';
+import { ConsentModule } from '../consent/consent.module';
 
 /**
  * GAMIFY-L4-11 — honest gamification. Reuses ProfileReadService (ProfileModule) for declared skill and
@@ -9,7 +10,7 @@ import { GamificationController } from './gamification.controller';
  * is global. No parallel profile/notifier is created here.
  */
 @Module({
-  imports: [ProfileModule],
+  imports: [ProfileModule, ConsentModule],
   providers: [GamificationService],
   controllers: [GamificationController],
   exports: [GamificationService],

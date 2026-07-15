@@ -14,12 +14,18 @@ import {
   TERMS_LAWFUL_BASIS,
   isOptionalPurposeRuntimeEnabled,
 } from '../consent/consent.constants';
+import { ENABLED_ONBOARDING_ALLERGEN_TOKENS } from '../recipes/intelligence/recipe-integrity';
+import { normalizeIranMobile } from '../common/phone-normalization';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import {
   nextConsentDecisionTimestamp,
   withUserConsentMutationBoundary,
+  withUserOptionalProcessingBoundary,
+  type OptionalProcessingTransactionClient,
 } from '../consent/optional-processing-transaction-boundary.service';
+
+const ENABLED_ALLERGEN_WRITE_TOKENS = new Set<string>(ENABLED_ONBOARDING_ALLERGEN_TOKENS);
 
 @Injectable()
 export class UsersService {
@@ -31,23 +37,26 @@ export class UsersService {
   ) {}
 
   async createUser(phone: string, password: string, name?: string) {
+    const normalizedPhone = normalizeIranMobile(phone);
     const hashedPassword = await bcrypt.hash(password, 10);
     return this.prisma.user.create({
-      data: { phone, password: hashedPassword, name },
+      data: { phone: normalizedPhone, password: hashedPassword, name },
     });
   }
 
   async createPasswordlessUser(phone: string, name?: string) {
+    const normalizedPhone = normalizeIranMobile(phone);
     return this.prisma.user.create({
-      data: { phone, password: null, isGuest: false, name },
+      data: { phone: normalizedPhone, password: null, isGuest: false, name },
     });
   }
 
   async findByPhone(phone: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
-      where: { phone },
+      where: { phone: normalizeIranMobile(phone) },
       include: {
         _count: { select: { allergies: true } },
+        onboardingProfile: { select: { completedAt: true } },
         userConsents: {
           where: { purpose: { in: ['terms', 'personalization'] } },
           orderBy: { createdAt: 'desc' },
@@ -61,22 +70,28 @@ export class UsersService {
   private withVerifiedOnboardingState<T extends Record<string, any> | null>(user: T): T {
     if (!user) return user;
     const declaredAllergyCount = Number(user?._count?.allergies ?? 0);
-    const latest = new Map<string, any>();
-    for (const row of user?.userConsents ?? []) {
-      if (!latest.has(row.purpose)) latest.set(row.purpose, row);
-    }
-    const terms = latest.get('terms');
-    const personalization = latest.get('personalization');
-    const atomicDecisionProof = terms?.status === 'granted'
-      && terms?.policyVersion === CURRENT_TERMS_POLICY_VERSION
-      && terms?.source === 'onboarding'
-      && ['granted', 'declined'].includes(personalization?.status)
-      && personalization?.policyVersion === CURRENT_PRIVACY_POLICY_VERSION
-      && personalization?.source === 'onboarding';
+    const decisions = Array.isArray(user?.userConsents) ? user.userConsents : [];
+    // Completion is historical truth, not current optional-processing authorization.
+    // A later Settings grant/decline/withdrawal must never reopen onboarding or make
+    // withdrawal conditional on answering the same questions again. V2 has an
+    // immutable completion row; the historical pair remains the compatibility proof
+    // for the atomic legacy command.
+    const v2CompletionProof = Boolean(user?.onboardingProfile?.completedAt);
+    const onboardingTermsProof = decisions.some((row: any) =>
+      row?.purpose === 'terms'
+      && row?.status === 'granted'
+      && row?.source === 'onboarding');
+    const onboardingPersonalizationDecisionProof = decisions.some((row: any) =>
+      row?.purpose === 'personalization'
+      && ['granted', 'declined'].includes(row?.status)
+      && row?.source === 'onboarding');
+    const atomicDecisionProof = onboardingTermsProof
+      && onboardingPersonalizationDecisionProof;
     return {
       ...user,
       onboardingComplete: Boolean(
-        user.onboardingCompletedAt && (declaredAllergyCount > 0 || atomicDecisionProof),
+        v2CompletionProof
+        || (user.onboardingCompletedAt && (declaredAllergyCount > 0 || atomicDecisionProof)),
       ),
     };
   }
@@ -127,6 +142,7 @@ export class UsersService {
         adminRole: true,
         isGuest: true,
         onboardingCompletedAt: true,
+        onboardingProfile: { select: { completedAt: true } },
         createdAt: true,
         isBanned: true, // jwt strategy rejects a banned principal
         sessionEpoch: true, // jwt strategy rejects a token with a stale epoch (force-logout / ban / password-reset)
@@ -147,23 +163,29 @@ export class UsersService {
    * filters the allergen. Names are the canonical chip tokens (e.g. 'nut','peanut','dairy').
    */
   async addAllergies(userId: string, names: string[]): Promise<{ added: string[] }> {
-    // WRITE-BOUNDARY ALLOWLIST (guardian): accept ONLY canonical EU-14 chip tokens, so a crafted/buggy client can
+    // WRITE-BOUNDARY ALLOWLIST (guardian): accept ONLY the currently audited onboarding tokens, so a crafted/buggy client can
     // neither pollute the global Allergy table with arbitrary strings nor write a non-canonical token the hard gate
     // would silently ignore. Off-list tokens are dropped (not 400) so a partly-valid batch still saves its valid set.
     const clean = [
       ...new Set(
         (names || [])
           .map((n) => String(n ?? '').trim().toLowerCase())
-          .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
+          .filter((n) => n && ENABLED_ALLERGEN_WRITE_TOKENS.has(n)),
       ),
     ];
     if (!clean.length) return { added: [] };
-    await this.prisma.$transaction(async (tx) => {
-      for (const name of clean) await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });
-      const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true } });
-      await tx.userAllergy.createMany({ data: records.map((a) => ({ userId, allergyId: a.id })), skipDuplicates: true });
-    });
-    return { added: clean };
+    const boundary = await withUserConsentMutationBoundary(
+      this.prisma,
+      { userId, operation: 'users.add-allergies' },
+      async (tx) => {
+        for (const name of clean) await tx.allergy.upsert({ where: { name }, create: { name }, update: {} });
+        const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true } });
+        await tx.userAllergy.createMany({ data: records.map((a) => ({ userId, allergyId: a.id })), skipDuplicates: true });
+        return clean;
+      },
+    );
+    if (boundary.status !== 'executed') throw new BadRequestException('User not found');
+    return { added: boundary.value };
   }
 
   async removeAllergies(userId: string, names: string[]): Promise<{ removed: string[] }> {
@@ -171,24 +193,35 @@ export class UsersService {
       ...new Set(
         (names || [])
           .map((n) => String(n ?? '').trim().toLowerCase())
+          // Removal is deliberately wider than creation. Deferred legacy declarations
+          // (currently lupin/sulphites) must remain removable even though current clients
+          // cannot create them until corpus coverage passes the policy gate.
           .filter((n) => n && CANONICAL_ALLERGEN_TOKENS.has(n)),
       ),
     ];
     if (!clean.length) return { removed: [] };
-    const removed = await this.prisma.$transaction(async (tx) => {
-      const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true, name: true } });
-      if (records.length > 0) {
-        await tx.userAllergy.deleteMany({
-          where: { userId, allergyId: { in: records.map((a) => a.id) } },
-        });
-      }
-      return records.map((a) => a.name);
-    });
-    return { removed };
+    const boundary = await withUserConsentMutationBoundary(
+      this.prisma,
+      { userId, operation: 'users.remove-allergies' },
+      async (tx) => {
+        const records = await tx.allergy.findMany({ where: { name: { in: clean } }, select: { id: true, name: true } });
+        if (records.length > 0) {
+          await tx.userAllergy.deleteMany({
+            where: { userId, allergyId: { in: records.map((a) => a.id) } },
+          });
+        }
+        return records.map((a) => a.name);
+      },
+    );
+    if (boundary.status !== 'executed') throw new BadRequestException('User not found');
+    return { removed: boundary.value };
   }
 
-  async getPreferences(userId: string) {
-    const user = await this.prisma.user.findUnique({
+  private async getPreferencesFromClient(
+    client: PrismaService | OptionalProcessingTransactionClient,
+    userId: string,
+  ) {
+    const user = await client.user.findUnique({
       where: { id: userId },
       select: {
         preferences: true,
@@ -214,6 +247,10 @@ export class UsersService {
     };
   }
 
+  async getPreferences(userId: string) {
+    return this.getPreferencesFromClient(this.prisma, userId);
+  }
+
   async updatePreferences(userId: string, dto: UpdatePreferencesDto) {
     const optionalPersonalizationRequested = dto.cuisine !== undefined
       || dto.budget !== undefined
@@ -226,14 +263,6 @@ export class UsersService {
         throw new ForbiddenException('Personalization processing is not active');
       }
     }
-    const currentPrefs = await this.getPreferences(userId);
-    const oldDiet = currentPrefs?.diet || null;
-    const oldSkillLevel = currentPrefs?.skillLevel || null;
-    const oldBudget = currentPrefs?.budget || null;
-    const oldAllergies = (currentPrefs?.allergies || []).slice().sort();
-    const oldCuisines = (currentPrefs?.cuisine || []).slice().sort();
-    const oldHealthGoals = (currentPrefs?.healthGoals || []).slice().sort();
-
     const safeParseArray = (value: any): string[] => {
       if (Array.isArray(value)) return value.map((v) => String(v ?? '').trim()).filter(Boolean);
       if (typeof value === 'string') {
@@ -243,7 +272,7 @@ export class UsersService {
     };
 
     // WRITE-BOUNDARY ALLOWLIST (guardian): the PRIMARY allergy write must enforce the SAME invariant as addAllergies
-    // — only canonical EU-14 chip tokens reach the global Allergy table, so a crafted/buggy client (or a future
+    // — only currently audited tokens reach the global Allergy table, so a crafted/buggy client (or a future
     // free-text field) can neither pollute it nor store a non-canonical token the hard gate silently ignores. The
     // legit onboarding/settings UI already sends only canonical chip ids, so this is byte-identical for real users.
     const normalizedAllergies = safeParseArray(dto.allergies)
@@ -251,15 +280,37 @@ export class UsersService {
       .filter(Boolean);
     if (
       dto.allergies !== undefined
-      && normalizedAllergies.some((name) => !CANONICAL_ALLERGEN_TOKENS.has(name))
+      && normalizedAllergies.some(
+        (name) => !CANONICAL_ALLERGEN_TOKENS.has(name) || !ENABLED_ALLERGEN_WRITE_TOKENS.has(name),
+      )
     ) {
       throw new BadRequestException('Preferences contain an unsupported allergen token');
     }
-    const allergies = [...new Set(normalizedAllergies)].sort();
+    const requestedEnabledAllergies = [
+      ...new Set(normalizedAllergies),
+    ].sort();
     const cuisine = safeParseArray(dto.cuisine).sort();
     const healthGoals = safeParseArray(dto.healthGoals).sort();
 
-    await this.prisma.$transaction(async (tx) => {
+    const persistPreferences = async (
+      tx: OptionalProcessingTransactionClient,
+      currentPrefs: Awaited<ReturnType<UsersService['getPreferences']>>,
+    ) => {
+      const oldDiet = currentPrefs?.diet || null;
+      const oldSkillLevel = currentPrefs?.skillLevel || null;
+      const oldBudget = currentPrefs?.budget || null;
+      const oldAllergies = (currentPrefs?.allergies || []).slice().sort();
+      const oldCuisines = (currentPrefs?.cuisine || []).slice().sort();
+      const oldHealthGoals = (currentPrefs?.healthGoals || []).slice().sort();
+      // Settings currently exposes only audited options. A replace-style save must not
+      // silently erase a pre-existing deferred/legacy hard exclusion just because it was
+      // not renderable in that form. Such declarations remain explicitly removable via
+      // removeAllergies, while a crafted request still cannot inject a new deferred token.
+      const protectedLegacyAllergies = oldAllergies.filter(
+        (name) => !ENABLED_ALLERGEN_WRITE_TOKENS.has(String(name).toLowerCase()),
+      );
+      const allergies = [...new Set([...requestedEnabledAllergies, ...protectedLegacyAllergies])].sort();
+
       await tx.userPreference.upsert({
         where: { userId },
         create: { userId, diet: dto.diet, skillLevel: dto.skillLevel, budget: dto.budget },
@@ -309,7 +360,37 @@ export class UsersService {
       if (dto.cuisine !== undefined) addIfChanged('cuisine', oldCuisines, cuisine);
       if (dto.healthGoals !== undefined) addIfChanged('healthGoals', oldHealthGoals, healthGoals);
       if (historyEntries.length > 0) await tx.preferenceHistory.createMany({ data: historyEntries });
-    });
+    };
+
+    if (optionalPersonalizationRequested) {
+      const boundary = await withUserOptionalProcessingBoundary(
+        this.prisma,
+        {
+          userId,
+          purposes: ['personalization'],
+          operation: 'users.update-preferences',
+        },
+        async (tx) => persistPreferences(
+          tx,
+          await this.getPreferencesFromClient(tx, userId),
+        ),
+      );
+      if (boundary.status !== 'executed') {
+        throw new ForbiddenException('Personalization processing is not active');
+      }
+    } else {
+      const boundary = await withUserConsentMutationBoundary(
+        this.prisma,
+        { userId, operation: 'users.update-preferences-core' },
+        async (tx) => persistPreferences(
+          tx,
+          await this.getPreferencesFromClient(tx, userId),
+        ),
+      );
+      if (boundary.status !== 'executed') {
+        throw new BadRequestException('User not found');
+      }
+    }
 
     return this.getPreferences(userId);
   }
@@ -741,6 +822,10 @@ export class UsersService {
             withdrawnAt: status === 'withdrawn' ? createdAt : null,
           },
         });
+      }
+      if (type === 'personalization') {
+        await tx.userFeatureVector.deleteMany({ where: { userId } });
+        await tx.userFeature.deleteMany({ where: { userId } });
       }
       },
     );

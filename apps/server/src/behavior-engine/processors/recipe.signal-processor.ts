@@ -52,7 +52,8 @@ export class RecipeSignalProcessor {
 
     // strength of the action as evidence of taste: cooking >> favoriting >> viewing.
     const cooked = event.type === 'cook_complete' || event.type === 'recipe_cooked';
-    const positive = cooked || event.type === 'favorite_add';
+    const explicitLike = event.type === 'recipe_liked';
+    const positive = cooked || event.type === 'favorite_add' || explicitLike;
 
     // ۱. سیگنال: علاقه به غذاهای خاص — fires on every positive action (now including a COOK, the
     // strongest signal; previously cooking produced nothing, so the loop never closed — L0/C1).
@@ -64,7 +65,7 @@ export class RecipeSignalProcessor {
 
       if (recipe) {
         // confidence scales with the strength of the action (a cook is hard evidence).
-        const confidence = cooked ? 1 : event.type === 'favorite_add' ? 0.8 : 0.5;
+        const confidence = cooked ? 1 : event.type === 'favorite_add' ? 0.8 : explicitLike ? 0.7 : 0.5;
 
         // آیا غذا high-protein است؟
         const isHighProtein = recipe.ingredients.some(i =>
@@ -103,8 +104,8 @@ export class RecipeSignalProcessor {
     }
 
     // ۲. ذخیره SignalObservation برای بازسازی آینده — a cook is the heaviest observation.
-    const signalName = cooked ? 'cooked_recipe' : event.type === 'favorite_add' ? 'likes_recipe' : 'views_recipe';
-    const weight = cooked ? 1.5 : event.type === 'favorite_add' ? 1.0 : 0.5;
+    const signalName = cooked ? 'cooked_recipe' : positive ? 'likes_recipe' : 'views_recipe';
+    const weight = cooked ? 1.5 : event.type === 'favorite_add' ? 1.0 : explicitLike ? 0.8 : 0.5;
     await tx.signalObservation.create({
       data: { userId, signalName, eventId: event.id, weight },
     });
@@ -114,7 +115,12 @@ export class RecipeSignalProcessor {
     // the ranker's tasteAffinity. THIS is what makes «N خورش بپز → خورشی‌تر» real. A cook is stronger
     // evidence than a favorite. (A plain view stays observation-only — too weak for a taste commitment.)
     if (positive) {
-      await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(tx, userId, recipeId, cooked ? 0.5 : 0.3);
+      await this.signalCalculator.applyPositiveFeedbackInLockedTransaction(
+        tx,
+        userId,
+        recipeId,
+        cooked ? 0.5 : event.type === 'favorite_add' ? 0.3 : 0.2,
+      );
     }
   }
 }

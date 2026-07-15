@@ -27,6 +27,12 @@ describe('sanitizePayload — analytics ingest privacy (advisor audit)', () => {
     expect(out.items[0]).toEqual({ id: 1 });
   });
 
+  it('redacts PII values even when smuggled under an otherwise allowed key', () => {
+    const out = sanitizePayload({ recipeId: '09123456789', ref: 'person@example.com' });
+    expect(JSON.stringify(out)).not.toContain('09123456789');
+    expect(JSON.stringify(out)).not.toContain('person@example.com');
+  });
+
   it('is null-safe and never throws', () => {
     expect(sanitizePayload(null)).toBeNull();
     expect(sanitizePayload(undefined)).toBeNull();
