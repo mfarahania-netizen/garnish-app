@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 const h = vi.hoisted(() => ({
   states: {},
   post: vi.fn(),
+  patch: vi.fn(),
   put: vi.fn(),
   get: vi.fn(),
   delete: vi.fn(),
@@ -21,7 +22,7 @@ vi.mock('@tanstack/react-query', () => ({
   }),
 }));
 vi.mock('../../lib/apiClient', () => ({
-  default: { get: h.get, put: h.put, post: h.post, delete: h.delete },
+  default: { get: h.get, put: h.put, post: h.post, patch: h.patch, delete: h.delete },
 }));
 vi.mock('../../context/AuthContext', () => ({ useAuth: () => ({ logout: vi.fn() }) }));
 vi.mock('../../lib/analytics-init', () => ({
@@ -57,6 +58,15 @@ function ready({ analytics = false, personalization = false, runtime = true } = 
       processingEnabled: runtime,
     },
   } });
+  h.states['onboarding/profile'] = query({
+    schemaVersion: 2,
+    revision: 4,
+    status: 'completed',
+    completedAt: '2026-07-14T10:00:00.000Z',
+    safety: { status: 'declared', allergyIds: ['gluten'], intoleranceIds: [], dietaryRules: [] },
+    preferences: { dietPattern: 'omnivore', weekdayTimeBucket: '15_30', cooksForCount: '2' },
+    taste: { likedRecipeIds: [], dislikedRecipeIds: [] },
+  });
 }
 
 beforeEach(() => {
@@ -75,6 +85,7 @@ beforeEach(() => {
     diet: body.diet,
     allergies: body.allergies,
   } }));
+  h.patch.mockResolvedValue({ data: { revision: 5, completedAt: '2026-07-14T10:00:00.000Z', replayed: false } });
 });
 
 it('omits unsupported legacy allergens from preference writes', async () => {
@@ -143,6 +154,32 @@ it('serializes legacy-allergen removal after an in-flight full-state write', asy
   await waitFor(() => expect(result.current.busy).toBe(false));
 });
 
+it('saves completed onboarding answers through the revision-checked profile editor', async () => {
+  const { result } = renderHook(() => useSettings(), { wrapper });
+  await waitFor(() => expect(result.current.profileAnswersStatus).toBe('ready'));
+
+  act(() => {
+    result.current.setWeekdayTimeBucket('under_15');
+    result.current.setCooksForCount('3_4');
+    result.current.toggleDietaryRule('no_pork');
+  });
+  expect(result.current.profileAnswersDirty).toBe(true);
+
+  await act(async () => { await result.current.saveProfileAnswers(); });
+
+  expect(h.patch).toHaveBeenCalledWith('/onboarding/v2/profile/preferences', expect.objectContaining({
+    schemaVersion: 2,
+    idempotencyKey: expect.any(String),
+    expectedRevision: 4,
+    dietPattern: 'omnivore',
+    weekdayTimeBucket: 'under_15',
+    cooksForCount: '3_4',
+    dietaryRules: ['no_pork'],
+  }));
+  expect(result.current.profileAnswersDirty).toBe(false);
+  expect(result.current.toast?.message).toBe('پاسخ‌های شخصی‌سازی ذخیره شد');
+});
+
 it('deduplicates repeated account deletion attempts while the first request is pending', async () => {
   let resolveDelete;
   h.delete.mockImplementation(() => new Promise((resolve) => { resolveDelete = resolve; }));
@@ -162,6 +199,23 @@ it('deduplicates repeated account deletion attempts while the first request is p
     resolveDelete({ data: null });
     await Promise.all([first, second]);
   });
+});
+
+it('exposes the household ownership recovery path for a blocked account deletion', async () => {
+  h.delete.mockRejectedValue({
+    response: { status: 409, data: { code: 'household_owner_transfer_required' } },
+  });
+  const { result } = renderHook(() => useSettings(), { wrapper });
+  await waitFor(() => expect(result.current.status).toBe('ready'));
+
+  await act(async () => { await result.current.deleteAccount(); });
+
+  expect(result.current.accountDeletionBlocker).toEqual({
+    kind: 'household_owner_transfer_required',
+    message: 'پیش از حذف حساب، مالکیت خانه را به یک عضو دیگر منتقل کن.',
+  });
+  expect(result.current.toast?.message).toContain('مالکیت خانه');
+  expect(result.current.busy).toBe(false);
 });
 
 it('never trusts persisted device mirrors before canonical consent hydration', async () => {

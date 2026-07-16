@@ -684,6 +684,18 @@
   outline-offset: 2px;
 }
 
+/*
+ * Step headings receive programmatic focus so assistive technology announces
+ * the newly mounted panel. They are structural landmarks (tabIndex=-1), not
+ * interactive controls, so the global control focus ring must not be painted
+ * around the heading copy. Keep focus itself intact.
+ */
+[data-onboarding-heading]:focus-visible {
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shimmer { to { background-position-x: -200%; } }
 

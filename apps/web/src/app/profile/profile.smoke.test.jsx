@@ -59,6 +59,7 @@ function readyShape() {
       badges: 4,
     },
     known: {
+      status: 'ready',
       dietLabel: 'گیاه‌خوار',
       allergens: ['بادام‌زمینی', 'لبنیات'],
     },
@@ -67,6 +68,16 @@ function readyShape() {
       personalizationGranted: true,
       maturityLabel: 'در حال رشد',
       maturityTone: 'ok',
+      allergyGuardStatus: 'active',
+      personalizationStatus: 'active',
+    },
+    household: {
+      status: 'active',
+      name: 'خانهٔ ما',
+      role: 'OWNER',
+      memberCount: 2,
+      count: 1,
+      refresh: vi.fn(),
     },
   };
 }
@@ -97,6 +108,11 @@ describe('ProfilePage smoke', () => {
     expect(screen.getByText('پیشرفتِ تو')).toBeInTheDocument();
     expect(screen.getByText('آنچه از تو می‌دانیم')).toBeInTheDocument();
     expect(screen.getByText('دسترسی سریع')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'ویرایش پاسخ‌های شخصی‌سازی' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'ورود به خرید باهم' })).toBeInTheDocument();
+    expect(screen.getByText('خانهٔ ما')).toBeInTheDocument();
+    expect(screen.getByText('۲ عضو · لیست خرید مشترک')).toBeInTheDocument();
+    expect(screen.queryByText('کامل‌بودن پروفایل')).not.toBeInTheDocument();
     expect(screen.queryByText('تاریخچهٔ پخت')).not.toBeInTheDocument();
     expect(screen.getByText('خروج از حساب')).toBeInTheDocument();
     expect(screen.getByText('شناختِ ذائقه')).toBeInTheDocument();
@@ -132,8 +148,21 @@ describe('ProfilePage smoke', () => {
   it('shows Food DNA as a summary card, not a duplicate internal detail view', () => {
     useProfile.mockReturnValue(readyShape());
     renderWithProviders(<ProfilePage initialView="dna" />);
-    expect(screen.getByRole('button', { name: 'شناسهٔ ذائقه — مشاهده جزئیات' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'شناسهٔ ذائقه — دیدن جزئیات و دقیق‌ترکردن' })).toBeInTheDocument();
     expect(screen.queryByText('تفکیکِ ابعاد')).not.toBeInTheDocument();
     expect(screen.queryByText('آشتیِ صادقانه')).not.toBeInTheDocument();
+  });
+
+  it('shows an explicit unknown safety state instead of claiming no sensitivity', () => {
+    const shape = readyShape();
+    shape.known = { status: 'unavailable', dietLabel: null, allergens: [] };
+    shape.control = { allergyGuardStatus: 'unavailable', personalizationStatus: 'unavailable' };
+    useProfile.mockReturnValue(shape);
+    renderWithProviders(<ProfilePage />);
+
+    expect(screen.getByText('وضعیت الگوی غذایی و حساسیت‌ها مشخص نیست')).toBeInTheDocument();
+    expect(screen.getByText(/این یعنی «نامشخص»، نه «ثبت‌نشده»/)).toBeInTheDocument();
+    expect(screen.queryByText('هنوز الگوی غذایی یا حساسیتی ثبت نکرده‌ای.')).not.toBeInTheDocument();
+    expect(screen.getByText('وضعیت یادگیری اختیاری فعلاً مشخص نیست')).toBeInTheDocument();
   });
 });

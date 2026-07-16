@@ -80,6 +80,45 @@ export class OnboardingPreferencesDto {
   cooksForCount?: CooksForCountBand;
 }
 
+/**
+ * Ongoing editor for the non-taste, non-allergy answers collected during
+ * onboarding. This is intentionally a complete snapshot of this small domain:
+ * partial bodies could otherwise pair a stale screen value with a newer server
+ * value. Optimistic concurrency protects that boundary.
+ */
+export class UpdateOnboardingProfilePreferencesDto {
+  @Equals(ONBOARDING_SCHEMA_VERSION)
+  schemaVersion!: 2;
+
+  @IsUUID()
+  idempotencyKey!: string;
+
+  @IsDefined()
+  @IsInt()
+  @Min(0)
+  @Max(2_147_483_647)
+  expectedRevision!: number;
+
+  @IsDefined()
+  @IsIn(DIET_PATTERNS)
+  dietPattern!: DietPattern;
+
+  @IsDefined()
+  @IsIn(WEEKDAY_TIME_BUCKETS)
+  weekdayTimeBucket!: WeekdayTimeBucket;
+
+  @IsDefined()
+  @IsIn(COOKS_FOR_COUNT_BANDS)
+  cooksForCount!: CooksForCountBand;
+
+  @IsDefined()
+  @IsArray()
+  @ArrayMaxSize(DIETARY_RULES.length)
+  @ArrayUnique()
+  @IsIn(DIETARY_RULES, { each: true })
+  dietaryRules!: DietaryRule[];
+}
+
 export class OnboardingTasteDto {
   @IsArray()
   @ArrayMaxSize(TASTE_LIKE_LIMIT)

@@ -4,6 +4,7 @@ describe('user.serializer (E2)', () => {
   const rawUser = {
     id: 'u1',
     phone: '09123456789',
+    phoneVerifiedAt: new Date('2026-01-01T12:00:00.000Z'),
     name: 'Test',
     email: 'test@example.com',
     avatar: 'a.png',
@@ -21,6 +22,7 @@ describe('user.serializer (E2)', () => {
       const safe = sanitizeUser(rawUser) as any;
       expect(safe.password).toBeUndefined();
       expect(safe.updatedAt).toBeUndefined();
+      expect(safe.phoneVerifiedAt).toBeUndefined();
     });
 
     it('keeps the allow-listed safe fields', () => {
@@ -28,6 +30,7 @@ describe('user.serializer (E2)', () => {
       expect(safe).toEqual({
         id: 'u1',
         phone: '09123456789',
+        phoneVerified: true,
         name: 'Test',
         email: 'test@example.com',
         avatar: 'a.png',
@@ -48,7 +51,11 @@ describe('user.serializer (E2)', () => {
     it('omits fields that are absent (e.g. safe-selected findById without createdAt)', () => {
       const partial = { id: 'u2', phone: '0912', name: null, email: null, avatar: null, isAdmin: true, adminRole: 'admin' };
       const safe = sanitizeUser(partial) as any;
-      expect(safe).toEqual({ ...partial, onboardingComplete: false });
+      expect(safe).toEqual({
+        ...partial,
+        onboardingComplete: false,
+        phoneVerified: false,
+      });
       expect('createdAt' in safe).toBe(false);
     });
   });

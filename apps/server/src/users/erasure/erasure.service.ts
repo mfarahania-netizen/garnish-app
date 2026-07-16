@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ErasureAuditService } from './erasure-audit.service';
 
@@ -41,6 +42,38 @@ export class ErasureService {
     const requestedBy = actor.actorType ?? 'self';
 
     const out = await this.prisma.$transaction(async (tx) => {
+      // Household owner deletion is explicit. A singleton owner's household can be
+      // erased with the account; a shared household must first receive an explicit
+      // owner transfer. Never auto-promote another adult during a GDPR operation.
+      await tx.$queryRaw(
+        Prisma.sql`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`,
+      );
+      const lockedUser = await tx.user.findUnique({
+        where: { id: userId },
+        select: { id: true },
+      });
+      if (!lockedUser) return null;
+      await tx.$queryRaw(
+        Prisma.sql`SELECT "id" FROM "households" WHERE "ownerUserId" = ${userId} FOR UPDATE`,
+      );
+      const ownedHouseholds = await tx.household.findMany({
+        where: { ownerUserId: userId },
+        select: {
+          id: true,
+          _count: {
+            select: {
+              memberships: {
+                where: { status: 'ACTIVE', userId: { not: userId } },
+              },
+            },
+          },
+        },
+      });
+      if (ownedHouseholds.some((household) => household._count.memberships > 0)) {
+        throw new ConflictException({ code: 'household_owner_transfer_required' });
+      }
+      const households = await tx.household.deleteMany({ where: { ownerUserId: userId } });
+
       // 1. revoke active sessions (explicit; they would also cascade on delete)
       const sessions = await tx.userSession.deleteMany({ where: { userId } });
 
@@ -72,6 +105,7 @@ export class ErasureService {
           reason: 'user_requested',
           metadata: {
             requestedBy,
+            householdRowsDeleted: households.count,
             sessionsRevoked: sessions.count,
             consentScrubbed: consent.count,
             auditScrubbed: audit.count,
@@ -89,6 +123,7 @@ export class ErasureService {
 
       return {
         erasureEventId: event.id,
+        householdRowsDeleted: households.count,
         sessionsRevoked: sessions.count,
         consentScrubbed: consent.count,
         auditScrubbed: audit.count,
@@ -98,11 +133,17 @@ export class ErasureService {
       };
     });
 
+    if (!out) {
+      this.logger.warn('eraseUser: user disappeared before the transaction lock');
+      return { status: 'not_found', erasureEventId: null, summary: {} };
+    }
+
     this.logger.log(`eraseUser completed: event=${out.erasureEventId} sessionsRevoked=${out.sessionsRevoked}`);
     return {
       status: 'erased',
       erasureEventId: out.erasureEventId,
       summary: {
+        householdRowsDeleted: out.householdRowsDeleted,
         sessionsRevoked: out.sessionsRevoked,
         consentScrubbed: out.consentScrubbed,
         auditScrubbed: out.auditScrubbed,

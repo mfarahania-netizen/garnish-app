@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   IconChevronLeft, IconLeaf, IconTrendingUp, IconFlame, IconToolsKitchen2,
   IconAward, IconPlant2, IconAlertTriangle, IconBookmark, IconPencil,
-  IconInfoCircle, IconLogout, IconSparkles,
+  IconInfoCircle, IconLogout, IconSparkles, IconUsers,
 } from '@tabler/icons-react';
 import { useProfile } from './useProfile';
 import { useAuth } from '../../context/AuthContext';
@@ -99,6 +99,41 @@ function ControlStrip({ control, known }) {
   );
 }
 
+function HouseholdCard({ household, onOpen }) {
+  if (!household || household.status === 'disabled') return null;
+
+  const active = household.status === 'active';
+  const description = household.status === 'loading'
+    ? 'در حال دریافت وضعیت خانه…'
+    : household.status === 'unavailable'
+      ? 'وضعیت خانه فعلاً در دسترس نیست؛ داخل بخش دوباره تلاش کن.'
+      : active
+        ? `${toFaDigits(household.memberCount || 1)} عضو · لیست خرید مشترک`
+        : 'یک خانه بساز یا دعوتت را قبول کن.';
+
+  return (
+    <UnstyledButton
+      type="button"
+      onClick={onOpen}
+      aria-label="ورود به خرید باهم"
+      style={{ ...cardWrap, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 76, marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-4)', textAlign: 'start', boxShadow: 'var(--g-shadow-1)' }}
+    >
+      <Box aria-hidden="true" style={{ inlineSize: 42, blockSize: 42, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)' }}>
+        <IconUsers size={21} stroke={1.8} />
+      </Box>
+      <Box style={{ flex: 1, minInlineSize: 0 }}>
+        <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>
+          {active ? household.name || 'خرید باهم' : 'خرید باهم'}
+        </Text>
+        <Text component="span" role={household.status === 'unavailable' ? 'status' : undefined} style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: household.status === 'unavailable' ? 'var(--g-color-state-warning-fg)' : 'var(--g-color-text-muted)' }}>
+          {description}
+        </Text>
+      </Box>
+      <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+    </UnstyledButton>
+  );
+}
+
 function ProfileEditModal({ opened, onClose, profile, onSaved, showToast }) {
   const queryClient = useQueryClient();
   const { trackEvent } = useAnalytics();
@@ -148,7 +183,7 @@ function ProfileEditModal({ opened, onClose, profile, onSaved, showToast }) {
           styles={{ label: { fontFamily: 'var(--g-font-fa)', fontWeight: 700 }, input: { fontFamily: 'var(--g-font-fa)', textAlign: 'right' } }}
         />
         <Box>
-          <Text component="label" htmlFor="profile-avatar-upload" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, marginBlockEnd: 'var(--g-space-2)', color: 'var(--g-color-text-primary)' }}>آواتار</Text>
+          <Text component="label" htmlFor="profile-avatar-upload" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, marginBlockEnd: 'var(--g-space-2)', color: 'var(--g-color-text-primary)' }}>آواتار</Text>
           <input id="profile-avatar-upload" type="file" accept="image/png,image/jpeg,image/gif,image/webp" onChange={(e) => setFile(e.currentTarget.files?.[0] || null)} />
           {file ? <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)', marginBlockStart: 6 }}>{file.name}</Text> : null}
         </Box>
@@ -165,7 +200,7 @@ function ProfileEditModal({ opened, onClose, profile, onSaved, showToast }) {
 
 /* ── Profile view ── */
 function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
-  const { header, dna, progress, known, control } = p;
+  const { header, dna, progress, known, control, household, refetch } = p;
   const deferNavigate = useCallback((to) => {
     if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
       window.requestAnimationFrame(() => navigate(to));
@@ -207,12 +242,11 @@ function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
       <ControlStrip control={control} known={known} />
 
       {/* DNA summary card → DNA view */}
-      <UnstyledButton type="button" onClick={() => go('/food-dna', 'dna-card')} aria-label="شناسهٔ ذائقه — مشاهده جزئیات" style={{ ...cardWrap, position: 'relative', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)', padding: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-5)', textAlign: 'start' }}>
+      <UnstyledButton type="button" onClick={() => go('/food-dna', 'dna-card')} aria-label="شناسهٔ ذائقه — دیدن جزئیات و دقیق‌ترکردن" style={{ ...cardWrap, position: 'relative', overflow: 'hidden', boxShadow: 'var(--g-shadow-1)', padding: 'var(--g-space-5)', marginBlockStart: 'var(--g-space-5)', textAlign: 'start' }}>
         <Box aria-hidden="true" style={{ position: 'absolute', insetBlockStart: -40, insetInlineStart: -30, inlineSize: 150, blockSize: 150, borderRadius: '50%', background: 'radial-gradient(circle, var(--g-color-brand-50), transparent 70%)' }} />
         <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', color: 'var(--g-color-brand-700)', marginBlockEnd: 'var(--g-space-4)' }}>
           <IconLeaf size={15} stroke={1.8} aria-hidden="true" />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 700 }}>شناسهٔ ذائقهٔ تو</Text>
-          <IconChevronLeft size={16} stroke={1.8} aria-hidden="true" style={{ marginInlineStart: 'auto', color: 'var(--g-color-text-muted)' }} />
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800 }}>شناسهٔ ذائقهٔ تو</Text>
         </Box>
         <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-4)' }}>
           <FoodDnaRing size={96} tone={dna.forming ? 'forming' : 'mature'} caption="بلوغ" showValue={false} displayMode="qualitative" />
@@ -229,8 +263,16 @@ function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
                   </Box>
                 ))}
               </Box>
-            ) : null}
+            ) : (
+              <Text component="p" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)', margin: 'var(--g-space-2) 0 0' }}>
+                با انتخاب‌ها و آشپزی‌های بعدی، این تصویر دقیق‌تر می‌شود.
+              </Text>
+            )}
           </Box>
+        </Box>
+        <Box style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockStart: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)', borderBlockStart: '1px solid var(--g-color-border-subtle)', color: 'var(--g-color-brand-700)' }}>
+          <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700 }}>دیدن جزئیات و دقیق‌ترکردن</Text>
+          <IconChevronLeft size={18} stroke={1.9} aria-hidden="true" />
         </Box>
       </UnstyledButton>
 
@@ -245,37 +287,72 @@ function ProfileView({ p, onEdit, navigate, trackEvent, onLogout }) {
       ) : (
         <Box style={{ ...cardWrap, padding: 'var(--g-space-4)', display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)' }}>
           <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
-          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>پیشرفتت این لحظه در دسترس نیست — کمی بعد دوباره سر بزن.</Text>
+          <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>پیشرفتت این لحظه در دسترس نیست — کمی بعد دوباره سر بزن.</Text>
         </Box>
       )}
 
       {/* آنچه از تو می‌دانیم */}
       <Text component="h2" style={sectionTitle}>آنچه از تو می‌دانیم</Text>
       <Box style={cardWrap}>
-        {known.dietLabel ? (
+        {known.status === 'unavailable' ? (
+          <Box role="status" style={{ ...rowBtn, minBlockSize: 68, paddingBlock: 'var(--g-space-3)' }}>
+            <IconInfoCircle size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0 }} />
+            <Box style={{ flex: 1, minInlineSize: 0 }}>
+              <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>وضعیت الگوی غذایی و حساسیت‌ها مشخص نیست</Text>
+              <Text component="span" style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>اطلاعات فعلی بارگذاری نشد؛ این یعنی «نامشخص»، نه «ثبت‌نشده».</Text>
+            </Box>
+            <UnstyledButton type="button" onClick={refetch} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-2)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 800 }}>تلاش دوباره</UnstyledButton>
+          </Box>
+        ) : known.status === 'loading' ? (
+          <Box role="status" aria-live="polite" style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)' }}>
+            <IconInfoCircle size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+            <Text component="span" style={{ flex: 1, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-secondary)' }}>در حال دریافت الگوی غذایی و حساسیت‌ها…</Text>
+          </Box>
+        ) : null}
+        {known.status === 'ready' && known.dietLabel ? (
           <KnownRow icon={IconPlant2} iconColor="var(--g-color-brand-600)" onEdit={() => deferNavigate('/settings#food-profile')}>
             بیشتر غذای <b>{known.dietLabel}</b> را دوست داری
           </KnownRow>
         ) : null}
-        {known.allergens.map((a, i) => (
+        {known.status === 'ready' ? known.allergens.map((a, i) => (
           <KnownRow key={a} icon={IconAlertTriangle} iconColor="var(--g-color-allergen-fg)" divider={i > 0 || !!known.dietLabel} onEdit={() => deferNavigate('/settings#allergies')}>
             حساسیت به <b>{a}</b> — پرچمِ ایمنی فعال است
           </KnownRow>
-        ))}
-        {!known.dietLabel && !known.allergens.length ? (
+        )) : null}
+        {known.status === 'ready' && !known.dietLabel && !known.allergens.length ? (
           <Box style={{ ...rowBtn, paddingBlock: 'var(--g-space-3)' }}>
             <IconLeaf size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>هرچی بیشتر بپزی، بهتر می‌شناسیمت.</Text>
+            <Text component="span" style={{ flex: 1, textAlign: 'start', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>هنوز الگوی غذایی یا حساسیتی ثبت نکرده‌ای.</Text>
           </Box>
         ) : null}
       </Box>
+
+      <UnstyledButton
+        type="button"
+        onClick={() => go('/settings#personalization-profile', 'personalization-answers')}
+        aria-label="ویرایش پاسخ‌های شخصی‌سازی"
+        style={{ ...cardWrap, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 68, marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-4)', textAlign: 'start', boxShadow: 'var(--g-shadow-1)' }}
+      >
+        <Box aria-hidden="true" style={{ inlineSize: 40, blockSize: 40, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)' }}>
+          <IconSparkles size={20} stroke={1.8} />
+        </Box>
+        <Box style={{ flex: 1, minInlineSize: 0 }}>
+          <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>ویرایش پاسخ‌های شخصی‌سازی</Text>
+          <Text component="span" style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>غذا، ایمنی، زمان، تعداد نفرات و ذائقه</Text>
+          {control?.personalizationStatus === 'unavailable' ? (
+            <Text component="span" style={{ display: 'block', marginBlockStart: 3, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-warning-fg)' }}>وضعیت یادگیری اختیاری فعلاً مشخص نیست</Text>
+          ) : null}
+        </Box>
+        <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0 }} />
+      </UnstyledButton>
+
+      <HouseholdCard household={household} onOpen={() => go('/household', 'household-card')} />
 
       {/* دسترسی سریع */}
       <Text component="h2" style={sectionTitle}>دسترسی سریع</Text>
       <Box style={cardWrap}>
         <QuickRow icon={IconBookmark} label="علاقه‌مندی‌ها" onClick={() => go('/favorites', 'favorites')} />
         <QuickRow icon={IconAward} label="دستاوردها" onClick={() => go('/achievements', 'achievements')} last />
-        <QuickRow icon={IconSparkles} label="تنظیمات و پروفایل غذایی" onClick={() => go('/settings', 'settings')} last />
       </Box>
 
       {/* logout */}

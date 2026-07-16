@@ -11,6 +11,7 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   phone     String?  @unique
+  phoneVerifiedAt DateTime?
   email     String?  @unique
   googleId  String?  @unique
   authProvider String?
@@ -97,6 +98,13 @@ model User {
   pantryItems  PantryItem[]
   passwordResetCodes PasswordResetCode[]
   authOtpCodes       AuthOtpCode[]
+
+  // Household v1 is an additive collaborative boundary. Legacy personal meal,
+  // pantry and shopping rows stay user-owned and are never dual-written.
+  ownedHouseholds          Household[]            @relation("HouseholdOwner")
+  householdMemberships     HouseholdMembership[]
+  householdInvitesConsumed HouseholdInvite[]      @relation("HouseholdInviteConsumer")
+  householdIdempotency     HouseholdIdempotency[]
 }
 
 model PasswordResetCode {
@@ -1298,4 +1306,256 @@ model WorkflowAlert {
   @@index([status, dueAt])
   @@index([assignedTo, status])
   @@index([workflowKey, createdAt])
+}
+
+// ============================================================================================
+// HOUSEHOLD V1 — additive H1/H2 thin slice. These tables intentionally do not reinterpret the
+// legacy ShoppingList/ShoppingItem models. Every collaborative resource carries householdId.
+// ============================================================================================
+
+enum HouseholdStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum HouseholdRole {
+  OWNER
+  MEMBER
+}
+
+enum HouseholdMembershipStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+}
+
+enum HouseholdInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED
+  EXPIRED
+}
+
+enum HouseholdShoppingItemStatus {
+  NEEDED
+  BOUGHT
+  DECISION_PENDING
+  SUBSTITUTION_APPROVED
+  SKIPPED
+  REMOVED
+}
+
+enum HouseholdShoppingSessionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum HouseholdShoppingDecisionStatus {
+  OPEN
+  RESOLVED
+  CANCELLED
+}
+
+enum HouseholdIdempotencyState {
+  PROCESSING
+  COMPLETED
+}
+
+model Household {
+  id          String          @id @default(uuid())
+  name        String
+  status      HouseholdStatus @default(ACTIVE)
+  ownerUserId String
+  owner       User            @relation("HouseholdOwner", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  version     Int             @default(1)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  memberships       HouseholdMembership[]
+  invites           HouseholdInvite[]
+  shoppingList      HouseholdShoppingList?
+  shoppingItems     HouseholdShoppingItem[]
+  shoppingSessions  HouseholdShoppingSession[]
+  shoppingDecisions HouseholdShoppingDecision[]
+  auditEvents       HouseholdAuditEvent[]
+  idempotency       HouseholdIdempotency[]
+
+  @@index([ownerUserId, status])
+  @@map("households")
+}
+
+model HouseholdMembership {
+  id          String                    @id @default(uuid())
+  householdId String
+  household   Household                 @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        HouseholdRole
+  status      HouseholdMembershipStatus @default(ACTIVE)
+  joinedAt    DateTime                  @default(now())
+  endedAt     DateTime?
+  version     Int                       @default(1)
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+
+  createdInvites    HouseholdInvite[]
+  startedSessions   HouseholdShoppingSession[]
+  createdDecisions  HouseholdShoppingDecision[] @relation("HouseholdDecisionCreator")
+  resolvedDecisions HouseholdShoppingDecision[] @relation("HouseholdDecisionResolver")
+  auditEvents       HouseholdAuditEvent[]
+
+  @@unique([householdId, userId])
+  @@index([userId, status])
+  @@index([householdId, status])
+  @@map("household_memberships")
+}
+
+model HouseholdInvite {
+  id                     String                @id @default(uuid())
+  householdId            String
+  household              Household             @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdByMembershipId  String?
+  createdByMembership    HouseholdMembership?  @relation(fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+  targetPhoneDigest      String?
+  targetDigestKeyVersion Int                   @default(1)
+  activeKey              String?               @default("PENDING")
+  status                 HouseholdInviteStatus @default(PENDING)
+  expiresAt              DateTime
+  consumedAt             DateTime?
+  consumedByUserId       String?
+  consumedBy             User?                 @relation("HouseholdInviteConsumer", fields: [consumedByUserId], references: [id], onDelete: SetNull)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@unique([householdId, targetPhoneDigest, activeKey])
+  @@index([targetPhoneDigest, status, expiresAt])
+  @@index([householdId, status, expiresAt])
+  @@map("household_invites")
+}
+
+model HouseholdShoppingList {
+  id          String    @id @default(uuid())
+  householdId String    @unique
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  name        String    @default("خرید خانه")
+  version     Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  items    HouseholdShoppingItem[]
+  sessions HouseholdShoppingSession[]
+
+  @@unique([id, householdId])
+  @@map("household_shopping_lists")
+}
+
+model HouseholdShoppingItem {
+  id                String                      @id @default(uuid())
+  householdId       String
+  household         Household                   @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  listId            String
+  list              HouseholdShoppingList       @relation(fields: [listId, householdId], references: [id, householdId], onDelete: Cascade)
+  name              String
+  normalizedKey     String
+  activeSemanticKey String?
+  amount            String?
+  unit              String?
+  status            HouseholdShoppingItemStatus @default(NEEDED)
+  version           Int                         @default(1)
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @updatedAt
+  deletedAt         DateTime?
+
+  decisions HouseholdShoppingDecision[]
+
+  @@unique([listId, activeSemanticKey])
+  @@unique([id, householdId])
+  @@index([householdId, status])
+  @@index([listId, updatedAt])
+  @@map("household_shopping_items")
+}
+
+model HouseholdShoppingSession {
+  id                    String                         @id @default(uuid())
+  householdId           String
+  household             Household                      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  listId                String
+  list                  HouseholdShoppingList          @relation(fields: [listId, householdId], references: [id, householdId], onDelete: Cascade)
+  startedByMembershipId String?
+  startedByMembership   HouseholdMembership?           @relation(fields: [startedByMembershipId], references: [id], onDelete: SetNull)
+  status                HouseholdShoppingSessionStatus @default(ACTIVE)
+  activeKey             String?                        @default("ACTIVE")
+  version               Int                            @default(1)
+  startedAt             DateTime                       @default(now())
+  endedAt               DateTime?
+  updatedAt             DateTime                       @updatedAt
+
+  @@unique([listId, activeKey])
+  @@index([householdId, status])
+  @@map("household_shopping_sessions")
+}
+
+model HouseholdShoppingDecision {
+  id                     String                          @id @default(uuid())
+  householdId            String
+  household              Household                       @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  itemId                 String
+  item                   HouseholdShoppingItem           @relation(fields: [itemId, householdId], references: [id, householdId], onDelete: Cascade)
+  createdByMembershipId  String?
+  createdByMembership    HouseholdMembership?            @relation("HouseholdDecisionCreator", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+  resolvedByMembershipId String?
+  resolvedByMembership   HouseholdMembership?            @relation("HouseholdDecisionResolver", fields: [resolvedByMembershipId], references: [id], onDelete: SetNull)
+  question               String
+  options                Json
+  selectedOption         String?
+  status                 HouseholdShoppingDecisionStatus @default(OPEN)
+  activeKey              String?                         @default("OPEN")
+  version                Int                             @default(1)
+  expiresAt              DateTime
+  createdAt              DateTime                        @default(now())
+  resolvedAt             DateTime?
+  updatedAt              DateTime                        @updatedAt
+
+  @@unique([itemId, activeKey])
+  @@index([householdId, status, expiresAt])
+  @@map("household_shopping_decisions")
+}
+
+model HouseholdIdempotency {
+  id              String                    @id @default(uuid())
+  principalUserId String
+  principal       User                      @relation(fields: [principalUserId], references: [id], onDelete: Cascade)
+  householdId     String?
+  household       Household?                @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  operation       String
+  key             String
+  requestHash     String
+  state           HouseholdIdempotencyState @default(PROCESSING)
+  response        Json?
+  createdAt       DateTime                  @default(now())
+  expiresAt       DateTime
+
+  @@unique([principalUserId, operation, key])
+  @@index([householdId, createdAt])
+  @@index([expiresAt])
+  @@map("household_idempotency")
+}
+
+model HouseholdAuditEvent {
+  id                String               @id @default(uuid())
+  householdId       String
+  household         Household            @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  actorMembershipId String?
+  actorMembership   HouseholdMembership? @relation(fields: [actorMembershipId], references: [id], onDelete: SetNull)
+  action            String
+  entityType        String
+  entityId          String
+  metadata          Json                 @default("{}")
+  createdAt         DateTime             @default(now())
+
+  @@index([householdId, createdAt])
+  @@index([entityType, entityId])
+  @@map("household_audit_events")
 }

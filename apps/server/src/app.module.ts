@@ -30,6 +30,7 @@ import { GamificationModule } from './gamification/gamification.module';
 import { BriefingModule } from './briefing/briefing.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { OnboardingV2Module } from './onboarding/onboarding-v2.module';
+import { HouseholdsModule } from './households/households.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { OnboardingV2Module } from './onboarding/onboarding-v2.module';
     RecipesModule,
     UsersModule,
     OnboardingV2Module,
+    HouseholdsModule,
     AuthModule,
     FavoritesModule,
     MealPlansModule,

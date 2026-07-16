@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test/renderWithProviders';
 import SettingsPage from './page';
 
@@ -37,12 +37,31 @@ const readyShape = () => ({
     { id: 'gluten', label: 'گلوتن' },
     { id: 'dairy', label: 'لبنیات' },
   ],
+  cooktimeOptions: [
+    { id: 'under_15', label: 'کمتر از ۱۵ دقیقه' },
+    { id: '15_30', label: '۱۵ تا ۳۰ دقیقه' },
+  ],
+  cooksForOptions: [
+    { id: '1', label: '۱ نفر' },
+    { id: '2', label: '۲ نفر' },
+  ],
+  dietaryRuleOptions: [{ id: 'no_pork', label: 'گوشت خوک نمی‌خورم' }],
   legacyAllergenOptions: [],
   pattern: 'omnivore',
   allergens: { gluten: true },
   choosePattern: vi.fn(),
   toggleAllergen: vi.fn(),
   removeLegacyAllergen: vi.fn(),
+  profileAnswersStatus: 'ready',
+  weekdayTimeBucket: '15_30',
+  setWeekdayTimeBucket: vi.fn(),
+  cooksForCount: '2',
+  setCooksForCount: vi.fn(),
+  dietaryRules: [],
+  toggleDietaryRule: vi.fn(),
+  profileAnswersDirty: false,
+  profileAnswersBusy: false,
+  saveProfileAnswers: vi.fn(),
   consent: { personalization: false, analytics: false },
   consentActive: { personalization: false, analytics: false },
   consentRuntimeAvailable: { personalization: true, analytics: true },
@@ -51,6 +70,8 @@ const readyShape = () => ({
   account: { phone: '09120000000', email: 'test@example.com' },
   exportData: vi.fn(),
   deleteAccount: vi.fn(),
+  accountDeletionBlocker: null,
+  openHouseholdOwnership: vi.fn(),
   busy: false,
   toast: null,
 });
@@ -63,11 +84,29 @@ describe('SettingsPage smoke', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'تنظیمات' })).toBeInTheDocument();
     // a section head + a chip option from the realistic shape.
     expect(screen.getByRole('heading', { level: 2, name: 'پروفایل غذایی' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'پاسخ‌های شخصی‌سازی' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'وگان' })).toBeInTheDocument();
     expect(screen.getByRole('switch', { name: 'آمارِ استفادهٔ اختیاری' })).toBeInTheDocument();
     expect(screen.queryByText('آمارِ ناشناس')).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { level: 2, name: 'اعلان‌ها' })).not.toBeInTheDocument();
     expect(screen.queryByRole('switch', { name: 'بریفینگِ هفتگی' })).not.toBeInTheDocument();
+  });
+
+  it('edits and saves the ongoing personalization answers without reopening onboarding', () => {
+    const shape = readyShape();
+    shape.profileAnswersDirty = true;
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'کمتر از ۱۵ دقیقه' }));
+    fireEvent.click(screen.getByRole('button', { name: '۱ نفر' }));
+    fireEvent.click(screen.getByRole('button', { name: 'گوشت خوک نمی‌خورم' }));
+    fireEvent.click(screen.getByRole('button', { name: 'ذخیرهٔ پاسخ‌ها' }));
+
+    expect(shape.setWeekdayTimeBucket).toHaveBeenCalledWith('under_15');
+    expect(shape.setCooksForCount).toHaveBeenCalledWith('1');
+    expect(shape.toggleDietaryRule).toHaveBeenCalledWith('no_pork');
+    expect(shape.saveProfileAnswers).toHaveBeenCalledTimes(1);
   });
 
   it('renders the loading state (skeletons, no throw)', () => {
@@ -106,16 +145,23 @@ describe('SettingsPage smoke', () => {
     expect(shape.refetch).toHaveBeenCalledTimes(1);
   });
 
-  it('marks notification controls as unavailable instead of claiming local choices are operational', () => {
+  it('focuses and scrolls to an allowlisted hash target after ready content mounts', async () => {
     const shape = readyShape();
     useSettings.mockReturnValue(shape);
-    renderWithProviders(<SettingsPage />);
+    const scrollIntoView = vi.fn();
+    const previous = HTMLElement.prototype.scrollIntoView;
+    HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
-    expect(screen.getByText(/این تنظیمات هنوز به سرویس ارسال اعلان متصل نیستند/)).toBeInTheDocument();
-    expect(screen.getByRole('switch', { name: 'بریفینگِ هفتگی' })).toBeDisabled();
-    expect(screen.getByRole('switch', { name: 'بریفینگِ هفتگی' })).toHaveAttribute('aria-checked', 'false');
-    expect(screen.getByRole('switch', { name: 'ساعتِ آرام' })).toBeDisabled();
-    expect(shape.toggleNotif).not.toHaveBeenCalled();
+    try {
+      renderWithProviders(<SettingsPage />, { route: '/settings#allergies' });
+      const target = document.getElementById('allergies');
+      await waitFor(() => expect(document.activeElement).toBe(target));
+      expect(scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ block: 'start' }));
+      expect(target).toHaveAttribute('aria-labelledby', 'allergies-title');
+    } finally {
+      if (previous) HTMLElement.prototype.scrollIntoView = previous;
+      else delete HTMLElement.prototype.scrollIntoView;
+    }
   });
 
   it('requires explicit typed confirmation before permanent account deletion', async () => {
@@ -136,5 +182,22 @@ describe('SettingsPage smoke', () => {
     fireEvent.click(confirmButton);
 
     expect(shape.deleteAccount).toHaveBeenCalledTimes(1);
+  });
+
+  it('routes an owner to household members when account deletion requires a transfer', async () => {
+    const shape = readyShape();
+    shape.accountDeletionBlocker = {
+      kind: 'household_owner_transfer_required',
+      message: 'پیش از حذف حساب، مالکیت خانه را به یک عضو دیگر منتقل کن.',
+    };
+    useSettings.mockReturnValue(shape);
+    renderWithProviders(<SettingsPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'حذف حساب' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('مالکیت خانه');
+    fireEvent.click(screen.getByRole('button', { name: 'رفتن به اعضای خانه' }));
+
+    expect(shape.openHouseholdOwnership).toHaveBeenCalledTimes(1);
+    expect(shape.deleteAccount).not.toHaveBeenCalled();
   });
 });

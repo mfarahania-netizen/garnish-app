@@ -51,6 +51,10 @@ function isGoogleAuthEnabled(env: NodeJS.ProcessEnv): boolean {
   return (env.GOOGLE_AUTH_ENABLED ?? '').trim().toLowerCase() === 'true';
 }
 
+function isHouseholdV1Enabled(env: NodeJS.ProcessEnv): boolean {
+  return (env.HOUSEHOLD_V1_ENABLED ?? '').trim().toLowerCase() === 'true';
+}
+
 function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
   return [
     { key: 'DATABASE_URL', required: true },
@@ -75,6 +79,8 @@ function buildRules(env: NodeJS.ProcessEnv): EnvRule[] {
     { key: 'OTP_DAILY_LIMIT_PER_PHONE', required: false },
     { key: 'GOOGLE_AUTH_ENABLED', required: false },
     { key: 'GOOGLE_CLIENT_ID', required: isGoogleAuthEnabled(env), minLength: 20 },
+    { key: 'HOUSEHOLD_V1_ENABLED', required: false },
+    { key: 'HOUSEHOLD_INVITE_PEPPER', required: isHouseholdV1Enabled(env), minLength: 32 },
   ];
 }
 
@@ -145,6 +151,11 @@ export function validateEnv(
   const nodeEnv = (env.NODE_ENV ?? '').trim().toLowerCase();
   if (smsDevLogRaw === 'true' && nodeEnv !== 'development' && nodeEnv !== 'test') {
     errors.push('SMS_DEV_LOG_OTP may be true only when NODE_ENV is development or test');
+  }
+
+  const householdEnabledRaw = (env.HOUSEHOLD_V1_ENABLED ?? '').trim().toLowerCase();
+  if (householdEnabledRaw && householdEnabledRaw !== 'true' && householdEnabledRaw !== 'false') {
+    errors.push('HOUSEHOLD_V1_ENABLED must be true or false');
   }
 
   const otpBounds: Array<[string, number, number]> = [

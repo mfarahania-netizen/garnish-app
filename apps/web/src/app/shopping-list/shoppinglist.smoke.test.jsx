@@ -6,6 +6,8 @@ import ShoppingListPage from './page';
 vi.mock('./useShopping', () => ({ useShopping: vi.fn() }));
 import { useShopping } from './useShopping';
 
+vi.mock('../household/feature', () => ({ isHouseholdV1Enabled: () => true }));
+
 // jsdom in this environment provides no localStorage, which AuthProvider (pulled in by the
 // render harness) touches synchronously on mount. The page never reads auth, so replace the
 // provider with a passthrough to keep this smoke test scoped + deterministic (no network/storage).
@@ -40,6 +42,14 @@ function baseHook(overrides = {}) {
 }
 
 describe('ShoppingListPage smoke', () => {
+  it('keeps خرید باهم visible as the featured shared-shopping entry', () => {
+    useShopping.mockReturnValue(baseHook({ status: 'empty' }));
+    renderWithProviders(<ShoppingListPage />);
+
+    expect(screen.getByRole('button', { name: 'باز کردن خرید باهم' })).toBeInTheDocument();
+    expect(screen.getByText('لیست مشترک و تصمیم سریع برای ناموجودها')).toBeInTheDocument();
+  });
+
   it('renders the loading state', () => {
     useShopping.mockReturnValue(baseHook({ status: 'loading', total: 0, done: 0 }));
     renderWithProviders(<ShoppingListPage />);

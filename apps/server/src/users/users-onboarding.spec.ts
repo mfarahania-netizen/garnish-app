@@ -346,7 +346,7 @@ describe('UsersService.completeOnboardingCommand', () => {
   });
 });
 
-describe('legacy onboarding safety remediation', () => {
+describe('legacy onboarding compatibility', () => {
   const lookup = async (row: Record<string, unknown>) => {
     const prisma = { user: { findUnique: jest.fn().mockResolvedValue(row) } };
     const service = new UsersService(
@@ -358,7 +358,7 @@ describe('legacy onboarding safety remediation', () => {
     return { user: await service.findByPhone('09120000000'), prisma };
   };
 
-  it('routes a completed legacy user with empty allergies and no explicit decision proof back to onboarding', async () => {
+  it('keeps a completed legacy user out of the onboarding loop even without newer V2 proof rows', async () => {
     const { user } = await lookup({
       id: 'legacy-empty',
       onboardingCompletedAt: new Date('2025-01-01'),
@@ -366,7 +366,7 @@ describe('legacy onboarding safety remediation', () => {
       userConsents: [],
     });
 
-    expect(user?.onboardingComplete).toBe(false);
+    expect(user?.onboardingComplete).toBe(true);
   });
 
   it.each([
@@ -395,6 +395,7 @@ describe('legacy onboarding safety remediation', () => {
       const row = {
         id: `v2-${settingsStatus}`,
         phone: '09120000000',
+        phoneVerifiedAt: new Date('2026-07-14T09:00:00.000Z'),
         name: null,
         onboardingCompletedAt: completedAt,
         onboardingProfile: { completedAt },
@@ -416,11 +417,16 @@ describe('legacy onboarding safety remediation', () => {
       expect((idUser as Record<string, any> | null)?.onboardingComplete).toBe(true);
       expect(sanitizeUser(phoneUser as Record<string, any>)?.onboardingComplete).toBe(true);
       expect(sanitizeUser(idUser as Record<string, any>)?.onboardingComplete).toBe(true);
+      expect(sanitizeUser(phoneUser as Record<string, any>)?.phoneVerified).toBe(true);
+      expect(sanitizeUser(idUser as Record<string, any>)?.phoneVerified).toBe(true);
       expect(prisma.user.findUnique).toHaveBeenNthCalledWith(1, expect.objectContaining({
         include: expect.objectContaining({ onboardingProfile: { select: { completedAt: true } } }),
       }));
       expect(prisma.user.findUnique).toHaveBeenNthCalledWith(2, expect.objectContaining({
-        select: expect.objectContaining({ onboardingProfile: { select: { completedAt: true } } }),
+        select: expect.objectContaining({
+          phoneVerifiedAt: true,
+          onboardingProfile: { select: { completedAt: true } },
+        }),
       }));
     },
   );

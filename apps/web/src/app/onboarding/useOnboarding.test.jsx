@@ -525,6 +525,38 @@ describe('useOnboarding V2 state and contract', () => {
     expect(restored.result.current.answers.taste.dislikes.map((item) => item.id)).toEqual(['d1']);
   });
 
+  it('never restores the result screen unless the server confirms completion', async () => {
+    authState.token = 'stale-result-token';
+    const first = renderHook(() => useOnboarding(), { wrapper });
+    await waitFor(() => expect(first.result.current.hydrating).toBe(false));
+    const key = sessionStorage.key(0);
+    const draft = JSON.parse(sessionStorage.getItem(key));
+    first.unmount();
+
+    sessionStorage.setItem(key, JSON.stringify({ ...draft, step: 7 }));
+    apiMock.get.mockImplementation((url) => {
+      if (url === '/onboarding/v2') {
+        return Promise.resolve({ data: emptyProfile({ revision: 3, updatedAt: 'saved-but-incomplete' }) });
+      }
+      if (url === '/users/consent') {
+        return Promise.resolve({
+          data: {
+            purposes: {
+              terms: { granted: true, policyVersion: CURRENT_TERMS_POLICY_VERSION },
+              personalization: { granted: false, policyVersion: CURRENT_PRIVACY_POLICY_VERSION, processingEnabled: true },
+            },
+          },
+        });
+      }
+      return Promise.resolve({ data: { items: [] } });
+    });
+
+    const restored = renderHook(() => useOnboarding(), { wrapper });
+    await waitFor(() => expect(restored.result.current.hydrating).toBe(false));
+    expect(restored.result.current.alreadyCompleted).toBe(false);
+    expect(restored.result.current.step).toBe(6);
+  });
+
   it('resolves real titles for taste choices restored from the server', async () => {
     authState.token = 'resolve-title-token';
     apiMock.get.mockImplementation((url) => {

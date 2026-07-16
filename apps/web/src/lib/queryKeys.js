@@ -9,6 +9,7 @@ export const queryKeys = {
     taste: ['profile', 'taste'],
   },
   consent: ['users', 'consent'],
+  onboardingProfile: ['onboarding', 'profile'],
 };
 
 export function invalidateProfileDomain(queryClient) {
@@ -19,4 +20,5 @@ export function invalidateProfileDomain(queryClient) {
   queryClient.invalidateQueries({ queryKey: queryKeys.profile.dna });
   queryClient.invalidateQueries({ queryKey: queryKeys.profile.taste });
   queryClient.invalidateQueries({ queryKey: queryKeys.consent });
+  queryClient.invalidateQueries({ queryKey: queryKeys.onboardingProfile });
 }

@@ -10,7 +10,6 @@ import RequireAuth from './shell/RequireAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { hasAnalyticsConsent } from './lib/analytics-init';
 import { installE2EQueryInspection } from './lib/private-session-cache';
-
 const HomePage = lazy(() => import('./app/home/page'));
 const RecipeDetailPage = lazy(() => import('./app/recipe/[id]/page'));
 const CookPage = lazy(() => import('./app/cook/[id]/page'));
@@ -22,6 +21,7 @@ const ProfilePage = lazy(() => import('./app/profile/page'));
 const FoodDnaPage = lazy(() => import('./app/food-dna/page'));
 const PlanPage = lazy(() => import('./app/plan/page'));
 const ShoppingListPage = lazy(() => import('./app/shopping-list/page'));
+const HouseholdPage = lazy(() => import('./app/household/page'));
 const FavoritesPage = lazy(() => import('./app/favorites/page'));
 const AssistantPage = lazy(() => import('./app/assistant/page'));
 const SettingsPage = lazy(() => import('./app/settings/page'));
@@ -252,6 +252,7 @@ export function AppRoutes() {
           <Route path="/food-dna" element={routeElement(<FoodDnaPage />)} />
           <Route path="/plan" element={routeElement(<PlanPage />)} />
           <Route path="/shopping-list" element={routeElement(<ShoppingListPage />)} />
+          <Route path="/household" element={routeElement(<HouseholdPage />)} />
           <Route path="/favorites" element={routeElement(<FavoritesPage />)} />
           <Route path="/assistant" element={routeElement(<AssistantPage />)} />
           <Route path="/settings" element={routeElement(<SettingsPage />)} />

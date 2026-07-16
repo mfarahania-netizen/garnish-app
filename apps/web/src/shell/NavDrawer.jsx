@@ -1,9 +1,16 @@
 import { Box, Drawer, Text, UnstyledButton } from '@mantine/core';
 import { useReducedMotion } from '@mantine/hooks';
 import { NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
-import { IconX, IconLeaf, IconLogout, IconLayoutDashboard, IconLogin2 } from '@tabler/icons-react';
+import {
+  IconX,
+  IconLeaf,
+  IconLogout,
+  IconLayoutDashboard,
+  IconLogin2,
+  IconChevronLeft,
+} from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { DRAWER_PRIMARY, DRAWER_SECONDARY } from './navConfig';
+import { DRAWER_HOUSEHOLD, DRAWER_PRIMARY, DRAWER_SECONDARY } from './navConfig';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../lib/apiClient';
 import { faPercent } from '../components/ges/format';
@@ -68,6 +75,78 @@ function DrawerLink({ item, onNavigate, secondary }) {
   );
 }
 
+function DrawerGroupTitle({ children }) {
+  return (
+    <Text
+      component="div"
+      style={{
+        paddingInline: 'var(--g-space-3)',
+        paddingBlockEnd: 'var(--g-space-1)',
+        fontFamily: 'var(--g-font-fa)',
+        fontSize: 'var(--g-font-size-12)',
+        fontWeight: 700,
+        color: 'var(--g-color-text-muted)',
+      }}
+    >
+      {children}
+    </Text>
+  );
+}
+
+function HouseholdHero({ item, onNavigate }) {
+  if (!item) return null;
+  return (
+    <RouterNavLink
+      to={item.to}
+      onClick={onNavigate}
+      aria-label={`${item.label} — ${item.description}`}
+      style={({ isActive }) => ({
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--g-space-3)',
+        minBlockSize: 76,
+        margin: 'var(--g-space-3)',
+        padding: 'var(--g-space-3)',
+        borderRadius: 'var(--g-radius-card)',
+        border: `1px solid ${isActive ? 'var(--g-color-brand-500)' : 'var(--g-color-brand-200)'}`,
+        background: 'linear-gradient(135deg, var(--g-color-brand-50), var(--g-color-ai-surface))',
+        boxShadow: isActive ? 'var(--g-shadow-2)' : 'var(--g-shadow-1)',
+        color: 'var(--g-color-text-primary)',
+        textDecoration: 'none',
+      })}
+    >
+      {({ isActive }) => (
+        <>
+          <Box
+            aria-hidden="true"
+            style={{
+              inlineSize: 44,
+              blockSize: 44,
+              flexShrink: 0,
+              display: 'grid',
+              placeItems: 'center',
+              borderRadius: 'var(--g-radius-input)',
+              background: isActive ? 'var(--g-color-brand-600)' : 'var(--g-color-brand-100)',
+              color: isActive ? 'var(--g-color-text-inverse)' : 'var(--g-color-brand-700)',
+            }}
+          >
+            <item.Icon size={22} stroke={1.9} />
+          </Box>
+          <Box style={{ flex: 1, minInlineSize: 0 }}>
+            <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'inherit' }}>
+              {item.label}
+            </Text>
+            <Text component="span" style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 1.65, color: 'var(--g-color-text-secondary)' }}>
+              {item.description}
+            </Text>
+          </Box>
+          <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ flexShrink: 0, color: 'var(--g-color-brand-700)' }} />
+        </>
+      )}
+    </RouterNavLink>
+  );
+}
+
 export default function NavDrawer({ opened, onClose }) {
   const { token, user, logout, guestEnabled } = useAuth();
   const navigate = useNavigate();
@@ -124,8 +203,14 @@ export default function NavDrawer({ opened, onClose }) {
           gap: 'var(--g-space-3)',
         }}
       >
-        <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minInlineSize: 0 }}>
+        <UnstyledButton
+          type="button"
+          onClick={() => { onClose(); navigate('/profile'); }}
+          aria-label="رفتن به پروفایل"
+          style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', minInlineSize: 0, textAlign: 'start' }}
+        >
           <Box
+            component="span"
             aria-hidden="true"
             style={{
               flexShrink: 0, inlineSize: 50, blockSize: 50, borderRadius: '50%',
@@ -135,12 +220,12 @@ export default function NavDrawer({ opened, onClose }) {
           >
             {initial}
           </Box>
-          <Box style={{ minInlineSize: 0 }}>
-            <Text component="div" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <Box component="span" style={{ display: 'block', minInlineSize: 0 }}>
+            <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontWeight: 800, fontSize: 'var(--g-font-size-16)', color: 'var(--g-color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {name}
             </Text>
             {band ? (
-              <Box style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 2 }}>
+              <Box component="span" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', marginBlockStart: 2 }}>
                 <IconLeaf size={12} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-700)' }} />
                 <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontWeight: 600, fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-brand-700)' }}>
                   ذائقه: {BAND_SHORT[band] || 'در حال شکل‌گیری'}{pct != null ? ` ${faPercent(pct)}` : ''}
@@ -148,7 +233,7 @@ export default function NavDrawer({ opened, onClose }) {
               </Box>
             ) : null}
           </Box>
-        </Box>
+        </UnstyledButton>
         <UnstyledButton
           type="button"
           onClick={onClose}
@@ -161,13 +246,16 @@ export default function NavDrawer({ opened, onClose }) {
 
       {/* NAV (scrolls; each item rendered once) */}
       <Box style={{ flex: 1, overflowY: 'auto', minBlockSize: 0 }}>
+        <HouseholdHero item={DRAWER_HOUSEHOLD} onNavigate={onClose} />
         <Box component="nav" aria-label="منوی اصلی" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-3)' }}>
+          <DrawerGroupTitle>غذا و سلیقه</DrawerGroupTitle>
           {DRAWER_PRIMARY.map((item) => (
             <DrawerLink key={item.to} item={item} onNavigate={onClose} />
           ))}
         </Box>
         <Box aria-hidden="true" style={{ blockSize: 1, background: 'var(--g-color-border-subtle)', marginInline: 'var(--g-space-5)' }} />
         <Box component="nav" aria-label="بیشتر" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--g-space-1)', paddingInline: 'var(--g-space-3)', paddingBlock: 'var(--g-space-3)' }}>
+          <DrawerGroupTitle>حساب و پشتیبانی</DrawerGroupTitle>
           {DRAWER_SECONDARY.map((item) => (
             <DrawerLink key={item.to} item={item} onNavigate={onClose} secondary />
           ))}

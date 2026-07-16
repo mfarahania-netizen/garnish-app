@@ -370,6 +370,7 @@ describe('AuthService OTP login/signup', () => {
     const createdUser = {
       id: 'u-new',
       phone: '09125859634',
+      phoneVerifiedAt: new Date('2026-07-15T12:00:00.000Z'),
       isGuest: false,
       password: null,
       sessionEpoch: 0,
@@ -400,19 +401,146 @@ describe('AuthService OTP login/signup', () => {
       where: { phone: '09125859634' },
       create: {
         phone: '09125859634',
+        phoneVerifiedAt: expect.any(Date),
         password: null,
         isGuest: false,
         name: 'Test',
       },
-      update: { isGuest: false, deviceKey: null },
+      update: {
+        isGuest: false,
+        deviceKey: null,
+        phoneVerifiedAt: expect.any(Date),
+      },
     });
     expect(usersService.findById).toHaveBeenCalledWith('u-new');
     expect(jwtService.sign).toHaveBeenCalledWith({ sub: 'u-new', epoch: 0 });
     expect(res.token).toBe('tok');
     expect(res.created).toBe(true);
     expect(res.user?.onboardingComplete).toBe(false);
+    expect(res.user?.phoneVerified).toBe(true);
     expect((res.user as any).password).toBeUndefined();
     expect(prisma.userEvent.create).not.toHaveBeenCalled();
+  });
+
+  it('claims a pre-registered unverified phone by clearing its password and invalidating stale JWTs', async () => {
+    const codeHash = await bcrypt.hash('123456', 10);
+    const existingUser = {
+      id: 'u-preclaimed',
+      phone: '09125859634',
+      phoneVerifiedAt: null,
+      password: 'attacker-controlled-hash',
+      isGuest: false,
+      sessionEpoch: 4,
+      onboardingCompletedAt: null,
+    };
+    let claimedUser: any;
+    const prisma: any = {
+      authOtpCode: {
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'otp-claim',
+          phone: existingUser.phone,
+          codeHash,
+          attempts: 0,
+        }),
+        updateMany: jest
+          .fn()
+          .mockResolvedValueOnce({ count: 1 })
+          .mockResolvedValueOnce({ count: 0 }),
+      },
+      user: {
+        findUnique: jest.fn().mockResolvedValue(existingUser),
+        upsert: jest.fn(async ({ update }: any) => {
+          claimedUser = {
+            ...existingUser,
+            password: null,
+            phoneVerifiedAt: update.phoneVerifiedAt,
+            sessionEpoch: existingUser.sessionEpoch + 1,
+          };
+          return claimedUser;
+        }),
+      },
+      $transaction: jest.fn(async (fn) =>
+        fn({ authOtpCode: prisma.authOtpCode, user: prisma.user }),
+      ),
+    };
+    const usersService: any = {
+      findById: jest.fn(async () => claimedUser),
+    };
+    const jwtService: any = { sign: jest.fn().mockReturnValue('victim-token') };
+
+    const result = await makeAuth(usersService, jwtService, prisma).verifyOtp(
+      existingUser.phone,
+      '123456',
+    );
+
+    expect(prisma.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { phone: existingUser.phone },
+        update: expect.objectContaining({
+          phoneVerifiedAt: expect.any(Date),
+          password: null,
+          sessionEpoch: { increment: 1 },
+        }),
+      }),
+    );
+    expect(jwtService.sign).toHaveBeenCalledWith({
+      sub: existingUser.id,
+      epoch: 5,
+    });
+    expect(result.user?.phoneVerified).toBe(true);
+    expect((result.user as any).phoneVerifiedAt).toBeUndefined();
+    expect((result.user as any).password).toBeUndefined();
+  });
+
+  it('also clears a password registration that races after the OTP user lookup', async () => {
+    const codeHash = await bcrypt.hash('123456', 10);
+    const racedUser = {
+      id: 'u-raced-preclaim',
+      phone: '09125859634',
+      phoneVerifiedAt: new Date(),
+      password: 'raced-attacker-hash',
+      isGuest: false,
+      sessionEpoch: 0,
+      onboardingCompletedAt: null,
+    };
+    const claimedUser = { ...racedUser, password: null, sessionEpoch: 1 };
+    const prisma: any = {
+      authOtpCode: {
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'otp-raced-claim',
+          phone: racedUser.phone,
+          codeHash,
+          attempts: 0,
+        }),
+        updateMany: jest
+          .fn()
+          .mockResolvedValueOnce({ count: 1 })
+          .mockResolvedValueOnce({ count: 0 }),
+      },
+      user: {
+        findUnique: jest.fn().mockResolvedValue(null),
+        upsert: jest.fn().mockResolvedValue(racedUser),
+        update: jest.fn().mockResolvedValue(claimedUser),
+      },
+      $transaction: jest.fn(async (fn) =>
+        fn({ authOtpCode: prisma.authOtpCode, user: prisma.user }),
+      ),
+    };
+    const usersService: any = {
+      findById: jest.fn().mockResolvedValue(claimedUser),
+    };
+    const jwtService: any = { sign: jest.fn().mockReturnValue('claimed-token') };
+
+    await makeAuth(usersService, jwtService, prisma).verifyOtp(
+      racedUser.phone,
+      '123456',
+    );
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: racedUser.id },
+      data: { password: null, sessionEpoch: { increment: 1 } },
+    });
+    expect(jwtService.sign).toHaveBeenCalledWith({ sub: racedUser.id, epoch: 1 });
   });
 
   it('atomically consumes a valid OTP so exactly one concurrent verifier receives a token', async () => {
@@ -420,6 +548,7 @@ describe('AuthService OTP login/signup', () => {
     const user = {
       id: 'u-race',
       phone: '09125859634',
+      phoneVerifiedAt: new Date('2026-07-14T12:00:00.000Z'),
       isGuest: false,
       sessionEpoch: 0,
       onboardingCompletedAt: new Date(),
@@ -459,6 +588,9 @@ describe('AuthService OTP login/signup', () => {
       .toBeInstanceOf(UnauthorizedException);
     expect(jwtService.sign).toHaveBeenCalledTimes(1);
     expect(prisma.user.upsert).toHaveBeenCalledTimes(1);
+    const verifiedUpdate = prisma.user.upsert.mock.calls[0][0].update;
+    expect(verifiedUpdate.password).toBeUndefined();
+    expect(verifiedUpdate.sessionEpoch).toBeUndefined();
   });
 
   it('keeps concurrent wrong guesses within the configured attempt budget', async () => {

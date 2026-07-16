@@ -9,44 +9,51 @@ import {
   IconHome,
   IconCompass,
   IconCalendarEvent,
-  IconCalendarWeek,
   IconShoppingCart,
   IconHeart,
   IconUser,
-  IconUserCircle,
+  IconUsers,
   IconChefHat,
   IconLeaf,
   IconSparkles,
   IconSettings,
-  IconBell,
   IconHelpCircle,
-  IconRefresh,
 } from '@tabler/icons-react';
+import { isHouseholdV1Enabled } from '../app/household/feature';
 
 // BottomNav — 5 primary tabs (RTL order: first item renders at the inline-start / right).
 export const BOTTOM_TABS = [
   { label: 'خانه', to: '/', Icon: IconHome, end: true },
-  { label: 'کشف', to: '/discover', Icon: IconCompass },
+  { label: 'پیشنهادها', to: '/discover', Icon: IconCompass },
   { label: 'برنامه', to: '/plan', Icon: IconCalendarEvent },
   { label: 'خرید', to: '/shopping-list', Icon: IconShoppingCart },
   { label: 'پروفایل', to: '/profile', Icon: IconUser },
 ];
 
-// Hamburger Drawer — two grouped sections, matching the approved mockup. Each item
-// is a real route (unbuilt paths land on the in-shell 404); rendered ONCE.
+// The drawer is intentionally complementary to the five bottom destinations.
+// Repeating profile/plan/shopping here made the menu longer without creating a
+// new wayfinding job. Household is a featured entry, not another generic row.
 export const DRAWER_PRIMARY = [
-  { label: 'پروفایل من', to: '/profile', Icon: IconUserCircle },
-  { label: 'شناسهٔ ذائقه', to: '/food-dna', Icon: IconLeaf },
-  { label: 'رسپی‌ها', to: '/recipes', Icon: IconChefHat },
-  { label: 'برنامهٔ هفتگی', to: '/plan', Icon: IconCalendarWeek },
-  { label: 'لیست خرید', to: '/shopping-list', Icon: IconShoppingCart },
+  { label: 'دستورها', to: '/recipes', Icon: IconChefHat },
   { label: 'ذخیره‌ها', to: '/favorites', Icon: IconHeart },
+  { label: 'شناسهٔ ذائقه', to: '/food-dna', Icon: IconLeaf },
   { label: 'دستیار آشپزی', to: '/assistant', Icon: IconSparkles },
 ];
 
+export function drawerHouseholdFor(env = import.meta.env) {
+  return isHouseholdV1Enabled(env)
+    ? {
+        label: 'خرید باهم',
+        description: 'لیست مشترک و تصمیم سریع برای خرید',
+        to: '/household',
+        Icon: IconUsers,
+      }
+    : null;
+}
+
+export const DRAWER_HOUSEHOLD = drawerHouseholdFor();
+
 export const DRAWER_SECONDARY = [
-  { label: 'ویرایش پروفایل غذایی', to: '/settings#food-profile', Icon: IconRefresh },
   { label: 'تنظیمات', to: '/settings', Icon: IconSettings },
-  { label: 'اعلان‌ها', to: '/notifications', Icon: IconBell },
   { label: 'کمک و پشتیبانی', to: '/support', Icon: IconHelpCircle },
 ];

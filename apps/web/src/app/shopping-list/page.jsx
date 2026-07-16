@@ -6,6 +6,7 @@ import { emojiFor } from './ingredient-emoji';
 import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
+import { isHouseholdV1Enabled } from '../household/feature';
 
 const normalizeShoppingAmount = (value) =>
   String(value ?? '')
@@ -169,6 +170,36 @@ export default function ShoppingListPage() {
         </Box>
         <UnstyledButton type="button" onClick={onFromPlan} disabled={s.busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-chip)', border: '1px solid var(--g-color-brand-200)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600 }}><IconRefresh size={14} stroke={1.8} aria-hidden="true" />از روی برنامه</UnstyledButton>
       </Box>
+
+      {isHouseholdV1Enabled() ? (
+        <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-3)' }}>
+          <UnstyledButton
+            type="button"
+            onClick={() => navigate('/household')}
+            aria-label="باز کردن خرید باهم"
+            style={{
+              inlineSize: '100%',
+              minBlockSize: 56,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--g-space-3)',
+              padding: 'var(--g-space-2) var(--g-space-3)',
+              border: '1px solid var(--g-color-brand-200)',
+              borderRadius: 'var(--g-radius-card)',
+              background: 'var(--g-color-ai-surface)',
+              textAlign: 'start',
+            }}
+          >
+            <Box aria-hidden="true" style={{ inlineSize: 38, blockSize: 38, flexShrink: 0, display: 'grid', placeItems: 'center', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)', color: 'var(--g-color-brand-700)' }}>
+              <IconUsers size={19} stroke={1.8} />
+            </Box>
+            <Box style={{ flex: 1, minInlineSize: 0 }}>
+              <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, color: 'var(--g-color-text-primary)' }}>خرید باهم</Text>
+              <Text component="span" style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>لیست مشترک و تصمیم سریع برای ناموجودها</Text>
+            </Box>
+          </UnstyledButton>
+        </Box>
+      ) : null}
 
       <Box style={{ flex: 1, minBlockSize: 0, overflowY: 'auto' }}>
         <PlanBuildSummary summary={buildSummary} />

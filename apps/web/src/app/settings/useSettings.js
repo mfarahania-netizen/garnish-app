@@ -6,7 +6,14 @@ import { useAuth } from '../../context/AuthContext';
 import { enableAnalytics, disableAnalytics } from '../../lib/analytics-init';
 import { CURRENT_PRIVACY_POLICY_VERSION } from '../../lib/consent-policy';
 import { clearRecommendationAttribution } from '../../lib/recommendationAttribution';
-import { PATTERN_OPTIONS, ALLERGEN_OPTIONS, ONBOARDING_ALLERGEN_OPTIONS } from '../onboarding/steps';
+import {
+  PATTERN_OPTIONS,
+  ALLERGEN_OPTIONS,
+  ONBOARDING_ALLERGEN_OPTIONS,
+  COOKTIME_OPTIONS,
+  COOKS_FOR_OPTIONS,
+  DIETARY_RULE_OPTIONS,
+} from '../onboarding/steps';
 import { invalidateProfileDomain, queryKeys } from '../../lib/queryKeys';
 
 /**
@@ -24,6 +31,13 @@ import { invalidateProfileDomain, queryKeys } from '../../lib/queryKeys';
 const PERS_KEY = 'garnish.consent.personalization';
 const SUPPORTED_ALLERGEN_IDS = new Set(ONBOARDING_ALLERGEN_OPTIONS.map((option) => option.id));
 const ALLERGEN_BY_ID = new Map(ALLERGEN_OPTIONS.map((option) => [option.id, option]));
+const mutationId = () => {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  const hex = () => Math.floor(Math.random() * 16).toString(16);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (token) => (
+    token === 'x' ? hex() : ((Math.floor(Math.random() * 4) + 8).toString(16))
+  ));
+};
 
 export function useSettings() {
   const navigate = useNavigate();
@@ -32,6 +46,7 @@ export function useSettings() {
   const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data) });
   const prefs = useQuery({ queryKey: queryKeys.preferences, queryFn: () => apiClient.get('/users/preferences').then((r) => r.data) });
   const serverConsent = useQuery({ queryKey: queryKeys.consent, queryFn: () => apiClient.get('/users/consent').then((r) => r.data) });
+  const onboardingProfile = useQuery({ queryKey: queryKeys.onboardingProfile, queryFn: () => apiClient.get('/onboarding/v2').then((r) => r.data) });
 
   const [pattern, setPattern] = useState('');
   const [allergens, setAllergens] = useState({}); // id → true
@@ -46,7 +61,18 @@ export function useSettings() {
   const [consentWriteUnknown, setConsentWriteUnknown] = useState(false);
   const [consentBusy, setConsentBusy] = useState({ personalization: false, analytics: false });
   const [preferenceBusy, setPreferenceBusy] = useState(false);
+  const [profileAnswersBusy, setProfileAnswersBusy] = useState(false);
+  const [weekdayTimeBucket, setWeekdayTimeBucket] = useState('');
+  const [cooksForCount, setCooksForCount] = useState('');
+  const [dietaryRules, setDietaryRules] = useState([]);
+  const [profileAnswersRevision, setProfileAnswersRevision] = useState(0);
+  const [profileAnswersBaseline, setProfileAnswersBaseline] = useState({
+    weekdayTimeBucket: '',
+    cooksForCount: '',
+    dietaryRules: [],
+  });
   const [accountBusy, setAccountBusy] = useState(false);
+  const [accountDeletionBlocker, setAccountDeletionBlocker] = useState(null);
   const [toast, setToast] = useState(null);
   const preferenceSnapshot = useRef({ pattern: '', allergens: {} });
   const preferenceWriteChain = useRef(Promise.resolve());
@@ -66,6 +92,22 @@ export function useSettings() {
     setPattern(nextPattern);
     setAllergens(map);
   }, [preferenceBusy, prefs.isLoading, prefs.isError, prefs.data]);
+
+  useEffect(() => {
+    if (profileAnswersBusy || onboardingProfile.isLoading || onboardingProfile.isFetching || onboardingProfile.isError) return;
+    const profile = onboardingProfile.data;
+    if (!profile || profile.status !== 'completed') return;
+    const next = {
+      weekdayTimeBucket: profile.preferences?.weekdayTimeBucket || '',
+      cooksForCount: profile.preferences?.cooksForCount || '',
+      dietaryRules: [...(profile.safety?.dietaryRules || [])].sort(),
+    };
+    setProfileAnswersBaseline(next);
+    setWeekdayTimeBucket(next.weekdayTimeBucket);
+    setCooksForCount(next.cooksForCount);
+    setDietaryRules(next.dietaryRules);
+    setProfileAnswersRevision(Number(profile.revision || 0));
+  }, [profileAnswersBusy, onboardingProfile.data, onboardingProfile.isLoading, onboardingProfile.isFetching, onboardingProfile.isError]);
 
   useEffect(() => {
     if (serverConsent.isLoading || serverConsent.isFetching || serverConsent.isError || !serverConsent.data?.purposes) {
@@ -174,6 +216,62 @@ export function useSettings() {
     return removal;
   }, [flash, queryClient]);
 
+  const toggleDietaryRule = useCallback((id) => {
+    setDietaryRules((current) => current.includes(id)
+      ? current.filter((value) => value !== id)
+      : [...current, id].sort());
+  }, []);
+
+  const profileAnswersDirty = weekdayTimeBucket !== profileAnswersBaseline.weekdayTimeBucket
+    || cooksForCount !== profileAnswersBaseline.cooksForCount
+    || JSON.stringify([...dietaryRules].sort()) !== JSON.stringify(profileAnswersBaseline.dietaryRules);
+
+  const saveProfileAnswers = useCallback(async () => {
+    const dietPattern = preferenceSnapshot.current.pattern;
+    if (!dietPattern || !weekdayTimeBucket || !cooksForCount || profileAnswersBusy) return false;
+    setProfileAnswersBusy(true);
+    const snapshot = {
+      weekdayTimeBucket,
+      cooksForCount,
+      dietaryRules: [...dietaryRules].sort(),
+    };
+    try {
+      const saved = await apiClient.patch('/onboarding/v2/profile/preferences', {
+        schemaVersion: 2,
+        idempotencyKey: mutationId(),
+        expectedRevision: profileAnswersRevision,
+        dietPattern,
+        ...snapshot,
+      }).then((response) => response.data);
+      setProfileAnswersBaseline(snapshot);
+      setProfileAnswersRevision(Number(saved.revision));
+      queryClient.setQueryData(queryKeys.onboardingProfile, (current) => current ? ({
+        ...current,
+        revision: Number(saved.revision),
+        preferences: {
+          ...current.preferences,
+          dietPattern,
+          weekdayTimeBucket: snapshot.weekdayTimeBucket,
+          cooksForCount: snapshot.cooksForCount,
+        },
+        safety: { ...current.safety, dietaryRules: snapshot.dietaryRules },
+      }) : current);
+      invalidateProfileDomain(queryClient);
+      flash('پاسخ‌های شخصی‌سازی ذخیره شد', 'ok');
+      return true;
+    } catch (error) {
+      if (error?.response?.status === 409 && error.response.data?.code === 'revision_conflict') {
+        await onboardingProfile.refetch();
+        flash('پاسخ‌ها جای دیگری تغییر کرده بود؛ نسخهٔ تازه بارگذاری شد', 'err');
+      } else {
+        flash('پاسخ‌ها ذخیره نشد — دوباره تلاش کن', 'err');
+      }
+      return false;
+    } finally {
+      setProfileAnswersBusy(false);
+    }
+  }, [cooksForCount, dietaryRules, flash, onboardingProfile, profileAnswersBusy, profileAnswersRevision, queryClient, weekdayTimeBucket]);
+
   const toggleConsent = useCallback(async (key) => {
     if (!['personalization', 'analytics'].includes(key)) return;
     if (
@@ -280,12 +378,24 @@ export function useSettings() {
       await apiClient.delete('/users/me');
       logout();
       navigate('/login', { replace: true });
-    } catch {
+    } catch (error) {
       deleteInFlight.current = false;
-      flash('حذف نشد — دوباره امتحان کن', 'err');
+      if (error?.response?.status === 409 && error.response.data?.code === 'household_owner_transfer_required') {
+        setAccountDeletionBlocker({
+          kind: 'household_owner_transfer_required',
+          message: 'پیش از حذف حساب، مالکیت خانه را به یک عضو دیگر منتقل کن.',
+        });
+        flash('برای حذف حساب، اول مالکیت خانه را منتقل کن', 'err');
+      } else {
+        flash('حذف نشد — دوباره امتحان کن', 'err');
+      }
       setAccountBusy(false);
     }
   }, [logout, navigate, flash]);
+
+  const openHouseholdOwnership = useCallback(() => {
+    navigate('/household');
+  }, [navigate]);
 
   const account = useMemo(() => ({ phone: me.data?.phone || '', email: me.data?.email || '' }), [me.data]);
 
@@ -297,6 +407,10 @@ export function useSettings() {
   if (serverConsent.isLoading || serverConsent.isFetching) consentStatus = 'loading';
   else if (serverConsent.isError || consentWriteUnknown) consentStatus = 'error';
   else if (!consentHydrated) consentStatus = 'loading';
+
+  let profileAnswersStatus = 'ready';
+  if (onboardingProfile.isLoading || onboardingProfile.isFetching) profileAnswersStatus = 'loading';
+  else if (onboardingProfile.isError || onboardingProfile.data?.status !== 'completed') profileAnswersStatus = 'error';
 
   const refetch = useCallback(() => {
     setConsentHydrated(false);
@@ -310,7 +424,8 @@ export function useSettings() {
     me.refetch();
     prefs.refetch();
     serverConsent.refetch();
-  }, [me, prefs, serverConsent]);
+    onboardingProfile.refetch();
+  }, [me, prefs, serverConsent, onboardingProfile]);
 
   return {
     status,
@@ -318,10 +433,20 @@ export function useSettings() {
     refetch,
     patternOptions: PATTERN_OPTIONS,
     allergenOptions: ONBOARDING_ALLERGEN_OPTIONS,
+    cooktimeOptions: COOKTIME_OPTIONS,
+    cooksForOptions: COOKS_FOR_OPTIONS,
+    dietaryRuleOptions: DIETARY_RULE_OPTIONS,
     legacyAllergenOptions: legacyAllergens.map((id) => ALLERGEN_BY_ID.get(id)).filter(Boolean),
     pattern, allergens, choosePattern, toggleAllergen, removeLegacyAllergen,
+    profileAnswersStatus,
+    weekdayTimeBucket, setWeekdayTimeBucket,
+    cooksForCount, setCooksForCount,
+    dietaryRules, toggleDietaryRule,
+    profileAnswersDirty,
+    profileAnswersBusy,
+    saveProfileAnswers,
     consent, consentActive, consentRuntimeAvailable, toggleConsent, consentBusy,
-    account, exportData, deleteAccount,
-    busy: preferenceBusy || accountBusy, toast,
+    account, exportData, deleteAccount, accountDeletionBlocker, openHouseholdOwnership,
+    busy: preferenceBusy || profileAnswersBusy || accountBusy, toast,
   };
 }

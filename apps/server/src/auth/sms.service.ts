@@ -4,7 +4,24 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 
-const MELIPAYAMAK_ERROR_CODES = new Set([0, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 17, 35]);
+const MELIPAYAMAK_ERROR_CODES = new Set([
+  '0',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '9',
+  '10',
+  '11',
+  '12',
+  '14',
+  '15',
+  '16',
+  '17',
+  '35',
+]);
 
 function maskPhone(phone: string) {
   return phone.length >= 6
@@ -13,9 +30,15 @@ function maskPhone(phone: string) {
 }
 
 function devOtpLogEnabled() {
-  const nodeEnv = String(process.env.NODE_ENV || '').trim().toLowerCase();
-  return String(process.env.SMS_DEV_LOG_OTP || '').trim().toLowerCase() === 'true'
-    && (nodeEnv === 'development' || nodeEnv === 'test');
+  const nodeEnv = String(process.env.NODE_ENV || '')
+    .trim()
+    .toLowerCase();
+  return (
+    String(process.env.SMS_DEV_LOG_OTP || '')
+      .trim()
+      .toLowerCase() === 'true' &&
+    (nodeEnv === 'development' || nodeEnv === 'test')
+  );
 }
 
 function providerTimeoutMs() {
@@ -59,6 +82,7 @@ export class SmsService {
       String(process.env.MELIPAYAMAK_ENABLED || '').toLowerCase() !== 'true'
     ) {
       if (devOtpLogEnabled()) {
+        // eslint-disable-next-line no-console
         console.info(
           `[dev-sms] melipayamak disabled ${maskPhone(phone)} code=${code}`,
         );
@@ -83,7 +107,9 @@ export class SmsService {
     if (provider === 'disabled') {
       if (devOtpLogEnabled()) {
         // eslint-disable-next-line no-console
-        console.info(`[dev-sms] password reset ${maskPhone(phone)} code=${code}`);
+        console.info(
+          `[dev-sms] password reset ${maskPhone(phone)} code=${code}`,
+        );
       }
       return;
     }
@@ -128,11 +154,14 @@ export class SmsService {
     params.set('to', phone);
     params.set('bodyId', bodyId);
 
-    const res = await providerFetch('https://api.payamak-panel.com/post/Send.asmx/SendByBaseNumber2', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params,
-    });
+    const res = await providerFetch(
+      'https://api.payamak-panel.com/post/Send.asmx/SendByBaseNumber2',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params,
+      },
+    );
     if (!res.ok) throw new ServiceUnavailableException('sms_send_failed');
     let body: string;
     try {
@@ -145,15 +174,13 @@ export class SmsService {
       /^\uFEFF?\s*(?:<\?xml[^>]*\?>\s*)?<string\b[^>]*>\s*([+-]?\d+)\s*<\/string>\s*$/i,
     );
     const receipt = match?.[1] ?? '';
-    const receiptNumber = Number(receipt);
     if (
       !/^[1-9]\d*$/.test(receipt)
-      || !Number.isSafeInteger(receiptNumber)
-      || MELIPAYAMAK_ERROR_CODES.has(receiptNumber)
+      || MELIPAYAMAK_ERROR_CODES.has(receipt)
     ) {
       throw new ServiceUnavailableException('sms_send_failed');
     }
 
-    this.logger.log(`melipayamak accepted receipt=${receipt}`);
+    this.logger.log('melipayamak accepted');
   }
 }

@@ -18,7 +18,11 @@ import {
   isOptionalPurposeRuntimeEnabled,
 } from '../consent/consent.constants';
 import { nextConsentDecisionTimestamp } from '../consent/optional-processing-transaction-boundary.service';
-import { CompleteOnboardingV2Dto, SaveOnboardingDraftDto } from './dto/onboarding-v2.dto';
+import {
+  CompleteOnboardingV2Dto,
+  SaveOnboardingDraftDto,
+  UpdateOnboardingProfilePreferencesDto,
+} from './dto/onboarding-v2.dto';
 import {
   COOKS_FOR_COUNT_BANDS,
   DIETARY_RULES,
@@ -26,6 +30,7 @@ import {
   ONBOARDING_SCHEMA_VERSION,
   OnboardingCompleteResponse,
   OnboardingMutationResponse,
+  OnboardingProfilePreferencesUpdateResponse,
   OnboardingV2View,
   SUPPORTED_ONBOARDING_ALLERGEN_IDS,
   TASTE_DISLIKE_LIMIT,
@@ -51,6 +56,16 @@ type NormalizedDraft = {
   safety?: NormalizedSafety;
   preferences?: { dietPattern?: string; weekdayTimeBucket?: string; cooksForCount?: string };
   taste?: { likedRecipeIds: string[]; dislikedRecipeIds: string[] };
+};
+
+type NormalizedProfilePreferencesUpdate = {
+  schemaVersion: 2;
+  idempotencyKey: string;
+  expectedRevision: number;
+  dietPattern: string;
+  weekdayTimeBucket: string;
+  cooksForCount: string;
+  dietaryRules: string[];
 };
 
 const SUPPORTED_ALLERGENS = new Set<string>(SUPPORTED_ONBOARDING_ALLERGEN_IDS);
@@ -270,6 +285,213 @@ export class OnboardingV2Service {
         // snapshots. The canonical profile remains the only draft data source.
         const response: OnboardingMutationResponse = {
           revision: Number(row.revision),
+          replayed: false,
+        };
+        await tx.onboardingMutation.create({
+          data: {
+            userId,
+            idempotencyKey: normalized.idempotencyKey,
+            operation,
+            requestHash: hash,
+            response: response as unknown as Prisma.InputJsonValue,
+          },
+        });
+        await this.trimMutationLedger(tx, userId);
+        return response;
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        const raced = await this.findReplay(userId, normalized.idempotencyKey, operation, hash);
+        if (raced) return { ...(raced as any), replayed: true };
+      }
+      if (error?.code === 'P2034') {
+        throw new ConflictException({ code: 'serialization_conflict_retry' });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Edit the durable, non-taste preferences after onboarding has completed.
+   * This deliberately does not reopen the onboarding draft: completion stays
+   * immutable, while the small editable projection is kept synchronized across
+   * every current consumer in one locked serializable transaction.
+   */
+  async updateProfilePreferences(
+    userId: string,
+    dto: UpdateOnboardingProfilePreferencesDto,
+  ): Promise<OnboardingProfilePreferencesUpdateResponse> {
+    const normalized = this.normalizeProfilePreferencesUpdate(dto);
+    const operation = 'profile:preferences';
+    const hash = requestHash(operation, normalized);
+
+    const replay = await this.findReplay(userId, normalized.idempotencyKey, operation, hash);
+    if (replay) {
+      return { ...(replay as any), replayed: true };
+    }
+
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        await tx.$executeRaw(Prisma.sql`SET LOCAL lock_timeout = '2000ms'`);
+        await tx.$executeRaw(Prisma.sql`SET LOCAL statement_timeout = '4500ms'`);
+        const lockedUsers = await tx.$queryRaw<Array<{ id: string }>>(
+          Prisma.sql`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`,
+        );
+        if (lockedUsers.length !== 1) {
+          throw new BadRequestException({ code: 'user_not_found' });
+        }
+
+        const inTransactionReplay = await this.findReplayTx(
+          tx,
+          userId,
+          normalized.idempotencyKey,
+          operation,
+          hash,
+        );
+        if (inTransactionReplay) {
+          return { ...(inTransactionReplay as any), replayed: true };
+        }
+
+        const [current, legacy] = await Promise.all([
+          tx.onboardingProfile.findUnique({ where: { userId } }),
+          this.legacySeed(tx, userId),
+        ]);
+        const effectiveCompletedAtRaw = current?.completedAt ?? legacy.completedAt;
+        if (!effectiveCompletedAtRaw) {
+          throw new ConflictException({ code: 'onboarding_not_completed' });
+        }
+        if (current && Number(current.schemaVersion) !== ONBOARDING_SCHEMA_VERSION) {
+          throw new ConflictException({ code: 'onboarding_schema_mismatch' });
+        }
+        const effectiveCompletedAt = new Date(effectiveCompletedAtRaw);
+        if (Number.isNaN(effectiveCompletedAt.getTime())) {
+          throw new InternalServerErrorException({ code: 'onboarding_completion_timestamp_invalid' });
+        }
+
+        const currentRevision = Number(current?.revision ?? 0);
+        if (normalized.expectedRevision !== currentRevision) {
+          throw new ConflictException({ code: 'revision_conflict', currentRevision });
+        }
+
+        await tx.userPreference.upsert({
+          where: { userId },
+          create: { userId, diet: normalized.dietPattern },
+          update: { diet: normalized.dietPattern },
+        });
+        await this.upsertDeclaredFact(
+          tx,
+          userId,
+          'dietary.cultural_constraints',
+          normalized.dietaryRules,
+          'onboarding_v2_profile_edit',
+        );
+        await this.upsertDeclaredFact(
+          tx,
+          userId,
+          'constraints.cooking_time_workday',
+          normalized.weekdayTimeBucket,
+          'onboarding_v2_profile_edit',
+        );
+        await this.upsertDeclaredFact(
+          tx,
+          userId,
+          'context.cooks_for_count',
+          normalized.cooksForCount,
+          'onboarding_v2_profile_edit',
+        );
+
+        await tx.onboardingProfile.upsert({
+          where: { userId },
+          create: {
+            userId,
+            schemaVersion: ONBOARDING_SCHEMA_VERSION,
+            revision: 1,
+            ...this.createDataFromLegacy(legacy),
+            dietaryRules: normalized.dietaryRules,
+            dietPattern: normalized.dietPattern,
+            weekdayTimeBucket: normalized.weekdayTimeBucket,
+            cooksForCount: normalized.cooksForCount,
+            completedAt: effectiveCompletedAt,
+          },
+          update: {
+            schemaVersion: ONBOARDING_SCHEMA_VERSION,
+            revision: { increment: 1 },
+            dietaryRules: normalized.dietaryRules,
+            dietPattern: normalized.dietPattern,
+            weekdayTimeBucket: normalized.weekdayTimeBucket,
+            cooksForCount: normalized.cooksForCount,
+            // Preserve the original completion timestamp. For an orphan V2 row
+            // beside a valid legacy marker, this heals the row without reopening it.
+            completedAt: effectiveCompletedAt,
+          },
+        });
+
+        // Both the dense vector and its normalized feature rows may contain the
+        // previous time preference. Their next read must rebuild from this commit.
+        await tx.userFeatureVector.deleteMany({ where: { userId } });
+        await tx.userFeature.deleteMany({ where: { userId } });
+
+        const [persistedProfile, persistedPreference, persistedFacts] = await Promise.all([
+          tx.onboardingProfile.findUnique({
+            where: { userId },
+            select: {
+              schemaVersion: true,
+              revision: true,
+              completedAt: true,
+              dietaryRules: true,
+              dietPattern: true,
+              weekdayTimeBucket: true,
+              cooksForCount: true,
+            },
+          }),
+          tx.userPreference.findUnique({ where: { userId }, select: { diet: true } }),
+          tx.userFact.findMany({
+            where: {
+              userId,
+              key: {
+                in: [
+                  'declared.dietary.cultural_constraints',
+                  'declared.constraints.cooking_time_workday',
+                  'declared.context.cooks_for_count',
+                ],
+              },
+            },
+            select: { key: true, value: true },
+          }),
+        ]);
+        const factValues = new Map(
+          persistedFacts.map((row: any) => [row.key, (row.value as any)?.v ?? row.value]),
+        );
+        const persistedCompletedAt = persistedProfile?.completedAt
+          ? new Date(persistedProfile.completedAt)
+          : null;
+        const profileMatches = Boolean(
+          persistedProfile
+          && Number(persistedProfile.schemaVersion) === ONBOARDING_SCHEMA_VERSION
+          && Number(persistedProfile.revision) === currentRevision + 1
+          && persistedCompletedAt
+          && persistedCompletedAt.getTime() === effectiveCompletedAt.getTime()
+          && persistedProfile.dietPattern === normalized.dietPattern
+          && persistedProfile.weekdayTimeBucket === normalized.weekdayTimeBucket
+          && persistedProfile.cooksForCount === normalized.cooksForCount
+          && stableJson(jsonArray(persistedProfile.dietaryRules)) === stableJson(normalized.dietaryRules)
+        );
+        const projectionsMatch = Boolean(
+          persistedPreference?.diet === normalized.dietPattern
+          && String(factValues.get('declared.constraints.cooking_time_workday') ?? '')
+            === normalized.weekdayTimeBucket
+          && String(factValues.get('declared.context.cooks_for_count') ?? '')
+            === normalized.cooksForCount
+          && stableJson(jsonArray(factValues.get('declared.dietary.cultural_constraints')))
+            === stableJson(normalized.dietaryRules)
+        );
+        if (!profileMatches || !projectionsMatch || !persistedCompletedAt) {
+          throw new InternalServerErrorException({ code: 'profile_preferences_commit_verification_failed' });
+        }
+
+        const response: OnboardingProfilePreferencesUpdateResponse = {
+          revision: Number(persistedProfile!.revision),
+          completedAt: persistedCompletedAt.toISOString(),
           replayed: false,
         };
         await tx.onboardingMutation.create({
@@ -645,6 +867,47 @@ export class OnboardingV2Service {
     }
   }
 
+  private normalizeProfilePreferencesUpdate(
+    dto: UpdateOnboardingProfilePreferencesDto,
+  ): NormalizedProfilePreferencesUpdate {
+    const normalized: NormalizedProfilePreferencesUpdate = {
+      schemaVersion: ONBOARDING_SCHEMA_VERSION,
+      idempotencyKey: String(dto.idempotencyKey),
+      expectedRevision: Number(dto.expectedRevision),
+      dietPattern: String(dto.dietPattern ?? '').trim().toLowerCase(),
+      weekdayTimeBucket: String(dto.weekdayTimeBucket ?? '').trim().toLowerCase(),
+      cooksForCount: String(dto.cooksForCount ?? '').trim().toLowerCase(),
+      dietaryRules: uniqueSorted(dto.dietaryRules),
+    };
+    if (Number(dto.schemaVersion) !== ONBOARDING_SCHEMA_VERSION) {
+      throw new BadRequestException({ code: 'onboarding_schema_mismatch' });
+    }
+    if (
+      !Number.isInteger(normalized.expectedRevision)
+      || normalized.expectedRevision < 0
+      || normalized.expectedRevision > 2_147_483_647
+    ) {
+      throw new BadRequestException({ code: 'invalid_expected_revision' });
+    }
+    if (!ALLOWED_DIETS.has(normalized.dietPattern)) {
+      throw new BadRequestException({ code: 'invalid_preferences' });
+    }
+    if (!ALLOWED_TIME_BUCKETS.has(normalized.weekdayTimeBucket)) {
+      throw new BadRequestException({ code: 'invalid_preferences' });
+    }
+    if (!ALLOWED_COOKS_FOR.has(normalized.cooksForCount)) {
+      throw new BadRequestException({ code: 'invalid_preferences' });
+    }
+    if (
+      !Array.isArray(dto.dietaryRules)
+      || normalized.dietaryRules.length !== dto.dietaryRules.length
+      || normalized.dietaryRules.some((rule) => !ALLOWED_RULES.has(rule))
+    ) {
+      throw new BadRequestException({ code: 'invalid_dietary_rules' });
+    }
+    return normalized;
+  }
+
   private normalizeDraft(dto: SaveOnboardingDraftDto): NormalizedDraft {
     const base = {
       schemaVersion: ONBOARDING_SCHEMA_VERSION,
@@ -809,12 +1072,18 @@ export class OnboardingV2Service {
     return { likedRecipeIds, dislikedRecipeIds };
   }
 
-  private async upsertDeclaredFact(tx: Tx, userId: string, dimension: string, value: string | string[]) {
+  private async upsertDeclaredFact(
+    tx: Tx,
+    userId: string,
+    dimension: string,
+    value: string | string[],
+    source = 'onboarding_v2',
+  ) {
     const key = `declared.${dimension}`;
     await tx.userFact.upsert({
       where: { userId_key: { userId, key } },
-      create: { userId, key, value: { v: value }, source: 'onboarding_v2', confidence: 1 },
-      update: { value: { v: value }, source: 'onboarding_v2', confidence: 1, expiresAt: null },
+      create: { userId, key, value: { v: value }, source, confidence: 1 },
+      update: { value: { v: value }, source, confidence: 1, expiresAt: null },
     });
   }
 

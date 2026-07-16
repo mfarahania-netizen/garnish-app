@@ -1,19 +1,21 @@
 import { useState, useRef, useEffect } from 'react';
 import { Box, Modal, Text, UnstyledButton } from '@mantine/core';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   IconSalad, IconShieldHalf, IconShieldLock, IconUserCircle, IconAdjustments,
   IconDeviceMobile, IconDownload, IconTrash, IconChevronLeft, IconAlertTriangle, IconPlus, IconCheck,
   IconInfoCircle, IconCloudOff, IconRefresh,
+  IconSparkles, IconClock, IconUsers,
 } from '@tabler/icons-react';
 import { useSettings } from './useSettings';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 
 const card = { background: 'var(--g-color-bg-surface)', border: '1px solid var(--g-color-border-subtle)', borderRadius: 'var(--g-radius-card)' };
-const SectionHead = ({ icon: Icon, children }) => (
+const SectionHead = ({ icon: Icon, children, id }) => (
   <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginInline: 2, marginBlock: 'var(--g-space-6) var(--g-space-3)' }}>
     <Icon size={17} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
-    <Text component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-16)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{children}</Text>
+    <Text id={id} component="h2" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-18)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>{children}</Text>
   </Box>
 );
 const subLabel = { fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 600, color: 'var(--g-color-text-secondary)' };
@@ -40,12 +42,12 @@ function ToggleRow({ label, sub, on, onClick, first, disabled = false }) {
   );
 }
 
-function Chip({ label, on, onClick, danger, ariaLabel }) {
+function Chip({ label, on, onClick, danger, ariaLabel, disabled = false }) {
   const fg = danger ? 'var(--g-color-allergen-fg)' : on ? 'var(--g-color-brand-700)' : 'var(--g-color-text-secondary)';
   const bg = danger ? 'var(--g-color-allergen-bg)' : on ? 'var(--g-color-brand-50)' : 'var(--g-color-bg-surface)';
   const bd = danger ? 'var(--g-color-allergen-fg)' : on ? 'var(--g-color-brand-600)' : 'var(--g-color-border-subtle)';
   return (
-    <UnstyledButton type="button" onClick={onClick} aria-pressed={on} aria-label={ariaLabel || label} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
+    <UnstyledButton type="button" onClick={onClick} disabled={disabled} aria-pressed={on} aria-label={ariaLabel || label} style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--g-space-1)', minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', border: `1px solid ${on ? bd : 'var(--g-color-border-subtle)'}`, background: on ? bg : 'var(--g-color-bg-surface)', color: on ? fg : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600, opacity: disabled ? 0.58 : 1 }}>
       {danger ? <IconAlertTriangle size={12} stroke={2} aria-hidden="true" style={{ opacity: on ? 1 : 0.6 }} /> : (on ? <IconCheck size={12} stroke={2.4} aria-hidden="true" /> : <IconPlus size={12} stroke={2} aria-hidden="true" />)}
       {label}
     </UnstyledButton>
@@ -54,7 +56,7 @@ function Chip({ label, on, onClick, danger, ariaLabel }) {
 
 function Seg({ active, label, soon, onClick }) {
   return (
-    <UnstyledButton type="button" onClick={onClick} aria-pressed={active} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', background: active ? 'var(--g-color-brand-600)' : 'transparent', color: active ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 600 }}>
+    <UnstyledButton type="button" onClick={onClick} aria-pressed={active} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-4)', borderRadius: 'var(--g-radius-chip)', background: active ? 'var(--g-color-brand-600)' : 'transparent', color: active ? 'var(--g-color-text-inverse)' : 'var(--g-color-text-secondary)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 600 }}>
       {label}{soon ? <Text component="span" style={{ fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}> · به‌زودی</Text> : null}
     </UnstyledButton>
   );
@@ -62,6 +64,8 @@ function Seg({ active, label, soon, onClick }) {
 
 export default function SettingsPage() {
   const s = useSettings();
+  const navigate = useNavigate();
+  const { hash } = useLocation();
   const [toast, setToast] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -73,6 +77,27 @@ export default function SettingsPage() {
     setToast({ message: s.toast.message, Icon: s.toast.icon === 'err' ? IconCloudOff : IconCheck });
     tt.current = setTimeout(() => setToast(null), 2200);
   }, [s.toast?.ts]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (s.status !== 'ready' || !hash) return undefined;
+    let id = '';
+    try { id = decodeURIComponent(hash.slice(1)); } catch { return undefined; }
+    if (!['food-profile', 'allergies', 'personalization-profile'].includes(id)) return undefined;
+
+    // The target does not exist while Settings is hydrating. Resolve it only
+    // after the ready content mounts, then focus without triggering a second
+    // browser scroll. The allowlist above avoids selector/hash injection.
+    const timer = window.setTimeout(() => {
+      const target = document.getElementById(id);
+      if (!target) return;
+      target.focus({ preventScroll: true });
+      if (typeof target.scrollIntoView === 'function') {
+        const reduceMotion = typeof window.matchMedia === 'function'
+          && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [hash, s.status]);
 
   const closeDeleteDialog = () => {
     if (s.busy) return;
@@ -103,35 +128,113 @@ export default function SettingsPage() {
     <Box style={{ display: 'flex', flexDirection: 'column' }}>
       <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockStart: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-3)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
         <Text component="h1" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-22)', fontWeight: 800, color: 'var(--g-color-text-primary)', margin: 0 }}>تنظیمات</Text>
+        <Text component="p" style={{ margin: 'var(--g-space-1) 0 0', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>پروفایل غذایی، حریم خصوصی و حساب را از یک‌جا مدیریت کن.</Text>
       </Box>
 
       <Box style={{ paddingInline: 'var(--g-space-4)', paddingBlockEnd: 'var(--g-space-8)' }}>
         {/* food profile */}
-        <Box id="food-profile" style={{ scrollMarginBlockStart: 80 }} />
-        <SectionHead icon={IconSalad}>پروفایل غذایی</SectionHead>
-        <Box style={{ ...card, padding: 'var(--g-space-4)' }}>
-          <Text component="div" style={{ ...subLabel, marginBlockEnd: 'var(--g-space-2)' }}>الگوی غذایی</Text>
-          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-            {s.patternOptions.map((p) => <Chip key={p.id} label={p.label} on={s.pattern === p.id} onClick={() => s.choosePattern(p.id)} />)}
-          </Box>
-          <Text component="div" style={{ ...subLabel, marginBlock: 'var(--g-space-5) var(--g-space-1)' }}>حساسیت‌ها</Text>
-          <Box id="allergies" style={{ scrollMarginBlockStart: 80 }} />
-          <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: '0 0 var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
-            <IconShieldHalf size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0, marginBlockStart: 1 }} />پرچمِ ایمنی — اطلاع‌رسانی، نه توصیهٔ پزشکی.
-          </Text>
-          <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-            {s.allergenOptions.map((a) => <Chip key={a.id} label={a.label} on={!!s.allergens[a.id]} onClick={() => s.toggleAllergen(a.id)} danger />)}
-          </Box>
-          {s.legacyAllergenOptions?.length ? (
-            <Box role="note" style={{ marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-warning-bg)' }}>
-              <Text component="p" style={{ margin: '0 0 var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-state-warning-fg)' }}>
-                این موارد از نسخهٔ قبلی حفظ شده‌اند، اما پوشش کامل دادهٔ دستورها هنوز تأیید نشده؛ مواد اولیه را هم بررسی کن. برای حذف، همان مورد را بزن.
+        <Box component="section" id="food-profile" tabIndex={-1} aria-labelledby="food-profile-title" style={{ scrollMarginBlockStart: 88, outline: 'none', boxShadow: 'none' }}>
+          <SectionHead id="food-profile-title" icon={IconSalad}>پروفایل غذایی</SectionHead>
+          <Box style={{ ...card, overflow: 'hidden' }}>
+            <Box role="note" style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', padding: 'var(--g-space-3) var(--g-space-4)', background: 'var(--g-color-state-info-bg)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+              <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ marginBlockStart: 2, color: 'var(--g-color-brand-700)', flexShrink: 0 }} />
+              <Text component="p" style={{ margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
+                الگوی غذایی و پرچم‌های ایمنی با هر انتخاب ذخیره می‌شوند. برای موارد پزشکی، برچسب مواد اولیه را هم بررسی کن.
               </Text>
+            </Box>
+            <Box style={{ padding: 'var(--g-space-4)' }}>
+              <Text component="h3" style={{ ...subLabel, fontSize: 'var(--g-font-size-14)', margin: '0 0 var(--g-space-2)' }}>الگوی غذایی</Text>
               <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
-                {s.legacyAllergenOptions.map((a) => <Chip key={a.id} label={`${a.label} · قدیمی`} ariaLabel={`حذف ${a.label}`} on onClick={() => s.removeLegacyAllergen(a.id)} danger />)}
+                {s.patternOptions.map((p) => <Chip key={p.id} label={p.label} on={s.pattern === p.id} onClick={() => s.choosePattern(p.id)} />)}
               </Box>
             </Box>
-          ) : null}
+            <Box id="allergies" tabIndex={-1} aria-labelledby="allergies-title" style={{ padding: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)', scrollMarginBlockStart: 88, outline: 'none', boxShadow: 'none' }}>
+              <Text id="allergies-title" component="h3" style={{ ...subLabel, fontSize: 'var(--g-font-size-14)', margin: '0 0 var(--g-space-1)' }}>حساسیت‌ها</Text>
+              <Text component="p" style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', margin: '0 0 var(--g-space-3)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>
+                <IconShieldHalf size={13} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-warning-fg)', flexShrink: 0, marginBlockStart: 1 }} />پرچمِ ایمنی — اطلاع‌رسانی، نه توصیهٔ پزشکی.
+              </Text>
+              <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                {s.allergenOptions.map((a) => <Chip key={a.id} label={a.label} on={!!s.allergens[a.id]} onClick={() => s.toggleAllergen(a.id)} danger />)}
+              </Box>
+              {s.legacyAllergenOptions?.length ? (
+                <Box role="note" style={{ marginBlockStart: 'var(--g-space-3)', padding: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-state-warning-bg)' }}>
+                  <Text component="p" style={{ margin: '0 0 var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-state-warning-fg)' }}>
+                    این موارد از نسخهٔ قبلی حفظ شده‌اند، اما پوشش کامل دادهٔ دستورها هنوز تأیید نشده؛ مواد اولیه را هم بررسی کن. برای حذف، همان مورد را بزن.
+                  </Text>
+                  <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                    {s.legacyAllergenOptions.map((a) => <Chip key={a.id} label={`${a.label} · قدیمی`} ariaLabel={`حذف ${a.label}`} on onClick={() => s.removeLegacyAllergen(a.id)} danger />)}
+                  </Box>
+                </Box>
+              ) : null}
+            </Box>
+          </Box>
+        </Box>
+
+        <Box component="section" id="personalization-profile" tabIndex={-1} aria-labelledby="personalization-profile-title" style={{ scrollMarginBlockStart: 88, outline: 'none', boxShadow: 'none' }}>
+          <SectionHead id="personalization-profile-title" icon={IconSparkles}>پاسخ‌های شخصی‌سازی</SectionHead>
+          {s.profileAnswersStatus === 'loading' ? (
+            <Box role="status" aria-label="در حال بارگذاری پاسخ‌های شخصی‌سازی" style={{ ...card, padding: 'var(--g-space-4)' }}>
+              <SkeletonLine w="55%" h={14} />
+              <SkeletonLine w="80%" h={12} style={{ marginBlockStart: 'var(--g-space-3)' }} />
+            </Box>
+          ) : s.profileAnswersStatus === 'error' ? (
+            <Box role="alert" style={{ ...card, display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', padding: 'var(--g-space-4)' }}>
+              <IconCloudOff size={20} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-state-danger-fg)', flexShrink: 0 }} />
+              <Text component="p" style={{ flex: 1, margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>پاسخ‌های قبلی تأیید نشدند؛ چیزی را حدس نمی‌زنیم.</Text>
+              <UnstyledButton type="button" onClick={s.refetch} style={{ minBlockSize: 44, paddingInline: 'var(--g-space-3)', color: 'var(--g-color-brand-700)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', fontWeight: 800 }}>تلاش دوباره</UnstyledButton>
+            </Box>
+          ) : (
+            <Box style={{ ...card, overflow: 'hidden' }}>
+              <Box role="note" style={{ display: 'flex', gap: 'var(--g-space-2)', alignItems: 'flex-start', padding: 'var(--g-space-3) var(--g-space-4)', background: 'var(--g-color-state-info-bg)', borderBlockEnd: '1px solid var(--g-color-border-subtle)' }}>
+                <IconInfoCircle size={16} stroke={1.8} aria-hidden="true" style={{ marginBlockStart: 2, color: 'var(--g-color-brand-700)', flexShrink: 0 }} />
+                <Text component="p" style={{ margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
+                  این پاسخ‌ها روی زمان دستورها و مقدار خرید اثر می‌گذارند؛ فقط چیزهایی را نگه دار که هنوز درست‌اند.
+                </Text>
+              </Box>
+              <Box style={{ padding: 'var(--g-space-4)' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlockEnd: 'var(--g-space-2)' }}>
+                  <IconClock size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
+                  <Text component="h3" style={{ ...subLabel, fontSize: 'var(--g-font-size-14)', margin: 0 }}>وقت معمول آشپزی در روزهای هفته</Text>
+                </Box>
+                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                  {s.cooktimeOptions.map((option) => <Chip key={option.id} label={option.label} on={s.weekdayTimeBucket === option.id} onClick={() => s.setWeekdayTimeBucket(option.id)} disabled={s.profileAnswersBusy} />)}
+                </Box>
+
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-2)', marginBlock: 'var(--g-space-5) var(--g-space-2)' }}>
+                  <IconUsers size={16} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
+                  <Text component="h3" style={{ ...subLabel, fontSize: 'var(--g-font-size-14)', margin: 0 }}>معمولاً برای چند نفر می‌پزی؟</Text>
+                </Box>
+                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                  {s.cooksForOptions.map((option) => <Chip key={option.id} label={option.label} on={s.cooksForCount === option.id} onClick={() => s.setCooksForCount(option.id)} disabled={s.profileAnswersBusy} />)}
+                </Box>
+
+                <Text component="h3" style={{ ...subLabel, fontSize: 'var(--g-font-size-14)', margin: 'var(--g-space-5) 0 var(--g-space-2)' }}>قاعدهٔ غذایی</Text>
+                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--g-space-2)' }}>
+                  {s.dietaryRuleOptions.map((option) => <Chip key={option.id} label={option.label} on={s.dietaryRules.includes(option.id)} onClick={() => s.toggleDietaryRule(option.id)} disabled={s.profileAnswersBusy} />)}
+                </Box>
+
+                {!s.pattern ? (
+                  <Text role="alert" component="p" style={{ margin: 'var(--g-space-4) 0 0', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-state-warning-fg)' }}>برای ذخیره، اول الگوی غذایی را در بخش بالا انتخاب کن.</Text>
+                ) : null}
+                <UnstyledButton
+                  type="button"
+                  onClick={() => { void s.saveProfileAnswers(); }}
+                  disabled={!s.profileAnswersDirty || !s.pattern || !s.weekdayTimeBucket || !s.cooksForCount || s.profileAnswersBusy}
+                  style={{ inlineSize: '100%', minBlockSize: 48, marginBlockStart: 'var(--g-space-4)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800, opacity: !s.profileAnswersDirty || !s.pattern || !s.weekdayTimeBucket || !s.cooksForCount || s.profileAnswersBusy ? 0.48 : 1 }}
+                >
+                  {s.profileAnswersBusy ? 'در حال ذخیره…' : s.profileAnswersDirty ? 'ذخیرهٔ پاسخ‌ها' : 'پاسخ‌ها ذخیره‌اند'}
+                </UnstyledButton>
+              </Box>
+              <UnstyledButton type="button" onClick={() => navigate('/food-dna')} style={{ display: 'flex', alignItems: 'center', gap: 'var(--g-space-3)', inlineSize: '100%', minBlockSize: 60, paddingInline: 'var(--g-space-4)', borderBlockStart: '1px solid var(--g-color-border-subtle)', textAlign: 'start' }}>
+                <IconSparkles size={19} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-brand-600)' }} />
+                <Box style={{ flex: 1 }}>
+                  <Text component="span" style={{ display: 'block', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>اصلاح ذائقه و دوست‌داشتنی‌ها</Text>
+                  <Text component="span" style={{ display: 'block', marginBlockStart: 2, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', color: 'var(--g-color-text-muted)' }}>از سؤال‌های کوتاه و بازخوردهای قابل‌برگشت استفاده کن.</Text>
+                </Box>
+                <IconChevronLeft size={18} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)' }} />
+              </UnstyledButton>
+            </Box>
+          )}
         </Box>
 
         {/* consent */}
@@ -220,10 +323,18 @@ export default function SettingsPage() {
         title="حذف دائمی حساب"
         styles={{ title: { fontFamily: 'var(--g-font-fa)', fontWeight: 800 }, body: { fontFamily: 'var(--g-font-fa)' } }}
       >
-        <Text id="delete-account-consequences" component="p" style={{ margin: '0 0 var(--g-space-4)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
+        <Text id="delete-account-consequences" component="p" style={{ margin: '0 0 var(--g-space-4)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-secondary)' }}>
           این کار برگشت‌پذیر نیست. حساب و داده‌های متصل حذف می‌شوند؛ رکوردهای الزامی ممیزی فقط به‌شکل بی‌هویت باقی می‌مانند.
         </Text>
-        <Text component="label" htmlFor="delete-account-confirmation" style={{ display: 'block', marginBlockEnd: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-13)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>
+        {s.accountDeletionBlocker?.kind === 'household_owner_transfer_required' ? (
+          <Box role="alert" style={{ padding: 'var(--g-space-3)', marginBlockEnd: 'var(--g-space-4)', border: '1px solid var(--g-color-brand-200)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-50)' }}>
+            <Text component="p" style={{ margin: 0, fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', color: 'var(--g-color-text-primary)' }}>{s.accountDeletionBlocker.message}</Text>
+            <UnstyledButton type="button" onClick={s.openHouseholdOwnership} style={{ minBlockSize: 44, marginBlockStart: 'var(--g-space-2)', paddingInline: 'var(--g-space-3)', borderRadius: 'var(--g-radius-input)', background: 'var(--g-color-brand-600)', color: 'var(--g-color-text-inverse)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 800 }}>
+              رفتن به اعضای خانه
+            </UnstyledButton>
+          </Box>
+        ) : null}
+        <Text component="label" htmlFor="delete-account-confirmation" style={{ display: 'block', marginBlockEnd: 'var(--g-space-2)', fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-14)', fontWeight: 700, color: 'var(--g-color-text-primary)' }}>
           برای تأیید، عبارت «حذف حساب» را بنویس.
         </Text>
         <input

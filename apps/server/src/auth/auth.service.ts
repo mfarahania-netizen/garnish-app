@@ -268,20 +268,41 @@ export class AuthService {
       if (existingUser?.isBanned) {
         throw new UnauthorizedException('حساب شما مسدود شده است. برای پیگیری با پشتیبانی تماس بگیرید.');
       }
+      const claimingUnverifiedExistingPhone = Boolean(
+        existingUser && !existingUser.phoneVerifiedAt,
+      );
 
       // Native upsert closes the phone-unique creation race with another auth
       // flow. Only the OTP claimant reaches this point; an independently
       // created account is adopted without exposing a P2002/500 to the client.
-      const updatedUser = await tx.user.upsert({
+      let updatedUser = await tx.user.upsert({
         where: { phone: normalizedPhone },
         create: {
           phone: normalizedPhone,
+          phoneVerifiedAt: claimedAt,
           password: null,
           isGuest: false,
           name: name?.trim() || undefined,
         },
-        update: { isGuest: false, deviceKey: null },
+        update: {
+          isGuest: false,
+          deviceKey: null,
+          phoneVerifiedAt: claimedAt,
+          ...(claimingUnverifiedExistingPhone
+            ? { password: null, sessionEpoch: { increment: 1 } }
+            : {}),
+        },
       });
+      // If a legacy password registration inserted this phone after the
+      // pre-upsert lookup but before the upsert, the update branch returns a
+      // password even though existingUser was null. Claim it in the same
+      // transaction and invalidate the attacker's already-issued JWT epoch.
+      if (!existingUser && updatedUser.password) {
+        updatedUser = await tx.user.update({
+          where: { id: updatedUser.id },
+          data: { password: null, sessionEpoch: { increment: 1 } },
+        });
+      }
       await tx.authOtpCode.updateMany({
         where: { phone: normalizedPhone, purpose: 'login', consumedAt: null, id: { not: otp.id } },
         data: { consumedAt: claimedAt },

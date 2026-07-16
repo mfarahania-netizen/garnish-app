@@ -13,6 +13,7 @@
 export interface SafeUser {
   id: string;
   phone: string;
+  phoneVerified?: boolean;
   name: string | null;
   email?: string | null;
   avatar?: string | null;
@@ -54,6 +55,7 @@ export function sanitizeUser(
   if (!('onboardingComplete' in out)) {
     out.onboardingComplete = Boolean(user.onboardingCompletedAt);
   }
+  out.phoneVerified = Boolean(user.phone && user.phoneVerifiedAt);
   if (!('avatarUrl' in out) && user.avatar) {
     out.avatarUrl = user.avatar;
   }

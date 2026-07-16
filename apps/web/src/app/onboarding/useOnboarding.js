@@ -403,6 +403,13 @@ export function useOnboarding() {
         if (serverCompleted) {
           setAlreadyCompleted(true);
           setStep(RESULT_STEP);
+        } else if (sessionDraft?.step === RESULT_STEP) {
+          // The result screen is server-authoritative. A stale tab/session from an
+          // older build must not strand an incomplete account in a finish -> guard
+          // -> finish loop. Keep the restored answers, but return to the review
+          // boundary so the user can submit the canonical completion command.
+          setAlreadyCompleted(false);
+          setStep(REVIEW_STEP);
         } else if (!available && sessionDraft?.step === 5) {
           setStep(REVIEW_STEP);
         }

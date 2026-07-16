@@ -17,8 +17,14 @@ vi.mock('../lib/apiClient', () => ({ default: { get: vi.fn() } }));
 vi.mock('@mantine/hooks', () => ({ useReducedMotion: () => true }));
 
 vi.mock('./navConfig', () => ({
-  DRAWER_PRIMARY: [{ to: '/', label: 'خانه', Icon: () => null, end: true }],
-  DRAWER_SECONDARY: [],
+  DRAWER_HOUSEHOLD: {
+    to: '/household',
+    label: 'خرید باهم',
+    description: 'لیست مشترک و تصمیم سریع برای خرید',
+    Icon: () => null,
+  },
+  DRAWER_PRIMARY: [{ to: '/recipes', label: 'دستورها', Icon: () => null }],
+  DRAWER_SECONDARY: [{ to: '/settings', label: 'تنظیمات', Icon: () => null }],
 }));
 
 vi.mock('@mantine/core', () => ({
@@ -34,6 +40,7 @@ vi.mock('@tabler/icons-react', () => ({
   IconLogout: () => null,
   IconLayoutDashboard: () => null,
   IconLogin2: () => null,
+  IconChevronLeft: () => null,
 }));
 
 function mount() {
@@ -59,5 +66,14 @@ describe('NavDrawer launch auth behavior', () => {
     expect(screen.queryByText('خروج از حالت دمو')).not.toBeInTheDocument();
     expect(screen.getByText('خروج')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'خروج از حساب' })).toBeInTheDocument();
+  });
+
+  it('renders a featured shared-shopping entry and clear menu groups', () => {
+    mount();
+    expect(screen.getByRole('link', { name: /خرید باهم/ })).toHaveAttribute('href', '/household');
+    expect(screen.getByText('غذا و سلیقه')).toBeInTheDocument();
+    expect(screen.getByText('حساب و پشتیبانی')).toBeInTheDocument();
+    expect(screen.getByText('دستورها')).toBeInTheDocument();
+    expect(screen.getByText('تنظیمات')).toBeInTheDocument();
   });
 });

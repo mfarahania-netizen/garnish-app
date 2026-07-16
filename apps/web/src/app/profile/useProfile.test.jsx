@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // REAL-hook test (not a hook-mock smoke test): it executes the actual useProfile body so the
@@ -42,7 +42,9 @@ describe('useProfile (real hook)', () => {
     expect(result.current.known.allergens.length).toBe(2);
     expect(result.current.progress).not.toBeNull();
     expect(result.current.progress.totalCooks).toBe(5);
-    expect(result.current.control.personalizationGranted).toBe(true);
+    expect(result.current.known.status).toBe('ready');
+    expect(result.current.control.allergyGuardStatus).toBe('active');
+    expect(result.current.control.personalizationStatus).toBe('active');
   });
 
   it('stays ready + degrades when /gamification/me fails (progress=null, allergens still ok)', async () => {
@@ -52,5 +54,27 @@ describe('useProfile (real hook)', () => {
     expect(result.current.progress).toBeNull();
     expect(Array.isArray(result.current.known.allergens)).toBe(true);
     expect(result.current.header.cooksText).toBe('');
+  });
+
+  it('never presents a failed preferences read as no declared allergy', async () => {
+    get.mockImplementation((url) => (url === '/users/preferences' ? Promise.reject(new Error('500')) : routeOk(url)));
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    await waitFor(() => expect(result.current.known.status).toBe('unavailable'));
+    expect(result.current.status).toBe('ready');
+    expect(result.current.known.allergens).toEqual([]);
+    expect(result.current.control.allergyGuardStatus).toBe('unavailable');
+    expect(result.current.control.allergyGuardStatus).not.toBe('inactive');
+  });
+
+  it('marks consent as unavailable and includes it in the profile retry', async () => {
+    get.mockImplementation((url) => (url === '/users/consent' ? Promise.reject(new Error('500')) : routeOk(url)));
+    const { result } = renderHook(() => useProfile(), { wrapper });
+
+    await waitFor(() => expect(result.current.control.personalizationStatus).toBe('unavailable'));
+    const before = get.mock.calls.filter(([url]) => url === '/users/consent').length;
+    act(() => { result.current.refetch(); });
+    await waitFor(() => expect(get.mock.calls.filter(([url]) => url === '/users/consent').length).toBeGreaterThan(before));
+    expect(result.current.control.personalizationStatus).not.toBe('inactive');
   });
 });

@@ -167,15 +167,23 @@ describe('Onboarding V2 UI', () => {
     }
 
     const view = renderWithProviders(<TransitionHarness />);
-    await waitFor(() => expect(
-      view.container.querySelector('[data-onboarding-panel="2"] [data-onboarding-heading]'),
-    ).toHaveFocus());
+    await waitFor(() => {
+      const safetyHeading = view.container.querySelector(
+        '[data-onboarding-panel="2"] [data-onboarding-heading]',
+      );
+      expect(safetyHeading).toHaveAttribute('tabindex', '-1');
+      expect(safetyHeading).toHaveFocus();
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'test-next-step' }));
 
-    await waitFor(() => expect(
-      view.container.querySelector('[data-onboarding-panel="3"] [data-onboarding-heading]'),
-    ).toHaveFocus());
+    await waitFor(() => {
+      const dietHeading = view.container.querySelector(
+        '[data-onboarding-panel="3"] [data-onboarding-heading]',
+      );
+      expect(dietHeading).toHaveAttribute('tabindex', '-1');
+      expect(dietHeading).toHaveFocus();
+    });
   });
 
   it('collects time and household size with equal choices', () => {

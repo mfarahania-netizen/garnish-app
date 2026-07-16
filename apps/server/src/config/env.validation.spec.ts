@@ -59,6 +59,17 @@ describe('validateEnv (E1 fail-fast)', () => {
     expect(() => validateEnv({ ...valid, SMS_DEV_LOG_OTP: 'false' } as any)).not.toThrow();
   });
 
+  it('keeps Household v1 default-off and requires an independent strong invite pepper when enabled', () => {
+    expect(() => validateEnv({ ...valid } as any)).not.toThrow();
+    expect(() => validateEnv({ ...valid, HOUSEHOLD_V1_ENABLED: 'true' } as any)).toThrow('exit:1');
+    expect(() => validateEnv({
+      ...valid,
+      HOUSEHOLD_V1_ENABLED: 'true',
+      HOUSEHOLD_INVITE_PEPPER: 'h'.repeat(32),
+    } as any)).not.toThrow();
+    expect(() => validateEnv({ ...valid, HOUSEHOLD_V1_ENABLED: 'yes' } as any)).toThrow('exit:1');
+  });
+
   it.each([
     ['OTP_TTL_SECONDS', '29'],
     ['OTP_RESEND_COOLDOWN_SECONDS', '601'],

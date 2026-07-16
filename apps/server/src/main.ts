@@ -55,7 +55,7 @@ async function bootstrap() {
     // This stays narrow (no wildcard) but prevents Vite's 127.0.0.1 URL from breaking browser auth via CORS.
     origin: resolveCorsOrigins(env.FRONTEND_URL),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: 'Content-Type, Authorization, Idempotency-Key',
     credentials: true,
   });
 

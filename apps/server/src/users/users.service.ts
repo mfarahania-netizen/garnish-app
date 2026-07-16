@@ -69,30 +69,16 @@ export class UsersService {
 
   private withVerifiedOnboardingState<T extends Record<string, any> | null>(user: T): T {
     if (!user) return user;
-    const declaredAllergyCount = Number(user?._count?.allergies ?? 0);
-    const decisions = Array.isArray(user?.userConsents) ? user.userConsents : [];
-    // Completion is historical truth, not current optional-processing authorization.
-    // A later Settings grant/decline/withdrawal must never reopen onboarding or make
-    // withdrawal conditional on answering the same questions again. V2 has an
-    // immutable completion row; the historical pair remains the compatibility proof
-    // for the atomic legacy command.
+    // Completion is historical navigation state, not a safety authorization.
+    // Legacy users were already allowed to complete before the V2 profile and
+    // consent rows existed. Requiring those newer proofs here contradicts
+    // OnboardingV2Service (which restores onboardingCompletedAt as completed) and
+    // traps legitimate users in /profile -> /onboarding -> finish loops. Safety and
+    // personalization remain fail-closed in their own preference/consent gates.
     const v2CompletionProof = Boolean(user?.onboardingProfile?.completedAt);
-    const onboardingTermsProof = decisions.some((row: any) =>
-      row?.purpose === 'terms'
-      && row?.status === 'granted'
-      && row?.source === 'onboarding');
-    const onboardingPersonalizationDecisionProof = decisions.some((row: any) =>
-      row?.purpose === 'personalization'
-      && ['granted', 'declined'].includes(row?.status)
-      && row?.source === 'onboarding');
-    const atomicDecisionProof = onboardingTermsProof
-      && onboardingPersonalizationDecisionProof;
     return {
       ...user,
-      onboardingComplete: Boolean(
-        v2CompletionProof
-        || (user.onboardingCompletedAt && (declaredAllergyCount > 0 || atomicDecisionProof)),
-      ),
+      onboardingComplete: Boolean(v2CompletionProof || user.onboardingCompletedAt),
     };
   }
 
@@ -135,6 +121,7 @@ export class UsersService {
       select: {
         id: true,
         phone: true,
+        phoneVerifiedAt: true,
         name: true,
         email: true,
         avatar: true,
@@ -431,6 +418,7 @@ export class UsersService {
     return {
       id: true,
       phone: true,
+      phoneVerifiedAt: true,
       name: true,
       email: true,
       avatar: true,

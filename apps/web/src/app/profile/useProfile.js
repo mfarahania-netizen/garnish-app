@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { queryKeys } from '../../lib/queryKeys';
 import { toFaDigits } from '../../components/ges/format';
 import { traitsFromProfile, dimensionBreakdown, tasteReconciliation, faAllergen } from '../home/lib/reasons';
+import { householdApi } from '../household/householdApi';
+import { isHouseholdV1Enabled } from '../household/feature';
 
 /**
  * useProfile — the «تو» screen's data, all from real owner-scoped reads (no fabrication):
@@ -12,6 +14,7 @@ import { traitsFromProfile, dimensionBreakdown, tasteReconciliation, faAllergen 
  *   GET /profile         → maturity (band, overallScore) + observed dimension confidences + reconciliation
  *   GET /gamification/me → streak (weeks) + cooked count + earned badges (private; no leaderboard)
  *   GET /users/preferences → declared allergies (the active safety flag) + top dietary pattern
+ *   GET /households       → honest shared-home status and profile entry point
  */
 
 const BAND_SHORT = { empty: 'تازه شروع شده', forming: 'در حال شکل‌گیری', developing: 'در حال رشد', mature: 'پخته و روشن' };
@@ -35,12 +38,18 @@ function memberSince(createdAt) {
 export function useProfile() {
   const { token } = useAuth();
   const enabled = !!token;
+  const householdEnabled = isHouseholdV1Enabled();
 
   const me = useQuery({ queryKey: queryKeys.me, queryFn: () => apiClient.get('/users/me').then((r) => r.data), enabled });
   const profile = useQuery({ queryKey: queryKeys.profile.living, queryFn: () => apiClient.get('/profile').then((r) => r.data), enabled });
   const gamification = useQuery({ queryKey: queryKeys.gamificationMe, queryFn: () => apiClient.get('/gamification/me').then((r) => r.data), enabled });
   const prefs = useQuery({ queryKey: queryKeys.preferences, queryFn: () => apiClient.get('/users/preferences').then((r) => r.data), enabled });
   const consent = useQuery({ queryKey: queryKeys.consent, queryFn: () => apiClient.get('/users/consent').then((r) => r.data), enabled });
+  const households = useQuery({
+    queryKey: ['household', 'list'],
+    queryFn: householdApi.listHouseholds,
+    enabled: enabled && householdEnabled,
+  });
 
   return useMemo(() => {
     // Critical reads = identity (/users/me) + taste profile (/profile). Gamification + preferences are
@@ -53,7 +62,13 @@ export function useProfile() {
     else if (criticalError || !me.data) status = 'error';
 
     if (status !== 'ready') {
-      return { status, refetch: () => { me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); } };
+      return {
+        status,
+        refetch: () => {
+          me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); consent.refetch();
+          if (householdEnabled) households.refetch();
+        },
+      };
     }
 
     const name = (me.data?.name || '').trim() || 'تو';
@@ -72,13 +87,41 @@ export function useProfile() {
     const since = memberSince(me.data?.createdAt);
 
     // «آنچه از تو می‌دانیم»
-    const dietId = prefs.data?.diet || null;
+    const preferenceState = prefs.isLoading
+      ? 'loading'
+      : prefs.isError || !prefs.data
+        ? 'unavailable'
+        : 'ready';
+    const personalizationState = consent.isLoading
+      ? 'loading'
+      : consent.isError || !consent.data
+        ? 'unavailable'
+        : consent.data?.purposes?.personalization?.granted === true
+          ? 'active'
+          : 'inactive';
+    const dietId = preferenceState === 'ready' ? (prefs.data?.diet || null) : null;
     const dietLabel = dietId ? (DIET_FA[dietId] || null) : null;
-    const allergies = (Array.isArray(prefs.data?.allergies) ? prefs.data.allergies : []).map(faAllergen).filter(Boolean);
+    const allergies = preferenceState === 'ready'
+      ? (Array.isArray(prefs.data?.allergies) ? prefs.data.allergies : []).map(faAllergen).filter(Boolean)
+      : [];
+    const householdList = Array.isArray(households.data?.households) ? households.data.households : [];
+    const activeHousehold = householdList[0] || null;
+    const householdStatus = !householdEnabled
+      ? 'disabled'
+      : households.isLoading
+        ? 'loading'
+        : households.isError
+          ? 'unavailable'
+          : activeHousehold
+            ? 'active'
+            : 'empty';
 
     return {
       status,
-      refetch: () => { me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); },
+      refetch: () => {
+        me.refetch(); profile.refetch(); gamification.refetch(); prefs.refetch(); consent.refetch();
+        if (householdEnabled) households.refetch();
+      },
       header: {
         name,
         avatar: me.data?.avatar || null,
@@ -101,6 +144,7 @@ export function useProfile() {
       // than zeroed stat cards that would read as "you've done nothing".
       progress: gamOk ? { streakWeeks, totalCooks: totalCooks ?? 0, badges } : null,
       known: {
+        status: preferenceState,
         // only a REAL localized dietary pattern — never shoehorn a behaviour trait into a diet claim
         dietLabel,
         // every declared allergen (localized) — a safety flag, none silently hidden
@@ -111,7 +155,19 @@ export function useProfile() {
         personalizationGranted: consent.data?.purposes?.personalization?.granted === true,
         maturityLabel: BAND_SHORT[band] || 'در حال شکل‌گیری',
         maturityTone: band === 'developing' || band === 'mature' ? 'ok' : 'muted',
+        allergyGuardStatus: preferenceState === 'ready'
+          ? (allergies.length > 0 ? 'active' : 'inactive')
+          : preferenceState,
+        personalizationStatus: personalizationState,
+      },
+      household: {
+        status: householdStatus,
+        name: activeHousehold?.name || null,
+        role: activeHousehold?.role || null,
+        memberCount: activeHousehold?.memberCount || 0,
+        count: householdList.length,
+        refresh: households.refetch,
       },
     };
-  }, [me.data, me.isLoading, me.isError, profile.data, profile.isLoading, profile.isError, gamification.data, gamification.isLoading, gamification.isError, prefs.data, consent.data, me, profile, gamification, prefs, consent]);
+  }, [me, profile, gamification, prefs, consent, households, householdEnabled]);
 }

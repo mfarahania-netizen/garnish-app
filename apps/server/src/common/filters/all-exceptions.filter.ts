@@ -28,6 +28,21 @@ import { randomUUID } from 'crypto';
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger('Exception');
 
+  private logPath(req: Request): string {
+    const routePath = (req as Request & { route?: { path?: unknown } }).route
+      ?.path;
+    if (typeof routePath === 'string' && routePath.length <= 300) {
+      return routePath;
+    }
+    return String(req.path || req.url || '/')
+      .split('?')[0]
+      .replace(
+        /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi,
+        ':id',
+      )
+      .slice(0, 300);
+  }
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
@@ -41,6 +56,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     let message: string | string[] = 'Internal server error';
     let error = 'InternalServerError';
+    let code: string | undefined;
+    let currentVersion: number | undefined;
 
     if (exception instanceof HttpException) {
       const body = exception.getResponse();
@@ -51,10 +68,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const b = body as Record<string, unknown>;
         message = (b.message as string | string[]) ?? exception.message;
         error = (b.error as string) ?? exception.name;
+        if (
+          typeof b.code === 'string' &&
+          /^[a-z0-9_]{1,80}$/.test(b.code)
+        ) {
+          code = b.code;
+        }
+        if (
+          typeof b.currentVersion === 'number' &&
+          Number.isSafeInteger(b.currentVersion) &&
+          b.currentVersion > 0
+        ) {
+          currentVersion = b.currentVersion;
+        }
       }
     }
 
-    const logLine = `${req.method} ${req.url} -> ${status} traceId=${traceId}`;
+    const logLine = `${req.method} ${this.logPath(req)} -> ${status} traceId=${traceId}`;
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         logLine,
@@ -71,6 +101,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       path: req.url,
       timestamp: new Date().toISOString(),
       traceId,
+      ...(code ? { code } : {}),
+      ...(currentVersion ? { currentVersion } : {}),
     });
   }
 }

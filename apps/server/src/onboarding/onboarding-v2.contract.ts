@@ -75,6 +75,15 @@ export interface OnboardingMutationResponse {
   replayed: boolean;
 }
 
+/**
+ * Metadata-only response for post-completion preference edits. Answer values
+ * stay out of the bounded idempotency ledger; the client already owns the
+ * submitted snapshot and can refresh the canonical view when needed.
+ */
+export interface OnboardingProfilePreferencesUpdateResponse extends OnboardingMutationResponse {
+  completedAt: string;
+}
+
 export interface OnboardingCompleteResponse {
   profileRevision: number;
   completedAt: string;

@@ -43,4 +43,42 @@ describe('AllExceptionsFilter (E7)', () => {
     expect(body.message).toBe('Internal server error');
     expect(JSON.stringify(body)).not.toContain('boom secret detail');
   });
+
+  it('preserves only allow-listed machine-readable conflict fields', () => {
+    const { host, json } = makeHost({ method: 'PATCH', url: '/households/x' });
+    filter.catch(
+      new BadRequestException({
+        code: 'version_conflict',
+        currentVersion: 3,
+        secret: 'must-not-leak',
+      }),
+      host,
+    );
+
+    const body = json.mock.calls[0][0];
+    expect(body).toMatchObject({
+      statusCode: 400,
+      code: 'version_conflict',
+      currentVersion: 3,
+    });
+    expect(body.secret).toBeUndefined();
+  });
+
+  it('redacts UUID path parameters and query values from operational logs', () => {
+    const warn = Logger.prototype.warn as jest.Mock;
+    warn.mockClear();
+    const uuid = '123e4567-e89b-42d3-a456-426614174000';
+    const { host } = makeHost({
+      method: 'GET',
+      url: `/households/${uuid}/invites?token=private`,
+      path: `/households/${uuid}/invites`,
+    });
+
+    filter.catch(new BadRequestException('bad input'), host);
+
+    const logged = String(warn.mock.calls[0][0]);
+    expect(logged).toContain('/households/:id/invites');
+    expect(logged).not.toContain(uuid);
+    expect(logged).not.toContain('private');
+  });
 });

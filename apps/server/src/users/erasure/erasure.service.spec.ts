@@ -12,14 +12,26 @@ describe('ErasureService (E39-1C)', () => {
 
   /** Build a mock tx client that records call order and returns deterministic counts. */
   function makeTx(order: string[]) {
+    let lockCount = 0;
     return {
+      $queryRaw: jest.fn(async (_a: unknown) => {
+        order.push(lockCount++ === 0 ? 'userLock' : 'householdLock');
+        return [];
+      }),
+      household: {
+        findMany: jest.fn(async (_a: unknown) => { order.push('householdCheck'); return []; }),
+        deleteMany: jest.fn(async (_a: unknown) => { order.push('householdDelete'); return { count: 0 }; }),
+      },
       userSession: { deleteMany: jest.fn(async (_a: unknown) => { order.push('session'); return { count: 2 }; }) },
       recipePrior: { deleteMany: jest.fn(async (_a: unknown) => { order.push('recipePrior'); return { count: 7 }; }) },
       consentLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('consent'); return { count: 3 }; }) },
       userAuditLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('audit'); return { count: 4 }; }) },
       dataAccessLog: { updateMany: jest.fn(async (_a: unknown) => { order.push('access'); return { count: 5 }; }) },
       erasureEvent: { create: jest.fn(async (_a: { data: Record<string, unknown> }) => { order.push('event'); return { id: 'evt-1' }; }) },
-      user: { delete: jest.fn(async (_a: unknown) => { order.push('delete'); return { id: USER_ID }; }) },
+      user: {
+        findUnique: jest.fn(async () => ({ id: USER_ID })),
+        delete: jest.fn(async (_a: unknown) => { order.push('delete'); return { id: USER_ID }; }),
+      },
       // Cascade/SetNull tables the service must NOT touch explicitly (DB handles them on user.delete):
       chatMessage: { deleteMany: jest.fn() },
       userFact: { deleteMany: jest.fn() },
@@ -45,14 +57,14 @@ describe('ErasureService (E39-1C)', () => {
 
     const result = await service.eraseUser(USER_ID);
 
-    expect(order).toEqual(['session', 'recipePrior', 'consent', 'audit', 'access', 'event', 'delete']);
+    expect(order).toEqual(['userLock', 'householdLock', 'householdCheck', 'householdDelete', 'session', 'recipePrior', 'consent', 'audit', 'access', 'event', 'delete']);
     expect(order[order.length - 1]).toBe('delete'); // user.delete strictly last
     expect(tx.user.delete).toHaveBeenCalledWith({ where: { id: USER_ID } });
     // L1 step 4 — no-FK RecipePrior person rows must be erased explicitly (they do NOT cascade)
     expect(tx.recipePrior.deleteMany).toHaveBeenCalledWith({ where: { scope: 'person', scopeKey: USER_ID } });
     expect(result.status).toBe('erased');
     expect(result.erasureEventId).toBe('evt-1');
-    expect(result.summary).toEqual({ sessionsRevoked: 2, consentScrubbed: 3, auditScrubbed: 4, accessScrubbed: 5, recipePriorRowsDeleted: 7 });
+    expect(result.summary).toEqual({ householdRowsDeleted: 0, sessionsRevoked: 2, consentScrubbed: 3, auditScrubbed: 4, accessScrubbed: 5, recipePriorRowsDeleted: 7 });
   });
 
   it('scrubs residual PII on the surviving audit-long records (null-out, scoped by userId)', async () => {
@@ -87,6 +99,7 @@ describe('ErasureService (E39-1C)', () => {
     // metadata = counts + actor code only (no email/phone/name/raw text)
     expect(arg.data.metadata).toEqual({
       requestedBy: 'self',
+      householdRowsDeleted: 0,
       sessionsRevoked: 2,
       consentScrubbed: 3,
       auditScrubbed: 4,
@@ -124,6 +137,54 @@ describe('ErasureService (E39-1C)', () => {
 
     expect(result).toEqual({ status: 'not_found', erasureEventId: null, summary: {} });
     expect(prisma.$transaction).not.toHaveBeenCalled();
+    expect(tx.user.delete).not.toHaveBeenCalled();
+  });
+
+  it('returns not_found without destructive work when the user disappears before the transaction lock', async () => {
+    const order: string[] = [];
+    const { prisma, tx } = makePrisma(order);
+    (tx.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
+
+    const result = await new ErasureService(prisma as never).eraseUser(USER_ID);
+
+    expect(result).toEqual({ status: 'not_found', erasureEventId: null, summary: {} });
+    expect(order).toEqual(['userLock']);
+    expect(tx.household.findMany).not.toHaveBeenCalled();
+    expect(tx.userSession.deleteMany).not.toHaveBeenCalled();
+    expect(tx.user.delete).not.toHaveBeenCalled();
+  });
+
+  it('deletes an owner-only household inside the transaction before erasing its owner', async () => {
+    const order: string[] = [];
+    const { prisma, tx } = makePrisma(order);
+    (tx.household.findMany as jest.Mock).mockImplementationOnce(async () => {
+      order.push('householdCheck');
+      return [{ id: 'h1', _count: { memberships: 0 } }];
+    });
+    tx.household.deleteMany.mockResolvedValueOnce({ count: 1 });
+
+    const result = await new ErasureService(prisma as never).eraseUser(USER_ID);
+
+    expect(tx.household.deleteMany).toHaveBeenCalledWith({ where: { ownerUserId: USER_ID } });
+    expect(order.indexOf('householdDelete')).toBeLessThan(order.indexOf('delete'));
+    expect(result.summary.householdRowsDeleted).toBe(1);
+  });
+
+  it('fails closed before any destructive work when another active member needs an owner transfer', async () => {
+    const order: string[] = [];
+    const { prisma, tx } = makePrisma(order);
+    (tx.household.findMany as jest.Mock).mockImplementationOnce(async () => {
+      order.push('householdCheck');
+      return [{ id: 'h1', _count: { memberships: 1 } }];
+    });
+
+    await expect(new ErasureService(prisma as never).eraseUser(USER_ID)).rejects.toMatchObject({
+      response: expect.objectContaining({ code: 'household_owner_transfer_required' }),
+    });
+    expect(order).toEqual(['userLock', 'householdLock', 'householdCheck']);
+    expect(tx.household.deleteMany).not.toHaveBeenCalled();
+    expect(tx.userSession.deleteMany).not.toHaveBeenCalled();
+    expect(tx.erasureEvent.create).not.toHaveBeenCalled();
     expect(tx.user.delete).not.toHaveBeenCalled();
   });
 });
