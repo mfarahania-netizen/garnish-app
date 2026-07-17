@@ -69,32 +69,10 @@ export class BehaviorEngineScheduler {
     console.log(`✅ Behavior Engine cron finished: ${succeeded} succeeded, ${failed} failed.`);
 
     // 🆕 ثبت لاگ cron با پیدا کردن یک userId معتبر
-    try {
-      // Prefer an admin; fall back to any NON-GUEST real user. Never attach system telemetry to a guest — that
-      // child row would permanently block the guest-reaper from cleaning up an otherwise-abandoned guest.
-      const user = await this.prisma.user.findFirst({
-        where: { isAdmin: true },
-        select: { id: true },
-      }) ?? await this.prisma.user.findFirst({ where: { isGuest: false }, select: { id: true } });
-
-      if (user) {
-        await this.prisma.userEvent.create({
-          data: {
-            userId: user.id,
-            type: 'cron_behavior_engine_run',
-            consentPurpose: 'core', // L0: operational/system telemetry (essential), not personal-data collection
-            payload: JSON.stringify({
-              activeUsers: userIds.length,
-              succeeded,
-              failed,
-            }),
-          },
-        });
-      } else {
-        console.warn('⚠️ No user found to log cron run.');
-      }
-    } catch (err) {
-      console.error('Failed to log cron run:', err);
-    }
+    // Operational completion is aggregate process telemetry. Attaching it to an
+    // arbitrary user's ledger would create a false user event and retention edge.
+    console.log(
+      `[behavior-engine] aggregate run: active=${userIds.length} succeeded=${succeeded} failed=${failed}`,
+    );
   }
 }

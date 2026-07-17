@@ -1,6 +1,6 @@
 // apps/server/src/app.module.ts
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -31,6 +31,7 @@ import { BriefingModule } from './briefing/briefing.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { OnboardingV2Module } from './onboarding/onboarding-v2.module';
 import { HouseholdsModule } from './households/households.module';
+import { PrivateCacheControlInterceptor } from './common/interceptors/private-cache-control.interceptor';
 
 @Module({
   imports: [
@@ -72,6 +73,9 @@ import { HouseholdsModule } from './households/households.module';
     GamificationModule,
     BriefingModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_INTERCEPTOR, useClass: PrivateCacheControlInterceptor },
+  ],
 })
 export class AppModule {}

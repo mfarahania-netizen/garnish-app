@@ -19,6 +19,8 @@ import { RankingService } from './pipeline/ranking.service';
 import { CandidateGeneratorService } from './pipeline/candidate-generator';
 import { FeatureStoreService } from '../behavior-engine/feature-store/feature-store.service';
 import { AnalyticsService } from '../analytics/analytics.service';
+import { Throttle } from '@nestjs/throttler';
+import { TrackImpressionDto } from './dto/track-impression.dto';
 
 @Controller('recommendations')
 export class RecommendationController {
@@ -43,18 +45,10 @@ export class RecommendationController {
 
   @Post('impression')
   @UseGuards(AuthGuard('jwt'))
+  @Throttle({ default: { limit: 120, ttl: 60000 } })
   async trackImpression(
     @Req() req,
-    @Body()
-    body: {
-      recipeIds?: string[];
-      recipeId?: string;
-      viewportMs?: number;
-      visibleRatio?: number;
-      testMode?: boolean;
-      source?: string;
-      requestId?: string;
-    },
+    @Body() body: TrackImpressionDto,
   ) {
     const userId = req.user.userId;
     const recipeIds = [...new Set([...(body.recipeIds || []), body.recipeId].filter(Boolean))] as string[];
@@ -72,15 +66,6 @@ export class RecommendationController {
         reason: 'not_viewed_enough',
         minimumViewportMs: 1000,
         minimumVisibleRatio: 0.5,
-      };
-    }
-
-    if (body.testMode) {
-      return {
-        accepted: true,
-        testMode: true,
-        learned: false,
-        trackedRecipeIds: recipeIds,
       };
     }
 

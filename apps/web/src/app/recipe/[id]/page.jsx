@@ -427,7 +427,7 @@ function SubSheet({ sub, onClose, onApply, appliedTo, onRemoveSwap, onRetry }) {
           </Box>
           <Box style={{ display: 'flex', gap: 'var(--g-space-1)', alignItems: 'flex-start', marginBlockStart: 'var(--g-space-3)' }}>
             <IconInfoCircle size={14} stroke={1.8} aria-hidden="true" style={{ color: 'var(--g-color-text-muted)', flexShrink: 0, marginBlockStart: 1 }} />
-            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>فقط گزینه‌های کم‌ریسک یا قابل قبول نمایش داده می‌شوند. حساسیت‌های اعلام‌شده‌ات همیشه فیلتر می‌مانند.</Text>
+            <Text component="span" style={{ fontFamily: 'var(--g-font-fa)', fontSize: 'var(--g-font-size-12)', lineHeight: 'var(--g-leading-body)', color: 'var(--g-color-text-muted)' }}>حساسیت‌های اعلام‌شده در فیلترهای گارنیش لحاظ می‌شوند، اما تضمین ایمنی نیست؛ مواد هر دستور را خودت بررسی کن.</Text>
           </Box>
         </Box>
       ) : null}

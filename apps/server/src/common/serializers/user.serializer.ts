@@ -52,7 +52,7 @@ export function sanitizeUser(
       out[field] = user[field];
     }
   }
-  if (!('onboardingComplete' in out)) {
+  if (!('onboardingComplete' in out) && 'onboardingCompletedAt' in user) {
     out.onboardingComplete = Boolean(user.onboardingCompletedAt);
   }
   out.phoneVerified = Boolean(user.phone && user.phoneVerifiedAt);

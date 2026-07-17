@@ -53,10 +53,15 @@ describe('user.serializer (E2)', () => {
       const safe = sanitizeUser(partial) as any;
       expect(safe).toEqual({
         ...partial,
-        onboardingComplete: false,
         phoneVerified: false,
       });
       expect('createdAt' in safe).toBe(false);
+      expect('onboardingComplete' in safe).toBe(false);
+    });
+
+    it('derives onboardingComplete only when the source selected onboardingCompletedAt', () => {
+      expect(sanitizeUser({ id: 'u3', phone: '0912', name: null, onboardingCompletedAt: null }))
+        .toMatchObject({ onboardingComplete: false });
     });
   });
 
