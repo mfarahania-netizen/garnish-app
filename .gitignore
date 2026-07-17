@@ -35,3 +35,8 @@ home-screen-design-exploration/
 # graphify (codebase knowledge-graph dev tool) — generated artifacts, never commit
 graphify-out/
 .graphify/
+
+# Generated QA/execution evidence is local and disposable. The small set of
+# machine artifacts intentionally tracked under these folders remains tracked.
+docs/qa/**
+docs/execution/**

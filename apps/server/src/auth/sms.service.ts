@@ -99,6 +99,24 @@ export class SmsService {
       .trim()
       .toLowerCase();
 
+    if (provider === 'melipayamak') {
+      if (
+        String(process.env.MELIPAYAMAK_ENABLED || '').toLowerCase() !== 'true'
+      ) {
+        if (devOtpLogEnabled()) {
+          // eslint-disable-next-line no-console
+          console.info(
+            `[dev-sms] melipayamak disabled password reset ${maskPhone(phone)} code=${code}`,
+          );
+          return;
+        }
+        throw new ServiceUnavailableException('sms_provider_disabled');
+      }
+
+      await this.sendMelipayamakPattern(phone, code);
+      return;
+    }
+
     if (provider === 'kavenegar') {
       await this.sendKavenegarLookup(phone, code);
       return;
@@ -110,8 +128,8 @@ export class SmsService {
         console.info(
           `[dev-sms] password reset ${maskPhone(phone)} code=${code}`,
         );
+        return;
       }
-      return;
     }
 
     throw new ServiceUnavailableException('sms_provider_not_configured');

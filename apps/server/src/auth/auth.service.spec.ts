@@ -131,6 +131,57 @@ describe('AuthService password reset', () => {
     expect(sms.sendPasswordResetCode).toHaveBeenCalledWith('09125859634', expect.stringMatching(/^\d{6}$/));
   });
 
+  it('returns the same generic response for an unknown phone and a known phone when SMS delivery fails', async () => {
+    const user = { id: 'u1', phone: '09125859634', isGuest: false };
+    const usersService: any = {
+      findByPhone: jest
+        .fn()
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(null),
+    };
+    let sentCode = '';
+    const sms: any = {
+      sendPasswordResetCode: jest.fn(async (_phone: string, code: string) => {
+        sentCode = code;
+        throw new Error('provider secret 09125859634');
+      }),
+    };
+    const prisma: any = {
+      passwordResetCode: {
+        count: jest.fn().mockResolvedValue(0),
+        create: jest.fn().mockResolvedValue({ id: 'r-provider-failed' }),
+        delete: jest.fn().mockResolvedValue({ id: 'r-provider-failed' }),
+        updateMany: jest.fn(),
+      },
+      userEvent: { create: jest.fn() },
+    };
+    const service = makeAuth(
+      usersService,
+      { sign: jest.fn() },
+      prisma,
+      sms,
+    );
+    const warn = jest
+      .spyOn((service as any).logger, 'warn')
+      .mockImplementation(() => undefined);
+
+    const knownProviderFailure = await service.requestPasswordReset(
+      '09125859634',
+    );
+    const unknownPhone = await service.requestPasswordReset('09125859634');
+
+    expect(knownProviderFailure).toEqual(unknownPhone);
+    expect(prisma.passwordResetCode.delete).toHaveBeenCalledWith({
+      where: { id: 'r-provider-failed' },
+    });
+    expect(prisma.passwordResetCode.updateMany).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith('Password reset SMS delivery failed');
+    const logged = warn.mock.calls.flat().join(' ');
+    expect(logged).not.toContain('09125859634');
+    expect(logged).not.toContain(sentCode);
+    expect(logged).not.toContain('provider secret');
+  });
+
   it('confirms a valid code, hashes the new password, consumes codes, and bumps session epoch', async () => {
     const codeHash = await bcrypt.hash('123456', 10);
     const usersService: any = { findByPhone: jest.fn().mockResolvedValue({ id: 'u1', phone: '09125859634', isGuest: false }) };
@@ -138,10 +189,18 @@ describe('AuthService password reset', () => {
       passwordResetCode: {
         findFirst: jest.fn().mockResolvedValue({ id: 'r1', codeHash, attempts: 0 }),
         update: jest.fn(),
-        updateMany: jest.fn(),
+        updateMany: jest
+          .fn()
+          .mockResolvedValueOnce({ count: 1 })
+          .mockResolvedValueOnce({ count: 0 }),
       },
       user: { update: jest.fn() },
-      $transaction: jest.fn(async (ops) => Promise.all(ops)),
+      $transaction: jest.fn(async (fn) =>
+        fn({
+          passwordResetCode: prisma.passwordResetCode,
+          user: prisma.user,
+        }),
+      ),
       userEvent: { create: jest.fn() },
     };
 
@@ -152,10 +211,99 @@ describe('AuthService password reset', () => {
       where: { id: 'u1' },
       data: { password: expect.stringMatching(/^\$2/), sessionEpoch: { increment: 1 } },
     });
-    expect(prisma.passwordResetCode.update).toHaveBeenCalledWith({
-      where: { id: 'r1' },
+    expect(prisma.passwordResetCode.updateMany).toHaveBeenNthCalledWith(1, {
+      where: {
+        id: 'r1',
+        userId: 'u1',
+        phone: '09125859634',
+        consumedAt: null,
+        expiresAt: { gt: expect.any(Date) },
+        attempts: { lt: 5 },
+      },
       data: { consumedAt: expect.any(Date) },
     });
+    expect(prisma.passwordResetCode.update).not.toHaveBeenCalled();
+  });
+
+  it('allows exactly one concurrent replay to claim a reset code and update the password', async () => {
+    const codeHash = await bcrypt.hash('123456', 10);
+    const usersService: any = {
+      findByPhone: jest
+        .fn()
+        .mockResolvedValue({ id: 'u-race', phone: '09125859634', isGuest: false }),
+    };
+    let claimed = false;
+    const updateMany = jest.fn(async ({ where }: any) => {
+      if (where.id === 'r-race') {
+        if (claimed) return { count: 0 };
+        claimed = true;
+        return { count: 1 };
+      }
+      return { count: 0 };
+    });
+    const prisma: any = {
+      passwordResetCode: {
+        findFirst: jest.fn().mockResolvedValue({
+          id: 'r-race',
+          codeHash,
+          attempts: 0,
+        }),
+        updateMany,
+      },
+      user: { update: jest.fn().mockResolvedValue({ id: 'u-race' }) },
+      $transaction: jest.fn(async (fn) =>
+        fn({
+          passwordResetCode: prisma.passwordResetCode,
+          user: prisma.user,
+        }),
+      ),
+    };
+    const service = makeAuth(usersService, { sign: jest.fn() }, prisma);
+
+    const outcomes = await Promise.allSettled([
+      service.confirmPasswordReset('09125859634', '123456', 'newPassword8'),
+      service.confirmPasswordReset('09125859634', '123456', 'newPassword8'),
+    ]);
+
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1);
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1);
+    expect(
+      (outcomes.find((outcome) => outcome.status === 'rejected') as PromiseRejectedResult).reason,
+    ).toBeInstanceOf(UnauthorizedException);
+    expect(prisma.user.update).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not update the password or sessions when the atomic reset claim fails', async () => {
+    const codeHash = await bcrypt.hash('123456', 10);
+    const usersService: any = {
+      findByPhone: jest
+        .fn()
+        .mockResolvedValue({ id: 'u1', phone: '09125859634', isGuest: false }),
+    };
+    const prisma: any = {
+      passwordResetCode: {
+        findFirst: jest.fn().mockResolvedValue({ id: 'r-lost', codeHash, attempts: 0 }),
+        updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+      },
+      user: { update: jest.fn() },
+      $transaction: jest.fn(async (fn) =>
+        fn({
+          passwordResetCode: prisma.passwordResetCode,
+          user: prisma.user,
+        }),
+      ),
+    };
+
+    await expect(
+      makeAuth(usersService, { sign: jest.fn() }, prisma).confirmPasswordReset(
+        '09125859634',
+        '123456',
+        'newPassword8',
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(prisma.user.update).not.toHaveBeenCalled();
+    expect(prisma.passwordResetCode.updateMany).toHaveBeenCalledTimes(1);
   });
 });
 

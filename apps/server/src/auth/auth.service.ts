@@ -388,7 +388,7 @@ export class AuthService {
       if (recent === 0) {
         const code = String(randomInt(100000, 1000000));
         const codeHash = await bcrypt.hash(code, 10);
-        await this.prisma.passwordResetCode.create({
+        const reset = await this.prisma.passwordResetCode.create({
           data: {
             userId: user.id,
             phone: normalizedPhone,
@@ -396,7 +396,27 @@ export class AuthService {
             expiresAt: new Date(Date.now() + 10 * 60_000),
           },
         });
-        await this.sms.sendPasswordResetCode(normalizedPhone, code);
+        try {
+          await this.sms.sendPasswordResetCode(normalizedPhone, code);
+        } catch {
+          // A provider failure must not reveal whether this phone has an
+          // account. Retire the unsent code and return the same generic
+          // acknowledgement used for unknown phones. Never log phone/code or
+          // raw provider details from this enumeration-sensitive path.
+          try {
+            await this.prisma.passwordResetCode.delete({
+              where: { id: reset.id },
+            });
+          } catch {
+            await this.prisma.passwordResetCode
+              .updateMany({
+                where: { id: reset.id, consumedAt: null },
+                data: { consumedAt: new Date() },
+              })
+              .catch(() => undefined);
+          }
+          this.logger.warn('Password reset SMS delivery failed');
+        }
       }
     }
 
@@ -429,20 +449,37 @@ export class AuthService {
     }
 
     const password = await bcrypt.hash(newPassword, 10);
-    await this.prisma.$transaction([
-      this.prisma.user.update({
+    const claimedAt = new Date();
+    await this.prisma.$transaction(async (tx) => {
+      // Claim before mutating the password. The full validity predicate makes
+      // consumption a database-level compare-and-set: concurrent replays can
+      // observe the same hash, but exactly one transaction can claim the row.
+      const claimed = await tx.passwordResetCode.updateMany({
+        where: {
+          id: reset.id,
+          userId: user.id,
+          phone: normalizedPhone,
+          consumedAt: null,
+          expiresAt: { gt: claimedAt },
+          attempts: { lt: 5 },
+        },
+        data: { consumedAt: claimedAt },
+      });
+      if (claimed.count !== 1) {
+        throw new UnauthorizedException(
+          'کد بازیابی معتبر نیست یا منقضی شده است.',
+        );
+      }
+
+      await tx.user.update({
         where: { id: user.id },
         data: { password, sessionEpoch: { increment: 1 } },
-      }),
-      this.prisma.passwordResetCode.update({
-        where: { id: reset.id },
-        data: { consumedAt: new Date() },
-      }),
-      this.prisma.passwordResetCode.updateMany({
+      });
+      await tx.passwordResetCode.updateMany({
         where: { userId: user.id, consumedAt: null, id: { not: reset.id } },
-        data: { consumedAt: new Date() },
-      }),
-    ]);
+        data: { consumedAt: claimedAt },
+      });
+    });
 
     return { ok: true, message: 'رمز عبور با موفقیت تغییر کرد. حالا وارد شوید.' };
   }

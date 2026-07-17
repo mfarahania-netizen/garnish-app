@@ -51,6 +51,67 @@ describe('SmsService Melipayamak transport', () => {
     expect(log.mock.calls.flat().join(' ')).not.toContain('123456789');
   });
 
+  it('sends password-reset codes through the same configured Melipayamak pattern', async () => {
+    jest
+      .spyOn(Logger.prototype, 'log')
+      .mockImplementation(() => undefined);
+    (global.fetch as jest.Mock).mockResolvedValue(
+      response('<string xmlns="http://tempuri.org/">987654321</string>'),
+    );
+
+    await new SmsService().sendPasswordResetCode('09125859634', '654321');
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const [url, options] = (global.fetch as jest.Mock).mock.calls[0];
+    const params = options.body as URLSearchParams;
+    expect(String(url)).toBe(
+      'https://api.payamak-panel.com/post/Send.asmx/SendByBaseNumber2',
+    );
+    expect(params.get('username')).toBe('panel-user');
+    expect(params.get('password')).toBe('test-api-key-not-secret');
+    expect(params.get('text')).toBe('654321');
+    expect(params.get('to')).toBe('09125859634');
+    expect(params.get('bodyId')).toBe('484419');
+  });
+
+  it('fails password-reset delivery closed when Melipayamak is disabled or unconfigured', async () => {
+    process.env.MELIPAYAMAK_ENABLED = 'false';
+    delete process.env.SMS_DEV_LOG_OTP;
+
+    await expect(
+      new SmsService().sendPasswordResetCode('09125859634', '654321'),
+    ).rejects.toThrow('sms_provider_disabled');
+    expect(global.fetch).not.toHaveBeenCalled();
+
+    process.env.MELIPAYAMAK_ENABLED = 'true';
+    delete process.env.MELIPAYAMAK_PATTERN_BODY_ID;
+    await expect(
+      new SmsService().sendPasswordResetCode('09125859634', '654321'),
+    ).rejects.toThrow('sms_provider_not_configured');
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it('allows disabled password-reset logging only behind the explicit dev OTP flag', async () => {
+    process.env.SMS_PROVIDER = 'disabled';
+    delete process.env.SMS_DEV_LOG_OTP;
+    const info = jest
+      .spyOn(console, 'info')
+      .mockImplementation(() => undefined);
+
+    await expect(
+      new SmsService().sendPasswordResetCode('09125859634', '654321'),
+    ).rejects.toThrow('sms_provider_not_configured');
+    expect(info).not.toHaveBeenCalled();
+
+    process.env.SMS_DEV_LOG_OTP = 'true';
+    await expect(
+      new SmsService().sendPasswordResetCode('09125859634', '654321'),
+    ).resolves.toBeUndefined();
+    expect(info).toHaveBeenCalledWith(
+      '[dev-sms] password reset 0912***34 code=654321',
+    );
+  });
+
   it('accepts an opaque numeric receipt wider than the JavaScript safe integer range', async () => {
     const log = jest
       .spyOn(Logger.prototype, 'log')
