@@ -39,6 +39,16 @@ const mutationId = () => {
   ));
 };
 
+export function deriveSettingsStatus(me, prefs, consent) {
+  if (me.isError || prefs.isError || consent.isError) return 'error';
+  if (
+    me.isLoading || me.isFetching
+    || prefs.isLoading || prefs.isFetching
+    || consent.isLoading || consent.isFetching
+  ) return 'loading';
+  return 'ready';
+}
+
 export function useSettings() {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -399,9 +409,7 @@ export function useSettings() {
 
   const account = useMemo(() => ({ phone: me.data?.phone || '', email: me.data?.email || '' }), [me.data]);
 
-  let status = 'ready';
-  if (me.isLoading || me.isFetching || prefs.isLoading || prefs.isFetching) status = 'loading';
-  else if (me.isError || prefs.isError) status = 'error';
+  const status = deriveSettingsStatus(me, prefs, serverConsent);
 
   let consentStatus = 'ready';
   if (serverConsent.isLoading || serverConsent.isFetching) consentStatus = 'loading';
