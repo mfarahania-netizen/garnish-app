@@ -7,6 +7,7 @@ import { toFaDigits } from '../../components/ges/format';
 import { SkeletonLine } from '../../components/ges/LoadingSkeleton';
 import Toast from '../../components/ges/Toast';
 import { isHouseholdV1Enabled } from '../household/feature';
+import { useNavigate } from 'react-router-dom';
 
 const normalizeShoppingAmount = (value) =>
   String(value ?? '')
@@ -121,6 +122,7 @@ function PlanBuildSummary({ summary }) {
 }
 
 export default function ShoppingListPage() {
+  const navigate = useNavigate();
   const s = useShopping();
   const [draft, setDraft] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);

@@ -39,7 +39,7 @@ export async function askAI(prompt) {
   } catch (error) {
     clearTimeout(timeoutId);
     if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') {
-      throw new Error('⏳ پاسخ دستیار خیلی طول کشید. لطفاً دوباره تلاش کن.');
+      throw new Error('⏳ پاسخ دستیار خیلی طول کشید. لطفاً دوباره تلاش کن.', { cause: error });
     }
     console.error('خطا در ارتباط با دستیار:', error);
     throw error;

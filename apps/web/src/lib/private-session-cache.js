@@ -69,7 +69,7 @@ export function installE2EQueryInspection({
       const queries = queryClient.getQueryCache().getAll();
       const summary = await Promise.all(queries.map(async (query) => {
         const queryKey = query.queryKey ?? [];
-        let serializedKey = '';
+        let serializedKey;
         try { serializedKey = JSON.stringify(queryKey); } catch { serializedKey = '[unserializable]'; }
         return {
           queryKeyNamespace: safeQueryNamespace(queryKey),
