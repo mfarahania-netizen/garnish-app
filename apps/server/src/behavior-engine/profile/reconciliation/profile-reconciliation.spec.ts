@@ -62,7 +62,7 @@ describe('reconcileProfile — allergy SAFETY precedence (the hard rule)', () =>
     expect(a.status).toBe('declared_observed_conflict'); // engagement noticed...
     expect(a.reconciledValue).toEqual(['peanut']); // ...but the allergy is NEVER removed
     expect(a.confidence).toBe(1); // hard constraint
-    expect(a.safeExplanation).toMatch(/always enforced|never overridden/i);
+    expect(a.safeExplanation).toMatch(/does not override|not a safety guarantee/i);
   });
 });
 

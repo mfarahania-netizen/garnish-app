@@ -50,7 +50,7 @@ const noAllergyProfile = { reconciled: { dimensions: {} }, declared: { dimension
 function makeSvc(rows: any[], profile: any = noAllergyProfile) {
   const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(rows) }, userEvent: { findMany: jest.fn().mockResolvedValue([]) } };
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(profile) };
-  return new MealPlanPlannerService(prisma, profiles);
+  return new MealPlanPlannerService(prisma, profiles, { hasPurpose: jest.fn().mockResolvedValue(true) } as any);
 }
 
 describe('S5 course gate — real planner over the real corpus', () => {

@@ -33,6 +33,13 @@ describe('Declared dimension registry (PROFILE-L4-05)', () => {
     const groups = new Set(DECLARED_DIMENSIONS.map((d) => d.group));
     expect([...groups].sort()).toEqual(['constraints', 'context', 'dietary', 'goals', 'history']);
   });
+  it('describes declared allergies as binary and never claims an unimplemented intensity field', () => {
+    const allergy = getDeclaredDef('dietary.allergies_intolerances')!;
+    const copy = `${allergy.label} ${allergy.safeExplanationTemplate}`;
+    expect(copy).toMatch(/binary/i);
+    expect(copy).toMatch(/no intensity level is stored/i);
+    expect(copy).not.toMatch(/with severity/i);
+  });
 });
 
 describe('buildDeclaredProfile — consent gating + banding + recency', () => {

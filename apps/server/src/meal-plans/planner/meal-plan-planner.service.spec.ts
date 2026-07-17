@@ -11,12 +11,13 @@ const CORPUS = [
   { id: 'peanutDish', title: 'Peanut Curry', diet: 'omnivore', mealType: 'lunch,dinner', region: 'asian', categories: '[]', difficulty: 'easy', cookingTime: 20, allergens: '["peanut"]', ingredients: [{ name: 'peanut', ingredient: { allergens: { eu14: ['peanut'], us9: ['peanut'], other: [], mayContain: [] } } }] },
 ];
 
-function makeService(allergies?: string[]) {
+function makeService(allergies?: string[], personalized = true) {
   const prisma: any = { recipe: { findMany: jest.fn().mockResolvedValue(CORPUS) }, userEvent: { findMany: jest.fn().mockResolvedValue([]) } };
   const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }, { key: 'context.cooks_for_count', value: '3_4', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
   if (allergies) declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: allergies, confidence: 0.9, recencyScore: 1 } as any;
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };
-  return { svc: new MealPlanPlannerService(prisma, profiles), prisma, profiles };
+  const consent: any = { hasPurpose: jest.fn().mockResolvedValue(personalized) };
+  return { svc: new MealPlanPlannerService(prisma, profiles, consent), prisma, profiles, consent };
 }
 
 describe('MealPlanPlannerService (PLANNER-L4-09)', () => {
@@ -41,5 +42,13 @@ describe('MealPlanPlannerService (PLANNER-L4-09)', () => {
     const { svc } = makeService(); // no allergies
     const p = await svc.proposePlan('u1', { days: 7, meals: ['lunch', 'dinner'] });
     expect(p.excludedForAllergy).toBe(0);
+  });
+
+  it('does not read behavioral decline history when personalization is not granted', async () => {
+    const { svc, prisma } = makeService(undefined, false);
+    const p = await svc.proposePlan('u1', { days: 2, meals: ['lunch'] });
+    expect(p.personalized).toBe(false);
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+    expect(p.slots.length).toBeGreaterThan(0); // core declared safety still applies
   });
 });

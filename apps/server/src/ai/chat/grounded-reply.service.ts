@@ -11,6 +11,7 @@ import { t, Locale, resolveLocale } from '../i18n/template-registry';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 import { PUBLISHED_RECIPE_WHERE } from '../../recipes/recipe-visibility';
 import { computeDishNutrition, buildDishInputs, DishDictRow } from '../../recipes/intelligence/dish-nutrition';
+import { ConsentService } from '../../consent/consent.service';
 
 /**
  * GroundedReplyService (AI-GROUNDED-ASSISTANT).
@@ -110,6 +111,7 @@ export class GroundedReplyService {
     private readonly prisma: PrismaService,
     private readonly profiles: ProfileReadService,
     private readonly tools: ToolRegistryService,
+    private readonly consent: ConsentService = new ConsentService(prisma),
   ) {}
 
   /**
@@ -213,6 +215,11 @@ export class GroundedReplyService {
   private async loadUserModel(userId: string, profile?: any): Promise<UserModelContext> {
     const empty: UserModelContext = { dislikes: [], favorites: [], skill: null, goals: [], facts: [] };
     if (!userId) return empty;
+    try {
+      if (!(await this.consent.hasPurpose(userId, 'personalization'))) return empty;
+    } catch {
+      return empty;
+    }
     const arr = (s: unknown): string[] => {
       try { const a = JSON.parse(typeof s === 'string' ? s : '[]'); return Array.isArray(a) ? a.map((x) => String(x).trim()).filter(Boolean) : []; } catch { return []; }
     };

@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { tokenize } from './search/tfidf';
+import { isOptionalPurposeRuntimeEnabled } from '../consent/consent.constants';
 
 @Injectable()
 export class RecipesService {
@@ -290,6 +291,7 @@ export class RecipesService {
 
   private async getRecipeEngagement() {
     const engagement = new Map<string, { views: number; cooks: number; mealPlans: number; score: number }>();
+    if (!isOptionalPurposeRuntimeEnabled('analytics')) return engagement;
     const ensure = (recipeId: string) => {
       const current = engagement.get(recipeId) ?? { views: 0, cooks: 0, mealPlans: 0, score: 0 };
       engagement.set(recipeId, current);
@@ -299,7 +301,11 @@ export class RecipesService {
     const eventGroups = (this.prisma as any).userEvent?.groupBy
       ? await (this.prisma as any).userEvent.groupBy({
           by: ['recipeId', 'type'],
-          where: { recipeId: { not: null }, type: { in: eventTypes } },
+          where: {
+            recipeId: { not: null },
+            type: { in: eventTypes },
+            consentPurpose: { in: ['analytics', 'personalization'] },
+          },
           _count: { _all: true },
         } as any).catch(() => [])
       : [];
@@ -312,18 +318,7 @@ export class RecipesService {
       if (['cook_complete', 'recipe_cooked', 'recommendation_cook'].includes(group.type)) item.cooks += count;
       if (group.type === 'mealplan_add') item.mealPlans += count;
     }
-    const slotGroups = (this.prisma as any).mealSlot?.groupBy
-      ? await (this.prisma as any).mealSlot.groupBy({
-          by: ['recipeId'],
-          where: { recipeId: { not: null } },
-          _count: { _all: true },
-        } as any).catch(() => [])
-      : [];
-    for (const group of slotGroups as any[]) {
-      const recipeId = group.recipeId;
-      if (!recipeId) continue;
-      ensure(recipeId).mealPlans += Number(group._count?._all ?? 0);
-    }
+    // MealSlot has no purpose provenance, so it is not repurposed into public analytics ranking.
     for (const item of engagement.values()) {
       item.score = item.views + item.cooks + item.mealPlans;
     }

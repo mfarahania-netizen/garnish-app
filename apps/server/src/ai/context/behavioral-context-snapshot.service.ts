@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConsentService } from '../../consent/consent.service';
 import { BehavioralContextSnapshot } from '../ai-core.types';
 
 // P1-3: signal names that must NEVER reach the AI snapshot (sensitive). Mirrors get-user-food-context's filter.
@@ -17,19 +18,46 @@ const SENSITIVE_SIGNAL = /allerg|health|medical|diagnos|disease|symptom|diabet|c
 @Injectable()
 export class BehavioralContextSnapshotService {
   private readonly logger = new Logger(BehavioralContextSnapshotService.name);
+  private readonly consent: ConsentService;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    consent?: ConsentService,
+  ) {
+    // Direct offline harnesses historically construct this service without Nest. They still go through
+    // the canonical current-policy implementation instead of duplicating a weaker consent query.
+    this.consent = consent ?? new ConsentService(prisma);
+  }
 
   async build(userId: string, opts: { locale?: string } = {}): Promise<BehavioralContextSnapshot> {
+    let personalizationActive = false;
+    try {
+      personalizationActive = await this.consent.hasPurpose(
+        userId,
+        'personalization',
+      );
+    } catch (err) {
+      this.logger.warn(
+        `snapshot consent unavailable; personalization disabled: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+
     let preferences: Record<string, unknown> = {};
     try {
-      const pref = await this.prisma.userPreference.findUnique({ where: { userId } });
+      const pref = await this.prisma.userPreference.findUnique({
+        where: { userId },
+        select: personalizationActive
+          ? { diet: true, skillLevel: true, budget: true }
+          : { diet: true, skillLevel: true },
+      });
       if (pref) {
-        // ONLY non-sensitive, user-set preferences. No allergies/health-goals (sensitive).
+        // Diet/skill are user-declared core planning inputs. Budget is optional personalization data.
         preferences = {
           diet: pref.diet ?? null,
           skillLevel: pref.skillLevel ?? null,
-          budget: pref.budget ?? null,
+          ...(personalizationActive
+            ? { budget: (pref as { budget?: string | null }).budget ?? null }
+            : {}),
         };
       }
     } catch (err) {
@@ -45,11 +73,7 @@ export class BehavioralContextSnapshotService {
     let dataMaturity = 'cold-start';
     const consents = ['core'];
     try {
-      const consented = await this.prisma.userConsent.findFirst({
-        where: { userId, purpose: 'personalization', status: 'granted' },
-        select: { id: true },
-      });
-      if (consented) {
+      if (personalizationActive) {
         consents.push('personalization');
         const top = await this.prisma.userBehaviorSignal.findMany({
           where: { userId },

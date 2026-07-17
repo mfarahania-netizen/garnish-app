@@ -4,13 +4,19 @@ import { RecipeSafetyFilterService } from '../recipes/intelligence/recipe-safety
 import { isRecipeVisibleTo } from '../recipes/recipe-visibility';
 import { getStartOfWeek, getStartOfWeekOffset } from '../utils/date.utils';
 import { isFamiliarDish } from './planner/familiarity';
+import { ConsentService } from '../consent/consent.service';
 
 @Injectable()
 export class MealPlansService {
+  private readonly consent: ConsentService;
+
   constructor(
-    private prisma: PrismaService,
+    private readonly prisma: PrismaService,
     private readonly safety: RecipeSafetyFilterService,
-  ) {}
+    consent?: ConsentService,
+  ) {
+    this.consent = consent ?? new ConsentService(prisma);
+  }
 
   async getCurrentPlan(userId: string, weekOffset = 0) {
     const startOfWeek = getStartOfWeekOffset(weekOffset);
@@ -239,13 +245,19 @@ export class MealPlansService {
   }
 
   async generateSmartPlan(userId: string, weekOffset = 0) {
-    const profile = await this.prisma.userPreference.findUnique({
+    const personalizationActive = await this.consent
+      .hasPurpose(userId, 'personalization')
+      .catch(() => false);
+    const profile: any = await this.prisma.userPreference.findUnique({
       where: { userId },
+      select: personalizationActive
+        ? { diet: true, skillLevel: true, budget: true }
+        : { diet: true, skillLevel: true },
     });
 
     const userDiet = profile?.diet || 'omnivore';
     const userSkill = profile?.skillLevel || 'beginner';
-    const userBudget = profile?.budget || 'low';
+    const userBudget = personalizationActive ? profile?.budget : null;
 
     const where: any = { status: 'active', isPublic: true }; // advisor audit: plan only from published recipes
 
@@ -257,7 +269,7 @@ export class MealPlansService {
       where.difficulty = { not: 'سخت' };
     }
 
-    if (userBudget === 'low') {
+    if (personalizationActive && userBudget === 'low') {
       where.cost = 'کم‌هزینه';
     }
 

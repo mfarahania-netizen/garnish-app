@@ -52,7 +52,7 @@ describe('Planner + Shopping QA gate (PLANNER-L4-09)', () => {
     const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
     declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: ['peanut'], confidence: 0.9, recencyScore: 1 } as any;
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };
-    const svc = new MealPlanPlannerService(prisma, profiles);
+    const svc = new MealPlanPlannerService(prisma, profiles, { hasPurpose: jest.fn().mockResolvedValue(true) } as any);
     const proposal = await svc.proposePlan('u1', { days: 7, meals: ['lunch', 'dinner'] });
     check('plan_allergy_hard_exclude', 'allergy_safety', proposal.excludedForAllergy >= 1 && !proposal.slots.find((s) => s.recipeId === 'peanut'));
     check('reuses_unified_profile', 'reuse', profiles.getLivingUserProfile.mock.calls.length > 0);

@@ -1,6 +1,9 @@
 import { IneService, INE_REAL_SEND_FLAG } from './ine.service';
 
-function makeService(opts: { consents?: string[]; sent24?: number; dismissals?: number; shoppingItems?: number; churn?: number } = {}) {
+function makeService(
+  opts: { consents?: string[]; sent24?: number; dismissals?: number; shoppingItems?: number; churn?: number } = {},
+  hasPurpose: jest.Mock = jest.fn().mockResolvedValue(true),
+) {
   const notifCreate = jest.fn();
   const prisma: any = {
     notification: {
@@ -17,14 +20,80 @@ function makeService(opts: { consents?: string[]; sent24?: number; dismissals?: 
     getLivingUserProfile: jest.fn().mockResolvedValue({ observed: { byDimension: {} } }),
     getConsentState: jest.fn().mockResolvedValue({ granted: opts.consents ?? ['core'] }),
   };
-  return { svc: new IneService(prisma, profiles), prisma, profiles, notifCreate };
+  const consent: any = { hasPurpose };
+  return {
+    svc: new IneService(prisma, profiles, consent),
+    prisma,
+    profiles,
+    consent,
+    notifCreate,
+  };
 }
 
 const NOON = new Date('2026-06-15T12:00:00');
 
 describe('IneService — DRY-RUN (no real send)', () => {
   const prev = process.env[INE_REAL_SEND_FLAG];
-  afterEach(() => { if (prev === undefined) delete process.env[INE_REAL_SEND_FLAG]; else process.env[INE_REAL_SEND_FLAG] = prev; });
+  const previousRuntime = process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+
+  beforeEach(() => {
+    process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = 'true';
+  });
+
+  afterEach(() => {
+    if (prev === undefined) delete process.env[INE_REAL_SEND_FLAG];
+    else process.env[INE_REAL_SEND_FLAG] = prev;
+    if (previousRuntime === undefined)
+      delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+    else
+      process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED = previousRuntime;
+  });
+
+  it('runtime OFF returns an empty preview with zero optional IO', async () => {
+    delete process.env.OPTIONAL_PERSONALIZATION_PROCESSING_ENABLED;
+    const { svc, prisma, profiles, consent } = makeService({ shoppingItems: 2, churn: 90 });
+
+    const preview = await svc.previewForUser('u1', NOON);
+
+    expect(preview.decisions).toEqual([]);
+    expect(consent.hasPurpose).not.toHaveBeenCalled();
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(profiles.getConsentState).not.toHaveBeenCalled();
+    expect(prisma.notification.count).not.toHaveBeenCalled();
+    expect(prisma.shoppingList.findFirst).not.toHaveBeenCalled();
+    expect(prisma.mealPlan.findFirst).not.toHaveBeenCalled();
+    expect(prisma.userBehaviorProfile.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('withdrawal returns empty candidates/state before optional IO', async () => {
+    const { svc, prisma, profiles } = makeService(
+      { shoppingItems: 2, churn: 90 },
+      jest.fn().mockResolvedValue(false),
+    );
+
+    await expect(svc.resolveCandidates('u1', NOON)).resolves.toEqual([]);
+    const state = await svc.resolveState('u1', NOON);
+
+    expect(state.consents).toEqual(['core']);
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(prisma.notification.count).not.toHaveBeenCalled();
+    expect(prisma.shoppingList.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('consent read error is fail-closed before optional IO', async () => {
+    const { svc, prisma, profiles } = makeService(
+      {},
+      jest.fn().mockRejectedValue(new Error('ledger unavailable')),
+    );
+
+    const state = await svc.resolveState('u1', NOON);
+    await expect(svc.resolveCandidates('u1', NOON)).resolves.toEqual([]);
+
+    expect(state.consents).toEqual(['core']);
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(prisma.notification.findMany).not.toHaveBeenCalled();
+    expect(prisma.shoppingList.findFirst).not.toHaveBeenCalled();
+  });
 
   it('real-send path is DEFAULT-OFF and the engine never dispatches', async () => {
     delete process.env[INE_REAL_SEND_FLAG];

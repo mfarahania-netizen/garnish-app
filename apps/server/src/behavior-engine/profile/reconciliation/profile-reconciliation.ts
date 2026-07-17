@@ -114,9 +114,9 @@ export function reconcileProfile(declared: DeclaredProfile, observed: UserFoodId
     const obs = engagement.length ? { value: 'observed_engagement_with_allergen', confidence: taste?.confidence ?? 0, evidence: engagement } : null;
     let status: ReconciledStatus = dec ? (obs ? 'declared_observed_conflict' : 'declared_only') : 'unknown';
     const explanation = obs
-      ? `You declared allergies/intolerances; we noticed some engagement with related ingredients. For your safety the declared allergy is ALWAYS enforced and is never overridden by behavior.`
+      ? `You declared allergies/intolerances; related behavior does not override them in Garnish filtering. This is informational, not a safety guarantee; check every ingredient list.`
       : dec
-        ? `Declared allergies/intolerances are always enforced as a hard safety constraint.`
+        ? `Declared allergies/intolerances take precedence in Garnish filtering. This is informational, not a safety guarantee; check every ingredient list.`
         : '';
     dims['allergies'] = {
       key: 'allergies',

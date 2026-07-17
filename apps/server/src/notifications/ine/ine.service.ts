@@ -13,6 +13,8 @@ import { ProfileReadService } from '../../behavior-engine/profile/read/profile-r
 import { getStartOfWeek } from '../../utils/date.utils';
 import { decide, IneDecision, UserNotificationState } from './ine-pipeline';
 import { getTrigger } from './notification-triggers';
+import { ConsentService } from '../../consent/consent.service';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 
 export const INE_REAL_SEND_FLAG = 'INE_REAL_SEND_ENABLED'; // DEFAULT OFF — dry-run unless explicitly 'true'
 const LEDGER_CAP = 2000;
@@ -31,7 +33,11 @@ export class IneService {
   private readonly logger = new Logger(IneService.name);
   private readonly ledger: LedgerEntry[] = [];
 
-  constructor(private readonly prisma: PrismaService, private readonly profiles: ProfileReadService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly profiles: ProfileReadService,
+    private readonly consent: ConsentService,
+  ) {}
 
   /** The ONLY real-send path is gated here; default OFF → the engine is pure dry-run. */
   realSendEnabled(): boolean {
@@ -39,6 +45,8 @@ export class IneService {
   }
 
   async resolveState(userId: string, now: Date = new Date()): Promise<UserNotificationState> {
+    if (!(await this.canPersonalize(userId))) return this.neutralState(userId, now);
+
     let openAffinity = 0.4; // cold-start default
     try {
       const profile: any = await this.profiles.getLivingUserProfile(userId);
@@ -98,6 +106,8 @@ export class IneService {
 
   /** Live eligibility resolution for the owner-preview (bounded queries; defensive). */
   async resolveCandidates(userId: string, now: Date = new Date()): Promise<TriggerCandidate[]> {
+    if (!(await this.canPersonalize(userId))) return [];
+
     const candidates: TriggerCandidate[] = [];
     try {
       const list = await this.prisma.shoppingList.findFirst({ where: { userId }, include: { items: { where: { isChecked: false } } }, orderBy: { createdAt: 'desc' } });
@@ -138,5 +148,30 @@ export class IneService {
 
   getLedger(limit = 100): LedgerEntry[] {
     return this.ledger.slice(-limit);
+  }
+
+  private async canPersonalize(userId: string): Promise<boolean> {
+    if (!userId || !isOptionalPurposeRuntimeEnabled('personalization')) return false;
+    try {
+      return await this.consent.hasPurpose(userId, 'personalization');
+    } catch {
+      return false;
+    }
+  }
+
+  private neutralState(userId: string, now: Date): UserNotificationState {
+    return {
+      userId,
+      hour: now.getHours(),
+      openAffinity: 0.4,
+      dismissFatigue: 0,
+      quietHours: { start: 22, end: 7 },
+      activeHours: [8, 12, 18, 20],
+      sentLast24h: 0,
+      recentDismissals: 0,
+      sentThisWeekByTrigger: {},
+      consents: ['core'],
+      dailyCap: DAILY_CAP,
+    };
   }
 }

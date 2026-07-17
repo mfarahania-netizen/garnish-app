@@ -11,14 +11,18 @@ function profileWithAllergy(allergens: string[]) {
 }
 
 describe('CandidateGeneratorService', () => {
+  const epoch = new Date('2099-07-01T00:00:00.000Z');
+  const previousAnalyticsRuntime = process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
   let prisma: any;
   let featureStore: any;
   let embeddingService: any;
   let profiles: any;
   let content: any;
+  let consent: any;
   let service: CandidateGeneratorService;
 
   beforeEach(() => {
+    process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = 'true';
     prisma = {
       userEvent: {
         findMany: jest.fn().mockResolvedValue([]),
@@ -54,9 +58,15 @@ describe('CandidateGeneratorService', () => {
     };
     profiles = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergy([])) };
     content = { neighbors: jest.fn().mockResolvedValue({ neighbors: [], status: 'no_similar' }) };
+    consent = { currentGrantEpoch: jest.fn().mockResolvedValue(epoch) };
     // real shared safety gate (same prisma + profiles mocks) — the safety tests exercise the ONE reusable filter
     const safety = new RecipeSafetyFilterService(prisma, profiles);
-    service = new CandidateGeneratorService(prisma, featureStore, embeddingService, profiles, content, safety);
+    service = new CandidateGeneratorService(prisma, featureStore, embeddingService, profiles, content, safety, consent);
+  });
+
+  afterAll(() => {
+    if (previousAnalyticsRuntime === undefined) delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+    else process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = previousAnalyticsRuntime;
   });
 
   // GUARDIAN H1/H2: the allergy HARD filter + no-pork must hold on the LIVE feed for an ACTIVE user
@@ -134,6 +144,41 @@ describe('CandidateGeneratorService', () => {
     expect(new Set(result).size).toBe(result.length);
   });
 
+  it('personalized sources use only personalization-provenance events; public trending excludes legacy rows', async () => {
+    const rows = [
+      { payload: '{"recipeId":"analytics-seed"}', consentPurpose: 'analytics' },
+      { payload: '{"recipeId":"legacy-seed"}', consentPurpose: null },
+      { payload: '{"recipeId":"personal-seed"}', consentPurpose: 'personalization' },
+    ];
+    prisma.userEvent.findMany.mockImplementation((args: any) => Promise.resolve(
+      rows.filter((row) => row.consentPurpose === args.where.consentPurpose),
+    ));
+    const similarSeedSets: string[][] = [];
+    prisma.searchTerm.findMany.mockImplementation((args: any) => {
+      if (args.where?.recipeId?.in) {
+        similarSeedSets.push(args.where.recipeId.in);
+        return Promise.resolve([{ term: 'personal-term' }]);
+      }
+      return Promise.resolve([]);
+    });
+
+    await service.generate('u1', 10);
+
+    expect(similarSeedSets).toContainEqual(['personal-seed']);
+    expect(similarSeedSets.flat()).not.toEqual(expect.arrayContaining(['analytics-seed', 'legacy-seed']));
+    for (const [args] of prisma.userEvent.findMany.mock.calls) {
+      expect(args.where.consentPurpose).toBe('personalization');
+    }
+    expect(prisma.userEvent.count).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ consentPurpose: 'personalization' }),
+    }));
+    expect(prisma.userEvent.groupBy).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        consentPurpose: { in: ['analytics', 'personalization'] },
+      }),
+    }));
+  });
+
   it('P1-6: one candidate source throwing does NOT fail the slate (failure isolated, not propagated)', async () => {
     // userEvent.groupBy is used ONLY by the trending source → make exactly that one source throw.
     prisma.userEvent.groupBy.mockRejectedValue(new Error('trending source down'));
@@ -143,6 +188,96 @@ describe('CandidateGeneratorService', () => {
     const result = await service.generate('u1', 10);
     // pre-P1-6 the sequential `await` propagated the throw and failed the whole request; now the slate serves.
     expect(result).toContain('safe-dish');
+  });
+
+  it('withdrawal uses only public/cold-start sources and never reads private candidate signals', async () => {
+    consent.currentGrantEpoch.mockResolvedValue(null);
+    const safety = {
+      safeIds: jest.fn(async (_userId: string, ids: string[]) => ids),
+    };
+    service = new CandidateGeneratorService(
+      prisma,
+      featureStore,
+      embeddingService,
+      profiles,
+      content,
+      safety as any,
+      consent,
+    );
+
+    await service.generate('u1', 10);
+
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+    expect(prisma.userEvent.count).not.toHaveBeenCalled();
+    expect(prisma.searchTerm.findMany).not.toHaveBeenCalled();
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+    expect(prisma.userHealthGoal.findMany).not.toHaveBeenCalled();
+    expect(prisma.favoriteRecipe.findMany).not.toHaveBeenCalled();
+    expect(prisma.shoppingItem.findMany).not.toHaveBeenCalled();
+    expect(prisma.recipeIngredient.findMany).not.toHaveBeenCalled();
+    expect(embeddingService.getEmbedding).not.toHaveBeenCalled();
+    expect(profiles.getLivingUserProfile).not.toHaveBeenCalled();
+    expect(content.neighbors).not.toHaveBeenCalled();
+    expect(safety.safeIds).toHaveBeenCalledWith('u1', expect.any(Array));
+  });
+
+  it('consent read failure takes the same fail-closed public/cold-start path', async () => {
+    consent.currentGrantEpoch.mockRejectedValue(new Error('consent unavailable'));
+
+    await expect(service.generate('u1', 10)).resolves.toEqual(expect.any(Array));
+
+    expect(prisma.userEvent.findMany).not.toHaveBeenCalled();
+    expect(prisma.userEvent.count).not.toHaveBeenCalled();
+    expect(prisma.searchTerm.findMany).not.toHaveBeenCalled();
+    expect(prisma.shoppingItem.findMany).not.toHaveBeenCalled();
+    expect(embeddingService.getEmbedding).not.toHaveBeenCalled();
+    expect(content.neighbors).not.toHaveBeenCalled();
+  });
+
+  it('default-off analytics uses no event aggregate in the generic public fallback', async () => {
+    delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+    consent.currentGrantEpoch.mockResolvedValue(null);
+
+    await service.generate('u1', 10);
+
+    expect(prisma.userEvent.groupBy).not.toHaveBeenCalled();
+  });
+
+  it('filters personal event history to the latest grant epoch', async () => {
+    await service.generate('u1', 10);
+
+    for (const [args] of prisma.userEvent.findMany.mock.calls) {
+      expect(args.where.timestamp).toEqual({ gte: epoch });
+    }
+    expect(prisma.userEvent.count).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ timestamp: { gte: epoch } }),
+    }));
+  });
+
+  it('discards a personalized slate when withdrawal and re-grant changes epoch during source reads', async () => {
+    const nextEpoch = new Date('2099-07-02T00:00:00.000Z');
+    consent.currentGrantEpoch
+      .mockResolvedValueOnce(epoch)
+      .mockResolvedValue(nextEpoch);
+    prisma.userEvent.findMany.mockResolvedValue([{ payload: '{"recipeId":"old-seed"}' }]);
+    prisma.searchTerm.findMany
+      .mockResolvedValueOnce([{ term: 'old-term' }])
+      .mockResolvedValueOnce([{ recipeId: 'old-personalized' }]);
+    const safety = { safeIds: jest.fn(async (_userId: string, ids: string[]) => ids) };
+    service = new CandidateGeneratorService(
+      prisma,
+      featureStore,
+      embeddingService,
+      profiles,
+      content,
+      safety as any,
+      consent,
+    );
+
+    const result = await service.generate('u1', 10);
+
+    expect(result).not.toContain('old-personalized');
+    expect(safety.safeIds).toHaveBeenCalled();
   });
 });
 
@@ -157,7 +292,20 @@ describe('CandidateGeneratorService — COLDSTART-L4-14 (profile-grounded, aller
     };
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(opts.profile) };
     const content: any = { neighbors: jest.fn().mockResolvedValue({ neighbors: opts.neighbors ?? [], status: 'ok' }) };
-    return { svc: new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content, {} as any), prisma, profiles, content };
+    return {
+      svc: new CandidateGeneratorService(
+        prisma,
+        {} as any,
+        {} as any,
+        profiles,
+        content,
+        {} as any,
+        { currentGrantEpoch: jest.fn().mockResolvedValue(new Date('2099-07-01')) } as any,
+      ),
+      prisma,
+      profiles,
+      content,
+    };
   }
 
   it('reads getLivingUserProfile (NOT raw user.preferences)', async () => {
@@ -182,7 +330,15 @@ describe('CandidateGeneratorService — COLDSTART-L4-14 (profile-grounded, aller
     };
     const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergy(['peanut'])) };
     const content: any = { neighbors: jest.fn().mockResolvedValue({ neighbors: [{ recipeId: 'peanut' }], status: 'ok' }) };
-    const svc = new CandidateGeneratorService(prisma, {} as any, {} as any, profiles, content, {} as any);
+    const svc = new CandidateGeneratorService(
+      prisma,
+      {} as any,
+      {} as any,
+      profiles,
+      content,
+      {} as any,
+      { currentGrantEpoch: jest.fn().mockResolvedValue(new Date('2099-07-01')) } as any,
+    );
     const candidates = await svc.coldStartCandidates('u1');
     expect(candidates.map((c) => c.recipeId)).not.toContain('peanut');
     expect(candidates.map((c) => c.recipeId)).toContain('safe');

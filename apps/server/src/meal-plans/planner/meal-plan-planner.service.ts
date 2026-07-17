@@ -14,6 +14,7 @@ import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { toStringArray, norm } from '../../ai/tools/grounding-utils';
 import { generateMealPlan, proposeSwapForSlot, PlanCandidate, PlanProposal, ProposedSlot } from './meal-plan-generator';
 import { deriveCourse } from './course';
+import { ConsentService } from '../../consent/consent.service';
 
 const CORPUS_CAP = 400;
 const COOKS_FOR_TO_SIZE: Record<string, number> = { '1': 1, '2': 2, '3_4': 3, '5_plus': 5 };
@@ -42,15 +43,24 @@ function householdFromProfile(profile: any): number {
 export class MealPlanPlannerService {
   private readonly logger = new Logger(MealPlanPlannerService.name);
 
-  constructor(private readonly prisma: PrismaService, private readonly profiles: ProfileReadService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly profiles: ProfileReadService,
+    private readonly consent: ConsentService,
+  ) {}
+
+  private async hasPersonalization(userId: string): Promise<boolean> {
+    try { return await this.consent.hasPurpose(userId, 'personalization'); } catch { return false; }
+  }
 
   async proposePlan(userId: string, opts: { meals?: string[]; days?: number } = {}): Promise<PlanProposal & { personalized: boolean; excludedForAllergy: number }> {
     const profile = await this.profiles.getLivingUserProfile(userId);
     const { candidates, excludedForAllergy } = await this.buildSafeCandidates(profile);
+    const personalized = await this.hasPersonalization(userId);
     // FI-STEP-1.3: exclude recipes the user recently declined/removed (additive; downstream of allergy)
-    const excludeRecipeIds = await this.recentlyDeclinedIds(userId);
+    const excludeRecipeIds = personalized ? await this.recentlyDeclinedIds(userId) : new Set<string>();
     const proposal = generateMealPlan(candidates, { meals: opts.meals, days: opts.days, householdSize: householdFromProfile(profile), excludeRecipeIds });
-    return { ...proposal, personalized: true, excludedForAllergy };
+    return { ...proposal, personalized, excludedForAllergy };
   }
 
   /**
@@ -63,10 +73,11 @@ export class MealPlanPlannerService {
   ): Promise<{ slot: ProposedSlot | null; personalized: boolean }> {
     const profile = await this.profiles.getLivingUserProfile(userId);
     const { candidates } = await this.buildSafeCandidates(profile);
-    const recentlyDeclined = await this.recentlyDeclinedIds(userId);
+    const personalized = await this.hasPersonalization(userId);
+    const recentlyDeclined = personalized ? await this.recentlyDeclinedIds(userId) : new Set<string>();
     const exclude = new Set<string>([...recentlyDeclined, ...(input.excludeRecipeIds ?? [])]);
     const slot = proposeSwapForSlot(candidates, { dayOfWeek: input.dayOfWeek, meal: input.mealType, excludeRecipeIds: exclude });
-    return { slot, personalized: true };
+    return { slot, personalized };
   }
 
   /** Allergy-safe, fit-scored, course-derived candidates (shared by proposePlan + swapSlot). Allergen-
@@ -112,7 +123,12 @@ export class MealPlanPlannerService {
   private async recentlyDeclinedIds(userId: string): Promise<Set<string>> {
     const cutoff = new Date(Date.now() - RECENTLY_DECLINED_WINDOW_DAYS * 24 * 60 * 60 * 1000);
     const events = await this.prisma.userEvent.findMany({
-      where: { userId, type: { in: DECLINE_EVENTS }, timestamp: { gte: cutoff } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        type: { in: DECLINE_EVENTS },
+        timestamp: { gte: cutoff },
+      },
       select: { payload: true },
       orderBy: { timestamp: 'desc' },
       take: 500,

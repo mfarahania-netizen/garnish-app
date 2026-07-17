@@ -63,6 +63,27 @@ describe('GroundedReplyService — grounded retrieval', () => {
   });
 });
 
+describe('GroundedReplyService — personalization consent boundary', () => {
+  it('keeps the hard safety flow but reads no behavior profile or user facts after withdrawal', async () => {
+    const pool = [recipe('r1')];
+    const prisma: any = {
+      recipe: { findMany: jest.fn().mockResolvedValue(pool) },
+      userBehaviorProfile: { findFirst: jest.fn() },
+      userFact: { findMany: jest.fn() },
+    };
+    const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(profileWithAllergies([])) };
+    const consent: any = { hasPurpose: jest.fn().mockResolvedValue(false) };
+    const svc = new GroundedReplyService(prisma, profiles, toolsReturning(['r1']), consent);
+
+    const result = await svc.buildGrounding('u1', 'غذا');
+
+    expect(result.groundingStatus).toBe('ok');
+    expect(result.userModel).toEqual({ dislikes: [], favorites: [], skill: null, goals: [], facts: [] });
+    expect(prisma.userBehaviorProfile.findFirst).not.toHaveBeenCalled();
+    expect(prisma.userFact.findMany).not.toHaveBeenCalled();
+  });
+});
+
 describe('GroundedReplyService — ALLERGY HARD GATE (leaks must be 0)', () => {
   it('HARD-drops both declared-allergen and derived-allergen recipes; never surfaces them', async () => {
     const pool = [

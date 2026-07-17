@@ -23,6 +23,7 @@ import { IneService, TriggerCandidate } from '../notifications/ine/ine.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { composeBriefing, mealContextFor, BriefingNudgeInput, BriefingPickInput } from './briefing-composer';
 import { BRIEFING_EVENTS, BriefingFeedbackAction, INACTIVE_REENGAGE_DAYS } from './briefing.constants';
+import { ConsentService } from '../consent/consent.service';
 
 const PICK_CANDIDATES = 12;
 const COOK_TYPES = ['cook_complete', 'recommendation_cook'];
@@ -40,11 +41,36 @@ export class BriefingService {
     private readonly gamification: GamificationService,
     private readonly ine: IneService,
     private readonly analytics: AnalyticsService,
+    private readonly consent: ConsentService,
   ) {}
+
+  private async hasPersonalization(userId: string): Promise<boolean> {
+    try {
+      return await this.consent.hasPurpose(userId, 'personalization');
+    } catch {
+      return false;
+    }
+  }
 
   /** Compose today's briefing for this meal context (one per day per context). Reuse-composed. */
   async getTodayBriefing(userId: string, now: Date = new Date()) {
     const context = mealContextFor(now);
+    if (!(await this.hasPersonalization(userId))) {
+      const briefing = composeBriefing({
+        userId,
+        now,
+        context,
+        picks: [],
+        nudge: { kind: null, reason: '' },
+        progress: {
+          streakWeeks: 0,
+          streakStatus: 'idle',
+          streakMessage: '',
+          newlyUnlockedTitle: null,
+        },
+      });
+      return { ...briefing, personalizationEnabled: false };
+    }
     const profile = await this.profiles.getLivingUserProfile(userId);
 
     // S4/S07 — safe, explainable picks from a bounded candidate set (allergen filter is hard, via S07).
@@ -68,7 +94,7 @@ export class BriefingService {
     // briefing_view feeds the existing signal/profile loop (best-effort; never blocks the read)
     this.analytics.trackEvent({ userId, type: BRIEFING_EVENTS.view, payload: { mealContext: context, pickRecipeId: briefing.pick?.recipeId ?? null } }).catch(() => undefined);
 
-    return briefing;
+    return { ...briefing, personalizationEnabled: true };
   }
 
   /**
@@ -76,6 +102,7 @@ export class BriefingService {
    * assistant greets you with the SAME honest, consent-respecting signal the daily briefing uses (no parallel logic).
    */
   async getProactiveNudge(userId: string, now: Date = new Date()): Promise<BriefingNudgeInput> {
+    if (!(await this.hasPersonalization(userId))) return { kind: null, reason: '' };
     return this.resolveNudge(userId, now);
   }
 
@@ -120,7 +147,14 @@ export class BriefingService {
   }
 
   private async cookedRecipeIds(userId: string): Promise<Set<string>> {
-    const events = await this.prisma.userEvent.findMany({ where: { userId, type: { in: COOK_TYPES } }, select: { payload: true } });
+    const events = await this.prisma.userEvent.findMany({
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        type: { in: COOK_TYPES },
+      },
+      select: { payload: true },
+    });
     const ids = new Set<string>();
     for (const e of events) {
       try { const id = e.payload ? JSON.parse(e.payload as unknown as string)?.recipeId : undefined; if (id) ids.add(id); } catch { /* tolerate */ }
@@ -134,6 +168,9 @@ export class BriefingService {
    * decision; nothing is dispatched. No parallel sender.
    */
   async evaluateDelivery(userId: string, now: Date = new Date()) {
+    if (!(await this.hasPersonalization(userId))) {
+      return { userId, dryRun: !this.ine.realSendEnabled(), decisions: [] };
+    }
     const candidates: TriggerCandidate[] = [{ triggerKey: 'daily_briefing', payload: {} }];
     if (await this.isInactive(userId, now)) candidates.push({ triggerKey: 'reengagement_gentle' });
     const decisions = await this.ine.decideForUser(userId, candidates, now);
@@ -142,7 +179,11 @@ export class BriefingService {
 
   private async isInactive(userId: string, now: Date): Promise<boolean> {
     try {
-      const last = await this.prisma.userEvent.findFirst({ where: { userId }, orderBy: { timestamp: 'desc' }, select: { timestamp: true } });
+      const last = await this.prisma.userEvent.findFirst({
+        where: { userId, consentPurpose: 'personalization' },
+        orderBy: { timestamp: 'desc' },
+        select: { timestamp: true },
+      });
       if (!last) return false; // a brand-new user is not "lapsed"
       const days = (now.getTime() - last.timestamp.getTime()) / 86_400_000;
       return days >= INACTIVE_REENGAGE_DAYS;
@@ -154,7 +195,9 @@ export class BriefingService {
   /** Log a user's accept/reject/swap on the briefing — feeds the existing signal/profile loop. */
   async logFeedback(userId: string, action: BriefingFeedbackAction, payload: Record<string, any> = {}) {
     const type = BRIEFING_EVENTS[action];
-    await this.analytics.trackEvent({ userId, type, payload });
-    return { logged: true, type };
+    const event = await this.analytics.trackEvent({ userId, type, payload });
+    return event
+      ? { logged: true, type }
+      : { logged: false, type, reason: 'consent_not_granted' };
   }
 }

@@ -29,4 +29,12 @@ describe('TemplateRegistry', () => {
   it('a missing key returns the key itself (loud dev error, never a crash)', () => {
     expect(t('no_such_key', 'fa')).toBe('no_such_key');
   });
+
+  it('allergy copy is informational and never promises absolute safety', () => {
+    const copy = ['allergy_offer', 'allergy_offer_unknown']
+      .flatMap((key) => Object.values(__TEMPLATES_FOR_TEST[key]))
+      .join(' ');
+    expect(copy).not.toMatch(/always|keep you safe|همیشه|altijd|veilig blijft/i);
+    expect(copy).toMatch(/not a safety guarantee|تضمین ایمنی نیست|geen veiligheidsgarantie/i);
+  });
 });

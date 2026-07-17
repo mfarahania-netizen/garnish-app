@@ -28,7 +28,7 @@ function makeService(opts: { allergies?: string[]; declinedRecipeIds?: string[] 
   const declared = buildDeclaredProfile('u1', [{ key: 'dietary.pattern', value: 'omnivore', declaredAt: recent() }], { granted: ['core', 'analytics', 'personalization'] }, { now: NOW });
   if (opts.allergies) declared.dimensions['dietary.allergies_intolerances'] = { ...declared.dimensions['dietary.allergies_intolerances'], status: 'declared', value: opts.allergies, confidence: 0.9, recencyScore: 1 } as any;
   const profiles: any = { getLivingUserProfile: jest.fn().mockResolvedValue(composeLivingUserProfile(declared, null, NOW)) };
-  return { svc: new MealPlanPlannerService(prisma, profiles), prisma };
+  return { svc: new MealPlanPlannerService(prisma, profiles, { hasPurpose: jest.fn().mockResolvedValue(true) } as any), prisma };
 }
 
 describe('FI-STEP-1.3 — generator proposeSwapForSlot (single-slot next-best)', () => {
@@ -67,6 +67,11 @@ describe('FI-STEP-1.3 — planner swapSlot + recently-declined', () => {
     const declined = makeService({ declinedRecipeIds: ['safe1'] });
     const p = await declined.svc.proposePlan('u1', { days: 7, meals: ['lunch', 'dinner'] });
     expect(p.slots.find((s) => s.recipeId === 'safe1')).toBeUndefined();
+    expect(declined.prisma.userEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ consentPurpose: 'personalization' }),
+      }),
+    );
 
     const notDeclined = makeService(); // same corpus, nothing declined → safe1 is eligible again
     const p2 = await notDeclined.svc.proposePlan('u1', { days: 7, meals: ['lunch', 'dinner'] });

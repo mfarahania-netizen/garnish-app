@@ -54,6 +54,8 @@ describe('RecipesService', () => {
     });
 
     it('findAll ranks by engagement before pagination, not by createdAt', async () => {
+      const previous = process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+      process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = 'true';
       const rows = [
         { id: 'fresh-low', title: 'fresh low', createdAt: new Date('2026-07-01'), ingredients: [], steps: [], searchTerms: [] },
         { id: 'popular', title: 'popular', createdAt: new Date('2026-01-01'), ingredients: [], steps: [], searchTerms: [] },
@@ -77,11 +79,52 @@ describe('RecipesService', () => {
         userEvent: { groupBy: userEventGroupBy },
         mealSlot: { groupBy: mealSlotGroupBy },
       } as any);
-      const out = await svc.findAll(0, 4);
-      expect(out.data.map((recipe: any) => recipe.id)).toEqual(['popular', 'cooked', 'planned', 'fresh-low']);
-      expect(findMany.mock.calls[0][0].orderBy).toBeUndefined();
-      expect(findMany.mock.calls[0][0].skip).toBeUndefined();
-      expect(findMany.mock.calls[0][0].take).toBeUndefined();
+      try {
+        const out = await svc.findAll(0, 4);
+        expect(out.data.map((recipe: any) => recipe.id)).toEqual(['popular', 'cooked', 'planned', 'fresh-low']);
+        expect(findMany.mock.calls[0][0].orderBy).toBeUndefined();
+        expect(findMany.mock.calls[0][0].skip).toBeUndefined();
+        expect(findMany.mock.calls[0][0].take).toBeUndefined();
+        expect(mealSlotGroupBy).not.toHaveBeenCalled();
+        expect(userEventGroupBy).toHaveBeenCalledWith(expect.objectContaining({
+          where: expect.objectContaining({ consentPurpose: { in: ['analytics', 'personalization'] } }),
+        }));
+      } finally {
+        if (previous === undefined) delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+        else process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = previous;
+      }
+    });
+
+    it('default-off public rail performs zero engagement-data IO and remains deterministic', async () => {
+      const previous = process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+      delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+      const rows = [
+        { id: 'b', title: 'B', ingredients: [], steps: [], searchTerms: [] },
+        { id: 'a', title: 'A', ingredients: [], steps: [], searchTerms: [] },
+      ];
+      const userEventGroupBy = jest.fn();
+      const mealSlotGroupBy = jest.fn();
+      const svc = new RecipesService({
+        recipe: {
+          findMany: jest.fn().mockResolvedValue(rows),
+          count: jest.fn().mockResolvedValue(rows.length),
+        },
+        userEvent: { groupBy: userEventGroupBy },
+        mealSlot: { groupBy: mealSlotGroupBy },
+      } as any);
+
+      try {
+        const first = await svc.findAll(0, 2);
+        const second = await svc.findAll(0, 2);
+        expect(first.data.map((recipe: any) => recipe.id)).toEqual(
+          second.data.map((recipe: any) => recipe.id),
+        );
+        expect(userEventGroupBy).not.toHaveBeenCalled();
+        expect(mealSlotGroupBy).not.toHaveBeenCalled();
+      } finally {
+        if (previous === undefined) delete process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED;
+        else process.env.OPTIONAL_ANALYTICS_INGEST_ENABLED = previous;
+      }
     });
 
     it('findOne returns null for an unreviewed pending recipe', async () => {

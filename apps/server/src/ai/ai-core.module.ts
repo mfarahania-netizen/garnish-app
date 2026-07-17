@@ -27,6 +27,7 @@ import { AiAssistService } from './assist/ai-assist.service';
 import { IntentClassifierService } from './intent/intent-classifier.service';
 import { AgenticLoopService } from './agentic/agentic-loop.service';
 import { AgenticToolCatalogService } from './agentic/agentic-tool-catalog.service';
+import { ConsentModule } from '../consent/consent.module';
 
 /**
  * AI Core v1 skeleton (E47-A1).
@@ -40,7 +41,7 @@ import { AgenticToolCatalogService } from './agentic/agentic-tool-catalog.servic
  * Coexists with the legacy AiModule; routing legacy calls through the orchestrator is E47-A2.
  */
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, ConsentModule],
   providers: [
     AiOrchestratorService,
     ToolRegistryService,

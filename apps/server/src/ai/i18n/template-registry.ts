@@ -139,14 +139,14 @@ const TEMPLATES: Record<string, Entry> = {
   ts_next: { fa: '**دفعهٔ بعد:** {prevent}', nl: '**Volgende keer:** {prevent}', en: '**Next time:** {prevent}' },
   // ── §3 conversational allergy (frame; the allergen LABELS stay canonical — corpus i18n is Dim 7) ──
   allergy_offer: {
-    fa: 'متوجه شدم که به {names} حساسیت داری. می‌خوای به پروفایلت اضافه‌اش کنم تا همیشه از غذاهات حذفش کنم و ایمن بمونی؟',
-    nl: 'Ik begrijp dat je allergisch bent voor {names}. Zal ik het aan je profiel toevoegen zodat ik het altijd uit je gerechten weglaat en je veilig blijft?',
-    en: 'I understand you’re allergic to {names}. Shall I add it to your profile so I always leave it out of your dishes and keep you safe?',
+    fa: 'متوجه شدم که به {names} حساسیت داری. می‌خواهی به پروفایلت اضافه‌اش کنم تا گارنیش در هشدارها و فیلتر پیشنهادها لحاظش کند؟ این تضمین ایمنی نیست؛ مواد هر دستور را خودت بررسی کن.',
+    nl: 'Ik begrijp dat je allergisch bent voor {names}. Zal ik dit aan je profiel toevoegen voor waarschuwingen en filtering in Garnish? Dit is geen veiligheidsgarantie; controleer zelf alle ingrediënten.',
+    en: 'I understand you’re allergic to {names}. Shall I add it to your profile for Garnish warnings and filtering? This is not a safety guarantee; check every recipe’s ingredients yourself.',
   },
   allergy_offer_unknown: {
-    fa: 'به‌نظر رسید یک حساسیت گفتی، ولی مطمئن نشدم دقیقاً کدوم ماده — اسمش رو بگو یا توی پروفایلت اضافه‌اش کن تا همیشه ایمن نگهت دارم.',
-    nl: 'Het leek of je een allergie noemde, maar ik weet niet zeker welk ingrediënt — noem het, of voeg het toe in je profiel, dan houd ik je altijd veilig.',
-    en: 'It sounded like you mentioned an allergy, but I’m not sure which ingredient — tell me its name or add it in your profile so I always keep you safe.',
+    fa: 'به‌نظر رسید یک حساسیت گفتی، ولی دقیقاً کدام ماده روشن نیست. اسمش را بگو یا در پروفایلت ثبت کن تا گارنیش در هشدارها و فیلترها لحاظش کند؛ این تضمین ایمنی نیست و باید مواد هر دستور را بررسی کنی.',
+    nl: 'Het leek of je een allergie noemde, maar het ingrediënt is niet duidelijk. Noem het of voeg het toe voor waarschuwingen en filtering; dit is geen veiligheidsgarantie, dus controleer alle ingrediënten.',
+    en: 'It sounded like you mentioned an allergy, but the ingredient is unclear. Name it or add it for warnings and filtering; this is not a safety guarantee, so check every ingredient list.',
   },
   // ── substitution (frame; the swap notes/«why» come from the dictionary data — Dim 7 content) ──
   substitution_intro: {

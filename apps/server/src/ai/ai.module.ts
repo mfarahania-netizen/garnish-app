@@ -17,6 +17,7 @@ import { FavoritesModule } from '../favorites/favorites.module';
 import { ShoppingListModule } from '../shopping-list/shopping-list.module';
 import { MealPlansModule } from '../meal-plans/meal-plans.module';
 import { BriefingModule } from '../briefing/briefing.module';
+import { ConsentModule } from '../consent/consent.module';
 
 /**
  * Legacy AI module. The chat controller now routes through the AI Orchestrator (E47-A3) by
@@ -27,7 +28,7 @@ import { BriefingModule } from '../briefing/briefing.module';
  * → PrismaModule only; AiModule is imported by neither.
  */
 @Module({
-  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule, MealPlansModule, BriefingModule],
+  imports: [AiCoreModule, ProfileModule, AnalyticsModule, FavoritesModule, ShoppingListModule, MealPlansModule, BriefingModule, ConsentModule],
   controllers: [AiController],
   providers: [
     AiService,

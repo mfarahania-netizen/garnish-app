@@ -8,6 +8,8 @@ import { RecipeContentFeatureStore } from '../../recipes/search/recipe-content-f
 import { RecipeSafetyFilterService } from '../../recipes/intelligence/recipe-safety-filter.service';
 import { assessRecipeFit } from '../../recipes/intelligence/recipe-fit';
 import { analyzeRecipeIntegrity } from '../../recipes/intelligence/recipe-integrity';
+import { ConsentService } from '../../consent/consent.service';
+import { isOptionalPurposeRuntimeEnabled } from '../../consent/consent.constants';
 
 // COLDSTART-L4-14: full recipe shape needed for assessRecipeFit + analyzeRecipeIntegrity (allergy-safe fit).
 const FIT_SELECT = {
@@ -27,6 +29,7 @@ export class CandidateGeneratorService {
     private profiles: ProfileReadService,
     private content: RecipeContentFeatureStore,
     private safety: RecipeSafetyFilterService,
+    private readonly consent: ConsentService,
   ) {}
 
   async generate(userId: string, limit = 50): Promise<string[]> {
@@ -35,16 +38,29 @@ export class CandidateGeneratorService {
     // request. Promise.allSettled fixes both: parallel latency + a failing source degrades to an empty bucket
     // (logged) while the slate still serves. Input order is preserved → the quota logic is byte-identical when
     // all sources succeed.
-    const sources: Array<{ source: string; run: () => Promise<string[]> }> = [
-      { source: 'similar', run: () => this.getSimilarRecipes(userId) },
-      { source: 'embedding', run: () => this.getEmbeddingSimilarRecipes(userId) },
-      { source: 'collaborative', run: () => this.getCollaborativeRecipes(userId) },
-      { source: 'trending', run: () => this.getTrendingRecipes() },
-      { source: 'health', run: () => this.getHealthGoalRecipes(userId) },
-      { source: 'seasonal', run: () => this.getSeasonalRecipes() },
-      { source: 'inventory', run: () => this.getInventoryRecipes(userId) },
-      { source: 'cold_start', run: () => this.getColdStartRecipes(userId) },
-    ];
+    const consentEpoch = await this.currentPersonalizedAnalyticsEpoch(userId);
+    const canPersonalize = !!consentEpoch;
+    const publicColdStart = () => this.getPublicColdStartRecipes();
+    const sources: Array<{ source: string; run: () => Promise<string[]> }> = canPersonalize
+      ? [
+          { source: 'similar', run: () => this.getSimilarRecipes(userId, consentEpoch) },
+          { source: 'embedding', run: () => this.getEmbeddingSimilarRecipes(userId, consentEpoch) },
+          { source: 'collaborative', run: () => this.getCollaborativeRecipes(userId) },
+          { source: 'trending', run: () => this.getTrendingRecipes(consentEpoch) },
+          { source: 'health', run: () => this.getHealthGoalRecipes(userId) },
+          { source: 'seasonal', run: () => this.getSeasonalRecipes() },
+          { source: 'inventory', run: () => this.getInventoryRecipes(userId) },
+          { source: 'cold_start', run: () => this.getColdStartRecipes(userId, consentEpoch) },
+        ]
+      : [
+          // No behavioral count, embedding, collaborative, health-goal, or inventory reads. Public discovery
+          // remains generic; only the final shared hard-safety filter reads declared allergy/constraint data.
+          ...(isOptionalPurposeRuntimeEnabled('analytics')
+            ? [{ source: 'trending', run: () => this.getTrendingRecipes() }]
+            : []),
+          { source: 'seasonal', run: () => this.getSeasonalRecipes() },
+          { source: 'cold_start', run: publicColdStart },
+        ];
     const settled = await Promise.allSettled(sources.map((s) => s.run()));
     const buckets = sources.map((s, i) => {
       const r = settled[i];
@@ -78,7 +94,9 @@ export class CandidateGeneratorService {
         if (seen.has(recipeId)) continue;
         seen.add(recipeId);
         candidates.push(recipeId);
-        if (candidates.length >= target) return this.filterSafe(userId, candidates);
+        if (candidates.length >= target) {
+          return this.finalizeCandidates(userId, candidates, target, consentEpoch);
+        }
       }
     }
 
@@ -88,12 +106,59 @@ export class CandidateGeneratorService {
           if (seen.has(recipeId)) continue;
           seen.add(recipeId);
           candidates.push(recipeId);
-          if (candidates.length >= target) return this.filterSafe(userId, candidates);
+          if (candidates.length >= target) {
+            return this.finalizeCandidates(userId, candidates, target, consentEpoch);
+          }
         }
       }
     }
 
+    return this.finalizeCandidates(userId, candidates, target, consentEpoch);
+  }
+
+  private async currentPersonalizedAnalyticsEpoch(userId: string): Promise<Date | null> {
+    if (!userId) return null;
+    try {
+      return await this.consent.currentGrantEpoch(userId, [
+        'analytics',
+        'personalization',
+      ]);
+    } catch {
+      return null;
+    }
+  }
+
+  private sameEpoch(before: Date, after: Date | null): boolean {
+    return !!after && before.getTime() === after.getTime();
+  }
+
+  private async finalizeCandidates(
+    userId: string,
+    candidates: string[],
+    target: number,
+    consentEpoch: Date | null,
+  ): Promise<string[]> {
+    if (consentEpoch) {
+      const epochAfterReads = await this.currentPersonalizedAnalyticsEpoch(userId);
+      if (!this.sameEpoch(consentEpoch, epochAfterReads)) {
+        return this.publicFallback(userId, target);
+      }
+    }
     return this.filterSafe(userId, candidates);
+  }
+
+  private async publicFallback(userId: string, target: number): Promise<string[]> {
+    const sources = await Promise.allSettled([
+      ...(isOptionalPurposeRuntimeEnabled('analytics')
+        ? [this.getTrendingRecipes()]
+        : []),
+      this.getSeasonalRecipes(),
+      this.getPublicColdStartRecipes(),
+    ]);
+    const ids = sources.flatMap((result) =>
+      result.status === 'fulfilled' ? result.value : [],
+    );
+    return this.filterSafe(userId, [...new Set(ids)].slice(0, target));
   }
 
   /**
@@ -110,9 +175,14 @@ export class CandidateGeneratorService {
     return this.safety.safeIds(userId, candidateIds);
   }
 
-  private async getSimilarRecipes(userId: string): Promise<string[]> {
+  private async getSimilarRecipes(userId: string, consentEpoch: Date): Promise<string[]> {
     const recentViews = await this.prisma.userEvent.findMany({
-      where: { userId, type: { in: ['recipe_view', 'favorite_add'] } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        type: { in: ['recipe_view', 'favorite_add'] },
+        timestamp: { gte: consentEpoch },
+      },
       orderBy: { timestamp: 'desc' },
       take: 10,
     });
@@ -142,9 +212,14 @@ export class CandidateGeneratorService {
     return [...new Set(similarRecipes.map(s => s.recipeId))];
   }
 
-  private async getEmbeddingSimilarRecipes(userId: string): Promise<string[]> {
+  private async getEmbeddingSimilarRecipes(userId: string, consentEpoch: Date): Promise<string[]> {
     const recentViews = await this.prisma.userEvent.findMany({
-      where: { userId, type: 'recipe_view' },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        type: 'recipe_view',
+        timestamp: { gte: consentEpoch },
+      },
       orderBy: { timestamp: 'desc' },
       take: 3,
       select: { payload: true },
@@ -220,11 +295,16 @@ export class CandidateGeneratorService {
     return [...new Set(favoriteRecipes.map(f => f.recipeId))];
   }
 
-  private async getTrendingRecipes(): Promise<string[]> {
+  private async getTrendingRecipes(consentEpoch?: Date): Promise<string[]> {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const since = consentEpoch && consentEpoch > oneWeekAgo ? consentEpoch : oneWeekAgo;
     const trending = await this.prisma.userEvent.groupBy({
       by: ['payload'],
-      where: { type: 'recipe_view', timestamp: { gte: oneWeekAgo } },
+      where: {
+        type: 'recipe_view',
+        consentPurpose: { in: ['analytics', 'personalization'] },
+        timestamp: { gte: since },
+      },
       _count: { payload: true },
       orderBy: { _count: { payload: 'desc' } },
       take: 10,
@@ -273,6 +353,19 @@ export class CandidateGeneratorService {
     return recipes.map(r => r.id);
   }
 
+  /** Generic discovery fallback for users who did not opt into personalization. User-specific declared
+   * preferences are deliberately not used for ranking here; the shared final safety gate still applies
+   * allergies and hard dietary/observance constraints before any recipe is returned. */
+  private async getPublicColdStartRecipes(): Promise<string[]> {
+    const recipes = await this.prisma.recipe.findMany({
+      where: { status: 'active', isPublic: true },
+      select: { id: true },
+      orderBy: { id: 'asc' },
+      take: 20,
+    });
+    return recipes.map((recipe) => recipe.id);
+  }
+
   private async getInventoryRecipes(userId: string): Promise<string[]> {
     const shoppingItems = await this.prisma.shoppingItem.findMany({
       where: { shoppingList: { userId } },
@@ -292,9 +385,15 @@ export class CandidateGeneratorService {
     return [...new Set(recipes.map(r => r.recipeId))];
   }
 
-  private async getColdStartRecipes(userId: string): Promise<string[]> {
+  private async getColdStartRecipes(userId: string, consentEpoch: Date): Promise<string[]> {
+    const defaultSince = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const since = consentEpoch > defaultSince ? consentEpoch : defaultSince;
     const hasBehaviorHistory = await this.prisma.userEvent.count({
-      where: { userId, timestamp: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+      where: {
+        userId,
+        consentPurpose: 'personalization',
+        timestamp: { gte: since },
+      },
     });
     if (hasBehaviorHistory > 5) return [];
     const candidates = await this.coldStartCandidates(userId);
