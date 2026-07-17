@@ -445,7 +445,8 @@ function errLine(error) {
     invalid_admin_role: 'نقش ادمین معتبر نیست.',
     privacy_admin_required: 'فقط مالک یا نقش حریم خصوصی/پشتیبانی می‌تواند PII را نمایش دهد.',
     phone_or_email_required: 'تلفن یا ایمیل لازم است.',
-    password_min_6: 'رمز حداقل ۶ کاراکتر.',
+    password_min_6: 'رمز حداقل ۸ کاراکتر.',
+    password_min_8: 'رمز حداقل ۸ کاراکتر.',
     phone_taken: 'این تلفن قبلاً ثبت شده.',
     email_taken: 'این ایمیل قبلاً ثبت شده.',
   };
@@ -495,7 +496,7 @@ function DangerModal({ state, onClose, busy, error, onConfirm }) {
             </select>
           </label>
         ) : null}
-        {cfg.pw ? <PasswordInput label="رمزِ جدید (حداقل ۶)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} /> : null}
+        {cfg.pw ? <PasswordInput label="رمزِ جدید (حداقل ۸)" value={pw} onChange={(e) => setPw(e.target.value)} styles={fieldStyles} /> : null}
         <TextInput label="دلیل (الزامی — در سندِ audit ثبت می‌شود)" value={reason} onChange={(e) => setReason(e.target.value)} styles={fieldStyles} placeholder="چرا این کار را انجام می‌دهی؟" />
         {cfg.confirmWord ? <TextInput label={`برای تأیید، «${expect}» را تایپ کن`} value={word} onChange={(e) => setWord(e.target.value)} styles={fieldStyles} /> : null}
         <Box style={{ display: 'flex', gap: 8, marginBlockStart: 2 }}>
@@ -517,7 +518,7 @@ function CreateForm({ onSubmit, pending, error, canCreateAdmin }) {
       <TextInput label="نام" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} styles={fieldStyles} />
       <TextInput label="تلفن" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} styles={fieldStyles} dir="ltr" />
       <TextInput label="ایمیل (اختیاری)" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} styles={fieldStyles} dir="ltr" />
-      <PasswordInput label="رمزِ عبور (حداقل ۶)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
+      <PasswordInput label="رمزِ عبور (حداقل ۸)" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} styles={fieldStyles} />
       <label style={{ display: 'grid', gap: 4, fontFamily: 'var(--g-font-fa)', fontSize: '11.5px', fontWeight: 600, color: 'var(--g-color-text-secondary)' }}>
         نقش ادمین
         <select disabled={!canCreateAdmin} value={canCreateAdmin ? f.adminRole : 'user'} onChange={(e) => setF({ ...f, adminRole: e.target.value })} style={{ minBlockSize: 38, borderRadius: '9px', border: '1px solid var(--g-color-border-subtle)', background: 'var(--g-color-bg-surface)', color: 'var(--g-color-text-primary)', fontFamily: 'var(--g-font-fa)', fontSize: '12.5px', paddingInline: 10 }}>

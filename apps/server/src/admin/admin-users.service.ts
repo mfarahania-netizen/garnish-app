@@ -166,7 +166,7 @@ export class AdminUsersService {
     const phone = body.phone?.trim() || null;
     const email = body.email?.trim() || null;
     if (!phone && !email) throw new BadRequestException('phone_or_email_required');
-    if (!body.password || body.password.length < 6) throw new BadRequestException('password_min_6');
+    if (!body.password || body.password.length < 8) throw new BadRequestException('password_min_8');
     if (phone && (await this.prisma.user.findUnique({ where: { phone } }))) throw new BadRequestException('phone_taken');
     if (email && (await this.prisma.user.findUnique({ where: { email } }))) throw new BadRequestException('email_taken');
     const password = await bcrypt.hash(body.password, 10);
@@ -214,7 +214,7 @@ export class AdminUsersService {
   /** Reset a user's password (admin recovery). Bumps the epoch + clears sessions → forces re-login everywhere. */
   async resetPassword(id: string, newPassword: string) {
     await this.ensureExists(id);
-    if (!newPassword || newPassword.length < 6) throw new BadRequestException('password_min_6');
+    if (!newPassword || newPassword.length < 8) throw new BadRequestException('password_min_8');
     const password = await bcrypt.hash(newPassword, 10);
     await this.prisma.user.update({ where: { id }, data: { password, sessionEpoch: { increment: 1 } } });
     await this.prisma.userSession.deleteMany({ where: { userId: id } });
